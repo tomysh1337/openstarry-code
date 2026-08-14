@@ -567,6 +567,14 @@ def test_release_workflow_gates_built_and_downloaded_installers_on_profile_reten
     assert "codesign --verify --deep --strict" in mac_audit
     assert "spctl -a -vv -t exec" in mac_audit
     assert "xcrun stapler validate" in mac_audit
+    assert 'signing_details="$(codesign -d --verbose=4' in mac_audit
+    assert "Authority=Developer ID Application:" in mac_audit
+    assert "Signature=adhoc" in mac_audit
+    assert "code object is not signed at all" in mac_audit
+    assert mac_audit.index("Authority=Developer ID Application:") < mac_audit.index(
+        "codesign --verify --deep --strict"
+    )
+    assert "Unexpected macOS signing mode" in mac_audit
     assert "@electron/asar@3.4.1 extract-file" in mac_audit
     assert "verify-release-macos-upgrade.sh" in mac_audit
     assert "Get-FileHash -Algorithm SHA256" in windows_audit
@@ -615,9 +623,9 @@ def test_release_workflow_hydrates_and_smokes_desktop_router_runtime() -> None:
             assert "OPENSTARRY_CODE_GATEWAY_SMOKE_TIMEOUT_MS" not in job
 
 
-def test_release_workflow_keeps_macos_signing_identity_auto_selected() -> None:
+def test_release_workflow_keeps_macos_signing_optional_and_auto_selected() -> None:
     workflow = Path(".github/workflows/wheelhouse-release.yml").read_text(encoding="utf-8")
-    mac_step = workflow.split("- name: Build signed macOS installer", 1)[1].split(
+    mac_step = workflow.split("- name: Build macOS installer", 1)[1].split(
         "- name: Verify Electron package", 1
     )[0]
 

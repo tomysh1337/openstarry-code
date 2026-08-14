@@ -51,6 +51,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Updated the RC3 desktop upgrade gates to launch, inspect, and uninstall the
   renamed OpenStarry Code application and gateway while retaining the legacy
   OpenSquilla profile fixture as the migration source.
+- Aligned the downloaded macOS asset audit with optional signing: Developer ID
+  builds still require strict code-signing, Gatekeeper, and notarization checks,
+  while ad-hoc and unsigned builds retain checksum, package-version, and upgrade
+  verification without claiming Developer ID provenance.
 
 ## [0.5.4] - 2026-08-14
 

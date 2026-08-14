@@ -359,7 +359,7 @@ jobs:
         working-directory: desktop/electron
         run: npm ci
 
-      - name: Build signed macOS installer
+      - name: Build macOS installer
         working-directory: desktop/electron
         env:
           CSC_LINK: ${{ secrets.MAC_CSC_LINK }}
@@ -913,7 +913,7 @@ jobs:
           mkdir -p release-audit
           gh release download "${TAG}" --dir release-audit
 
-      - name: Verify checksums, signing, notarization, and packaged version
+      - name: Verify checksums, packaged version, and signing mode
         env:
           TAG: ${{ env.RELEASE_TAG }}
         shell: bash
@@ -983,9 +983,22 @@ jobs:
 
           shutil.rmtree(sys.argv[1])
           PY
-            codesign --verify --deep --strict --verbose=2 "${app_path}"
-            spctl -a -vv -t exec "${app_path}"
-            xcrun stapler validate "${app_path}"
+            signing_details="$(codesign -d --verbose=4 "${app_path}" 2>&1 || true)"
+            printf '%s\n' "${signing_details}"
+            if grep -q '^Authority=Developer ID Application:' \
+              <<<"${signing_details}"; then
+              codesign --verify --deep --strict --verbose=2 "${app_path}"
+              spctl -a -vv -t exec "${app_path}"
+              xcrun stapler validate "${app_path}"
+            elif grep -q '^Signature=adhoc$' <<<"${signing_details}"; then
+              echo "Verified ad-hoc macOS signing mode; Developer ID checks do not apply."
+            elif grep -q 'code object is not signed at all' \
+              <<<"${signing_details}"; then
+              echo "Verified unsigned macOS signing mode; Developer ID checks do not apply."
+            else
+              echo "Unexpected macOS signing mode for ${app_path}" >&2
+              exit 1
+            fi
           }
 
           extracted="$(mktemp -d)"
