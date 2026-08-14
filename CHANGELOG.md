@@ -42,7 +42,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
   source checkout.
 - Fixed the packaged first-send release gate to use the current
   `OPENSTARRY_CODE_*` context and test environment variables, and added a
-  renderer state snapshot when the gate fails.
+  renderer state snapshot when the gate fails. The gate now settles Electron's
+  initial navigation before installing its send probe and separates active-page
+  renderer failures from console noise emitted only during application teardown.
 - Sized the Gateway's detached optional-read pool to the complete advertised
   bootstrap method set, preventing a fresh Control UI from rejecting its own
   concurrent session and metadata reads.

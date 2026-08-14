@@ -96,6 +96,19 @@ def test_release_workflow_builds_desktop_installers() -> None:
     assert "OPENSTARRY_CODE_LLM_CONTEXT_WINDOW_TOKENS: '131072'" in first_send_gate
     assert "OPENSTARRY_CODE_TESTING: '0'" in first_send_gate
     assert "OPENSQUILLA_TESTING" not in first_send_gate
+    initial_load_settled = first_send_gate.index("await page.waitForLoadState('load'")
+    probe_reload = first_send_gate.index("await page.reload({ waitUntil: 'domcontentloaded' })")
+    assert initial_load_settled < probe_reload
+    assert "initial Electron navigation must settle before probe reload" in first_send_gate
+    assert "mainFrameNavigations" in first_send_gate
+    active_log_snapshot = first_send_gate.index(
+        "desktopLogSummary = await readDesktopLogSummary(userDataDir)"
+    )
+    renderer_teardown = first_send_gate.index("await app?.close().catch(() => {})")
+    shutdown_log_snapshot = first_send_gate.index(
+        "shutdownDesktopLogSummary = await readDesktopLogSummary(userDataDir)"
+    )
+    assert active_log_snapshot < renderer_teardown < shutdown_log_snapshot
 
 
 def test_release_workflow_runs_legacy_windows_upgrade_checks_on_server_2022() -> None:

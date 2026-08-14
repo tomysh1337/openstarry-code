@@ -149,6 +149,7 @@ async function readDesktopLogSummary(userDataDir) {
     if (error?.code !== 'ENOENT') throw error
   }
   const eventCounts = {}
+  const rendererConsoleEntries = []
   let malformedRecords = 0
   let forbiddenErrorCount = 0
   for (const line of source.split(/\r?\n/)) {
@@ -158,6 +159,7 @@ async function readDesktopLogSummary(userDataDir) {
       const record = JSON.parse(line)
       const event = typeof record?.event === 'string' ? record.event : 'unknown'
       eventCounts[event] = (eventCounts[event] || 0) + 1
+      if (event === 'renderer_console') rendererConsoleEntries.push(record.detail || {})
     } catch {
       malformedRecords += 1
     }
@@ -165,6 +167,7 @@ async function readDesktopLogSummary(userDataDir) {
   return {
     bytes: Buffer.byteLength(source, 'utf8'),
     eventCounts,
+    rendererConsoleEntries,
     forbiddenErrorCount,
     malformedRecords,
   }
@@ -184,7 +187,9 @@ const consoleErrors = []
 const outboundNetwork = []
 const rpcSendCounts = new Map()
 const rpcSessions = new Map()
+const mainFrameNavigations = []
 let desktopLogSummary
+let shutdownDesktopLogSummary
 let rendererFailureSnapshot
 
 async function browserRpcSnapshot(page) {
@@ -295,11 +300,32 @@ try {
     await route.abort('blockedbyclient')
   })
   const page = await app.firstWindow({ timeout: 60_000 })
+  mainFrameNavigations.push(page.url())
+  page.on('framenavigated', (frame) => {
+    if (frame === page.mainFrame()) mainFrameNavigations.push(frame.url())
+  })
   page.on('pageerror', (error) => pageErrors.push(String(error?.message || error)))
   page.on('console', (message) => {
     if (message.type() === 'error') consoleErrors.push(message.text())
   })
   await waitFor(() => page.url().includes('/control/chat'), 'candidate Control UI')
+  // firstWindow can expose the target URL while Electron's initial loadURL()
+  // promise is still pending. Reloading at that point aborts the main-process
+  // navigation and schedules its 500 ms retry, which can replace the document
+  // after the first chat.send. Settle the real app before installing the probe.
+  await page.waitForLoadState('load', { timeout: SEND_TIMEOUT_MS })
+  await page.locator('.conn-pill.connected').waitFor({
+    state: 'visible',
+    timeout: SEND_TIMEOUT_MS,
+  })
+  await page.locator('.chat-textarea').waitFor({ state: 'visible', timeout: SEND_TIMEOUT_MS })
+  await page.locator('#app-route-header [data-testid="chat-header-actions"]').waitFor({
+    state: 'attached',
+    timeout: SEND_TIMEOUT_MS,
+  })
+  const settledLaunchUrl = page.url()
+  await delay(750)
+  assert.equal(page.url(), settledLaunchUrl, 'initial Electron navigation must settle before probe reload')
   // Observe the renderer's own WebSocket without proxying it. Playwright's
   // routeWebSocket transparent proxy changes the ASGI accept sequence in a
   // packaged Electron app, so the release gate instruments send() in the page
@@ -463,9 +489,13 @@ try {
     })).catch(snapshotError => ({ error: String(snapshotError) }))
   }
 } finally {
+  // Snapshot the active renderer before Electron teardown. Closing the final
+  // window can make Chromium report a WebSocket-destruction console error on
+  // macOS after the page has ceased to exist; that is outside this send gate.
+  desktopLogSummary = await readDesktopLogSummary(userDataDir)
   await app?.close().catch(() => {})
   await provider?.close().catch(() => {})
-  desktopLogSummary = await readDesktopLogSummary(userDataDir)
+  shutdownDesktopLogSummary = await readDesktopLogSummary(userDataDir)
 }
 
 if (runError) {
@@ -476,14 +506,22 @@ if (runError) {
     provider: provider?.counts(),
     renderer: { pageErrors: pageErrors.length, consoleErrors: consoleErrors.length },
     externalRendererRequests: outboundNetwork.length,
+    mainFrameNavigations,
+    pageErrors,
+    consoleErrors,
     rendererFailureSnapshot,
     desktopLog: desktopLogSummary,
+    shutdownDesktopLog: shutdownDesktopLogSummary,
   }, null, 2))
   throw runError
 }
 
 assert.equal(desktopLogSummary.forbiddenErrorCount, 0, 'desktop.log contains a forbidden renderer failure')
-assert.equal(desktopLogSummary.eventCounts.renderer_console || 0, 0, 'desktop.log contains renderer console errors')
+assert.equal(
+  desktopLogSummary.eventCounts.renderer_console || 0,
+  0,
+  `desktop.log contains active renderer console errors: ${JSON.stringify(desktopLogSummary.rendererConsoleEntries)}`,
+)
 assert.equal(desktopLogSummary.eventCounts.renderer_unresponsive || 0, 0, 'renderer became unresponsive')
 assert.equal(
   provider?.counts().chatRequestCount,
@@ -498,7 +536,16 @@ console.log(JSON.stringify({
   viewports: { wide: Math.ceil(iterations / 2), tight: Math.floor(iterations / 2) },
   rpc: { chatSend: rpcSendCounts.size, uniqueSessions: new Set(rpcSessions.values()).size },
   provider: provider?.counts(),
-  renderer: { pageErrors: pageErrors.length, consoleErrors: consoleErrors.length },
+  renderer: {
+    pageErrors: pageErrors.length,
+    consoleErrors: consoleErrors.length,
+    mainFrameNavigations: mainFrameNavigations.length,
+  },
   externalRendererRequests: outboundNetwork.length,
   desktopLog: desktopLogSummary,
+  shutdownRendererConsoleErrors: Math.max(
+    0,
+    (shutdownDesktopLogSummary.eventCounts.renderer_console || 0)
+      - (desktopLogSummary.eventCounts.renderer_console || 0),
+  ),
 }, null, 2))
