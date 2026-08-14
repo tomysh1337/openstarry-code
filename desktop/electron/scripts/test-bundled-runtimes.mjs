@@ -40,6 +40,7 @@ try {
       String.raw`Z:\fixture\runtime\python.staging`,
       1,
       'win32',
+      true,
     ),
     [
       '--force-local',
@@ -57,6 +58,22 @@ try {
     'non-Windows tar arguments must stay portable',
   )
   assert.deepEqual(
+    tarExtractArgs(
+      String.raw`Z:\fixture\.runtime-cache\python.tar.gz`,
+      String.raw`Z:\fixture\runtime\python.staging`,
+      0,
+      'win32',
+      false,
+    ),
+    [
+      '-xf',
+      'Z:/fixture/.runtime-cache/python.tar.gz',
+      '-C',
+      'Z:/fixture/runtime/python.staging',
+    ],
+    'Windows tar implementations without --force-local must use portable arguments',
+  )
+  assert.deepEqual(
     windowsZipExtractSpec(
       String.raw`Z:\fixture\.runtime-cache\node.zip`,
       String.raw`Z:\fixture\runtime\node.staging`,
@@ -68,12 +85,12 @@ try {
         '-NoProfile',
         '-NonInteractive',
         '-Command',
-        'Expand-Archive -LiteralPath $env:OPENSQUILLA_RUNTIME_ARCHIVE '
-          + '-DestinationPath $env:OPENSQUILLA_RUNTIME_DESTINATION -Force',
+        'Expand-Archive -LiteralPath $env:OPENSTARRY_CODE_RUNTIME_ARCHIVE '
+          + '-DestinationPath $env:OPENSTARRY_CODE_RUNTIME_DESTINATION -Force',
       ],
       environment: {
-        OPENSQUILLA_RUNTIME_ARCHIVE: String.raw`Z:\fixture\.runtime-cache\node.zip`,
-        OPENSQUILLA_RUNTIME_DESTINATION: String.raw`Z:\fixture\runtime\node.staging`,
+        OPENSTARRY_CODE_RUNTIME_ARCHIVE: String.raw`Z:\fixture\.runtime-cache\node.zip`,
+        OPENSTARRY_CODE_RUNTIME_DESTINATION: String.raw`Z:\fixture\runtime\node.staging`,
       },
     },
     'Windows zip extraction must use the system archive command with literal paths',

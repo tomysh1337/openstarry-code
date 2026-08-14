@@ -13,8 +13,8 @@ from pathlib import Path
 import pytest
 import yaml
 
-CURRENT_VERSION = "0.5.3"
-CURRENT_DESKTOP_VERSION = "0.5.3"
+CURRENT_VERSION = "0.5.4"
+CURRENT_DESKTOP_VERSION = "0.5.4"
 CURRENT_TAG = f"v{CURRENT_VERSION}"
 HISTORICAL_PREVIEW_VERSION = "0.2.0rc1"
 HISTORICAL_PREVIEW_TAG = f"v{HISTORICAL_PREVIEW_VERSION}"
@@ -52,10 +52,13 @@ def test_desktop_electron_release_config_matches_current_release() -> None:
     assert build["artifactName"] == "OpenStarry-Code-${version}-${os}-${arch}.${ext}"
     assert build["mac"]["target"] == ["dmg", "zip"]
     assert build["mac"].get("identity", "auto") is not None
-    assert build["win"]["target"] == ["nsis"]
+    assert build["win"]["target"] == ["nsis", "msi"]
     assert build["nsis"]["oneClick"] is False
     assert build["nsis"]["allowToChangeInstallationDirectory"] is True
     assert build["nsis"]["deleteAppDataOnUninstall"] is False
+    assert build["msi"]["oneClick"] is False
+    assert build["msi"]["perMachine"] is False
+    assert build["msi"]["createDesktopShortcut"] == "always"
     package_verifier = Path("desktop/electron/scripts/verify-package.mjs").read_text(
         encoding="utf-8"
     )
@@ -73,6 +76,7 @@ def test_release_workflow_builds_desktop_installers() -> None:
     assert "desktop_asset_version" in workflow
     assert "OpenStarry-Code-{desktop_version}-mac-arm64.dmg" in workflow
     assert "OpenStarry-Code-{desktop_version}-win-x64.exe" in workflow
+    assert "OpenStarry-Code-{desktop_version}-win-x64.msi" in workflow
     assert "latest-mac.yml" in workflow
     assert "latest.yml" in workflow
     assert 'NOTES_FILE="docs/releases/${TAG#v}.md"' in workflow
@@ -627,8 +631,8 @@ def test_release_workflow_keeps_windows_build_unsigned_until_signing_is_availabl
 def test_release_docs_describe_unsigned_windows_policy() -> None:
     readme = Path("README.md").read_text(encoding="utf-8")
     release_notes = Path(f"docs/releases/{CURRENT_VERSION}.md").read_text(encoding="utf-8")
-    assert "this source-first release does not include a desktop\ninstaller" in readme
-    assert "A bundled desktop installer\nis outside this release" in release_notes
+    assert "Windows installers are currently unsigned" in readme
+    assert "Windows installers are currently unsigned" in release_notes
     return
 
     readme = Path("README.md").read_text(encoding="utf-8")
@@ -859,7 +863,8 @@ def test_readme_release_install_uses_latest_assets_and_pinned_alternative() -> N
         f"releases/download/{CURRENT_TAG}/openstarry_code-{CURRENT_VERSION}-py3-none-any.whl"
         in readme
     )
-    assert "this source-first release does not include a desktop\ninstaller" in readme
+    assert f"OpenStarry-Code-{CURRENT_DESKTOP_VERSION}-win-x64.exe" in readme
+    assert f"OpenStarry-Code-{CURRENT_DESKTOP_VERSION}-win-x64.msi" in readme
     assert "openstarry_code-latest-py3-none-any.whl" not in readme
     return
 
@@ -1020,7 +1025,9 @@ def test_current_release_notes_cover_goals_recovery_upgrade_and_containers() -> 
     assert "## Downloads" in notes
     assert f"openstarry_code-{CURRENT_VERSION}-py3-none-any.whl" in notes
     assert f"openstarry_code-{CURRENT_VERSION}.tar.gz" in notes
-    assert "A bundled desktop installer\nis outside this release" in notes
+    assert f"OpenStarry-Code-{CURRENT_DESKTOP_VERSION}-win-x64.exe" in notes
+    assert f"OpenStarry-Code-{CURRENT_DESKTOP_VERSION}-win-x64.msi" in notes
+    assert "application-build" in notes
     assert "Durable Goals" in notes
     assert "migration layer" in notes
     assert "## Attribution" in notes

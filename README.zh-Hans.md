@@ -201,26 +201,29 @@ powershell -ExecutionPolicy Bypass -File ./scripts/install_source.ps1
 ## 发布构建
 
 当前 OpenStarry Code 正式版本为
-[`v0.5.3`](https://github.com/tomysh1337/openstarry-code/releases/tag/v0.5.3)，
+[`v0.5.4`](https://github.com/tomysh1337/openstarry-code/releases/tag/v0.5.4)，
 由 2026-08-14 的仓库标签状态构建。
 
 使用 `uv` 直接安装已验证的 wheel：
 
 ```sh
 uv tool install --python 3.12 \
-  "openstarry-code[recommended] @ https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.3/openstarry_code-0.5.3-py3-none-any.whl"
+  "openstarry-code[recommended] @ https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.4/openstarry_code-0.5.4-py3-none-any.whl"
 ```
 <!-- Release URL 分隔：/ -->
 
 | 产物 | 用途 | 完整性 |
 | --- | --- | --- |
-| [`openstarry_code-0.5.3-py3-none-any.whl`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.3/openstarry_code-0.5.3-py3-none-any.whl) | 包含已编译 Web UI 的 Python 运行时 | 记录于 `SHA256SUMS` |
-| [`openstarry_code-0.5.3.tar.gz`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.3/openstarry_code-0.5.3.tar.gz) | 可复现的源码发行包 | 记录于 `SHA256SUMS` |
+| [`OpenStarry-Code-0.5.4-win-x64.exe`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.4/OpenStarry-Code-0.5.4-win-x64.exe) | NSIS Windows 交互式安装包 | 记录于 `SHA256SUMS` |
+| [`OpenStarry-Code-0.5.4-win-x64.msi`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.4/OpenStarry-Code-0.5.4-win-x64.msi) | WiX MSI Windows 安装包 | 记录于 `SHA256SUMS` |
+| [`openstarry_code-0.5.4-py3-none-any.whl`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.4/openstarry_code-0.5.4-py3-none-any.whl) | 包含已编译 Web UI 的 Python 运行时 | 记录于 `SHA256SUMS` |
+| [`openstarry_code-0.5.4.tar.gz`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.4/openstarry_code-0.5.4.tar.gz) | 可复现的源码发行包 | 记录于 `SHA256SUMS` |
 | `SHA256SUMS` | Release 下载文件的 SHA-256 清单 | 与版本同步发布 |
 
 发布验证覆盖完整前端构建、产物契约、Python 包构建、提供商与配置专项测试、Web UI
-单元测试和依赖审计。Electron 源码仍可单独构建，但在 app ID 与更新通道完成独立迁移契约前，
-本 fork 不声明已经提供单独重命名的桌面安装器。
+单元测试和依赖审计。Windows 桌面安装包内置 Python gateway、Node.js、Python 和
+Git Bash runtime，同时提供 NSIS EXE 与 WiX MSI。当前 Windows 安装包尚未代码签名，
+使用前请核对 `SHA256SUMS`。
 
 | 发布门禁 | 结果 |
 | --- | --- |
@@ -230,14 +233,15 @@ uv tool install --python 3.12 \
 | Python 专项测试 | 36 项通过 |
 | npm 依赖审计 | 0 个已知漏洞 |
 | wheel/sdist 构建 | 通过 |
+| Windows EXE/MSI 构建与包结构校验 | 通过 |
 
 版本历史见 [`CHANGELOG.md`](CHANGELOG.md)，详细发行说明见
-[`docs/releases/0.5.3.md`](docs/releases/0.5.3.md)。
+[`docs/releases/0.5.4.md`](docs/releases/0.5.4.md)。
 
-### 继承桌面通道
+### 上游兼容下载
 
-上面的 fork Release 以源码发行包为主。仍需使用继承桌面通道时，上游 0.5.3 的固定版本
-GitHub 产物为：
+OpenStarry Code v0.5.4 已提供独立 Windows 安装包。需要核对上游 0.5.3 行为时，
+对应的固定版本 GitHub 产物为：
 
 - [`OpenSquilla-0.5.3-mac-arm64.dmg`](https://github.com/opensquilla/opensquilla/releases/download/v0.5.3/OpenSquilla-0.5.3-mac-arm64.dmg)
 - [`OpenSquilla-0.5.3-win-x64.exe`](https://github.com/opensquilla/opensquilla/releases/download/v0.5.3/OpenSquilla-0.5.3-win-x64.exe)

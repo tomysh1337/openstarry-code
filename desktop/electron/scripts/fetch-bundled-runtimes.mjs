@@ -189,13 +189,31 @@ export function tarExtractArgs(
   destination,
   stripComponents,
   platform = process.platform,
+  forceLocalSupported,
 ) {
-  const args = platform === 'win32' ? ['--force-local'] : []
+  const useForceLocal =
+    platform === 'win32' &&
+    (forceLocalSupported ?? detectTarForceLocalSupport())
+  const args = useForceLocal ? ['--force-local'] : []
   const archivePath = platform === 'win32' ? archive.replaceAll('\\', '/') : archive
   const destinationPath = platform === 'win32' ? destination.replaceAll('\\', '/') : destination
   args.push('-xf', archivePath, '-C', destinationPath)
   if (stripComponents > 0) args.push(`--strip-components=${stripComponents}`)
   return args
+}
+
+let tarForceLocalSupport
+
+function detectTarForceLocalSupport() {
+  if (tarForceLocalSupport !== undefined) return tarForceLocalSupport
+  const result = spawnSync('tar', ['--help'], {
+    encoding: 'utf8',
+    windowsHide: true,
+  })
+  const help = `${result.stdout ?? ''}\n${result.stderr ?? ''}`
+  tarForceLocalSupport =
+    result.status === 0 && /(^|\s)--force-local(?:\s|$)/m.test(help)
+  return tarForceLocalSupport
 }
 
 export function windowsZipExtractSpec(archive, destination) {
@@ -206,12 +224,12 @@ export function windowsZipExtractSpec(archive, destination) {
       '-NoProfile',
       '-NonInteractive',
       '-Command',
-      'Expand-Archive -LiteralPath $env:OPENSQUILLA_RUNTIME_ARCHIVE '
-        + '-DestinationPath $env:OPENSQUILLA_RUNTIME_DESTINATION -Force',
+      'Expand-Archive -LiteralPath $env:OPENSTARRY_CODE_RUNTIME_ARCHIVE '
+        + '-DestinationPath $env:OPENSTARRY_CODE_RUNTIME_DESTINATION -Force',
     ],
     environment: {
-      OPENSQUILLA_RUNTIME_ARCHIVE: archive,
-      OPENSQUILLA_RUNTIME_DESTINATION: destination,
+      OPENSTARRY_CODE_RUNTIME_ARCHIVE: archive,
+      OPENSTARRY_CODE_RUNTIME_DESTINATION: destination,
     },
   }
 }

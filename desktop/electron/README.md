@@ -1,6 +1,6 @@
-# OpenSquilla Electron Desktop Shell
+# OpenStarry Code Electron Desktop Shell
 
-This package is the macOS desktop shell for the existing OpenSquilla Control UI.
+This package is the desktop shell for the OpenStarry Code Control UI.
 It does not rewrite the Vue frontend. The Electron main process configures a
 desktop credential, starts a local gateway, and loads the backend-served
 `/control/` app.
@@ -32,20 +32,20 @@ The shell looks for the checkout root automatically. To point it at a different
 checkout:
 
 ```bash
-OPENSQUILLA_DESKTOP_REPO_ROOT=/path/to/openstarry-code npm run dev
+OPENSTARRY_CODE_DESKTOP_REPO_ROOT=/path/to/openstarry-code npm run dev
 ```
 
 During development, the shell starts a gateway from the selected checkout by
 default. To force a specific local port:
 
 ```bash
-OPENSQUILLA_DESKTOP_GATEWAY_PORT=18793 npm run dev
+OPENSTARRY_CODE_DESKTOP_GATEWAY_PORT=18793 npm run dev
 ```
 
 To attach to an already-running gateway instead of spawning one:
 
 ```bash
-OPENSQUILLA_DESKTOP_GATEWAY_URL=http://127.0.0.1:18791 npm run dev
+OPENSTARRY_CODE_DESKTOP_GATEWAY_URL=http://127.0.0.1:18791 npm run dev
 ```
 
 ## Local Release Build
@@ -68,10 +68,10 @@ npm run dist
 
 ## Windows Release Signing
 
-Windows release builds are currently unsigned. The release workflow builds the
-NSIS installer with electron-builder and uploads the unsigned `.exe`,
-`.blockmap`, and `latest.yml` artifacts together so updater metadata matches
-the exact installer bytes.
+Windows release builds are currently unsigned. The release workflow builds both
+the NSIS `.exe` and WiX `.msi` installers with electron-builder, then uploads
+them with the `.blockmap` and `latest.yml` artifacts so updater metadata matches
+the exact NSIS installer bytes.
 
 Do not sign the `.exe` after `latest.yml` is emitted; that changes the
 installer bytes and invalidates the updater hash. If Windows code signing is
@@ -84,7 +84,7 @@ current policy.
 
 - Reuses `openstarry-code-webui` and the Python gateway exactly as they run in the
   browser.
-- Starts a bundled `runtime/gateway/opensquilla-gateway` in packaged builds.
+- Starts a bundled `runtime/gateway/openstarry-code-gateway` in packaged builds.
 - Falls back to `uv run openstarry-code gateway run --listen 127.0.0.1 --port <port>`
   during development when no bundled runtime exists.
 - Uses `contextIsolation: true`, `nodeIntegration: false`, and a minimal preload

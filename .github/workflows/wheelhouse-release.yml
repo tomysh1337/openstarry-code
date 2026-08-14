@@ -196,11 +196,11 @@ jobs:
       - name: Test release asset contracts
         run: uv run --extra dev pytest tests/test_scripts/test_build_wheelhouse_zip.py
 
-      - name: Build versioned wheel
+      - name: Build versioned Python distributions
         shell: bash
         run: |
           rm -rf dist build/wheelhouse-zip
-          uv build --wheel --out-dir dist
+          uv build --out-dir dist
 
       - name: Verify wheel contains the exact Web UI artifact
         shell: bash
@@ -251,8 +251,11 @@ jobs:
           wheels = sorted(
               path for path in Path("dist").glob("openstarry_code-*.whl")
           )
+          sdists = sorted(Path("dist").glob("openstarry_code-*.tar.gz"))
           assert len(wheels) == 1, f"expected one versioned wheel, got {len(wheels)}"
           assert wheels[0].name == f"openstarry_code-{version}-py3-none-any.whl"
+          assert len(sdists) == 1, f"expected one versioned sdist, got {len(sdists)}"
+          assert sdists[0].name == f"openstarry_code-{version}.tar.gz"
           assert not list(Path("dist").glob("OpenStarry-Code-*portable*.zip")), (
               "0.5+ release assets must not include Windows portable zips"
           )
@@ -289,9 +292,12 @@ jobs:
           wheels = sorted(
               path for path in dist.glob("openstarry_code-*.whl")
           )
+          sdists = sorted(dist.glob("openstarry_code-*.tar.gz"))
           assert len(wheels) == 1, f"expected one versioned wheel, got {len(wheels)}"
           assert wheels[0].name == f"openstarry_code-{version}-py3-none-any.whl"
-          assets = [wheels[0]]
+          assert len(sdists) == 1, f"expected one versioned sdist, got {len(sdists)}"
+          assert sdists[0].name == f"openstarry_code-{version}.tar.gz"
+          assets = [wheels[0], sdists[0]]
           lines = [
               f"{hashlib.sha256(path.read_bytes()).hexdigest()}  {path.name}"
               for path in assets
@@ -305,6 +311,7 @@ jobs:
           name: openstarry-code-release-assets-python-${{ env.RELEASE_PROFILE }}
           path: |
             dist/*.whl
+            dist/*.tar.gz
             dist/SHA256SUMS
           overwrite: true
 
@@ -533,6 +540,7 @@ jobs:
           name: openstarry-code-electron-windows
           path: |
             dist/desktop-electron/*.exe
+            dist/desktop-electron/*.msi
             dist/desktop-electron/*.blockmap
             dist/desktop-electron/latest.yml
           overwrite: true
@@ -603,8 +611,10 @@ jobs:
               "latest-mac.yml",
               f"OpenStarry-Code-{desktop_version}-win-x64.exe",
               f"OpenStarry-Code-{desktop_version}-win-x64.exe.blockmap",
+              f"OpenStarry-Code-{desktop_version}-win-x64.msi",
               "latest.yml",
               f"openstarry_code-{version}-py3-none-any.whl",
+              f"openstarry_code-{version}.tar.gz",
           ]
           lines = []
           for name in asset_names:
@@ -644,8 +654,10 @@ jobs:
               "latest-mac.yml",
               f"OpenStarry-Code-{desktop_version}-win-x64.exe",
               f"OpenStarry-Code-{desktop_version}-win-x64.exe.blockmap",
+              f"OpenStarry-Code-{desktop_version}-win-x64.msi",
               "latest.yml",
               f"openstarry_code-{version}-py3-none-any.whl",
+              f"openstarry_code-{version}.tar.gz",
           ]
           assets = [dist / name for name in asset_names]
           assert sha256s.is_file(), "missing SHA256SUMS"
@@ -798,8 +810,10 @@ jobs:
               "latest-mac.yml",
               f"OpenStarry-Code-{desktop_version}-win-x64.exe",
               f"OpenStarry-Code-{desktop_version}-win-x64.exe.blockmap",
+              f"OpenStarry-Code-{desktop_version}-win-x64.msi",
               "latest.yml",
               f"openstarry_code-{version}-py3-none-any.whl",
+              f"openstarry_code-{version}.tar.gz",
               "SHA256SUMS",
           }
           raw = subprocess.check_output(

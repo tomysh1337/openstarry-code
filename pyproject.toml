@@ -1,6 +1,6 @@
 [project]
 name = "openstarry-code"
-version = "0.5.3"
+version = "0.5.4"
 description = "OpenStarry Code - stackable multi-provider Python agent runtime with automatic model discovery"
 license = "Apache-2.0"
 readme = "README.md"
@@ -151,7 +151,11 @@ exclude = [
     "/build/**",
     "/dist/**",
     "/desktop/electron/dist/**",
+    "/desktop/electron/.pyinstaller/**",
+    "/desktop/electron/.runtime-cache/**",
     "/desktop/electron/node_modules/**",
+    "/desktop/electron/runtime/developer/**",
+    "/desktop/electron/runtime/gateway/**",
     "/openstarry-code-webui/node_modules/**",
     "/openstarry-code-webui/test-results/**",
 ]

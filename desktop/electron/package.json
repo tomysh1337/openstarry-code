@@ -1,6 +1,6 @@
 {
   "name": "@openstarry-code/desktop-electron",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "private": true,
   "description": "Electron desktop shell for the OpenStarry Code Control UI.",
   "repository": {
@@ -54,7 +54,8 @@
     "test:onboarding-flow": "npm run build && node scripts/test-onboarding-flow.mjs",
     "start": "electron .",
     "pack": "npm run build && electron-builder --dir && npm run verify:package",
-    "dist": "npm run build && electron-builder && npm run verify:package"
+    "dist": "npm run build && electron-builder && npm run verify:package",
+    "dist:windows": "npm run build && electron-builder --win nsis msi --x64 && npm run verify:package"
   },
   "dependencies": {
     "electron-updater": "^6.6.2"
@@ -149,7 +150,8 @@
     "win": {
       "icon": "assets/icon.ico",
       "target": [
-        "nsis"
+        "nsis",
+        "msi"
       ]
     },
     "nsis": {
@@ -159,6 +161,14 @@
       "deleteAppDataOnUninstall": false,
       "installerIcon": "assets/icon.ico",
       "uninstallerIcon": "assets/icon.ico"
+    },
+    "msi": {
+      "oneClick": false,
+      "perMachine": false,
+      "runAfterFinish": true,
+      "createDesktopShortcut": "always",
+      "createStartMenuShortcut": true,
+      "shortcutName": "OpenStarry Code"
     }
   }
 }

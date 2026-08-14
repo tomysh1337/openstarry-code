@@ -166,6 +166,7 @@ winget install --id Git.Git -e
 winget install --id GitHub.GitLFS -e
 winget install --id OpenJS.NodeJS.LTS -e
 powershell -ExecutionPolicy Bypass -c "irm https://astral.sh/uv/install.ps1 | iex"
+$env:Path = "$HOME\.local\bin;$env:Path"
 git lfs install
 ```
 
@@ -183,6 +184,7 @@ sudo apt update && sudo apt install -y git git-lfs curl
 curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
 sudo apt install -y nodejs
 curl -LsSf https://astral.sh/uv/install.sh | sh
+. "$HOME/.local/bin/env"
 git lfs install
 ```
 
@@ -214,28 +216,30 @@ bundled gateway and platform runtime pass the packaging gate.
 ## Release Build
 
 The current OpenStarry Code release is
-[`v0.5.3`](https://github.com/tomysh1337/openstarry-code/releases/tag/v0.5.3),
+[`v0.5.4`](https://github.com/tomysh1337/openstarry-code/releases/tag/v0.5.4),
 built from the tagged repository state on 2026-08-14.
 
 Install its verified wheel directly with `uv`:
 
 ```sh
 uv tool install --python 3.12 \
-  "openstarry-code[recommended] @ https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.3/openstarry_code-0.5.3-py3-none-any.whl"
+  "openstarry-code[recommended] @ https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.4/openstarry_code-0.5.4-py3-none-any.whl"
 ```
 <!-- release URL boundary: / -->
 
 | Artifact | Purpose | Integrity |
 | --- | --- | --- |
-| [`openstarry_code-0.5.3-py3-none-any.whl`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.3/openstarry_code-0.5.3-py3-none-any.whl) | Installable Python runtime with the compiled Web UI | Listed in `SHA256SUMS` |
-| [`openstarry_code-0.5.3.tar.gz`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.3/openstarry_code-0.5.3.tar.gz) | Reproducible source distribution | Listed in `SHA256SUMS` |
+| [`OpenStarry-Code-0.5.4-win-x64.exe`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.4/OpenStarry-Code-0.5.4-win-x64.exe) | Interactive NSIS Windows installer | Listed in `SHA256SUMS` |
+| [`OpenStarry-Code-0.5.4-win-x64.msi`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.4/OpenStarry-Code-0.5.4-win-x64.msi) | WiX MSI Windows installer | Listed in `SHA256SUMS` |
+| [`openstarry_code-0.5.4-py3-none-any.whl`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.4/openstarry_code-0.5.4-py3-none-any.whl) | Installable Python runtime with the compiled Web UI | Listed in `SHA256SUMS` |
+| [`openstarry_code-0.5.4.tar.gz`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.4/openstarry_code-0.5.4.tar.gz) | Reproducible source distribution | Listed in `SHA256SUMS` |
 | `SHA256SUMS` | SHA-256 manifest for release downloads | Published with the release |
 
 Release verification covers the complete frontend build, artifact contract,
 Python package build, focused provider/configuration tests, Web UI unit tests,
-and dependency audit. The Electron source builds with the OpenStarry Code app
-ID and protocol, but this source-first release does not include a desktop
-installer because the bundled gateway and Windows Python runtime are absent.
+and dependency audit. The Windows desktop release includes the bundled gateway,
+Python, Node.js, and Git Bash runtimes in both NSIS EXE and WiX MSI formats.
+Windows installers are currently unsigned; verify `SHA256SUMS` before use.
 
 | Release gate | Result |
 | --- | --- |
@@ -247,7 +251,7 @@ installer because the bundled gateway and Windows Python runtime are absent.
 | Wheel/sdist build | Passed |
 
 See [`CHANGELOG.md`](CHANGELOG.md) for the version history and
-[`docs/releases/0.5.3.md`](docs/releases/0.5.3.md) for detailed release notes.
+[`docs/releases/0.5.4.md`](docs/releases/0.5.4.md) for detailed release notes.
 
 ### Network privacy
 

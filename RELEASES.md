@@ -5,10 +5,16 @@ with the `openstarry_code` Python import from
 [`tomysh1337/openstarry-code`](https://github.com/tomysh1337/openstarry-code).
 The fork's first source-first release publishes the verified Python wheel,
 source archive, and `SHA256SUMS`. Desktop source uses the new identity, while a
-bundled installer waits for the packaged gateway and platform Python runtime.
+Windows releases include the packaged gateway and pinned Python, Node.js, and
+Git Bash runtimes in NSIS EXE and WiX MSI installers.
+0.5.x releases (previews and the stable) publish Electron desktop installers;
+0.5.4 adds WiX MSI beside the existing NSIS EXE target.
+GitHub Releases do not publish Windows portable zips, portable latest aliases,
+public wheelhouse zips, or separately branded macOS or Linux portable bundles.
 
 | Version | Tag | Date | Notes |
 |---|---|---|---|
+| 0.5.4 | v0.5.4 | 2026-08-14 | Windows desktop release: NSIS EXE, WiX MSI, bundled application-build skill, and portable tar extraction compatibility |
 | 0.5.3 | v0.5.3 | 2026-08-14 | OpenStarry Code: four custom API slots, automatic model discovery, B5 stacking, rebranded documentation, dependency fixes, and the inherited 0.5.3 runtime improvements |
 | 0.5.2 | v0.5.2 | 2026-07-30 | Maintenance: same-turn steering, responsive startup and session history, safer recovery and usage accounting, and Desktop/provider/UI fixes |
 | 0.5.1 | v0.5.1 | 2026-07-29 | Maintenance: Full host/Cron reliability, Plan mode and project workspaces, artifact previews, desktop recovery, and provider/UI improvements |
@@ -25,16 +31,17 @@ bundled installer waits for the packaged gateway and platform Python runtime.
 | 0.2.0rc1 | v0.2.0rc1 | 2026-05-19 | Second public preview |
 | 0.1.0rc1 | v0.1.0rc1 | 2026-05-12 | First public preview |
 
-OpenStarry Code v0.5.3 publishes exactly these source-first artifacts:
+OpenStarry Code v0.5.4 publishes these verified artifacts:
 
-- `openstarry_code-0.5.3-py3-none-any.whl`
-- `openstarry_code-0.5.3.tar.gz`
+- `OpenStarry-Code-0.5.4-win-x64.exe`
+- `OpenStarry-Code-0.5.4-win-x64.msi`
+- `openstarry_code-0.5.4-py3-none-any.whl`
+- `openstarry_code-0.5.4.tar.gz`
 - `SHA256SUMS`
 
 The release is marked stable after the wheel contents, compiled Web UI,
-entry points, source archive, and checksums pass verification. It does not
-advertise a DMG, EXE, updater feed, portable archive, or container image that
-was not built from the tagged OpenStarry Code source.
+entry points, source archive, Windows package layout, bundled runtime, and
+checksums pass verification. The Windows installers are currently unsigned.
 
 For Windows Desktop upgrades from RC3 to RC4 or later, users must install the
 new version directly over the existing installation and must not uninstall RC3
@@ -167,7 +174,7 @@ These checks cannot be fully proven by local artifact generation:
 - The tag exists on GitHub and matches `pyproject.toml`.
 - The release workflow can fetch hydrated Git LFS router assets.
 - The draft GitHub Release title is `OpenSquilla 0.5.3`.
-- Preview drafts are marked Pre-release and never Latest; the `v0.5.3`
+- Preview drafts are marked Pre-release and must not be marked as Latest; the `v0.5.3`
   stable draft is not marked Pre-release, and Latest is applied only at
   publish after explicit maintainer confirmation.
 - Preview GitHub Releases contain the Electron installers, updater metadata,

@@ -6,6 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.5.4] - 2026-08-14
+
+### Added
+
+- Added a WiX MSI target alongside the existing NSIS EXE installer, including
+  per-user installation and desktop/Start Menu shortcuts.
+- Added the bundled `application-build` skill for reproducible Electron,
+  runtime, package verification, checksum, and GitHub Release workflows.
+
+### Fixed
+
+- Windows runtime extraction now detects whether the installed `tar` supports
+  `--force-local` and falls back to portable bsdtar arguments when it does not.
+- Runtime archive extraction uses the `OPENSTARRY_CODE_RUNTIME_*` namespace.
+- Source distributions explicitly exclude generated Electron runtimes,
+  PyInstaller work files, and runtime download caches.
+
 ## [0.5.3] - 2026-08-14
 
 ### Added
