@@ -489,6 +489,17 @@ def test_release_workflow_gates_built_and_downloaded_installers_on_profile_reten
         assert "--label" in helper
         assert "test-packaged-session-recovery.mjs" not in helper
         assert "--session-key" not in helper
+    assert '${old_mount}/OpenSquilla.app' in mac_helper
+    assert '${candidate_mount}/OpenStarry Code.app' in mac_helper
+    assert "Contents/MacOS/OpenStarry Code" in mac_helper
+    assert "openstarry-code-gateway" in mac_helper
+    assert "OPENSTARRY_CODE_DESKTOP_DISABLE_AUTO_UPDATE" in mac_helper
+    assert "OPENSTARRY_CODE_RECOVERY_OFFLINE" in mac_helper
+    assert "OpenSquilla-0.5.0-rc3-win-x64.exe" in windows_helper
+    assert "OpenStarry Code.exe" in windows_helper
+    assert "openstarry-code-gateway.exe" in windows_helper
+    assert "OPENSTARRY_CODE_DESKTOP_DISABLE_AUTO_UPDATE" in windows_helper
+    assert "OPENSTARRY_CODE_RECOVERY_OFFLINE" in windows_helper
 
     assert "test-packaged-update-banner.mjs" in windows_helper
     assert "if ($VerifyLongRunningUpdateBanner)" in windows_helper

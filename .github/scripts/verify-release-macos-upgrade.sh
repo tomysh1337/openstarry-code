@@ -50,13 +50,13 @@ python "${probe}" seed --home "${profile}" --label "${label}"
 
 hdiutil attach -nobrowse -readonly -mountpoint "${candidate_mount}" "${candidate_dmg}"
 mv "${install_root}/OpenSquilla.app" "${install_root}/OpenSquilla.rc3.app"
-ditto "${candidate_mount}/OpenSquilla.app" "${install_root}/OpenSquilla.app"
+ditto "${candidate_mount}/OpenStarry Code.app" "${install_root}/OpenStarry Code.app"
 hdiutil detach "${candidate_mount}" -quiet
 python "${probe}" verify --home "${profile}" --label "${label}"
 
-app_binary="${install_root}/OpenSquilla.app/Contents/MacOS/OpenSquilla"
+app_binary="${install_root}/OpenStarry Code.app/Contents/MacOS/OpenStarry Code"
 test -x "${app_binary}"
-OPENSQUILLA_DESKTOP_DISABLE_AUTO_UPDATE=1 \
+OPENSTARRY_CODE_DESKTOP_DISABLE_AUTO_UPDATE=1 \
   "${app_binary}" --use-mock-keychain "--user-data-dir=${user_data}" \
   >"${sandbox}/candidate-desktop.log" 2>&1 &
 app_pid=$!
@@ -67,10 +67,10 @@ wait "${app_pid}" || true
 app_pid=""
 
 gateway_binary="$(find \
-  "${install_root}/OpenSquilla.app/Contents/Resources/runtime/gateway" \
-  -type f -name opensquilla-gateway -perm -111 -print -quit)"
+  "${install_root}/OpenStarry Code.app/Contents/Resources/runtime/gateway" \
+  -type f -name openstarry-code-gateway -perm -111 -print -quit)"
 test -x "${gateway_binary}"
-OPENSQUILLA_RECOVERY_OFFLINE=1 "${gateway_binary}" recovery inspect \
+OPENSTARRY_CODE_RECOVERY_OFFLINE=1 "${gateway_binary}" recovery inspect \
   --home "${profile}" --json >"${sandbox}/candidate-inspect.json"
 python - "${profile}" "${sandbox}/candidate-inspect.json" <<'PY'
 import json
@@ -92,13 +92,13 @@ assert Path(configured_state[0]["path"]).resolve() == home / "state", report
 PY
 python "${probe}" verify --home "${profile}" --label "${label}"
 
-python - "${install_root}/OpenSquilla.app" "${install_root}/OpenSquilla.rc3.app" <<'PY'
+python - "${install_root}/OpenStarry Code.app" "${install_root}/OpenSquilla.rc3.app" <<'PY'
 import shutil
 import sys
 
 for app_path in sys.argv[1:]:
     shutil.rmtree(app_path)
 PY
-test ! -e "${install_root}/OpenSquilla.app"
+test ! -e "${install_root}/OpenStarry Code.app"
 test ! -e "${install_root}/OpenSquilla.rc3.app"
 python "${probe}" verify --home "${profile}" --label "${label}"

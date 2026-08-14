@@ -22,8 +22,8 @@ $profile = Join-Path $userData 'opensquilla'
 $probe = Join-Path $PWD '.github\scripts\verify-release-profile-preservation.py'
 $updateBannerSmoke = Join-Path $PWD 'desktop\electron\scripts\test-packaged-update-banner.mjs'
 $env:APPDATA = $appData
-$env:OPENSQUILLA_DESKTOP_DISABLE_AUTO_UPDATE = '1'
-$env:OPENSQUILLA_RECOVERY_OFFLINE = '1'
+$env:OPENSTARRY_CODE_DESKTOP_DISABLE_AUTO_UPDATE = '1'
+$env:OPENSTARRY_CODE_RECOVERY_OFFLINE = '1'
 
 New-Item -ItemType Directory -Force -Path $oldDir, $appData | Out-Null
 gh release download $oldTag --repo $repository --pattern $oldAsset --dir $oldDir
@@ -31,7 +31,8 @@ if ($LASTEXITCODE -ne 0) { throw 'Failed to download the RC3 Windows installer.'
 $oldInstaller = Join-Path $oldDir $oldAsset
 
 function Stop-InstalledProcesses {
-  Get-Process -Name 'OpenSquilla', 'opensquilla-gateway' -ErrorAction SilentlyContinue |
+  Get-Process -Name 'OpenSquilla', 'OpenStarry Code', 'opensquilla-gateway', `
+    'openstarry-code-gateway' -ErrorAction SilentlyContinue |
     ForEach-Object {
       try {
         $path = if ($_.Path) { [IO.Path]::GetFullPath($_.Path) } else { '' }
@@ -61,9 +62,9 @@ try {
   python $probe verify --home $profile --label $Label
   if ($LASTEXITCODE -ne 0) { throw 'Candidate installation changed RC3 profile data.' }
 
-  $app = Join-Path $installDir 'OpenSquilla.exe'
+  $app = Join-Path $installDir 'OpenStarry Code.exe'
   if (-not (Test-Path -LiteralPath $app -PathType Leaf)) {
-    throw 'Candidate installation did not publish OpenSquilla.exe.'
+    throw 'Candidate installation did not publish OpenStarry Code.exe.'
   }
   # Preserve the original packaged launch gate for every channel. The RC-only
   # long-running banner smoke below is additive; stable candidates must not
@@ -88,7 +89,7 @@ try {
   Stop-InstalledProcesses
 
   $gateway = Get-ChildItem -Path (Join-Path $installDir 'resources\runtime\gateway') `
-    -Filter 'opensquilla-gateway.exe' -File -Recurse | Select-Object -First 1
+    -Filter 'openstarry-code-gateway.exe' -File -Recurse | Select-Object -First 1
   if (-not $gateway) { throw 'Packaged recovery CLI was not found.' }
   $inspectionRaw = & $gateway.FullName recovery inspect --home $profile --json
   if ($LASTEXITCODE -ne 0) { throw 'Packaged recovery inspection failed.' }
@@ -134,7 +135,7 @@ try {
     Start-Sleep -Seconds 1
   }
   if (Test-Path -LiteralPath $app -PathType Leaf) {
-    throw 'Candidate uninstaller did not remove OpenSquilla.exe.'
+    throw 'Candidate uninstaller did not remove OpenStarry Code.exe.'
   }
   python $probe verify --home $profile --label $Label
   if ($LASTEXITCODE -ne 0) { throw 'Candidate uninstaller changed RC3 profile data.' }

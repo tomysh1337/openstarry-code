@@ -48,6 +48,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Sized the Gateway's detached optional-read pool to the complete advertised
   bootstrap method set, preventing a fresh Control UI from rejecting its own
   concurrent session and metadata reads.
+- Updated the RC3 desktop upgrade gates to launch, inspect, and uninstall the
+  renamed OpenStarry Code application and gateway while retaining the legacy
+  OpenSquilla profile fixture as the migration source.
 
 ## [0.5.4] - 2026-08-14
 
