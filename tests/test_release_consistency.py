@@ -597,6 +597,9 @@ def test_release_workflow_keeps_macos_signing_identity_auto_selected() -> None:
     assert "CSC_LINK: ${{ secrets.MAC_CSC_LINK }}" in mac_step
     assert "CSC_KEY_PASSWORD: ${{ secrets.MAC_CSC_KEY_PASSWORD }}" in mac_step
     assert "APPLE_ID: ${{ secrets.APPLE_ID }}" in mac_step
+    assert 'if [[ -z "${CSC_LINK:-}" ]]' in mac_step
+    assert "unset CSC_LINK CSC_KEY_PASSWORD APPLE_ID" in mac_step
+    assert "export CSC_IDENTITY_AUTO_DISCOVERY=false" in mac_step
     assert "CSC_NAME" not in mac_step
     assert "GH_TOKEN" not in mac_step
 

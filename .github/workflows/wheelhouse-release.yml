@@ -200,7 +200,8 @@ jobs:
         shell: bash
         run: |
           rm -rf dist build/wheelhouse-zip
-          uv build --out-dir dist
+          uv build --wheel --out-dir dist
+          uv build --sdist --out-dir dist
 
       - name: Verify wheel contains the exact Web UI artifact
         shell: bash
@@ -367,6 +368,11 @@ jobs:
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: |
+          set -euo pipefail
+          if [[ -z "${CSC_LINK:-}" ]]; then
+            unset CSC_LINK CSC_KEY_PASSWORD APPLE_ID APPLE_APP_SPECIFIC_PASSWORD APPLE_TEAM_ID
+            export CSC_IDENTITY_AUTO_DISCOVERY=false
+          fi
           npm run fetch:runtimes
           npm run build:gateway
           npm run build
