@@ -365,7 +365,7 @@ async def test_call_naming_llm_payload_and_sanitization(monkeypatch):
     assert captured["json"]["stream"] is False
     # OpenRouter attribution headers are present (mirrors compaction path).
     assert captured["headers"]["Authorization"] == "Bearer test-key"
-    assert captured["headers"]["HTTP-Referer"] == "https://opensquilla.ai"
+    assert captured["headers"]["HTTP-Referer"] == "https://github.com/tomysh1337/openstarry-code"
     assert captured["headers"]["X-Title"] == "OpenStarry Code"
 
 
@@ -441,7 +441,7 @@ async def test_call_naming_llm_adds_tokenrhythm_app_attribution(monkeypatch):
     monkeypatch.setattr(
         "openstarry_code.session.naming.tokenrhythm_install_id_headers",
         lambda _provider_kind, _base_url: {
-            "X-OpenStarry Code-Install-Id": install_id
+            "X-OpenStarry-Code-Install-Id": install_id
         },
     )
     monkeypatch.setattr(
@@ -464,13 +464,13 @@ async def test_call_naming_llm_adds_tokenrhythm_app_attribution(monkeypatch):
     )
 
     assert captured["url"] == "https://tokenrhythm.studio/v1/chat/completions"
-    assert captured["headers"]["HTTP-Referer"] == "https://opensquilla.ai"
+    assert captured["headers"]["HTTP-Referer"] == "https://github.com/tomysh1337/openstarry-code"
     assert captured["headers"]["X-Title"] == "OpenStarry Code"
-    assert captured["headers"]["X-OpenStarry Code-Session-Id"] == "session-1"
-    assert captured["headers"]["X-OpenStarry Code-Turn-Id"] == "turn-1"
-    assert captured["headers"]["X-OpenStarry Code-Execution-Id"] == "naming-1"
-    assert captured["headers"]["X-OpenStarry Code-Call-Kind"] == "auxiliary.naming"
-    assert captured["headers"]["X-OpenStarry Code-Install-Id"] == install_id
+    assert captured["headers"]["X-OpenStarry-Code-Session-Id"] == "session-1"
+    assert captured["headers"]["X-OpenStarry-Code-Turn-Id"] == "turn-1"
+    assert captured["headers"]["X-OpenStarry-Code-Execution-Id"] == "naming-1"
+    assert captured["headers"]["X-OpenStarry-Code-Call-Kind"] == "auxiliary.naming"
+    assert captured["headers"]["X-OpenStarry-Code-Install-Id"] == install_id
     assert install_id not in str(captured["json"])
     # Title sanitization removes the trailing redaction marker as punctuation.
     assert title == "Echo"
@@ -535,7 +535,7 @@ async def test_call_naming_llm_cancellation_does_not_retain_install_id(monkeypat
     monkeypatch.setattr(
         "openstarry_code.session.naming.tokenrhythm_install_id_headers",
         lambda _provider_kind, _base_url: {
-            "X-OpenStarry Code-Install-Id": install_id
+            "X-OpenStarry-Code-Install-Id": install_id
         },
     )
     monkeypatch.setattr(
@@ -557,7 +557,7 @@ async def test_call_naming_llm_cancellation_does_not_retain_install_id(monkeypat
 
     assert task.cancelled()
     assert usage_reasons == ["cancelled"]
-    assert sent_headers["X-OpenStarry Code-Install-Id"] == install_id
+    assert sent_headers["X-OpenStarry-Code-Install-Id"] == install_id
     assert caught.value.__cause__ is None
     assert caught.value.__context__ is None
 

@@ -69,7 +69,7 @@ def _manifest(
         "prerelease": prerelease,
         "publishedAt": "2026-07-15T00:00:00Z",
         "releaseUrl": release_url
-        or f"https://github.com/opensquilla/opensquilla/releases/tag/{tag}",
+        or f"https://github.com/tomysh1337/openstarry-code/releases/tag/{tag}",
         # Python intentionally does not consume platform assets, but including
         # them keeps fixtures representative of the shared desktop manifest.
         "sha256sums": "SHA256SUMS",
@@ -442,7 +442,7 @@ def test_channel_endpoints_are_static_and_rc_scoped(monkeypatch) -> None:
             ),
             (
                 "0.5.0",
-                "https://github.com/opensquilla/opensquilla/releases/tag/v0.5.0",
+                "https://github.com/tomysh1337/openstarry-code/releases/tag/v0.5.0",
                 None,
             ),
         ),
@@ -451,7 +451,7 @@ def test_channel_endpoints_are_static_and_rc_scoped(monkeypatch) -> None:
             _manifest(),
             (
                 "0.5.0-rc5",
-                "https://github.com/opensquilla/opensquilla/releases/tag/v0.5.0rc5",
+                "https://github.com/tomysh1337/openstarry-code/releases/tag/v0.5.0rc5",
                 None,
             ),
         ),
@@ -465,7 +465,7 @@ def test_channel_endpoints_are_static_and_rc_scoped(monkeypatch) -> None:
             ),
             (
                 "0.5.0",
-                "https://github.com/opensquilla/opensquilla/releases/tag/v0.5.0",
+                "https://github.com/tomysh1337/openstarry-code/releases/tag/v0.5.0",
                 None,
             ),
         ),
@@ -499,7 +499,7 @@ def test_fetch_accepts_valid_static_channel_manifest(
         {**_manifest(), "tag": "vv0.5.0rc5"},
         {
             **_manifest(tag="V0.5.0RC5"),
-            "releaseUrl": ("https://github.com/opensquilla/opensquilla/releases/tag/V0.5.0RC5"),
+            "releaseUrl": ("https://github.com/tomysh1337/openstarry-code/releases/tag/V0.5.0RC5"),
         },
         {**_manifest(), "version": "0.5.0rc5"},
         {**_manifest(), "version": "0.5.0-RC5"},

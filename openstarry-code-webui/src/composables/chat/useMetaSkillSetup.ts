@@ -154,7 +154,7 @@ export function useMetaSkillSetup(options: UseMetaSkillSetupOptions) {
       return 'The queued launch was removed. The MetaSkill request is still saved and can be retried.'
     }
     if (result.status === 'unknown') {
-      return 'OpenSquilla could not confirm whether the launch was accepted. Retry safely with the same request identity.'
+      return 'OpenStarry Code could not confirm whether the launch was accepted. Retry safely with the same request identity.'
     }
     return 'The MetaSkill launch was not accepted. The original request is still saved and can be retried.'
   }

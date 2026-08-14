@@ -1,4 +1,4 @@
-/** OpenSquilla Web UI — SVG icon paths (ported from legacy icons.js). */
+/** OpenStarry Code Web UI — SVG icon paths (ported from the legacy UI). */
 
 export type IconName =
   | 'chat' | 'home' | 'channels' | 'sessions' | 'usage' | 'cron'

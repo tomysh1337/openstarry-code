@@ -6,6 +6,14 @@ from openstarry_code.search.types import SearchProvider, SearchProviderSpec
 
 _providers: dict[str, type[SearchProvider]] = {}
 _provider_specs: dict[str, SearchProviderSpec] = {
+    "baidu": SearchProviderSpec(
+        provider_id="baidu",
+        capabilities=frozenset({"web", "no_key", "chinese_web"}),
+    ),
+    "bing_cn": SearchProviderSpec(
+        provider_id="bing_cn",
+        capabilities=frozenset({"web", "no_key", "chinese_web"}),
+    ),
     "bocha": SearchProviderSpec(
         provider_id="bocha",
         requires_api_key=True,
@@ -45,6 +53,10 @@ _provider_specs: dict[str, SearchProviderSpec] = {
         runtime_supported=False,
         requires_api_key=True,
         env_key="PERPLEXITY_API_KEY",
+    ),
+    "sogou": SearchProviderSpec(
+        provider_id="sogou",
+        capabilities=frozenset({"web", "no_key", "chinese_web"}),
     ),
 }
 

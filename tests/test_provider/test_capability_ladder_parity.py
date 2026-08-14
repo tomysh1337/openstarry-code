@@ -212,6 +212,12 @@ _EXPECTED_CAPS: dict[tuple[str, str, str], tuple[bool, bool, bool, str]] = {
         False,
         "none",
     ),
+    ("custom_responses", "totally-unknown-model-x1", ""): (
+        False,
+        True,
+        False,
+        "none",
+    ),
     ("qwen_token_plan", "qwen3.8-max-preview", ""): (
         True,
         True,
@@ -871,6 +877,7 @@ _EXPECTED_REQUIRES_API_KEY: dict[str, bool] = {
     "custom_3": False,
     "custom_4": False,
     "custom_anthropic": False,
+    "custom_responses": False,
     "dashscope": True,
     "deepseek": True,
     "gemini": True,
@@ -930,6 +937,7 @@ _EXPECTED_UNKNOWN_CONTEXT_WINDOW: dict[str, int] = {
     "custom_3": 8192,
     "custom_4": 8192,
     "custom_anthropic": 8192,
+    "custom_responses": 8192,
     "dashscope": 200000,
     "deepseek": 200000,
     "gemini": 200000,
@@ -1020,6 +1028,7 @@ def test_named_provider_sets_stay_distinct() -> None:
             "custom_3",
             "custom_4",
             "custom_anthropic",
+            "custom_responses",
         }
     )
     assert LOCAL_RUNTIME_PROVIDERS == KEYLESS_PROVIDERS | {"vllm", "local"}

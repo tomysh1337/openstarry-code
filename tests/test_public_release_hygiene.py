@@ -241,14 +241,17 @@ def test_readme_documents_quick_and_manual_terminal_install_commands() -> None:
 
     assert "uv tool install --python 3.12" in text
     assert '"openstarry-code[recommended] @ https://github.com' in text
-    assert "https://opensquilla.ai/install.sh" not in text
-    assert "https://opensquilla.ai/install.ps1" not in text
+    assert "https://github.com/tomysh1337/openstarry-code/install.sh" not in text
+    assert "https://github.com/tomysh1337/openstarry-code/install.ps1" not in text
     assert "Starting with Preview 5" not in text
     assert "predates the packaged TUI companion" not in text
     assert "opensquilla_tui_host-0.5.0rc4" not in text
     assert "curl -LsSf https://astral.sh/uv/install.sh | sh" in text
     assert '. "$HOME/.local/bin/env"' in text
-    assert 'powershell -ExecutionPolicy Bypass -c "irm https://astral.sh/uv/install.ps1 | iex"' in text
+    assert (
+        'powershell -ExecutionPolicy Bypass -c '
+        '"irm https://astral.sh/uv/install.ps1 | iex"'
+    ) in text
     assert "$env:Path" in text
     assert "bash scripts/install_source.sh" in text
     assert "./scripts/install_source.ps1" in text

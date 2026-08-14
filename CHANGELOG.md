@@ -6,6 +6,39 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.5.5] - 2026-08-14
+
+### Added
+
+- Added first-class custom API entries for OpenAI Chat Completions, OpenAI
+  Responses, and Anthropic Messages. Each accepts an operator-supplied Base
+  URL and model, supports optional credentials, and participates in live model
+  discovery where the protocol exposes a model catalog.
+- Added key-free Bing China, Baidu, and Sogou search providers alongside
+  DuckDuckGo, including onboarding metadata, runtime routing, diagnostics,
+  sandbox network grants, and normalized search results.
+
+### Changed
+
+- Moved the three primary custom API protocols directly behind TokenRhythm in
+  provider selection and marked them as verified onboarding options.
+- Updated current application surfaces, install guidance, update links, API
+  attribution, and release metadata to the OpenStarry Code identity while
+  retaining legacy storage, IPC, and migration identifiers for upgrades.
+
+### Fixed
+
+- Replaced invalid `X-OpenStarry Code-*` HTTP correlation headers with legal
+  `X-OpenStarry-Code-*` names across chat, model discovery, image generation,
+  session naming, compaction, tracing, and error redaction.
+- Fixed Electron first-run verification to read the renamed
+  `openstarry-code/config.toml` profile.
+- Switched Sogou search to its working mobile HTML endpoint after the desktop
+  endpoint began returning an anti-automation challenge for normal queries.
+- Fixed the frozen desktop gateway to resolve bundled schema migrations from
+  `openstarry_code/_migrations`, so packaged MSI/NSIS installs boot without a
+  source checkout.
+
 ## [0.5.4] - 2026-08-14
 
 ### Added

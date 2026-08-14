@@ -41,6 +41,8 @@ class SearchProviderSetupSpec:
 
 
 _SEARCH_PROVIDER_LABELS: dict[str, str] = {
+    "baidu": "Baidu",
+    "bing_cn": "Bing China",
     "bocha": "Bocha",
     "brave": "Brave Search",
     "duckduckgo": "DuckDuckGo",
@@ -48,6 +50,7 @@ _SEARCH_PROVIDER_LABELS: dict[str, str] = {
     "tavily": "Tavily",
     "exa": "Exa",
     "perplexity": "Perplexity",
+    "sogou": "Sogou",
 }
 
 

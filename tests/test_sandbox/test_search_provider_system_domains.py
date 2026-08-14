@@ -18,11 +18,14 @@ from openstarry_code.sandbox.integration import (
 from openstarry_code.search.registry import get_provider_spec
 
 _PROVIDER_API_URL_ATTRS = {
+    "baidu": ("openstarry_code.search.providers.baidu", "_SEARCH_URL"),
+    "bing_cn": ("openstarry_code.search.providers.bing_cn", "_SEARCH_URL"),
     "bocha": ("openstarry_code.search.providers.bocha", "_API_URL"),
     "brave": ("openstarry_code.search.providers.brave", "_API_URL"),
     "duckduckgo": ("openstarry_code.search.providers.duckduckgo", "_DDHTML_URL"),
     "exa": ("openstarry_code.search.providers.exa", "_API_URL"),
     "iqs": ("openstarry_code.search.providers.iqs", "_API_URL"),
+    "sogou": ("openstarry_code.search.providers.sogou", "_SEARCH_URL"),
     "tavily": ("openstarry_code.search.providers.tavily", "_API_URL"),
 }
 

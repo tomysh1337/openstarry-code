@@ -33,10 +33,10 @@ const EXPORT_SCALE = 2
 const SHARE_EXPORT_BOTTOM_SAFE_AREA = 32
 const SHARE_EXPORT_USER_BUBBLE_RIGHT_OFFSET = 10
 
-const SHARE_FILENAME_PREFIX = 'opensquilla'
+const SHARE_FILENAME_PREFIX = 'openstarry-code'
 const SHARE_FILENAME_FALLBACK = 'chat'
 const SHARE_SLUG_MAX_LENGTH = 40
-const SHARE_FOOTER_CAPTION = 'opensquilla.ai'
+const SHARE_FOOTER_CAPTION = 'OpenStarry Code'
 
 const SHARE_STAGE_ID = 'opensquilla-share-export-stage'
 
@@ -132,11 +132,11 @@ function shareTitleSlug(rawName: string): string {
   // Unwrap values that are already composed filenames (the previous template
   // produced "opensquilla-chat-<title|chat>-<date>.png", which duplicated
   // "chat" whenever the title fell back).
-  const looksComposed = /\.png$/i.test(value) || /^opensquilla-/i.test(value)
+  const looksComposed = /\.png$/i.test(value) || /^(?:openstarry-code|opensquilla)-/i.test(value)
   if (looksComposed) {
     value = value
       .replace(/\.png$/i, '')
-      .replace(/^opensquilla-/i, '')
+      .replace(/^(?:openstarry-code|opensquilla)-/i, '')
       .replace(/-\d{4}-\d{2}-\d{2}$/, '')
       .replace(/^chat-(?=.)/i, '')
   }
@@ -626,7 +626,7 @@ async function drawTemplateBrand(
 
   // Measure with the wordmark font already set so the centered group is exact.
   context.font = `600 18px ${tokens.fontSans}`
-  const wordWidth = context.measureText('OpenSquilla').width
+  const wordWidth = context.measureText('OpenStarry Code').width
   const groupWidth = (mark ? markSize + markGap : 0) + wordWidth
   let cursorX = Math.round((SHARE_TEMPLATE_WIDTH - groupWidth) / 2)
 
@@ -639,7 +639,7 @@ async function drawTemplateBrand(
   context.fillStyle = tokens.text
   context.textAlign = 'left'
   context.textBaseline = 'middle'
-  context.fillText('OpenSquilla', cursorX, y + SHARE_TEMPLATE_BRAND_HEIGHT / 2)
+  context.fillText('OpenStarry Code', cursorX, y + SHARE_TEMPLATE_BRAND_HEIGHT / 2)
   context.textBaseline = 'alphabetic'
 }
 

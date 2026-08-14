@@ -133,7 +133,10 @@ def test_selectable_discovery_delegates_verified_official_hosts(
     ]
 
 
-@pytest.mark.parametrize("provider_id", ["custom", "custom_2", "custom_3", "custom_4"])
+@pytest.mark.parametrize(
+    "provider_id",
+    ["custom", "custom_2", "custom_3", "custom_4", "custom_responses"],
+)
 def test_custom_openai_slots_discover_models_from_their_configured_endpoint(
     monkeypatch: Any,
     provider_id: str,

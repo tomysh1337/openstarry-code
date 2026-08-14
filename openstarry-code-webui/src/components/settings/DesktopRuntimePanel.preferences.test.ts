@@ -278,7 +278,7 @@ describe('DesktopRuntimePanel close behavior preference', () => {
 
     expect(findPreviewModeSelect(el).value).toBe('full')
     const warning = el.querySelector<HTMLElement>('[data-testid="desktop-preview-mode-forced"]')
-    expect(warning?.textContent).toContain('OPENSQUILLA_PREVIEW_FORCE_OFFLINE')
+    expect(warning?.textContent).toContain('OPENSTARRY_CODE_PREVIEW_FORCE_OFFLINE')
     app.unmount()
   })
 })

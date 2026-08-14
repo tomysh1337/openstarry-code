@@ -29,6 +29,9 @@ def test_search_docs_describe_runtime_provider_matrix() -> None:
         "Exa",
         "EXA_API_KEY",
         "DuckDuckGo",
+        "Bing China",
+        "Baidu",
+        "Sogou",
         "no-key",
         "partial-key",
         "all-key",
@@ -38,8 +41,14 @@ def test_search_docs_describe_runtime_provider_matrix() -> None:
     ]:
         assert expected in docs
 
-    assert '"duckduckgo", "bocha", "brave", "iqs", "tavily", or "exa"' in docs
-    assert "web search (DuckDuckGo, Bocha, Brave, IQS, Tavily, or Exa)" in docs
+    assert (
+        '"duckduckgo", "bing_cn", "baidu", "sogou", "bocha", "brave", '
+        '"iqs", "tavily", or "exa"'
+    ) in docs
+    assert (
+        "web search (DuckDuckGo, Bing China, Baidu, Sogou, Bocha, Brave, IQS, Tavily, or Exa)"
+        in docs
+    )
 
 
 def test_desktop_search_surfaces_use_shared_runtime_provider_catalog() -> None:

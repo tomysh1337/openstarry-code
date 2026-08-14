@@ -230,7 +230,7 @@ describe('DataMigrationPanel desktop provider', () => {
 
     const maintenance = el.querySelector('[data-testid="profile-consolidation-maintenance"]')
     expect(maintenance?.textContent).toContain('Historical data is safely preserved')
-    expect(maintenance?.textContent).toContain('OpenSquilla is ready to use')
+    expect(maintenance?.textContent).toContain('OpenStarry Code is ready to use')
     expect(maintenance?.textContent).toContain('unsafe_path')
     expect(maintenance?.textContent).not.toContain('/synthetic/')
 
@@ -449,7 +449,7 @@ describe('DataMigrationPanel desktop cleanup', () => {
     checkbox!.checked = true
     checkbox!.dispatchEvent(new Event('change', { bubbles: true }))
     const phrase = summary?.querySelector<HTMLInputElement>('input[type="text"]')
-    phrase!.value = 'DELETE ALL OPENSQUILLA DATA'
+    phrase!.value = 'DELETE ALL OPENSTARRY CODE DATA'
     phrase!.dispatchEvent(new Event('input', { bubbles: true }))
     await settle()
     expect(apply?.disabled).toBe(false)
@@ -459,7 +459,7 @@ describe('DataMigrationPanel desktop cleanup', () => {
     expect(applyDesktopCleanup).toHaveBeenCalledWith({
       previewId: 'opaque-preview',
       acknowledged: true,
-      confirmation: 'DELETE ALL OPENSQUILLA DATA',
+      confirmation: 'DELETE ALL OPENSTARRY CODE DATA',
     })
     const payload = (applyDesktopCleanup.mock.calls as unknown[][])[0]?.[0] as Record<string, unknown>
     expect(payload).not.toHaveProperty('mode')

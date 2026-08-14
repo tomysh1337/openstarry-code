@@ -71,12 +71,12 @@ class BrowserWorkbenchRuntime implements WorkbenchPanelRuntime {
     const native = this.context.nativeWorkbenchApi
     this.context.updateRenderState({ errorMessage: '', loading: true })
     try {
-      if (!native) throw new Error('The side browser requires OpenSquilla Desktop.')
+      if (!native) throw new Error('The side browser requires OpenStarry Code Desktop.')
       const capabilities = native.getCapabilities
         ? await native.getCapabilities()
         : { protocolVersions: [1] }
       if (!capabilities.protocolVersions.includes(2)) {
-        throw new Error('Update OpenSquilla Desktop to use the side browser.')
+        throw new Error('Update OpenStarry Code Desktop to use the side browser.')
       }
       const url = browserUrlFromWorkbenchItem(this.item)
       const result = await native.createSurface({

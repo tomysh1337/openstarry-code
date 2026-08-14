@@ -333,7 +333,7 @@ async def test_openrouter_image_provider_adds_app_attribution_headers(monkeypatc
     assert captured["headers"] == {
         "Authorization": "Bearer or-test",
         "Content-Type": "application/json",
-        "HTTP-Referer": "https://opensquilla.ai",
+        "HTTP-Referer": "https://github.com/tomysh1337/openstarry-code",
         "X-Title": "OpenStarry Code",
     }
     assert result.image_bytes == b"opensquilla"
@@ -2086,7 +2086,7 @@ async def test_tokenrhythm_image_provider_uses_images_api_and_b64_response(
     monkeypatch.setattr(
         "openstarry_code.provider.image_generation.tokenrhythm_install_id_headers",
         lambda _provider_kind, _base_url: {
-            "X-OpenStarry Code-Install-Id": "synthetic-install-id"
+            "X-OpenStarry-Code-Install-Id": "synthetic-install-id"
         },
     )
 
@@ -2104,13 +2104,13 @@ async def test_tokenrhythm_image_provider_uses_images_api_and_b64_response(
     headers = captured["headers"]
     assert isinstance(headers, dict)
     assert headers["Authorization"] == "Bearer synthetic-tokenrhythm-key"
-    assert headers["HTTP-Referer"] == "https://opensquilla.ai"
+    assert headers["HTTP-Referer"] == "https://github.com/tomysh1337/openstarry-code"
     assert headers["X-Title"] == "OpenStarry Code"
     assert headers[TOKENRHYTHM_SESSION_ID_HEADER] == "session-1"
     assert headers[TOKENRHYTHM_TURN_ID_HEADER] == "turn-1"
     assert headers[TOKENRHYTHM_EXECUTION_ID_HEADER] == "image-execution-1"
     assert headers[TOKENRHYTHM_CALL_KIND_HEADER] == "auxiliary.image_generation"
-    assert headers["X-OpenStarry Code-Install-Id"] == "synthetic-install-id"
+    assert headers["X-OpenStarry-Code-Install-Id"] == "synthetic-install-id"
     assert "synthetic-install-id" not in str(captured["json"])
     assert result.provider == "tokenrhythm"
     assert result.model == "qwen-image-2.0"
@@ -2200,7 +2200,7 @@ async def test_tokenrhythm_image_http_error_drops_retained_install_id(
     monkeypatch.setattr(
         "openstarry_code.provider.image_generation.tokenrhythm_install_id_headers",
         lambda *_args, **_kwargs: {
-            "X-OpenStarry Code-Install-Id": install_id
+            "X-OpenStarry-Code-Install-Id": install_id
         },
     )
     monkeypatch.setattr(
@@ -2215,7 +2215,7 @@ async def test_tokenrhythm_image_http_error_drops_retained_install_id(
         await provider.generate(_tokenrhythm_image_request())
 
     assert raised.value.__context__ is None
-    assert raised.value.request.headers["X-OpenStarry Code-Install-Id"] == "[PRESENT]"
+    assert raised.value.request.headers["X-OpenStarry-Code-Install-Id"] == "[PRESENT]"
     assert raised.value.response.request is raised.value.request
     retained = " ".join(
         (
@@ -2259,7 +2259,7 @@ async def test_tokenrhythm_image_invalid_json_drops_retained_install_id(
     monkeypatch.setattr(
         "openstarry_code.provider.image_generation.tokenrhythm_install_id_headers",
         lambda *_args, **_kwargs: {
-            "X-OpenStarry Code-Install-Id": install_id
+            "X-OpenStarry-Code-Install-Id": install_id
         },
     )
     monkeypatch.setattr(

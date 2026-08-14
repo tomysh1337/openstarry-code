@@ -87,7 +87,7 @@ describe('browser Workbench provider', () => {
     const harness = await createHarness(api)
 
     expect(harness.renderState).toMatchObject({
-      errorMessage: 'Update OpenSquilla Desktop to use the side browser.',
+      errorMessage: 'Update OpenStarry Code Desktop to use the side browser.',
       loading: false,
     })
     expect(api.createSurface).not.toHaveBeenCalled()
@@ -98,7 +98,7 @@ describe('browser Workbench provider', () => {
       nativeSurface: true,
       runtimeState: harness.renderState,
     })).toMatchObject({
-      errorMessage: 'Update OpenSquilla Desktop to use the side browser.',
+      errorMessage: 'Update OpenStarry Code Desktop to use the side browser.',
       loading: false,
     })
   })

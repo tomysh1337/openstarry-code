@@ -3,7 +3,7 @@
        expressive skin (meta.skin). Structure/type/colour come from the scoped
        skin.css via the .oor-* classes; this view only owns layout. -->
   <div class="oor-page">
-    <p class="oor-kicker">OpenSquilla &middot; Field Notes</p>
+    <p class="oor-kicker">OpenStarry Code &middot; Field Notes</p>
     <h1 class="oor-mast" data-word="Changelog">Changelog</h1>
     <p class="oor-lead">
       What shipped, in the house editorial voice &mdash; a page you read, not one

@@ -42,12 +42,19 @@ CUSTOM_OPENAI_PROVIDER_ENV_KEYS: dict[str, str] = {
     "custom_3": "CUSTOM_LLM_3_API_KEY",
     "custom_4": "CUSTOM_LLM_4_API_KEY",
 }
+CUSTOM_RESPONSES_PROVIDER_ID = "custom_responses"
 CUSTOM_OPENAI_PROVIDER_IDS: frozenset[str] = frozenset(
     CUSTOM_OPENAI_PROVIDER_ENV_KEYS
 )
 
 KEYLESS_PROVIDERS: frozenset[str] = frozenset(
-    {"ollama", "lm_studio", "ovms", "custom_anthropic"}
+    {
+        "ollama",
+        "lm_studio",
+        "ovms",
+        "custom_anthropic",
+        CUSTOM_RESPONSES_PROVIDER_ID,
+    }
 ) | CUSTOM_OPENAI_PROVIDER_IDS
 
 LOCAL_RUNTIME_PROVIDERS: frozenset[str] = KEYLESS_PROVIDERS | {"vllm", "local"}
@@ -594,6 +601,16 @@ for _provider_spec in [
         required_fields=frozenset({"model", "base_url"}),
         failure_family="anthropic",
         auth_header_style="bearer",
+    ),
+    _spec(
+        CUSTOM_RESPONSES_PROVIDER_ID,
+        "openai_responses",
+        "openai_responses",
+        "CUSTOM_RESPONSES_API_KEY",
+        required_fields=frozenset({"model", "base_url"}),
+        failure_family="openai_compat",
+        capabilities=frozenset({"chat", "responses"}),
+        selectable_model_catalog="operator_live",
     ),
     _spec("vllm", "openai_compat", "openai"),
     _spec("lm_studio", "openai_compat", "lm_studio", default_base_url="http://localhost:1234/v1"),

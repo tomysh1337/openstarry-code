@@ -23,7 +23,7 @@ function markdownFilename(title: string): string {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '')
     .slice(0, 36) || 'chat'
-  return `opensquilla-chat-${slug}-${new Date().toISOString().slice(0, 10)}.md`
+  return `openstarry-code-chat-${slug}-${new Date().toISOString().slice(0, 10)}.md`
 }
 
 function markdownEscape(text: string): string {
@@ -48,7 +48,7 @@ function subagentCompletionMarkdown(text: string): string {
 
 export function buildChatMarkdown(options: BuildChatMarkdownOptions): string {
   const lines: string[] = [
-    `# ${options.title || 'OpenSquilla chat'}`,
+    `# ${options.title || 'OpenStarry Code chat'}`,
     '',
     `Exported: ${options.exportedAt}`,
     '',

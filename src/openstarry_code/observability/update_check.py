@@ -56,8 +56,8 @@ DEFAULT_UPDATE_CHECK_ENDPOINT = f"{DEFAULT_UPDATE_CHANNEL_ROOT}/stable.json"
 # this template before it reaches the network; keeping it as a named constant
 # also makes the public endpoint contract easy to exercise in tests.
 DEFAULT_RC_UPDATE_CHECK_ENDPOINT = f"{DEFAULT_UPDATE_CHANNEL_ROOT}/preview/{{base}}.json"
-DEFAULT_RELEASE_TAG_PAGE = "https://github.com/opensquilla/opensquilla/releases/tag"
-DEFAULT_RELEASES_INDEX_PAGE = "https://github.com/opensquilla/opensquilla/releases"
+DEFAULT_RELEASE_TAG_PAGE = "https://github.com/tomysh1337/openstarry-code/releases/tag"
+DEFAULT_RELEASES_INDEX_PAGE = "https://github.com/tomysh1337/openstarry-code/releases"
 # Compatibility name for callers that imported the old fallback constant.
 # A lookup without an exact release URL leads to the generic index rather than
 # implying that any particular GitHub Release was selected.
@@ -638,7 +638,7 @@ def _fetch_latest_release(
 
         headers = {
             "Accept": "application/json",
-            "User-Agent": f"opensquilla/{current_version}",
+            "User-Agent": f"openstarry_code/{current_version}",
         }
         with httpx.Client(timeout=timeout, follow_redirects=True) as client:
             response = client.get(endpoint, headers=headers)

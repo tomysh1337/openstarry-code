@@ -16,7 +16,7 @@
     <div class="sidebar-brand">
       <div class="sidebar-brand-lockup">
         <img class="sidebar-brand-mark" :src="brandMarkUrl" alt="" aria-hidden="true" />
-        <span class="sidebar-brand-text">OpenSquilla</span>
+        <span class="sidebar-brand-text">OpenStarry Code</span>
       </div>
       <button
         ref="sidebarDockToggleRef"
@@ -601,7 +601,7 @@ const router = useRouter()
 // afterEach only fires on navigation, so a same-route language switch needs an
 // explicit re-localize of the tab title.
 watch(() => appStore.locale, () => {
-  document.title = `${routeTitle($route)} — OpenSquilla`
+  document.title = `${routeTitle($route)} — OpenStarry Code`
 })
 const { allSessions, sessionListError, isLoading, loadSessions } = useSessions(
   optionalSessionRpcCallOptions,

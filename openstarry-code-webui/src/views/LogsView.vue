@@ -367,7 +367,7 @@ const filePath = computed(() => status.value?.gateway_file_log?.path || 'debug.l
 
 const rawLogEnabled = computed(() => status.value?.raw_turn_call_log?.enabled ?? false)
 const rawSource = computed(() => status.value?.raw_turn_call_log?.source || 'off')
-const rawPath = computed(() => status.value?.raw_turn_call_log?.directory?.path || '~/.opensquilla/logs')
+const rawPath = computed(() => status.value?.raw_turn_call_log?.directory?.path || '~/.openstarry-code/logs')
 
 const fileLogLabel = computed(() =>
   fileLogEnabled.value ? t('usageLogs.logs.fileLogOn') : t('usageLogs.logs.fileLogOff'))

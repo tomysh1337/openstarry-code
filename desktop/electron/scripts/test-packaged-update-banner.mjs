@@ -24,7 +24,7 @@ async function writeSyntheticUpdateCache(userDataDir, baseVersion, timestamp) {
       schema_version: 2,
       cache_scope: `rc:${baseVersion}`,
       latest_version: null,
-      release_url: 'https://github.com/opensquilla/opensquilla/releases',
+      release_url: 'https://github.com/tomysh1337/openstarry-code/releases',
       checked_at: new Date(timestamp * 1000).toISOString(),
       checked_ts: timestamp,
       last_attempt_ts: timestamp,

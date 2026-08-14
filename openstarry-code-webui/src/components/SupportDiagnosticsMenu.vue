@@ -243,7 +243,7 @@ async function downloadBundle(options: { includeContent: boolean }) {
     }
     const blob = await response.blob()
     const filename = filenameFromContentDisposition(response.headers.get('content-disposition'))
-      || 'opensquilla-bundle.zip'
+      || 'openstarry-code-bundle.zip'
     downloadBlob(blob, filename)
     pushToast(t('monitorSupport.bundleReady'), { tone: 'ok' })
   } catch {

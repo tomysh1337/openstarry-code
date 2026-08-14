@@ -393,7 +393,7 @@ async def test_fetch_live_catalog_entries_uses_url_verbatim_without_auth() -> No
         patch("openstarry_code.provider.live_catalog.httpx.AsyncClient") as mock_client_cls,
         patch(
             "openstarry_code.provider.live_catalog.tokenrhythm_install_id_headers",
-            return_value={"X-OpenStarry Code-Install-Id": "synthetic-install-id"},
+            return_value={"X-OpenStarry-Code-Install-Id": "synthetic-install-id"},
         ),
     ):
         mock_client = AsyncMock()
@@ -416,9 +416,9 @@ async def test_fetch_live_catalog_entries_uses_url_verbatim_without_auth() -> No
     # The listing stays keyless while carrying fixed public app attribution.
     headers = captured["kwargs"]["headers"]
     assert headers == {
-        "HTTP-Referer": "https://opensquilla.ai",
+        "HTTP-Referer": "https://github.com/tomysh1337/openstarry-code",
         "X-Title": "OpenStarry Code",
-        "X-OpenStarry Code-Install-Id": "synthetic-install-id",
+        "X-OpenStarry-Code-Install-Id": "synthetic-install-id",
     }
     assert "Authorization" not in headers
     mock_response.json.assert_called_once_with(parse_float=Decimal)
@@ -440,7 +440,7 @@ async def test_fetch_live_catalog_omits_install_id_with_explicit_proxy() -> None
         **_kwargs: Any,
     ) -> dict[str, str]:
         helper_proxies.append(proxy)
-        return {} if proxy else {"X-OpenStarry Code-Install-Id": "must-not-send"}
+        return {} if proxy else {"X-OpenStarry-Code-Install-Id": "must-not-send"}
 
     with (
         patch("openstarry_code.provider.live_catalog.httpx.AsyncClient") as mock_client_cls,
@@ -468,7 +468,7 @@ async def test_fetch_live_catalog_omits_install_id_with_explicit_proxy() -> None
         )
 
     assert helper_proxies == ["http://company-proxy.example:8080"]
-    assert "X-OpenStarry Code-Install-Id" not in captured["headers"]
+    assert "X-OpenStarry-Code-Install-Id" not in captured["headers"]
     assert mock_client_cls.call_args.kwargs["proxy"] == "http://company-proxy.example:8080"
 
 
@@ -496,7 +496,7 @@ async def test_fetch_live_catalog_redacts_install_id_from_http_error(
     monkeypatch.setattr(
         "openstarry_code.provider.live_catalog.tokenrhythm_install_id_headers",
         lambda *_args, **_kwargs: {
-            "X-OpenStarry Code-Install-Id": install_id
+            "X-OpenStarry-Code-Install-Id": install_id
         },
     )
     monkeypatch.setattr(
@@ -511,7 +511,7 @@ async def test_fetch_live_catalog_redacts_install_id_from_http_error(
         )
 
     assert raised.value.__context__ is None
-    assert raised.value.request.headers["X-OpenStarry Code-Install-Id"] == "[PRESENT]"
+    assert raised.value.request.headers["X-OpenStarry-Code-Install-Id"] == "[PRESENT]"
     retained = " ".join(
         (
             repr(raised.value.request.headers),

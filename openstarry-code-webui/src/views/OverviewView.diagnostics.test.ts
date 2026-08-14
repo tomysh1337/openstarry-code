@@ -394,7 +394,7 @@ describe('OverviewView diagnose-with-agent hand-off', () => {
     expect(arg.state?.autosend).toBe(true)
 
     const prefill = String(arg.state?.prefill)
-    expect(prefill).toContain('Please troubleshoot this OpenSquilla configuration')
+    expect(prefill).toContain('Please troubleshoot this OpenStarry Code configuration')
     expect(prefill).toContain('<context source="client:diagnostic-context">')
     expect(prefill).toContain('"platform":"web"')
     expect(prefill).toContain('"hasTerminalWorkflow":true')

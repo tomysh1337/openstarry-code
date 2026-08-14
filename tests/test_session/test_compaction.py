@@ -1332,7 +1332,7 @@ async def test_call_compaction_llm_adds_openrouter_app_attribution(monkeypatch) 
     assert captured["headers"] == {
         "Authorization": "Bearer test-key",
         "Content-Type": "application/json",
-        "HTTP-Referer": "https://opensquilla.ai",
+        "HTTP-Referer": "https://github.com/tomysh1337/openstarry-code",
         "X-Title": "OpenStarry Code",
     }
 
@@ -1373,7 +1373,7 @@ async def test_call_compaction_llm_adds_tokenrhythm_app_attribution(monkeypatch)
     monkeypatch.setattr(
         "openstarry_code.session.compaction.tokenrhythm_install_id_headers",
         lambda _provider_kind, _base_url: {
-            "X-OpenStarry Code-Install-Id": install_id
+            "X-OpenStarry-Code-Install-Id": install_id
         },
     )
     monkeypatch.setattr(
@@ -1403,12 +1403,12 @@ async def test_call_compaction_llm_adds_tokenrhythm_app_attribution(monkeypatch)
     assert headers == {
         "Authorization": "Bearer test-key",
         "Content-Type": "application/json",
-        "HTTP-Referer": "https://opensquilla.ai",
-        "X-OpenStarry Code-Session-Id": "session-1",
-        "X-OpenStarry Code-Turn-Id": "turn-1",
-        "X-OpenStarry Code-Execution-Id": "compaction-1",
-        "X-OpenStarry Code-Call-Kind": "auxiliary.compaction",
-        "X-OpenStarry Code-Install-Id": install_id,
+        "HTTP-Referer": "https://github.com/tomysh1337/openstarry-code",
+        "X-OpenStarry-Code-Session-Id": "session-1",
+        "X-OpenStarry-Code-Turn-Id": "turn-1",
+        "X-OpenStarry-Code-Execution-Id": "compaction-1",
+        "X-OpenStarry-Code-Call-Kind": "auxiliary.compaction",
+        "X-OpenStarry-Code-Install-Id": install_id,
         "X-Title": "OpenStarry Code",
     }
     payload = captured["json"]
@@ -1494,11 +1494,11 @@ async def test_call_compaction_llm_privacy_switch_removes_correlation_on_wire(
     )
 
     assert result == "summary"
-    assert not any(name.startswith("X-OpenStarry Code-") for name in captured_headers)
+    assert not any(name.startswith("X-OpenStarry-Code-") for name in captured_headers)
     assert captured_headers == {
         "Authorization": "Bearer test-key",
         "Content-Type": "application/json",
-        "HTTP-Referer": "https://opensquilla.ai",
+        "HTTP-Referer": "https://github.com/tomysh1337/openstarry-code",
         "X-Title": "OpenStarry Code",
     }
 
@@ -1564,7 +1564,7 @@ async def test_call_compaction_llm_cancellation_does_not_retain_install_id(
     monkeypatch.setattr(
         "openstarry_code.session.compaction.tokenrhythm_install_id_headers",
         lambda _provider_kind, _base_url: {
-            "X-OpenStarry Code-Install-Id": install_id
+            "X-OpenStarry-Code-Install-Id": install_id
         },
     )
     monkeypatch.setattr(
@@ -1587,7 +1587,7 @@ async def test_call_compaction_llm_cancellation_does_not_retain_install_id(
 
     assert task.cancelled()
     assert usage_reasons == ["cancelled"]
-    assert sent_headers["X-OpenStarry Code-Install-Id"] == install_id
+    assert sent_headers["X-OpenStarry-Code-Install-Id"] == install_id
     assert caught.value.__cause__ is None
     assert caught.value.__context__ is None
 

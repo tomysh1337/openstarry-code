@@ -42,7 +42,7 @@ async function copyCommand(command: string): Promise<void> {
     </div>
     <SetupCommandBlock
       class="prb__command"
-      command="opensquilla gateway restart"
+      command="openstarry-code gateway restart"
       :copy-label="t('channelStatus.banner.copyLabel')"
       @copy="copyCommand"
     />

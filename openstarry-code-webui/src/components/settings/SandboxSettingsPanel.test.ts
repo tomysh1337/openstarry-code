@@ -386,7 +386,7 @@ describe('SandboxSettingsPanel', () => {
     await settle()
 
     expect(document.body.querySelector('[data-testid="sandbox-setup-progress"]')?.textContent)
-      .toContain('OpenSquilla is completing Safe mode setup. Keep the app open.')
+      .toContain('OpenStarry Code is completing Safe mode setup. Keep the app open.')
     expect(document.body.querySelector('[data-testid="sandbox-setup-confirm"]')).toBeTruthy()
 
     await vi.advanceTimersByTimeAsync(10_000)
@@ -432,7 +432,7 @@ describe('SandboxSettingsPanel', () => {
     await settle()
 
     expect(document.body.querySelector('[data-testid="sandbox-setup-progress"]')?.textContent)
-      .toContain('OpenSquilla is completing Safe mode setup. Keep the app open.')
+      .toContain('OpenStarry Code is completing Safe mode setup. Keep the app open.')
     expect(document.body.querySelector('[data-testid="sandbox-setup-confirm"]')).toBeTruthy()
 
     resolveEnsure({

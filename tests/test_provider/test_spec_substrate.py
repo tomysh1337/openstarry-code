@@ -27,6 +27,7 @@ _CATALOG_SOURCE_WAIVERS: frozenset[str] = frozenset(
         "custom_3",
         "custom_4",
         "custom_anthropic",
+        "custom_responses",
         # Deployment-defined aggregation proxy: the model set is whatever
         # the operator's LiteLLM instance routes; no stable public catalog.
         "litellm_proxy",
@@ -164,7 +165,13 @@ def test_selectable_model_catalog_is_enabled_only_for_verified_providers() -> No
         for spec in list_provider_specs()
         if spec.selectable_model_catalog == "operator_live"
     }
-    assert operator_scoped == {"custom", "custom_2", "custom_3", "custom_4"}
+    assert operator_scoped == {
+        "custom",
+        "custom_2",
+        "custom_3",
+        "custom_4",
+        "custom_responses",
+    }
 
 
 def test_anthropic_backend_auth_header_styles() -> None:

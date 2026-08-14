@@ -4,13 +4,13 @@ import type { CliInvocation } from '@/platform'
 
 // Matches the leading `opensquilla` CLI token only — `opensquilla gateway …`
 // rewrites; `export FOO=…` and other shell lines pass through untouched.
-const CLI_TOKEN = /^opensquilla(?=\s|$)/
+const CLI_TOKEN = /^(?:openstarry-code|opensquilla)(?=\s|$)/
 
 // Gateway process-lifecycle commands. On the desktop shell these cannot work
 // from a copied command — the shell supervises its own gateway child (pid lock
 // + respawn), so a CLI restart/start/stop refuses, times out, or races the
 // shell. They are surfaced as guidance (use the app's restart) instead.
-const GATEWAY_LIFECYCLE = /^opensquilla\s+gateway\s+(?:restart|start|stop)(?:\s|$)/
+const GATEWAY_LIFECYCLE = /^(?:openstarry-code|opensquilla)\s+gateway\s+(?:restart|start|stop)(?:\s|$)/
 
 // localStorage key the rpc store persists the active gateway URL under. Kept in
 // sync with stores/rpc.ts WS_URL_KEY.

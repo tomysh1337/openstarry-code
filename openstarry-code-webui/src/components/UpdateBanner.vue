@@ -19,7 +19,7 @@ const platform = getPlatform()
 const isDesktop = platform.id === 'desktop'
 
 const DISMISS_KEY = 'opensquilla-update-dismissed'
-const RELEASES_FALLBACK = 'https://github.com/opensquilla/opensquilla/releases'
+const RELEASES_FALLBACK = 'https://github.com/tomysh1337/openstarry-code/releases'
 const UPDATE_STATUS_URL = '/api/system/update'
 const POLL_INTERVAL_MS = 15 * 60 * 1000
 const REQUEST_TIMEOUT_MS = 5 * 1000

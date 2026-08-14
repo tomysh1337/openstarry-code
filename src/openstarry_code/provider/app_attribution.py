@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from urllib.parse import urlparse
 
-OPENSTARRY_CODE_APP_REFERER = "https://opensquilla.ai"
+OPENSTARRY_CODE_APP_REFERER = "https://github.com/tomysh1337/openstarry-code"
 OPENSTARRY_CODE_APP_TITLE = "OpenStarry Code"
 
 _APP_ATTRIBUTION_ROOT_HOSTS = frozenset({"openrouter.ai", "tokenrhythm.studio"})

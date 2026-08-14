@@ -62,16 +62,16 @@ EXPECTED_VERIFIED = {
     "openrouter", "openai", "openai_responses", "anthropic", "ollama", "deepseek",
     "gemini", "dashscope", "qwen_token_plan", "qwen_token_plan_anthropic",
     "moonshot", "zhipu", "qianfan",
-    "volcengine", "byteplus", "tokenrhythm",
+    "volcengine", "byteplus", "tokenrhythm", "custom", "custom_anthropic",
+    "custom_responses",
 }
 # Experimental: registry-runnable, offered with a visible caveat.
 EXPECTED_EXPERIMENTAL = {
     "azure", "bailian_coding", "bailian_coding_cn", "kimi_coding_openai",
     "kimi_coding_anthropic", "minimax", "minimax_openai", "minimax_coding_openai",
     "minimax_coding_anthropic", "minimax_cn", "minimax_global", "mimo_openai",
-    "mimo_anthropic", "mistral", "groq", "aihubmix", "vllm", "custom",
+    "mimo_anthropic", "mistral", "groq", "aihubmix", "vllm",
     "custom_2", "custom_3", "custom_4",
-    "custom_anthropic",
     "lm_studio", "siliconflow", "ovms", "litellm_proxy", "openai_codex",
     "volcengine_coding_plan", "volcengine_coding_plan_anthropic",
     "byteplus_coding_plan", "byteplus_coding_plan_anthropic",
@@ -107,12 +107,17 @@ def test_catalog_marks_unsupported_providers_disabled():
         assert specs[pid].runtime_supported is False
 
 
-def test_catalog_prioritizes_tokenrhythm_then_openrouter_then_sorts_remaining():
+def test_catalog_prioritizes_recommended_and_custom_providers():
     specs = list_provider_setup_specs()
-    assert specs[0].provider_id == "tokenrhythm"
-    assert specs[1].provider_id == "openrouter"
-    assert [(s.label.lower(), s.provider_id) for s in specs[2:]] == sorted(
-        (s.label.lower(), s.provider_id) for s in specs[2:]
+    assert [spec.provider_id for spec in specs[:5]] == [
+        "tokenrhythm",
+        "custom",
+        "custom_responses",
+        "custom_anthropic",
+        "openrouter",
+    ]
+    assert [(s.label.lower(), s.provider_id) for s in specs[5:]] == sorted(
+        (s.label.lower(), s.provider_id) for s in specs[5:]
     )
 
 
@@ -265,7 +270,7 @@ def test_custom_provider_is_a_first_class_self_hosted_endpoint():
     assert spec.backend == "openai_compat"
     assert spec.provider_kind == "openai"
     assert spec.deployment == "custom"
-    assert spec.label.startswith("Custom OpenAI-compatible endpoint")
+    assert spec.label.startswith("Custom API (Chat Completions)")
 
     assert spec.requires_base_url is True
     assert spec.default_base_url == ""
@@ -312,7 +317,12 @@ def test_custom_openai_slots_are_independent(provider_id: str, env_key: str, slo
 
     assert spec.backend == "openai_compat"
     assert spec.env_key == env_key
-    assert spec.label.startswith(f"Custom OpenAI-compatible endpoint {slot}")
+    expected_label = (
+        "Custom API (Chat Completions)"
+        if slot == 1
+        else f"Custom OpenAI-compatible endpoint {slot}"
+    )
+    assert spec.label.startswith(expected_label)
     assert spec.accepts_api_key is True
     assert spec.requires_api_key is False
     assert spec.requires_base_url is True
@@ -325,12 +335,33 @@ def test_custom_anthropic_provider_is_a_first_class_messages_endpoint():
     assert spec.backend == "anthropic"
     assert spec.provider_kind == "anthropic"
     assert spec.deployment == "custom"
-    assert spec.label.startswith("Custom Anthropic-compatible endpoint")
+    assert spec.label.startswith("Custom API (Anthropic Messages)")
     assert spec.requires_base_url is True
     assert spec.default_base_url == ""
     assert spec.accepts_api_key is True
     assert spec.requires_api_key is False
     assert spec.env_key == "CUSTOM_ANTHROPIC_API_KEY"
+
+    fields = {field.name: field for field in spec.fields}
+    assert fields["model"].required is True
+    assert fields["base_url"].required is True
+    assert fields["api_key"].required is False
+
+
+def test_custom_responses_provider_supports_operator_endpoint_and_model_discovery():
+    spec = get_provider_setup_spec("custom_responses")
+
+    assert spec.runtime_supported is True
+    assert spec.backend == "openai_responses"
+    assert spec.provider_kind == "openai_responses"
+    assert spec.deployment == "custom"
+    assert spec.label.startswith("Custom API (Responses)")
+    assert spec.requires_base_url is True
+    assert spec.default_base_url == ""
+    assert spec.accepts_api_key is True
+    assert spec.requires_api_key is False
+    assert spec.env_key == "CUSTOM_RESPONSES_API_KEY"
+    assert "responses" in spec.capabilities
 
     fields = {field.name: field for field in spec.fields}
     assert fields["model"].required is True

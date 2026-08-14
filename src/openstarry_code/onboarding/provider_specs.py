@@ -90,11 +90,12 @@ _PROVIDER_LABELS: dict[str, str] = {
     "tencent_token_plan_anthropic": "Tencent Token Plan (Anthropic)",
     "tokenrhythm": "TokenRhythm",
     "vllm": "vLLM (self-hosted)",
-    "custom": "Custom OpenAI-compatible endpoint 1",
+    "custom": "Custom API (Chat Completions)",
     "custom_2": "Custom OpenAI-compatible endpoint 2",
     "custom_3": "Custom OpenAI-compatible endpoint 3",
     "custom_4": "Custom OpenAI-compatible endpoint 4",
-    "custom_anthropic": "Custom Anthropic-compatible endpoint",
+    "custom_anthropic": "Custom API (Anthropic Messages)",
+    "custom_responses": "Custom API (Responses)",
     "litellm_proxy": "LiteLLM Proxy",
     "lm_studio": "LM Studio (local)",
     "ovms": "OpenVINO Model Server",
@@ -107,13 +108,16 @@ _PROVIDER_LABELS: dict[str, str] = {
     "openai_responses": "OpenAI (Responses API)",
 }
 
-# Catalog display order: TokenRhythm is the recommended first pick, then
-# OpenRouter; everything else sorts by label. This one map orders the Web UI
+# Catalog display order: TokenRhythm is the recommended first pick, followed by
+# the three generic custom protocols and OpenRouter. This one map orders the Web UI
 # dropdown, CLI ``providers list``, and the interactive onboarding picker —
 # every surface renders the server order.
 _CATALOG_RANK = {
     "tokenrhythm": 0,
-    "openrouter": 1,
+    "custom": 1,
+    "custom_responses": 2,
+    "custom_anthropic": 3,
+    "openrouter": 4,
 }
 
 _INLINE_ROUTER_SUPPORTED_PROVIDER_IDS: frozenset[str] = frozenset(
@@ -134,6 +138,9 @@ _INLINE_ROUTER_SUPPORTED_PROVIDER_IDS: frozenset[str] = frozenset(
 
 _ONBOARDING_VERIFIED_PROVIDER_IDS = frozenset(
     {
+        "custom",
+        "custom_anthropic",
+        "custom_responses",
         "openrouter",
         "openai",
         "openai_responses",

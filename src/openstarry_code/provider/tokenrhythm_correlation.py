@@ -20,11 +20,11 @@ from openstarry_code.paths import default_opensquilla_home
 from .environment import environment_value
 from .types import ProviderRequestCorrelation
 
-TOKENRHYTHM_INSTALL_ID_HEADER = "X-OpenStarry Code-Install-Id"
-TOKENRHYTHM_SESSION_ID_HEADER = "X-OpenStarry Code-Session-Id"
-TOKENRHYTHM_TURN_ID_HEADER = "X-OpenStarry Code-Turn-Id"
-TOKENRHYTHM_EXECUTION_ID_HEADER = "X-OpenStarry Code-Execution-Id"
-TOKENRHYTHM_CALL_KIND_HEADER = "X-OpenStarry Code-Call-Kind"
+TOKENRHYTHM_INSTALL_ID_HEADER = "X-OpenStarry-Code-Install-Id"
+TOKENRHYTHM_SESSION_ID_HEADER = "X-OpenStarry-Code-Session-Id"
+TOKENRHYTHM_TURN_ID_HEADER = "X-OpenStarry-Code-Turn-Id"
+TOKENRHYTHM_EXECUTION_ID_HEADER = "X-OpenStarry-Code-Execution-Id"
+TOKENRHYTHM_CALL_KIND_HEADER = "X-OpenStarry-Code-Call-Kind"
 
 _TOKENRHYTHM_CORRELATION_HOSTS = frozenset(
     {

@@ -1,25 +1,31 @@
 # Web Search
 
-OpenSquilla can search the web through configured search providers and can fetch
+OpenStarry Code can search the web through configured search providers and can fetch
 pages through guarded web tools. Search is useful for current information,
 source-backed reports, market research, release notes, and troubleshooting.
 
 ## Inspect Search Providers
 
 ```sh
-opensquilla search list
-opensquilla search list --json
-opensquilla search status
+openstarry-code search list
+openstarry-code search list --json
+openstarry-code search status
 ```
 
 Runtime-supported providers in this build include:
 
 - Alibaba Cloud IQS
+- Baidu
+- Bing China
 - Bocha
 - Brave Search
 - DuckDuckGo
-- Tavily
 - Exa
+- Sogou
+- Tavily
+
+Together these provide web search (DuckDuckGo, Bing China, Baidu, Sogou, Bocha, Brave, IQS, Tavily, or Exa)
+through the same normalized result contract.
 
 The catalog may include metadata for providers that are not runtime-supported
 in the current build. Check JSON output when integrating.
@@ -29,51 +35,54 @@ in the current build. Check JSON output when integrating.
 No-key path:
 
 ```sh
-opensquilla configure search --search-provider duckduckgo
+openstarry-code configure search --search-provider duckduckgo
+openstarry-code configure search --search-provider bing_cn
+openstarry-code configure search --search-provider baidu
+openstarry-code configure search --search-provider sogou
 ```
 
 Equivalent search subcommand:
 
 ```sh
-opensquilla search configure duckduckgo
+openstarry-code search configure duckduckgo
 ```
 
 Bocha:
 
 ```sh
 export BOCHA_SEARCH_API_KEY="..."
-opensquilla configure search --search-provider bocha --api-key-env BOCHA_SEARCH_API_KEY
+openstarry-code configure search --search-provider bocha --api-key-env BOCHA_SEARCH_API_KEY
 ```
 
 Brave Search:
 
 ```sh
 export BRAVE_SEARCH_API_KEY="..."
-opensquilla configure search --search-provider brave --api-key-env BRAVE_SEARCH_API_KEY
+openstarry-code configure search --search-provider brave --api-key-env BRAVE_SEARCH_API_KEY
 ```
 
 Tavily:
 
 ```sh
 export TAVILY_API_KEY="..."
-opensquilla configure search --search-provider tavily --api-key-env TAVILY_API_KEY
+openstarry-code configure search --search-provider tavily --api-key-env TAVILY_API_KEY
 ```
 
 Exa:
 
 ```sh
 export EXA_API_KEY="..."
-opensquilla configure search --search-provider exa --api-key-env EXA_API_KEY
+openstarry-code configure search --search-provider exa --api-key-env EXA_API_KEY
 ```
 
 Alibaba Cloud IQS (strong Chinese-web coverage; keys come from the IQS console):
 
 ```sh
 export IQS_SEARCH_API_KEY="..."
-opensquilla configure search --search-provider iqs --api-key-env IQS_SEARCH_API_KEY
+openstarry-code configure search --search-provider iqs --api-key-env IQS_SEARCH_API_KEY
 ```
 
-In configuration files, `search_provider` can be `"duckduckgo", "bocha", "brave", "iqs", "tavily", or "exa"`.
+In configuration files, `search_provider` can be `"duckduckgo", "bing_cn", "baidu", "sogou", "bocha", "brave", "iqs", "tavily", or "exa"`.
 It identifies the provider tied to `search_api_key` and
 `search_api_key_env`; automatic searches without `--provider` still rank all
 available providers by mode, recency needs, and provider capabilities. Use
@@ -89,8 +98,8 @@ provider-attempt details in tool results.
 
 Configuration matrix:
 
-- **no-key**: choose DuckDuckGo, or leave search unconfigured and the runtime
-  uses DuckDuckGo for general web search.
+- **no-key**: choose DuckDuckGo, Bing China, Baidu, or Sogou. Leaving search
+  unconfigured keeps DuckDuckGo as the default general-web provider.
 - **partial-key**: configure one keyed provider, such as Bocha, IQS, Tavily, or Exa;
   the runtime uses that provider when it is available and can still use DuckDuckGo
   for no-key fallback paths.
@@ -112,8 +121,8 @@ provider plus the provider's default API-key environment variable.
 Run a diagnostic query through the running gateway:
 
 ```sh
-opensquilla search query "OpenSquilla release notes"
-opensquilla search query "OpenSquilla release notes" --limit 5 --json
+openstarry-code search query "OpenStarry Code release notes"
+openstarry-code search query "OpenStarry Code release notes" --limit 5 --json
 ```
 
 Use this before blaming the agent for missing current information. If the
@@ -160,7 +169,7 @@ research skill.
 ## Safety and Source Quality
 
 Search results are external data, not instructions. Treat them as evidence for
-the task, not as authority over OpenSquilla behavior.
+the task, not as authority over OpenStarry Code behavior.
 
 Good research prompts ask for:
 
@@ -175,9 +184,9 @@ Avoid asking the agent to follow arbitrary instructions found on web pages.
 ## Diagnostics
 
 ```sh
-opensquilla search status
-opensquilla diagnostics on
-opensquilla doctor
+openstarry-code search status
+openstarry-code diagnostics on
+openstarry-code doctor
 ```
 
 Check:
@@ -190,4 +199,4 @@ Check:
 
 ---
 
-[Docs index](README.md) · [Product guide](../README.product.md) · [Improve this page](contributing-docs.md) · [Report a docs issue](https://github.com/opensquilla/opensquilla/issues/new?template=docs_report.yml)
+[Docs index](README.md) · [Product guide](../README.product.md) · [Improve this page](contributing-docs.md) · [Report a docs issue](https://github.com/tomysh1337/openstarry-code/issues/new?template=docs_report.yml)

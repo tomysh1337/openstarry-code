@@ -18,17 +18,18 @@ async function flushLoad() {
 }
 
 const PREFIX =
-  "OPENSQUILLA_STATE_DIR='/tmp/state' OPENSQUILLA_GATEWAY_CONFIG_PATH='/tmp/config.toml' '/apps/opensquilla-gateway'"
+  "OPENSTARRY_CODE_STATE_DIR='/tmp/state' OPENSTARRY_CODE_GATEWAY_CONFIG_PATH='/tmp/config.toml' '/apps/openstarry-code-gateway'"
 
 describe('isGatewayLifecycleCommand', () => {
   it('matches gateway restart/start/stop but not other gateway subcommands', () => {
+    expect(isGatewayLifecycleCommand('openstarry-code gateway restart')).toBe(true)
+    expect(isGatewayLifecycleCommand('openstarry-code gateway restart --config /x')).toBe(true)
+    expect(isGatewayLifecycleCommand('openstarry-code gateway start --port 18791')).toBe(true)
+    expect(isGatewayLifecycleCommand('openstarry-code gateway stop')).toBe(true)
+    expect(isGatewayLifecycleCommand('openstarry-code gateway status --json')).toBe(false)
+    expect(isGatewayLifecycleCommand('openstarry-code configure --section channels')).toBe(false)
+    expect(isGatewayLifecycleCommand('openstarry-code gateway restarter')).toBe(false)
     expect(isGatewayLifecycleCommand('opensquilla gateway restart')).toBe(true)
-    expect(isGatewayLifecycleCommand('opensquilla gateway restart --config /x')).toBe(true)
-    expect(isGatewayLifecycleCommand('opensquilla gateway start --port 18791')).toBe(true)
-    expect(isGatewayLifecycleCommand('opensquilla gateway stop')).toBe(true)
-    expect(isGatewayLifecycleCommand('opensquilla gateway status --json')).toBe(false)
-    expect(isGatewayLifecycleCommand('opensquilla configure --section channels')).toBe(false)
-    expect(isGatewayLifecycleCommand('opensquilla gateway restarter')).toBe(false)
   })
 })
 
@@ -40,13 +41,14 @@ describe('useCliInvocation', () => {
     try { window.localStorage.clear() } catch { /* node env */ }
   })
 
-  it('rewrites the leading opensquilla token with the shell prefix', async () => {
+  it('rewrites the leading OpenStarry Code token with the shell prefix', async () => {
     platformMock.gateway.getCliInvocation = async () => ({ mode: 'bundled', prefix: PREFIX })
     const { format } = useCliInvocation()
     await flushLoad()
-    expect(format('opensquilla gateway restart --config /tmp/config.toml'))
+    expect(format('openstarry-code gateway restart --config /tmp/config.toml'))
       .toBe(`${PREFIX} gateway restart --config /tmp/config.toml`)
-    expect(format('opensquilla')).toBe(PREFIX)
+    expect(format('openstarry-code')).toBe(PREFIX)
+    expect(format('opensquilla doctor')).toBe(`${PREFIX} doctor`)
   })
 
   it('keeps $-sequences in the prefix literal instead of expanding them', async () => {

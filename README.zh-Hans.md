@@ -8,7 +8,7 @@
 
 <p align="center">
   <strong>面向终端、Web 与消息渠道的可叠加多模型智能运行时。</strong><br>
-  一个微内核，四个自定义 API 槽位，自动识别模型，组成可编排的模型网格。
+  一个微内核，四个可叠加 API 槽位，三种自定义协议，自动识别模型。
 </p>
 
 <p align="center">
@@ -103,7 +103,7 @@ STATE        SQLITE + VECTOR MEMORY + DURABLE SESSIONS
 | 层级 | 能力 |
 | --- | --- |
 | **提供商总线** | OpenAI、Anthropic、OpenRouter、Ollama、DeepSeek、Gemini、Qwen/DashScope、TokenRhythm 等 20 多个提供商档案 |
-| **自定义 API 网格** | 四套独立的 Base URL、密钥、默认模型、代理和模型目录 |
+| **自定义 API 网格** | 四套独立 Chat Completions 槽位，以及专用 Responses 与 Anthropic Messages 入口 |
 | **模型智能** | 自动请求 `/models`、上下文元数据、本地路由和动态 Ensemble 选择 |
 | **Agent 运行时** | 持久会话、自适应提示、重试、结构化工具、定时任务和成本统计 |
 | **知识层** | 本地嵌入、向量记忆、文件处理、网络搜索和持久化产物 |
@@ -192,32 +192,32 @@ powershell -ExecutionPolicy Bypass -File ./scripts/install_source.ps1
 
 使用这种方式安装后，直接运行 `openstarry-code`，无需添加 `uv run` 前缀。
 
-当前已发布的桌面包和 wheel 来自
-[上游发布通道](https://github.com/opensquilla/opensquilla/releases)。
-需要本 fork 的自定义 API 功能时，请使用上面的源码流程。
+当前发布的桌面安装包、MSI、wheel 和源码包均来自
+[OpenStarry Code Release](https://github.com/tomysh1337/openstarry-code/releases)。
+源码流程适合本地开发，Release 产物适合直接安装和版本化部署。
 
 </details>
 
 ## 发布构建
 
 当前 OpenStarry Code 正式版本为
-[`v0.5.4`](https://github.com/tomysh1337/openstarry-code/releases/tag/v0.5.4)，
+[`v0.5.5`](https://github.com/tomysh1337/openstarry-code/releases/tag/v0.5.5)，
 由 2026-08-14 的仓库标签状态构建。
 
 使用 `uv` 直接安装已验证的 wheel：
 
 ```sh
 uv tool install --python 3.12 \
-  "openstarry-code[recommended] @ https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.4/openstarry_code-0.5.4-py3-none-any.whl"
+  "openstarry-code[recommended] @ https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.5/openstarry_code-0.5.5-py3-none-any.whl"
 ```
 <!-- Release URL 分隔：/ -->
 
 | 产物 | 用途 | 完整性 |
 | --- | --- | --- |
-| [`OpenStarry-Code-0.5.4-win-x64.exe`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.4/OpenStarry-Code-0.5.4-win-x64.exe) | NSIS Windows 交互式安装包 | 记录于 `SHA256SUMS` |
-| [`OpenStarry-Code-0.5.4-win-x64.msi`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.4/OpenStarry-Code-0.5.4-win-x64.msi) | WiX MSI Windows 安装包 | 记录于 `SHA256SUMS` |
-| [`openstarry_code-0.5.4-py3-none-any.whl`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.4/openstarry_code-0.5.4-py3-none-any.whl) | 包含已编译 Web UI 的 Python 运行时 | 记录于 `SHA256SUMS` |
-| [`openstarry_code-0.5.4.tar.gz`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.4/openstarry_code-0.5.4.tar.gz) | 可复现的源码发行包 | 记录于 `SHA256SUMS` |
+| [`OpenStarry-Code-0.5.5-win-x64.exe`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.5/OpenStarry-Code-0.5.5-win-x64.exe) | NSIS Windows 交互式安装包 | 记录于 `SHA256SUMS` |
+| [`OpenStarry-Code-0.5.5-win-x64.msi`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.5/OpenStarry-Code-0.5.5-win-x64.msi) | WiX MSI Windows 安装包 | 记录于 `SHA256SUMS` |
+| [`openstarry_code-0.5.5-py3-none-any.whl`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.5/openstarry_code-0.5.5-py3-none-any.whl) | 包含已编译 Web UI 的 Python 运行时 | 记录于 `SHA256SUMS` |
+| [`openstarry_code-0.5.5.tar.gz`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.5/openstarry_code-0.5.5.tar.gz) | 可复现的源码发行包 | 记录于 `SHA256SUMS` |
 | `SHA256SUMS` | Release 下载文件的 SHA-256 清单 | 与版本同步发布 |
 
 发布验证覆盖完整前端构建、产物契约、Python 包构建、提供商与配置专项测试、Web UI
@@ -236,11 +236,11 @@ Git Bash runtime，同时提供 NSIS EXE 与 WiX MSI。当前 Windows 安装包�
 | Windows EXE/MSI 构建与包结构校验 | 通过 |
 
 版本历史见 [`CHANGELOG.md`](CHANGELOG.md)，详细发行说明见
-[`docs/releases/0.5.4.md`](docs/releases/0.5.4.md)。
+[`docs/releases/0.5.5.md`](docs/releases/0.5.5.md)。
 
 ### 上游兼容下载
 
-OpenStarry Code v0.5.4 已提供独立 Windows 安装包。需要核对上游 0.5.3 行为时，
+OpenStarry Code v0.5.5 已提供独立 Windows 安装包。需要核对上游 0.5.3 行为时，
 对应的固定版本 GitHub 产物为：
 
 - [`OpenSquilla-0.5.3-mac-arm64.dmg`](https://github.com/opensquilla/opensquilla/releases/download/v0.5.3/OpenSquilla-0.5.3-mac-arm64.dmg)
@@ -283,7 +283,8 @@ disable_network_observability = true
 
 ## 自定义 API 网格
 
-四个 OpenAI 兼容槽位都是独立的一等提供商。
+每个自定义端点都是独立的一等提供商。目录会把三种主要自定义协议放在 TokenRhythm
+之后，首次启动时即可直接填写自己的 Base URL。
 
 | Provider ID | 默认密钥变量 | 隔离配置 |
 | --- | --- | --- |
@@ -291,9 +292,26 @@ disable_network_observability = true
 | `custom_2` | `CUSTOM_LLM_2_API_KEY` | Base URL、密钥、模型、代理 |
 | `custom_3` | `CUSTOM_LLM_3_API_KEY` | Base URL、密钥、模型、代理 |
 | `custom_4` | `CUSTOM_LLM_4_API_KEY` | Base URL、密钥、模型、代理 |
+| `custom_responses` | `CUSTOM_RESPONSES_API_KEY` | OpenAI Responses 协议、Base URL、可选密钥、模型 |
+| `custom_anthropic` | `CUSTOM_ANTHROPIC_API_KEY` | Anthropic Messages 协议、Base URL、可选密钥、模型 |
 
 连接探测成功后，每个槽位都会请求 `GET <base_url>/models`，返回的模型 ID 会自动进入
 模型选择器。不提供模型目录的端点仍可通过手动模型 ID 使用。
+
+## 网络搜索矩阵
+
+OpenStarry Code 内置四种免密钥搜索方式：DuckDuckGo、Bing 中国（`bing_cn`）、
+百度（`baidu`）和搜狗（`sogou`）。Bocha、Brave、阿里云 IQS、Tavily 与 Exa
+继续作为密钥型搜索源。所有来源都会返回统一的标题、URL、摘要和来源字段，因此切换
+搜索引擎不需要修改 Agent 工具。
+
+```sh
+openstarry-code configure search --search-provider bing_cn
+openstarry-code configure search --search-provider baidu
+openstarry-code configure search --search-provider sogou
+```
+
+回退策略、代理、诊断和自动选择逻辑见 [`docs/search.md`](docs/search.md)。
 
 ### 叠加多个 API
 

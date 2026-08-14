@@ -1,19 +1,19 @@
 # Configuration
 
-OpenSquilla can be configured from the onboarding wizard, the Web UI setup
+OpenStarry Code can be configured from the onboarding wizard, the Web UI setup
 flow, CLI commands, environment variables, and TOML files. Use CLI commands for
 routine setup and edit TOML only for advanced or scripted deployments.
 
 ## Config Load Order
 
-OpenSquilla reads configuration in this order:
+OpenStarry Code reads configuration in this order:
 
 1. `OPENSQUILLA_GATEWAY_CONFIG_PATH`
-2. `./opensquilla.toml`
-3. `~/.opensquilla/config.toml`
+2. `./openstarry-code.toml`
+3. `~/.openstarry-code/config.toml`
 4. built-in defaults
 
-Use `--config ./opensquilla.toml` when you want to write or inspect a
+Use `--config ./openstarry-code.toml` when you want to write or inspect a
 project-local config file.
 
 ## Task Runtime Concurrency
@@ -44,7 +44,7 @@ Prefer environment-variable references for secrets:
 
 ```sh
 export OPENROUTER_API_KEY="sk-..."
-opensquilla configure provider --provider openrouter --api-key-env OPENROUTER_API_KEY
+openstarry-code configure provider --provider openrouter --api-key-env OPENROUTER_API_KEY
 ```
 
 Avoid committing raw API keys to TOML files, shell history, examples, or issue
@@ -53,18 +53,18 @@ reports.
 ## First-Run Wizard
 
 ```sh
-opensquilla onboard
+openstarry-code onboard
 ```
 
 Common options:
 
 ```sh
-opensquilla onboard --if-needed
-opensquilla onboard --minimal
-opensquilla onboard --provider openrouter --api-key-env OPENROUTER_API_KEY
-opensquilla onboard --provider openai --model gpt-5.4-mini --api-key-env OPENAI_API_KEY
-opensquilla onboard --provider ollama --model llama3.1
-opensquilla onboard status
+openstarry-code onboard --if-needed
+openstarry-code onboard --minimal
+openstarry-code onboard --provider openrouter --api-key-env OPENROUTER_API_KEY
+openstarry-code onboard --provider openai --model gpt-5.4-mini --api-key-env OPENAI_API_KEY
+openstarry-code onboard --provider ollama --model llama3.1
+openstarry-code onboard status
 ```
 
 The router mode defaults to `recommended`. Use `--router disabled` when you want
@@ -75,15 +75,15 @@ direct single-model routing.
 The `configure` command edits a selected section:
 
 ```sh
-opensquilla configure provider --provider openrouter --api-key-env OPENROUTER_API_KEY
-opensquilla configure router --router recommended
-opensquilla configure router --router openrouter-mix
-opensquilla configure router --router disabled
-opensquilla configure search --search-provider duckduckgo
-opensquilla configure search --search-provider tavily --api-key-env TAVILY_API_KEY
-opensquilla configure channels
-opensquilla configure image-generation
-opensquilla configure memory-embedding
+openstarry-code configure provider --provider openrouter --api-key-env OPENROUTER_API_KEY
+openstarry-code configure router --router recommended
+openstarry-code configure router --router openrouter-mix
+openstarry-code configure router --router disabled
+openstarry-code configure search --search-provider duckduckgo
+openstarry-code configure search --search-provider tavily --api-key-env TAVILY_API_KEY
+openstarry-code configure channels
+openstarry-code configure image-generation
+openstarry-code configure memory-embedding
 ```
 
 Supported sections:
@@ -99,14 +99,14 @@ Supported sections:
 
 | Need | Preferred command |
 | --- | --- |
-| First setup | `opensquilla onboard` |
-| CI or install scripts | `opensquilla onboard --if-needed` |
-| Change provider | `opensquilla configure provider ...` |
-| Enable or disable routing | `opensquilla configure router ...` |
-| Configure web search | `opensquilla configure search ...` |
-| Configure messaging platforms | `opensquilla configure channels` |
-| Inspect current values | `opensquilla config get` |
-| Persist an advanced key | `opensquilla config set <key> <value> --config <path>` |
+| First setup | `openstarry-code onboard` |
+| CI or install scripts | `openstarry-code onboard --if-needed` |
+| Change provider | `openstarry-code configure provider ...` |
+| Enable or disable routing | `openstarry-code configure router ...` |
+| Configure web search | `openstarry-code configure search ...` |
+| Configure messaging platforms | `openstarry-code configure channels` |
+| Inspect current values | `openstarry-code config get` |
+| Persist an advanced key | `openstarry-code config set <key> <value> --config <path>` |
 
 ## Tool Policy
 
@@ -136,9 +136,9 @@ used or rejected recovery events for diagnostics.
 Inspect provider support:
 
 ```sh
-opensquilla providers list
-opensquilla providers configure openrouter
-opensquilla providers status
+openstarry-code providers list
+openstarry-code providers configure openrouter
+openstarry-code providers status
 ```
 
 Onboarding-verified providers include:
@@ -156,8 +156,8 @@ Onboarding-verified providers include:
 - Baidu Qianfan
 - Volcengine Ark
 
-OpenSquilla also carries provider registry entries for additional
-OpenAI-compatible or self-hosted backends. Use `opensquilla providers list` on
+OpenStarry Code also carries provider registry entries for additional
+OpenAI-compatible or self-hosted backends. Use `openstarry-code providers list` on
 your install to see the current catalog.
 
 Read: [`providers-and-models.md`](providers-and-models.md)
@@ -175,9 +175,9 @@ Router modes:
 Commands:
 
 ```sh
-opensquilla configure router --router recommended
-opensquilla configure router --router openrouter-mix
-opensquilla configure router --router disabled
+openstarry-code configure router --router recommended
+openstarry-code configure router --router openrouter-mix
+openstarry-code configure router --router disabled
 ```
 
 Router-supported provider profiles depend on the installed build and configured
@@ -189,24 +189,28 @@ using direct model runs for evaluation.
 Inspect search providers:
 
 ```sh
-opensquilla search list
-opensquilla search status
-opensquilla search query "OpenSquilla release notes"
+openstarry-code search list
+openstarry-code search status
+openstarry-code search query "OpenStarry Code release notes"
 ```
 
 Configure search:
 
 ```sh
-opensquilla configure search --search-provider duckduckgo
-opensquilla configure search --search-provider bocha --api-key-env BOCHA_SEARCH_API_KEY
-opensquilla configure search --search-provider brave --api-key-env BRAVE_SEARCH_API_KEY
-opensquilla configure search --search-provider tavily --api-key-env TAVILY_API_KEY
-opensquilla configure search --search-provider exa --api-key-env EXA_API_KEY
-opensquilla configure search --search-provider iqs --api-key-env IQS_SEARCH_API_KEY
+openstarry-code configure search --search-provider duckduckgo
+openstarry-code configure search --search-provider bing_cn
+openstarry-code configure search --search-provider baidu
+openstarry-code configure search --search-provider sogou
+openstarry-code configure search --search-provider bocha --api-key-env BOCHA_SEARCH_API_KEY
+openstarry-code configure search --search-provider brave --api-key-env BRAVE_SEARCH_API_KEY
+openstarry-code configure search --search-provider tavily --api-key-env TAVILY_API_KEY
+openstarry-code configure search --search-provider exa --api-key-env EXA_API_KEY
+openstarry-code configure search --search-provider iqs --api-key-env IQS_SEARCH_API_KEY
 ```
 
-Runtime-supported search providers in this build include DuckDuckGo, Bocha,
-Brave Search, Alibaba Cloud IQS, Tavily, and Exa. DuckDuckGo is the no-key path.
+Runtime-supported search providers in this build include DuckDuckGo, Bing China,
+Baidu, Sogou, Bocha, Brave Search, Alibaba Cloud IQS, Tavily, and Exa.
+DuckDuckGo, Bing China, Baidu, and Sogou are no-key paths.
 A partial-key setup can configure only one keyed provider; an all-key setup can
 expose `BOCHA_SEARCH_API_KEY`, `BRAVE_SEARCH_API_KEY`, `IQS_SEARCH_API_KEY`,
 `TAVILY_API_KEY`, and `EXA_API_KEY` so runtime provider selection can choose by
@@ -224,17 +228,17 @@ Read: [`search.md`](search.md)
 List supported channel types:
 
 ```sh
-opensquilla channels types --json
-opensquilla channels describe feishu
-opensquilla channels add telegram --name personal
-opensquilla channels status
+openstarry-code channels types --json
+openstarry-code channels describe feishu
+openstarry-code channels add telegram --name personal
+openstarry-code channels status
 ```
 
 Channel saves update configuration. Restart the gateway after edits:
 
 ```sh
-opensquilla gateway restart
-opensquilla channels status <name> --json
+openstarry-code gateway restart
+openstarry-code channels status <name> --json
 ```
 
 See [`channels.md`](channels.md) for details.
@@ -262,7 +266,7 @@ opaque_max_bytes = 31457280            # 30 MiB
 # this cap can be raised but not disabled. Requires a gateway restart.
 upload_store_max_total_bytes = 314572800    # 300 MiB
 # Disk budget for attachment copies materialized into an agent workspace
-# (<workspace>/.opensquilla/attachments). When exceeded, new materializations
+# (<workspace>/.openstarry-code/attachments). When exceeded, new materializations
 # degrade to an unavailable marker; existing files are never evicted. Set to
 # 0 (or any non-positive value) to disable the budget entirely.
 workspace_attachment_disk_budget_bytes = 1073741824  # 1 GiB
@@ -299,19 +303,19 @@ Behavior notes:
 Useful commands:
 
 ```sh
-opensquilla memory status
-opensquilla memory index
-opensquilla memory list
-opensquilla memory search "project preference"
-opensquilla memory show <path>
-opensquilla memory dream
-opensquilla memory flush-session <session-key>
+openstarry-code memory status
+openstarry-code memory index
+openstarry-code memory list
+openstarry-code memory search "project preference"
+openstarry-code memory show <path>
+openstarry-code memory dream
+openstarry-code memory flush-session <session-key>
 ```
 
 Configure embedding behavior:
 
 ```sh
-opensquilla configure memory-embedding
+openstarry-code configure memory-embedding
 ```
 
 Memory can combine Markdown-backed sources with SQLite keyword and semantic
@@ -325,24 +329,24 @@ Read: [`features/memory.md`](features/memory.md)
 Inspect or change posture:
 
 ```sh
-opensquilla sandbox status
-opensquilla sandbox on
-opensquilla sandbox full
-opensquilla sandbox bypass
-opensquilla sandbox reset
+openstarry-code sandbox status
+openstarry-code sandbox on
+openstarry-code sandbox full
+openstarry-code sandbox bypass
+openstarry-code sandbox reset
 ```
 
 Single-shot automation permissions:
 
 ```sh
-opensquilla agent --permissions restricted -m "Read the repo and summarize it"
-opensquilla agent --permissions full -m "Make a local patch and run tests"
+openstarry-code agent --permissions restricted -m "Read the repo and summarize it"
+openstarry-code agent --permissions full -m "Make a local patch and run tests"
 ```
 
 For unattended automation that must stay inside a workspace:
 
 ```sh
-opensquilla agent \
+openstarry-code agent \
   --workspace /path/to/project \
   --workspace-lockdown \
   --scratch-dir /path/to/project/.scratch \
@@ -354,12 +358,12 @@ Read: [`tools-and-sandbox.md`](tools-and-sandbox.md)
 ## Outbound URL Filtering And Fake-IP DNS
 
 URL-fetching tools validate resolved addresses through the shared SSRF guard in
-`opensquilla.tools.ssrf`. Private, loopback, link-local, and reserved ranges are
+`openstarry_code.tools.ssrf`. Private, loopback, link-local, and reserved ranges are
 blocked by default.
 
 Some trusted proxy or fake-IP DNS setups resolve public hostnames such as
 `github.com` to addresses in the RFC 2544 benchmark range `198.18.0.0/15`.
-OpenSquilla keeps blocking those addresses unless the operator explicitly opts
+OpenStarry Code keeps blocking those addresses unless the operator explicitly opts
 in:
 
 ```toml
@@ -382,16 +386,16 @@ Gateway.
 Foreground:
 
 ```sh
-opensquilla gateway run --listen 127.0.0.1 --port 18791
+openstarry-code gateway run --listen 127.0.0.1 --port 18791
 ```
 
 Managed:
 
 ```sh
-opensquilla gateway start --json
-opensquilla gateway status
-opensquilla gateway stop
-opensquilla gateway restart
+openstarry-code gateway start --json
+openstarry-code gateway status
+openstarry-code gateway stop
+openstarry-code gateway restart
 ```
 
 Bind precedence:
@@ -403,7 +407,7 @@ Bind precedence:
 5. config host
 6. `127.0.0.1`
 
-When listening on the LAN, OpenSquilla accepts only loopback, RFC 1918, and
+When listening on the LAN, OpenStarry Code accepts only loopback, RFC 1918, and
 IPv6 ULA socket peers. `auth.allowed_client_cidrs` can narrow that built-in
 range but cannot add public networks:
 
@@ -424,7 +428,7 @@ uses the configured default workspace. All file-capable tools follow the same
 non-bypassable policy:
 
 - ordinary host files are readable;
-- the built-in credential paths and OpenSquilla authority/recovery data are
+- the built-in credential paths and OpenStarry Code authority/recovery data are
   not readable;
 - writes are allowed only inside the configured default workspace;
 - workspace creation, selection, and other owner-only lifecycle operations are
@@ -439,7 +443,7 @@ or authority path.
 ## Safe Mode Policy
 
 Settings -> Sandbox persists a versioned policy snapshot for each new task.
-Ordinary host files are readable and writable in Safe mode, except OpenSquilla
+Ordinary host files are readable and writable in Safe mode, except OpenStarry Code
 authority/recovery data and the built-in or custom deny-write paths. Mutating a
 deny-write path requires an exact user approval.
 
@@ -492,17 +496,17 @@ Plan-mode interaction, upgrade notes, and recovery guidance in
 
 ## Raw Config Editing
 
-For advanced settings, inspect `opensquilla.toml.example` and edit the active
+For advanced settings, inspect `openstarry-code.toml.example` and edit the active
 config file directly. Use CLI commands for routine provider, router, search,
 channel, and sandbox changes because they avoid common key-shape mistakes.
 
 After changing files by hand, restart the gateway and run:
 
 ```sh
-opensquilla doctor
-opensquilla gateway status
+openstarry-code doctor
+openstarry-code gateway status
 ```
 
 ---
 
-[Docs index](README.md) · [Product guide](../README.product.md) · [Improve this page](contributing-docs.md) · [Report a docs issue](https://github.com/opensquilla/opensquilla/issues/new?template=docs_report.yml)
+[Docs index](README.md) · [Product guide](../README.product.md) · [Improve this page](contributing-docs.md) · [Report a docs issue](https://github.com/tomysh1337/openstarry-code/issues/new?template=docs_report.yml)

@@ -2047,18 +2047,18 @@ def _installed_reinstall_command_lines() -> str:
 
     if _RELEASE_VERSION_RE.match(__version__):
         wheel_url = (
-            "https://github.com/opensquilla/opensquilla/releases/download/"
-            f"v{__version__}/opensquilla-{__version__}-py3-none-any.whl"
+            "https://github.com/tomysh1337/openstarry-code/releases/download/"
+            f"v{__version__}/openstarry_code-{__version__}-py3-none-any.whl"
         )
         return (
             "  uv tool install --python 3.12 --force "
-            f"\"opensquilla[recommended] @ {wheel_url}\"\n"
+            f"\"openstarry-code[recommended] @ {wheel_url}\"\n"
         )
     return (
         "  uv tool install --python 3.12 --force "
-        "\"opensquilla[recommended] @ <wheel-url>\"\n"
+        "\"openstarry-code[recommended] @ <wheel-url>\"\n"
         "  (use the wheel from the latest release: "
-        "https://github.com/opensquilla/opensquilla/releases/latest)\n"
+        "https://github.com/tomysh1337/openstarry-code/releases/latest)\n"
     )
 
 

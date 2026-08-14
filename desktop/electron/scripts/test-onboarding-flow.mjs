@@ -38,7 +38,7 @@ async function setupWindow(app) {
   }, 'desktop onboarding window')
 }
 
-const userDataRoot = await mkdtemp(join(tmpdir(), 'opensquilla-electron-onboarding-test-'))
+const userDataRoot = await mkdtemp(join(tmpdir(), 'openstarry-code-electron-onboarding-test-'))
 const userDataDir = join(userDataRoot, 'chromium-user-data')
 const isolatedHome = join(userDataRoot, 'home')
 await mkdir(isolatedHome, { recursive: true })
@@ -75,12 +75,12 @@ try {
   await page.locator('#onboardingLocale').selectOption('zh-Hans')
   assert.deepEqual(pageErrors, [], 'onboarding should not raise page-script errors during locale rendering')
   assert.equal(await page.evaluate(() => document.documentElement.lang), 'zh-Hans')
-  assert.equal(await page.title(), '设置 OpenSquilla')
+  assert.equal(await page.title(), '设置 OpenStarry Code')
   assert.equal(await page.locator('[data-screen="0"]').count(), 0, 'setup-depth selection must be removed')
   assert.equal(await page.locator('[data-screen="2"], [data-screen="3"], [data-screen="4"]').count(), 0, 'onboarding must use a single setup screen')
   assert.equal(await page.locator('[data-setup-mode], [data-model-routing-mode]').count(), 0, 'advanced setup controls must be removed')
   assert.equal(await page.locator('.rail, .progress, .step').count(), 0, 'onboarding must not render a side rail or step tracker')
-  assert.equal(await page.locator('.topbar .brand').innerText(), 'OpenSquilla')
+  assert.equal(await page.locator('.topbar .brand').innerText(), 'OpenStarry Code')
   assert.equal(await page.locator('.eyebrow, .card-badge').count(), 0, 'decorative step labels and badges must be removed')
   assert.equal(await page.locator('#providerHint').count(), 0, 'provider hint banner must be removed')
   assert.equal(await providerScreen.isVisible(), true, 'onboarding should open directly on provider setup')
@@ -101,7 +101,7 @@ try {
     'rgb(52, 58, 64)',
     'the single primary action should use the softer graphite treatment',
   )
-  assert.equal(await page.locator('#finish').innerText(), '启动 OpenSquilla')
+  assert.equal(await page.locator('#finish').innerText(), '启动 OpenStarry Code')
   assert.equal(await page.locator('.next-button, .back-button').count(), 0, 'single-page onboarding must not render next or back actions')
   assert.equal(await providerScreen.locator('.provider-feature, .provider-disclosure').count(), 0, 'provider setup should use one unified select')
   assert.equal(await providerScreen.locator('.provider-promo').count(), 0, 'the promotion should not occupy a separate row')
@@ -368,7 +368,7 @@ try {
   const saved = await waitFor(async () => {
     const credential = JSON.parse(await readFile(join(userDataDir, 'desktop-credential.json'), 'utf8'))
     if (credential.provider !== 'tokenrhythm') return null
-    const config = await readFile(join(userDataDir, 'opensquilla', 'config.toml'), 'utf8')
+    const config = await readFile(join(userDataDir, 'openstarry-code', 'config.toml'), 'utf8')
     return { credential, config }
   }, 'saved simple onboarding credential and config')
   const { credential, config } = saved

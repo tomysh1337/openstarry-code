@@ -90,7 +90,7 @@ async def test_openai_embedding_provider_adds_openrouter_app_attribution_for_que
     assert captured["url"] == "https://openrouter.ai/api/v1/embeddings"
     assert captured["headers"] == {
         "Authorization": "Bearer or-test",
-        "HTTP-Referer": "https://opensquilla.ai",
+        "HTTP-Referer": "https://github.com/tomysh1337/openstarry-code",
         "X-Title": "OpenStarry Code",
     }
 

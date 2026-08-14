@@ -6,7 +6,7 @@
 
 <p align="center">
   <strong>Stackable multi-provider intelligence for terminal, web, and messaging.</strong><br>
-  One microkernel runtime. Four custom API slots. Automatic model discovery. One composable model mesh.<br>
+  One microkernel runtime. Four stackable API slots. Three custom protocols. Automatic model discovery.<br>
   <strong>面向终端、Web 与消息渠道的可叠加多模型智能运行时。</strong>
 </p>
 
@@ -113,7 +113,7 @@ STATE        SQLITE + VECTOR MEMORY + DURABLE SESSIONS
 | Layer | Capability |
 | --- | --- |
 | **Provider fabric** | OpenAI, Anthropic, OpenRouter, Ollama, DeepSeek, Gemini, Qwen/DashScope, TokenRhythm, and 20+ provider profiles |
-| **Custom API mesh** | Four isolated base URLs, keys, default models, proxies, and model catalogs |
+| **Custom API mesh** | Four isolated Chat Completions slots plus dedicated Responses and Anthropic Messages endpoints |
 | **Model intelligence** | Automatic `/models` discovery, context metadata, local routing, and dynamic ensemble selection |
 | **Agent runtime** | Persistent sessions, adaptive prompts, retries, structured tools, cron, and cost tracking |
 | **Knowledge layer** | Local embeddings, vector memory, file ingestion, web search, and durable artifacts |
@@ -216,23 +216,23 @@ bundled gateway and platform runtime pass the packaging gate.
 ## Release Build
 
 The current OpenStarry Code release is
-[`v0.5.4`](https://github.com/tomysh1337/openstarry-code/releases/tag/v0.5.4),
+[`v0.5.5`](https://github.com/tomysh1337/openstarry-code/releases/tag/v0.5.5),
 built from the tagged repository state on 2026-08-14.
 
 Install its verified wheel directly with `uv`:
 
 ```sh
 uv tool install --python 3.12 \
-  "openstarry-code[recommended] @ https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.4/openstarry_code-0.5.4-py3-none-any.whl"
+  "openstarry-code[recommended] @ https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.5/openstarry_code-0.5.5-py3-none-any.whl"
 ```
 <!-- release URL boundary: / -->
 
 | Artifact | Purpose | Integrity |
 | --- | --- | --- |
-| [`OpenStarry-Code-0.5.4-win-x64.exe`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.4/OpenStarry-Code-0.5.4-win-x64.exe) | Interactive NSIS Windows installer | Listed in `SHA256SUMS` |
-| [`OpenStarry-Code-0.5.4-win-x64.msi`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.4/OpenStarry-Code-0.5.4-win-x64.msi) | WiX MSI Windows installer | Listed in `SHA256SUMS` |
-| [`openstarry_code-0.5.4-py3-none-any.whl`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.4/openstarry_code-0.5.4-py3-none-any.whl) | Installable Python runtime with the compiled Web UI | Listed in `SHA256SUMS` |
-| [`openstarry_code-0.5.4.tar.gz`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.4/openstarry_code-0.5.4.tar.gz) | Reproducible source distribution | Listed in `SHA256SUMS` |
+| [`OpenStarry-Code-0.5.5-win-x64.exe`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.5/OpenStarry-Code-0.5.5-win-x64.exe) | Interactive NSIS Windows installer | Listed in `SHA256SUMS` |
+| [`OpenStarry-Code-0.5.5-win-x64.msi`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.5/OpenStarry-Code-0.5.5-win-x64.msi) | WiX MSI Windows installer | Listed in `SHA256SUMS` |
+| [`openstarry_code-0.5.5-py3-none-any.whl`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.5/openstarry_code-0.5.5-py3-none-any.whl) | Installable Python runtime with the compiled Web UI | Listed in `SHA256SUMS` |
+| [`openstarry_code-0.5.5.tar.gz`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.5/openstarry_code-0.5.5.tar.gz) | Reproducible source distribution | Listed in `SHA256SUMS` |
 | `SHA256SUMS` | SHA-256 manifest for release downloads | Published with the release |
 
 Release verification covers the complete frontend build, artifact contract,
@@ -251,7 +251,7 @@ Windows installers are currently unsigned; verify `SHA256SUMS` before use.
 | Wheel/sdist build | Passed |
 
 See [`CHANGELOG.md`](CHANGELOG.md) for the version history and
-[`docs/releases/0.5.4.md`](docs/releases/0.5.4.md) for detailed release notes.
+[`docs/releases/0.5.5.md`](docs/releases/0.5.5.md) for detailed release notes.
 
 ### Network privacy
 
@@ -278,8 +278,9 @@ Explicit update-availability checks remain disabled when these controls apply. S
 
 ## Custom API Mesh
 
-Each OpenAI-compatible slot is a first-class provider with independent
-connection state.
+Each custom endpoint is a first-class provider with independent connection
+state. The catalog puts the three primary protocol choices directly after
+TokenRhythm so a user-supplied Base URL is available during first-run setup.
 
 | Provider ID | Default key variable | Isolation |
 | --- | --- | --- |
@@ -287,11 +288,30 @@ connection state.
 | `custom_2` | `CUSTOM_LLM_2_API_KEY` | Base URL, key, model, proxy |
 | `custom_3` | `CUSTOM_LLM_3_API_KEY` | Base URL, key, model, proxy |
 | `custom_4` | `CUSTOM_LLM_4_API_KEY` | Base URL, key, model, proxy |
+| `custom_responses` | `CUSTOM_RESPONSES_API_KEY` | OpenAI Responses protocol, Base URL, optional key, model |
+| `custom_anthropic` | `CUSTOM_ANTHROPIC_API_KEY` | Anthropic Messages protocol, Base URL, optional key, model |
 
 After a successful connection probe, each slot requests
 `GET <base_url>/models`. Returned model IDs populate the model picker. An
 endpoint without a model catalog remains usable through the manual model-ID
 field.
+
+## Web Search Matrix
+
+OpenStarry Code includes four search paths that need no API key: DuckDuckGo,
+Bing China (`bing_cn`), Baidu (`baidu`), and Sogou (`sogou`). Bocha, Brave,
+Alibaba Cloud IQS, Tavily, and Exa remain available as keyed providers. Every
+provider returns the same normalized title, URL, snippet, and source shape, so
+the selected engine can be changed without changing agent tools.
+
+```sh
+openstarry-code configure search --search-provider bing_cn
+openstarry-code configure search --search-provider baidu
+openstarry-code configure search --search-provider sogou
+```
+
+See [`docs/search.md`](docs/search.md) for fallback, proxy, diagnostics, and
+provider-selection behavior.
 
 ### Stack multiple APIs
 

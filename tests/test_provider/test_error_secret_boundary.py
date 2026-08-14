@@ -67,7 +67,7 @@ async def test_short_install_id_is_redacted_from_openai_chat_and_model_discovery
         openai_module,
         "tokenrhythm_install_id_headers",
         lambda *_args, **_kwargs: {
-            "X-OpenStarry Code-Install-Id": _SHORT_INSTALL_ID
+            "X-OpenStarry-Code-Install-Id": _SHORT_INSTALL_ID
         },
     )
     provider = OpenAIProvider(
@@ -101,7 +101,7 @@ async def test_short_install_id_is_redacted_from_openai_chat_and_model_discovery
         await provider.list_models(raise_on_error=True)
     assert _SHORT_INSTALL_ID not in str(raised.value)
     assert "model discovery echoed ***" in str(raised.value)
-    assert raised.value.request.headers["X-OpenStarry Code-Install-Id"] == "[PRESENT]"
+    assert raised.value.request.headers["X-OpenStarry-Code-Install-Id"] == "[PRESENT]"
     assert _SHORT_INSTALL_ID not in repr(raised.value.request.headers)
     assert _SHORT_INSTALL_ID not in repr(raised.value.__context__)
 
@@ -120,7 +120,7 @@ def test_http_status_error_clone_redacts_retained_request_and_response(
         f"https://tokenrhythm.studio/v1/models?echo={_SHORT_INSTALL_ID}",
         headers={
             "Authorization": f"Bearer {_API_KEY}",
-            "X-OpenStarry Code-Install-Id": _SHORT_INSTALL_ID,
+            "X-OpenStarry-Code-Install-Id": _SHORT_INSTALL_ID,
             "X-Upstream-Echo": _SHORT_INSTALL_ID,
         },
         content=f'{{"echo":"{_SHORT_INSTALL_ID}"}}',
@@ -144,7 +144,7 @@ def test_http_status_error_clone_redacts_retained_request_and_response(
 
     assert isinstance(safe, httpx.HTTPStatusError)
     assert safe.response.request is safe.request
-    assert safe.request.headers["X-OpenStarry Code-Install-Id"] == "[PRESENT]"
+    assert safe.request.headers["X-OpenStarry-Code-Install-Id"] == "[PRESENT]"
     retained = " ".join(
         (
             str(safe),

@@ -69,7 +69,7 @@ async def test_pricing_cache_refresh_adds_openrouter_app_attribution() -> None:
     assert captured["headers"] == {
         "Authorization": "Bearer test-key",
         "Content-Type": "application/json",
-        "HTTP-Referer": "https://opensquilla.ai",
+        "HTTP-Referer": "https://github.com/tomysh1337/openstarry-code",
         "X-Title": "OpenStarry Code",
     }
     price = cache.get_price_sync("openai/gpt-4o")

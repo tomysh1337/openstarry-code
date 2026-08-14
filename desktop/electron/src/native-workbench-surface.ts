@@ -305,7 +305,7 @@ export class NativeWorkbenchSurfaceManager {
     }
     const owner = this.options.getWindow()
     if (!owner || owner.isDestroyed()) {
-      return { ok: false, message: 'The OpenSquilla window is unavailable.' }
+      return { ok: false, message: 'The OpenStarry Code window is unavailable.' }
     }
 
     this.hookWindow(owner)
@@ -427,7 +427,7 @@ export class NativeWorkbenchSurfaceManager {
     }
     if (record.owner.isDestroyed()) {
       void this.destroySurface(record.id)
-      return { ok: false, message: 'The OpenSquilla window is unavailable.' }
+      return { ok: false, message: 'The OpenStarry Code window is unavailable.' }
     }
     record.requestedRect = {
       x: request.x,
@@ -491,7 +491,7 @@ export class NativeWorkbenchSurfaceManager {
             this.reportPrivilegedGatewayBlock(record, request.url!)
             return {
               ok: false,
-              message: 'The OpenSquilla Gateway is unavailable inside isolated previews.',
+              message: 'The OpenStarry Code Gateway is unavailable inside isolated previews.',
             }
           }
           await contents.loadURL(request.url!)

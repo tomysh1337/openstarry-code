@@ -88,7 +88,7 @@ _RESPONSE_READ_CHUNK_BYTES = 64 * 1024
 # this script can run as a standalone subprocess without importing the
 # openstarry-code package. Keep the three constants and the predicate in sync if
 # the canonical helper changes.
-_OPENROUTER_APP_REFERER = "https://opensquilla.ai"
+_OPENROUTER_APP_REFERER = "https://github.com/tomysh1337/openstarry-code"
 _OPENROUTER_APP_TITLE = "OpenStarry Code"
 _SAFE_POLICY_CODE_RE = re.compile(r"[A-Za-z][A-Za-z0-9_.-]{0,127}")
 _SAFE_MODEL_ID_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}")

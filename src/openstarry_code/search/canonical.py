@@ -228,6 +228,9 @@ def _ensure_builtin_search_providers() -> None:
         "openstarry_code.search.providers.iqs",
         "openstarry_code.search.providers.tavily",
         "openstarry_code.search.providers.brave",
+        "openstarry_code.search.providers.baidu",
+        "openstarry_code.search.providers.bing_cn",
+        "openstarry_code.search.providers.sogou",
         "openstarry_code.search.providers.exa",
         "openstarry_code.search.providers.duckduckgo",
     ):

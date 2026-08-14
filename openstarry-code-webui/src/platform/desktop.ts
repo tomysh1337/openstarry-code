@@ -15,7 +15,7 @@ import type {
 
 function requireDesktopApi(): OpenSquillaDesktopApi {
   const api = window.opensquillaDesktop
-  if (!api) throw new Error('OpenSquilla desktop API is unavailable.')
+  if (!api) throw new Error('OpenStarry Code desktop API is unavailable.')
   return api
 }
 

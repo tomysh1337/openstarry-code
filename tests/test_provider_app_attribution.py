@@ -8,7 +8,7 @@ from openstarry_code.provider.app_attribution import (
 )
 
 EXPECTED_HEADERS = {
-    "HTTP-Referer": "https://opensquilla.ai",
+    "HTTP-Referer": "https://github.com/tomysh1337/openstarry-code",
     "X-Title": "OpenStarry Code",
 }
 
@@ -56,7 +56,7 @@ def test_provider_app_headers_reject_untrusted_or_malformed_urls(
 
 
 def test_provider_app_identity_constants_are_fixed() -> None:
-    assert OPENSTARRY_CODE_APP_REFERER == "https://opensquilla.ai"
+    assert OPENSTARRY_CODE_APP_REFERER == "https://github.com/tomysh1337/openstarry-code"
     assert OPENSTARRY_CODE_APP_TITLE == "OpenStarry Code"
 
 

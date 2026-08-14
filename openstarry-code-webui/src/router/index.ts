@@ -77,14 +77,14 @@ export function routeTitle(route: RouteLocationNormalized): string {
     const translated = i18n.global.t(key)
     if (translated !== key) return translated
   }
-  return (route.meta?.title as string) || 'OpenSquilla'
+  return (route.meta?.title as string) || 'OpenStarry Code'
 }
 
 router.afterEach((to, _from, failure) => {
   if (failure || !isChatRoutePath(to.path)) {
     clearPrimedSessionBootstrapAdmission()
   }
-  document.title = `${routeTitle(to)} — OpenSquilla`
+  document.title = `${routeTitle(to)} — OpenStarry Code`
   // Remember the current view (path only) so the next launch reopens here.
   saveLastRoute(to.path)
 })

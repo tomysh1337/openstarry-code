@@ -109,7 +109,7 @@ _MAX_MEDIA_REDIRECTS = 5
 # this script can run as a standalone subprocess without importing the
 # openstarry-code package. Volcengine / BytePlus URLs DO NOT receive these
 # headers (the predicate gates by host).
-_OPENROUTER_APP_REFERER = "https://opensquilla.ai"
+_OPENROUTER_APP_REFERER = "https://github.com/tomysh1337/openstarry-code"
 _OPENROUTER_APP_TITLE = "OpenStarry Code"
 
 

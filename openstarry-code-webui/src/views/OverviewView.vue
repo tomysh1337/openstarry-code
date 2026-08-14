@@ -891,7 +891,7 @@ function gatewayUnavailableFixSteps(gatewayUrl: string): FixStep[] {
     return [
       {
         label: t('sessions.overview.gw.inspectRemote'),
-        command: `opensquilla gateway status --gateway ${shellArg(gatewayUrl)} --json`,
+        command: `openstarry-code gateway status --gateway ${shellArg(gatewayUrl)} --json`,
       },
       {
         label: t('sessions.overview.gw.repairRemote'),
@@ -908,11 +908,11 @@ function gatewayUnavailableFixSteps(gatewayUrl: string): FixStep[] {
   return [
     {
       label: t('sessions.overview.gw.runLocalDoctor'),
-      command: `opensquilla doctor${doctorTarget}${configTarget} --json`,
+      command: `openstarry-code doctor${doctorTarget}${configTarget} --json`,
       detail: t('sessions.overview.gw.runLocalDoctorDetail'),
     },
-    { label: t('sessions.overview.gw.startLocal'), command: `opensquilla gateway start${targetArgs}${configTarget}` },
-    { label: t('sessions.overview.gw.inspectLocal'), command: `opensquilla gateway status${targetArgs} --json${configTarget}` },
+    { label: t('sessions.overview.gw.startLocal'), command: `openstarry-code gateway start${targetArgs}${configTarget}` },
+    { label: t('sessions.overview.gw.inspectLocal'), command: `openstarry-code gateway status${targetArgs} --json${configTarget}` },
   ]
 }
 

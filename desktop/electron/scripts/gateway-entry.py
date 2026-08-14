@@ -16,7 +16,7 @@ def _run_desktop_ca_probe() -> int:
 
     if ca_certificate_count <= 0:
         print(
-            "OpenSquilla Desktop TLS trust probe found no trusted CA certificates.",
+            "OpenStarry Code Desktop TLS trust probe found no trusted CA certificates.",
             file=sys.stderr,
         )
         return 1

@@ -9,10 +9,10 @@ from openstarry_code.provider.openrouter_attribution import (
 def test_openrouter_app_headers_match_app_attribution_contract() -> None:
     # OpenRouter's documented app-attribution contract: HTTP-Referer + X-Title.
     assert openrouter_app_headers("https://openrouter.ai/api/v1") == {
-        "HTTP-Referer": "https://opensquilla.ai",
+        "HTTP-Referer": "https://github.com/tomysh1337/openstarry-code",
         "X-Title": "OpenStarry Code",
     }
-    assert OPENROUTER_APP_REFERER == "https://opensquilla.ai"
+    assert OPENROUTER_APP_REFERER == "https://github.com/tomysh1337/openstarry-code"
     assert OPENROUTER_APP_TITLE == "OpenStarry Code"
 
 

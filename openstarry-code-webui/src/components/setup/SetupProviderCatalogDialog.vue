@@ -20,7 +20,15 @@ const pickerRef = ref<HTMLElement | null>(null)
 const inputRef = ref<HTMLInputElement | null>(null)
 const query = ref('')
 const activeIndex = ref(0)
-const FEATURED = ['tokenrhythm', 'openrouter', 'deepseek', 'gemini']
+const FEATURED = [
+  'tokenrhythm',
+  'custom',
+  'custom_responses',
+  'custom_anthropic',
+  'openrouter',
+  'deepseek',
+  'gemini',
+]
 const TOKENRHYTHM_REGISTRATION_URL = 'https://tokenrhythm.studio/'
 
 const configured = computed(() => new Set(

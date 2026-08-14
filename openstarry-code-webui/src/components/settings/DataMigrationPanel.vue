@@ -247,7 +247,7 @@ const cleanupConfirmation = ref('')
 const cleanupTitleEl = ref<HTMLElement | null>(null)
 const cleanupReturnFocusEl = ref<HTMLElement | null>(null)
 let progressUnsub: (() => void) | null = null
-const DELETE_ALL_CONFIRMATION = 'DELETE ALL OPENSQUILLA DATA'
+const DELETE_ALL_CONFIRMATION = 'DELETE ALL OPENSTARRY CODE DATA'
 
 const isGatewayPreview = computed(() => selectedCandidate.value?.provider === 'gateway')
 const knownAttention = computed(() => {
@@ -1150,7 +1150,7 @@ onUnmounted(unsubscribeProgress)
               }) }}
             </p>
             <p>{{ t('settings.dataMigration.hostCliHint') }}</p>
-            <code>opensquilla migrate opensquilla --help</code>
+            <code>openstarry-code migrate opensquilla --help</code>
           </details>
         </template>
 

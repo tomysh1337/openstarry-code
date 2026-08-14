@@ -48,7 +48,7 @@ def test_advertised_search_recovery_one_liner_keeps_saved_settings(tmp_path):
     assert entry is not None
     _label, advertised = entry
     tokens = advertised.split()
-    assert tokens[0] == "opensquilla"
+    assert tokens[0] == "openstarry-code"
     result = runner.invoke(app, [*tokens[1:], "--config", str(target)])
 
     assert result.exit_code == 0, result.output

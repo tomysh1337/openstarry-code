@@ -30,11 +30,11 @@ def test_llm_trace_recorder_writes_full_payload_and_redacts_headers(
         headers={
             "Authorization": "Bearer secret",
             "Content-Type": "application/json",
-            "X-OpenStarry Code-Install-Id": "install-1",
-            "X-OpenStarry Code-Session-Id": "session-1",
-            "X-OpenStarry Code-Turn-Id": "turn-1",
-            "X-OpenStarry Code-Execution-Id": "execution-1",
-            "X-OpenStarry Code-Call-Kind": "agent.chat",
+            "X-OpenStarry-Code-Install-Id": "install-1",
+            "X-OpenStarry-Code-Session-Id": "session-1",
+            "X-OpenStarry-Code-Turn-Id": "turn-1",
+            "X-OpenStarry-Code-Execution-Id": "execution-1",
+            "X-OpenStarry-Code-Call-Kind": "agent.chat",
         },
     )
     recorder.record_response_headers(response_ids=["gen-safe-1"])
@@ -56,11 +56,11 @@ def test_llm_trace_recorder_writes_full_payload_and_redacts_headers(
     ]
     assert rows[0]["payload"]["messages"][0]["content"] == "hi"
     assert rows[0]["headers"]["Authorization"] == "[REDACTED]"
-    assert rows[0]["headers"]["X-OpenStarry Code-Install-Id"] == "[PRESENT]"
-    assert rows[0]["headers"]["X-OpenStarry Code-Session-Id"] == "[PRESENT]"
-    assert rows[0]["headers"]["X-OpenStarry Code-Turn-Id"] == "[PRESENT]"
-    assert rows[0]["headers"]["X-OpenStarry Code-Execution-Id"] == "[PRESENT]"
-    assert rows[0]["headers"]["X-OpenStarry Code-Call-Kind"] == "[PRESENT]"
+    assert rows[0]["headers"]["X-OpenStarry-Code-Install-Id"] == "[PRESENT]"
+    assert rows[0]["headers"]["X-OpenStarry-Code-Session-Id"] == "[PRESENT]"
+    assert rows[0]["headers"]["X-OpenStarry-Code-Turn-Id"] == "[PRESENT]"
+    assert rows[0]["headers"]["X-OpenStarry-Code-Execution-Id"] == "[PRESENT]"
+    assert rows[0]["headers"]["X-OpenStarry-Code-Call-Kind"] == "[PRESENT]"
     serialized = json.dumps(rows[0]["headers"], sort_keys=True)
     assert "install-1" not in serialized
     assert "session-1" not in serialized
@@ -119,7 +119,7 @@ def test_llm_trace_recorder_invalid_path_never_affects_provider_call(
 
     recorder.record_request(
         payload={"model": "test-model"},
-        headers={"X-OpenStarry Code-Install-Id": "must-not-escape"},
+        headers={"X-OpenStarry-Code-Install-Id": "must-not-escape"},
     )
 
 

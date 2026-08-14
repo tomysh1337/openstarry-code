@@ -113,7 +113,7 @@ describe('UpdateBanner live update polling', () => {
       .mockResolvedValueOnce(jsonResponse(payload({
         latest: '0.5.0rc5',
         available: true,
-        url: 'https://github.com/opensquilla/opensquilla/releases/tag/v0.5.0rc5',
+        url: 'https://github.com/tomysh1337/openstarry-code/releases/tag/v0.5.0rc5',
       })))
 
     const { el } = await mountBanner()
@@ -125,7 +125,7 @@ describe('UpdateBanner live update polling', () => {
     const banner = el.querySelector('[data-testid="update-banner"]')
     expect(banner?.textContent).toContain('0.5.0rc5')
     expect(el.querySelector('.update-banner__link')?.getAttribute('href')).toBe(
-      'https://github.com/opensquilla/opensquilla/releases/tag/v0.5.0rc5',
+      'https://github.com/tomysh1337/openstarry-code/releases/tag/v0.5.0rc5',
     )
   })
 
@@ -333,7 +333,7 @@ describe('UpdateBanner live update polling', () => {
     const { el } = await mountBanner()
 
     expect(el.querySelector('.update-banner__link')?.getAttribute('href')).toBe(
-      'https://github.com/opensquilla/opensquilla/releases',
+      'https://github.com/tomysh1337/openstarry-code/releases',
     )
   })
 

@@ -1343,10 +1343,10 @@ describe('SetupProviderPanel — configured provider management', () => {
       .map(option => option.textContent)
     expect(initial).toEqual([
       expect.stringContaining('TokenRhythm'),
+      expect.stringContaining('Custom endpoint'),
       expect.stringContaining('DeepSeek'),
       expect.stringContaining('Gemini'),
       expect.stringContaining('Anthropic'),
-      expect.stringContaining('Custom endpoint'),
     ])
     expect(initial.join(' ')).not.toContain('OpenAI')
     expect(document.body.querySelector('.provider-picker__list')).toBeTruthy()
@@ -1674,7 +1674,7 @@ describe('SetupProviderPanel — TokenRhythm recommendation', () => {
     const recommendationCard = recommendation(el)!
     expect(recommendationCard.closest('[hidden]')).toBeTruthy()
     expect(recommendationCard.querySelector('.setup-provider-recommendation__scope')?.textContent)
-      .toContain('OpenSquilla recommendation · Optional')
+      .toContain('OpenStarry Code recommendation · Optional')
     expect(el.querySelector('.setup-provider-global-block__eyebrow')).toBeNull()
     expect(recommendation(el)?.textContent).toContain('Recommended: TokenRhythm')
     expect(recommendation(el)?.textContent)

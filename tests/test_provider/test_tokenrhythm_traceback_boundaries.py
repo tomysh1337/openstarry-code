@@ -27,7 +27,7 @@ from openstarry_code.provider.openai import OpenAIProvider
 from openstarry_code.provider.types import ChatConfig, Message
 
 _INSTALL_ID = "synthetic-install-id-frame-boundary"
-_HEADER = "X-OpenStarry Code-Install-Id"
+_HEADER = "X-OpenStarry-Code-Install-Id"
 
 
 def _retained_value_text(

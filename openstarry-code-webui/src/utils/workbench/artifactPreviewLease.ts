@@ -264,7 +264,7 @@ function brokerError(
 
 function desktopBrokerUnavailable(): ArtifactPreviewLeaseError {
   return new ArtifactPreviewLeaseError(
-    'Update OpenSquilla Desktop to use browser-grade Artifact previews.',
+    'Update OpenStarry Code Desktop to use browser-grade Artifact previews.',
     0,
     'DESKTOP_PREVIEW_BROKER_UNAVAILABLE',
   )

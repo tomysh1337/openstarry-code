@@ -404,7 +404,7 @@ const dirtyDiscardLabel = computed(() => {
   if (onlyDirtySection.value === 'modelStrategy') return t('settings.dialog.discardRouting')
   return t('common.discard')
 })
-const displayConfigPath = computed(() => configPath.value || '~/.opensquilla/config.toml')
+const displayConfigPath = computed(() => configPath.value || '~/.openstarry-code/config.toml')
 // Provider drafts deliberately stay out of the settings-wide dirty bar because
 // their editor owns Save/Cancel. They still participate in every path that
 // unmounts Settings so browser navigation cannot silently discard credentials.

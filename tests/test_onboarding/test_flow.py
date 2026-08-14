@@ -92,7 +92,12 @@ def test_interactive_provider_choice_offers_all_runtime_supported_providers():
 
     choices = captured["choices"]
     assert choices[0] == "tokenrhythm (TokenRhythm)"
-    assert choices[1] == "openrouter (OpenRouter)"
+    assert choices[1:5] == [
+        "custom (Custom API (Chat Completions))",
+        "custom_responses (Custom API (Responses))",
+        "custom_anthropic (Custom API (Anthropic Messages))",
+        "openrouter (OpenRouter)",
+    ]
     assert captured["default"] == "tokenrhythm (TokenRhythm)"
     offered = {choice.split(" ")[0] for choice in choices}
     from tests.test_onboarding.test_provider_specs import EXPECTED_SUPPORTED
@@ -1526,9 +1531,11 @@ def test_interactive_feishu_websocket_prompts_only_core_fields(tmp_path, monkeyp
     assert "latest recommended portable package" in out
     assert "OPENSTARRY_CODE_INSTALL_EXTRAS" not in normalized_out
     assert "uv tool install --python 3.12 --force" in normalized_out
-    assert "opensquilla[recommended]" in normalized_out
-    assert "https://github.com/opensquilla/opensquilla/releases/download/" in out
-    assert "v0.5.3" in out
+    assert "openstarry-code[recommended]" in normalized_out
+    assert "https://github.com/tomysh1337/openstarry-code/releases/download/" in out
+    from openstarry_code import __version__ as installed_version
+
+    assert f"v{installed_version}" in out
     assert "opensquilla.ai/install." not in normalized_out
     assert "uv sync --extra recommended" in normalized_out
     assert "--extra feishu" not in normalized_out
@@ -2672,10 +2679,10 @@ def test_installed_reinstall_command_pins_the_running_release_wheel(monkeypatch)
     lines = flow._installed_reinstall_command_lines()
 
     assert (
-        "https://github.com/opensquilla/opensquilla/releases/download/"
-        "v0.6.0/opensquilla-0.6.0-py3-none-any.whl" in lines
+        "https://github.com/tomysh1337/openstarry-code/releases/download/"
+        "v0.6.0/openstarry_code-0.6.0-py3-none-any.whl" in lines
     )
-    assert "opensquilla[recommended]" in lines
+    assert "openstarry-code[recommended]" in lines
     assert "0.5.0rc4" not in lines
 
 
@@ -2686,7 +2693,7 @@ def test_installed_reinstall_command_supports_prerelease_versions(monkeypatch):
 
     lines = flow._installed_reinstall_command_lines()
 
-    assert "v1.2.3rc1/opensquilla-1.2.3rc1-py3-none-any.whl" in lines
+    assert "v1.2.3rc1/openstarry_code-1.2.3rc1-py3-none-any.whl" in lines
 
 
 def test_installed_reinstall_command_never_guesses_a_wheel_for_dev_builds(monkeypatch):

@@ -9,12 +9,14 @@ must be logged.
 
 from __future__ import annotations
 
+from importlib import resources as importlib_resources
 from pathlib import Path
 
 import pytest
 import structlog
 
 from openstarry_code.gateway.boot import _resolve_migrations_dir
+from openstarry_code.persistence import migrator
 
 
 def _env_ignored_events(captured: list[dict]) -> list[dict]:
@@ -67,3 +69,23 @@ def test_usable_env_dir_wins_without_warning(
         resolved = _resolve_migrations_dir()
     assert resolved == pinned
     assert _env_ignored_events(captured) == []
+
+
+def test_packaged_migrations_resolve_from_openstarry_code_package(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    package_root = tmp_path / "openstarry_code"
+    migrations = package_root / "_migrations"
+    migrations.mkdir(parents=True)
+    (migrations / "V001__synthetic.py").write_text("steps = []\n")
+    requested_packages: list[str] = []
+
+    def fake_files(package: str) -> Path:
+        requested_packages.append(package)
+        return package_root
+
+    monkeypatch.delenv("OPENSTARRY_CODE_MIGRATIONS_DIR", raising=False)
+    monkeypatch.setattr(importlib_resources, "files", fake_files)
+
+    assert migrator.resolve_migrations_dir() == migrations
+    assert requested_packages == ["openstarry_code"]

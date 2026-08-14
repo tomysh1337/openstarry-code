@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import pytest
+
 from openstarry_code.onboarding.search_specs import (
     get_search_provider_setup_spec,
     list_search_provider_setup_specs,
@@ -11,7 +13,18 @@ from openstarry_code.onboarding.search_specs import (
 
 def test_search_catalog_includes_known_providers():
     ids = {s.provider_id for s in list_search_provider_setup_specs()}
-    assert {"bocha", "brave", "duckduckgo", "iqs", "tavily", "exa", "perplexity"} <= ids
+    assert {
+        "baidu",
+        "bing_cn",
+        "bocha",
+        "brave",
+        "duckduckgo",
+        "iqs",
+        "sogou",
+        "tavily",
+        "exa",
+        "perplexity",
+    } <= ids
 
 
 def test_search_catalog_marks_runtime_providers_supported():
@@ -23,6 +36,9 @@ def test_search_catalog_marks_runtime_providers_supported():
     assert specs["tavily"].runtime_supported is True
     assert specs["exa"].runtime_supported is True
     assert specs["perplexity"].runtime_supported is False
+    assert specs["bing_cn"].runtime_supported is True
+    assert specs["baidu"].runtime_supported is True
+    assert specs["sogou"].runtime_supported is True
 
 
 def test_bocha_search_spec_requires_api_key():
@@ -58,6 +74,13 @@ def test_tavily_search_spec_requires_api_key():
 def test_duckduckgo_search_spec_does_not_require_api_key():
     spec = get_search_provider_setup_spec("duckduckgo")
     assert spec.requires_api_key is False
+
+
+@pytest.mark.parametrize("provider_id", ["bing_cn", "baidu", "sogou"])
+def test_chinese_web_search_specs_do_not_require_api_key(provider_id: str):
+    spec = get_search_provider_setup_spec(provider_id)
+    assert spec.requires_api_key is False
+    assert "chinese_web" in spec.capabilities
 
 
 def test_search_catalog_payload_is_web_safe_shape():

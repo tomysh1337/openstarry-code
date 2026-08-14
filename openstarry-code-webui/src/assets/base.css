@@ -1,4 +1,4 @@
-/* OpenSquilla Web UI — component & layout styles.
+/* OpenStarry Code Web UI — component & layout styles.
    Design tokens are layered and imported first so the built cascade order is
    identical to the previous single-file base.css: foundation (L0, theme-
    invariant) then the per-theme L1 blocks (dark default on :root, then light).

@@ -3227,11 +3227,14 @@ async def build_services(
     # ── Search provider runtime ────────────────────────────────────
     async def _configure_search_provider() -> None:
         try:
+            import openstarry_code.search.providers.baidu  # noqa: F401
+            import openstarry_code.search.providers.bing_cn  # noqa: F401
             import openstarry_code.search.providers.bocha  # noqa: F401 — registers provider
             import openstarry_code.search.providers.brave  # noqa: F401 — registers provider
             import openstarry_code.search.providers.duckduckgo  # noqa: F401 — registers provider
             import openstarry_code.search.providers.exa  # noqa: F401 — registers provider
             import openstarry_code.search.providers.iqs  # noqa: F401 — registers provider
+            import openstarry_code.search.providers.sogou  # noqa: F401
             import openstarry_code.search.providers.tavily  # noqa: F401 — registers provider
             from openstarry_code.tools.builtin.web import configure_search
 

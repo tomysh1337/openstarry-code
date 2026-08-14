@@ -359,7 +359,7 @@ function exportCsv() {
   const coverageSuffix = snapshot?.mode === 'session_approximation'
     ? '-approximate'
     : snapshot?.mode === 'ledger_partial' ? '-partial' : ''
-  download(`opensquilla-usage-${suffix}${coverageSuffix}-cny${rate}.csv`, 'text/csv', csv)
+  download(`openstarry-code-usage-${suffix}${coverageSuffix}-cny${rate}.csv`, 'text/csv', csv)
 }
 
 // ---------------------------------------------------------------------------

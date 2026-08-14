@@ -90,7 +90,18 @@ _SEARCH_BENCHMARK_BLOCKLIST_DEFAULT_TERMS = (
 _VALID_SEARCH_MODES: frozenset[str] = frozenset({"auto", "news", "technical", "broad"})
 _VALID_SEARCH_RECENCIES: frozenset[str] = frozenset({"day", "week", "month", "year"})
 _VALID_SEARCH_PROVIDERS: frozenset[str] = frozenset(
-    {"auto", "bocha", "tavily", "brave", "duckduckgo", "exa", "iqs"}
+    {
+        "auto",
+        "baidu",
+        "bing_cn",
+        "bocha",
+        "brave",
+        "duckduckgo",
+        "exa",
+        "iqs",
+        "sogou",
+        "tavily",
+    }
 )
 
 def _network_http_request(args: Mapping[str, Any]) -> NetworkOperationRequest:
@@ -643,11 +654,14 @@ def _search_provider_kwargs(provider_name: str) -> dict[str, object]:
 
 
 def _ensure_builtin_search_providers() -> None:
+    import openstarry_code.search.providers.baidu  # noqa: F401
+    import openstarry_code.search.providers.bing_cn  # noqa: F401
     import openstarry_code.search.providers.bocha  # noqa: F401
     import openstarry_code.search.providers.brave  # noqa: F401
     import openstarry_code.search.providers.duckduckgo  # noqa: F401
     import openstarry_code.search.providers.exa  # noqa: F401
     import openstarry_code.search.providers.iqs  # noqa: F401
+    import openstarry_code.search.providers.sogou  # noqa: F401
     import openstarry_code.search.providers.tavily  # noqa: F401
 
 
@@ -1150,7 +1164,18 @@ def _search_error_payload(
         "provider": {
             "type": "string",
             "description": "Optional provider override.",
-            "enum": ["auto", "bocha", "tavily", "brave", "duckduckgo", "exa", "iqs"],
+            "enum": [
+                "auto",
+                "baidu",
+                "bing_cn",
+                "bocha",
+                "brave",
+                "duckduckgo",
+                "exa",
+                "iqs",
+                "sogou",
+                "tavily",
+            ],
         },
     },
     required=["query"],

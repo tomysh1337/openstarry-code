@@ -254,7 +254,7 @@ try {
     window.opensquillaDesktop.applyDesktopCleanup({
       previewId,
       acknowledged: true,
-      confirmation: 'DELETE ALL OPENSQUILLA DATA',
+      confirmation: 'DELETE ALL OPENSTARRY CODE DATA',
     })
   ), deleteAllPreview.previewId).catch(() => {})
   await Promise.race([

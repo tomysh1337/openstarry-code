@@ -45,6 +45,7 @@ root release README with task-oriented guides.
 
 ## Surfaces and Operations
 
+- [`releases/0.5.5.md`](releases/0.5.5.md) - OpenStarry Code 0.5.5 release notes.
 - [`releases/0.5.4.md`](releases/0.5.4.md) - OpenStarry Code 0.5.4 release notes.
 - [`releases/0.5.3.md`](releases/0.5.3.md) - OpenStarry Code 0.5.3 release notes.
 - [`releases/0.5.2.md`](releases/0.5.2.md) - OpenSquilla 0.5.2 release notes.

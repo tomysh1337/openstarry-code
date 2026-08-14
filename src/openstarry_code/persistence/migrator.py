@@ -92,7 +92,7 @@ def resolve_migrations_dir() -> Path:
     try:
         from importlib import resources as importlib_resources
 
-        package_dir = importlib_resources.files("opensquilla").joinpath("_migrations")
+        package_dir = importlib_resources.files("openstarry_code").joinpath("_migrations")
         if package_dir.is_dir():
             path = Path(str(package_dir))
             if any(path.glob("V*.py")):
@@ -106,7 +106,7 @@ def resolve_migrations_dir() -> Path:
 
     raise RuntimeError(
         "openstarry-code migrations directory not found "
-        "(checked OPENSTARRY_CODE_MIGRATIONS_DIR, opensquilla/_migrations, "
+        "(checked OPENSTARRY_CODE_MIGRATIONS_DIR, openstarry_code/_migrations, "
         "and repo migrations/)"
     )
 

@@ -71,7 +71,7 @@ describe('useDesktopUpdatePresentation', () => {
 
     expect(presentation.summary.value).toBe('Update 2.0.0')
     expect(presentation.indicatorLabel).toBe(presentation.summary)
-    expect(presentation.title.value).toBe('OpenSquilla 2.0.0 is available')
+    expect(presentation.title.value).toBe('OpenStarry Code 2.0.0 is available')
     expect(presentation.iconName.value).toBe('download')
     expect(presentation.severity.value).toBe('info')
     expect(presentation.manualInstall.value).toBe(false)

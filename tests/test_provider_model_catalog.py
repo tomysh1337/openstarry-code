@@ -373,7 +373,7 @@ async def test_fetch_openrouter_adds_app_attribution_headers() -> None:
     assert captured["url"] == "https://openrouter.ai/api/v1/models"
     assert captured["headers"] == {
         "Authorization": "Bearer test-key",
-        "HTTP-Referer": "https://opensquilla.ai",
+        "HTTP-Referer": "https://github.com/tomysh1337/openstarry-code",
         "X-Title": "OpenStarry Code",
     }
     model = catalog.get("openai/gpt-4o")

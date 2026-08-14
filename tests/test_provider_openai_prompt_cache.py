@@ -95,7 +95,7 @@ def test_openrouter_anthropic_auto_cache_adds_top_level_cache_control(monkeypatc
 
     assert done.cached_tokens == 5
     headers = captured["headers"]
-    assert headers["HTTP-Referer"] == "https://opensquilla.ai"
+    assert headers["HTTP-Referer"] == "https://github.com/tomysh1337/openstarry-code"
     assert headers["X-Title"] == "OpenStarry Code"
     payload = captured["payload"]
     assert payload["cache_control"] == {"type": "ephemeral"}

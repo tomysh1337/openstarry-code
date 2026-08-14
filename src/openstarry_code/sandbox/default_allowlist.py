@@ -20,6 +20,7 @@ DEFAULT_ALLOWLIST: dict[str, tuple[str, ...]] = {
     ),
     "search": (
         "api.search.brave.com",
+        "cn.bing.com",
         "html.duckduckgo.com",
         "duckduckgo.com",
         "api.bochaai.com",
@@ -28,6 +29,9 @@ DEFAULT_ALLOWLIST: dict[str, tuple[str, ...]] = {
         "cloud-iqs.aliyuncs.com",
         "www.google.com",
         "www.bing.com",
+        "www.baidu.com",
+        "m.sogou.com",
+        "www.sogou.com",
     ),
     "developer-docs": (
         "developer.mozilla.org",

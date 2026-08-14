@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline';">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Starting OpenSquilla</title>
+  <title>Starting OpenStarry Code</title>
   <style>
     :root {
       color-scheme: light dark;
@@ -502,7 +502,7 @@
 </head>
 <body>
   <div class="shell">
-    <main class="boot" aria-label="OpenSquilla startup" data-i18n-aria="bootAria">
+    <main class="boot" aria-label="OpenStarry Code startup" data-i18n-aria="bootAria">
       <section class="brand">
         <div class="mark-row">
           <span class="loader" aria-hidden="true">
@@ -515,7 +515,7 @@
             <span style="--i: 6"></span>
             <span style="--i: 7"></span>
           </span>
-          <h1>OpenSquilla</h1>
+          <h1>OpenStarry Code</h1>
         </div>
         <p class="subtitle" data-i18n="subtitle">Starting the desktop control surface.</p>
       </section>
@@ -547,7 +547,7 @@
       <section class="recovery" id="recoveryPanel" role="region" aria-labelledby="recoveryTitle">
         <div>
           <h2 id="recoveryTitle" tabindex="-1" data-i18n="recoveryTitle">Your primary profile needs recovery</h2>
-          <p id="recoveryIntro" data-i18n="recoveryIntro">OpenSquilla paused the primary gateway because it could not prove that writing is safe. Primary data and any completed consolidation backups remain preserved.</p>
+          <p id="recoveryIntro" data-i18n="recoveryIntro">OpenStarry Code paused the primary gateway because it could not prove that writing is safe. Primary data and any completed consolidation backups remain preserved.</p>
         </div>
         <div class="recovery-code" id="recoveryCode"></div>
         <div class="recovery-detail" id="recoveryDetail" hidden></div>
@@ -592,13 +592,13 @@
     // we swap to the OS locale as soon as getOsLocale() resolves.
     const MESSAGES = {
       en: {
-        title: 'Starting OpenSquilla', bootAria: 'OpenSquilla startup',
+        title: 'Starting OpenStarry Code', bootAria: 'OpenStarry Code startup',
         subtitle: 'Starting the desktop control surface.',
         phaseDefault: 'Preparing desktop profile',
         stepProfile: 'Profile', stepGateway: 'Gateway', stepControl: 'Control',
         errorTitle: 'Startup needs attention',
         errorDefault: 'The gateway did not finish starting.',
-        profileInUse: 'The previous Gateway has not exited. Wait for it to finish, or quit every OpenSquilla app or terminal using this profile, then try again. If it will not exit, restart the computer. Do not delete profile lock files.',
+        profileInUse: 'The previous Gateway has not exited. Wait for it to finish, or quit every OpenStarry Code app or terminal using this profile, then try again. If it will not exit, restart the computer. Do not delete profile lock files.',
         revealLog: 'Reveal log', resetSetup: 'Reset setup', quit: 'Quit', retry: 'Retry',
         startupPaused: 'Startup paused',
         resetConfirm: 'Reset desktop setup? This clears the saved provider credential and reopens onboarding. Your workspace path, identity, memory, and chat history are kept.',
@@ -606,23 +606,23 @@
         resetProgress: 'Clearing saved setup and restarting onboarding.',
         resetFailed: 'Reset failed',
         recoveryTitle: 'Your primary profile needs recovery',
-        recoveryIntro: 'OpenSquilla paused the primary gateway because it could not prove that writing is safe. Primary data and any completed consolidation backups remain preserved.',
-        recoveryTitleLockBusy: 'Another OpenSquilla process is using this profile',
-        recoveryTitleUpdate: 'Update OpenSquilla to open this profile',
-        recoveryIntroUpdate: 'This configuration was created by a newer version of OpenSquilla. Update the app to continue — your data stays untouched.',
+        recoveryIntro: 'OpenStarry Code paused the primary gateway because it could not prove that writing is safe. Primary data and any completed consolidation backups remain preserved.',
+        recoveryTitleLockBusy: 'Another OpenStarry Code process is using this profile',
+        recoveryTitleUpdate: 'Update OpenStarry Code to open this profile',
+        recoveryIntroUpdate: 'This configuration was created by a newer version of OpenStarry Code. Update the app to continue — your data stays untouched.',
         openDownloadPage: 'Get the latest version',
         workspaceLabel: 'Choose a verified workspace', chooseWorkspace: 'Use selected workspace', browseWorkspace: 'Browse…',
         recoverTransaction: 'Safely recover interrupted operation', revealProfile: 'Show profile location', revealBackups: 'Show backup location',
         copyDiagnostics: 'Copy diagnostics', diagnosticsCopied: 'Sanitized diagnostics copied.', recoveryWorking: 'Working…', noWorkspaceCandidates: 'No verified candidates; browse for a workspace.',
       },
       'zh-Hans': {
-        title: '正在启动 OpenSquilla', bootAria: 'OpenSquilla 启动',
+        title: '正在启动 OpenStarry Code', bootAria: 'OpenStarry Code 启动',
         subtitle: '正在启动桌面控制界面。',
         phaseDefault: '正在准备桌面配置',
         stepProfile: '配置', stepGateway: '网关', stepControl: '控制',
         errorTitle: '启动需要处理',
         errorDefault: '网关未能完成启动。',
-        profileInUse: '上一个网关尚未退出。请等待其结束，或退出所有正在使用此配置的 OpenSquilla 应用和终端后重试；若仍无法退出，请重启电脑。不要删除配置锁文件。',
+        profileInUse: '上一个网关尚未退出。请等待其结束，或退出所有正在使用此配置的 OpenStarry Code 应用和终端后重试；若仍无法退出，请重启电脑。不要删除配置锁文件。',
         revealLog: '显示日志', resetSetup: '重新配置', quit: '退出', retry: '重试',
         startupPaused: '启动已暂停',
         resetConfirm: '要重置桌面设置吗？这会清除已保存的提供商凭据并重新进入引导。工作区路径、身份、记忆和聊天记录都会保留。',
@@ -630,23 +630,23 @@
         resetProgress: '正在清除已保存的设置并重新启动引导。',
         resetFailed: '重置失败',
         recoveryTitle: '主配置需要恢复',
-        recoveryIntro: 'OpenSquilla 无法确认主配置可安全写入，因此已暂停主网关。主配置数据及已完成的聚合备份均会保留。',
-        recoveryTitleLockBusy: '另一个 OpenSquilla 进程正在使用此配置',
-        recoveryTitleUpdate: '请更新 OpenSquilla 以打开此配置',
-        recoveryIntroUpdate: '此配置由更新版本的 OpenSquilla 创建。请将应用更新到最新版本后继续，你的数据不会受到影响。',
+        recoveryIntro: 'OpenStarry Code 无法确认主配置可安全写入，因此已暂停主网关。主配置数据及已完成的聚合备份均会保留。',
+        recoveryTitleLockBusy: '另一个 OpenStarry Code 进程正在使用此配置',
+        recoveryTitleUpdate: '请更新 OpenStarry Code 以打开此配置',
+        recoveryIntroUpdate: '此配置由更新版本的 OpenStarry Code 创建。请将应用更新到最新版本后继续，你的数据不会受到影响。',
         openDownloadPage: '获取最新版本',
         workspaceLabel: '选择已验证的工作区', chooseWorkspace: '使用所选工作区', browseWorkspace: '浏览…',
         recoverTransaction: '安全恢复中断的操作', revealProfile: '显示配置位置', revealBackups: '显示备份位置',
         copyDiagnostics: '复制诊断信息', diagnosticsCopied: '已复制脱敏诊断信息。', recoveryWorking: '正在处理…', noWorkspaceCandidates: '没有已验证候选；请浏览选择工作区。',
       },
       ja: {
-        title: 'OpenSquilla を起動しています', bootAria: 'OpenSquilla の起動',
+        title: 'OpenStarry Code を起動しています', bootAria: 'OpenStarry Code の起動',
         subtitle: 'デスクトップのコントロール画面を起動しています。',
         phaseDefault: 'デスクトッププロファイルを準備しています',
         stepProfile: 'プロファイル', stepGateway: 'ゲートウェイ', stepControl: 'コントロール',
         errorTitle: '起動の確認が必要です',
         errorDefault: 'ゲートウェイの起動が完了しませんでした。',
-        profileInUse: '前のゲートウェイがまだ終了していません。終了を待つか、このプロファイルを使用しているすべての OpenSquilla アプリとターミナルを終了してから再試行してください。終了しない場合はコンピューターを再起動してください。プロファイルのロックファイルは削除しないでください。',
+        profileInUse: '前のゲートウェイがまだ終了していません。終了を待つか、このプロファイルを使用しているすべての OpenStarry Code アプリとターミナルを終了してから再試行してください。終了しない場合はコンピューターを再起動してください。プロファイルのロックファイルは削除しないでください。',
         revealLog: 'ログを表示', resetSetup: '設定をリセット', quit: '終了', retry: '再試行',
         startupPaused: '起動を一時停止しました',
         resetConfirm: 'デスクトップ設定をリセットしますか？保存済みのプロバイダー認証情報を消去してオンボーディングを再開します。ワークスペースのパス、ID、メモリ、チャット履歴は保持されます。',
@@ -655,22 +655,22 @@
         resetFailed: 'リセットに失敗しました',
         recoveryTitle: 'プライマリプロファイルの復旧が必要です',
         recoveryIntro: '安全な書き込みを確認できないため、プライマリゲートウェイを一時停止しました。プライマリデータと完了済みの統合バックアップは保持されています。',
-        recoveryTitleLockBusy: '別の OpenSquilla プロセスがこのプロファイルを使用しています',
-        recoveryTitleUpdate: 'このプロファイルを開くには OpenSquilla の更新が必要です',
-        recoveryIntroUpdate: 'この設定は新しいバージョンの OpenSquilla で作成されています。アプリを最新版に更新すると続行できます。データはそのまま保持されます。',
+        recoveryTitleLockBusy: '別の OpenStarry Code プロセスがこのプロファイルを使用しています',
+        recoveryTitleUpdate: 'このプロファイルを開くには OpenStarry Code の更新が必要です',
+        recoveryIntroUpdate: 'この設定は新しいバージョンの OpenStarry Code で作成されています。アプリを最新版に更新すると続行できます。データはそのまま保持されます。',
         openDownloadPage: '最新バージョンを入手',
         workspaceLabel: '検証済みワークスペースを選択', chooseWorkspace: '選択したワークスペースを使用', browseWorkspace: '参照…',
         recoverTransaction: '中断した操作を安全に復旧', revealProfile: 'プロファイルの場所を表示', revealBackups: 'バックアップの場所を表示',
         copyDiagnostics: '診断情報をコピー', diagnosticsCopied: 'サニタイズ済み診断情報をコピーしました。', recoveryWorking: '処理中…', noWorkspaceCandidates: '検証済み候補がありません。ワークスペースを参照してください。',
       },
       fr: {
-        title: 'Démarrage d\'OpenSquilla', bootAria: 'Démarrage d\'OpenSquilla',
+        title: 'Démarrage d\'OpenStarry Code', bootAria: 'Démarrage d\'OpenStarry Code',
         subtitle: 'Démarrage de l\'interface de contrôle du bureau.',
         phaseDefault: 'Préparation du profil de bureau',
         stepProfile: 'Profil', stepGateway: 'Passerelle', stepControl: 'Contrôle',
         errorTitle: 'Le démarrage nécessite votre attention',
         errorDefault: 'La passerelle n\'a pas terminé son démarrage.',
-        profileInUse: 'La passerelle précédente n’est pas terminée. Attendez sa fermeture, ou quittez toutes les applications et tous les terminaux OpenSquilla utilisant ce profil, puis réessayez. Si elle ne se ferme pas, redémarrez l’ordinateur. Ne supprimez pas les fichiers de verrouillage du profil.',
+        profileInUse: 'La passerelle précédente n’est pas terminée. Attendez sa fermeture, ou quittez toutes les applications et tous les terminaux OpenStarry Code utilisant ce profil, puis réessayez. Si elle ne se ferme pas, redémarrez l’ordinateur. Ne supprimez pas les fichiers de verrouillage du profil.',
         revealLog: 'Afficher le journal', resetSetup: 'Réinitialiser', quit: 'Quitter', retry: 'Réessayer',
         startupPaused: 'Démarrage en pause',
         resetConfirm: 'Réinitialiser la configuration du bureau ? Cela efface les identifiants du fournisseur et relance l’onboarding. Le chemin de l’espace de travail, l’identité, la mémoire et l’historique des discussions sont conservés.',
@@ -678,23 +678,23 @@
         resetProgress: 'Suppression de la configuration enregistrée et relance de l’onboarding.',
         resetFailed: 'Échec de la réinitialisation',
         recoveryTitle: 'Le profil principal doit être récupéré',
-        recoveryIntro: 'OpenSquilla a suspendu la passerelle principale car une écriture sûre ne pouvait pas être garantie. Les données principales et les sauvegardes de consolidation terminées restent préservées.',
-        recoveryTitleLockBusy: 'Un autre processus OpenSquilla utilise ce profil',
-        recoveryTitleUpdate: 'Mettez à jour OpenSquilla pour ouvrir ce profil',
-        recoveryIntroUpdate: 'Cette configuration a été créée par une version plus récente d’OpenSquilla. Mettez l’application à jour pour continuer — vos données restent intactes.',
+        recoveryIntro: 'OpenStarry Code a suspendu la passerelle principale car une écriture sûre ne pouvait pas être garantie. Les données principales et les sauvegardes de consolidation terminées restent préservées.',
+        recoveryTitleLockBusy: 'Un autre processus OpenStarry Code utilise ce profil',
+        recoveryTitleUpdate: 'Mettez à jour OpenStarry Code pour ouvrir ce profil',
+        recoveryIntroUpdate: 'Cette configuration a été créée par une version plus récente d’OpenStarry Code. Mettez l’application à jour pour continuer — vos données restent intactes.',
         openDownloadPage: 'Obtenir la dernière version',
         workspaceLabel: 'Choisir un espace de travail vérifié', chooseWorkspace: 'Utiliser l’espace sélectionné', browseWorkspace: 'Parcourir…',
         recoverTransaction: 'Récupérer l’opération interrompue en toute sécurité', revealProfile: 'Afficher l’emplacement du profil', revealBackups: 'Afficher les sauvegardes',
         copyDiagnostics: 'Copier le diagnostic', diagnosticsCopied: 'Diagnostic expurgé copié.', recoveryWorking: 'Traitement…', noWorkspaceCandidates: 'Aucun candidat vérifié ; parcourez les dossiers.',
       },
       de: {
-        title: 'OpenSquilla wird gestartet', bootAria: 'OpenSquilla-Start',
+        title: 'OpenStarry Code wird gestartet', bootAria: 'OpenStarry Code-Start',
         subtitle: 'Die Desktop-Steueroberfläche wird gestartet.',
         phaseDefault: 'Desktop-Profil wird vorbereitet',
         stepProfile: 'Profil', stepGateway: 'Gateway', stepControl: 'Control',
         errorTitle: 'Der Start erfordert Ihre Aufmerksamkeit',
         errorDefault: 'Das Gateway hat den Start nicht abgeschlossen.',
-        profileInUse: 'Das vorherige Gateway wurde noch nicht beendet. Warten Sie, bis es beendet ist, oder schließen Sie alle OpenSquilla-Apps und -Terminals, die dieses Profil verwenden, und versuchen Sie es erneut. Falls es nicht beendet wird, starten Sie den Computer neu. Löschen Sie keine Profilsperrdateien.',
+        profileInUse: 'Das vorherige Gateway wurde noch nicht beendet. Warten Sie, bis es beendet ist, oder schließen Sie alle OpenStarry Code-Apps und -Terminals, die dieses Profil verwenden, und versuchen Sie es erneut. Falls es nicht beendet wird, starten Sie den Computer neu. Löschen Sie keine Profilsperrdateien.',
         revealLog: 'Protokoll anzeigen', resetSetup: 'Zurücksetzen', quit: 'Beenden', retry: 'Wiederholen',
         startupPaused: 'Start angehalten',
         resetConfirm: 'Desktop-Einrichtung zurücksetzen? Die gespeicherten Anbieter-Zugangsdaten werden gelöscht und das Onboarding wird neu geöffnet. Arbeitsbereichspfad, Identität, Speicher und Chatverlauf bleiben erhalten.',
@@ -702,23 +702,23 @@
         resetProgress: 'Gespeicherte Einrichtung wird gelöscht und Onboarding neu gestartet.',
         resetFailed: 'Zurücksetzen fehlgeschlagen',
         recoveryTitle: 'Das Hauptprofil muss wiederhergestellt werden',
-        recoveryIntro: 'OpenSquilla hat das Haupt-Gateway angehalten, weil sicheres Schreiben nicht bestätigt werden konnte. Hauptdaten und abgeschlossene Konsolidierungssicherungen bleiben erhalten.',
-        recoveryTitleLockBusy: 'Ein anderer OpenSquilla-Prozess verwendet dieses Profil',
-        recoveryTitleUpdate: 'Aktualisieren Sie OpenSquilla, um dieses Profil zu öffnen',
-        recoveryIntroUpdate: 'Diese Konfiguration wurde von einer neueren OpenSquilla-Version erstellt. Aktualisieren Sie die App, um fortzufahren — Ihre Daten bleiben unverändert.',
+        recoveryIntro: 'OpenStarry Code hat das Haupt-Gateway angehalten, weil sicheres Schreiben nicht bestätigt werden konnte. Hauptdaten und abgeschlossene Konsolidierungssicherungen bleiben erhalten.',
+        recoveryTitleLockBusy: 'Ein anderer OpenStarry Code-Prozess verwendet dieses Profil',
+        recoveryTitleUpdate: 'Aktualisieren Sie OpenStarry Code, um dieses Profil zu öffnen',
+        recoveryIntroUpdate: 'Diese Konfiguration wurde von einer neueren OpenStarry Code-Version erstellt. Aktualisieren Sie die App, um fortzufahren — Ihre Daten bleiben unverändert.',
         openDownloadPage: 'Neueste Version laden',
         workspaceLabel: 'Geprüften Arbeitsbereich wählen', chooseWorkspace: 'Auswahl verwenden', browseWorkspace: 'Durchsuchen…',
         recoverTransaction: 'Unterbrochenen Vorgang sicher wiederherstellen', revealProfile: 'Profilordner anzeigen', revealBackups: 'Sicherungsordner anzeigen',
         copyDiagnostics: 'Diagnose kopieren', diagnosticsCopied: 'Bereinigte Diagnose kopiert.', recoveryWorking: 'Wird ausgeführt…', noWorkspaceCandidates: 'Keine geprüften Kandidaten; bitte Arbeitsbereich auswählen.',
       },
       es: {
-        title: 'Iniciando OpenSquilla', bootAria: 'Inicio de OpenSquilla',
+        title: 'Iniciando OpenStarry Code', bootAria: 'Inicio de OpenStarry Code',
         subtitle: 'Iniciando la superficie de control del escritorio.',
         phaseDefault: 'Preparando el perfil de escritorio',
         stepProfile: 'Perfil', stepGateway: 'Pasarela', stepControl: 'Control',
         errorTitle: 'El inicio necesita atención',
         errorDefault: 'La pasarela no terminó de iniciarse.',
-        profileInUse: 'La pasarela anterior aún no ha terminado. Espera a que se cierre o sal de todas las aplicaciones y terminales de OpenSquilla que usen este perfil y vuelve a intentarlo. Si no se cierra, reinicia el equipo. No elimines los archivos de bloqueo del perfil.',
+        profileInUse: 'La pasarela anterior aún no ha terminado. Espera a que se cierre o sal de todas las aplicaciones y terminales de OpenStarry Code que usen este perfil y vuelve a intentarlo. Si no se cierra, reinicia el equipo. No elimines los archivos de bloqueo del perfil.',
         revealLog: 'Mostrar registro', resetSetup: 'Restablecer', quit: 'Salir', retry: 'Reintentar',
         startupPaused: 'Inicio en pausa',
         resetConfirm: '¿Restablecer la configuración de escritorio? Esto borra la credencial del proveedor y vuelve a abrir la configuración inicial. Se conservan la ruta del espacio de trabajo, la identidad, la memoria y el historial de chat.',
@@ -726,10 +726,10 @@
         resetProgress: 'Borrando la configuración guardada y reiniciando la incorporación.',
         resetFailed: 'Error al restablecer',
         recoveryTitle: 'El perfil principal necesita recuperación',
-        recoveryIntro: 'OpenSquilla pausó la pasarela principal porque no pudo demostrar que fuera seguro escribir. Los datos principales y las copias de consolidación completadas permanecen conservados.',
-        recoveryTitleLockBusy: 'Otro proceso de OpenSquilla está usando este perfil',
-        recoveryTitleUpdate: 'Actualiza OpenSquilla para abrir este perfil',
-        recoveryIntroUpdate: 'Esta configuración fue creada por una versión más reciente de OpenSquilla. Actualiza la aplicación para continuar; tus datos permanecen intactos.',
+        recoveryIntro: 'OpenStarry Code pausó la pasarela principal porque no pudo demostrar que fuera seguro escribir. Los datos principales y las copias de consolidación completadas permanecen conservados.',
+        recoveryTitleLockBusy: 'Otro proceso de OpenStarry Code está usando este perfil',
+        recoveryTitleUpdate: 'Actualiza OpenStarry Code para abrir este perfil',
+        recoveryIntroUpdate: 'Esta configuración fue creada por una versión más reciente de OpenStarry Code. Actualiza la aplicación para continuar; tus datos permanecen intactos.',
         openDownloadPage: 'Obtener la última versión',
         workspaceLabel: 'Elegir un espacio verificado', chooseWorkspace: 'Usar el espacio seleccionado', browseWorkspace: 'Examinar…',
         recoverTransaction: 'Recuperar de forma segura la operación interrumpida', revealProfile: 'Mostrar ubicación del perfil', revealBackups: 'Mostrar copias de seguridad',
@@ -851,7 +851,7 @@
       // The two conditions a user can act on directly get plain-language
       // copy instead of the generic recovery framing: a config authored by a
       // newer build (update the app) and a profile still held by another
-      // OpenSquilla process (let it finish or quit it).
+      // OpenStarry Code process (let it finish or quit it).
       const needsAppUpdate = stableCode === 'config_schema_too_new';
       if (needsAppUpdate) {
         recoveryTitle.textContent = msg.recoveryTitleUpdate;

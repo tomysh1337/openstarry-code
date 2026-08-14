@@ -464,7 +464,7 @@ def test_stream_timeout_fallback_preserves_tokenrhythm_correlation_headers(
     monkeypatch.setattr(
         "openstarry_code.provider.openai.tokenrhythm_install_id_headers",
         lambda _provider_kind, _base_url, **_kwargs: {
-            "X-OpenStarry Code-Install-Id": "synthetic-install-id"
+            "X-OpenStarry-Code-Install-Id": "synthetic-install-id"
         },
     )
     provider = CapturingFallbackProvider(
@@ -490,15 +490,15 @@ def test_stream_timeout_fallback_preserves_tokenrhythm_correlation_headers(
     )
 
     expected = {
-        "X-OpenStarry Code-Session-Id": "session-1",
-        "X-OpenStarry Code-Turn-Id": "turn-1",
-        "X-OpenStarry Code-Execution-Id": "execution-1",
-        "X-OpenStarry Code-Call-Kind": "agent.chat",
+        "X-OpenStarry-Code-Session-Id": "session-1",
+        "X-OpenStarry-Code-Turn-Id": "turn-1",
+        "X-OpenStarry-Code-Execution-Id": "execution-1",
+        "X-OpenStarry-Code-Call-Kind": "agent.chat",
     }
     assert {name: stream_headers[name] for name in expected} == expected
     assert {name: fallback_headers[name] for name in expected} == expected
-    assert stream_headers["X-OpenStarry Code-Install-Id"] == "synthetic-install-id"
-    assert fallback_headers["X-OpenStarry Code-Install-Id"] == "synthetic-install-id"
+    assert stream_headers["X-OpenStarry-Code-Install-Id"] == "synthetic-install-id"
+    assert fallback_headers["X-OpenStarry-Code-Install-Id"] == "synthetic-install-id"
 
 
 def test_stream_timeout_fallback_drops_stale_install_id_after_hot_disable(
@@ -535,7 +535,7 @@ def test_stream_timeout_fallback_drops_stale_install_id_after_hot_disable(
         nonlocal install_header_checks
         install_header_checks += 1
         if install_header_checks == 1:
-            return {"X-OpenStarry Code-Install-Id": "stale-install-id"}
+            return {"X-OpenStarry-Code-Install-Id": "stale-install-id"}
         return {}
 
     monkeypatch.setattr(
@@ -556,7 +556,7 @@ def test_stream_timeout_fallback_drops_stale_install_id_after_hot_disable(
                 payload={"model": "deepseek-v4-flash", "messages": [], "stream": True},
                 headers={
                     "Authorization": "Bearer test",
-                    "X-OpenStarry Code-Install-Id": "stale-install-id",
+                    "X-OpenStarry-Code-Install-Id": "stale-install-id",
                 },
                 cfg=ChatConfig(timeout=1.0),
                 tools=None,
@@ -567,7 +567,7 @@ def test_stream_timeout_fallback_drops_stale_install_id_after_hot_disable(
     events = asyncio.run(collect_fallback())
 
     assert install_header_checks == 2
-    assert "X-OpenStarry Code-Install-Id" not in captured_headers
+    assert "X-OpenStarry-Code-Install-Id" not in captured_headers
     assert any(isinstance(event, ErrorEvent) for event in events)
 
 
@@ -738,7 +738,7 @@ def test_tokenrhythm_chat_adds_app_attribution_headers(
     monkeypatch.setattr(
         "openstarry_code.provider.openai.tokenrhythm_install_id_headers",
         lambda provider_kind, request_base_url, **_kwargs: (
-            {"X-OpenStarry Code-Install-Id": "synthetic-install-id"}
+            {"X-OpenStarry-Code-Install-Id": "synthetic-install-id"}
             if is_tokenrhythm_correlation_target(provider_kind, request_base_url)
             else {}
         ),
@@ -753,15 +753,15 @@ def test_tokenrhythm_chat_adds_app_attribution_headers(
     _collect(provider, ChatConfig())
 
     assert captured["url"] == expected_url
-    assert captured["headers"].get("HTTP-Referer") == "https://opensquilla.ai"
+    assert captured["headers"].get("HTTP-Referer") == "https://github.com/tomysh1337/openstarry-code"
     assert captured["headers"].get("X-Title") == "OpenStarry Code"
     if expects_install_id:
         assert (
-            captured["headers"].get("X-OpenStarry Code-Install-Id")
+            captured["headers"].get("X-OpenStarry-Code-Install-Id")
             == "synthetic-install-id"
         )
     else:
-        assert "X-OpenStarry Code-Install-Id" not in captured["headers"]
+        assert "X-OpenStarry-Code-Install-Id" not in captured["headers"]
     assert "synthetic-install-id" not in json.dumps(captured["payload"], sort_keys=True)
 
 
@@ -795,7 +795,7 @@ def test_tokenrhythm_chat_omits_install_id_with_explicit_proxy(
         **_kwargs: Any,
     ) -> dict[str, str]:
         helper_proxies.append(proxy)
-        return {} if proxy else {"X-OpenStarry Code-Install-Id": "must-not-send"}
+        return {} if proxy else {"X-OpenStarry-Code-Install-Id": "must-not-send"}
 
     monkeypatch.setattr(
         "openstarry_code.provider.openai.httpx.AsyncClient",
@@ -818,7 +818,7 @@ def test_tokenrhythm_chat_omits_install_id_with_explicit_proxy(
     assert captured["client_proxy"] == "http://company-proxy.example:8080"
     assert helper_proxies
     assert set(helper_proxies) == {"http://company-proxy.example:8080"}
-    assert "X-OpenStarry Code-Install-Id" not in captured["headers"]
+    assert "X-OpenStarry-Code-Install-Id" not in captured["headers"]
 
 
 def test_tokenrhythm_chat_adds_session_correlation_headers_only(
@@ -845,10 +845,10 @@ def test_tokenrhythm_chat_adds_session_correlation_headers_only(
         ),
     )
 
-    assert captured["headers"].get("X-OpenStarry Code-Session-Id") == "session-1"
-    assert captured["headers"].get("X-OpenStarry Code-Turn-Id") == "turn-1"
-    assert captured["headers"].get("X-OpenStarry Code-Execution-Id") == "execution-1"
-    assert captured["headers"].get("X-OpenStarry Code-Call-Kind") == "agent.chat"
+    assert captured["headers"].get("X-OpenStarry-Code-Session-Id") == "session-1"
+    assert captured["headers"].get("X-OpenStarry-Code-Turn-Id") == "turn-1"
+    assert captured["headers"].get("X-OpenStarry-Code-Execution-Id") == "execution-1"
+    assert captured["headers"].get("X-OpenStarry-Code-Call-Kind") == "agent.chat"
     serialized_payload = json.dumps(captured["payload"], sort_keys=True)
     assert "session-1" not in serialized_payload
     assert "turn-1" not in serialized_payload
@@ -890,7 +890,7 @@ def test_tokenrhythm_chat_never_forwards_correlation_across_redirects(
     monkeypatch.setattr(
         "openstarry_code.provider.openai.tokenrhythm_install_id_headers",
         lambda _provider_kind, _base_url, **_kwargs: {
-            "X-OpenStarry Code-Install-Id": "synthetic-install-id"
+            "X-OpenStarry-Code-Install-Id": "synthetic-install-id"
         },
     )
     provider = OpenAIProvider(
@@ -923,8 +923,8 @@ def test_tokenrhythm_chat_never_forwards_correlation_across_redirects(
     assert client_options["follow_redirects"] is False
     assert len(requests) == 1
     assert requests[0].url.host == "tokenrhythm.studio"
-    assert requests[0].headers["X-OpenStarry Code-Install-Id"] == "synthetic-install-id"
-    assert requests[0].headers["X-OpenStarry Code-Session-Id"] == "session-1"
+    assert requests[0].headers["X-OpenStarry-Code-Install-Id"] == "synthetic-install-id"
+    assert requests[0].headers["X-OpenStarry-Code-Session-Id"] == "session-1"
     assert any(isinstance(event, ErrorEvent) for event in events)
 
 
@@ -961,10 +961,10 @@ def test_session_correlation_is_not_sent_to_other_or_custom_provider_origins(
         ),
     )
 
-    assert "X-OpenStarry Code-Session-Id" not in captured["headers"]
-    assert "X-OpenStarry Code-Turn-Id" not in captured["headers"]
-    assert "X-OpenStarry Code-Execution-Id" not in captured["headers"]
-    assert "X-OpenStarry Code-Call-Kind" not in captured["headers"]
+    assert "X-OpenStarry-Code-Session-Id" not in captured["headers"]
+    assert "X-OpenStarry-Code-Turn-Id" not in captured["headers"]
+    assert "X-OpenStarry-Code-Execution-Id" not in captured["headers"]
+    assert "X-OpenStarry-Code-Call-Kind" not in captured["headers"]
 
 
 def test_tokenrhythm_list_models_adds_app_attribution_headers(
@@ -983,7 +983,7 @@ def test_tokenrhythm_list_models_adds_app_attribution_headers(
     monkeypatch.setattr(
         "openstarry_code.provider.openai.tokenrhythm_install_id_headers",
         lambda _provider_kind, _base_url, **_kwargs: {
-            "X-OpenStarry Code-Install-Id": "synthetic-install-id"
+            "X-OpenStarry-Code-Install-Id": "synthetic-install-id"
         },
     )
     provider = OpenAIProvider(
@@ -996,10 +996,10 @@ def test_tokenrhythm_list_models_adds_app_attribution_headers(
     assert asyncio.run(provider.list_models()) == []
 
     assert captured["url"] == "https://tokenrhythm.studio/v1/models"
-    assert captured["headers"].get("HTTP-Referer") == "https://opensquilla.ai"
+    assert captured["headers"].get("HTTP-Referer") == "https://github.com/tomysh1337/openstarry-code"
     assert captured["headers"].get("X-Title") == "OpenStarry Code"
     assert (
-        captured["headers"].get("X-OpenStarry Code-Install-Id")
+        captured["headers"].get("X-OpenStarry-Code-Install-Id")
         == "synthetic-install-id"
     )
 

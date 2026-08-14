@@ -4,16 +4,17 @@ The OpenStarry Code fork publishes the `openstarry-code` distribution and CLI
 with the `openstarry_code` Python import from
 [`tomysh1337/openstarry-code`](https://github.com/tomysh1337/openstarry-code).
 The fork's first source-first release publishes the verified Python wheel,
-source archive, and `SHA256SUMS`. Desktop source uses the new identity, while a
+source archive, and `SHA256SUMS`. Desktop source uses the new identity, while
 Windows releases include the packaged gateway and pinned Python, Node.js, and
 Git Bash runtimes in NSIS EXE and WiX MSI installers.
 0.5.x releases (previews and the stable) publish Electron desktop installers;
-0.5.4 adds WiX MSI beside the existing NSIS EXE target.
+0.5.4 added WiX MSI beside the existing NSIS EXE target.
 GitHub Releases do not publish Windows portable zips, portable latest aliases,
 public wheelhouse zips, or separately branded macOS or Linux portable bundles.
 
 | Version | Tag | Date | Notes |
 |---|---|---|---|
+| 0.5.5 | v0.5.5 | 2026-08-14 | Custom Chat/Responses/Anthropic endpoints, Bing China/Baidu/Sogou search, complete OpenStarry branding, and correlation-header fixes |
 | 0.5.4 | v0.5.4 | 2026-08-14 | Windows desktop release: NSIS EXE, WiX MSI, bundled application-build skill, and portable tar extraction compatibility |
 | 0.5.3 | v0.5.3 | 2026-08-14 | OpenStarry Code: four custom API slots, automatic model discovery, B5 stacking, rebranded documentation, dependency fixes, and the inherited 0.5.3 runtime improvements |
 | 0.5.2 | v0.5.2 | 2026-07-30 | Maintenance: same-turn steering, responsive startup and session history, safer recovery and usage accounting, and Desktop/provider/UI fixes |
@@ -31,12 +32,12 @@ public wheelhouse zips, or separately branded macOS or Linux portable bundles.
 | 0.2.0rc1 | v0.2.0rc1 | 2026-05-19 | Second public preview |
 | 0.1.0rc1 | v0.1.0rc1 | 2026-05-12 | First public preview |
 
-OpenStarry Code v0.5.4 publishes these verified artifacts:
+OpenStarry Code v0.5.5 publishes these verified artifacts:
 
-- `OpenStarry-Code-0.5.4-win-x64.exe`
-- `OpenStarry-Code-0.5.4-win-x64.msi`
-- `openstarry_code-0.5.4-py3-none-any.whl`
-- `openstarry_code-0.5.4.tar.gz`
+- `OpenStarry-Code-0.5.5-win-x64.exe`
+- `OpenStarry-Code-0.5.5-win-x64.msi`
+- `openstarry_code-0.5.5-py3-none-any.whl`
+- `openstarry_code-0.5.5.tar.gz`
 - `SHA256SUMS`
 
 The release is marked stable after the wheel contents, compiled Web UI,
@@ -50,7 +51,7 @@ must tell users to back up that directory. RC4 and later NSIS packages set
 `deleteAppDataOnUninstall=false`.
 
 Container tags follow a separate policy: each release publishes
-`ghcr.io/opensquilla/opensquilla:<git-tag>`, and Docker `:latest`
+`ghcr.io/tomysh1337/openstarry-code:<git-tag>`, and Docker `:latest`
 tracks the most recently pushed release tag, including previews and backports.
 If a backport moves `:latest`, rerun the container workflow from the newest tag
 to restore the intended ordering. The fixed release tag is the rollback and

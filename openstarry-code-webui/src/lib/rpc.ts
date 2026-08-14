@@ -1,4 +1,4 @@
-/** OpenSquilla Web UI — WebSocket RPC client (TypeScript port). */
+/** OpenStarry Code Web UI — WebSocket RPC client (TypeScript port). */
 
 export interface RpcErrorDetail {
   code?: string;

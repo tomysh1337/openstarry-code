@@ -10,8 +10,8 @@ from pathlib import Path
 
 _CA_ENV_VARS = ("SSL_CERT_FILE", "SSL_CERT_DIR")
 _PACKAGING_ERROR = (
-    "OpenSquilla Desktop could not initialize its packaged TLS trust store. "
-    "Reinstall OpenSquilla Desktop or rebuild the Desktop gateway with the certifi CA bundle."
+    "OpenStarry Code Desktop could not initialize its packaged TLS trust store. "
+    "Reinstall OpenStarry Code Desktop or rebuild the Desktop gateway with the certifi CA bundle."
 )
 
 

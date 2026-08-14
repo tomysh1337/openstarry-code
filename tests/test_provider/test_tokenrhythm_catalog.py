@@ -821,7 +821,7 @@ async def test_typed_fetch_helpers_return_normalized_records_and_gate_auth_host(
         ) as client_cls,
         patch(
             "openstarry_code.provider.tokenrhythm_catalog.tokenrhythm_install_id_headers",
-            return_value={"X-OpenStarry Code-Install-Id": "synthetic-install-id"},
+            return_value={"X-OpenStarry-Code-Install-Id": "synthetic-install-id"},
         ) as install_headers,
     ):
         published = await fetch_tokenrhythm_published()
@@ -835,12 +835,12 @@ async def test_typed_fetch_helpers_return_normalized_records_and_gate_auth_host(
     auth_response.json.assert_called_once_with(parse_float=Decimal)
     public_call, auth_call = client.get.await_args_list
     assert "Authorization" not in public_call.kwargs["headers"]
-    assert public_call.kwargs["headers"]["X-OpenStarry Code-Install-Id"] == (
+    assert public_call.kwargs["headers"]["X-OpenStarry-Code-Install-Id"] == (
         "synthetic-install-id"
     )
     assert auth_call.args[0] == "https://tokenrhythm.studio/v1/models"
     assert auth_call.kwargs["headers"]["Authorization"].startswith("Bearer sk-tr-synthetic")
-    assert auth_call.kwargs["headers"]["X-OpenStarry Code-Install-Id"] == (
+    assert auth_call.kwargs["headers"]["X-OpenStarry-Code-Install-Id"] == (
         "synthetic-install-id"
     )
     assert client_cls.call_count == 2
@@ -903,7 +903,7 @@ async def test_typed_fetch_passes_explicit_proxy_to_install_id_gate() -> None:
         "https://tokenrhythm.studio/api/models",
         proxy=proxy,
     )
-    assert "X-OpenStarry Code-Install-Id" not in client.get.await_args.kwargs["headers"]
+    assert "X-OpenStarry-Code-Install-Id" not in client.get.await_args.kwargs["headers"]
 
 
 @pytest.mark.asyncio
@@ -944,7 +944,7 @@ async def test_typed_declared_fetch_redacts_schema_drift_secret_keys(
         ),
         patch(
             "openstarry_code.provider.tokenrhythm_catalog.tokenrhythm_install_id_headers",
-            return_value={"X-OpenStarry Code-Install-Id": install_id},
+            return_value={"X-OpenStarry-Code-Install-Id": install_id},
         ),
     ):
         declared = await fetch_tokenrhythm_declared(api_key=api_key)

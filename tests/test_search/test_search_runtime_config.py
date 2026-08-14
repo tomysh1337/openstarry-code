@@ -484,8 +484,11 @@ def test_runtime_build_provider_registers_builtin_providers_in_fresh_process(
         "openstarry_code.search.providers.iqs",
         "openstarry_code.search.providers.tavily",
         "openstarry_code.search.providers.brave",
+        "openstarry_code.search.providers.baidu",
+        "openstarry_code.search.providers.bing_cn",
         "openstarry_code.search.providers.exa",
         "openstarry_code.search.providers.duckduckgo",
+        "openstarry_code.search.providers.sogou",
     ):
         monkeypatch.delitem(sys.modules, module_name, raising=False)
     monkeypatch.setattr(registry, "_providers", {})

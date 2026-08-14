@@ -2013,22 +2013,22 @@ const fixCommands = computed(() => {
   if (!envRecoveryCommands.value.length) return []
   return [
     ...envRecoveryCommands.value,
-    { label: t('setup.command.restartAfterEnv'), command: `opensquilla gateway restart${configCliArg.value}` },
+    { label: t('setup.command.restartAfterEnv'), command: `openstarry-code gateway restart${configCliArg.value}` },
   ]
 })
 
 const handoffCommands = computed(() => [
-  { label: t('setup.command.cliOnboarding'), command: `opensquilla onboard --if-needed${configCliArg.value}` },
-  { label: t('setup.command.checkStatus'), command: `opensquilla onboard status${configCliArg.value}` },
+  { label: t('setup.command.cliOnboarding'), command: `openstarry-code onboard --if-needed${configCliArg.value}` },
+  { label: t('setup.command.checkStatus'), command: `openstarry-code onboard status${configCliArg.value}` },
 ])
 
 const recipeCommands = computed(() => [
-  { label: t('setup.command.providerOptions'), command: `opensquilla onboard catalog providers${configCliArg.value}` },
-  { label: t('setup.command.routerTiers'), command: `opensquilla onboard catalog router${configCliArg.value}` },
-  { label: t('setup.command.searchOptions'), command: `opensquilla onboard catalog search${configCliArg.value}` },
-  { label: t('setup.command.channelOptions'), command: `opensquilla onboard catalog channels${configCliArg.value}` },
-  { label: t('setup.command.imageOptions'), command: `opensquilla onboard catalog image${configCliArg.value}` },
-  { label: t('setup.command.memoryOptions'), command: `opensquilla onboard catalog memory${configCliArg.value}` },
+  { label: t('setup.command.providerOptions'), command: `openstarry-code onboard catalog providers${configCliArg.value}` },
+  { label: t('setup.command.routerTiers'), command: `openstarry-code onboard catalog router${configCliArg.value}` },
+  { label: t('setup.command.searchOptions'), command: `openstarry-code onboard catalog search${configCliArg.value}` },
+  { label: t('setup.command.channelOptions'), command: `openstarry-code onboard catalog channels${configCliArg.value}` },
+  { label: t('setup.command.imageOptions'), command: `openstarry-code onboard catalog image${configCliArg.value}` },
+  { label: t('setup.command.memoryOptions'), command: `openstarry-code onboard catalog memory${configCliArg.value}` },
 ])
 
 const configSummary = computed(() => {

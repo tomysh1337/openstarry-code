@@ -629,7 +629,7 @@ function desktopChildEnvironment(
 // import. The shape check mirrors the Python migrator's home validator
 // (config.toml, state/, or workspace/ inside), so both sides agree on what
 // counts as a home — but the import itself always runs through the bundled CLI
-// (`opensquilla migrate opensquilla`) so the migration logic exists exactly
+// (`openstarry-code migrate opensquilla`) so the migration logic exists exactly
 // once, in Python; Electron only owns trusted source selection and lifecycle.
 type MigrationSourceKind = 'cli-home' | 'desktop-home' | 'windows-portable'
 
@@ -1039,9 +1039,9 @@ function macDesktopInstallBlockerMessage(context = macDesktopInstallContext()): 
   if (!context.blocked) return null
   const currentLocation = context.appBundlePath ? ` Current location: ${context.appBundlePath}` : ''
   return (
-    'OpenSquilla is running from a temporary macOS AppTranslocation location. ' +
-    'Quit OpenSquilla, drag OpenSquilla.app from the DMG into Applications if you are installing it, ' +
-    'eject the DMG, then open OpenSquilla again.' +
+    'OpenStarry Code is running from a temporary macOS AppTranslocation location. ' +
+    'Quit OpenStarry Code, drag OpenStarry Code.app from the DMG into Applications if you are installing it, ' +
+    'eject the DMG, then open OpenStarry Code again.' +
     currentLocation
   )
 }
@@ -1398,6 +1398,30 @@ const PROVIDER_CATALOG: ProviderCatalogEntry[] = [
 const PROVIDER_BY_ID = new Map(PROVIDER_CATALOG.map((provider) => [provider.id, provider]))
 
 const SEARCH_PROVIDER_CATALOG: SearchProviderCatalogEntry[] = [
+  {
+    providerId: 'bing_cn',
+    label: 'Bing China',
+    envKey: '',
+    requiresApiKey: false,
+    note: 'No key required. Searches the cn.bing.com index.',
+    keyPlaceholder: 'not required',
+  },
+  {
+    providerId: 'baidu',
+    label: 'Baidu',
+    envKey: '',
+    requiresApiKey: false,
+    note: 'No key required. Broad Chinese-language web coverage.',
+    keyPlaceholder: 'not required',
+  },
+  {
+    providerId: 'sogou',
+    label: 'Sogou',
+    envKey: '',
+    requiresApiKey: false,
+    note: 'No key required. Additional Chinese-language web index.',
+    keyPlaceholder: 'not required',
+  },
   {
     providerId: 'duckduckgo',
     label: 'DuckDuckGo',
@@ -1865,7 +1889,7 @@ function encryptSecret(secret: string): { value: string; encryption: SecretEncry
   if (policyBackend === 'safeStorage') {
     if (availableBackend !== 'safeStorage') {
       throw new Error(
-        'The OS keychain is unavailable. Unlock it and reopen OpenSquilla before saving credentials.'
+        'The OS keychain is unavailable. Unlock it and reopen OpenStarry Code before saving credentials.'
       )
     }
     try {
@@ -2074,7 +2098,7 @@ function enqueueDesktopPreferencesUpdate(
     const loaded = loadDesktopPreferencesRecord()
     if (!loaded.writable) {
       throw new Error(
-        'Desktop preferences were written by a newer OpenSquilla version and were not changed.',
+        'Desktop preferences were written by a newer OpenStarry Code version and were not changed.',
       )
     }
     const previous = loaded.value
@@ -2814,7 +2838,7 @@ async function openArtifactWithDefaultApp(payload: ArtifactOpenRequest): Promise
     // Buffer.from() here would just memcpy a second full copy of the payload
     // (hundreds of MB for media artifacts) into the main process.
     const bytes = raw instanceof Uint8Array ? raw : new Uint8Array(raw)
-    const dir = join(app.getPath('temp'), 'opensquilla-artifacts')
+    const dir = join(app.getPath('temp'), 'openstarry-code-artifacts')
     mkdirSync(dir, { recursive: true, mode: 0o700 })
     void pruneArtifactCache(dir)
     const name = safeArtifactFileName(payload?.name)
@@ -2945,6 +2969,9 @@ const PROVIDER_NOTE_MESSAGES: Record<DesktopLocale, Record<string, string>> = {
 // were unreachable in every non-English locale.
 const SEARCH_PROVIDER_NOTE_MESSAGES: Record<DesktopLocale, Record<string, string>> = {
   en: {
+    bing_cn: 'No key required. Searches the cn.bing.com index.',
+    baidu: 'No key required. Broad Chinese-language web coverage.',
+    sogou: 'No key required. Additional Chinese-language web index.',
     duckduckgo: 'No key required. Good default for getting started.',
     bocha: 'Web search with inline summaries and freshness support.',
     brave: 'Managed search access with freshness support.',
@@ -2953,6 +2980,9 @@ const SEARCH_PROVIDER_NOTE_MESSAGES: Record<DesktopLocale, Record<string, string
     iqs: 'Alibaba Cloud web search tuned for agents, with strong Chinese-web coverage.',
   },
   'zh-Hans': {
+    bing_cn: '无需密钥，使用 cn.bing.com 搜索结果。',
+    baidu: '无需密钥，覆盖广泛的中文网页。',
+    sogou: '无需密钥，提供额外的中文网页索引。',
     duckduckgo: '无需密钥。适合入门的默认选项。',
     bocha: '带内联摘要和时效性支持的网络搜索。',
     brave: '带时效性支持的托管搜索访问。',
@@ -3052,32 +3082,32 @@ const DESKTOP_MESSAGES: Record<DesktopLocale, Record<string, string>> = {
     'menu.checkForUpdates': 'Check for Updates…',
     'menu.relaunchToUpdate': 'Relaunch to Update',
     'menu.downloadDiagnostics': 'Download Diagnostics…',
-    'tray.open': 'Open OpenSquilla',
-    'tray.running': 'OpenSquilla is running in the background',
-    'tray.quit': 'Quit OpenSquilla',
-    'tray.backgroundTitle': 'OpenSquilla is still running',
-    'tray.backgroundDetail': 'Tasks, schedules, and connected channels continue in the background. Open or quit OpenSquilla from the system tray.',
-    'closePrompt.title': 'Close OpenSquilla?',
+    'tray.open': 'Open OpenStarry Code',
+    'tray.running': 'OpenStarry Code is running in the background',
+    'tray.quit': 'Quit OpenStarry Code',
+    'tray.backgroundTitle': 'OpenStarry Code is still running',
+    'tray.backgroundDetail': 'Tasks, schedules, and connected channels continue in the background. Open or quit OpenStarry Code from the system tray.',
+    'closePrompt.title': 'Close OpenStarry Code?',
     'closePrompt.message': 'What should happen when the main window closes?',
     'closePrompt.detail': 'Background mode keeps tasks, schedules, and connected channels running. Explicit Quit safely stops the local runtime.',
     'closePrompt.background': 'Keep running in background',
-    'closePrompt.quit': 'Quit OpenSquilla',
+    'closePrompt.quit': 'Quit OpenStarry Code',
     'closePrompt.cancel': 'Cancel',
     'closePrompt.remember': 'Remember my choice',
     'sandboxUnavailable.title': 'Safe mode is unavailable',
-    'sandboxUnavailable.message': 'OpenSquilla cannot start its sandbox on this device.',
+    'sandboxUnavailable.message': 'OpenStarry Code cannot start its sandbox on this device.',
     'sandboxUnavailable.detail': 'Safe mode has been disabled. Tasks can use Full Access, which runs with host permissions and has additional security risk.',
     'sandboxUnavailable.acknowledge': 'I understand',
     'sandboxUnavailable.suppress': "Don't remind me again",
     'update.newVersionTitle': 'A new version is available',
-    'update.newVersionDetail': 'OpenSquilla {version} is available. Download it now?',
+    'update.newVersionDetail': 'OpenStarry Code {version} is available. Download it now?',
     'update.download': 'Download',
     'update.later': 'Later',
     'update.readyTitle': 'Update ready to install',
-    'update.readyDetail': 'OpenSquilla {version} has been downloaded. Restart to finish updating?',
+    'update.readyDetail': 'OpenStarry Code {version} has been downloaded. Restart to finish updating?',
     'update.restartNow': 'Restart now',
     'update.upToDateTitle': "You're up to date",
-    'update.upToDateDetail': 'OpenSquilla {version} is the latest version.',
+    'update.upToDateDetail': 'OpenStarry Code {version} is the latest version.',
     'update.errorTitle': 'Update check failed',
     'update.manifestInvalid': 'The update information is invalid. Please try again later.',
     'update.sourceUnavailable': 'The update service is temporarily unavailable. Please try again later.',
@@ -3085,11 +3115,11 @@ const DESKTOP_MESSAGES: Record<DesktopLocale, Record<string, string>> = {
     'update.integrityFailed': 'The downloaded installer failed integrity verification and was deleted.',
     'update.downloadFailed': 'The update could not be downloaded. Please try again.',
     'update.installFailed': 'The update installer could not be opened. Please try again.',
-    'update.moveToApplications': 'Move OpenSquilla to your Applications folder to enable automatic updates, then try again.',
-    'update.gatewayShutdownTimeout': 'OpenSquilla could not stop the local runtime. Try relaunching to update again.',
+    'update.moveToApplications': 'Move OpenStarry Code to your Applications folder to enable automatic updates, then try again.',
+    'update.gatewayShutdownTimeout': 'OpenStarry Code could not stop the local runtime. Try relaunching to update again.',
     'update.mockInstallTitle': 'Mock update restart',
-    'update.mockInstallDetail': 'Mock mode: OpenSquilla would restart now to install {version}. No files were changed.',
-    'uninstall.confirmTitle': 'Delete local OpenSquilla desktop data?',
+    'update.mockInstallDetail': 'Mock mode: OpenStarry Code would restart now to install {version}. No files were changed.',
+    'uninstall.confirmTitle': 'Delete local OpenStarry Code desktop data?',
     'uninstall.confirmMessage': 'This permanently deletes the local desktop profile on this machine.',
     'uninstall.confirmDetail': 'Sessions, configuration, and secrets will be removed. The installed app itself will remain; remove it through your OS after the app closes.',
     'uninstall.cancel': 'Cancel',
@@ -3100,8 +3130,8 @@ const DESKTOP_MESSAGES: Record<DesktopLocale, Record<string, string>> = {
     'cleanup.deleteProfileTitle': 'Delete the current profile?',
     'cleanup.deleteProfileMessage': 'This permanently deletes the listed primary profile data, credential, and logs. Backups are kept.',
     'cleanup.deleteAllConfirm': 'Delete all data',
-    'cleanup.deleteAllTitle': 'Delete all OpenSquilla user data?',
-    'cleanup.deleteAllMessage': 'OpenSquilla will close first. The deletion starts only after the app and local runtime have fully exited.',
+    'cleanup.deleteAllTitle': 'Delete all OpenStarry Code user data?',
+    'cleanup.deleteAllMessage': 'OpenStarry Code will close first. The deletion starts only after the app and local runtime have fully exited.',
     'migration.overwriteTitle': 'Replace conflicting desktop data?',
     'migration.overwriteMessage': 'The selected installation will replace the current Desktop data.',
     'migration.overwriteDetail': 'A complete timestamped backup will be retained. Confirm the source below before continuing.',
@@ -3110,18 +3140,18 @@ const DESKTOP_MESSAGES: Record<DesktopLocale, Record<string, string>> = {
     'migration.overwriteNoSync': 'The Desktop profile and source will not sync after transfer.',
     'migration.overwriteCancel': 'Cancel',
     'migration.overwriteConfirm': 'Back up and replace',
-    'launch.alreadyRunningTitle': 'OpenSquilla is already running',
-    'launch.alreadyRunningMessage': 'Another OpenSquilla window is already open on this machine. Bringing it to the front.',
-    'window.onboarding': 'Set up OpenSquilla',
+    'launch.alreadyRunningTitle': 'OpenStarry Code is already running',
+    'launch.alreadyRunningMessage': 'Another OpenStarry Code window is already open on this machine. Bringing it to the front.',
+    'window.onboarding': 'Set up OpenStarry Code',
     'boot.profile': 'Preparing desktop profile',
     'boot.gateway-start': 'Starting local runtime',
     'boot.gateway-health': 'Checking gateway health',
     'boot.control': 'Loading Control UI',
     'boot.ready': 'Ready',
-    'onboarding.title': 'Set up OpenSquilla',
+    'onboarding.title': 'Set up OpenStarry Code',
     'onboarding.rail.title': 'Desktop setup',
-    'onboarding.rail.subtitle': 'Set up OpenSquilla on this device.',
-    'onboarding.rail.foot': 'OpenSquilla keeps this profile local to this device.',
+    'onboarding.rail.subtitle': 'Set up OpenStarry Code on this device.',
+    'onboarding.rail.foot': 'OpenStarry Code keeps this profile local to this device.',
     'onboarding.language.label': 'Language',
     'onboarding.aria.setupSteps': 'Setup steps',
     'onboarding.aria.setupDepth': 'Setup depth',
@@ -3142,7 +3172,7 @@ const DESKTOP_MESSAGES: Record<DesktopLocale, Record<string, string>> = {
     'onboarding.step1.heading': 'Choose setup depth',
     'onboarding.step1.subtitle': 'Start with the shortest working path, or open the full router and tier controls now.',
     'onboarding.step1.simpleTitle': 'Simple setup',
-    'onboarding.step1.simpleDesc': 'Pick one provider, add its key, choose search, and start OpenSquilla with defaults.',
+    'onboarding.step1.simpleDesc': 'Pick one provider, add its key, choose search, and start OpenStarry Code with defaults.',
     'onboarding.step1.advancedTitle': 'Advanced setup',
     'onboarding.step1.advancedDesc': 'Review tier defaults and direct model details before startup.',
     'onboarding.step1.note': 'You can change provider, router, and search settings later from the desktop Settings page.',
@@ -3165,7 +3195,7 @@ const DESKTOP_MESSAGES: Record<DesktopLocale, Record<string, string>> = {
     'onboarding.step2.next': 'Next',
     'onboarding.step3.badge': 'Advanced',
     'onboarding.step3.heading': 'Choose routing mode',
-    'onboarding.step3.subtitle': 'Decide whether OpenSquilla should use Smart Router tiers, call one fixed model, or use the current provider\'s ensemble.',
+    'onboarding.step3.subtitle': 'Decide whether OpenStarry Code should use Smart Router tiers, call one fixed model, or use the current provider\'s ensemble.',
     'onboarding.step3.back': 'Back',
     'onboarding.step3.next': 'Next',
     'onboarding.step3.directModel': 'Direct model',
@@ -3180,7 +3210,7 @@ const DESKTOP_MESSAGES: Record<DesktopLocale, Record<string, string>> = {
     'onboarding.step5.searchKey': 'Search API key',
     'onboarding.step5.searchHintDefault': 'DuckDuckGo is enough to start.',
     'onboarding.step5.back': 'Back',
-    'onboarding.step5.finish': 'Start OpenSquilla',
+    'onboarding.step5.finish': 'Start OpenStarry Code',
   },
   'zh-Hans': {
     'menu.edit': '编辑',
@@ -3189,32 +3219,32 @@ const DESKTOP_MESSAGES: Record<DesktopLocale, Record<string, string>> = {
     'menu.checkForUpdates': '检查更新…',
     'menu.relaunchToUpdate': '重启以更新',
     'menu.downloadDiagnostics': '下载诊断信息…',
-    'tray.open': '打开 OpenSquilla',
-    'tray.running': 'OpenSquilla 正在后台运行',
-    'tray.quit': '退出 OpenSquilla',
-    'tray.backgroundTitle': 'OpenSquilla 仍在运行',
-    'tray.backgroundDetail': '任务、定时任务和已连接渠道会继续在后台运行。可从系统托盘打开或退出 OpenSquilla。',
-    'closePrompt.title': '关闭 OpenSquilla？',
+    'tray.open': '打开 OpenStarry Code',
+    'tray.running': 'OpenStarry Code 正在后台运行',
+    'tray.quit': '退出 OpenStarry Code',
+    'tray.backgroundTitle': 'OpenStarry Code 仍在运行',
+    'tray.backgroundDetail': '任务、定时任务和已连接渠道会继续在后台运行。可从系统托盘打开或退出 OpenStarry Code。',
+    'closePrompt.title': '关闭 OpenStarry Code？',
     'closePrompt.message': '关闭主窗口时要执行什么操作？',
     'closePrompt.detail': '后台模式会继续运行任务、定时任务和已连接渠道；显式退出会安全停止本地运行时。',
     'closePrompt.background': '继续在后台运行',
-    'closePrompt.quit': '退出 OpenSquilla',
+    'closePrompt.quit': '退出 OpenStarry Code',
     'closePrompt.cancel': '取消',
     'closePrompt.remember': '记住我的选择',
     'sandboxUnavailable.title': '安全模式当前不可用',
-    'sandboxUnavailable.message': 'OpenSquilla 无法在此设备上启动沙箱。',
+    'sandboxUnavailable.message': 'OpenStarry Code 无法在此设备上启动沙箱。',
     'sandboxUnavailable.detail': '安全模式已禁用。任务只能使用完全访问，并将以宿主机权限运行，存在额外的安全风险。',
     'sandboxUnavailable.acknowledge': '我知道了',
     'sandboxUnavailable.suppress': '不再提醒',
     'update.newVersionTitle': '有新版本可用',
-    'update.newVersionDetail': 'OpenSquilla {version} 已发布，现在下载吗？',
+    'update.newVersionDetail': 'OpenStarry Code {version} 已发布，现在下载吗？',
     'update.download': '下载',
     'update.later': '稍后',
     'update.readyTitle': '更新已就绪',
-    'update.readyDetail': 'OpenSquilla {version} 已下载完成。是否重启以完成更新？',
+    'update.readyDetail': 'OpenStarry Code {version} 已下载完成。是否重启以完成更新？',
     'update.restartNow': '立即重启',
     'update.upToDateTitle': '已是最新版本',
-    'update.upToDateDetail': 'OpenSquilla {version} 已是最新版本。',
+    'update.upToDateDetail': 'OpenStarry Code {version} 已是最新版本。',
     'update.errorTitle': '检查更新失败',
     'update.manifestInvalid': '更新信息无效，请稍后重试。',
     'update.sourceUnavailable': '更新服务暂时不可用，请稍后重试。',
@@ -3222,11 +3252,11 @@ const DESKTOP_MESSAGES: Record<DesktopLocale, Record<string, string>> = {
     'update.integrityFailed': '下载的安装包未通过完整性校验，已将其删除。',
     'update.downloadFailed': '更新下载安装失败，请重试。',
     'update.installFailed': '无法打开更新安装包，请重试。',
-    'update.moveToApplications': '请先将 OpenSquilla 移动到"应用程序"文件夹以启用自动更新，然后重试。',
-    'update.gatewayShutdownTimeout': 'OpenSquilla 无法停止本地运行时。请再次尝试重启以更新。',
+    'update.moveToApplications': '请先将 OpenStarry Code 移动到"应用程序"文件夹以启用自动更新，然后重试。',
+    'update.gatewayShutdownTimeout': 'OpenStarry Code 无法停止本地运行时。请再次尝试重启以更新。',
     'update.mockInstallTitle': '模拟重启更新',
-    'update.mockInstallDetail': '模拟模式：OpenSquilla 现在会重启并安装 {version}。没有修改任何文件。',
-    'uninstall.confirmTitle': '删除本地 OpenSquilla 桌面数据？',
+    'update.mockInstallDetail': '模拟模式：OpenStarry Code 现在会重启并安装 {version}。没有修改任何文件。',
+    'uninstall.confirmTitle': '删除本地 OpenStarry Code 桌面数据？',
     'uninstall.confirmMessage': '这将永久删除本机上的本地桌面配置。',
     'uninstall.confirmDetail': '会话、配置和密钥都将被移除。已安装的应用本身会保留；应用关闭后请通过操作系统将其卸载。',
     'uninstall.cancel': '取消',
@@ -3237,8 +3267,8 @@ const DESKTOP_MESSAGES: Record<DesktopLocale, Record<string, string>> = {
     'cleanup.deleteProfileTitle': '删除当前配置文件？',
     'cleanup.deleteProfileMessage': '这会永久删除列出的主配置数据、凭据和日志。备份会保留。',
     'cleanup.deleteAllConfirm': '删除全部数据',
-    'cleanup.deleteAllTitle': '删除全部 OpenSquilla 用户数据？',
-    'cleanup.deleteAllMessage': 'OpenSquilla 会先退出。只有应用和本地运行时完全退出后，删除才会开始。',
+    'cleanup.deleteAllTitle': '删除全部 OpenStarry Code 用户数据？',
+    'cleanup.deleteAllMessage': 'OpenStarry Code 会先退出。只有应用和本地运行时完全退出后，删除才会开始。',
     'migration.overwriteTitle': '替换冲突的桌面数据？',
     'migration.overwriteMessage': '所选安装的数据将替换当前桌面数据。',
     'migration.overwriteDetail': '系统会保留完整的时间戳备份。继续前请确认下方的数据来源。',
@@ -3247,17 +3277,17 @@ const DESKTOP_MESSAGES: Record<DesktopLocale, Record<string, string>> = {
     'migration.overwriteNoSync': '转移后，桌面端数据与来源不会自动同步。',
     'migration.overwriteCancel': '取消',
     'migration.overwriteConfirm': '备份并替换',
-    'launch.alreadyRunningTitle': 'OpenSquilla 已在运行',
-    'launch.alreadyRunningMessage': '本机已打开另一个 OpenSquilla 窗口。正在将其置于前台。',
-    'window.onboarding': '设置 OpenSquilla',
+    'launch.alreadyRunningTitle': 'OpenStarry Code 已在运行',
+    'launch.alreadyRunningMessage': '本机已打开另一个 OpenStarry Code 窗口。正在将其置于前台。',
+    'window.onboarding': '设置 OpenStarry Code',
     'boot.profile': '正在准备桌面配置',
     'boot.gateway-start': '正在启动本地运行时',
     'boot.gateway-health': '正在检查网关健康状态',
     'boot.control': '正在加载控制界面',
     'boot.ready': '就绪',
-    'onboarding.title': '设置 OpenSquilla',
+    'onboarding.title': '设置 OpenStarry Code',
     'onboarding.rail.title': '桌面设置',
-    'onboarding.rail.subtitle': '在本机完成 OpenSquilla 的基本设置。',
+    'onboarding.rail.subtitle': '在本机完成 OpenStarry Code 的基本设置。',
     'onboarding.rail.foot': '桌面端设置会保存在本机。',
     'onboarding.language.label': '语言',
     'onboarding.aria.setupSteps': '设置步骤',
@@ -3279,7 +3309,7 @@ const DESKTOP_MESSAGES: Record<DesktopLocale, Record<string, string>> = {
     'onboarding.step1.heading': '选择设置深度',
     'onboarding.step1.subtitle': '从最短的可用路径开始，或者现在就打开完整的路由器和层级控件。',
     'onboarding.step1.simpleTitle': '简单设置',
-    'onboarding.step1.simpleDesc': '选择一个提供商，添加其密钥，选择搜索，然后使用默认设置启动 OpenSquilla。',
+    'onboarding.step1.simpleDesc': '选择一个提供商，添加其密钥，选择搜索，然后使用默认设置启动 OpenStarry Code。',
     'onboarding.step1.advancedTitle': '高级设置',
     'onboarding.step1.advancedDesc': '在启动前查看层级默认值和直连模型详情。',
     'onboarding.step1.note': '稍后可在桌面设置页面更改提供商、路由器和搜索设置。',
@@ -3302,7 +3332,7 @@ const DESKTOP_MESSAGES: Record<DesktopLocale, Record<string, string>> = {
     'onboarding.step2.next': '下一步',
     'onboarding.step3.badge': '高级',
     'onboarding.step3.heading': '选择路由模式',
-    'onboarding.step3.subtitle': '选择 OpenSquilla 使用 Smart Router 层级、直连一个固定模型，还是使用当前提供商的 Ensemble。',
+    'onboarding.step3.subtitle': '选择 OpenStarry Code 使用 Smart Router 层级、直连一个固定模型，还是使用当前提供商的 Ensemble。',
     'onboarding.step3.back': '返回',
     'onboarding.step3.next': '下一步',
     'onboarding.step3.directModel': '直连模型',
@@ -3317,7 +3347,7 @@ const DESKTOP_MESSAGES: Record<DesktopLocale, Record<string, string>> = {
     'onboarding.step5.searchKey': '搜索 API 密钥',
     'onboarding.step5.searchHintDefault': 'DuckDuckGo 足以开始使用。',
     'onboarding.step5.back': '返回',
-    'onboarding.step5.finish': '启动 OpenSquilla',
+    'onboarding.step5.finish': '启动 OpenStarry Code',
   },
   ja: {
     'menu.edit': '編集',
@@ -3326,27 +3356,27 @@ const DESKTOP_MESSAGES: Record<DesktopLocale, Record<string, string>> = {
     'menu.checkForUpdates': 'アップデートを確認…',
     'menu.relaunchToUpdate': '再起動してアップデート',
     'menu.downloadDiagnostics': '診断情報をダウンロード…',
-    'tray.open': 'OpenSquilla を開く',
-    'tray.running': 'OpenSquilla はバックグラウンドで実行中です',
-    'tray.quit': 'OpenSquilla を終了',
-    'tray.backgroundTitle': 'OpenSquilla は引き続き実行中です',
+    'tray.open': 'OpenStarry Code を開く',
+    'tray.running': 'OpenStarry Code はバックグラウンドで実行中です',
+    'tray.quit': 'OpenStarry Code を終了',
+    'tray.backgroundTitle': 'OpenStarry Code は引き続き実行中です',
     'tray.backgroundDetail': 'タスク、スケジュール、接続済みチャンネルはバックグラウンドで続行します。システムトレイから開くか終了できます。',
-    'closePrompt.title': 'OpenSquilla を閉じますか？',
+    'closePrompt.title': 'OpenStarry Code を閉じますか？',
     'closePrompt.message': 'メインウィンドウを閉じるときの動作を選択してください。',
     'closePrompt.detail': 'バックグラウンドモードではタスク、スケジュール、接続済みチャンネルが継続します。明示的に終了するとローカルランタイムを安全に停止します。',
     'closePrompt.background': 'バックグラウンドで続行',
-    'closePrompt.quit': 'OpenSquilla を終了',
+    'closePrompt.quit': 'OpenStarry Code を終了',
     'closePrompt.cancel': 'キャンセル',
     'closePrompt.remember': 'この選択を記憶する',
     'update.newVersionTitle': '新しいバージョンが利用可能です',
-    'update.newVersionDetail': 'OpenSquilla {version} が利用可能です。今すぐダウンロードしますか？',
+    'update.newVersionDetail': 'OpenStarry Code {version} が利用可能です。今すぐダウンロードしますか？',
     'update.download': 'ダウンロード',
     'update.later': '後で',
     'update.readyTitle': 'アップデートの準備が完了しました',
-    'update.readyDetail': 'OpenSquilla {version} をダウンロードしました。再起動して更新を完了しますか？',
+    'update.readyDetail': 'OpenStarry Code {version} をダウンロードしました。再起動して更新を完了しますか？',
     'update.restartNow': '今すぐ再起動',
     'update.upToDateTitle': '最新の状態です',
-    'update.upToDateDetail': 'OpenSquilla {version} が最新バージョンです。',
+    'update.upToDateDetail': 'OpenStarry Code {version} が最新バージョンです。',
     'update.errorTitle': 'アップデートの確認に失敗しました',
     'update.manifestInvalid': 'アップデート情報が無効です。しばらくしてから再試行してください。',
     'update.sourceUnavailable': 'アップデートサービスを一時的に利用できません。後でもう一度お試しください。',
@@ -3354,9 +3384,9 @@ const DESKTOP_MESSAGES: Record<DesktopLocale, Record<string, string>> = {
     'update.integrityFailed': 'ダウンロードしたインストーラは整合性検証に失敗したため削除されました。',
     'update.downloadFailed': 'アップデートをダウンロードできませんでした。もう一度お試しください。',
     'update.installFailed': 'アップデートインストーラを開けませんでした。もう一度お試しください。',
-    'update.moveToApplications': '自動アップデートを有効にするには、OpenSquilla を「アプリケーション」フォルダに移動してから再試行してください。',
+    'update.moveToApplications': '自動アップデートを有効にするには、OpenStarry Code を「アプリケーション」フォルダに移動してから再試行してください。',
     'update.gatewayShutdownTimeout': 'ローカルランタイムを停止できませんでした。もう一度、再起動してアップデートをお試しください。',
-    'uninstall.confirmTitle': 'ローカルの OpenSquilla デスクトップデータを削除しますか？',
+    'uninstall.confirmTitle': 'ローカルの OpenStarry Code デスクトップデータを削除しますか？',
     'uninstall.confirmMessage': 'このマシン上のローカルデスクトッププロファイルを完全に削除します。',
     'uninstall.confirmDetail': 'セッション、設定、シークレットが削除されます。インストール済みのアプリ自体は残ります。アプリを閉じた後、OS から削除してください。',
     'uninstall.cancel': 'キャンセル',
@@ -3367,8 +3397,8 @@ const DESKTOP_MESSAGES: Record<DesktopLocale, Record<string, string>> = {
     'cleanup.deleteProfileTitle': '現在のプロファイルを削除しますか？',
     'cleanup.deleteProfileMessage': '一覧のプライマリプロファイルデータ、認証情報、ログを完全に削除します。バックアップは保持されます。',
     'cleanup.deleteAllConfirm': 'すべてのデータを削除',
-    'cleanup.deleteAllTitle': 'OpenSquilla のすべてのユーザーデータを削除しますか？',
-    'cleanup.deleteAllMessage': 'OpenSquilla を先に終了します。アプリとローカルランタイムが完全に終了した後にのみ削除を開始します。',
+    'cleanup.deleteAllTitle': 'OpenStarry Code のすべてのユーザーデータを削除しますか？',
+    'cleanup.deleteAllMessage': 'OpenStarry Code を先に終了します。アプリとローカルランタイムが完全に終了した後にのみ削除を開始します。',
     'migration.overwriteTitle': '競合するデスクトップデータを置き換えますか？',
     'migration.overwriteMessage': '選択したインストールのデータで現在の Desktop データを置き換えます。',
     'migration.overwriteDetail': 'タイムスタンプ付きの完全なバックアップが保持されます。続行する前に以下の移行元を確認してください。',
@@ -3377,18 +3407,18 @@ const DESKTOP_MESSAGES: Record<DesktopLocale, Record<string, string>> = {
     'migration.overwriteNoSync': '転送後、Desktop と移行元は同期されません。',
     'migration.overwriteCancel': 'キャンセル',
     'migration.overwriteConfirm': 'バックアップして置換',
-    'launch.alreadyRunningTitle': 'OpenSquilla はすでに実行中です',
-    'launch.alreadyRunningMessage': 'このマシンでは別の OpenSquilla ウィンドウがすでに開いています。前面に表示します。',
-    'window.onboarding': 'OpenSquilla をセットアップ',
+    'launch.alreadyRunningTitle': 'OpenStarry Code はすでに実行中です',
+    'launch.alreadyRunningMessage': 'このマシンでは別の OpenStarry Code ウィンドウがすでに開いています。前面に表示します。',
+    'window.onboarding': 'OpenStarry Code をセットアップ',
     'boot.profile': 'デスクトッププロファイルを準備しています',
     'boot.gateway-start': 'ローカルランタイムを起動しています',
     'boot.gateway-health': 'ゲートウェイの稼働状況を確認しています',
     'boot.control': 'コントロール UI を読み込んでいます',
     'boot.ready': '準備完了',
-    'onboarding.title': 'OpenSquilla をセットアップ',
+    'onboarding.title': 'OpenStarry Code をセットアップ',
     'onboarding.rail.title': 'デスクトップ設定',
-    'onboarding.rail.subtitle': 'このデバイスで OpenSquilla を設定します。',
-    'onboarding.rail.foot': 'OpenSquilla はこのプロファイルをこのデバイス内に保持します。',
+    'onboarding.rail.subtitle': 'このデバイスで OpenStarry Code を設定します。',
+    'onboarding.rail.foot': 'OpenStarry Code はこのプロファイルをこのデバイス内に保持します。',
     'onboarding.language.label': '言語',
     'onboarding.aria.setupSteps': 'セットアップ手順',
     'onboarding.aria.setupDepth': 'セットアップの詳細度',
@@ -3406,7 +3436,7 @@ const DESKTOP_MESSAGES: Record<DesktopLocale, Record<string, string>> = {
     'onboarding.step1.heading': 'セットアップの詳細度を選択',
     'onboarding.step1.subtitle': '最短で動作する経路から始めるか、ここでルーターとティアの設定をすべて開きます。',
     'onboarding.step1.simpleTitle': 'シンプルセットアップ',
-    'onboarding.step1.simpleDesc': 'プロバイダーを 1 つ選び、キーを追加して検索を選択し、デフォルト設定で OpenSquilla を起動します。',
+    'onboarding.step1.simpleDesc': 'プロバイダーを 1 つ選び、キーを追加して検索を選択し、デフォルト設定で OpenStarry Code を起動します。',
     'onboarding.step1.advancedTitle': '詳細セットアップ',
     'onboarding.step1.advancedDesc': '起動前にティアのデフォルトと直接モデルの詳細を確認します。',
     'onboarding.step1.note': 'プロバイダー、ルーター、検索の設定は後でデスクトップの設定ページから変更できます。',
@@ -3432,7 +3462,7 @@ const DESKTOP_MESSAGES: Record<DesktopLocale, Record<string, string>> = {
     'onboarding.aria.modelRoutingMode': 'ルーティングモード',
     'onboarding.step3.badge': '詳細',
     'onboarding.step3.heading': 'ルーティングモードを選択',
-    'onboarding.step3.subtitle': 'OpenSquilla が Smart Router のティアを使うか、固定モデルを 1 つ呼び出すか、現在のプロバイダーのアンサンブルを使うかを選びます。',
+    'onboarding.step3.subtitle': 'OpenStarry Code が Smart Router のティアを使うか、固定モデルを 1 つ呼び出すか、現在のプロバイダーのアンサンブルを使うかを選びます。',
     'onboarding.step3.back': '戻る',
     'onboarding.step3.next': '次へ',
     'onboarding.step3.directModel': '直接モデル',
@@ -3447,7 +3477,7 @@ const DESKTOP_MESSAGES: Record<DesktopLocale, Record<string, string>> = {
     'onboarding.step5.searchKey': '検索 API キー',
     'onboarding.step5.searchHintDefault': 'DuckDuckGo で始めるには十分です。',
     'onboarding.step5.back': '戻る',
-    'onboarding.step5.finish': 'OpenSquilla を起動',
+    'onboarding.step5.finish': 'OpenStarry Code を起動',
   },
   fr: {
     'menu.edit': 'Édition',
@@ -3456,27 +3486,27 @@ const DESKTOP_MESSAGES: Record<DesktopLocale, Record<string, string>> = {
     'menu.checkForUpdates': 'Rechercher les mises à jour…',
     'menu.relaunchToUpdate': 'Relancer pour mettre à jour',
     'menu.downloadDiagnostics': 'Télécharger le diagnostic…',
-    'tray.open': 'Ouvrir OpenSquilla',
-    'tray.running': 'OpenSquilla fonctionne en arrière-plan',
-    'tray.quit': 'Quitter OpenSquilla',
-    'tray.backgroundTitle': 'OpenSquilla fonctionne toujours',
-    'tray.backgroundDetail': 'Les tâches, planifications et canaux connectés continuent en arrière-plan. Ouvrez ou quittez OpenSquilla depuis la zone de notification.',
-    'closePrompt.title': 'Fermer OpenSquilla ?',
+    'tray.open': 'Ouvrir OpenStarry Code',
+    'tray.running': 'OpenStarry Code fonctionne en arrière-plan',
+    'tray.quit': 'Quitter OpenStarry Code',
+    'tray.backgroundTitle': 'OpenStarry Code fonctionne toujours',
+    'tray.backgroundDetail': 'Les tâches, planifications et canaux connectés continuent en arrière-plan. Ouvrez ou quittez OpenStarry Code depuis la zone de notification.',
+    'closePrompt.title': 'Fermer OpenStarry Code ?',
     'closePrompt.message': 'Que doit-il se passer à la fermeture de la fenêtre principale ?',
     'closePrompt.detail': 'Le mode arrière-plan maintient les tâches, planifications et canaux connectés. Quitter explicitement arrête le runtime local en toute sécurité.',
     'closePrompt.background': 'Continuer en arrière-plan',
-    'closePrompt.quit': 'Quitter OpenSquilla',
+    'closePrompt.quit': 'Quitter OpenStarry Code',
     'closePrompt.cancel': 'Annuler',
     'closePrompt.remember': 'Mémoriser mon choix',
     'update.newVersionTitle': 'Une nouvelle version est disponible',
-    'update.newVersionDetail': 'OpenSquilla {version} est disponible. Télécharger maintenant ?',
+    'update.newVersionDetail': 'OpenStarry Code {version} est disponible. Télécharger maintenant ?',
     'update.download': 'Télécharger',
     'update.later': 'Plus tard',
     'update.readyTitle': 'Mise à jour prête à installer',
-    'update.readyDetail': 'OpenSquilla {version} a été téléchargée. Redémarrer pour terminer la mise à jour ?',
+    'update.readyDetail': 'OpenStarry Code {version} a été téléchargée. Redémarrer pour terminer la mise à jour ?',
     'update.restartNow': 'Redémarrer maintenant',
     'update.upToDateTitle': 'Vous êtes à jour',
-    'update.upToDateDetail': 'OpenSquilla {version} est la dernière version.',
+    'update.upToDateDetail': 'OpenStarry Code {version} est la dernière version.',
     'update.errorTitle': 'Échec de la recherche de mises à jour',
     'update.manifestInvalid': 'Les informations de mise à jour sont invalides. Réessayez plus tard.',
     'update.sourceUnavailable': 'Le service de mise à jour est temporairement indisponible. Réessayez plus tard.',
@@ -3484,9 +3514,9 @@ const DESKTOP_MESSAGES: Record<DesktopLocale, Record<string, string>> = {
     'update.integrityFailed': 'Le programme d’installation téléchargé a échoué au contrôle d’intégrité et a été supprimé.',
     'update.downloadFailed': 'Impossible de télécharger la mise à jour. Réessayez.',
     'update.installFailed': 'Impossible d’ouvrir le programme d’installation. Réessayez.',
-    'update.moveToApplications': 'Déplacez OpenSquilla dans votre dossier Applications pour activer les mises à jour automatiques, puis réessayez.',
-    'update.gatewayShutdownTimeout': 'OpenSquilla n\'a pas pu arrêter le runtime local. Réessayez de relancer la mise à jour.',
-    'uninstall.confirmTitle': 'Supprimer les données locales du bureau OpenSquilla ?',
+    'update.moveToApplications': 'Déplacez OpenStarry Code dans votre dossier Applications pour activer les mises à jour automatiques, puis réessayez.',
+    'update.gatewayShutdownTimeout': 'OpenStarry Code n\'a pas pu arrêter le runtime local. Réessayez de relancer la mise à jour.',
+    'uninstall.confirmTitle': 'Supprimer les données locales du bureau OpenStarry Code ?',
     'uninstall.confirmMessage': 'Cela supprime définitivement le profil de bureau local sur cette machine.',
     'uninstall.confirmDetail': 'Les sessions, la configuration et les secrets seront supprimés. L’application installée elle-même sera conservée ; supprimez-la via votre système d’exploitation après la fermeture de l’application.',
     'uninstall.cancel': 'Annuler',
@@ -3497,8 +3527,8 @@ const DESKTOP_MESSAGES: Record<DesktopLocale, Record<string, string>> = {
     'cleanup.deleteProfileTitle': 'Supprimer le profil actuel ?',
     'cleanup.deleteProfileMessage': 'Cette action supprime définitivement les données, l’identifiant et les journaux listés du profil principal. Les sauvegardes sont conservées.',
     'cleanup.deleteAllConfirm': 'Supprimer toutes les données',
-    'cleanup.deleteAllTitle': 'Supprimer toutes les données utilisateur OpenSquilla ?',
-    'cleanup.deleteAllMessage': 'OpenSquilla va d’abord se fermer. La suppression ne commence qu’après l’arrêt complet de l’application et de l’environnement local.',
+    'cleanup.deleteAllTitle': 'Supprimer toutes les données utilisateur OpenStarry Code ?',
+    'cleanup.deleteAllMessage': 'OpenStarry Code va d’abord se fermer. La suppression ne commence qu’après l’arrêt complet de l’application et de l’environnement local.',
     'migration.overwriteTitle': 'Remplacer les données de bureau en conflit ?',
     'migration.overwriteMessage': 'L’installation sélectionnée remplacera les données Desktop actuelles.',
     'migration.overwriteDetail': 'Une sauvegarde complète horodatée sera conservée. Vérifiez la source ci-dessous avant de continuer.',
@@ -3507,18 +3537,18 @@ const DESKTOP_MESSAGES: Record<DesktopLocale, Record<string, string>> = {
     'migration.overwriteNoSync': 'Après le transfert, le profil Desktop et la source ne seront pas synchronisés.',
     'migration.overwriteCancel': 'Annuler',
     'migration.overwriteConfirm': 'Sauvegarder et remplacer',
-    'launch.alreadyRunningTitle': 'OpenSquilla est déjà en cours d’exécution',
-    'launch.alreadyRunningMessage': 'Une autre fenêtre OpenSquilla est déjà ouverte sur cette machine. Elle va être mise au premier plan.',
-    'window.onboarding': 'Configurer OpenSquilla',
+    'launch.alreadyRunningTitle': 'OpenStarry Code est déjà en cours d’exécution',
+    'launch.alreadyRunningMessage': 'Une autre fenêtre OpenStarry Code est déjà ouverte sur cette machine. Elle va être mise au premier plan.',
+    'window.onboarding': 'Configurer OpenStarry Code',
     'boot.profile': 'Préparation du profil de bureau',
     'boot.gateway-start': 'Démarrage du runtime local',
     'boot.gateway-health': 'Vérification de l\'état de la passerelle',
     'boot.control': 'Chargement de l\'interface de contrôle',
     'boot.ready': 'Prêt',
-    'onboarding.title': 'Configurer OpenSquilla',
+    'onboarding.title': 'Configurer OpenStarry Code',
     'onboarding.rail.title': 'Configuration du bureau',
-    'onboarding.rail.subtitle': 'Configurez OpenSquilla sur cet appareil.',
-    'onboarding.rail.foot': 'OpenSquilla conserve ce profil en local sur cet appareil.',
+    'onboarding.rail.subtitle': 'Configurez OpenStarry Code sur cet appareil.',
+    'onboarding.rail.foot': 'OpenStarry Code conserve ce profil en local sur cet appareil.',
     'onboarding.language.label': 'Langue',
     'onboarding.aria.setupSteps': 'Étapes de configuration',
     'onboarding.aria.setupDepth': 'Niveau de configuration',
@@ -3536,7 +3566,7 @@ const DESKTOP_MESSAGES: Record<DesktopLocale, Record<string, string>> = {
     'onboarding.step1.heading': 'Choisir le niveau de configuration',
     'onboarding.step1.subtitle': 'Commencez par le chemin fonctionnel le plus court, ou ouvrez dès maintenant tous les réglages de routeur et de niveaux.',
     'onboarding.step1.simpleTitle': 'Configuration simple',
-    'onboarding.step1.simpleDesc': 'Choisissez un fournisseur, ajoutez sa clé, sélectionnez la recherche et démarrez OpenSquilla avec les valeurs par défaut.',
+    'onboarding.step1.simpleDesc': 'Choisissez un fournisseur, ajoutez sa clé, sélectionnez la recherche et démarrez OpenStarry Code avec les valeurs par défaut.',
     'onboarding.step1.advancedTitle': 'Configuration avancée',
     'onboarding.step1.advancedDesc': 'Examinez les niveaux par défaut et les détails du modèle direct avant le démarrage.',
     'onboarding.step1.note': 'Vous pourrez modifier les paramètres de fournisseur, de routeur et de recherche plus tard depuis la page Paramètres du bureau.',
@@ -3562,7 +3592,7 @@ const DESKTOP_MESSAGES: Record<DesktopLocale, Record<string, string>> = {
     'onboarding.aria.modelRoutingMode': 'Mode de routage',
     'onboarding.step3.badge': 'Avancé',
     'onboarding.step3.heading': 'Choisir le mode de routage',
-    'onboarding.step3.subtitle': "Décidez si OpenSquilla doit utiliser les niveaux du Smart Router, appeler un seul modèle fixe, ou utiliser l'ensemble du fournisseur actuel.",
+    'onboarding.step3.subtitle': "Décidez si OpenStarry Code doit utiliser les niveaux du Smart Router, appeler un seul modèle fixe, ou utiliser l'ensemble du fournisseur actuel.",
     'onboarding.step3.back': 'Retour',
     'onboarding.step3.next': 'Suivant',
     'onboarding.step3.directModel': 'Modèle direct',
@@ -3577,7 +3607,7 @@ const DESKTOP_MESSAGES: Record<DesktopLocale, Record<string, string>> = {
     'onboarding.step5.searchKey': 'Clé API de recherche',
     'onboarding.step5.searchHintDefault': 'DuckDuckGo suffit pour démarrer.',
     'onboarding.step5.back': 'Retour',
-    'onboarding.step5.finish': 'Démarrer OpenSquilla',
+    'onboarding.step5.finish': 'Démarrer OpenStarry Code',
   },
   de: {
     'menu.edit': 'Bearbeiten',
@@ -3586,27 +3616,27 @@ const DESKTOP_MESSAGES: Record<DesktopLocale, Record<string, string>> = {
     'menu.checkForUpdates': 'Nach Updates suchen…',
     'menu.relaunchToUpdate': 'Zum Aktualisieren neu starten',
     'menu.downloadDiagnostics': 'Diagnose herunterladen…',
-    'tray.open': 'OpenSquilla öffnen',
-    'tray.running': 'OpenSquilla wird im Hintergrund ausgeführt',
-    'tray.quit': 'OpenSquilla beenden',
-    'tray.backgroundTitle': 'OpenSquilla wird weiter ausgeführt',
-    'tray.backgroundDetail': 'Aufgaben, Zeitpläne und verbundene Kanäle laufen im Hintergrund weiter. Öffnen oder beenden Sie OpenSquilla über den Infobereich.',
-    'closePrompt.title': 'OpenSquilla schließen?',
+    'tray.open': 'OpenStarry Code öffnen',
+    'tray.running': 'OpenStarry Code wird im Hintergrund ausgeführt',
+    'tray.quit': 'OpenStarry Code beenden',
+    'tray.backgroundTitle': 'OpenStarry Code wird weiter ausgeführt',
+    'tray.backgroundDetail': 'Aufgaben, Zeitpläne und verbundene Kanäle laufen im Hintergrund weiter. Öffnen oder beenden Sie OpenStarry Code über den Infobereich.',
+    'closePrompt.title': 'OpenStarry Code schließen?',
     'closePrompt.message': 'Was soll beim Schließen des Hauptfensters geschehen?',
     'closePrompt.detail': 'Im Hintergrundmodus laufen Aufgaben, Zeitpläne und verbundene Kanäle weiter. Beim expliziten Beenden wird die lokale Laufzeit sicher gestoppt.',
     'closePrompt.background': 'Im Hintergrund weiter ausführen',
-    'closePrompt.quit': 'OpenSquilla beenden',
+    'closePrompt.quit': 'OpenStarry Code beenden',
     'closePrompt.cancel': 'Abbrechen',
     'closePrompt.remember': 'Auswahl merken',
     'update.newVersionTitle': 'Eine neue Version ist verfügbar',
-    'update.newVersionDetail': 'OpenSquilla {version} ist verfügbar. Jetzt herunterladen?',
+    'update.newVersionDetail': 'OpenStarry Code {version} ist verfügbar. Jetzt herunterladen?',
     'update.download': 'Herunterladen',
     'update.later': 'Später',
     'update.readyTitle': 'Update bereit zur Installation',
-    'update.readyDetail': 'OpenSquilla {version} wurde heruntergeladen. Neu starten, um das Update abzuschließen?',
+    'update.readyDetail': 'OpenStarry Code {version} wurde heruntergeladen. Neu starten, um das Update abzuschließen?',
     'update.restartNow': 'Jetzt neu starten',
     'update.upToDateTitle': 'Sie sind auf dem neuesten Stand',
-    'update.upToDateDetail': 'OpenSquilla {version} ist die neueste Version.',
+    'update.upToDateDetail': 'OpenStarry Code {version} ist die neueste Version.',
     'update.errorTitle': 'Update-Prüfung fehlgeschlagen',
     'update.manifestInvalid': 'Die Update-Informationen sind ungültig. Versuchen Sie es später erneut.',
     'update.sourceUnavailable': 'Der Update-Dienst ist vorübergehend nicht verfügbar. Versuchen Sie es später erneut.',
@@ -3614,9 +3644,9 @@ const DESKTOP_MESSAGES: Record<DesktopLocale, Record<string, string>> = {
     'update.integrityFailed': 'Das heruntergeladene Installationsprogramm hat die Integritätsprüfung nicht bestanden und wurde gelöscht.',
     'update.downloadFailed': 'Das Update konnte nicht heruntergeladen werden. Versuchen Sie es erneut.',
     'update.installFailed': 'Das Update-Installationsprogramm konnte nicht geöffnet werden. Versuchen Sie es erneut.',
-    'update.moveToApplications': 'Verschieben Sie OpenSquilla in Ihren Programme-Ordner, um automatische Updates zu aktivieren, und versuchen Sie es erneut.',
-    'update.gatewayShutdownTimeout': 'OpenSquilla konnte die lokale Laufzeitumgebung nicht stoppen. Versuchen Sie erneut, zum Aktualisieren neu zu starten.',
-    'uninstall.confirmTitle': 'Lokale OpenSquilla-Desktop-Daten löschen?',
+    'update.moveToApplications': 'Verschieben Sie OpenStarry Code in Ihren Programme-Ordner, um automatische Updates zu aktivieren, und versuchen Sie es erneut.',
+    'update.gatewayShutdownTimeout': 'OpenStarry Code konnte die lokale Laufzeitumgebung nicht stoppen. Versuchen Sie erneut, zum Aktualisieren neu zu starten.',
+    'uninstall.confirmTitle': 'Lokale OpenStarry Code-Desktop-Daten löschen?',
     'uninstall.confirmMessage': 'Dies löscht das lokale Desktop-Profil auf diesem Gerät dauerhaft.',
     'uninstall.confirmDetail': 'Sitzungen, Konfiguration und Secrets werden entfernt. Die installierte App selbst bleibt erhalten; entfernen Sie sie nach dem Schließen der App über Ihr Betriebssystem.',
     'uninstall.cancel': 'Abbrechen',
@@ -3627,8 +3657,8 @@ const DESKTOP_MESSAGES: Record<DesktopLocale, Record<string, string>> = {
     'cleanup.deleteProfileTitle': 'Aktuelles Profil löschen?',
     'cleanup.deleteProfileMessage': 'Die aufgeführten Daten, Zugangsdaten und Protokolle des Hauptprofils werden dauerhaft gelöscht. Sicherungen bleiben erhalten.',
     'cleanup.deleteAllConfirm': 'Alle Daten löschen',
-    'cleanup.deleteAllTitle': 'Alle OpenSquilla-Benutzerdaten löschen?',
-    'cleanup.deleteAllMessage': 'OpenSquilla wird zuerst beendet. Die Löschung beginnt erst, wenn App und lokale Laufzeit vollständig beendet sind.',
+    'cleanup.deleteAllTitle': 'Alle OpenStarry Code-Benutzerdaten löschen?',
+    'cleanup.deleteAllMessage': 'OpenStarry Code wird zuerst beendet. Die Löschung beginnt erst, wenn App und lokale Laufzeit vollständig beendet sind.',
     'migration.overwriteTitle': 'Konfliktierende Desktop-Daten ersetzen?',
     'migration.overwriteMessage': 'Die ausgewählte Installation ersetzt die aktuellen Desktop-Daten.',
     'migration.overwriteDetail': 'Eine vollständige Sicherung mit Zeitstempel bleibt erhalten. Prüfen Sie vor dem Fortfahren die Quelle unten.',
@@ -3637,18 +3667,18 @@ const DESKTOP_MESSAGES: Record<DesktopLocale, Record<string, string>> = {
     'migration.overwriteNoSync': 'Nach dem Transfer werden Desktop-Profil und Quelle nicht synchronisiert.',
     'migration.overwriteCancel': 'Abbrechen',
     'migration.overwriteConfirm': 'Sichern und ersetzen',
-    'launch.alreadyRunningTitle': 'OpenSquilla läuft bereits',
-    'launch.alreadyRunningMessage': 'Auf diesem Gerät ist bereits ein anderes OpenSquilla-Fenster geöffnet. Es wird in den Vordergrund geholt.',
-    'window.onboarding': 'OpenSquilla einrichten',
+    'launch.alreadyRunningTitle': 'OpenStarry Code läuft bereits',
+    'launch.alreadyRunningMessage': 'Auf diesem Gerät ist bereits ein anderes OpenStarry Code-Fenster geöffnet. Es wird in den Vordergrund geholt.',
+    'window.onboarding': 'OpenStarry Code einrichten',
     'boot.profile': 'Desktop-Profil wird vorbereitet',
     'boot.gateway-start': 'Lokale Laufzeitumgebung wird gestartet',
     'boot.gateway-health': 'Gateway-Zustand wird geprüft',
     'boot.control': 'Control-UI wird geladen',
     'boot.ready': 'Bereit',
-    'onboarding.title': 'OpenSquilla einrichten',
+    'onboarding.title': 'OpenStarry Code einrichten',
     'onboarding.rail.title': 'Desktop-Einrichtung',
-    'onboarding.rail.subtitle': 'Richten Sie OpenSquilla auf diesem Gerät ein.',
-    'onboarding.rail.foot': 'OpenSquilla behält dieses Profil lokal auf diesem Gerät.',
+    'onboarding.rail.subtitle': 'Richten Sie OpenStarry Code auf diesem Gerät ein.',
+    'onboarding.rail.foot': 'OpenStarry Code behält dieses Profil lokal auf diesem Gerät.',
     'onboarding.language.label': 'Sprache',
     'onboarding.aria.setupSteps': 'Einrichtungsschritte',
     'onboarding.aria.setupDepth': 'Einrichtungstiefe',
@@ -3666,7 +3696,7 @@ const DESKTOP_MESSAGES: Record<DesktopLocale, Record<string, string>> = {
     'onboarding.step1.heading': 'Einrichtungstiefe wählen',
     'onboarding.step1.subtitle': 'Beginnen Sie mit dem kürzesten funktionierenden Weg, oder öffnen Sie jetzt die vollständigen Router- und Stufeneinstellungen.',
     'onboarding.step1.simpleTitle': 'Einfache Einrichtung',
-    'onboarding.step1.simpleDesc': 'Wählen Sie einen Anbieter, fügen Sie seinen Schlüssel hinzu, wählen Sie die Suche und starten Sie OpenSquilla mit den Standardwerten.',
+    'onboarding.step1.simpleDesc': 'Wählen Sie einen Anbieter, fügen Sie seinen Schlüssel hinzu, wählen Sie die Suche und starten Sie OpenStarry Code mit den Standardwerten.',
     'onboarding.step1.advancedTitle': 'Erweiterte Einrichtung',
     'onboarding.step1.advancedDesc': 'Prüfen Sie vor dem Start die Stufenstandards und die Details des direkten Modells.',
     'onboarding.step1.note': 'Sie können Anbieter-, Router- und Sucheinstellungen später auf der Desktop-Seite Einstellungen ändern.',
@@ -3692,7 +3722,7 @@ const DESKTOP_MESSAGES: Record<DesktopLocale, Record<string, string>> = {
     'onboarding.aria.modelRoutingMode': 'Routing-Modus',
     'onboarding.step3.badge': 'Erweitert',
     'onboarding.step3.heading': 'Routing-Modus wählen',
-    'onboarding.step3.subtitle': 'Legen Sie fest, ob OpenSquilla die Smart-Router-Stufen verwenden, ein festes Modell aufrufen oder das Ensemble des aktuellen Anbieters nutzen soll.',
+    'onboarding.step3.subtitle': 'Legen Sie fest, ob OpenStarry Code die Smart-Router-Stufen verwenden, ein festes Modell aufrufen oder das Ensemble des aktuellen Anbieters nutzen soll.',
     'onboarding.step3.back': 'Zurück',
     'onboarding.step3.next': 'Weiter',
     'onboarding.step3.directModel': 'Direktes Modell',
@@ -3707,7 +3737,7 @@ const DESKTOP_MESSAGES: Record<DesktopLocale, Record<string, string>> = {
     'onboarding.step5.searchKey': 'Such-API-Schlüssel',
     'onboarding.step5.searchHintDefault': 'DuckDuckGo reicht für den Start.',
     'onboarding.step5.back': 'Zurück',
-    'onboarding.step5.finish': 'OpenSquilla starten',
+    'onboarding.step5.finish': 'OpenStarry Code starten',
   },
   es: {
     'menu.edit': 'Edición',
@@ -3716,27 +3746,27 @@ const DESKTOP_MESSAGES: Record<DesktopLocale, Record<string, string>> = {
     'menu.checkForUpdates': 'Buscar actualizaciones…',
     'menu.relaunchToUpdate': 'Reiniciar para actualizar',
     'menu.downloadDiagnostics': 'Descargar diagnóstico…',
-    'tray.open': 'Abrir OpenSquilla',
-    'tray.running': 'OpenSquilla se ejecuta en segundo plano',
-    'tray.quit': 'Salir de OpenSquilla',
-    'tray.backgroundTitle': 'OpenSquilla sigue en ejecución',
-    'tray.backgroundDetail': 'Las tareas, programaciones y canales conectados continúan en segundo plano. Abre o cierra OpenSquilla desde la bandeja del sistema.',
-    'closePrompt.title': '¿Cerrar OpenSquilla?',
+    'tray.open': 'Abrir OpenStarry Code',
+    'tray.running': 'OpenStarry Code se ejecuta en segundo plano',
+    'tray.quit': 'Salir de OpenStarry Code',
+    'tray.backgroundTitle': 'OpenStarry Code sigue en ejecución',
+    'tray.backgroundDetail': 'Las tareas, programaciones y canales conectados continúan en segundo plano. Abre o cierra OpenStarry Code desde la bandeja del sistema.',
+    'closePrompt.title': '¿Cerrar OpenStarry Code?',
     'closePrompt.message': '¿Qué debe ocurrir al cerrar la ventana principal?',
     'closePrompt.detail': 'El modo en segundo plano mantiene las tareas, programaciones y canales conectados. Salir explícitamente detiene el entorno local de forma segura.',
     'closePrompt.background': 'Seguir ejecutando en segundo plano',
-    'closePrompt.quit': 'Salir de OpenSquilla',
+    'closePrompt.quit': 'Salir de OpenStarry Code',
     'closePrompt.cancel': 'Cancelar',
     'closePrompt.remember': 'Recordar mi elección',
     'update.newVersionTitle': 'Hay una nueva versión disponible',
-    'update.newVersionDetail': 'OpenSquilla {version} está disponible. ¿Descargar ahora?',
+    'update.newVersionDetail': 'OpenStarry Code {version} está disponible. ¿Descargar ahora?',
     'update.download': 'Descargar',
     'update.later': 'Más tarde',
     'update.readyTitle': 'Actualización lista para instalar',
-    'update.readyDetail': 'OpenSquilla {version} se ha descargado. ¿Reiniciar para finalizar la actualización?',
+    'update.readyDetail': 'OpenStarry Code {version} se ha descargado. ¿Reiniciar para finalizar la actualización?',
     'update.restartNow': 'Reiniciar ahora',
     'update.upToDateTitle': 'Estás al día',
-    'update.upToDateDetail': 'OpenSquilla {version} es la última versión.',
+    'update.upToDateDetail': 'OpenStarry Code {version} es la última versión.',
     'update.errorTitle': 'Error al buscar actualizaciones',
     'update.manifestInvalid': 'La información de actualización no es válida. Inténtalo más tarde.',
     'update.sourceUnavailable': 'El servicio de actualizaciones no está disponible temporalmente. Inténtalo más tarde.',
@@ -3744,9 +3774,9 @@ const DESKTOP_MESSAGES: Record<DesktopLocale, Record<string, string>> = {
     'update.integrityFailed': 'El instalador descargado no superó la verificación de integridad y se eliminó.',
     'update.downloadFailed': 'No se pudo descargar la actualización. Inténtalo de nuevo.',
     'update.installFailed': 'No se pudo abrir el instalador de la actualización. Inténtalo de nuevo.',
-    'update.moveToApplications': 'Mueve OpenSquilla a tu carpeta de Aplicaciones para habilitar las actualizaciones automáticas e inténtalo de nuevo.',
-    'update.gatewayShutdownTimeout': 'OpenSquilla no pudo detener el runtime local. Intenta reiniciar para actualizar de nuevo.',
-    'uninstall.confirmTitle': '¿Eliminar los datos locales de escritorio de OpenSquilla?',
+    'update.moveToApplications': 'Mueve OpenStarry Code a tu carpeta de Aplicaciones para habilitar las actualizaciones automáticas e inténtalo de nuevo.',
+    'update.gatewayShutdownTimeout': 'OpenStarry Code no pudo detener el runtime local. Intenta reiniciar para actualizar de nuevo.',
+    'uninstall.confirmTitle': '¿Eliminar los datos locales de escritorio de OpenStarry Code?',
     'uninstall.confirmMessage': 'Esto elimina permanentemente el perfil de escritorio local en esta máquina.',
     'uninstall.confirmDetail': 'Se eliminarán las sesiones, la configuración y los secretos. La aplicación instalada en sí permanecerá; elimínala a través de tu sistema operativo después de cerrar la aplicación.',
     'uninstall.cancel': 'Cancelar',
@@ -3757,8 +3787,8 @@ const DESKTOP_MESSAGES: Record<DesktopLocale, Record<string, string>> = {
     'cleanup.deleteProfileTitle': '¿Eliminar el perfil actual?',
     'cleanup.deleteProfileMessage': 'Esto elimina permanentemente los datos, la credencial y los registros enumerados del perfil principal. Se conservan las copias de seguridad.',
     'cleanup.deleteAllConfirm': 'Eliminar todos los datos',
-    'cleanup.deleteAllTitle': '¿Eliminar todos los datos de usuario de OpenSquilla?',
-    'cleanup.deleteAllMessage': 'OpenSquilla se cerrará primero. La eliminación solo comienza cuando la app y el entorno local hayan terminado por completo.',
+    'cleanup.deleteAllTitle': '¿Eliminar todos los datos de usuario de OpenStarry Code?',
+    'cleanup.deleteAllMessage': 'OpenStarry Code se cerrará primero. La eliminación solo comienza cuando la app y el entorno local hayan terminado por completo.',
     'migration.overwriteTitle': '¿Reemplazar los datos de escritorio en conflicto?',
     'migration.overwriteMessage': 'La instalación seleccionada reemplazará los datos actuales de Desktop.',
     'migration.overwriteDetail': 'Se conservará una copia de seguridad completa con marca de tiempo. Confirma la fuente indicada abajo antes de continuar.',
@@ -3767,18 +3797,18 @@ const DESKTOP_MESSAGES: Record<DesktopLocale, Record<string, string>> = {
     'migration.overwriteNoSync': 'Después de transferir, el perfil Desktop y el origen no se sincronizarán.',
     'migration.overwriteCancel': 'Cancelar',
     'migration.overwriteConfirm': 'Respaldar y reemplazar',
-    'launch.alreadyRunningTitle': 'OpenSquilla ya se está ejecutando',
-    'launch.alreadyRunningMessage': 'Ya hay otra ventana de OpenSquilla abierta en esta máquina. Se traerá al frente.',
-    'window.onboarding': 'Configurar OpenSquilla',
+    'launch.alreadyRunningTitle': 'OpenStarry Code ya se está ejecutando',
+    'launch.alreadyRunningMessage': 'Ya hay otra ventana de OpenStarry Code abierta en esta máquina. Se traerá al frente.',
+    'window.onboarding': 'Configurar OpenStarry Code',
     'boot.profile': 'Preparando el perfil de escritorio',
     'boot.gateway-start': 'Iniciando el runtime local',
     'boot.gateway-health': 'Comprobando el estado de la pasarela',
     'boot.control': 'Cargando la interfaz de control',
     'boot.ready': 'Listo',
-    'onboarding.title': 'Configurar OpenSquilla',
+    'onboarding.title': 'Configurar OpenStarry Code',
     'onboarding.rail.title': 'Configuración de escritorio',
-    'onboarding.rail.subtitle': 'Configura OpenSquilla en este dispositivo.',
-    'onboarding.rail.foot': 'OpenSquilla mantiene este perfil local en este dispositivo.',
+    'onboarding.rail.subtitle': 'Configura OpenStarry Code en este dispositivo.',
+    'onboarding.rail.foot': 'OpenStarry Code mantiene este perfil local en este dispositivo.',
     'onboarding.language.label': 'Idioma',
     'onboarding.aria.setupSteps': 'Pasos de configuración',
     'onboarding.aria.setupDepth': 'Nivel de configuración',
@@ -3796,7 +3826,7 @@ const DESKTOP_MESSAGES: Record<DesktopLocale, Record<string, string>> = {
     'onboarding.step1.heading': 'Elige el nivel de configuración',
     'onboarding.step1.subtitle': 'Empieza por el camino funcional más corto, o abre ahora todos los controles de enrutador y niveles.',
     'onboarding.step1.simpleTitle': 'Configuración simple',
-    'onboarding.step1.simpleDesc': 'Elige un proveedor, añade su clave, selecciona la búsqueda e inicia OpenSquilla con los valores predeterminados.',
+    'onboarding.step1.simpleDesc': 'Elige un proveedor, añade su clave, selecciona la búsqueda e inicia OpenStarry Code con los valores predeterminados.',
     'onboarding.step1.advancedTitle': 'Configuración avanzada',
     'onboarding.step1.advancedDesc': 'Revisa los valores predeterminados de niveles y los detalles del modelo directo antes del inicio.',
     'onboarding.step1.note': 'Puedes cambiar los ajustes de proveedor, enrutador y búsqueda más tarde desde la página Ajustes del escritorio.',
@@ -3822,7 +3852,7 @@ const DESKTOP_MESSAGES: Record<DesktopLocale, Record<string, string>> = {
     'onboarding.aria.modelRoutingMode': 'Modo de enrutamiento',
     'onboarding.step3.badge': 'Avanzado',
     'onboarding.step3.heading': 'Elige el modo de enrutamiento',
-    'onboarding.step3.subtitle': 'Decide si OpenSquilla debe usar los niveles del Smart Router, llamar a un único modelo fijo o usar el ensemble del proveedor actual.',
+    'onboarding.step3.subtitle': 'Decide si OpenStarry Code debe usar los niveles del Smart Router, llamar a un único modelo fijo o usar el ensemble del proveedor actual.',
     'onboarding.step3.back': 'Atrás',
     'onboarding.step3.next': 'Siguiente',
     'onboarding.step3.directModel': 'Modelo directo',
@@ -3837,7 +3867,7 @@ const DESKTOP_MESSAGES: Record<DesktopLocale, Record<string, string>> = {
     'onboarding.step5.searchKey': 'Clave API de búsqueda',
     'onboarding.step5.searchHintDefault': 'DuckDuckGo es suficiente para empezar.',
     'onboarding.step5.back': 'Atrás',
-    'onboarding.step5.finish': 'Iniciar OpenSquilla',
+    'onboarding.step5.finish': 'Iniciar OpenStarry Code',
   },
 }
 
@@ -4274,7 +4304,7 @@ function createWindowsTray(): boolean {
   try {
     const tray = new Tray(appIconPath())
     windowsTray = tray
-    tray.setToolTip('OpenSquilla')
+    tray.setToolTip('OpenStarry Code')
     tray.on('click', () => revealDesktopApp())
     tray.on('balloon-click', () => revealDesktopApp())
     rebuildWindowsTrayMenu()
@@ -5690,7 +5720,7 @@ function onboardingHtml(
 <body>
   <main>
     <header class="topbar">
-      <div class="brand"><span class="brand-mark" aria-hidden="true"></span><span>OpenSquilla</span></div>
+      <div class="brand"><span class="brand-mark" aria-hidden="true"></span><span>OpenStarry Code</span></div>
       <label class="language-picker" for="onboardingLocale">
         <span class="sr-only" data-i18n="onboarding.language.label">${ot('onboarding.language.label')}</span>
         <select id="onboardingLocale" aria-label="${ot('onboarding.aria.language')}" data-i18n-aria="onboarding.aria.language">
@@ -6207,9 +6237,9 @@ async function runOnboarding(): Promise<DesktopConnection> {
     )
   ) {
     throw new Error(
-      'OpenSquilla needs the OS keychain to read or safely adopt this credential, '
+      'OpenStarry Code needs the OS keychain to read or safely adopt this credential, '
       + 'but the keychain is currently unavailable. Unlock it and reopen '
-      + 'OpenSquilla, or use "Reset setup" to start over.'
+      + 'OpenStarry Code, or use "Reset setup" to start over.'
     )
   }
   if (!pendingProviderSetup && existing && isConnectionReady(existing)) {
@@ -6283,7 +6313,7 @@ async function runOnboarding(): Promise<DesktopConnection> {
         const reject = rejectOnboarding
         resolveOnboarding = null
         rejectOnboarding = null
-        reject(new Error('OpenSquilla setup was closed.'))
+        reject(new Error('OpenStarry Code setup was closed.'))
       }
     })
 
@@ -6316,7 +6346,7 @@ async function assertRepoRoot(): Promise<void> {
   const pyprojectPath = join(repoRoot, 'pyproject.toml')
   const webuiPath = join(repoRoot, 'src', 'openstarry_code', 'gateway', 'static', 'dist', 'index.html')
   if (!(await pathExists(pyprojectPath))) {
-    throw new Error(`OpenSquilla checkout not found at ${repoRoot}`)
+    throw new Error(`OpenStarry Code checkout not found at ${repoRoot}`)
   }
   if (!(await pathExists(webuiPath))) {
     throw new Error(
@@ -7412,7 +7442,7 @@ async function consolidateLegacyRecoveryProfilesBeforeStartup(
   desktopProfileConsolidationPromise = (async () => {
     const exclusive = desktopWriters.tryBeginExclusive('consolidate legacy Desktop profiles')
     if (!exclusive) {
-      throw new Error('OpenSquilla is finishing another profile operation. Try startup again.')
+      throw new Error('OpenStarry Code is finishing another profile operation. Try startup again.')
     }
     try {
       await waitForDesktopWriterOperations(1)
@@ -7586,7 +7616,7 @@ async function findGatewayPort(): Promise<number> {
       return port
     }
   }
-  throw new Error('No free OpenSquilla desktop gateway port found in 18791-18830.')
+  throw new Error('No free OpenStarry Code desktop gateway port found in 18791-18830.')
 }
 
 async function healthCheck(url: string): Promise<boolean> {
@@ -7637,7 +7667,7 @@ function gatewayExitLooksLikeProfileInUse(output: string): boolean {
 function desktopGatewayStillRunningMessage(): string {
   return (
     'OPENSTARRY_CODE_PROFILE_IN_USE: A previous Desktop Gateway has not exited. ' +
-    'Wait for it to finish, or quit every OpenSquilla app or terminal using this profile, ' +
+    'Wait for it to finish, or quit every OpenStarry Code app or terminal using this profile, ' +
     'then try again. If it will not exit, restart the computer. ' +
     'Do not delete profile lock files.'
   )
@@ -7647,16 +7677,16 @@ function classifyGatewayExitMessage(message: string, outputTail: string): string
   if (gatewayExitLooksLikeProfileInUse(outputTail)) {
     return (
       message +
-      '\n\nAnother OpenSquilla runtime is still using this profile. ' +
-      'Quit every OpenSquilla app or terminal using it, then try again. ' +
+      '\n\nAnother OpenStarry Code runtime is still using this profile. ' +
+      'Quit every OpenStarry Code app or terminal using it, then try again. ' +
       'If an older process will not exit, restart the computer. Do not delete profile lock files.'
     )
   }
   if (!gatewayExitLooksLikeNewerConfig(outputTail)) return message
   return (
     message +
-    '\n\nOpenSquilla could not read this config because it contains settings written by a newer OpenSquilla version. ' +
-    `Reopen the newer OpenSquilla version that created it, or reset the desktop config before running this version (${app.getVersion()}). ` +
+    '\n\nOpenStarry Code could not read this config because it contains settings written by a newer OpenStarry Code version. ' +
+    `Reopen the newer OpenStarry Code version that created it, or reset the desktop config before running this version (${app.getVersion()}). ` +
     'Use Reveal log for details.'
   )
 }
@@ -8050,7 +8080,7 @@ async function startGateway(): Promise<GatewayState> {
   await waitForControlUi(url, () => childExitMessage)
   // Guard against adopting a foreign gateway that won the probe→bind race: if our
   // spawned child has already exited, it lost the exclusive bind and the healthy
-  // endpoint belongs to someone else (e.g. a CLI `opensquilla gateway run` on the
+  // endpoint belongs to someone else (e.g. a CLI `openstarry-code gateway run` on the
   // same port). Surface it as a port conflict so recovery advances to the next
   // port instead of silently attaching the window to the wrong profile.
   if (hasGatewayProcessExited(child) || gatewayProcess !== child) {
@@ -8142,7 +8172,7 @@ async function createMainWindow(): Promise<BrowserWindow> {
     height: 900,
     minWidth: 960,
     minHeight: 640,
-    title: 'OpenSquilla',
+    title: 'OpenStarry Code',
     icon: appIconPath(),
     show: false,
     // Paint the window in the app's base color from the first frame so launch
@@ -8666,7 +8696,7 @@ async function downloadDiagnostics(): Promise<void> {
     const win = currentMainWindow()
     const defaultPath = join(
       app.getPath('downloads'),
-      `opensquilla-bundle-${stamp}.zip`,
+      `openstarry-code-bundle-${stamp}.zip`,
     )
     const saveOptions: Electron.SaveDialogOptions = {
       defaultPath,
@@ -9435,7 +9465,7 @@ function initAutoUpdater(): void {
   autoUpdater.autoInstallOnAppQuit = false
   // electron-updater generates a persistent per-install staging UUID even
   // when no staged rollout is configured. Override the outbound header with a
-  // fixed, non-user-specific value; OpenSquilla channels do not use rollout
+  // fixed, non-user-specific value; OpenStarry Code channels do not use rollout
   // bucketing and update checks should not add a cross-request identifier.
   autoUpdater.requestHeaders = {
     'x-user-staging-id': '00000000-0000-4000-8000-000000000000',
@@ -9521,7 +9551,7 @@ async function fetchDesktopUpdateChannelFromRoot(root?: string): Promise<unknown
   let response: Response
   try {
     response = await fetch(url, {
-      headers: { Accept: 'application/json', 'User-Agent': 'OpenSquilla-Desktop' },
+      headers: { Accept: 'application/json', 'User-Agent': 'OpenStarry Code-Desktop' },
       signal: AbortSignal.timeout(8000),
       cache: 'no-store',
     })
@@ -9545,7 +9575,7 @@ async function fetchDesktopUpdateChannelFromGithubReleases(): Promise<unknown> {
   let response: Response
   try {
     response = await fetch(UPDATE_GITHUB_RELEASES_API_URL, {
-      headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'OpenSquilla-Desktop' },
+      headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'OpenStarry Code-Desktop' },
       signal: AbortSignal.timeout(8000),
       cache: 'no-store',
     })
@@ -9617,7 +9647,7 @@ async function probeDesktopUpdateSource(
   let response: Response
   try {
     response = await fetch(url, {
-      headers: { Accept: 'application/octet-stream', Range: 'bytes=0-0', 'User-Agent': 'OpenSquilla-Desktop' },
+      headers: { Accept: 'application/octet-stream', Range: 'bytes=0-0', 'User-Agent': 'OpenStarry Code-Desktop' },
       signal: AbortSignal.timeout(5000),
       cache: 'no-store',
     })
@@ -9683,7 +9713,7 @@ async function fetchWindowsInstallerDigestFromSource(
   let response: Response
   try {
     response = await fetch(checksumUrl, {
-      headers: { Accept: 'text/plain', 'User-Agent': 'OpenSquilla-Desktop' },
+      headers: { Accept: 'text/plain', 'User-Agent': 'OpenStarry Code-Desktop' },
       signal: AbortSignal.timeout(10_000),
       cache: 'no-store',
     })
@@ -9768,7 +9798,7 @@ async function downloadVerifiedWindowsInstaller(
   let response: Response
   try {
     response = await fetch(installerUrl, {
-      headers: { Accept: 'application/octet-stream', 'User-Agent': 'OpenSquilla-Desktop' },
+      headers: { Accept: 'application/octet-stream', 'User-Agent': 'OpenStarry Code-Desktop' },
       signal: AbortSignal.timeout(UPDATE_INSTALLER_DOWNLOAD_TIMEOUT_MS),
       cache: 'no-store',
     })
@@ -10490,7 +10520,7 @@ ipcMain.handle('desktop:workbench:surface:destroy', async (event, surfaceId: unk
 const DESKTOP_CLEANUP_STDOUT_LIMIT = 2 * 1024 * 1024
 const DESKTOP_CLEANUP_INSPECT_TIMEOUT_MS = 30_000
 const DESKTOP_CLEANUP_APPROVAL_LIMIT = 512 * 1024
-const DELETE_ALL_CONFIRMATION = 'DELETE ALL OPENSQUILLA DATA'
+const DELETE_ALL_CONFIRMATION = 'DELETE ALL OPENSTARRY CODE DATA'
 
 function currentDesktopCleanupSelection(mode: DesktopCleanupMode): DesktopCleanupSelection {
   return {
@@ -10755,7 +10785,7 @@ async function applyApprovedDesktopCleanup(
 
   const exclusive = desktopWriters.tryBeginExclusive('Desktop data cleanup')
   if (!exclusive) {
-    return { ok: false, detail: 'OpenSquilla is finishing another profile operation. Try again.' }
+    return { ok: false, detail: 'OpenStarry Code is finishing another profile operation. Try again.' }
   }
   desktopCleanupBusy = true
   let shouldQuit = false
@@ -10907,7 +10937,7 @@ ipcMain.handle('desktop:cleanup:reveal-user-data', async (event) => {
 })
 
 // ── Legacy home migration (Phase 3 entry points) ─────────────────────────────
-// The import logic lives once in Python (`opensquilla migrate opensquilla`,
+// The import logic lives once in Python (`openstarry-code migrate opensquilla`,
 // dry-run by default); the desktop only detects candidates, orchestrates the
 // gateway lifecycle, and spawns the bundled CLI.
 async function runMigrateCli(
@@ -11791,11 +11821,11 @@ ipcMain.handle('desktop:migration:browse-source', async (event, payload?: unknow
   }
   const sourceKind = parseMigrationSourceKind(payload)
   if (!sourceKind) {
-    return { ok: false, error: 'Choose the OpenSquilla profile type first.' }
+    return { ok: false, error: 'Choose the OpenStarry Code profile type first.' }
   }
   const window = currentMainWindow()
   const options: Electron.OpenDialogOptions = {
-    title: 'Choose an OpenSquilla profile',
+    title: 'Choose an OpenStarry Code profile',
     properties: ['openDirectory'],
   }
   const choice = window
@@ -11804,7 +11834,7 @@ ipcMain.handle('desktop:migration:browse-source', async (event, payload?: unknow
   if (choice.canceled || choice.filePaths.length !== 1) return { ok: false, aborted: true }
   const path = choice.filePaths[0] || ''
   if (!path || !looksLikeOpenSquillaHome(path) || resolvedPathsEqual(path, primaryDesktopHome())) {
-    return { ok: false, error: 'Choose a plain OpenSquilla profile directory.' }
+    return { ok: false, error: 'Choose a plain OpenStarry Code profile directory.' }
   }
   const candidate = await inspectLegacyImportCandidate(legacyImportCandidate(sourceKind, path))
   manuallyApprovedMigrationCandidates.set(resolve(path), candidate)
@@ -12207,7 +12237,7 @@ async function withRecoveryOperation<T>(
   if (!exclusive) {
     return {
       ok: false,
-      error: 'OpenSquilla is finishing another profile or lifecycle operation. Try again shortly.',
+      error: 'OpenStarry Code is finishing another profile or lifecycle operation. Try again shortly.',
       state: recoveryStateSnapshot(),
     }
   }
@@ -12305,8 +12335,8 @@ async function choosePrimaryWorkspace(
     const window = currentMainWindow()
     const options: Electron.OpenDialogOptions = {
       title: presentation === 'legacy-agent-data'
-        ? 'Choose legacy OpenSquilla Agent data'
-        : 'Choose an OpenSquilla workspace',
+        ? 'Choose legacy installation data'
+        : 'Choose an OpenStarry Code workspace',
       properties: ['openDirectory'],
     }
     const choice = window
@@ -12352,7 +12382,7 @@ async function choosePrimaryWorkspace(
 ipcMain.handle('desktop:recovery:state', () => recoveryStateSnapshot())
 ipcMain.handle('desktop:recovery:retry-consolidation', async (event) => {
   if (!trustedControlUiIpc(event)) {
-    return { ok: false, error: 'Automatic repair is available only inside OpenSquilla.' }
+    return { ok: false, error: 'Automatic repair is available only inside OpenStarry Code.' }
   }
   return await retryDeferredProfileConsolidation()
 })
@@ -12546,7 +12576,7 @@ ipcMain.handle('desktop:onboarding:cancel', () => {
   resolveOnboarding = null
   rejectOnboarding = null
   onboardingWindow?.close()
-  reject?.(new Error('OpenSquilla setup was cancelled.'))
+  reject?.(new Error('OpenStarry Code setup was cancelled.'))
   // The onboarding "Quit" button routes here; it is a deliberate exit, so quit
   // the app instead of surfacing the cancellation as a boot failure panel.
   app.quit()
@@ -12714,8 +12744,8 @@ app.on('before-quit', (event) => {
         pids: liveLifecycleOwnedGatewayProcesses().map((child) => child.pid),
       })
       dialog.showErrorBox(
-        'OpenSquilla could not quit safely',
-        'The local Gateway is still shutting down. OpenSquilla stayed open to avoid leaving a background process; try Quit again.',
+        'OpenStarry Code could not quit safely',
+        'The local Gateway is still shutting down. OpenStarry Code stayed open to avoid leaving a background process; try Quit again.',
       )
     })
     return

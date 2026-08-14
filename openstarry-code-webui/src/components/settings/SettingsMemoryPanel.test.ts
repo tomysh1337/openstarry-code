@@ -127,7 +127,7 @@ describe('SettingsMemoryPanel', () => {
   it('feature-gates old gateways without calling an unavailable method', async () => {
     const { el, call } = await mountPanel({ methods: [] })
 
-    expect(el.textContent).toContain('Update OpenSquilla to import a profile')
+    expect(el.textContent).toContain('Update OpenStarry Code to import a profile')
     expect(call).not.toHaveBeenCalled()
   })
 

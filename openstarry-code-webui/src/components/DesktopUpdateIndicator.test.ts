@@ -89,7 +89,7 @@ describe('DesktopUpdateIndicator', () => {
     trigger.click()
     await settle()
 
-    expect(document.body.textContent).toContain('Keep OpenSquilla open')
+    expect(document.body.textContent).toContain('Keep OpenStarry Code open')
     expect(document.querySelector('[data-testid="desktop-update-download"]')).toBeNull()
     expect(document.querySelector('[data-testid="desktop-update-relaunch"]')).toBeNull()
     expect(document.querySelector('[data-testid="desktop-update-later"]')).toBeNull()
