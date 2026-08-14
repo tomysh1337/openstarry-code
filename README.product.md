@@ -1,6 +1,6 @@
-# OpenSquilla Product Guide
+# OpenStarry Code Product Guide
 
-OpenSquilla is a token-efficient personal agent runtime for the terminal, a
+OpenStarry Code is a token-efficient personal agent runtime for the terminal, a
 local Web UI, and messaging channels. It is designed for users who want one
 agent surface that can chat, use tools, remember useful context, run scheduled
 work, publish artifacts, and route work across multiple LLM providers without
@@ -11,7 +11,7 @@ This guide is the product and usage entry point. The existing
 
 ## Start Here
 
-1. Install OpenSquilla:
+1. Install OpenStarry Code's compatibility runtime:
 
    ```sh
    uv tool install --python 3.12 "opensquilla[recommended] @ https://github.com/opensquilla/opensquilla/releases/download/v0.5.3/opensquilla-0.5.3-py3-none-any.whl"
@@ -36,9 +36,9 @@ This guide is the product and usage entry point. The existing
 For platform-specific install paths and recovery steps, see
 [`docs/quickstart.md`](docs/quickstart.md).
 
-## Why OpenSquilla
+## Why OpenStarry Code
 
-OpenSquilla focuses on cost-per-success and long-running usefulness rather than
+OpenStarry Code focuses on cost-per-success and long-running usefulness rather than
 single-turn chat alone.
 
 | Product capability | What users get |
@@ -57,7 +57,7 @@ single-turn chat alone.
 
 | Need | Read |
 | --- | --- |
-| Install and run OpenSquilla | [`docs/quickstart.md`](docs/quickstart.md) |
+| Install and run OpenStarry Code | [`docs/quickstart.md`](docs/quickstart.md) |
 | Choose the right workflow for a goal | [`docs/use-cases.md`](docs/use-cases.md) |
 | Start, stop, expose, or troubleshoot the gateway | [`docs/gateway.md`](docs/gateway.md) |
 | Configure providers, router, search, channels, memory, and permissions | [`docs/configuration.md`](docs/configuration.md) |
@@ -85,7 +85,7 @@ single-turn chat alone.
 | Connect MCP-capable clients | [`docs/mcp-server.md`](docs/mcp-server.md) |
 | Run sessions, cron, diagnostics, migration, and MCP operations | [`docs/operations.md`](docs/operations.md) |
 | Fix common install/runtime problems | [`docs/troubleshooting.md`](docs/troubleshooting.md) |
-| Understand OpenSquilla terminology | [`docs/glossary.md`](docs/glossary.md) |
+| Understand OpenStarry Code terminology | [`docs/glossary.md`](docs/glossary.md) |
 
 ## The Fastest Useful Workflow
 
@@ -119,7 +119,7 @@ Use these to inspect history, cost, and readiness.
 
 ## Configuration Essentials
 
-OpenSquilla loads configuration in this order:
+OpenStarry Code loads configuration in this order:
 
 1. `OPENSQUILLA_GATEWAY_CONFIG_PATH`
 2. `./opensquilla.toml`
@@ -145,7 +145,7 @@ See [`docs/configuration.md`](docs/configuration.md) for details.
 
 ### SquillaRouter
 
-SquillaRouter is OpenSquilla's local routing layer. It keeps lightweight tasks
+SquillaRouter is OpenStarry Code's local routing layer. It keeps lightweight tasks
 on cheaper models and reserves stronger tiers for harder turns. Router
 decisions stay local; the user's prompt is not sent to a separate external
 classifier just to decide the model.
@@ -155,7 +155,7 @@ Read: [`docs/features/squilla-router.md`](docs/features/squilla-router.md)
 ### Tool Compression
 
 Agent work often creates huge tool results: logs, web pages, search results,
-spreadsheets, diffs, and JSON. OpenSquilla can keep the raw result available
+spreadsheets, diffs, and JSON. OpenStarry Code can keep the raw result available
 while projecting a compact model-visible preview, reducing context pressure
 without throwing away the user's working state.
 
@@ -163,7 +163,7 @@ Read: [`docs/features/tool-compression.md`](docs/features/tool-compression.md)
 
 ### Meta-Skills
 
-Meta-skills let OpenSquilla present higher-level workflows instead of making the
+Meta-skills let OpenStarry Code present higher-level workflows instead of making the
 user re-describe the same multi-step process. They are useful for repeatable
 research reports, document-to-decision work, daily operating briefs, account
 watching, job-search preparation, academic paper drafting, short-drama production,
@@ -175,7 +175,7 @@ Read: [`docs/features/meta-skills.md`](docs/features/meta-skills.md),
 [`docs/features/meta-skill-user-guide.md`](docs/features/meta-skill-user-guide.md),
 and [`docs/authoring/meta-skills.md`](docs/authoring/meta-skills.md)
 
-## What OpenSquilla Can Do
+## What OpenStarry Code Can Do
 
 - Run chat from Web UI, CLI, gateway RPC, terminal channels, and supported
   messaging platforms.
@@ -187,9 +187,9 @@ and [`docs/authoring/meta-skills.md`](docs/authoring/meta-skills.md)
 - Track usage and estimated cost with `opensquilla cost`.
 - Diagnose readiness with `opensquilla doctor` and `/control/` health views.
 - Export reproducible install state with `opensquilla dist`.
-- Remove OpenSquilla cleanly with `opensquilla uninstall` — keeps your data
+- Remove OpenStarry Code cleanly with `opensquilla uninstall` — keeps your data
   unless you pass `--purge-state` / `--purge-config` / `--purge-all`.
-- Bridge OpenSquilla into MCP-capable clients with `opensquilla mcp-server run`
+- Bridge OpenStarry Code into MCP-capable clients with `opensquilla mcp-server run`
   when the `mcp` extra is installed.
 - Create and deliver artifacts such as HTML files, PDF reports, slides,
   spreadsheets, generated images, and channel-delivered files.
@@ -218,7 +218,7 @@ trust. For tool behavior, approval flow, and workspace containment, see
 
 ## Improve the Documentation
 
-OpenSquilla documentation is part of the product. If a setup step is confusing,
+OpenStarry Code documentation is part of the product. If a setup step is confusing,
 a command is stale, or a feature guide needs a clearer example, open a small
 pull request against `main`. Existing `dev` pull requests may continue during
 the branch transition.
@@ -228,4 +228,4 @@ guidance.
 
 ---
 
-[Docs index](docs/README.md) · [Improve these docs](docs/contributing-docs.md) · [Report a docs issue](https://github.com/opensquilla/opensquilla/issues/new?template=docs_report.yml) · [Contributing](CONTRIBUTING.md)
+[Docs index](docs/README.md) · [Improve these docs](docs/contributing-docs.md) · [Report a docs issue](https://github.com/tomysh1337/openstarry-code/issues/new) · [Contributing](CONTRIBUTING.md)

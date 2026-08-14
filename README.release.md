@@ -1,9 +1,9 @@
-# OpenSquilla
+# OpenStarry Code
 
-OpenSquilla is a Python agent runtime with MCP-native tools, durable sessions,
+OpenStarry Code is a Python agent runtime with MCP-native tools, durable sessions,
 local memory, multi-channel messaging, and a local web control UI.
 
-The package is published as part of an OpenSquilla release zip. Install from the
+The package is published as part of an OpenStarry Code release zip. Install from the
 release bundle rather than from a source checkout so the wheel, dependency
 wheelhouse, install scripts, and third-party notices stay together.
 The wheel already contains the built Web UI, so installing this release bundle
@@ -33,4 +33,4 @@ opensquilla gateway run
 ## Project Links
 
 Repository, license, release, and third-party notice information are included in
-the release bundle and in the public OpenSquilla repository.
+the release bundle and in the public OpenStarry Code repository.

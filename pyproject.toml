@@ -1,11 +1,11 @@
 [project]
 name = "opensquilla"
 version = "0.5.3"
-description = "OpenSquilla — microkernel Python agent runtime with MCP-native tools and multi-channel messaging"
+description = "OpenStarry Code - stackable multi-provider Python agent runtime with automatic model discovery"
 license = "Apache-2.0"
 readme = "README.md"
 authors = [
-    { name = "OpenSquilla contributors" },
+    { name = "OpenStarry Code contributors" },
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",
