@@ -36,9 +36,19 @@ from .qwen_token_plan import (
 # today's local-window set happens to include every keyless provider.
 # ---------------------------------------------------------------------------
 
-KEYLESS_PROVIDERS: frozenset[str] = frozenset(
-    {"ollama", "lm_studio", "ovms", "custom", "custom_anthropic"}
+CUSTOM_OPENAI_PROVIDER_ENV_KEYS: dict[str, str] = {
+    "custom": "CUSTOM_LLM_API_KEY",
+    "custom_2": "CUSTOM_LLM_2_API_KEY",
+    "custom_3": "CUSTOM_LLM_3_API_KEY",
+    "custom_4": "CUSTOM_LLM_4_API_KEY",
+}
+CUSTOM_OPENAI_PROVIDER_IDS: frozenset[str] = frozenset(
+    CUSTOM_OPENAI_PROVIDER_ENV_KEYS
 )
+
+KEYLESS_PROVIDERS: frozenset[str] = frozenset(
+    {"ollama", "lm_studio", "ovms", "custom_anthropic"}
+) | CUSTOM_OPENAI_PROVIDER_IDS
 
 LOCAL_RUNTIME_PROVIDERS: frozenset[str] = KEYLESS_PROVIDERS | {"vllm", "local"}
 
@@ -58,11 +68,13 @@ ProviderBackend = Literal[
 # is the default because every other backend sends a Bearer header.
 AuthHeaderStyle = Literal["x-api-key", "bearer"]
 
-# Whether a provider's live listing has been verified as a safe source for
-# user-selectable model ids. ``none`` is deliberately the default: several
-# compatibility adapters expose static or protocol-family model rows that do
-# not describe what the configured service actually serves.
-SelectableModelCatalog = Literal["none", "verified_live"]
+# Whether a provider's live listing can populate user-selectable model ids.
+# ``verified_live`` is restricted to official provider hosts;
+# ``operator_live`` is scoped to the endpoint explicitly configured by an
+# operator. ``none`` is deliberately the default because several compatibility
+# adapters expose static or protocol-family rows that do not describe what the
+# configured service actually serves.
+SelectableModelCatalog = Literal["none", "verified_live", "operator_live"]
 
 
 @dataclass(frozen=True)
@@ -553,21 +565,23 @@ for _provider_spec in [
         live_catalog_shape="tokenrhythm",
         selectable_model_catalog="verified_live",
     ),
-    # First-class id for any self-hosted or otherwise unlisted
-    # OpenAI-compatible endpoint (vLLM, SGLang, TGI, llama.cpp server, a
-    # bespoke proxy, ...). Pure registry metadata — the openai_compat backend
-    # and its "openai" dialect policy are reused unchanged. No
-    # default_base_url on purpose: requires_base_url() must stay True, the
-    # endpoint is defined by its operator-supplied URL. The API key is
-    # optional (listed in KEYLESS_PROVIDERS); CUSTOM_LLM_API_KEY is read when
-    # the endpoint enforces one.
-    _spec(
-        "custom",
-        "openai_compat",
-        "openai",
-        "CUSTOM_LLM_API_KEY",
-        required_fields=frozenset({"model", "base_url"}),
-        failure_family="openai_compat",
+    # Independent slots for self-hosted or otherwise unlisted OpenAI-compatible
+    # endpoints (vLLM, SGLang, TGI, llama.cpp server, bespoke proxies, ...).
+    # The openai_compat backend and its "openai" dialect policy are reused
+    # unchanged. Each slot has its own profile, endpoint, model, and optional
+    # environment-backed bearer key. Its operator-scoped /models response can
+    # populate the model picker without being treated as official metadata.
+    *(
+        _spec(
+            provider_id,
+            "openai_compat",
+            "openai",
+            env_key,
+            required_fields=frozenset({"model", "base_url"}),
+            failure_family="openai_compat",
+            selectable_model_catalog="operator_live",
+        )
+        for provider_id, env_key in CUSTOM_OPENAI_PROVIDER_ENV_KEYS.items()
     ),
     # Anthropic Messages counterpart to ``custom``.  Keeping a separate
     # provider id preserves the existing OpenAI-compatible default while

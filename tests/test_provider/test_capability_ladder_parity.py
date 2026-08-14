@@ -203,6 +203,9 @@ _EXPECTED_CAPS: dict[tuple[str, str, str], tuple[bool, bool, bool, str]] = {
     ("custom", "gemini-3-pro-preview", ""): (False, True, True, "none"),
     ("custom", "o3-mini", ""): (False, True, False, "none"),
     ("custom", "gpt-5.5", ""): (False, True, True, "none"),
+    ("custom_2", "totally-unknown-model-x1", ""): (False, True, False, "none"),
+    ("custom_3", "totally-unknown-model-x1", ""): (False, True, False, "none"),
+    ("custom_4", "totally-unknown-model-x1", ""): (False, True, False, "none"),
     ("custom_anthropic", "totally-unknown-model-x1", ""): (
         False,
         True,
@@ -864,6 +867,9 @@ _EXPECTED_REQUIRES_API_KEY: dict[str, bool] = {
     "byteplus_coding_plan": True,
     "byteplus_coding_plan_anthropic": True,
     "custom": False,
+    "custom_2": False,
+    "custom_3": False,
+    "custom_4": False,
     "custom_anthropic": False,
     "dashscope": True,
     "deepseek": True,
@@ -920,6 +926,9 @@ _EXPECTED_UNKNOWN_CONTEXT_WINDOW: dict[str, int] = {
     "byteplus_coding_plan": 200000,
     "byteplus_coding_plan_anthropic": 200000,
     "custom": 8192,
+    "custom_2": 8192,
+    "custom_3": 8192,
+    "custom_4": 8192,
     "custom_anthropic": 8192,
     "dashscope": 200000,
     "deepseek": 200000,
@@ -1002,7 +1011,16 @@ def test_unknown_model_context_window_parity_every_provider() -> None:
 
 def test_named_provider_sets_stay_distinct() -> None:
     assert KEYLESS_PROVIDERS == frozenset(
-        {"ollama", "lm_studio", "ovms", "custom", "custom_anthropic"}
+        {
+            "ollama",
+            "lm_studio",
+            "ovms",
+            "custom",
+            "custom_2",
+            "custom_3",
+            "custom_4",
+            "custom_anthropic",
+        }
     )
     assert LOCAL_RUNTIME_PROVIDERS == KEYLESS_PROVIDERS | {"vllm", "local"}
     # vllm/local are local runtimes for the context heuristic but NOT keyless.

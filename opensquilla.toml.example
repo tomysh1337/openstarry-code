@@ -128,6 +128,9 @@ base_url = "https://tokenrhythm.studio/v1"
 # byteplus      BYTEPLUS_API_KEY         https://ark.ap-southeast.bytepluses.com/api/v3
 # vllm          none                     explicit base_url required
 # custom        CUSTOM_LLM_API_KEY (optional)  explicit base_url required
+# custom_2      CUSTOM_LLM_2_API_KEY (optional)  explicit base_url required
+# custom_3      CUSTOM_LLM_3_API_KEY (optional)  explicit base_url required
+# custom_4      CUSTOM_LLM_4_API_KEY (optional)  explicit base_url required
 # lm_studio     none                     http://localhost:1234/v1
 # ovms          none                     http://localhost:8000/v3
 # qianfan       QIANFAN_API_KEY          https://qianfan.baidubce.com/v2
@@ -156,7 +159,14 @@ base_url = "https://tokenrhythm.studio/v1"
 # provider = "custom"
 # base_url = "http://127.0.0.1:8000/v1"   # required — no default endpoint
 # model = "qwen3-32b-awq"
-# # api_key is optional: set env CUSTOM_LLM_API_KEY (or api_key here) only if
+# # The setup UI queries /models after a successful probe. Add custom_2 through
+# # custom_4 as independent provider profiles when several endpoints are needed.
+#
+# [llm_profiles.custom_2]
+# base_url = "https://api-b.example/v1"
+# model = "model-b"
+# # custom_2 reads CUSTOM_LLM_2_API_KEY when api_key is omitted.
+# # custom reads CUSTOM_LLM_API_KEY (or api_key here) only if
 # # your endpoint enforces one. Declare the endpoint's real context window via
 # # [models.custom."qwen3-32b-awq"] — see the per-model overrides section below.
 #
@@ -291,11 +301,17 @@ all_failed_policy = "fallback_single"
 # max_output_tokens = 8192
 # supports_tools = true
 #
-# The generic `custom` and `custom_anthropic` providers use the same override
-# table shape, keyed by the served model id. Unknown custom models retain the
+# The generic `custom`, `custom_2` through `custom_4`, and `custom_anthropic`
+# providers use the same override table shape, keyed by the served model id.
+# Unknown custom models retain the
 # conservative 8k fallback for upgrade compatibility; both remote gateways
 # and local servers should declare their actual window:
 # [models.custom."qwen3-32b-awq"]
+# context_window = 131072
+# max_output_tokens = 8192
+# supports_tools = true
+#
+# [models.custom_2."model-b"]
 # context_window = 131072
 # max_output_tokens = 8192
 # supports_tools = true

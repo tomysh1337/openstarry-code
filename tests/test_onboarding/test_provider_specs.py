@@ -70,6 +70,7 @@ EXPECTED_EXPERIMENTAL = {
     "kimi_coding_anthropic", "minimax", "minimax_openai", "minimax_coding_openai",
     "minimax_coding_anthropic", "minimax_cn", "minimax_global", "mimo_openai",
     "mimo_anthropic", "mistral", "groq", "aihubmix", "vllm", "custom",
+    "custom_2", "custom_3", "custom_4",
     "custom_anthropic",
     "lm_studio", "siliconflow", "ovms", "litellm_proxy", "openai_codex",
     "volcengine_coding_plan", "volcengine_coding_plan_anthropic",
@@ -295,6 +296,26 @@ def test_custom_provider_catalog_payload_semantics():
     fields = {f["name"]: f for f in row["fields"]}
     assert fields["base_url"]["required"] is True
     assert fields["api_key"]["required"] is False
+
+
+@pytest.mark.parametrize(
+    ("provider_id", "env_key", "slot"),
+    [
+        ("custom", "CUSTOM_LLM_API_KEY", 1),
+        ("custom_2", "CUSTOM_LLM_2_API_KEY", 2),
+        ("custom_3", "CUSTOM_LLM_3_API_KEY", 3),
+        ("custom_4", "CUSTOM_LLM_4_API_KEY", 4),
+    ],
+)
+def test_custom_openai_slots_are_independent(provider_id: str, env_key: str, slot: int):
+    spec = get_provider_setup_spec(provider_id)
+
+    assert spec.backend == "openai_compat"
+    assert spec.env_key == env_key
+    assert spec.label.startswith(f"Custom OpenAI-compatible endpoint {slot}")
+    assert spec.accepts_api_key is True
+    assert spec.requires_api_key is False
+    assert spec.requires_base_url is True
 
 
 def test_custom_anthropic_provider_is_a_first_class_messages_endpoint():

@@ -133,6 +133,42 @@ def test_selectable_discovery_delegates_verified_official_hosts(
     ]
 
 
+@pytest.mark.parametrize("provider_id", ["custom", "custom_2", "custom_3", "custom_4"])
+def test_custom_openai_slots_discover_models_from_their_configured_endpoint(
+    monkeypatch: Any,
+    provider_id: str,
+) -> None:
+    seen = _patch_response(monkeypatch, _models_response)
+
+    result = _discover_selectable(
+        provider_id=provider_id,
+        api_key="synthetic-custom-key",
+        base_url="https://models.example.test/v1",
+    )
+
+    assert result.ok is True
+    assert result.source == "live"
+    assert [row["id"] for row in result.models] == ["test-model-a"]
+    assert [str(request.url) for request in seen] == [
+        "https://models.example.test/v1/models"
+    ]
+    assert seen[0].headers["authorization"] == "Bearer synthetic-custom-key"
+
+
+def test_custom_openai_slot_supports_local_plain_http_catalog(
+    monkeypatch: Any,
+) -> None:
+    seen = _patch_response(monkeypatch, _models_response)
+
+    result = _discover_selectable(
+        provider_id="custom_2",
+        base_url="http://127.0.0.1:8080/v1",
+    )
+
+    assert result.source == "live"
+    assert str(seen[0].url) == "http://127.0.0.1:8080/v1/models"
+
+
 def test_tokenrhythm_selectable_discovery_uses_catalog_coordinator(
     monkeypatch: Any,
 ) -> None:

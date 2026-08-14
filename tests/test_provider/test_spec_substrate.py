@@ -23,6 +23,9 @@ _CATALOG_SOURCE_WAIVERS: frozenset[str] = frozenset(
         # Generic custom endpoint ids: the model set is whatever the operator
         # serves; no models.dev source exists.
         "custom",
+        "custom_2",
+        "custom_3",
+        "custom_4",
         "custom_anthropic",
         # Deployment-defined aggregation proxy: the model set is whatever
         # the operator's LiteLLM instance routes; no stable public catalog.
@@ -155,6 +158,13 @@ def test_selectable_model_catalog_is_enabled_only_for_verified_providers() -> No
         token_plan_anthropic.selectable_model_discovery_provider_id
         == "qwen_token_plan"
     )
+
+    operator_scoped = {
+        spec.provider_id
+        for spec in list_provider_specs()
+        if spec.selectable_model_catalog == "operator_live"
+    }
+    assert operator_scoped == {"custom", "custom_2", "custom_3", "custom_4"}
 
 
 def test_anthropic_backend_auth_header_styles() -> None:

@@ -575,20 +575,29 @@ async def discover_selectable_provider_models(
     if not spec.runtime_supported:
         raise ValueError(f"Provider '{provider_id}' has no runtime support to discover.")
 
-    if spec.selectable_model_catalog != "verified_live":
+    catalog_policy = spec.selectable_model_catalog
+    if catalog_policy == "none":
         return ProviderModelsDiscoverResult(ok=True, provider_id=provider_id)
 
     effective_base_url = base_url.strip() or spec.default_base_url
-    try:
-        uses_https = httpx.URL(effective_base_url).scheme == "https"
-    except httpx.InvalidURL:
-        uses_https = False
-    if (
-        not uses_https
-        or not spec.compat.official_host
-        or not is_host_or_subdomain(effective_base_url, spec.compat.official_host)
-    ):
-        return ProviderModelsDiscoverResult(ok=True, provider_id=provider_id)
+    if catalog_policy == "operator_live":
+        try:
+            endpoint_scheme = httpx.URL(effective_base_url).scheme
+        except httpx.InvalidURL:
+            endpoint_scheme = ""
+        if endpoint_scheme not in {"http", "https"}:
+            return ProviderModelsDiscoverResult(ok=True, provider_id=provider_id)
+    else:
+        try:
+            uses_https = httpx.URL(effective_base_url).scheme == "https"
+        except httpx.InvalidURL:
+            uses_https = False
+        if (
+            not uses_https
+            or not spec.compat.official_host
+            or not is_host_or_subdomain(effective_base_url, spec.compat.official_host)
+        ):
+            return ProviderModelsDiscoverResult(ok=True, provider_id=provider_id)
 
     # TokenRhythm has two authoritative sources: its public website catalog
     # and the authenticated account entitlement list.  The gateway-owned

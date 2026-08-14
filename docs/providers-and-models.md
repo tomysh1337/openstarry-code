@@ -183,9 +183,11 @@ your subscription.
 
 ### Custom OpenAI- and Anthropic-compatible endpoints
 
-Use `custom` for an OpenAI Chat Completions endpoint and
-`custom_anthropic` for an Anthropic Messages endpoint. Both require an
-explicit model and base URL; API keys are optional:
+Use `custom`, `custom_2`, `custom_3`, and `custom_4` for independent OpenAI
+Chat Completions endpoints. Each slot has its own base URL, credential, and
+default model, so custom APIs can coexist with built-in providers and with
+each other. Use `custom_anthropic` for an Anthropic Messages endpoint. All
+custom endpoints require an explicit model and base URL; API keys are optional:
 
 ```toml
 [llm]
@@ -195,23 +197,67 @@ base_url = "https://llm.example.com/anthropic"
 api_key_env = "CUSTOM_ANTHROPIC_API_KEY"
 ```
 
-`custom_anthropic` appends `/v1/messages` and sends a bearer token.
-`custom` appends `/chat/completions` to versioned base URLs and reads
-`CUSTOM_LLM_API_KEY`.
+`custom_anthropic` appends `/v1/messages` and sends a bearer token. The OpenAI
+slots append `/chat/completions` to versioned base URLs and read
+`CUSTOM_LLM_API_KEY`, `CUSTOM_LLM_2_API_KEY`, `CUSTOM_LLM_3_API_KEY`, and
+`CUSTOM_LLM_4_API_KEY`, respectively.
+
+After a connection probe, each OpenAI-compatible custom slot queries the
+configured endpoint's `/models` resource. The returned model ids populate the
+model picker; endpoints without a listing keep the manual model-id field.
+
+Configure extra slots under `llm_profiles` and reference them from the existing
+custom B5 ensemble to stack several APIs in one answer path:
+
+```toml
+[llm]
+provider = "custom"
+model = "model-a"
+base_url = "https://api-a.example/v1"
+
+[llm_profiles.custom_2]
+model = "model-b"
+base_url = "https://api-b.example/v1"
+
+[llm_profiles.custom_3]
+model = "model-c"
+base_url = "https://api-c.example/v1"
+
+[llm_ensemble]
+enabled = true
+selection_mode = "custom_b5"
+min_successful_proposers = 2
+
+[[llm_ensemble.candidates]]
+provider = "custom"
+model = "model-a"
+role = "primary"
+
+[[llm_ensemble.candidates]]
+provider = "custom_2"
+model = "model-b"
+role = "contrast"
+
+[[llm_ensemble.candidates]]
+provider = "custom_3"
+model = "model-c"
+role = "aggregator"
+```
 
 Unknown custom models keep the conservative 8k context default for upgrade
 compatibility. Declare the endpoint's real window under
-`[models.custom."<model>"]` or
+`[models.custom."<model>"]`, `[models.custom_2."<model>"]`, or
 `[models.custom_anthropic."<model>"]`; this is important for both remote
 gateways and local servers with larger windows.
 
 The current custom-provider boundary is intentionally explicit:
 
-- protocol selection is available through the two fixed provider ids;
+- protocol selection is explicit, with four fixed OpenAI-compatible slots and
+  one Anthropic-compatible slot;
 - provider-scoped model overrides, base URL, proxy, and optional bearer key
   are supported;
-- arbitrary user-named provider ids and arbitrary request headers are not yet
-  part of the persisted provider contract;
+- arbitrary user-named provider ids and arbitrary request headers are not part
+  of the persisted provider contract;
 - custom Anthropic auth is currently optional bearer only (`x-api-key` and
   custom auth modes are not configurable), and custom protocol choices do not
   yet include OpenAI Responses or native Gemini;
