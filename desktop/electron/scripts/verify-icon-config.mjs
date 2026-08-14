@@ -8,6 +8,7 @@ const packageRoot = resolve(scriptDir, '..')
 const packageJsonPath = join(packageRoot, 'package.json')
 const macIconPath = join(packageRoot, 'assets', 'icon.icns')
 const windowsIconPath = join(packageRoot, 'assets', 'icon.ico')
+const portableIconPath = join(packageRoot, 'assets', 'icon.png')
 
 const failures = []
 
@@ -30,6 +31,18 @@ if (!existsSync(macIconPath)) {
 
 if (!existsSync(windowsIconPath)) {
   fail(`Windows icon is missing at ${windowsIconPath}`)
+}
+
+if (!existsSync(portableIconPath)) {
+  fail(`Portable icon is missing at ${portableIconPath}`)
+}
+
+if (existsSync(portableIconPath)) {
+  const png = await readFile(portableIconPath)
+  const pngSignature = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])
+  if (!png.subarray(0, pngSignature.length).equals(pngSignature)) {
+    fail(`Portable icon is not a valid PNG at ${portableIconPath}`)
+  }
 }
 
 expectEqual(build.mac?.icon, 'assets/icon.icns', 'build.mac.icon')

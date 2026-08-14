@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+- Added an original starfield application icon with synchronized PNG, Windows
+  ICO, and macOS ICNS assets generated from one reproducible master.
 - Added first-class custom API entries for OpenAI Chat Completions, OpenAI
   Responses, and Anthropic Messages. Each accepts an operator-supplied Base
   URL and model, supports optional credentials, and participates in live model

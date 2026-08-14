@@ -982,11 +982,13 @@ function bootPagePath(): string {
 }
 
 function appIconPath(): string {
-  // Only icon.icns (macOS) and icon.ico (Windows) ship in assets/ — there is no
-  // icon.png, so the previous path resolved to a missing file everywhere. On
-  // macOS BrowserWindow.icon is ignored (the bundle icon is used), so pointing at
-  // the platform icon that exists is correct for the surfaces that do read it.
-  const iconFile = process.platform === 'win32' ? 'icon.ico' : 'icon.icns'
+  // macOS ignores BrowserWindow.icon and reads the bundle ICNS. Other desktop
+  // surfaces use the matching ICO or PNG generated from the same starfield mark.
+  const iconFile = process.platform === 'win32'
+    ? 'icon.ico'
+    : process.platform === 'darwin'
+      ? 'icon.icns'
+      : 'icon.png'
   return app.isPackaged
     ? join(process.resourcesPath, 'app.asar', 'assets', iconFile)
     : join(packageRoot, 'assets', iconFile)
