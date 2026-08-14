@@ -13,7 +13,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from opensquilla.gateway.channel_dispatch import (
+from openstarry_code.gateway.channel_dispatch import (
     _ChannelInFlightSet,
     _compute_channel_cap,
     _deliver_runtime_channel_reply,
@@ -120,8 +120,8 @@ def test_inflight_cap_scales_with_concurrency(
 
 
 def test_compute_channel_cap_env_override(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Env path: OPENSQUILLA_CHANNEL_INFLIGHT_CAP=1 gives cap=min(1, 2×4)=1."""
-    monkeypatch.setenv("OPENSQUILLA_CHANNEL_INFLIGHT_CAP", "1")
+    """Env path: OPENSTARRY_CODE_CHANNEL_INFLIGHT_CAP=1 gives cap=min(1, 2×4)=1."""
+    monkeypatch.setenv("OPENSTARRY_CODE_CHANNEL_INFLIGHT_CAP", "1")
     # _compute_channel_cap reads from config object, not env directly —
     # env is applied by GatewayConfig. Test via config mock.
     cfg = _make_config(channel_inflight_cap=1, max_concurrency=4)
@@ -238,8 +238,8 @@ async def test_ac2_3_done_callback_logs_error_and_counter() -> None:
 
     session_key = "s:cb-test"
 
-    with patch("opensquilla.gateway.channel_dispatch._emit_metric", side_effect=_fake_emit):
-        with patch("opensquilla.gateway.channel_dispatch.log") as mock_log:
+    with patch("openstarry_code.gateway.channel_dispatch._emit_metric", side_effect=_fake_emit):
+        with patch("openstarry_code.gateway.channel_dispatch.log") as mock_log:
             task = asyncio.create_task(_failing_reply())
             ifs.add(task)
 
@@ -357,7 +357,7 @@ async def test_no_deadlock_stress() -> None:
 
     Uses mock task_runtime that returns immediately to avoid real LLM calls.
     """
-    from opensquilla.gateway.channel_dispatch import _ChannelInFlightSet
+    from openstarry_code.gateway.channel_dispatch import _ChannelInFlightSet
 
     total_requests = 10_000
     cap = 8
@@ -407,7 +407,7 @@ async def test_no_deadlock_stress() -> None:
 @pytest.mark.asyncio
 async def test_inflight_cap_triggers_busy_reply() -> None:
     """When cap is reached, channel gets 'Server busy' reply."""
-    from opensquilla.gateway.channel_dispatch import _ChannelInFlightSet
+    from openstarry_code.gateway.channel_dispatch import _ChannelInFlightSet
 
     ifs = _ChannelInFlightSet(cap=2)
     channel = _make_channel()
@@ -423,7 +423,7 @@ async def test_inflight_cap_triggers_busy_reply() -> None:
     assert ifs.full()
 
     # Simulate the busy-reply path from run_channel_dispatch
-    from opensquilla.channels.types import OutgoingMessage
+    from openstarry_code.channels.types import OutgoingMessage
 
     if ifs.full():
         await channel.send(
@@ -451,8 +451,8 @@ async def test_cap_full_no_transcript_pollution() -> None:
     """When _in_flight is full, enqueue is not called and transcript
     is not written; user receives 'Server busy' reply.
     """
-    from opensquilla.channels.types import IncomingMessage
-    from opensquilla.gateway.channel_dispatch import _ChannelInFlightSet, run_channel_dispatch
+    from openstarry_code.channels.types import IncomingMessage
+    from openstarry_code.gateway.channel_dispatch import _ChannelInFlightSet, run_channel_dispatch
 
     # Build a full in-flight set (cap=1, one dummy task)
     ifs = _ChannelInFlightSet(cap=1)
@@ -508,21 +508,21 @@ async def test_cap_full_no_transcript_pollution() -> None:
 
     with (
         patch(
-            "opensquilla.gateway.routing.build_channel_route_envelope",
+            "openstarry_code.gateway.routing.build_channel_route_envelope",
             return_value=fake_envelope,
         ),
-        patch("opensquilla.gateway.channel_dispatch._append_channel_user_message") as mock_append,
-        patch("opensquilla.gateway.channel_dispatch.start_turn_via_runtime") as mock_enqueue,
+        patch("openstarry_code.gateway.channel_dispatch._append_channel_user_message") as mock_append,
+        patch("openstarry_code.gateway.channel_dispatch.start_turn_via_runtime") as mock_enqueue,
         patch(
-            "opensquilla.gateway.channel_dispatch._record_delivery_context",
+            "openstarry_code.gateway.channel_dispatch._record_delivery_context",
             new=AsyncMock(return_value=(MagicMock(), False)),
         ),
-        patch("opensquilla.gateway.channel_dispatch._should_skip_unmentioned", return_value=False),
+        patch("openstarry_code.gateway.channel_dispatch._should_skip_unmentioned", return_value=False),
         patch(
-            "opensquilla.gateway.channel_dispatch._ingest_channel_message_attachments",
+            "openstarry_code.gateway.channel_dispatch._ingest_channel_message_attachments",
             new=AsyncMock(return_value=MagicMock(text="hello", attachments=[])),
         ),
-        patch("opensquilla.gateway.channel_dispatch._status_reactor") as mock_reactor_factory,
+        patch("openstarry_code.gateway.channel_dispatch._status_reactor") as mock_reactor_factory,
     ):
         mock_append.return_value = (MagicMock(), "hello")
         mock_enqueue.return_value = MagicMock(task_id="t-1")
@@ -574,7 +574,7 @@ async def test_debounce_reservation_enforced() -> None:
     """
     from unittest.mock import AsyncMock, MagicMock, patch
 
-    from opensquilla.gateway.channel_dispatch import (
+    from openstarry_code.gateway.channel_dispatch import (
         _ChannelInFlightSet,
         _dispatch_combined_message_after_debounce,
     )
@@ -624,36 +624,36 @@ async def test_debounce_reservation_enforced() -> None:
 
     with (
         patch(
-            "opensquilla.gateway.routing.build_channel_route_envelope",
+            "openstarry_code.gateway.routing.build_channel_route_envelope",
             return_value=fake_envelope,
         ),
         patch(
-            "opensquilla.gateway.channel_dispatch.start_turn_via_runtime",
+            "openstarry_code.gateway.channel_dispatch.start_turn_via_runtime",
             side_effect=_slow_enqueue,
         ),
         patch(
-            "opensquilla.gateway.channel_dispatch._append_channel_user_message",
+            "openstarry_code.gateway.channel_dispatch._append_channel_user_message",
             new=AsyncMock(return_value=(MagicMock(), "hello")),
         ),
         patch(
-            "opensquilla.gateway.channel_dispatch._record_delivery_context",
+            "openstarry_code.gateway.channel_dispatch._record_delivery_context",
             new=AsyncMock(return_value=(MagicMock(), False)),
         ),
         patch(
-            "opensquilla.gateway.channel_dispatch._ingest_channel_message_attachments",
+            "openstarry_code.gateway.channel_dispatch._ingest_channel_message_attachments",
             new=AsyncMock(return_value=MagicMock(text="hello", attachments=[])),
         ),
         patch(
-            "opensquilla.gateway.channel_dispatch._transcript_watermark",
+            "openstarry_code.gateway.channel_dispatch._transcript_watermark",
             new=AsyncMock(return_value=0),
         ),
-        patch("opensquilla.gateway.channel_dispatch._RuntimeChannelStreamRelay") as mock_relay_cls,
-        patch("opensquilla.gateway.channel_dispatch._status_reactor", return_value=mock_reactor),
+        patch("openstarry_code.gateway.channel_dispatch._RuntimeChannelStreamRelay") as mock_relay_cls,
+        patch("openstarry_code.gateway.channel_dispatch._status_reactor", return_value=mock_reactor),
         patch(
-            "opensquilla.gateway.channel_dispatch._deliver_runtime_channel_reply",
+            "openstarry_code.gateway.channel_dispatch._deliver_runtime_channel_reply",
             new=AsyncMock(),
         ),
-        patch("opensquilla.gateway.channel_dispatch._emit_events", new=AsyncMock()),
+        patch("openstarry_code.gateway.channel_dispatch._emit_events", new=AsyncMock()),
     ):
         mock_relay_cls.maybe_start.return_value = None
 
@@ -732,8 +732,8 @@ async def test_apply_overflow_policy_invoked_when_channel_override_present() -> 
     runtime.apply_overflow_policy(session_key, policy=<override>) before
     start_turn_via_runtime so the override takes effect for that turn.
     """
-    from opensquilla.channels.types import IncomingMessage
-    from opensquilla.gateway.channel_dispatch import _ChannelInFlightSet, run_channel_dispatch
+    from openstarry_code.channels.types import IncomingMessage
+    from openstarry_code.gateway.channel_dispatch import _ChannelInFlightSet, run_channel_dispatch
 
     msg = MagicMock()
     msg.content = "hello"
@@ -780,35 +780,35 @@ async def test_apply_overflow_policy_invoked_when_channel_override_present() -> 
 
     with (
         patch(
-            "opensquilla.gateway.routing.build_channel_route_envelope",
+            "openstarry_code.gateway.routing.build_channel_route_envelope",
             return_value=fake_envelope,
         ),
         patch(
-            "opensquilla.gateway.channel_dispatch._append_channel_user_message",
+            "openstarry_code.gateway.channel_dispatch._append_channel_user_message",
             new=AsyncMock(return_value=(MagicMock(), "hello")),
         ),
         patch(
-            "opensquilla.gateway.channel_dispatch.start_turn_via_runtime",
+            "openstarry_code.gateway.channel_dispatch.start_turn_via_runtime",
             new=AsyncMock(return_value=MagicMock(task_id="t-1")),
         ),
         patch(
-            "opensquilla.gateway.channel_dispatch._record_delivery_context",
+            "openstarry_code.gateway.channel_dispatch._record_delivery_context",
             new=AsyncMock(return_value=(MagicMock(), False)),
         ),
-        patch("opensquilla.gateway.channel_dispatch._should_skip_unmentioned", return_value=False),
+        patch("openstarry_code.gateway.channel_dispatch._should_skip_unmentioned", return_value=False),
         patch(
-            "opensquilla.gateway.channel_dispatch._ingest_channel_message_attachments",
+            "openstarry_code.gateway.channel_dispatch._ingest_channel_message_attachments",
             new=AsyncMock(return_value=MagicMock(text="hello", attachments=[])),
         ),
-        patch("opensquilla.gateway.channel_dispatch._status_reactor") as mock_reactor_factory,
+        patch("openstarry_code.gateway.channel_dispatch._status_reactor") as mock_reactor_factory,
         patch(
-            "opensquilla.gateway.channel_dispatch._RuntimeChannelStreamRelay",
+            "openstarry_code.gateway.channel_dispatch._RuntimeChannelStreamRelay",
         ) as mock_relay_cls,
         patch(
-            "opensquilla.gateway.channel_dispatch._deliver_runtime_channel_reply",
+            "openstarry_code.gateway.channel_dispatch._deliver_runtime_channel_reply",
             new=AsyncMock(),
         ),
-        patch("opensquilla.gateway.channel_dispatch._emit_events", new=AsyncMock()),
+        patch("openstarry_code.gateway.channel_dispatch._emit_events", new=AsyncMock()),
     ):
         mock_relay_cls.maybe_start.return_value = None
         mock_reactor = MagicMock()
@@ -843,8 +843,8 @@ async def test_apply_overflow_policy_invoked_when_channel_override_present() -> 
 @pytest.mark.asyncio
 async def test_apply_overflow_policy_not_invoked_without_channel_override() -> None:
     """No override hook fires when the channel has no per-channel mapping."""
-    from opensquilla.channels.types import IncomingMessage
-    from opensquilla.gateway.channel_dispatch import _ChannelInFlightSet, run_channel_dispatch
+    from openstarry_code.channels.types import IncomingMessage
+    from openstarry_code.gateway.channel_dispatch import _ChannelInFlightSet, run_channel_dispatch
 
     msg = MagicMock()
     msg.content = "hello"
@@ -891,35 +891,35 @@ async def test_apply_overflow_policy_not_invoked_without_channel_override() -> N
 
     with (
         patch(
-            "opensquilla.gateway.routing.build_channel_route_envelope",
+            "openstarry_code.gateway.routing.build_channel_route_envelope",
             return_value=fake_envelope,
         ),
         patch(
-            "opensquilla.gateway.channel_dispatch._append_channel_user_message",
+            "openstarry_code.gateway.channel_dispatch._append_channel_user_message",
             new=AsyncMock(return_value=(MagicMock(), "hello")),
         ),
         patch(
-            "opensquilla.gateway.channel_dispatch.start_turn_via_runtime",
+            "openstarry_code.gateway.channel_dispatch.start_turn_via_runtime",
             new=AsyncMock(return_value=MagicMock(task_id="t-1")),
         ),
         patch(
-            "opensquilla.gateway.channel_dispatch._record_delivery_context",
+            "openstarry_code.gateway.channel_dispatch._record_delivery_context",
             new=AsyncMock(return_value=(MagicMock(), False)),
         ),
-        patch("opensquilla.gateway.channel_dispatch._should_skip_unmentioned", return_value=False),
+        patch("openstarry_code.gateway.channel_dispatch._should_skip_unmentioned", return_value=False),
         patch(
-            "opensquilla.gateway.channel_dispatch._ingest_channel_message_attachments",
+            "openstarry_code.gateway.channel_dispatch._ingest_channel_message_attachments",
             new=AsyncMock(return_value=MagicMock(text="hello", attachments=[])),
         ),
-        patch("opensquilla.gateway.channel_dispatch._status_reactor") as mock_reactor_factory,
+        patch("openstarry_code.gateway.channel_dispatch._status_reactor") as mock_reactor_factory,
         patch(
-            "opensquilla.gateway.channel_dispatch._RuntimeChannelStreamRelay",
+            "openstarry_code.gateway.channel_dispatch._RuntimeChannelStreamRelay",
         ) as mock_relay_cls,
         patch(
-            "opensquilla.gateway.channel_dispatch._deliver_runtime_channel_reply",
+            "openstarry_code.gateway.channel_dispatch._deliver_runtime_channel_reply",
             new=AsyncMock(),
         ),
-        patch("opensquilla.gateway.channel_dispatch._emit_events", new=AsyncMock()),
+        patch("openstarry_code.gateway.channel_dispatch._emit_events", new=AsyncMock()),
     ):
         mock_relay_cls.maybe_start.return_value = None
         mock_reactor = MagicMock()

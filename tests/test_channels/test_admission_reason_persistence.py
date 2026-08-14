@@ -13,8 +13,8 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.channels.delivery_store import ChannelDeliveryStore
-from opensquilla.channels.types import (
+from openstarry_code.channels.delivery_store import ChannelDeliveryStore
+from openstarry_code.channels.types import (
     IncomingMessage,
     IngressProvenance,
     IngressVerification,

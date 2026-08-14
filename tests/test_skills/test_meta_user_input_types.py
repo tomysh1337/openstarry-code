@@ -6,7 +6,7 @@ import dataclasses
 
 import pytest
 
-from opensquilla.skills.meta.types import (
+from openstarry_code.skills.meta.types import (
     ClarifyField,
     ClarifyStepConfig,
     MetaPaused,
@@ -121,14 +121,14 @@ def test_meta_step_can_carry_clarify_config():
 
 
 def test_meta_result_paused_defaults_to_false():
-    from opensquilla.skills.meta.types import MetaResult
+    from openstarry_code.skills.meta.types import MetaResult
     r = MetaResult(ok=True, final_text="done")
     assert r.paused is False
     assert r.paused_payload is None
 
 
 def test_meta_result_paused_carries_payload():
-    from opensquilla.skills.meta.types import MetaPaused, MetaResult
+    from openstarry_code.skills.meta.types import MetaPaused, MetaResult
     cfg = ClarifyStepConfig(mode="form", fields=())
     paused = MetaPaused(run_id="r1", step_id="collect", schema=cfg)
     r = MetaResult(ok=False, paused=True, paused_payload=paused)

@@ -16,10 +16,10 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.gateway.routing import tool_context_from_envelope
-from opensquilla.provider.correlation_context import bind_provider_request_correlation
-from opensquilla.provider.types import ProviderRequestCorrelation
-from opensquilla.sandbox.run_context import (
+from openstarry_code.gateway.routing import tool_context_from_envelope
+from openstarry_code.provider.correlation_context import bind_provider_request_correlation
+from openstarry_code.provider.types import ProviderRequestCorrelation
+from openstarry_code.sandbox.run_context import (
     DomainGrant,
     MountGrant,
     PackageBundleGrant,
@@ -27,9 +27,9 @@ from opensquilla.sandbox.run_context import (
     RunContext,
     TemporaryGrant,
 )
-from opensquilla.sandbox.run_mode import RunMode
-from opensquilla.tools.builtin import sessions as sessions_tool
-from opensquilla.tools.types import CallerKind, ToolContext, current_tool_context
+from openstarry_code.sandbox.run_mode import RunMode
+from openstarry_code.tools.builtin import sessions as sessions_tool
+from openstarry_code.tools.types import CallerKind, ToolContext, current_tool_context
 
 
 @dataclass

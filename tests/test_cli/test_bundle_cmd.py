@@ -1,8 +1,8 @@
-"""``opensquilla bundle`` — offline diagnostics bundle collection.
+"""``openstarry-code bundle`` — offline diagnostics bundle collection.
 
 Offline: state/log dirs point at tmp_path; no gateway needs to run (live
 enrichment is best-effort and silently skipped, and stubbed out here for
-determinism). An autouse fixture also pins OPENSQUILLA_GATEWAY_CONFIG_PATH
+determinism). An autouse fixture also pins OPENSTARRY_CODE_GATEWAY_CONFIG_PATH
 to a synthetic TOML so no test can ever read or rewrite a real config.
 """
 
@@ -15,7 +15,7 @@ from pathlib import Path
 import pytest
 from typer.testing import CliRunner
 
-from opensquilla.cli.main import app
+from openstarry_code.cli.main import app
 
 runner = CliRunner()
 
@@ -25,15 +25,15 @@ def _hermetic_offline(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """Pin config resolution to a synthetic file and stub live enrichment.
 
     Without the config pin, resolve_config_path(None) falls back to
-    ./opensquilla.toml and then the developer's real home config — which the
+    ./openstarry-code.toml and then the developer's real home config — which the
     bundle's doctor collector must never see. The enrichment stub keeps tests
     deterministic and fast instead of relying on a quick connection failure.
     """
     config_path = tmp_path / "synthetic-config.toml"
     config_path.write_text("# synthetic bundle-cmd test config\n", encoding="utf-8")
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(config_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(config_path))
     try:
-        from opensquilla.cli import bundle_cmd
+        from openstarry_code.cli import bundle_cmd
     except ImportError:
         # First TDD run: module does not exist yet; let the CLI invocation
         # fail with "No such command" instead of a fixture error.
@@ -45,8 +45,8 @@ def test_bundle_writes_zip_and_prints_path(tmp_path, monkeypatch) -> None:
     home = tmp_path / "home"
     (home / "logs").mkdir(parents=True)
     (home / "logs" / "debug.log").write_text("2026-07-07 [INFO] opensquilla: ok\n")
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
-    monkeypatch.setenv("OPENSQUILLA_LOG_DIR", str(home / "logs"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_LOG_DIR", str(home / "logs"))
     output = tmp_path / "out.zip"
 
     result = runner.invoke(app, ["bundle", "--output", str(output)])
@@ -61,8 +61,8 @@ def test_bundle_writes_zip_and_prints_path(tmp_path, monkeypatch) -> None:
 def test_bundle_json_output(tmp_path, monkeypatch) -> None:
     home = tmp_path / "home"
     (home / "logs").mkdir(parents=True)
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
-    monkeypatch.setenv("OPENSQUILLA_LOG_DIR", str(home / "logs"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_LOG_DIR", str(home / "logs"))
     output = tmp_path / "out.zip"
 
     result = runner.invoke(app, ["bundle", "--output", str(output), "--json"])
@@ -76,8 +76,8 @@ def test_bundle_json_output(tmp_path, monkeypatch) -> None:
 def test_bundle_include_content_flag(tmp_path, monkeypatch) -> None:
     home = tmp_path / "home"
     (home / "logs").mkdir(parents=True)
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
-    monkeypatch.setenv("OPENSQUILLA_LOG_DIR", str(home / "logs"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_LOG_DIR", str(home / "logs"))
     output = tmp_path / "out.zip"
 
     result = runner.invoke(app, ["bundle", "--output", str(output), "--include-content"])

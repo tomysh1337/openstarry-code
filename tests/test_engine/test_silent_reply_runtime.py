@@ -8,19 +8,19 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.engine.types import DoneEvent, TextDeltaEvent
-from opensquilla.gateway.config import AttachmentsConfig, GatewayConfig, SquillaRouterConfig
-from opensquilla.provider import ContentBlockText, Message, ModelInfo
-from opensquilla.provider import DoneEvent as ProviderDone
-from opensquilla.provider import ErrorEvent as ProviderError
-from opensquilla.provider import TextDeltaEvent as ProviderText
-from opensquilla.provider import ToolUseEndEvent as ProviderToolUseEnd
-from opensquilla.provider import ToolUseStartEvent as ProviderToolUseStart
-from opensquilla.session.manager import SessionManager
-from opensquilla.session.storage import SessionStorage
-from opensquilla.tools.registry import ToolRegistry
-from opensquilla.tools.types import CallerKind, ToolContext, ToolSpec
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.engine.types import DoneEvent, TextDeltaEvent
+from openstarry_code.gateway.config import AttachmentsConfig, GatewayConfig, SquillaRouterConfig
+from openstarry_code.provider import ContentBlockText, Message, ModelInfo
+from openstarry_code.provider import DoneEvent as ProviderDone
+from openstarry_code.provider import ErrorEvent as ProviderError
+from openstarry_code.provider import TextDeltaEvent as ProviderText
+from openstarry_code.provider import ToolUseEndEvent as ProviderToolUseEnd
+from openstarry_code.provider import ToolUseStartEvent as ProviderToolUseStart
+from openstarry_code.session.manager import SessionManager
+from openstarry_code.session.storage import SessionStorage
+from openstarry_code.tools.registry import ToolRegistry
+from openstarry_code.tools.types import CallerKind, ToolContext, ToolSpec
 
 
 class _ScriptedProvider:

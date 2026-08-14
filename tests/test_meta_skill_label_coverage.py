@@ -21,7 +21,7 @@ def _extract_frontmatter(path: Path) -> dict:
 
 @pytest.mark.parametrize("name", BUNDLED_META_SKILLS)
 def test_bundled_meta_skill_steps_have_labels(name: str) -> None:
-    path = Path(f"src/opensquilla/skills/bundled/{name}/SKILL.md")
+    path = Path(f"src/openstarry_code/skills/bundled/{name}/SKILL.md")
     fm = _extract_frontmatter(path)
     steps = fm["composition"]["steps"]
 
@@ -32,7 +32,7 @@ def test_bundled_meta_skill_steps_have_labels(name: str) -> None:
 
 @pytest.mark.parametrize("name", BUNDLED_META_SKILLS)
 def test_bundled_meta_skill_has_request_template(name: str) -> None:
-    path = Path(f"src/opensquilla/skills/bundled/{name}/SKILL.md")
+    path = Path(f"src/openstarry_code/skills/bundled/{name}/SKILL.md")
     fm = _extract_frontmatter(path)
     template = fm.get("request_template")
 
@@ -47,7 +47,7 @@ def test_bundled_meta_skill_has_request_template(name: str) -> None:
 
 @pytest.mark.parametrize("name", BUNDLED_META_SKILLS)
 def test_bundled_meta_skill_has_output_contract(name: str) -> None:
-    path = Path(f"src/opensquilla/skills/bundled/{name}/SKILL.md")
+    path = Path(f"src/openstarry_code/skills/bundled/{name}/SKILL.md")
     fm = _extract_frontmatter(path)
     contract = fm.get("output_contract")
 
@@ -60,7 +60,7 @@ def test_bundled_meta_skill_has_output_contract(name: str) -> None:
 
 @pytest.mark.parametrize("name", BUNDLED_META_SKILLS)
 def test_bundled_meta_skill_has_eval_baseline(name: str) -> None:
-    path = Path(f"src/opensquilla/skills/bundled/{name}/SKILL.md")
+    path = Path(f"src/openstarry_code/skills/bundled/{name}/SKILL.md")
     fm = _extract_frontmatter(path)
     eval_prompts = fm.get("eval_prompts")
 
@@ -78,7 +78,7 @@ def test_bundled_meta_skill_has_eval_baseline(name: str) -> None:
 
 @pytest.mark.parametrize("name", BUNDLED_META_SKILLS)
 def test_bundled_meta_skill_declares_policy_or_preference_metadata(name: str) -> None:
-    path = Path(f"src/opensquilla/skills/bundled/{name}/SKILL.md")
+    path = Path(f"src/openstarry_code/skills/bundled/{name}/SKILL.md")
     fm = _extract_frontmatter(path)
 
     assert isinstance(fm.get("preference_keys"), list), (

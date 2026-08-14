@@ -8,19 +8,19 @@ from urllib.parse import urlsplit
 from starlette.applications import Starlette
 from starlette.testclient import TestClient
 
-from opensquilla.artifacts import (
+from openstarry_code.artifacts import (
     ARTIFACT_BUNDLE_BLOBS_DIR,
     ArtifactBundle,
     ArtifactBundleSourceFile,
     ArtifactStore,
 )
-from opensquilla.gateway.artifact_preview import (
+from openstarry_code.gateway.artifact_preview import (
     ArtifactPreviewLeaseService,
     create_artifact_preview_resource_app,
     register_artifact_preview_routes,
 )
-from opensquilla.gateway.config import AttachmentsConfig, AuthConfig, GatewayConfig
-from opensquilla.gateway.middleware import AuthMiddleware
+from openstarry_code.gateway.config import AttachmentsConfig, AuthConfig, GatewayConfig
+from openstarry_code.gateway.middleware import AuthMiddleware
 
 _SESSION_KEY = "agent:main:webchat:preview"
 _SESSION_ID = "session-preview"
@@ -241,7 +241,7 @@ def test_full_web_preview_origin_can_clear_site_data_before_revoke(tmp_path: Pat
     assert payload["preview_origin"]
     resource_app = create_artifact_preview_resource_app(service)
     with TestClient(resource_app, base_url=payload["preview_origin"]) as resource_client:
-        cleared = resource_client.get("/.opensquilla/clear-site-data")
+        cleared = resource_client.get("/.openstarry-code/clear-site-data")
 
     assert cleared.status_code == 204
     assert cleared.headers["clear-site-data"] == '"cache", "cookies", "storage"'
@@ -336,7 +336,7 @@ def test_force_offline_keeps_desktop_on_loopback_transport(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_PREVIEW_FORCE_OFFLINE", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_PREVIEW_FORCE_OFFLINE", "1")
     ref = _publish_html(tmp_path)
     app, service = _app(tmp_path)
     service.set_listener_port(43123)

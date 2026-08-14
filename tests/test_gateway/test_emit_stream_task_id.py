@@ -15,21 +15,21 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.types import (
+from openstarry_code.engine.types import (
     DoneEvent,
     ErrorEvent,
     TextDeltaEvent,
     ThinkingEvent,
     ToolUseStartEvent,
 )
-from opensquilla.gateway.boot import (
+from openstarry_code.gateway.boot import (
     TaskRuntimeStreamError,
     _emit_task_runtime_stream_events,
     dispatch_task_runtime_turn,
 )
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.routing import RouteEnvelope, SourceKind
-from opensquilla.gateway.task_runtime import _task_identity_payload
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.routing import RouteEnvelope, SourceKind
+from openstarry_code.gateway.task_runtime import _task_identity_payload
 
 SESSION = "agent:main:webchat:issue344"
 

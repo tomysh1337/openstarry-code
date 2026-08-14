@@ -21,11 +21,11 @@ from PIL import Image, PngImagePlugin
 REPO_ROOT = Path(__file__).resolve().parents[2]
 IMAGE_SCRIPT = (
     REPO_ROOT
-    / "src/opensquilla/skills/bundled/nano-banana-pro/scripts/generate_image.py"
+    / "src/openstarry_code/skills/bundled/nano-banana-pro/scripts/generate_image.py"
 )
 VIDEO_SCRIPT = (
     REPO_ROOT
-    / "src/opensquilla/skills/bundled/seedance-2-prompt/scripts/generate_video.py"
+    / "src/openstarry_code/skills/bundled/seedance-2-prompt/scripts/generate_video.py"
 )
 
 
@@ -53,15 +53,15 @@ def video_script() -> ModuleType:
 def isolated_runtime(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> Path:
     for name in (
         "OPENROUTER_API_KEY",
-        "OPENSQUILLA_META_CAPABILITY_PROVIDER",
-        "OPENSQUILLA_META_CAPABILITY_API_KEY",
-        "OPENSQUILLA_META_CAPABILITY_BASE_URL",
-        "OPENSQUILLA_META_CAPABILITY_PROXY",
-        "OPENSQUILLA_META_OPENROUTER_API_KEY",
-        "OPENSQUILLA_LLM_API_KEY",
-        "OPENSQUILLA_LLM_PROVIDER",
-        "OPENSQUILLA_GATEWAY_CONFIG_PATH",
-        "OPENSQUILLA_STATE_DIR",
+        "OPENSTARRY_CODE_META_CAPABILITY_PROVIDER",
+        "OPENSTARRY_CODE_META_CAPABILITY_API_KEY",
+        "OPENSTARRY_CODE_META_CAPABILITY_BASE_URL",
+        "OPENSTARRY_CODE_META_CAPABILITY_PROXY",
+        "OPENSTARRY_CODE_META_OPENROUTER_API_KEY",
+        "OPENSTARRY_CODE_LLM_API_KEY",
+        "OPENSTARRY_CODE_LLM_PROVIDER",
+        "OPENSTARRY_CODE_GATEWAY_CONFIG_PATH",
+        "OPENSTARRY_CODE_STATE_DIR",
         "CUSTOM_OPENROUTER_KEY",
         "AWS_SECRET_ACCESS_KEY",
         "ARK_API_KEY",
@@ -107,11 +107,11 @@ def _set_parent_connection(
     base_url: str = "https://openrouter.ai/api/v1",
     proxy: str = "",
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_META_CAPABILITY_PROVIDER", provider)
-    monkeypatch.setenv("OPENSQUILLA_META_CAPABILITY_API_KEY", key)
-    monkeypatch.setenv("OPENSQUILLA_META_CAPABILITY_BASE_URL", base_url)
+    monkeypatch.setenv("OPENSTARRY_CODE_META_CAPABILITY_PROVIDER", provider)
+    monkeypatch.setenv("OPENSTARRY_CODE_META_CAPABILITY_API_KEY", key)
+    monkeypatch.setenv("OPENSTARRY_CODE_META_CAPABILITY_BASE_URL", base_url)
     if proxy:
-        monkeypatch.setenv("OPENSQUILLA_META_CAPABILITY_PROXY", proxy)
+        monkeypatch.setenv("OPENSTARRY_CODE_META_CAPABILITY_PROXY", proxy)
 
 
 def test_paid_media_auth_docs_match_parent_bound_runtime_contract() -> None:
@@ -120,14 +120,14 @@ def test_paid_media_auth_docs_match_parent_bound_runtime_contract() -> None:
         VIDEO_SCRIPT.parents[1] / "SKILL.md",
     ):
         text = path.read_text(encoding="utf-8")
-        assert "OPENSQUILLA_META_CAPABILITY_PROVIDER" in text
-        assert "OPENSQUILLA_META_CAPABILITY_API_KEY" in text
-        assert "OPENSQUILLA_META_CAPABILITY_BASE_URL" in text
-        assert "OPENSQUILLA_META_CAPABILITY_PROXY" in text
-        assert "OPENSQUILLA_META_OPENROUTER_API_KEY" in text
-        assert "never discovers or parses `opensquilla.toml`" in text
-        assert "OPENSQUILLA_LLM_API_KEY" not in text
-        assert "`./opensquilla.toml`" not in text
+        assert "OPENSTARRY_CODE_META_CAPABILITY_PROVIDER" in text
+        assert "OPENSTARRY_CODE_META_CAPABILITY_API_KEY" in text
+        assert "OPENSTARRY_CODE_META_CAPABILITY_BASE_URL" in text
+        assert "OPENSTARRY_CODE_META_CAPABILITY_PROXY" in text
+        assert "OPENSTARRY_CODE_META_OPENROUTER_API_KEY" in text
+        assert "never discovers or parses `openstarry-code.toml`" in text
+        assert "OPENSTARRY_CODE_LLM_API_KEY" not in text
+        assert "`./openstarry-code.toml`" not in text
 
 
 def test_openrouter_skills_use_parent_injected_active_credential(
@@ -137,7 +137,7 @@ def test_openrouter_skills_use_parent_injected_active_credential(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     _write_toml(
-        Path.cwd() / "opensquilla.toml",
+        Path.cwd() / "openstarry-code.toml",
         """
         [llm]
         provider = "openrouter"
@@ -147,7 +147,7 @@ def test_openrouter_skills_use_parent_injected_active_credential(
     monkeypatch.setenv("AWS_SECRET_ACCESS_KEY", "workspace-selected-secret")
     monkeypatch.setenv("OPENROUTER_API_KEY", "ambient-openrouter-key")
     monkeypatch.setenv(
-        "OPENSQUILLA_META_OPENROUTER_API_KEY",
+        "OPENSTARRY_CODE_META_OPENROUTER_API_KEY",
         "active-config-openrouter-key",
     )
 
@@ -162,7 +162,7 @@ def test_openrouter_skills_never_rediscover_workspace_config_api_key_env(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     _write_toml(
-        Path.cwd() / "opensquilla.toml",
+        Path.cwd() / "openstarry-code.toml",
         """
         [llm]
         provider = "openrouter"
@@ -181,8 +181,8 @@ def test_openrouter_skills_do_not_treat_other_provider_llm_env_as_openrouter(
     isolated_runtime: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_LLM_PROVIDER", "anthropic")
-    monkeypatch.setenv("OPENSQUILLA_LLM_API_KEY", "anthropic-key")
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_PROVIDER", "anthropic")
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_API_KEY", "anthropic-key")
 
     assert image_script.resolve_api_key(None) is None
     assert _resolve_video_openrouter(video_script) is None
@@ -195,7 +195,7 @@ def test_explicit_media_key_wins_parent_injected_key(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setenv(
-        "OPENSQUILLA_META_OPENROUTER_API_KEY",
+        "OPENSTARRY_CODE_META_OPENROUTER_API_KEY",
         "active-config-openrouter-key",
     )
 
@@ -217,8 +217,8 @@ def test_openrouter_specific_env_still_wins_for_openrouter_skills(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setenv("OPENROUTER_API_KEY", "openrouter-env-key")
-    monkeypatch.setenv("OPENSQUILLA_LLM_PROVIDER", "anthropic")
-    monkeypatch.setenv("OPENSQUILLA_LLM_API_KEY", "anthropic-key")
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_PROVIDER", "anthropic")
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_API_KEY", "anthropic-key")
 
     assert image_script.resolve_api_key(None) == "openrouter-env-key"
     assert _resolve_video_openrouter(video_script) == "openrouter-env-key"
@@ -230,8 +230,8 @@ def test_non_openrouter_video_provider_uses_only_its_provider_env(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setenv("ARK_API_KEY", "ark-key")
-    monkeypatch.setenv("OPENSQUILLA_LLM_PROVIDER", "openrouter")
-    monkeypatch.setenv("OPENSQUILLA_LLM_API_KEY", "openrouter-key")
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_PROVIDER", "openrouter")
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_API_KEY", "openrouter-key")
 
     assert (
         video_script._resolve_api_key(
@@ -286,8 +286,8 @@ def test_paid_media_generic_parent_connection_requires_key_provider_and_base_url
     capsys: pytest.CaptureFixture[str],
 ) -> None:
     key = "partial-parent-key-must-not-submit"
-    monkeypatch.setenv("OPENSQUILLA_META_CAPABILITY_PROVIDER", "openrouter")
-    monkeypatch.setenv("OPENSQUILLA_META_CAPABILITY_API_KEY", key)
+    monkeypatch.setenv("OPENSTARRY_CODE_META_CAPABILITY_PROVIDER", "openrouter")
+    monkeypatch.setenv("OPENSTARRY_CODE_META_CAPABILITY_API_KEY", key)
     image_calls = 0
     video_calls = 0
 
@@ -349,7 +349,7 @@ def test_image_bound_credentials_reject_cross_origin_override_before_post(
     if source == "generic":
         _set_parent_connection(monkeypatch, key=key)
     elif source == "legacy":
-        monkeypatch.setenv("OPENSQUILLA_META_OPENROUTER_API_KEY", key)
+        monkeypatch.setenv("OPENSTARRY_CODE_META_OPENROUTER_API_KEY", key)
     else:
         monkeypatch.setenv("OPENROUTER_API_KEY", key)
     calls = 0
@@ -394,7 +394,7 @@ def test_video_bound_credentials_reject_cross_origin_override_before_post(
     if source == "generic":
         _set_parent_connection(monkeypatch, key=key)
     elif source == "legacy":
-        monkeypatch.setenv("OPENSQUILLA_META_OPENROUTER_API_KEY", key)
+        monkeypatch.setenv("OPENSTARRY_CODE_META_OPENROUTER_API_KEY", key)
     else:
         monkeypatch.setenv("OPENROUTER_API_KEY", key)
     calls = 0

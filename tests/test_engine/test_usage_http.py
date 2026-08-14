@@ -5,18 +5,18 @@ from dataclasses import dataclass, field
 
 import pytest
 
-from opensquilla.engine.usage_accounting import (
+from openstarry_code.engine.usage_accounting import (
     UsageAccountingScope,
     UsageAccountingUnavailableError,
     UsageExecutionContext,
     bind_usage_accounting_scope,
 )
-from opensquilla.engine.usage_http import (
+from openstarry_code.engine.usage_http import (
     openai_compatible_done_event,
     reserve_direct_usage_call,
 )
-from opensquilla.session.compaction import call_compaction_llm
-from opensquilla.session.naming import call_naming_llm
+from openstarry_code.session.compaction import call_compaction_llm
+from openstarry_code.session.naming import call_naming_llm
 
 
 @dataclass
@@ -122,7 +122,7 @@ def test_openai_compatible_receipt_rejects_inconsistent_or_nonfinite_values() ->
 async def test_direct_naming_receipt_finalizes_once(monkeypatch) -> None:
     calls: list[dict] = []
     monkeypatch.setattr(
-        "opensquilla.session.naming.httpx.AsyncClient",
+        "openstarry_code.session.naming.httpx.AsyncClient",
         lambda **kwargs: _client(_response_payload('"A useful title"'), calls),
     )
     sink = _Sink()
@@ -152,7 +152,7 @@ async def test_direct_tokenrhythm_receipt_uses_native_cny_policy(monkeypatch) ->
     payload["billing_pending"] = False
     payload["cost_cny"] = 0.000021
     monkeypatch.setattr(
-        "opensquilla.session.naming.httpx.AsyncClient",
+        "openstarry_code.session.naming.httpx.AsyncClient",
         lambda **kwargs: _client(payload, []),
     )
     sink = _Sink()
@@ -236,7 +236,7 @@ async def test_direct_image_billing_only_shape_without_trusted_receipt_is_unknow
 async def test_direct_start_failure_prevents_http_dispatch(monkeypatch) -> None:
     calls: list[dict] = []
     monkeypatch.setattr(
-        "opensquilla.session.naming.httpx.AsyncClient",
+        "openstarry_code.session.naming.httpx.AsyncClient",
         lambda **kwargs: _client(_response_payload(), calls),
     )
     sink = _Sink(fail_start=True)
@@ -259,7 +259,7 @@ async def test_missing_receipt_is_unknown_but_keeps_successful_output(monkeypatc
     payload = _response_payload('"Fallback title"')
     payload.pop("usage")
     monkeypatch.setattr(
-        "opensquilla.session.naming.httpx.AsyncClient",
+        "openstarry_code.session.naming.httpx.AsyncClient",
         lambda **kwargs: _client(payload, []),
     )
     sink = _Sink()
@@ -279,7 +279,7 @@ async def test_missing_receipt_is_unknown_but_keeps_successful_output(monkeypatc
 async def test_each_compaction_chunk_gets_one_distinct_event(monkeypatch) -> None:
     calls: list[dict] = []
     monkeypatch.setattr(
-        "opensquilla.session.compaction.httpx.AsyncClient",
+        "openstarry_code.session.compaction.httpx.AsyncClient",
         lambda **kwargs: _client(_response_payload("compact summary"), calls),
     )
     sink = _Sink()

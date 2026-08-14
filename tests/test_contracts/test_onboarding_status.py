@@ -18,9 +18,9 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.gateway.config import GatewayConfig, LlmProviderConfig
-from opensquilla.gateway.rpc import RpcContext
-from opensquilla.gateway.rpc_onboarding import _status_payload
+from openstarry_code.gateway.config import GatewayConfig, LlmProviderConfig
+from openstarry_code.gateway.rpc import RpcContext
+from openstarry_code.gateway.rpc_onboarding import _status_payload
 
 # Exact top-level shape of onboarding.status as shipped today.
 STATUS_TOP_LEVEL_KEYS = frozenset(
@@ -77,7 +77,7 @@ STATUS_TOP_LEVEL_KEYS = frozenset(
 # Section names double as wire keys inside ``sections`` / ``sectionDetails``.
 # ``ensemble`` is a deliberate additive extension of this frozen set: the
 # ``[llm_ensemble]`` routing surface gained CLI onboarding parity
-# (``opensquilla onboard configure ensemble``), and the CLI status table
+# (``openstarry-code onboard configure ensemble``), and the CLI status table
 # renders straight from this payload, so the section rides the same frozen
 # contract. Its verifier only ever reports ``ok`` (enabled) or ``optional``
 # (disabled) — it can never block onboarding or add action-required noise
@@ -181,8 +181,8 @@ IMAGE_GENERATION_CREDENTIAL_OPTION_KEYS = frozenset(
 
 def _synthetic_config(tmp_path, **overrides) -> GatewayConfig:
     # config_path points at a nonexistent tmp file so the status builder never
-    # reads the developer's real ~/.opensquilla config.
-    return GatewayConfig(config_path=str(tmp_path / "opensquilla.toml"), **overrides)
+    # reads the developer's real ~/.openstarry-code config.
+    return GatewayConfig(config_path=str(tmp_path / "openstarry-code.toml"), **overrides)
 
 
 async def test_onboarding_status_top_level_keys_are_frozen(tmp_path) -> None:
@@ -209,13 +209,13 @@ async def test_llm_profile_status_reflects_exhausted_global_credential_pool(
     tmp_path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.gateway.llm_runtime import (
+    from openstarry_code.gateway.llm_runtime import (
         NoCredentialsAvailable,
         reset_profile_credential_pools,
     )
-    from opensquilla.provider.failures import ProviderFailureKind
+    from openstarry_code.provider.failures import ProviderFailureKind
 
-    env_name = "OPENSQUILLA_TEST_STATUS_EXHAUSTED_POOL"
+    env_name = "OPENSTARRY_CODE_TEST_STATUS_EXHAUSTED_POOL"
     secret = "synthetic-status-exhausted-secret"
     monkeypatch.setenv(env_name, secret)
     cfg = _synthetic_config(
@@ -246,10 +246,10 @@ async def test_llm_profile_status_does_not_advance_pool_rotation(
     tmp_path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.gateway.llm_runtime import reset_profile_credential_pools
+    from openstarry_code.gateway.llm_runtime import reset_profile_credential_pools
 
-    env_a = "OPENSQUILLA_TEST_STATUS_POOL_A"
-    env_b = "OPENSQUILLA_TEST_STATUS_POOL_B"
+    env_a = "OPENSTARRY_CODE_TEST_STATUS_POOL_A"
+    env_b = "OPENSTARRY_CODE_TEST_STATUS_POOL_B"
     secret_a = "synthetic-status-pool-secret-a"
     secret_b = "synthetic-status-pool-secret-b"
     monkeypatch.setenv(env_a, secret_a)
@@ -411,7 +411,7 @@ async def test_env_recovery_command_rows_are_frozen(
 ) -> None:
     # A provider pointed at an env key that is not visible in this shell is
     # the one state that must produce a recovery command; freeze its row shape.
-    env_key = "OPENSQUILLA_TEST_UNSET_KEY"
+    env_key = "OPENSTARRY_CODE_TEST_UNSET_KEY"
     monkeypatch.delenv(env_key, raising=False)
     cfg = _synthetic_config(tmp_path, llm=LlmProviderConfig(api_key_env=env_key))
 
@@ -471,7 +471,7 @@ async def test_legacy_data_block_is_null_without_a_candidate(
 ) -> None:
     # Onboarding must not scan even when discovery would find a candidate.
     monkeypatch.setattr(
-        "opensquilla.migration.legacy_detect.detect_legacy_home",
+        "openstarry_code.migration.legacy_detect.detect_legacy_home",
         lambda target=None: (_ for _ in ()).throw(AssertionError("unexpected scan")),
     )
 
@@ -486,7 +486,7 @@ async def test_legacy_data_block_stays_null_when_a_candidate_exists(
     tmp_path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     monkeypatch.setattr(
-        "opensquilla.migration.legacy_detect.detect_legacy_home",
+        "openstarry_code.migration.legacy_detect.detect_legacy_home",
         lambda target=None: (_ for _ in ()).throw(AssertionError("unexpected scan")),
     )
 

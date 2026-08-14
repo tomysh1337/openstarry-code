@@ -1,15 +1,15 @@
 from __future__ import annotations
 
-from opensquilla.gateway.config import GatewayConfig, PrivacyConfig
-from opensquilla.observability.network_policy import (
+from openstarry_code.gateway.config import GatewayConfig, PrivacyConfig
+from openstarry_code.observability.network_policy import (
     network_observability_disabled,
     provider_install_id_disabled,
     provider_request_correlation_disabled,
 )
 
-GLOBAL_DISABLE_ENV = "OPENSQUILLA_PRIVACY_DISABLE_NETWORK_OBSERVABILITY"
-TELEMETRY_DISABLED_ENV = "OPENSQUILLA_TELEMETRY_DISABLED"
-UPDATE_CHECK_DISABLED_ENV = "OPENSQUILLA_UPDATE_CHECK_DISABLED"
+GLOBAL_DISABLE_ENV = "OPENSTARRY_CODE_PRIVACY_DISABLE_NETWORK_OBSERVABILITY"
+TELEMETRY_DISABLED_ENV = "OPENSTARRY_CODE_TELEMETRY_DISABLED"
+UPDATE_CHECK_DISABLED_ENV = "OPENSTARRY_CODE_UPDATE_CHECK_DISABLED"
 
 
 def test_defaults_allow_network_observability() -> None:
@@ -102,7 +102,7 @@ def test_provider_install_id_honors_legacy_telemetry_disable_only() -> None:
 
 def test_provider_install_id_is_suppressed_in_automated_environments() -> None:
     assert provider_install_id_disabled(env={"GITHUB_ACTIONS": "true"}) is True
-    assert provider_install_id_disabled(env={"OPENSQUILLA_TESTING": "1"}) is True
+    assert provider_install_id_disabled(env={"OPENSTARRY_CODE_TESTING": "1"}) is True
     assert provider_install_id_disabled(env={"PYTEST_CURRENT_TEST": "test_name"}) is True
 
 
@@ -111,7 +111,7 @@ def test_provider_install_id_ignores_false_automated_environment_values() -> Non
         provider_install_id_disabled(
             env={
                 "GITHUB_ACTIONS": "false",
-                "OPENSQUILLA_TESTING": "off",
+                "OPENSTARRY_CODE_TESTING": "off",
                 "PYTEST_CURRENT_TEST": "",
             }
         )

@@ -7,12 +7,12 @@ from typing import Any
 
 import pytest
 
-from opensquilla.session.models import MemoryDurableReceipt
-from opensquilla.session.storage import SessionStorage
+from openstarry_code.session.models import MemoryDurableReceipt
+from openstarry_code.session.storage import SessionStorage
 
 
 def test_parse_raw_fallback_entries_preserves_multiline_message_body():
-    from opensquilla.gateway.memory_repair_service import parse_raw_fallback_entries
+    from openstarry_code.gateway.memory_repair_service import parse_raw_fallback_entries
 
     entries = parse_raw_fallback_entries(
         "# Raw flush (timeout)\n\n"
@@ -30,8 +30,8 @@ def test_parse_raw_fallback_entries_preserves_multiline_message_body():
 
 
 def test_repair_parser_accepts_internal_archive_writer_output(tmp_path):
-    from opensquilla.gateway.memory_repair_service import parse_raw_fallback_entries
-    from opensquilla.memory.archive import write_raw_fallback_archive
+    from openstarry_code.gateway.memory_repair_service import parse_raw_fallback_entries
+    from openstarry_code.memory.archive import write_raw_fallback_archive
 
     content = (
         "# Raw flush (llm_error)\n\n"
@@ -55,7 +55,7 @@ def test_repair_parser_accepts_internal_archive_writer_output(tmp_path):
 
 @pytest.mark.asyncio
 async def test_list_repair_queue_returns_pending_durable_receipts(tmp_path):
-    from opensquilla.gateway.memory_repair_service import list_repair_queue
+    from openstarry_code.gateway.memory_repair_service import list_repair_queue
 
     storage = await SessionStorage.open(tmp_path / "sessions.db")
     try:
@@ -117,7 +117,7 @@ async def test_list_repair_queue_returns_pending_durable_receipts(tmp_path):
 
 @pytest.mark.asyncio
 async def test_repair_failure_backoff_abandons_after_fourth_attempt(tmp_path):
-    from opensquilla.gateway.memory_repair_service import mark_repair_attempt_failed
+    from openstarry_code.gateway.memory_repair_service import mark_repair_attempt_failed
 
     storage = await SessionStorage.open(tmp_path / "sessions.db")
     try:
@@ -175,7 +175,7 @@ async def test_repair_failure_backoff_abandons_after_fourth_attempt(tmp_path):
 async def test_repair_failure_backoff_treats_task7_pending_as_first_repair_attempt(
     tmp_path,
 ):
-    from opensquilla.gateway.memory_repair_service import mark_repair_attempt_failed
+    from openstarry_code.gateway.memory_repair_service import mark_repair_attempt_failed
 
     storage = await SessionStorage.open(tmp_path / "sessions.db")
     try:
@@ -274,7 +274,7 @@ class _FlushService:
 @pytest.mark.asyncio
 async def test_memory_repair_service_run_once_repairs_preimage_and_raw_fallback(tmp_path):
     try:
-        from opensquilla.gateway.memory_repair_service import MemoryRepairService
+        from openstarry_code.gateway.memory_repair_service import MemoryRepairService
     except ModuleNotFoundError:
         pytest.fail("MemoryRepairService is not implemented")
 
@@ -318,10 +318,10 @@ async def test_memory_repair_service_run_once_repairs_preimage_and_raw_fallback(
 async def test_memory_repair_service_rechecks_privacy_config_each_run(
     monkeypatch,
 ) -> None:
-    from opensquilla.gateway.memory_repair_service import MemoryRepairService
+    from openstarry_code.gateway.memory_repair_service import MemoryRepairService
 
     monkeypatch.delenv(
-        "OPENSQUILLA_PRIVACY_DISABLE_NETWORK_OBSERVABILITY",
+        "OPENSTARRY_CODE_PRIVACY_DISABLE_NETWORK_OBSERVABILITY",
         raising=False,
     )
     config = SimpleNamespace(
@@ -352,7 +352,7 @@ async def test_memory_repair_service_rechecks_privacy_config_each_run(
 
 @pytest.mark.asyncio
 async def test_memory_repair_service_canonicalizes_configured_agent_inputs(tmp_path):
-    from opensquilla.gateway.memory_repair_service import MemoryRepairService
+    from openstarry_code.gateway.memory_repair_service import MemoryRepairService
 
     op_root = tmp_path / "op-root"
     raw_dir = op_root / "memory" / ".raw_fallbacks"
@@ -392,7 +392,7 @@ async def test_memory_repair_service_canonicalizes_configured_agent_inputs(tmp_p
 
 @pytest.mark.asyncio
 async def test_memory_repair_run_imports_legacy_raw_fallback_to_ledger(tmp_path):
-    from opensquilla.gateway.memory_repair_service import run_memory_repair_once
+    from openstarry_code.gateway.memory_repair_service import run_memory_repair_once
 
     raw_dir = tmp_path / "memory" / ".raw_fallbacks"
     raw_dir.mkdir(parents=True)
@@ -435,7 +435,7 @@ async def test_memory_repair_run_imports_legacy_raw_fallback_to_ledger(tmp_path)
 async def test_memory_repair_run_scopes_durable_queue_and_legacy_import_by_agent(
     tmp_path,
 ):
-    from opensquilla.gateway.memory_repair_service import run_memory_repair_once
+    from openstarry_code.gateway.memory_repair_service import run_memory_repair_once
 
     main_root = tmp_path / "main"
     ops_root = tmp_path / "ops"
@@ -490,7 +490,7 @@ async def test_memory_repair_run_scopes_durable_queue_and_legacy_import_by_agent
 
 @pytest.mark.asyncio
 async def test_memory_repair_run_treats_agent_scope_prefix_as_literal(tmp_path):
-    from opensquilla.gateway.memory_repair_service import run_memory_repair_once
+    from openstarry_code.gateway.memory_repair_service import run_memory_repair_once
 
     op_root = tmp_path / "op_"
     op_raw_dir = op_root / "memory" / ".raw_fallbacks"
@@ -540,7 +540,7 @@ async def test_memory_repair_run_treats_agent_scope_prefix_as_literal(tmp_path):
 
 @pytest.mark.asyncio
 async def test_memory_repair_run_canonicalizes_percent_agent_before_scoping(tmp_path):
-    from opensquilla.gateway.memory_repair_service import run_memory_repair_once
+    from openstarry_code.gateway.memory_repair_service import run_memory_repair_once
 
     op_root = tmp_path / "op"
     op_raw_dir = op_root / "memory" / ".raw_fallbacks"
@@ -591,7 +591,7 @@ async def test_memory_repair_run_canonicalizes_percent_agent_before_scoping(tmp_
 
 @pytest.mark.asyncio
 async def test_memory_repair_run_uses_target_path_for_task7_flush_receipt(tmp_path):
-    from opensquilla.gateway.memory_repair_service import run_memory_repair_once
+    from openstarry_code.gateway.memory_repair_service import run_memory_repair_once
 
     raw_dir = tmp_path / "memory" / ".raw_fallbacks"
     raw_dir.mkdir(parents=True)
@@ -649,7 +649,7 @@ async def test_memory_repair_run_uses_target_path_for_task7_flush_receipt(tmp_pa
 
 @pytest.mark.asyncio
 async def test_memory_repair_failure_after_claim_keeps_task7_first_backoff(tmp_path):
-    from opensquilla.gateway.memory_repair_service import run_memory_repair_once
+    from openstarry_code.gateway.memory_repair_service import run_memory_repair_once
 
     raw_dir = tmp_path / "memory" / ".raw_fallbacks"
     raw_dir.mkdir(parents=True)
@@ -715,7 +715,7 @@ async def test_memory_repair_failure_after_claim_keeps_task7_first_backoff(tmp_p
 
 @pytest.mark.asyncio
 async def test_memory_repair_run_skips_future_retry_rows_until_due(tmp_path):
-    from opensquilla.gateway.memory_repair_service import run_memory_repair_once
+    from openstarry_code.gateway.memory_repair_service import run_memory_repair_once
 
     raw_dir = tmp_path / "memory" / ".raw_fallbacks"
     raw_dir.mkdir(parents=True)
@@ -790,7 +790,7 @@ async def test_memory_repair_run_skips_future_retry_rows_until_due(tmp_path):
 
 @pytest.mark.asyncio
 async def test_memory_repair_run_honors_compaction_selector_with_storage(tmp_path):
-    from opensquilla.gateway.memory_repair_service import run_memory_repair_once
+    from openstarry_code.gateway.memory_repair_service import run_memory_repair_once
 
     storage = await SessionStorage.open(tmp_path / "sessions.db")
 
@@ -821,7 +821,7 @@ async def test_memory_repair_run_honors_compaction_selector_with_storage(tmp_pat
 
 @pytest.mark.asyncio
 async def test_concurrent_memory_repair_runs_claim_durable_row_once(tmp_path):
-    from opensquilla.gateway.memory_repair_service import run_memory_repair_once
+    from openstarry_code.gateway.memory_repair_service import run_memory_repair_once
 
     raw_dir = tmp_path / "memory" / ".raw_fallbacks"
     raw_dir.mkdir(parents=True)
@@ -881,7 +881,7 @@ async def test_concurrent_memory_repair_runs_claim_durable_row_once(tmp_path):
 
 @pytest.mark.asyncio
 async def test_memory_repair_run_backs_off_stale_claim(tmp_path):
-    from opensquilla.gateway.memory_repair_service import run_memory_repair_once
+    from openstarry_code.gateway.memory_repair_service import run_memory_repair_once
 
     raw_dir = tmp_path / "memory" / ".raw_fallbacks"
     raw_dir.mkdir(parents=True)
@@ -937,7 +937,7 @@ async def test_memory_repair_run_backs_off_stale_claim(tmp_path):
 @pytest.mark.asyncio
 async def test_memory_repair_service_background_loop_runs_repair_tick(tmp_path):
     try:
-        from opensquilla.gateway.memory_repair_service import MemoryRepairService
+        from openstarry_code.gateway.memory_repair_service import MemoryRepairService
     except ModuleNotFoundError:
         pytest.fail("MemoryRepairService is not implemented")
 

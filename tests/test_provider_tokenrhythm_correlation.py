@@ -7,10 +7,10 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.observability import install_telemetry
-from opensquilla.observability.network_policy import provider_install_id_disabled
-from opensquilla.provider import tokenrhythm_correlation as tokenrhythm
-from opensquilla.provider.tokenrhythm_correlation import (
+from openstarry_code.observability import install_telemetry
+from openstarry_code.observability.network_policy import provider_install_id_disabled
+from openstarry_code.provider import tokenrhythm_correlation as tokenrhythm
+from openstarry_code.provider.tokenrhythm_correlation import (
     TOKENRHYTHM_CALL_KIND_HEADER,
     TOKENRHYTHM_EXECUTION_ID_HEADER,
     TOKENRHYTHM_INSTALL_ID_HEADER,
@@ -23,7 +23,7 @@ from opensquilla.provider.tokenrhythm_correlation import (
     tokenrhythm_correlation_headers,
     tokenrhythm_install_id_headers,
 )
-from opensquilla.provider.types import (
+from openstarry_code.provider.types import (
     ChatConfig,
     ProviderRequestCorrelation,
     derive_provider_request_correlation,
@@ -35,12 +35,12 @@ def _isolated_install_id_cache(monkeypatch: pytest.MonkeyPatch):
     _reset_tokenrhythm_install_id_cache_for_tests()
     for name in (
         "GITHUB_ACTIONS",
-        "OPENSQUILLA_TESTING",
+        "OPENSTARRY_CODE_TESTING",
         "PYTEST_CURRENT_TEST",
-        "OPENSQUILLA_PRIVACY_DISABLE_NETWORK_OBSERVABILITY",
-        "OPENSQUILLA_TELEMETRY_DISABLED",
-        "OPENSQUILLA_UPDATE_CHECK_DISABLED",
-        "OPENSQUILLA_TRUST_ENV",
+        "OPENSTARRY_CODE_PRIVACY_DISABLE_NETWORK_OBSERVABILITY",
+        "OPENSTARRY_CODE_TELEMETRY_DISABLED",
+        "OPENSTARRY_CODE_UPDATE_CHECK_DISABLED",
+        "OPENSTARRY_CODE_TRUST_ENV",
         "HTTP_PROXY",
         "HTTPS_PROXY",
         "ALL_PROXY",
@@ -286,7 +286,7 @@ def test_direct_privacy_env_suppresses_complete_correlation_set(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setenv(
-        "OPENSQUILLA_PRIVACY_DISABLE_NETWORK_OBSERVABILITY",
+        "OPENSTARRY_CODE_PRIVACY_DISABLE_NETWORK_OBSERVABILITY",
         "TRUE",
     )
 
@@ -308,8 +308,8 @@ def test_direct_privacy_env_suppresses_complete_correlation_set(
 @pytest.mark.parametrize(
     "legacy_env",
     [
-        "OPENSQUILLA_TELEMETRY_DISABLED",
-        "OPENSQUILLA_UPDATE_CHECK_DISABLED",
+        "OPENSTARRY_CODE_TELEMETRY_DISABLED",
+        "OPENSTARRY_CODE_UPDATE_CHECK_DISABLED",
     ],
 )
 def test_legacy_privacy_env_does_not_suppress_provider_correlation(
@@ -647,10 +647,10 @@ def test_install_id_privacy_config_is_rechecked_for_every_request(
 @pytest.mark.parametrize(
     "disable_env",
     [
-        "OPENSQUILLA_PRIVACY_DISABLE_NETWORK_OBSERVABILITY",
-        "OPENSQUILLA_TELEMETRY_DISABLED",
+        "OPENSTARRY_CODE_PRIVACY_DISABLE_NETWORK_OBSERVABILITY",
+        "OPENSTARRY_CODE_TELEMETRY_DISABLED",
         "GITHUB_ACTIONS",
-        "OPENSQUILLA_TESTING",
+        "OPENSTARRY_CODE_TESTING",
         "PYTEST_CURRENT_TEST",
     ],
 )
@@ -689,7 +689,7 @@ def test_update_check_disable_does_not_suppress_install_id(
     tmp_path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_UPDATE_CHECK_DISABLED", "true")
+    monkeypatch.setenv("OPENSTARRY_CODE_UPDATE_CHECK_DISABLED", "true")
     monkeypatch.setattr(
         install_telemetry,
         "ensure_install_telemetry_id",
@@ -799,7 +799,7 @@ def test_install_id_trusted_environment_proxy_does_not_start_resolution(
         return "8" * 64
 
     monkeypatch.setattr(install_telemetry, "ensure_install_telemetry_id", _ensure)
-    monkeypatch.setenv("OPENSQUILLA_TRUST_ENV", "true")
+    monkeypatch.setenv("OPENSTARRY_CODE_TRUST_ENV", "true")
     monkeypatch.setenv(proxy_env, "http://127.0.0.1:3128")
     monkeypatch.setenv("NO_PROXY", "tokenrhythm.studio")
 
@@ -818,7 +818,7 @@ def test_install_id_ignores_environment_proxy_when_trust_env_is_off(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setenv("HTTPS_PROXY", "http://127.0.0.1:3128")
-    monkeypatch.setenv("OPENSQUILLA_TRUST_ENV", "false")
+    monkeypatch.setenv("OPENSTARRY_CODE_TRUST_ENV", "false")
     monkeypatch.setattr(
         install_telemetry,
         "ensure_install_telemetry_id",

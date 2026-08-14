@@ -2,11 +2,11 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.provider.anthropic import AnthropicProvider
-from opensquilla.provider.openai import OpenAIProvider
-from opensquilla.provider.openai_responses import OpenAIResponsesProvider
-from opensquilla.provider.registry import get_provider_spec
-from opensquilla.provider.selector import ProviderBuildError, ProviderConfig, _build_provider
+from openstarry_code.provider.anthropic import AnthropicProvider
+from openstarry_code.provider.openai import OpenAIProvider
+from openstarry_code.provider.openai_responses import OpenAIResponsesProvider
+from openstarry_code.provider.registry import get_provider_spec
+from openstarry_code.provider.selector import ProviderBuildError, ProviderConfig, _build_provider
 
 
 @pytest.mark.parametrize(

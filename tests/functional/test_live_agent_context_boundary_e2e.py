@@ -10,9 +10,9 @@ import os
 
 import pytest
 
-from opensquilla.engine import Agent, AgentConfig
-from opensquilla.provider import Message
-from opensquilla.provider.openai import OpenAIProvider
+from openstarry_code.engine import Agent, AgentConfig
+from openstarry_code.provider import Message
+from openstarry_code.provider.openai import OpenAIProvider
 
 pytestmark = [pytest.mark.llm, pytest.mark.llm_smoke, pytest.mark.agent_context_boundary]
 
@@ -27,8 +27,8 @@ _INTERNAL_MARKERS = (
 
 @pytest.mark.asyncio
 async def test_live_openrouter_agent_boundary_smoke() -> None:
-    if os.environ.get("OPENSQUILLA_AGENT_CONTEXT_BOUNDARY_LIVE") != "1":
-        pytest.skip("set OPENSQUILLA_AGENT_CONTEXT_BOUNDARY_LIVE=1 to run live smoke")
+    if os.environ.get("OPENSTARRY_CODE_AGENT_CONTEXT_BOUNDARY_LIVE") != "1":
+        pytest.skip("set OPENSTARRY_CODE_AGENT_CONTEXT_BOUNDARY_LIVE=1 to run live smoke")
     api_key = os.environ.get("OPENROUTER_API_KEY")
     if not api_key:
         pytest.skip("OPENROUTER_API_KEY not set")

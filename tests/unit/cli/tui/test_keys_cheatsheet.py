@@ -1,6 +1,6 @@
 """Pin the ``/keys`` cheatsheet to the OpenTUI host's keyboard-handler source.
 
-The cheatsheet in ``opensquilla.cli.tui.adapters.commands`` is a hand-written
+The cheatsheet in ``openstarry_code.cli.tui.adapters.commands`` is a hand-written
 mirror of the imperative key handlers in ``package/src/composer.mjs`` and
 ``package/src/main.mjs``. Each documented row carries the exact source
 literal it describes; these tests fail when a binding is removed or renamed
@@ -14,14 +14,14 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.cli.tui.adapters.commands import (
+from openstarry_code.cli.tui.adapters.commands import (
     NATIVE_KEY_BINDINGS,
     OPENTUI_KEY_BINDINGS,
     render_keys_table,
 )
 
 _PACKAGE_SRC = (
-    Path(__file__).resolve().parents[4] / "src/opensquilla/cli/tui/opentui/package/src"
+    Path(__file__).resolve().parents[4] / "src/openstarry_code/cli/tui/opentui/package/src"
 )
 
 
@@ -60,7 +60,7 @@ def test_native_rows_match_the_launch_banner_vocabulary() -> None:
 
 
 def test_output_supports_host_ui_prefers_the_wrapper_capability_flag() -> None:
-    from opensquilla.cli.tui.adapters.slash_common import output_supports_host_ui
+    from openstarry_code.cli.tui.adapters.slash_common import output_supports_host_ui
 
     class _Wrapped:
         # The plugin wrapper always exposes a callable send_message that

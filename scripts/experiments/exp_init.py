@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create a reproducible OpenSquilla experiment manifest."""
+"""Create a reproducible OpenStarry Code experiment manifest."""
 
 from __future__ import annotations
 
@@ -250,7 +250,7 @@ def render_command(args: argparse.Namespace, manifest: dict[str, Any]) -> str:
     ml_instance_file = _snapshot_or_source(manifest["slice"]["ml"])
     verified_instance_file = _snapshot_or_source(manifest["slice"]["verified"])
     env_exports = [
-        f"export OPENSQUILLA_SOURCE_REPO={sh_quote(str(args.source_root))}",
+        f"export OPENSTARRY_CODE_SOURCE_REPO={sh_quote(str(args.source_root))}",
         f"export RUN_MODE={sh_quote(args.run_mode)}",
         f"export CONDITION_LABEL={sh_quote(args.condition_label)}",
         f"export QWEN_CONFIG_DIR={sh_quote(str(qwen_config_dir))}",

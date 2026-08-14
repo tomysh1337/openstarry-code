@@ -14,8 +14,8 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
-from opensquilla.skills import proposals_lib
-from opensquilla.skills.creator import proposer
+from openstarry_code.skills import proposals_lib
+from openstarry_code.skills.creator import proposer
 
 DEFAULT_HISTORY = {
     "co_occurrences": [
@@ -25,7 +25,7 @@ DEFAULT_HISTORY = {
 }
 DEFAULT_INTENT = (
     "Create a meta-skill that first uses history-explorer to inspect recent "
-    "OpenSquilla decision history for a query, then uses summarize to produce "
+    "OpenStarry Code decision history for a query, then uses summarize to produce "
     "a concise operational summary. Use only history-explorer and summarize."
 )
 
@@ -56,12 +56,12 @@ def run_live_meta_skill_creator_e2e(
     auto_enable_max_risk: str = "low",
 ) -> dict[str, Any]:
     """Run fill_slots -> assemble -> lint -> smoke -> persist/auto-enable."""
-    previous_provider = os.environ.get("OPENSQUILLA_LLM_PROVIDER")
-    previous_model = os.environ.get("OPENSQUILLA_LLM_MODEL")
+    previous_provider = os.environ.get("OPENSTARRY_CODE_LLM_PROVIDER")
+    previous_model = os.environ.get("OPENSTARRY_CODE_LLM_MODEL")
     if provider:
-        os.environ["OPENSQUILLA_LLM_PROVIDER"] = provider
+        os.environ["OPENSTARRY_CODE_LLM_PROVIDER"] = provider
     if model:
-        os.environ["OPENSQUILLA_LLM_MODEL"] = model
+        os.environ["OPENSTARRY_CODE_LLM_MODEL"] = model
 
     try:
         home_path = home or Path(tempfile.mkdtemp(prefix="opensquilla-live-meta-skill-"))
@@ -122,13 +122,13 @@ def run_live_meta_skill_creator_e2e(
         }
     finally:
         if previous_provider is None:
-            os.environ.pop("OPENSQUILLA_LLM_PROVIDER", None)
+            os.environ.pop("OPENSTARRY_CODE_LLM_PROVIDER", None)
         else:
-            os.environ["OPENSQUILLA_LLM_PROVIDER"] = previous_provider
+            os.environ["OPENSTARRY_CODE_LLM_PROVIDER"] = previous_provider
         if previous_model is None:
-            os.environ.pop("OPENSQUILLA_LLM_MODEL", None)
+            os.environ.pop("OPENSTARRY_CODE_LLM_MODEL", None)
         else:
-            os.environ["OPENSQUILLA_LLM_MODEL"] = previous_model
+            os.environ["OPENSTARRY_CODE_LLM_MODEL"] = previous_model
 
 
 def _parser() -> argparse.ArgumentParser:

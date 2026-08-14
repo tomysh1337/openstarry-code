@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run real V4 Phase 3 router smoke scenarios and a OpenSquilla gateway startup check."""
+"""Run real V4 Phase 3 router smoke scenarios and a OpenStarry Code gateway startup check."""
 
 from __future__ import annotations
 
@@ -26,10 +26,10 @@ SRC_DIR = REPO_ROOT / "src"
 if str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))
 
-from opensquilla.engine.pipeline import TurnContext  # noqa: E402
-from opensquilla.engine.steps import squilla_router as router_mod  # noqa: E402
-from opensquilla.env import load_env  # noqa: E402
-from opensquilla.gateway.config import GatewayConfig  # noqa: E402
+from openstarry_code.engine.pipeline import TurnContext  # noqa: E402
+from openstarry_code.engine.steps import squilla_router as router_mod  # noqa: E402
+from openstarry_code.env import load_env  # noqa: E402
+from openstarry_code.gateway.config import GatewayConfig  # noqa: E402
 
 TIERS = {
     "c0": {
@@ -946,23 +946,23 @@ def _live_tier_model_map(live_model: str) -> dict[str, str]:
 
     live_tier_models = {
         "c0": _tier_model_env(
-            "OPENSQUILLA_LIVE_LLM_C0_MODEL",
-            "OPENSQUILLA_LIVE_LLM_T0_MODEL",
+            "OPENSTARRY_CODE_LIVE_LLM_C0_MODEL",
+            "OPENSTARRY_CODE_LIVE_LLM_T0_MODEL",
             "deepseek/deepseek-v4-flash",
         ),
         "c1": _tier_model_env(
-            "OPENSQUILLA_LIVE_LLM_C1_MODEL",
-            "OPENSQUILLA_LIVE_LLM_T1_MODEL",
+            "OPENSTARRY_CODE_LIVE_LLM_C1_MODEL",
+            "OPENSTARRY_CODE_LIVE_LLM_T1_MODEL",
             "deepseek/deepseek-v4-pro",
         ),
         "c2": _tier_model_env(
-            "OPENSQUILLA_LIVE_LLM_C2_MODEL",
-            "OPENSQUILLA_LIVE_LLM_T2_MODEL",
+            "OPENSTARRY_CODE_LIVE_LLM_C2_MODEL",
+            "OPENSTARRY_CODE_LIVE_LLM_T2_MODEL",
             "z-ai/glm-5.2",
         ),
         "c3": _tier_model_env(
-            "OPENSQUILLA_LIVE_LLM_C3_MODEL",
-            "OPENSQUILLA_LIVE_LLM_T3_MODEL",
+            "OPENSTARRY_CODE_LIVE_LLM_C3_MODEL",
+            "OPENSTARRY_CODE_LIVE_LLM_T3_MODEL",
             "anthropic/claude-opus-4.8",
         ),
     }
@@ -1213,26 +1213,26 @@ def _gateway_startup_scenario() -> dict[str, Any]:
         tmp_path = Path(tmp)
         env = os.environ.copy()
         env["PYTHONPATH"] = str(SRC_DIR) + os.pathsep + env.get("PYTHONPATH", "")
-        env["OPENSQUILLA_GATEWAY_CONFIG_PATH"] = str(tmp_path / "no-config.toml")
-        env["OPENSQUILLA_STATE_DIR"] = str(tmp_path / "state")
-        env["OPENSQUILLA_AUTH_MODE"] = "none"
-        env["OPENSQUILLA_CONTROL_UI_ENABLED"] = "false"
-        env["OPENSQUILLA_RATE_ENABLED"] = "false"
-        env["OPENSQUILLA_MEMORY_SOURCE"] = "state"
-        env["OPENSQUILLA_MEMORY_DREAM_DISABLED"] = "1"
-        env["OPENSQUILLA_SANDBOX_SANDBOX"] = "false"
-        env["OPENSQUILLA_SANDBOX_SECURITY_GRADING"] = "false"
-        env["OPENSQUILLA_SQUILLA_ROUTER_ENABLED"] = "true"
-        env["OPENSQUILLA_SQUILLA_ROUTER_STRATEGY"] = "v4_phase3"
-        env["OPENSQUILLA_SQUILLA_ROUTER_ROLLOUT_PHASE"] = "full"
-        env["OPENSQUILLA_SQUILLA_ROUTER_REQUIRE_ROUTER_RUNTIME"] = "true"
+        env["OPENSTARRY_CODE_GATEWAY_CONFIG_PATH"] = str(tmp_path / "no-config.toml")
+        env["OPENSTARRY_CODE_STATE_DIR"] = str(tmp_path / "state")
+        env["OPENSTARRY_CODE_AUTH_MODE"] = "none"
+        env["OPENSTARRY_CODE_CONTROL_UI_ENABLED"] = "false"
+        env["OPENSTARRY_CODE_RATE_ENABLED"] = "false"
+        env["OPENSTARRY_CODE_MEMORY_SOURCE"] = "state"
+        env["OPENSTARRY_CODE_MEMORY_DREAM_DISABLED"] = "1"
+        env["OPENSTARRY_CODE_SANDBOX_SANDBOX"] = "false"
+        env["OPENSTARRY_CODE_SANDBOX_SECURITY_GRADING"] = "false"
+        env["OPENSTARRY_CODE_SQUILLA_ROUTER_ENABLED"] = "true"
+        env["OPENSTARRY_CODE_SQUILLA_ROUTER_STRATEGY"] = "v4_phase3"
+        env["OPENSTARRY_CODE_SQUILLA_ROUTER_ROLLOUT_PHASE"] = "full"
+        env["OPENSTARRY_CODE_SQUILLA_ROUTER_REQUIRE_ROUTER_RUNTIME"] = "true"
         env["OPENROUTER_API_KEY"] = ""
 
         proc = subprocess.Popen(
             [
                 sys.executable,
                 "-m",
-                "opensquilla.cli.main",
+                "openstarry_code.cli.main",
                 "gateway",
                 "run",
                 "--port",
@@ -1305,7 +1305,7 @@ def _live_llm_chat_scenario() -> dict[str, Any]:
         }
 
     port = _free_port()
-    live_model = os.environ.get("OPENSQUILLA_LIVE_LLM_MODEL", "").strip()
+    live_model = os.environ.get("OPENSTARRY_CODE_LIVE_LLM_MODEL", "").strip()
     session_key = f"live-e2e:{int(time.time() * 1000)}"
     turns_spec = [
         {
@@ -1335,19 +1335,19 @@ def _live_llm_chat_scenario() -> dict[str, Any]:
 
         env = os.environ.copy()
         env["PYTHONPATH"] = str(SRC_DIR) + os.pathsep + env.get("PYTHONPATH", "")
-        env["OPENSQUILLA_GATEWAY_CONFIG_PATH"] = str(config_path)
-        env["OPENSQUILLA_STATE_DIR"] = str(tmp_path / "state")
-        env["OPENSQUILLA_MEMORY_DREAM_DISABLED"] = "1"
-        env["OPENSQUILLA_SANDBOX_SANDBOX"] = "false"
-        env["OPENSQUILLA_SANDBOX_SECURITY_GRADING"] = "false"
-        env["OPENSQUILLA_TURN_CALL_LOG"] = "1"
-        env["OPENSQUILLA_TURN_CALL_LOG_DIR"] = str(turn_log_dir)
+        env["OPENSTARRY_CODE_GATEWAY_CONFIG_PATH"] = str(config_path)
+        env["OPENSTARRY_CODE_STATE_DIR"] = str(tmp_path / "state")
+        env["OPENSTARRY_CODE_MEMORY_DREAM_DISABLED"] = "1"
+        env["OPENSTARRY_CODE_SANDBOX_SANDBOX"] = "false"
+        env["OPENSTARRY_CODE_SANDBOX_SECURITY_GRADING"] = "false"
+        env["OPENSTARRY_CODE_TURN_CALL_LOG"] = "1"
+        env["OPENSTARRY_CODE_TURN_CALL_LOG_DIR"] = str(turn_log_dir)
 
         proc = subprocess.Popen(
             [
                 sys.executable,
                 "-m",
-                "opensquilla.cli.main",
+                "openstarry_code.cli.main",
                 "gateway",
                 "run",
                 "--port",
@@ -1491,7 +1491,7 @@ def _live_router_case_suite_scenario() -> dict[str, Any]:
         }
 
     port = _free_port()
-    live_model = os.environ.get("OPENSQUILLA_LIVE_LLM_MODEL", "").strip()
+    live_model = os.environ.get("OPENSTARRY_CODE_LIVE_LLM_MODEL", "").strip()
     live_cases = [
         {"kind": "single_turn", **case} for case in SINGLE_TURN_ROUTER_CASES
     ] + [{"kind": "dialogue", **case} for case in DIALOGUE_ROUTER_CASES]
@@ -1507,19 +1507,19 @@ def _live_router_case_suite_scenario() -> dict[str, Any]:
 
         env = os.environ.copy()
         env["PYTHONPATH"] = str(SRC_DIR) + os.pathsep + env.get("PYTHONPATH", "")
-        env["OPENSQUILLA_GATEWAY_CONFIG_PATH"] = str(config_path)
-        env["OPENSQUILLA_STATE_DIR"] = str(tmp_path / "state")
-        env["OPENSQUILLA_MEMORY_DREAM_DISABLED"] = "1"
-        env["OPENSQUILLA_SANDBOX_SANDBOX"] = "false"
-        env["OPENSQUILLA_SANDBOX_SECURITY_GRADING"] = "false"
-        env["OPENSQUILLA_TURN_CALL_LOG"] = "1"
-        env["OPENSQUILLA_TURN_CALL_LOG_DIR"] = str(turn_log_dir)
+        env["OPENSTARRY_CODE_GATEWAY_CONFIG_PATH"] = str(config_path)
+        env["OPENSTARRY_CODE_STATE_DIR"] = str(tmp_path / "state")
+        env["OPENSTARRY_CODE_MEMORY_DREAM_DISABLED"] = "1"
+        env["OPENSTARRY_CODE_SANDBOX_SANDBOX"] = "false"
+        env["OPENSTARRY_CODE_SANDBOX_SECURITY_GRADING"] = "false"
+        env["OPENSTARRY_CODE_TURN_CALL_LOG"] = "1"
+        env["OPENSTARRY_CODE_TURN_CALL_LOG_DIR"] = str(turn_log_dir)
 
         proc = subprocess.Popen(
             [
                 sys.executable,
                 "-m",
-                "opensquilla.cli.main",
+                "openstarry_code.cli.main",
                 "gateway",
                 "run",
                 "--port",
@@ -1703,7 +1703,7 @@ def main() -> int:
     parser.add_argument(
         "--skip-gateway",
         action="store_true",
-        help="run only router scenarios without starting opensquilla gateway",
+        help="run only router scenarios without starting openstarry-code gateway",
     )
     parser.add_argument(
         "--live-llm",

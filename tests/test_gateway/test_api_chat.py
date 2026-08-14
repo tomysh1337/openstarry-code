@@ -3,9 +3,9 @@ from __future__ import annotations
 import pytest
 from starlette.testclient import TestClient
 
-from opensquilla.gateway.app import create_gateway_app
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.protocol import ErrorShape, ResFrame
+from openstarry_code.gateway.app import create_gateway_app
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.protocol import ErrorShape, ResFrame
 
 
 class _ConflictDispatcher:
@@ -36,7 +36,7 @@ class _ConflictDispatcher:
     ],
 )
 def test_api_chat_maps_turn_conflicts_to_http_409(monkeypatch, code: str) -> None:
-    import opensquilla.gateway.app as gateway_app
+    import openstarry_code.gateway.app as gateway_app
 
     monkeypatch.setattr(gateway_app, "get_dispatcher", lambda: _ConflictDispatcher(code))
     app = create_gateway_app(GatewayConfig())

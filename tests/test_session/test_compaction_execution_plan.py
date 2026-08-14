@@ -6,11 +6,11 @@ from typing import Any
 
 import pytest
 
-from opensquilla.gateway.config import GatewayConfig, LlmProviderProfile
-from opensquilla.gateway.llm_runtime import ProfileCredentialPools
-from opensquilla.provider.failures import ProviderFailureKind
-from opensquilla.provider.selector import ProviderConfig
-from opensquilla.session.compaction_deployment import (
+from openstarry_code.gateway.config import GatewayConfig, LlmProviderProfile
+from openstarry_code.gateway.llm_runtime import ProfileCredentialPools
+from openstarry_code.provider.failures import ProviderFailureKind
+from openstarry_code.provider.selector import ProviderConfig
+from openstarry_code.session.compaction_deployment import (
     CompactionDeploymentIdentity,
     CompactionExecutionPlan,
     resolve_compaction_execution_plan,
@@ -37,7 +37,7 @@ def built_configs(monkeypatch: pytest.MonkeyPatch) -> list[ProviderConfig]:
         return _BuiltProvider(config)
 
     monkeypatch.setattr(
-        "opensquilla.session.compaction_deployment.build_provider_from_config",
+        "openstarry_code.session.compaction_deployment.build_provider_from_config",
         build,
     )
     return captured
@@ -76,7 +76,7 @@ def test_explicit_provider_and_model_are_first_and_do_not_leak_secrets(
         return SimpleNamespace(ready=True, provider_config=explicit)
 
     monkeypatch.setattr(
-        "opensquilla.session.compaction_deployment.resolve_provider_deployment",
+        "openstarry_code.session.compaction_deployment.resolve_provider_deployment",
         resolve,
     )
 
@@ -136,7 +136,7 @@ def test_explicit_target_uses_runtime_credential_pool_acquirer(
         return SimpleNamespace(ready=True, provider_config=explicit)
 
     monkeypatch.setattr(
-        "opensquilla.session.compaction_deployment.resolve_provider_deployment",
+        "openstarry_code.session.compaction_deployment.resolve_provider_deployment",
         resolve,
     )
 
@@ -164,8 +164,8 @@ def test_pooled_compaction_failure_rotates_key_on_next_plan(
     monkeypatch: pytest.MonkeyPatch,
     built_configs: list[ProviderConfig],
 ) -> None:
-    env_a = "OPENSQUILLA_TEST_COMPACTION_POOL_A"
-    env_b = "OPENSQUILLA_TEST_COMPACTION_POOL_B"
+    env_a = "OPENSTARRY_CODE_TEST_COMPACTION_POOL_A"
+    env_b = "OPENSTARRY_CODE_TEST_COMPACTION_POOL_B"
     secret_a = "sk-test-compaction-pool-a"
     secret_b = "sk-test-compaction-pool-b"
     monkeypatch.setenv(env_a, secret_a)
@@ -223,7 +223,7 @@ def test_model_only_override_stays_on_current_provider(
         raise AssertionError("model-only compatibility must not guess a provider")
 
     monkeypatch.setattr(
-        "opensquilla.session.compaction_deployment.resolve_provider_deployment",
+        "openstarry_code.session.compaction_deployment.resolve_provider_deployment",
         unexpected_resolution,
     )
 
@@ -254,7 +254,7 @@ def test_unavailable_explicit_candidate_continues_to_current_and_fallback(
     fallback = _config("ollama", "configured-fallback")
 
     monkeypatch.setattr(
-        "opensquilla.session.compaction_deployment.resolve_provider_deployment",
+        "openstarry_code.session.compaction_deployment.resolve_provider_deployment",
         lambda *_args, **_kwargs: SimpleNamespace(
             ready=False,
             provider_config=None,
@@ -395,7 +395,7 @@ def test_previous_session_identity_re_resolves_rotated_credentials_per_operation
         )
 
     monkeypatch.setattr(
-        "opensquilla.session.compaction_deployment.resolve_provider_deployment",
+        "openstarry_code.session.compaction_deployment.resolve_provider_deployment",
         resolve,
     )
     identity = CompactionDeploymentIdentity(
@@ -439,7 +439,7 @@ def test_unavailable_previous_session_identity_does_not_reuse_old_config(
     built_configs: list[ProviderConfig],
 ) -> None:
     monkeypatch.setattr(
-        "opensquilla.session.compaction_deployment.resolve_provider_deployment",
+        "openstarry_code.session.compaction_deployment.resolve_provider_deployment",
         lambda *_args, **_kwargs: SimpleNamespace(
             ready=False,
             provider_config=_config(

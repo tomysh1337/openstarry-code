@@ -7,7 +7,7 @@ from typing import Any
 import pytest
 import yaml
 
-from opensquilla.squilla_router.v4_phase3 import (
+from openstarry_code.squilla_router.v4_phase3 import (
     default_bundle_dir,
     runtime_src_import_path,
 )

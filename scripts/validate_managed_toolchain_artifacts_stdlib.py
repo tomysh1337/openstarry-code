@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Run managed-toolchain artifact validation from a stdlib-only source tree.
 
-The Alpine artifact job intentionally avoids installing OpenSquilla's complete
+The Alpine artifact job intentionally avoids installing OpenStarry Code's complete
 runtime dependency graph: the locked sqlite-vec package has no musllinux wheel.
 This fixed-path bootstrap skips the broad skills
 package initializer, then delegates to the canonical validator.  Installation
@@ -22,14 +22,14 @@ def _bootstrap_skills_package(repo_root: Path) -> None:
     skills_root = source_root / "opensquilla" / "skills"
     sys.path.insert(0, str(source_root))
 
-    import opensquilla
+    import openstarry_code
 
-    skills_package = ModuleType("opensquilla.skills")
+    skills_package = ModuleType("openstarry_code.skills")
     skills_package.__file__ = str(skills_root / "__init__.py")
-    skills_package.__package__ = "opensquilla.skills"
+    skills_package.__package__ = "openstarry_code.skills"
     skills_package.__path__ = [str(skills_root)]
-    sys.modules["opensquilla.skills"] = skills_package
-    opensquilla.skills = skills_package
+    sys.modules["openstarry_code.skills"] = skills_package
+    openstarry_code.skills = skills_package
 
 
 def main() -> None:

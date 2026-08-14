@@ -6,9 +6,9 @@ from typing import Any
 
 from typer.testing import CliRunner
 
-from opensquilla.cli import doctor_cmd as _doctor_cmd
-from opensquilla.cli import gateway_lifecycle
-from opensquilla.cli.main import app
+from openstarry_code.cli import doctor_cmd as _doctor_cmd
+from openstarry_code.cli import gateway_lifecycle
+from openstarry_code.cli.main import app
 
 runner = CliRunner()
 
@@ -41,7 +41,7 @@ class _FakeGatewayClient:
                     {
                         "label": "Configure provider",
                         "command": (
-                            "opensquilla providers configure openrouter "
+                            "openstarry-code providers configure openrouter "
                             "--api-key YOUR_API_KEY"
                         ),
                     }
@@ -96,15 +96,15 @@ class _ReadyGatewayClient(_FakeGatewayClient):
 class _OfflineGatewayClient(_FakeGatewayClient):
     async def connect(self, url: str) -> None:
         raise SystemExit(
-            "Cannot connect to OpenSquilla gateway.\n"
-            "Is the gateway running? Start it with: opensquilla gateway run\n"
+            "Cannot connect to OpenStarry Code gateway.\n"
+            "Is the gateway running? Start it with: openstarry-code gateway run\n"
             "Error: connection refused"
         )
 
 
 def test_doctor_json_calls_doctor_status(monkeypatch) -> None:
     _FakeGatewayClient.calls = []
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _FakeGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _FakeGatewayClient)
 
     result = runner.invoke(app, ["doctor", "--json"])
 
@@ -119,7 +119,7 @@ def test_doctor_json_calls_doctor_status(monkeypatch) -> None:
 
 def test_doctor_quick_skips_deep_memory_diagnostics(monkeypatch) -> None:
     _FakeGatewayClient.calls = []
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _FakeGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _FakeGatewayClient)
 
     result = runner.invoke(app, ["doctor", "--quick", "--json"])
 
@@ -134,7 +134,7 @@ def test_doctor_config_targets_gateway_from_config_path(tmp_path, monkeypatch) -
     _FakeGatewayClient.calls = []
     target = tmp_path / "custom.toml"
     target.write_text('host = "0.0.0.0"\nport = 20002\n', encoding="utf-8")
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _FakeGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _FakeGatewayClient)
 
     result = runner.invoke(app, ["doctor", "--json", "--config", str(target)])
 
@@ -148,7 +148,7 @@ def test_doctor_config_targets_gateway_from_config_path(tmp_path, monkeypatch) -
 
 def test_doctor_provider_probe_is_explicit_opt_in(monkeypatch) -> None:
     _FakeGatewayClient.calls = []
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _FakeGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _FakeGatewayClient)
 
     result = runner.invoke(app, ["doctor", "--probe-providers", "--json"])
 
@@ -165,7 +165,7 @@ def test_doctor_config_derived_gateway_recovery_preserves_config_target(
 ) -> None:
     target = tmp_path / "custom.toml"
     target.write_text('host = "0.0.0.0"\nport = 20002\n', encoding="utf-8")
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _OfflineGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _OfflineGatewayClient)
 
     result = runner.invoke(app, ["doctor", "--json", "--config", str(target)])
 
@@ -178,8 +178,8 @@ def test_doctor_config_derived_gateway_recovery_preserves_config_target(
     )
     commands = [step["command"] for step in finding["fixSteps"] if "command" in step]
     assert commands[:2] == [
-        f"opensquilla gateway start --config {_config_arg(target)}",
-        f"opensquilla gateway status --json --config {_config_arg(target)}",
+        f"openstarry-code gateway start --config {_config_arg(target)}",
+        f"openstarry-code gateway status --json --config {_config_arg(target)}",
     ]
     assert all("--bind 127.0.0.1" not in command for command in commands)
     assert all("--port 20002" not in command for command in commands[:2])
@@ -191,12 +191,12 @@ def test_doctor_targets_existing_cwd_config_without_explicit_config(
     monkeypatch,
 ) -> None:
     _FakeGatewayClient.calls = []
-    target = tmp_path / "opensquilla.toml"
+    target = tmp_path / "openstarry-code.toml"
     target.write_text('host = "127.0.0.1"\nport = 20009\n', encoding="utf-8")
     monkeypatch.chdir(tmp_path)
-    monkeypatch.delenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", raising=False)
-    monkeypatch.delenv("OPENSQUILLA_GATEWAY_URL", raising=False)
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _FakeGatewayClient)
+    monkeypatch.delenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_GATEWAY_URL", raising=False)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _FakeGatewayClient)
 
     result = runner.invoke(app, ["doctor", "--json"])
 
@@ -211,7 +211,7 @@ def test_doctor_targets_existing_cwd_config_without_explicit_config(
     )
     commands = [step["command"] for step in provider_finding["fixSteps"] if "command" in step]
     assert commands == [
-        "opensquilla providers configure openrouter --api-key YOUR_API_KEY "
+        "openstarry-code providers configure openrouter --api-key YOUR_API_KEY "
         f"--config {_config_arg(target)}"
     ]
 
@@ -221,11 +221,11 @@ def test_doctor_targets_env_config_without_explicit_config(
     monkeypatch,
 ) -> None:
     _FakeGatewayClient.calls = []
-    target = tmp_path / "env-opensquilla.toml"
+    target = tmp_path / "env-openstarry-code.toml"
     target.write_text('host = "127.0.0.1"\nport = 20010\n', encoding="utf-8")
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
-    monkeypatch.delenv("OPENSQUILLA_GATEWAY_URL", raising=False)
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _FakeGatewayClient)
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.delenv("OPENSTARRY_CODE_GATEWAY_URL", raising=False)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _FakeGatewayClient)
 
     result = runner.invoke(app, ["doctor", "--json"])
 
@@ -240,7 +240,7 @@ def test_doctor_targets_env_config_without_explicit_config(
     )
     commands = [step["command"] for step in provider_finding["fixSteps"] if "command" in step]
     assert commands == [
-        "opensquilla providers configure openrouter --api-key YOUR_API_KEY "
+        "openstarry-code providers configure openrouter --api-key YOUR_API_KEY "
         f"--config {_config_arg(target)}"
     ]
 
@@ -251,9 +251,9 @@ def test_doctor_prefers_active_profile_managed_gateway_runtime_port(
 ) -> None:
     _FakeGatewayClient.calls = []
     home = tmp_path / "profile"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
-    monkeypatch.delenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", raising=False)
-    monkeypatch.delenv("OPENSQUILLA_GATEWAY_URL", raising=False)
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
+    monkeypatch.delenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_GATEWAY_URL", raising=False)
     config = home / "config.toml"
     config.parent.mkdir(parents=True)
     config.write_text('host = "127.0.0.1"\nport = 18791\n', encoding="utf-8")
@@ -283,7 +283,7 @@ def test_doctor_prefers_active_profile_managed_gateway_runtime_port(
         "_probe_health",
         lambda self: True,
     )
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _FakeGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _FakeGatewayClient)
 
     result = runner.invoke(app, ["doctor", "--json"])
 
@@ -300,9 +300,9 @@ def test_doctor_reports_managed_gateway_recorded_config_path(
 ) -> None:
     _FakeGatewayClient.calls = []
     home = tmp_path / "profile"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
-    monkeypatch.delenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", raising=False)
-    monkeypatch.delenv("OPENSQUILLA_GATEWAY_URL", raising=False)
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
+    monkeypatch.delenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_GATEWAY_URL", raising=False)
     custom_config = tmp_path / "custom.toml"
     custom_config.write_text('host = "127.0.0.1"\nport = 18791\n', encoding="utf-8")
     lifecycle = home / "state" / "gateway" / "gateway.json"
@@ -328,7 +328,7 @@ def test_doctor_reports_managed_gateway_recorded_config_path(
         "_probe_health",
         lambda self: True,
     )
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _FakeGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _FakeGatewayClient)
 
     result = runner.invoke(app, ["doctor", "--json"])
 
@@ -342,7 +342,7 @@ def test_doctor_config_scopes_gateway_recovery_commands(tmp_path, monkeypatch) -
     _FakeGatewayClient.calls = []
     target = tmp_path / "custom.toml"
     target.write_text('host = "127.0.0.1"\nport = 20003\n', encoding="utf-8")
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _FakeGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _FakeGatewayClient)
 
     result = runner.invoke(app, ["doctor", "--json", "--config", str(target)])
 
@@ -355,7 +355,7 @@ def test_doctor_config_scopes_gateway_recovery_commands(tmp_path, monkeypatch) -
     )
     commands = [step["command"] for step in finding["fixSteps"] if "command" in step]
     assert commands == [
-        "opensquilla providers configure openrouter --api-key YOUR_API_KEY "
+        "openstarry-code providers configure openrouter --api-key YOUR_API_KEY "
         f"--config {_config_arg(target)}"
     ]
 
@@ -383,18 +383,18 @@ def test_doctor_config_scopes_config_set_recovery_commands(tmp_path, monkeypatch
                 "fixSteps": [
                     {
                         "label": "Enable gateway file logging",
-                        "command": "opensquilla config set log_file_enabled true",
+                        "command": "openstarry-code config set log_file_enabled true",
                     },
                     {
                         "label": "Restart gateway",
-                        "command": "opensquilla gateway restart",
+                        "command": "openstarry-code gateway restart",
                     },
                 ],
                 "restartRequired": True,
             }
         ],
     }
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _FakeGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _FakeGatewayClient)
 
     try:
         result = runner.invoke(app, ["doctor", "--json", "--config", str(target)])
@@ -410,8 +410,8 @@ def test_doctor_config_scopes_config_set_recovery_commands(tmp_path, monkeypatch
     )
     commands = [step["command"] for step in finding["fixSteps"] if "command" in step]
     assert commands == [
-        f"opensquilla config set log_file_enabled true --config {_config_arg(target)}",
-        f"opensquilla gateway restart --config {_config_arg(target)}",
+        f"openstarry-code config set log_file_enabled true --config {_config_arg(target)}",
+        f"openstarry-code gateway restart --config {_config_arg(target)}",
     ]
 
 
@@ -419,7 +419,7 @@ def test_doctor_bad_config_reports_config_recovery(tmp_path, monkeypatch) -> Non
     _FakeGatewayClient.calls = []
     target = tmp_path / "broken.toml"
     target.write_text("[llm\n", encoding="utf-8")
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _FakeGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _FakeGatewayClient)
 
     result = runner.invoke(app, ["doctor", "--json", "--config", str(target)])
 
@@ -436,8 +436,8 @@ def test_doctor_bad_gateway_config_env_reports_config_recovery(
     _FakeGatewayClient.calls = []
     target = tmp_path / "broken-env.toml"
     target.write_text("[llm\n", encoding="utf-8")
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _FakeGatewayClient)
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _FakeGatewayClient)
 
     result = runner.invoke(app, ["doctor", "--json"])
 
@@ -458,8 +458,8 @@ def test_doctor_explicit_gateway_context_ignores_env_config_path(
     _ReadyGatewayClient.calls = []
     target = tmp_path / "env.toml"
     target.write_text('host = "127.0.0.1"\nport = 20004\n', encoding="utf-8")
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _ReadyGatewayClient)
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _ReadyGatewayClient)
 
     result = runner.invoke(
         app,
@@ -479,7 +479,7 @@ def test_doctor_remote_gateway_ignores_explicit_local_config_context(
     _FakeGatewayClient.calls = []
     target = tmp_path / "local-only.toml"
     target.write_text('host = "127.0.0.1"\nport = 20008\n', encoding="utf-8")
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _FakeGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _FakeGatewayClient)
 
     result = runner.invoke(
         app,
@@ -504,12 +504,12 @@ def test_doctor_remote_gateway_ignores_explicit_local_config_context(
         if finding["id"] == "provider.active.not_configured"
     )
     commands = [step["command"] for step in finding["fixSteps"] if "command" in step]
-    assert commands == ["opensquilla providers configure openrouter --api-key YOUR_API_KEY"]
+    assert commands == ["openstarry-code providers configure openrouter --api-key YOUR_API_KEY"]
 
 
 def test_doctor_ready_json_exits_zero(monkeypatch) -> None:
     _ReadyGatewayClient.calls = []
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _ReadyGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _ReadyGatewayClient)
 
     result = runner.invoke(app, ["doctor", "--json"])
 
@@ -519,7 +519,7 @@ def test_doctor_ready_json_exits_zero(monkeypatch) -> None:
 
 def test_doctor_ready_table_summarizes_without_dumping_ok_findings(monkeypatch) -> None:
     _ReadyGatewayClient.calls = []
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _ReadyGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _ReadyGatewayClient)
 
     result = runner.invoke(app, ["doctor"])
 
@@ -534,7 +534,7 @@ def test_doctor_table_shows_gateway_config_and_agent_context(tmp_path, monkeypat
     _ReadyGatewayClient.calls = []
     target = tmp_path / "custom.toml"
     target.write_text('host = "127.0.0.1"\nport = 20003\n', encoding="utf-8")
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _ReadyGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _ReadyGatewayClient)
 
     result = runner.invoke(
         app,
@@ -563,7 +563,7 @@ def test_doctor_config_reports_running_gateway_config_mismatch(
         **original_payload,
         "configPath": str(running),
     }
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _ReadyGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _ReadyGatewayClient)
 
     try:
         result = runner.invoke(app, ["doctor", "--json", "--config", str(requested)])
@@ -585,9 +585,9 @@ def test_doctor_config_reports_running_gateway_config_mismatch(
     assert finding["evidence"]["requestedConfigPath"] == str(requested)
     assert finding["evidence"]["runningConfigPath"] == str(running)
     commands = [step["command"] for step in finding["fixSteps"] if "command" in step]
-    assert f"opensquilla gateway restart --config {_config_arg(requested)}" in commands
+    assert f"openstarry-code gateway restart --config {_config_arg(requested)}" in commands
     assert (
-        f"opensquilla gateway status --json --config {_config_arg(requested)}"
+        f"openstarry-code gateway status --json --config {_config_arg(requested)}"
         in commands
     )
 
@@ -606,7 +606,7 @@ def test_doctor_config_mismatch_prioritizes_requested_gateway_recovery(
         **original_payload,
         "configPath": str(running),
     }
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _FakeGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _FakeGatewayClient)
 
     try:
         result = runner.invoke(app, ["doctor", "--json", "--config", str(requested)])
@@ -635,7 +635,7 @@ def test_doctor_config_mismatch_keeps_running_findings_scoped_to_running_config(
         **original_payload,
         "configPath": str(running),
     }
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _FakeGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _FakeGatewayClient)
 
     try:
         result = runner.invoke(app, ["doctor", "--json", "--config", str(requested)])
@@ -653,7 +653,7 @@ def test_doctor_config_mismatch_keeps_running_findings_scoped_to_running_config(
         step["command"] for step in provider_finding["fixSteps"] if "command" in step
     ]
     assert provider_commands == [
-        "opensquilla providers configure openrouter --api-key YOUR_API_KEY "
+        "openstarry-code providers configure openrouter --api-key YOUR_API_KEY "
         f"--config {_config_arg(running)}"
     ]
     mismatch_finding = next(
@@ -664,18 +664,18 @@ def test_doctor_config_mismatch_keeps_running_findings_scoped_to_running_config(
     mismatch_commands = [
         step["command"] for step in mismatch_finding["fixSteps"] if "command" in step
     ]
-    assert f"opensquilla gateway restart --config {_config_arg(requested)}" in mismatch_commands
+    assert f"openstarry-code gateway restart --config {_config_arg(requested)}" in mismatch_commands
 
 
 def test_doctor_table_prints_fix_steps(monkeypatch) -> None:
     _FakeGatewayClient.calls = []
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _FakeGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _FakeGatewayClient)
 
     result = runner.invoke(app, ["doctor"])
 
     assert result.exit_code == 1
     assert "Active provider is not configured" in result.stdout
-    assert "opensquilla providers configure openrouter" in result.stdout
+    assert "openstarry-code providers configure openrouter" in result.stdout
 
 
 def test_doctor_degraded_table_exits_zero(monkeypatch) -> None:
@@ -697,7 +697,7 @@ def test_doctor_degraded_table_exits_zero(monkeypatch) -> None:
                     {
                         "label": "Configure search",
                         "command": (
-                            "opensquilla configure search "
+                            "openstarry-code configure search "
                             "--search-provider brave --api-key YOUR_API_KEY"
                         ),
                     }
@@ -706,7 +706,7 @@ def test_doctor_degraded_table_exits_zero(monkeypatch) -> None:
             }
         ],
     }
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _FakeGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _FakeGatewayClient)
 
     try:
         result = runner.invoke(app, ["doctor"])
@@ -740,14 +740,14 @@ def test_doctor_table_explains_non_blocking_error_impact(monkeypatch) -> None:
                 "fixSteps": [
                     {
                         "label": "Restart channel",
-                        "command": "opensquilla channels restart feishu --yes",
+                        "command": "openstarry-code channels restart feishu --yes",
                     }
                 ],
                 "restartRequired": False,
             }
         ],
     }
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _FakeGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _FakeGatewayClient)
 
     try:
         result = runner.invoke(app, ["doctor"])
@@ -780,7 +780,7 @@ def test_doctor_table_uses_readiness_impact_to_select_action_findings(monkeypatc
                     {
                         "label": "Enable image generation",
                         "command": (
-                            "opensquilla configure image-generation "
+                            "openstarry-code configure image-generation "
                             "--image-provider openai --api-key YOUR_API_KEY"
                         ),
                     }
@@ -797,7 +797,7 @@ def test_doctor_table_uses_readiness_impact_to_select_action_findings(monkeypatc
                     {
                         "label": "Configure provider",
                         "command": (
-                            "opensquilla providers configure openrouter --api-key YOUR_API_KEY"
+                            "openstarry-code providers configure openrouter --api-key YOUR_API_KEY"
                         ),
                     }
                 ],
@@ -805,7 +805,7 @@ def test_doctor_table_uses_readiness_impact_to_select_action_findings(monkeypatc
             },
         ],
     }
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _FakeGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _FakeGatewayClient)
 
     try:
         result = runner.invoke(app, ["doctor"])
@@ -840,13 +840,13 @@ def test_doctor_table_uses_readiness_impact_to_label_optional_steps(monkeypatch)
                 "fixSteps": [
                     {
                         "label": "Inspect sandbox",
-                        "command": "opensquilla sandbox status --json",
+                        "command": "openstarry-code sandbox status --json",
                     }
                 ],
             }
         ],
     }
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _FakeGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _FakeGatewayClient)
 
     try:
         result = runner.invoke(app, ["doctor"])
@@ -877,7 +877,7 @@ def test_doctor_table_hides_non_actionable_findings_when_attention_is_needed(mon
                     {
                         "label": "Enable image generation",
                         "command": (
-                            "opensquilla configure image-generation "
+                            "openstarry-code configure image-generation "
                             "--image-provider openai --api-key YOUR_API_KEY"
                         ),
                     }
@@ -896,7 +896,7 @@ def test_doctor_table_hides_non_actionable_findings_when_attention_is_needed(mon
             },
         ],
     }
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _FakeGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _FakeGatewayClient)
 
     try:
         result = runner.invoke(app, ["doctor"])
@@ -929,7 +929,7 @@ def test_doctor_table_labels_info_only_steps_as_optional(monkeypatch) -> None:
                     {
                         "label": "Enable image generation",
                         "command": (
-                            "opensquilla configure image-generation "
+                            "openstarry-code configure image-generation "
                             "--image-provider openai --api-key YOUR_API_KEY"
                         ),
                     }
@@ -948,7 +948,7 @@ def test_doctor_table_labels_info_only_steps_as_optional(monkeypatch) -> None:
             },
         ],
     }
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _FakeGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _FakeGatewayClient)
 
     try:
         result = runner.invoke(app, ["doctor"])
@@ -963,8 +963,8 @@ def test_doctor_table_labels_info_only_steps_as_optional(monkeypatch) -> None:
 
 
 def test_doctor_reports_gateway_unavailable_as_json(monkeypatch) -> None:
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _OfflineGatewayClient)
-    monkeypatch.setattr("opensquilla.cli.doctor_cmd._local_config_findings", lambda: [])
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _OfflineGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.doctor_cmd._local_config_findings", lambda: [])
 
     result = runner.invoke(app, ["doctor", "--json"])
 
@@ -980,15 +980,15 @@ def test_doctor_reports_gateway_unavailable_as_json(monkeypatch) -> None:
     finding = payload["findings"][0]
     assert finding["id"] == "gateway.unavailable"
     assert finding["readinessImpact"] == "blocks_ready"
-    assert "opensquilla gateway start" in finding["fixSteps"][0]["command"]
-    assert "opensquilla gateway run" not in finding["detail"]
+    assert "openstarry-code gateway start" in finding["fixSteps"][0]["command"]
+    assert "openstarry-code gateway run" not in finding["detail"]
     assert "recovery steps" in finding["detail"]
-    assert "opensquilla gateway run" in finding["evidence"]["error"]
+    assert "openstarry-code gateway run" in finding["evidence"]["error"]
 
 
 def test_doctor_gateway_unavailable_uses_requested_gateway_url(monkeypatch) -> None:
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _OfflineGatewayClient)
-    monkeypatch.setattr("opensquilla.cli.doctor_cmd._local_config_findings", lambda: [])
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _OfflineGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.doctor_cmd._local_config_findings", lambda: [])
 
     result = runner.invoke(
         app,
@@ -1001,8 +1001,8 @@ def test_doctor_gateway_unavailable_uses_requested_gateway_url(monkeypatch) -> N
     assert finding["evidence"]["gatewayUrl"] == "ws://127.0.0.1:19999/ws"
     commands = [step["command"] for step in finding["fixSteps"] if "command" in step]
     assert commands[:2] == [
-        "opensquilla gateway start --bind 127.0.0.1 --port 19999",
-        "opensquilla gateway status --bind 127.0.0.1 --port 19999 --json",
+        "openstarry-code gateway start --bind 127.0.0.1 --port 19999",
+        "openstarry-code gateway status --bind 127.0.0.1 --port 19999 --json",
     ]
 
 
@@ -1010,8 +1010,8 @@ def test_doctor_gateway_unavailable_uses_requested_config_path(
     tmp_path,
     monkeypatch,
 ) -> None:
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.onboarding.config_store import persist_config
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.onboarding.config_store import persist_config
 
     target = tmp_path / "custom-config.toml"
     persist_config(
@@ -1026,7 +1026,7 @@ def test_doctor_gateway_unavailable_uses_requested_config_path(
         path=target,
     )
     monkeypatch.delenv("CUSTOM_LLM_KEY", raising=False)
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _OfflineGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _OfflineGatewayClient)
 
     result = runner.invoke(
         app,
@@ -1051,14 +1051,14 @@ def test_doctor_gateway_unavailable_uses_requested_config_path(
         step["command"] for step in gateway_finding["fixSteps"] if "command" in step
     ]
     assert gateway_commands[:2] == [
-        "opensquilla gateway start --bind 127.0.0.1 --port 19999 "
+        "openstarry-code gateway start --bind 127.0.0.1 --port 19999 "
         f"--config {_config_arg(target)}",
         (
-            "opensquilla gateway status --bind 127.0.0.1 --port 19999 "
+            "openstarry-code gateway status --bind 127.0.0.1 --port 19999 "
             f"--json --config {_config_arg(target)}"
         ),
     ]
-    assert f"opensquilla diagnostics status --config {_config_arg(target)}" in gateway_commands
+    assert f"openstarry-code diagnostics status --config {_config_arg(target)}" in gateway_commands
     finding = next(
         finding
         for finding in payload["findings"]
@@ -1068,8 +1068,8 @@ def test_doctor_gateway_unavailable_uses_requested_config_path(
     assert "CUSTOM_LLM_KEY" in finding["detail"]
     commands = [step["command"] for step in finding["fixSteps"] if "command" in step]
     assert commands[-2:] == [
-        f"opensquilla onboard status --json --config {_config_arg(target)}",
-        f"opensquilla onboard --if-needed --config {_config_arg(target)}",
+        f"openstarry-code onboard status --json --config {_config_arg(target)}",
+        f"openstarry-code onboard --if-needed --config {_config_arg(target)}",
     ]
 
 
@@ -1079,7 +1079,7 @@ def test_doctor_gateway_unavailable_prioritizes_unreadable_config(
 ) -> None:
     target = tmp_path / "broken.toml"
     target.write_text("[llm\n", encoding="utf-8")
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _OfflineGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _OfflineGatewayClient)
 
     result = runner.invoke(
         app,
@@ -1101,14 +1101,14 @@ def test_doctor_gateway_unavailable_prioritizes_unreadable_config(
         step["command"] for step in payload["findings"][0]["fixSteps"] if "command" in step
     ]
     assert first_commands == [
-        f"opensquilla onboard status --json --config {_config_arg(target)}",
-        f"opensquilla onboard --if-needed --config {_config_arg(target)}",
+        f"openstarry-code onboard status --json --config {_config_arg(target)}",
+        f"openstarry-code onboard --if-needed --config {_config_arg(target)}",
     ]
 
 
 def test_doctor_gateway_unavailable_does_not_start_remote_gateway(monkeypatch) -> None:
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _OfflineGatewayClient)
-    monkeypatch.setattr("opensquilla.cli.doctor_cmd._local_config_findings", lambda: [])
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _OfflineGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.doctor_cmd._local_config_findings", lambda: [])
 
     result = runner.invoke(
         app,
@@ -1122,14 +1122,14 @@ def test_doctor_gateway_unavailable_does_not_start_remote_gateway(monkeypatch) -
     commands = [step["command"] for step in finding["fixSteps"] if "command" in step]
     assert all("gateway start" not in command for command in commands)
     assert commands[0] == (
-        "opensquilla gateway status --gateway wss://squilla.example.com/ws --json"
+        "openstarry-code gateway status --gateway wss://squilla.example.com/ws --json"
     )
     details = [step.get("detail", "") for step in finding["fixSteps"]]
     assert any("remote" in detail.lower() for detail in details)
 
 
 def test_doctor_offline_prioritizes_local_config_before_gateway_restart(monkeypatch) -> None:
-    from opensquilla.health.model import HealthFinding
+    from openstarry_code.health.model import HealthFinding
 
     monkeypatch.setattr(
         _doctor_cmd,
@@ -1161,7 +1161,7 @@ def test_doctor_offline_prioritizes_local_config_before_gateway_restart(monkeypa
 
 
 def test_doctor_offline_does_not_mix_local_config_into_remote_gateway(monkeypatch) -> None:
-    from opensquilla.health.model import HealthFinding
+    from openstarry_code.health.model import HealthFinding
 
     monkeypatch.setattr(
         _doctor_cmd,
@@ -1186,7 +1186,7 @@ def test_doctor_offline_does_not_mix_local_config_into_remote_gateway(monkeypatc
 
 
 def test_local_config_findings_explain_missing_llm_env(monkeypatch) -> None:
-    from opensquilla.gateway.config import GatewayConfig
+    from openstarry_code.gateway.config import GatewayConfig
 
     monkeypatch.delenv("CUSTOM_LLM_KEY", raising=False)
     cfg = GatewayConfig(
@@ -1212,13 +1212,13 @@ def test_local_config_findings_explain_missing_llm_env(monkeypatch) -> None:
         for step in finding.fix_steps
     )
     assert [step.command for step in finding.fix_steps if step.command][-2:] == [
-        "opensquilla onboard status --json",
-        "opensquilla onboard --if-needed",
+        "openstarry-code onboard status --json",
+        "openstarry-code onboard --if-needed",
     ]
 
 
 def test_local_config_findings_explain_optional_env_references(monkeypatch) -> None:
-    from opensquilla.gateway.config import GatewayConfig
+    from openstarry_code.gateway.config import GatewayConfig
 
     monkeypatch.delenv("CUSTOM_SEARCH_KEY", raising=False)
     monkeypatch.delenv("CUSTOM_IMAGE_KEY", raising=False)
@@ -1263,7 +1263,7 @@ def test_refresh_report_readiness_labels_operator_action_items() -> None:
     # The CLI recomputes the summary locally after rewriting fix commands; a
     # warn-severity optional finding must keep the "awaiting operator action"
     # label the gateway report uses, not decay to "optional setup item".
-    from opensquilla.cli.doctor_cmd import _refresh_report_readiness
+    from openstarry_code.cli.doctor_cmd import _refresh_report_readiness
 
     report: dict[str, Any] = {
         "findings": [
@@ -1294,7 +1294,7 @@ def test_refresh_report_readiness_labels_operator_action_items() -> None:
 
 
 def test_doctor_appends_local_tui_finding_when_opentui_unavailable(monkeypatch) -> None:
-    from opensquilla.cli.tui.renderers.selection import (
+    from openstarry_code.cli.tui.renderers.selection import (
         ChatUiFallback,
         ChatUiSelection,
         RendererBackendUnavailableReason,
@@ -1305,7 +1305,7 @@ def test_doctor_appends_local_tui_finding_when_opentui_unavailable(monkeypatch) 
 
     monkeypatch.setattr(_doctor_cmd, "_local_tui_findings", _REAL_LOCAL_TUI_FINDINGS)
     monkeypatch.setattr(
-        "opensquilla.cli.tui.renderers.selection.select_chat_ui_backend",
+        "openstarry_code.cli.tui.renderers.selection.select_chat_ui_backend",
         lambda mode=None: ChatUiSelection(
             requested_mode="auto",
             backend=_PlainBackend(),
@@ -1316,11 +1316,11 @@ def test_doctor_appends_local_tui_finding_when_opentui_unavailable(monkeypatch) 
         ),
     )
     monkeypatch.setattr(
-        "opensquilla.cli.tui.source_checkout.resolve_tui_source_checkout_hint",
+        "openstarry_code.cli.tui.source_checkout.resolve_tui_source_checkout_hint",
         lambda: None,
     )
     _ReadyGatewayClient.calls = []
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _ReadyGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _ReadyGatewayClient)
 
     result = runner.invoke(app, ["doctor", "--json"])
 
@@ -1341,14 +1341,14 @@ def test_doctor_appends_local_tui_finding_when_opentui_unavailable(monkeypatch) 
 
 
 def test_doctor_reports_nothing_when_opentui_is_active(monkeypatch) -> None:
-    from opensquilla.cli.tui.renderers.selection import ChatUiSelection
+    from openstarry_code.cli.tui.renderers.selection import ChatUiSelection
 
     class _OpenTuiBackend:
         backend_id = "opentui"
 
     monkeypatch.setattr(_doctor_cmd, "_local_tui_findings", _REAL_LOCAL_TUI_FINDINGS)
     monkeypatch.setattr(
-        "opensquilla.cli.tui.renderers.selection.select_chat_ui_backend",
+        "openstarry_code.cli.tui.renderers.selection.select_chat_ui_backend",
         lambda mode=None: ChatUiSelection(
             requested_mode="auto",
             backend=_OpenTuiBackend(),
@@ -1356,7 +1356,7 @@ def test_doctor_reports_nothing_when_opentui_is_active(monkeypatch) -> None:
         ),
     )
     _ReadyGatewayClient.calls = []
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _ReadyGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _ReadyGatewayClient)
 
     result = runner.invoke(app, ["doctor"])
 
@@ -1368,7 +1368,7 @@ def test_local_tui_findings_reports_probe_crash_as_warn(monkeypatch) -> None:
     def _boom(mode=None):
         raise RuntimeError("selection exploded")
 
-    monkeypatch.setattr("opensquilla.cli.tui.renderers.selection.select_chat_ui_backend", _boom)
+    monkeypatch.setattr("openstarry_code.cli.tui.renderers.selection.select_chat_ui_backend", _boom)
 
     findings = _REAL_LOCAL_TUI_FINDINGS()
 
@@ -1379,18 +1379,18 @@ def test_local_tui_findings_reports_probe_crash_as_warn(monkeypatch) -> None:
 
 
 def test_local_tui_findings_offers_source_checkout_fix_steps(monkeypatch) -> None:
-    from opensquilla.cli.tui.renderers.selection import (
+    from openstarry_code.cli.tui.renderers.selection import (
         ChatUiFallback,
         ChatUiSelection,
         RendererBackendUnavailableReason,
     )
-    from opensquilla.cli.tui.source_checkout import TuiSourceCheckoutHint
+    from openstarry_code.cli.tui.source_checkout import TuiSourceCheckoutHint
 
     class _PlainBackend:
         backend_id = "native"
 
     monkeypatch.setattr(
-        "opensquilla.cli.tui.renderers.selection.select_chat_ui_backend",
+        "openstarry_code.cli.tui.renderers.selection.select_chat_ui_backend",
         lambda mode=None: ChatUiSelection(
             requested_mode="auto",
             backend=_PlainBackend(),
@@ -1401,10 +1401,10 @@ def test_local_tui_findings_offers_source_checkout_fix_steps(monkeypatch) -> Non
         ),
     )
     monkeypatch.setattr(
-        "opensquilla.cli.tui.source_checkout.resolve_tui_source_checkout_hint",
+        "openstarry_code.cli.tui.source_checkout.resolve_tui_source_checkout_hint",
         lambda: TuiSourceCheckoutHint(
             install_command="bun install --cwd /repo/package",
-            launch_command="OPENSQUILLA_TUI_DEV_SOURCE_HOST=1 opensquilla chat --ui tui",
+            launch_command="OPENSTARRY_CODE_TUI_DEV_SOURCE_HOST=1 openstarry-code chat --ui tui",
         ),
     )
 
@@ -1414,14 +1414,14 @@ def test_local_tui_findings_offers_source_checkout_fix_steps(monkeypatch) -> Non
     commands = [step.command for step in findings[0].fix_steps]
     assert commands == [
         "bun install --cwd /repo/package",
-        "OPENSQUILLA_TUI_DEV_SOURCE_HOST=1 opensquilla chat --ui tui",
+        "OPENSTARRY_CODE_TUI_DEV_SOURCE_HOST=1 openstarry-code chat --ui tui",
     ]
     # Host-derived detail is sanitized before it reaches a report.
     assert "\x1b" not in findings[0].detail
 
 
 def test_doctor_merge_keeps_counts_and_summary_consistent(monkeypatch) -> None:
-    from opensquilla.cli.tui.renderers.selection import (
+    from openstarry_code.cli.tui.renderers.selection import (
         ChatUiFallback,
         ChatUiSelection,
         RendererBackendUnavailableReason,
@@ -1432,7 +1432,7 @@ def test_doctor_merge_keeps_counts_and_summary_consistent(monkeypatch) -> None:
 
     monkeypatch.setattr(_doctor_cmd, "_local_tui_findings", _REAL_LOCAL_TUI_FINDINGS)
     monkeypatch.setattr(
-        "opensquilla.cli.tui.renderers.selection.select_chat_ui_backend",
+        "openstarry_code.cli.tui.renderers.selection.select_chat_ui_backend",
         lambda mode=None: ChatUiSelection(
             requested_mode="auto",
             backend=_PlainBackend(),
@@ -1443,11 +1443,11 @@ def test_doctor_merge_keeps_counts_and_summary_consistent(monkeypatch) -> None:
         ),
     )
     monkeypatch.setattr(
-        "opensquilla.cli.tui.source_checkout.resolve_tui_source_checkout_hint",
+        "openstarry_code.cli.tui.source_checkout.resolve_tui_source_checkout_hint",
         lambda: None,
     )
     _ReadyGatewayClient.calls = []
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _ReadyGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _ReadyGatewayClient)
 
     result = runner.invoke(app, ["doctor", "--json"])
 
@@ -1462,7 +1462,7 @@ def test_doctor_merge_keeps_counts_and_summary_consistent(monkeypatch) -> None:
 
 
 def test_doctor_merge_preserves_offline_unavailable_sentinel(monkeypatch) -> None:
-    from opensquilla.cli.tui.renderers.selection import (
+    from openstarry_code.cli.tui.renderers.selection import (
         ChatUiFallback,
         ChatUiSelection,
         RendererBackendUnavailableReason,
@@ -1473,7 +1473,7 @@ def test_doctor_merge_preserves_offline_unavailable_sentinel(monkeypatch) -> Non
 
     monkeypatch.setattr(_doctor_cmd, "_local_tui_findings", _REAL_LOCAL_TUI_FINDINGS)
     monkeypatch.setattr(
-        "opensquilla.cli.tui.renderers.selection.select_chat_ui_backend",
+        "openstarry_code.cli.tui.renderers.selection.select_chat_ui_backend",
         lambda mode=None: ChatUiSelection(
             requested_mode="auto",
             backend=_PlainBackend(),
@@ -1484,10 +1484,10 @@ def test_doctor_merge_preserves_offline_unavailable_sentinel(monkeypatch) -> Non
         ),
     )
     monkeypatch.setattr(
-        "opensquilla.cli.tui.source_checkout.resolve_tui_source_checkout_hint",
+        "openstarry_code.cli.tui.source_checkout.resolve_tui_source_checkout_hint",
         lambda: None,
     )
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _OfflineGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _OfflineGatewayClient)
 
     result = runner.invoke(app, ["doctor", "--json"])
 

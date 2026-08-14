@@ -8,15 +8,15 @@ import httpx
 import pytest
 import structlog.testing
 
-from opensquilla.engine.agent import _chat_config_with_thinking_disabled
-from opensquilla.engine.types import ThinkingLevel
-from opensquilla.provider.openai import (
+from openstarry_code.engine.agent import _chat_config_with_thinking_disabled
+from openstarry_code.engine.types import ThinkingLevel
+from openstarry_code.provider.openai import (
     OpenAIProvider,
     _reasoning_replay_signature,
     _ReasoningReplayStats,
     _retained_reasoning_replay_units,
 )
-from opensquilla.provider.types import (
+from openstarry_code.provider.types import (
     ChatConfig,
     ContentBlockToolResult,
     ContentBlockToolUse,
@@ -40,7 +40,7 @@ TOKENRHYTHM_REASONING_LIMIT_UTF16_UNITS = 50_000
 
 @pytest.fixture(autouse=True)
 def _clear_reasoning_echo_override(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("OPENSQUILLA_REASONING_ECHO_TURNS", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_REASONING_ECHO_TURNS", raising=False)
 
 
 def _provider(
@@ -487,7 +487,7 @@ def test_tokenrhythm_field_limit_400_is_not_retried_reactively(
         return real_async_client(*args, **kwargs)
 
     monkeypatch.setattr(
-        "opensquilla.provider.openai.httpx.AsyncClient",
+        "openstarry_code.provider.openai.httpx.AsyncClient",
         patched_async_client,
     )
     private_marker = "synthetic-private-reasoning-marker"
@@ -537,7 +537,7 @@ def test_budget_rejection_does_not_report_a_transport_withheld_metric(
             raise AssertionError("budget-limited request must not reach transport")
 
     monkeypatch.setattr(
-        "opensquilla.provider.openai.httpx.AsyncClient",
+        "openstarry_code.provider.openai.httpx.AsyncClient",
         ForbiddenClient,
     )
     reasoning = _reasoning_with_utf16_units(

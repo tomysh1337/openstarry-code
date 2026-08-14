@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-_SKILL_DIR = REPO / "src" / "opensquilla" / "skills" / "bundled" / "history-explorer"
+_SKILL_DIR = REPO / "src" / "openstarry_code" / "skills" / "bundled" / "history-explorer"
 EXPLORE = _SKILL_DIR / "scripts" / "explore.py"
 
 
@@ -130,10 +130,10 @@ def test_router_fixtures_surfaces_fixture_files(tmp_path: Path) -> None:
 def test_meta_usage_includes_accepted_managed_skills(tmp_path: Path, monkeypatch) -> None:
     """N15: an accepted (managed-layer) meta-skill must appear in meta_usage.
 
-    Builds a fake ~/.opensquilla/skills/<name>/SKILL.md with kind: meta and
+    Builds a fake ~/.openstarry-code/skills/<name>/SKILL.md with kind: meta and
     verifies aggregate_meta_usage counts an invocation entry for it.
     """
-    home = tmp_path / ".opensquilla"
+    home = tmp_path / ".openstarry-code"
     managed_skills = home / "skills" / "user-composed-pipeline"
     managed_skills.mkdir(parents=True)
     (managed_skills / "SKILL.md").write_text(
@@ -164,7 +164,7 @@ def test_meta_usage_includes_accepted_managed_skills(tmp_path: Path, monkeypatch
     # Redirect default_opensquilla_home() so _load_meta_names picks up the
     # fake managed dir.  The subprocess inherits os.environ, so monkeypatch
     # on the current process propagates automatically.
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     out = _run_explore(log_dir, "user composed history", window_days=30)
 
@@ -175,8 +175,8 @@ def test_meta_usage_includes_accepted_managed_skills(tmp_path: Path, monkeypatch
 
 
 def test_resolve_log_dir_respects_env_overrides(tmp_path: Path, monkeypatch) -> None:
-    """N18 regression: log_dir resolution honors $OPENSQUILLA_LOG_DIR,
-    $OPENSQUILLA_STATE_DIR/logs, ~/.opensquilla/logs in that order;
+    """N18 regression: log_dir resolution honors $OPENSTARRY_CODE_LOG_DIR,
+    $OPENSTARRY_CODE_STATE_DIR/logs, ~/.openstarry-code/logs in that order;
     expands ~; never returns a path with a literal '~' from the subprocess."""
     import importlib.util
 
@@ -187,8 +187,8 @@ def test_resolve_log_dir_respects_env_overrides(tmp_path: Path, monkeypatch) -> 
     spec_obj.loader.exec_module(explore_mod)  # type: ignore[union-attr]
     _resolve_log_dir = explore_mod._resolve_log_dir
 
-    monkeypatch.delenv("OPENSQUILLA_LOG_DIR", raising=False)
-    monkeypatch.delenv("OPENSQUILLA_STATE_DIR", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_LOG_DIR", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_STATE_DIR", raising=False)
 
     # CLI arg wins and is returned as absolute path
     explicit = _resolve_log_dir(str(tmp_path / "explicit"))
@@ -201,23 +201,23 @@ def test_resolve_log_dir_respects_env_overrides(tmp_path: Path, monkeypatch) -> 
     assert not str(resolved).startswith("~"), f"tilde not expanded: {resolved}"
     assert str(resolved).startswith(str(tmp_path))
 
-    # OPENSQUILLA_LOG_DIR wins when no CLI arg
-    monkeypatch.setenv("OPENSQUILLA_LOG_DIR", str(tmp_path / "env_log"))
+    # OPENSTARRY_CODE_LOG_DIR wins when no CLI arg
+    monkeypatch.setenv("OPENSTARRY_CODE_LOG_DIR", str(tmp_path / "env_log"))
     assert _resolve_log_dir(None).name == "env_log"
 
-    # OPENSQUILLA_STATE_DIR/logs fallback when LOG_DIR not set
-    monkeypatch.delenv("OPENSQUILLA_LOG_DIR")
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "state"))
+    # OPENSTARRY_CODE_STATE_DIR/logs fallback when LOG_DIR not set
+    monkeypatch.delenv("OPENSTARRY_CODE_LOG_DIR")
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "state"))
     resolved_state = _resolve_log_dir(None)
     assert resolved_state.parent.name == "state"
     assert resolved_state.name == "logs"
 
-    # Default (~/.opensquilla/logs) when no CLI arg and no env
-    monkeypatch.delenv("OPENSQUILLA_STATE_DIR")
+    # Default (~/.openstarry-code/logs) when no CLI arg and no env
+    monkeypatch.delenv("OPENSTARRY_CODE_STATE_DIR")
     default = _resolve_log_dir(None)
     assert not str(default).startswith("~"), f"default tilde not expanded: {default}"
     assert default.name == "logs"
-    assert default.parent.name == ".opensquilla"
+    assert default.parent.name == ".openstarry-code"
 
 
 def test_meta_usage_filters_out_normal_helper_skills(tmp_path: Path) -> None:
@@ -239,7 +239,7 @@ def test_meta_usage_filters_out_normal_helper_skills(tmp_path: Path) -> None:
         "explore",
         str(
             Path(__file__).resolve().parents[2]
-            / "src" / "opensquilla" / "skills" / "bundled"
+            / "src" / "openstarry_code" / "skills" / "bundled"
             / "history-explorer" / "scripts" / "explore.py"
         ),
     )

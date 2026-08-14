@@ -7,7 +7,7 @@ import json
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-BUNDLE_REL = Path("src/opensquilla/squilla_router/models/v4.2_phase3_inference")
+BUNDLE_REL = Path("src/openstarry_code/squilla_router/models/v4.2_phase3_inference")
 BUNDLE_DIR = REPO_ROOT / BUNDLE_REL
 MANIFEST_PATH = BUNDLE_DIR / "artifact_manifest.json"
 

@@ -3,11 +3,11 @@ import { parseOpenSquillaReleaseTag, type ParsedReleaseTag } from './update-feed
 export const UPDATE_OSS_RELEASE_ROOT =
   'https://opensquilla-releases.oss-cn-beijing.aliyuncs.com/releases'
 export const UPDATE_GITHUB_RELEASE_ROOT =
-  'https://github.com/opensquilla/opensquilla/releases/download'
+  'https://github.com/tomysh1337/openstarry-code/releases/download'
 export const UPDATE_GITHUB_RELEASE_PAGE_ROOT =
-  'https://github.com/opensquilla/opensquilla/releases/tag'
+  'https://github.com/tomysh1337/openstarry-code/releases/tag'
 export const UPDATE_GITHUB_RELEASES_API_URL =
-  'https://api.github.com/repos/opensquilla/opensquilla/releases?per_page=100'
+  'https://api.github.com/repos/tomysh1337/openstarry-code/releases?per_page=100'
 
 export type DesktopUpdatePlatform = 'darwin-arm64' | 'win32-x64'
 export type DesktopUpdateSource = 'oss' | 'github'
@@ -134,9 +134,9 @@ function requiredReleaseAssets(version: ParsedReleaseTag): string[] {
     'SHA256SUMS',
     'latest-mac.yml',
     'latest.yml',
-    `OpenSquilla-${appVersion}-mac-arm64.zip`,
-    `OpenSquilla-${appVersion}-mac-arm64.dmg`,
-    `OpenSquilla-${appVersion}-win-x64.exe`,
+    `OpenStarry-Code-${appVersion}-mac-arm64.zip`,
+    `OpenStarry-Code-${appVersion}-mac-arm64.dmg`,
+    `OpenStarry-Code-${appVersion}-win-x64.exe`,
   ]
 }
 
@@ -208,12 +208,12 @@ export function updateChannelManifestFromReleaseInventory(
     platforms: {
       'darwin-arm64': {
         feed: 'latest-mac.yml',
-        archive: `OpenSquilla-${version}-mac-arm64.zip`,
-        installer: `OpenSquilla-${version}-mac-arm64.dmg`,
+        archive: `OpenStarry-Code-${version}-mac-arm64.zip`,
+        installer: `OpenStarry-Code-${version}-mac-arm64.dmg`,
       },
       'win32-x64': {
         feed: 'latest.yml',
-        installer: `OpenSquilla-${version}-win-x64.exe`,
+        installer: `OpenStarry-Code-${version}-win-x64.exe`,
       },
     },
   })
@@ -272,9 +272,9 @@ export function validateUpdateChannelManifest(payload: unknown): UpdateChannelMa
   }
 
 
-  const expectedMacArchive = `OpenSquilla-${version}-mac-arm64.zip`
-  const expectedMacInstaller = `OpenSquilla-${version}-mac-arm64.dmg`
-  const expectedWindowsInstaller = `OpenSquilla-${version}-win-x64.exe`
+  const expectedMacArchive = `OpenStarry-Code-${version}-mac-arm64.zip`
+  const expectedMacInstaller = `OpenStarry-Code-${version}-mac-arm64.dmg`
+  const expectedWindowsInstaller = `OpenStarry-Code-${version}-win-x64.exe`
   if (
     parsedPlatforms['darwin-arm64'].feed !== 'latest-mac.yml'
     || parsedPlatforms['darwin-arm64'].archive !== expectedMacArchive

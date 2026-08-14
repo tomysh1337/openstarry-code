@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from dataclasses import fields
 
-from opensquilla.engine.history import reconstruct_messages_from_entry
-from opensquilla.engine.runtime import _persisted_tool_result_segment
-from opensquilla.engine.session_sanitize import sanitize_session_messages
-from opensquilla.engine.types import ToolResultEvent
-from opensquilla.provider.types import ContentBlockToolResult, Message
-from opensquilla.tool_boundary import ToolResult
+from openstarry_code.engine.history import reconstruct_messages_from_entry
+from openstarry_code.engine.runtime import _persisted_tool_result_segment
+from openstarry_code.engine.session_sanitize import sanitize_session_messages
+from openstarry_code.engine.types import ToolResultEvent
+from openstarry_code.provider.types import ContentBlockToolResult, Message
+from openstarry_code.tool_boundary import ToolResult
 
 
 def _failure_status() -> dict[str, object]:

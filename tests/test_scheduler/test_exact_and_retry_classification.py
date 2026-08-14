@@ -11,19 +11,19 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from pathlib import Path
 
-from opensquilla.gateway.rpc import RpcContext
-from opensquilla.gateway.rpc_cron import _handle_cron_add
-from opensquilla.scheduler.jobs import (
+from openstarry_code.gateway.rpc import RpcContext
+from openstarry_code.gateway.rpc_cron import _handle_cron_add
+from openstarry_code.scheduler.jobs import (
     _apply_result_state,
     classify_error,
 )
-from opensquilla.scheduler.ops import SchedulerOps
-from opensquilla.scheduler.payloads import (
+from openstarry_code.scheduler.ops import SchedulerOps
+from openstarry_code.scheduler.payloads import (
     AGENT_TURN_KIND,
     make_agent_turn_payload,
 )
-from opensquilla.scheduler.persistence import JobStore
-from opensquilla.scheduler.types import (
+from openstarry_code.scheduler.persistence import JobStore
+from openstarry_code.scheduler.types import (
     CronJob,
     DeliveryConfig,
     JobExecution,

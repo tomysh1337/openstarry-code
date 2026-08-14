@@ -7,8 +7,8 @@ from unittest.mock import patch
 
 import pytest
 
-from opensquilla.session.models import SessionNode, TranscriptEntry
-from opensquilla.session.storage import SessionStorage, StorageBusyError
+from openstarry_code.session.models import SessionNode, TranscriptEntry
+from openstarry_code.session.storage import SessionStorage, StorageBusyError
 
 
 @pytest.mark.asyncio

@@ -17,9 +17,9 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 import pytest_asyncio
 
-from opensquilla.session.manager import SessionManager
-from opensquilla.session.models import SessionNode, TranscriptEntry
-from opensquilla.session.storage import SessionStorage, StaleEpochError
+from openstarry_code.session.manager import SessionManager
+from openstarry_code.session.models import SessionNode, TranscriptEntry
+from openstarry_code.session.storage import SessionStorage, StaleEpochError
 
 # ── fixtures ─────────────────────────────────────────────────────────────────
 
@@ -168,7 +168,7 @@ async def test_emit_no_db_query_per_event(storage):
     After the first cache-miss DB hit, subsequent emits for the same session
     read the in-process cache.  100 emits → < 5 DB calls.
     """
-    from opensquilla.gateway.rpc_sessions import _emit_to_subscribers
+    from openstarry_code.gateway.rpc_sessions import _emit_to_subscribers
 
     node = await _make_session(storage)
     key = node.session_key
@@ -209,7 +209,7 @@ async def test_emit_no_db_query_per_event(storage):
         session_manager=session_manager,
     )
 
-    import opensquilla.gateway.websocket as _ws_module
+    import openstarry_code.gateway.websocket as _ws_module
     original_get_registry = _ws_module.get_registry
     _ws_module.get_registry = lambda: FakeRegistry()
     try:

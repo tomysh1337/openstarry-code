@@ -8,8 +8,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.skills import capability_runtime
-from opensquilla.skills.capability_runtime import (
+from openstarry_code.skills import capability_runtime
+from openstarry_code.skills.capability_runtime import (
     CAPABILITY_AUDIO_GENERATE,
     CAPABILITY_IMAGE_GENERATE,
     CAPABILITY_IMAGE_REFERENCE,
@@ -19,17 +19,17 @@ from opensquilla.skills.capability_runtime import (
     META_CAPABILITY_PROVIDER_ENV,
     CapabilityProviderCandidate,
 )
-from opensquilla.skills.eligibility import EligibilityContext
-from opensquilla.skills.loader import SkillLoader
-from opensquilla.skills.meta.parser import parse_meta_plan
-from opensquilla.skills.meta.readiness import (
+from openstarry_code.skills.eligibility import EligibilityContext
+from openstarry_code.skills.loader import SkillLoader
+from openstarry_code.skills.meta.parser import parse_meta_plan
+from openstarry_code.skills.meta.readiness import (
     META_OPENROUTER_API_KEY_ENV,
     assess_meta_skill_readiness,
     configured_meta_readiness_env_aliases,
     configured_meta_skill_runtime_env,
     meta_readiness_context,
 )
-from opensquilla.skills.types import (
+from openstarry_code.skills.types import (
     SkillInstallSpec,
     SkillLayer,
     SkillPlatformMeta,
@@ -258,14 +258,14 @@ def test_openrouter_config_key_satisfies_canonical_skill_env_without_exposing_ke
 def test_openrouter_custom_api_key_env_satisfies_canonical_skill_env(monkeypatch) -> None:
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     monkeypatch.setenv(
-        "OPENSQUILLA_TEST_CUSTOM_OPENROUTER_KEY",
+        "OPENSTARRY_CODE_TEST_CUSTOM_OPENROUTER_KEY",
         "synthetic-openrouter-custom-env-key",
     )
     config = SimpleNamespace(
         llm=SimpleNamespace(
             provider=" OPENROUTER ",
             api_key="",
-            api_key_env="OPENSQUILLA_TEST_CUSTOM_OPENROUTER_KEY",
+            api_key_env="OPENSTARRY_CODE_TEST_CUSTOM_OPENROUTER_KEY",
         )
     )
     meta, plan, image, video, skill_index = _trusted_short_drama_fixture()
@@ -411,7 +411,7 @@ def test_missing_media_provider_projects_generic_manual_setup_action(
 ) -> None:
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     monkeypatch.setattr(
-        "opensquilla.skills.meta.readiness.is_skill_available_live",
+        "openstarry_code.skills.meta.readiness.is_skill_available_live",
         lambda _name: True,
     )
     meta, plan, image, video, skill_index = _trusted_short_drama_fixture()
@@ -575,7 +575,7 @@ def test_invalid_media_provider_proxy_projects_secret_free_manual_action(
     monkeypatch,
 ) -> None:
     monkeypatch.setattr(
-        "opensquilla.skills.meta.readiness.is_skill_available_live",
+        "openstarry_code.skills.meta.readiness.is_skill_available_live",
         lambda _name: True,
     )
     meta, plan, image, video, skill_index = _trusted_short_drama_fixture()
@@ -616,7 +616,7 @@ def test_workspace_parent_cannot_use_provider_alias_for_bundled_paid_children(
 ) -> None:
     monkeypatch.setenv("OPENROUTER_API_KEY", "ambient-key-must-not-authorize-parent")
     monkeypatch.setattr(
-        "opensquilla.skills.meta.readiness.is_skill_available_live",
+        "openstarry_code.skills.meta.readiness.is_skill_available_live",
         lambda _name: True,
     )
     meta, plan, image, video, skill_index = _trusted_short_drama_fixture(
@@ -630,7 +630,7 @@ def test_workspace_parent_cannot_use_provider_alias_for_bundled_paid_children(
         raise AssertionError("untrusted parent must not resolve a capability lease")
 
     monkeypatch.setattr(
-        "opensquilla.skills.meta.readiness.resolve_capability_status",
+        "openstarry_code.skills.meta.readiness.resolve_capability_status",
         forbidden_provider_resolution,
     )
     config = SimpleNamespace(
@@ -715,7 +715,7 @@ def test_config_credential_alias_fails_closed_for_wrong_provider_or_empty_env(
     monkeypatch,
 ) -> None:
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
-    monkeypatch.delenv("OPENSQUILLA_TEST_EMPTY_OPENROUTER_KEY", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_TEST_EMPTY_OPENROUTER_KEY", raising=False)
     wrong_provider = SimpleNamespace(
         llm=SimpleNamespace(
             provider="tokenrhythm",
@@ -727,7 +727,7 @@ def test_config_credential_alias_fails_closed_for_wrong_provider_or_empty_env(
         llm=SimpleNamespace(
             provider="openrouter",
             api_key="",
-            api_key_env="OPENSQUILLA_TEST_EMPTY_OPENROUTER_KEY",
+            api_key_env="OPENSTARRY_CODE_TEST_EMPTY_OPENROUTER_KEY",
         )
     )
     meta, plan, image, video, skill_index = _trusted_short_drama_fixture()
@@ -818,7 +818,7 @@ def test_readiness_blocks_missing_composed_skill_reference() -> None:
 
 def test_readiness_recurses_through_conditional_route_targets(monkeypatch) -> None:
     monkeypatch.setattr(
-        "opensquilla.skills.meta.readiness.is_skill_available_live",
+        "openstarry_code.skills.meta.readiness.is_skill_available_live",
         lambda _name: True,
     )
     leaf = _spec("route-leaf", bins=["route-renderer"])
@@ -873,7 +873,7 @@ def test_readiness_reports_missing_conditional_route_targets_deterministically(
     monkeypatch,
 ) -> None:
     monkeypatch.setattr(
-        "opensquilla.skills.meta.readiness.is_skill_available_live",
+        "openstarry_code.skills.meta.readiness.is_skill_available_live",
         lambda _name: True,
     )
     default = _spec("default-renderer")
@@ -911,7 +911,7 @@ def test_readiness_reports_missing_conditional_route_targets_deterministically(
 
 def test_readiness_retains_legacy_routes_skill_references(monkeypatch) -> None:
     monkeypatch.setattr(
-        "opensquilla.skills.meta.readiness.is_skill_available_live",
+        "openstarry_code.skills.meta.readiness.is_skill_available_live",
         lambda _name: True,
     )
     legacy_child = _spec("legacy-child", bins=["legacy-tool"])
@@ -946,7 +946,7 @@ def test_readiness_retains_legacy_routes_skill_references(monkeypatch) -> None:
 
 def test_readiness_ignores_non_skill_step_destinations(monkeypatch) -> None:
     monkeypatch.setattr(
-        "opensquilla.skills.meta.readiness.is_skill_available_live",
+        "openstarry_code.skills.meta.readiness.is_skill_available_live",
         lambda _name: True,
     )
     meta = _spec(
@@ -974,7 +974,7 @@ def test_readiness_ignores_non_skill_step_destinations(monkeypatch) -> None:
 
 def test_readiness_projects_trusted_setup_action(monkeypatch) -> None:
     monkeypatch.setattr(
-        "opensquilla.skills.meta.readiness.shutil.which",
+        "openstarry_code.skills.meta.readiness.shutil.which",
         lambda name: "/opt/homebrew/bin/brew" if name == "brew" else None,
     )
     meta = _spec(
@@ -1042,7 +1042,7 @@ def test_readiness_deduplicates_shared_managed_component_across_meta_and_child(
         },
     )
     monkeypatch.setattr(
-        "opensquilla.skills.toolchains.probe_component",
+        "openstarry_code.skills.toolchains.probe_component",
         lambda component_id: SimpleNamespace(
             component_id=component_id,
             ready=False,
@@ -1106,7 +1106,7 @@ def test_readiness_blocks_present_binaries_when_toolchain_capability_is_incomple
         ],
     )
     monkeypatch.setattr(
-        "opensquilla.skills.toolchains.probe_component",
+        "openstarry_code.skills.toolchains.probe_component",
         lambda component_id: SimpleNamespace(
             component_id=component_id,
             ready=False,
@@ -1144,7 +1144,7 @@ def test_readiness_accepts_present_binaries_after_capability_probe_passes(monkey
         ],
     )
     monkeypatch.setattr(
-        "opensquilla.skills.toolchains.probe_component",
+        "openstarry_code.skills.toolchains.probe_component",
         lambda component_id: SimpleNamespace(
             component_id=component_id,
             ready=True,
@@ -1177,7 +1177,7 @@ def test_passive_readiness_never_runs_native_capability_probe(monkeypatch) -> No
         ],
     )
     monkeypatch.setattr(
-        "opensquilla.skills.toolchains.probe_component",
+        "openstarry_code.skills.toolchains.probe_component",
         lambda _component_id: (_ for _ in ()).throw(
             AssertionError("passive readiness must not execute a native probe")
         ),
@@ -1225,11 +1225,11 @@ def test_external_toolchain_discloses_pinned_auxiliary_download_as_minimum(
         license="GPL-3.0-or-later",
     )
     monkeypatch.setattr(
-        "opensquilla.skills.toolchains.describe_component",
+        "openstarry_code.skills.toolchains.describe_component",
         lambda _component_id: descriptor,
     )
     monkeypatch.setattr(
-        "opensquilla.skills.toolchains.probe_component",
+        "openstarry_code.skills.toolchains.probe_component",
         lambda component_id: SimpleNamespace(
             component_id=component_id,
             ready=False,
@@ -1237,7 +1237,7 @@ def test_external_toolchain_discloses_pinned_auxiliary_download_as_minimum(
         ),
     )
     monkeypatch.setattr(
-        "opensquilla.skills.toolchains.trusted_brew_executable",
+        "openstarry_code.skills.toolchains.trusted_brew_executable",
         lambda: SimpleNamespace(),
     )
     ctx = EligibilityContext(
@@ -1277,15 +1277,15 @@ def test_external_toolchain_is_unavailable_without_trusted_homebrew(monkeypatch)
         license="GPL-3.0-or-later",
     )
     monkeypatch.setattr(
-        "opensquilla.skills.toolchains.describe_component",
+        "openstarry_code.skills.toolchains.describe_component",
         lambda _component_id: descriptor,
     )
     monkeypatch.setattr(
-        "opensquilla.skills.toolchains.trusted_brew_executable",
+        "openstarry_code.skills.toolchains.trusted_brew_executable",
         lambda: None,
     )
     monkeypatch.setattr(
-        "opensquilla.skills.toolchains.probe_component",
+        "openstarry_code.skills.toolchains.probe_component",
         lambda component_id: SimpleNamespace(
             component_id=component_id,
             ready=False,

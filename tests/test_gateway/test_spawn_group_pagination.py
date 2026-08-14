@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.gateway.subagent_announce import _list_spawn_group_sessions
+from openstarry_code.gateway.subagent_announce import _list_spawn_group_sessions
 
 
 class _Row:

@@ -6,7 +6,7 @@ from typing import Any
 
 import pytest
 
-from opensquilla.cli.tui.opentui.messages import (
+from openstarry_code.cli.tui.opentui.messages import (
     CompletionContext,
     HistoryMessage,
     HistoryReplace,
@@ -21,12 +21,12 @@ from opensquilla.cli.tui.opentui.messages import (
     RouterPluginState,
     ScrollbackWrite,
 )
-from opensquilla.cli.tui.opentui.surface import (
+from openstarry_code.cli.tui.opentui.surface import (
     OpenTuiOutputHandle,
     OpenTuiSurface,
     open_opentui_surface,
 )
-from opensquilla.engine.commands import Surface
+from openstarry_code.engine.commands import Surface
 
 
 class FakeOpenTuiBridge:
@@ -357,7 +357,7 @@ async def test_gateway_disconnect_fails_pending_approval_closed_and_dismisses() 
 
 @pytest.mark.asyncio
 async def test_plugin_output_wrapper_forwards_gateway_approval_lifecycle() -> None:
-    from opensquilla.cli.tui.adapters.runtime_helpers import TuiPluginOutputHandle
+    from openstarry_code.cli.tui.adapters.runtime_helpers import TuiPluginOutputHandle
 
     bridge = FakeOpenTuiBridge()
     inner = OpenTuiOutputHandle(bridge, approval_surface=Surface.CLI_GATEWAY)
@@ -688,7 +688,7 @@ async def test_open_opentui_surface_omits_ready_marker_by_default(
 ) -> None:
     """The readiness sentinel is harness scaffolding — a real session must not
     render it unless the env var (or caller) explicitly opts in."""
-    monkeypatch.delenv("OPENSQUILLA_TUI_READY_MARKER", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_TUI_READY_MARKER", raising=False)
     bridge = FakeOpenTuiBridge()
 
     async with open_opentui_surface(
@@ -710,7 +710,7 @@ async def test_open_opentui_surface_omits_ready_marker_by_default(
 async def test_open_opentui_surface_env_var_opts_into_ready_marker(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_TUI_READY_MARKER", "HARNESS_READY")
+    monkeypatch.setenv("OPENSTARRY_CODE_TUI_READY_MARKER", "HARNESS_READY")
     bridge = FakeOpenTuiBridge()
 
     async with open_opentui_surface(
@@ -757,7 +757,7 @@ async def test_opentui_surface_answers_file_completion_without_returning_input(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path,
 ) -> None:
-    from opensquilla.cli.tui.opentui import surface as surface_module
+    from openstarry_code.cli.tui.opentui import surface as surface_module
 
     calls: list[tuple[object, str, int]] = []
 
@@ -841,7 +841,7 @@ async def test_newer_completion_request_supersedes_older_one(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path,
 ) -> None:
-    from opensquilla.cli.tui.opentui import surface as surface_module
+    from openstarry_code.cli.tui.opentui import surface as surface_module
 
     def fake_enumerate_workspace_files(root, *, query: str, max_results: int):
         return [f"{query}.py"]
@@ -878,7 +878,7 @@ async def test_completion_failure_does_not_kill_the_input_loop(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path,
 ) -> None:
-    from opensquilla.cli.tui.opentui import surface as surface_module
+    from openstarry_code.cli.tui.opentui import surface as surface_module
 
     def broken_enumerate(root, *, query: str, max_results: int):
         raise OSError("workspace walk failed")
@@ -906,7 +906,7 @@ async def test_open_opentui_surface_uses_explicit_workspace_for_completion_conte
     monkeypatch: pytest.MonkeyPatch,
     tmp_path,
 ) -> None:
-    from opensquilla.cli.tui.opentui import surface as surface_module
+    from openstarry_code.cli.tui.opentui import surface as surface_module
 
     bridge = FakeOpenTuiBridge()
     captured: dict[str, Any] = {}
@@ -920,7 +920,7 @@ async def test_open_opentui_surface_uses_explicit_workspace_for_completion_conte
         captured["workspace_dir"] = workspace_dir
         return CompletionContext(catalog=(), files=("src/main.py",))
 
-    monkeypatch.setenv("OPENSQUILLA_WORKSPACE_DIR", "/tmp/wrong-env-workspace")
+    monkeypatch.setenv("OPENSTARRY_CODE_WORKSPACE_DIR", "/tmp/wrong-env-workspace")
     monkeypatch.setattr(
         surface_module,
         "build_completion_context",

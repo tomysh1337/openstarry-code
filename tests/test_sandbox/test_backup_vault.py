@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.sandbox.backup_vault import (
+from openstarry_code.sandbox.backup_vault import (
     BackupTooLarge,
     BackupUnavailable,
     BackupVault,

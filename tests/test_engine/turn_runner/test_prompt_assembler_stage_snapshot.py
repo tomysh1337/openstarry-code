@@ -25,10 +25,10 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.engine.types import ErrorEvent
-from opensquilla.observability.prompt_report import PromptReport
-from opensquilla.provider.types import ProviderRequestCorrelation
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.engine.types import ErrorEvent
+from openstarry_code.observability.prompt_report import PromptReport
+from openstarry_code.provider.types import ProviderRequestCorrelation
 
 # ---------------------------------------------------------------------------
 # Shared stubs
@@ -474,7 +474,7 @@ async def test_prompt_assembler_stage_snapshot(
     case_id, case, monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.delenv(
-        "OPENSQUILLA_PRIVACY_DISABLE_NETWORK_OBSERVABILITY",
+        "OPENSTARRY_CODE_PRIVACY_DISABLE_NETWORK_OBSERVABILITY",
         raising=False,
     )
     runner = _setup_runner(case)
@@ -551,7 +551,7 @@ async def test_root_provider_correlation_respects_dedicated_privacy_switch(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.delenv(
-        "OPENSQUILLA_PRIVACY_DISABLE_NETWORK_OBSERVABILITY",
+        "OPENSTARRY_CODE_PRIVACY_DISABLE_NETWORK_OBSERVABILITY",
         raising=False,
     )
     case = dict(_CASE_BASE)
@@ -562,7 +562,7 @@ async def test_root_provider_correlation_respects_dedicated_privacy_switch(
         )
     else:
         monkeypatch.setenv(
-            "OPENSQUILLA_PRIVACY_DISABLE_NETWORK_OBSERVABILITY",
+            "OPENSTARRY_CODE_PRIVACY_DISABLE_NETWORK_OBSERVABILITY",
             "true",
         )
 

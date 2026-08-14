@@ -4,7 +4,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.sandbox.run_mode import RunMode
+from openstarry_code.sandbox.run_mode import RunMode
 
 
 class _RuntimePreferenceStorage:
@@ -57,7 +57,7 @@ class _SessionManager:
 
 
 def test_run_context_round_trips_mode_source() -> None:
-    from opensquilla.sandbox.run_context import (
+    from openstarry_code.sandbox.run_context import (
         RunContext,
         run_context_from_origin_payload,
     )
@@ -73,7 +73,7 @@ def test_run_context_round_trips_mode_source() -> None:
 
 
 def test_run_context_rejects_unknown_mode_source() -> None:
-    from opensquilla.sandbox.run_context import run_context_from_origin_payload
+    from openstarry_code.sandbox.run_context import run_context_from_origin_payload
 
     restored = run_context_from_origin_payload(
         {
@@ -88,7 +88,7 @@ def test_run_context_rejects_unknown_mode_source() -> None:
 
 
 def test_run_context_rejects_unhashable_mode_source() -> None:
-    from opensquilla.sandbox.run_context import run_context_from_origin_payload
+    from openstarry_code.sandbox.run_context import run_context_from_origin_payload
 
     restored = run_context_from_origin_payload(
         {
@@ -103,8 +103,8 @@ def test_run_context_rejects_unhashable_mode_source() -> None:
 
 
 def test_effective_legacy_project_full_remains_full() -> None:
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.sandbox.run_context import RunContext, effective_project_run_mode
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.sandbox.run_context import RunContext, effective_project_run_mode
 
     resolved = effective_project_run_mode(
         RunContext(run_mode=RunMode.FULL, workspace="/tmp/project"),
@@ -116,8 +116,8 @@ def test_effective_legacy_project_full_remains_full() -> None:
 
 
 def test_effective_legacy_project_preserves_explicit_full() -> None:
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.sandbox.run_context import RunContext, effective_project_run_mode
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.sandbox.run_context import RunContext, effective_project_run_mode
 
     resolved = effective_project_run_mode(
         RunContext(run_mode=RunMode.FULL, workspace="/tmp/project"),
@@ -130,8 +130,8 @@ def test_effective_legacy_project_preserves_explicit_full() -> None:
 
 @pytest.mark.asyncio
 async def test_fresh_owner_default_run_context_is_full() -> None:
-    from opensquilla.sandbox.config import SandboxSettings
-    from opensquilla.sandbox.run_context import get_run_context
+    from openstarry_code.sandbox.config import SandboxSettings
+    from openstarry_code.sandbox.run_context import get_run_context
 
     manager = _SessionManager()
     config = SimpleNamespace(
@@ -164,9 +164,9 @@ async def test_persisted_owner_preference_wins_over_direct_config_update(
     updated_config_mode: str,
     expected: RunMode,
 ) -> None:
-    from opensquilla.sandbox.config import SandboxSettings
-    from opensquilla.sandbox.run_context import get_run_context
-    from opensquilla.session.storage import SessionStorage
+    from openstarry_code.sandbox.config import SandboxSettings
+    from openstarry_code.sandbox.run_context import get_run_context
+    from openstarry_code.session.storage import SessionStorage
 
     database = tmp_path / f"preferences-{stored_mode}.sqlite"
     storage = SessionStorage(str(database))
@@ -210,8 +210,8 @@ async def test_persisted_legacy_preference_names_resolve_to_current_modes(
     updated_config_mode: str,
     expected: RunMode,
 ) -> None:
-    from opensquilla.sandbox.config import SandboxSettings
-    from opensquilla.sandbox.run_context import get_run_context
+    from openstarry_code.sandbox.config import SandboxSettings
+    from openstarry_code.sandbox.run_context import get_run_context
 
     manager = _SessionManager(run_mode_preference=stored_mode)
     context = await get_run_context(
@@ -238,8 +238,8 @@ async def test_persisted_legacy_preference_names_resolve_to_current_modes(
     ],
 )
 async def test_no_hint_owner_tasks_use_persisted_preference(session_key: str) -> None:
-    from opensquilla.sandbox.config import SandboxSettings
-    from opensquilla.sandbox.run_context import get_run_context
+    from openstarry_code.sandbox.config import SandboxSettings
+    from openstarry_code.sandbox.run_context import get_run_context
 
     manager = _SessionManager(run_mode_preference="safe")
     context = await get_run_context(
@@ -258,8 +258,8 @@ async def test_no_hint_owner_tasks_use_persisted_preference(session_key: str) ->
 
 @pytest.mark.asyncio
 async def test_delegating_manager_view_resolves_persisted_preference() -> None:
-    from opensquilla.sandbox.config import SandboxSettings
-    from opensquilla.sandbox.run_context import get_run_context
+    from openstarry_code.sandbox.config import SandboxSettings
+    from openstarry_code.sandbox.run_context import get_run_context
 
     manager = _SessionManager(run_mode_preference="safe")
 
@@ -282,7 +282,7 @@ async def test_delegating_manager_view_resolves_persisted_preference() -> None:
 
 @pytest.mark.asyncio
 async def test_sandbox_run_mode_set_persists_user_provenance() -> None:
-    from opensquilla.sandbox.run_context import (
+    from openstarry_code.sandbox.run_context import (
         get_run_context,
         run_context_from_origin_payload,
         set_run_mode,
@@ -315,7 +315,7 @@ async def test_sandbox_run_mode_set_persists_user_provenance() -> None:
 
 @pytest.mark.asyncio
 async def test_set_run_mode_persists_first_workspace_and_preserves_origin_keys() -> None:
-    from opensquilla.sandbox.run_context import normalize_workspace_path, set_run_mode
+    from openstarry_code.sandbox.run_context import normalize_workspace_path, set_run_mode
 
     manager = _SessionManager()
     manager.node.origin = {"other": {"kept": True}}
@@ -340,7 +340,7 @@ async def test_set_run_mode_persists_first_workspace_and_preserves_origin_keys()
 
 @pytest.mark.asyncio
 async def test_saved_restricted_mode_overrides_globally_disabled_sandbox() -> None:
-    from opensquilla.sandbox.run_context import get_run_context, normalize_workspace_path
+    from openstarry_code.sandbox.run_context import get_run_context, normalize_workspace_path
 
     manager = _SessionManager()
     manager.node.origin = {"sandbox_run_context": {"run_mode": "standard", "workspace": "/tmp/old"}}
@@ -364,9 +364,9 @@ async def test_saved_restricted_mode_overrides_globally_disabled_sandbox() -> No
 
 @pytest.mark.asyncio
 async def test_rpc_run_context_get_reports_missing_session() -> None:
-    from opensquilla.gateway.auth import Principal
-    from opensquilla.gateway.rpc import RpcContext
-    from opensquilla.gateway.rpc_sandbox import _handle_sandbox_run_context_get
+    from openstarry_code.gateway.auth import Principal
+    from openstarry_code.gateway.rpc import RpcContext
+    from openstarry_code.gateway.rpc_sandbox import _handle_sandbox_run_context_get
 
     manager = _SessionManager()
     config = SimpleNamespace(
@@ -396,9 +396,9 @@ async def test_rpc_run_context_get_reports_missing_session() -> None:
 
 @pytest.mark.asyncio
 async def test_rpc_run_context_set_rejects_non_owner_full_mode_without_mutation() -> None:
-    from opensquilla.gateway.auth import Principal
-    from opensquilla.gateway.rpc import RpcContext, RpcHandlerError
-    from opensquilla.gateway.rpc_sandbox import _handle_sandbox_run_context_set
+    from openstarry_code.gateway.auth import Principal
+    from openstarry_code.gateway.rpc import RpcContext, RpcHandlerError
+    from openstarry_code.gateway.rpc_sandbox import _handle_sandbox_run_context_set
 
     manager = _SessionManager()
     config = SimpleNamespace(
@@ -431,9 +431,9 @@ async def test_rpc_run_context_set_rejects_non_owner_full_mode_without_mutation(
 
 @pytest.mark.asyncio
 async def test_rpc_run_context_set_allows_owner_full_mode() -> None:
-    from opensquilla.gateway.auth import Principal
-    from opensquilla.gateway.rpc import RpcContext
-    from opensquilla.gateway.rpc_sandbox import _handle_sandbox_run_context_set
+    from openstarry_code.gateway.auth import Principal
+    from openstarry_code.gateway.rpc import RpcContext
+    from openstarry_code.gateway.rpc_sandbox import _handle_sandbox_run_context_set
 
     manager = _SessionManager()
     config = SimpleNamespace(
@@ -468,11 +468,11 @@ async def test_rpc_run_context_set_allows_owner_full_mode() -> None:
 async def test_rpc_run_context_set_decodes_non_owner_legacy_trusted_mode(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.gateway import rpc_sandbox
-    from opensquilla.gateway.auth import Principal
-    from opensquilla.gateway.rpc import RpcContext
-    from opensquilla.gateway.rpc_sandbox import _handle_sandbox_run_context_set
-    from opensquilla.sandbox.capability_service import (
+    from openstarry_code.gateway import rpc_sandbox
+    from openstarry_code.gateway.auth import Principal
+    from openstarry_code.gateway.rpc import RpcContext
+    from openstarry_code.gateway.rpc_sandbox import _handle_sandbox_run_context_set
+    from openstarry_code.sandbox.capability_service import (
         REQUIRED_SAFE_CAPABILITIES,
         WINDOWS_REQUIRED_SAFE_CAPABILITIES,
         CapabilityReport,
@@ -521,9 +521,9 @@ async def test_rpc_run_context_set_decodes_non_owner_legacy_trusted_mode(
 async def test_rpc_run_context_get_coerces_remote_guest_default_full_to_safe(
     auth_state: str,
 ) -> None:
-    from opensquilla.gateway.auth import Principal
-    from opensquilla.gateway.rpc import RpcContext
-    from opensquilla.gateway.rpc_sandbox import _handle_sandbox_run_context_get
+    from openstarry_code.gateway.auth import Principal
+    from openstarry_code.gateway.rpc import RpcContext
+    from openstarry_code.gateway.rpc_sandbox import _handle_sandbox_run_context_get
 
     manager = _SessionManager()
     config = SimpleNamespace(
@@ -560,10 +560,10 @@ async def test_rpc_run_context_get_coerces_remote_guest_default_full_to_safe(
 async def test_rpc_run_context_set_creates_owner_new_webchat_session(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.gateway import rpc_sandbox
-    from opensquilla.gateway.auth import Principal
-    from opensquilla.gateway.rpc import RpcContext
-    from opensquilla.sandbox.capability_service import (
+    from openstarry_code.gateway import rpc_sandbox
+    from openstarry_code.gateway.auth import Principal
+    from openstarry_code.gateway.rpc import RpcContext
+    from openstarry_code.sandbox.capability_service import (
         REQUIRED_SAFE_CAPABILITIES,
         WINDOWS_REQUIRED_SAFE_CAPABILITIES,
         CapabilityReport,

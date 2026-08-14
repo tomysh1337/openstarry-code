@@ -5,7 +5,7 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine import (
+from openstarry_code.engine import (
     Agent,
     AgentConfig,
     ErrorEvent,
@@ -13,9 +13,9 @@ from opensquilla.engine import (
     ToolResult,
     WarningEvent,
 )
-from opensquilla.engine.types import CompactionEvent
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.provider import (
+from openstarry_code.engine.types import CompactionEvent
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.provider import (
     ChatConfig,
     ContentBlockToolResult,
     ContentBlockToolUse,
@@ -31,14 +31,14 @@ from opensquilla.provider import (
     ToolUseStartEvent,
     build_ensemble_provider_from_config,
 )
-from opensquilla.provider import (
+from openstarry_code.provider import (
     DoneEvent as ProviderDoneEvent,
 )
-from opensquilla.provider import (
+from openstarry_code.provider import (
     ErrorEvent as ProviderErrorEvent,
 )
-from opensquilla.provider.selector import ProviderConfig
-from opensquilla.session.compaction import CompactionResult
+from openstarry_code.provider.selector import ProviderConfig
+from openstarry_code.session.compaction import CompactionResult
 
 
 class _ExactMessageLimitProvider:
@@ -581,7 +581,7 @@ def _install_exact_compactor(
             kept_start_index=cut,
         )
 
-    monkeypatch.setattr("opensquilla.engine.agent.compact_context", _compact)
+    monkeypatch.setattr("openstarry_code.engine.agent.compact_context", _compact)
 
 
 @pytest.mark.asyncio
@@ -1052,7 +1052,7 @@ async def test_token_compaction_maps_duplicate_content_boundaries_by_prefix_cut(
             kept_start_index=cut,
         )
 
-    monkeypatch.setattr("opensquilla.engine.agent.compact_context", _compact)
+    monkeypatch.setattr("openstarry_code.engine.agent.compact_context", _compact)
     agent = Agent(
         provider=_ExactMessageLimitProvider([None]),
         config=AgentConfig(flush_enabled=False),
@@ -1113,7 +1113,7 @@ async def test_member_budget_rebinding_and_exact_count_recovery_compose_once(
     def _build_member(config: ProviderConfig) -> _CountAwareEnsembleMemberProvider:
         return _CountAwareEnsembleMemberProvider(config, member_calls)
 
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", _build_member)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", _build_member)
     gateway_config = GatewayConfig(
         llm={
             "provider": "tokenrhythm",

@@ -4,9 +4,9 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.session.manager import SessionManager
-from opensquilla.session.models import SessionNode, SessionStatus
-from opensquilla.tools.builtin import sessions as sessions_tool
+from openstarry_code.session.manager import SessionManager
+from openstarry_code.session.models import SessionNode, SessionStatus
+from openstarry_code.tools.builtin import sessions as sessions_tool
 
 
 class _MemoryStorage:

@@ -5,12 +5,12 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.tools.types import CallerKind, ToolContext, current_tool_context
+from openstarry_code.tools.types import CallerKind, ToolContext, current_tool_context
 
 
 @pytest.mark.asyncio
 async def test_trusted_sandbox_does_not_mark_shell_host_elevated(monkeypatch) -> None:
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     calls: list[tuple[str, object]] = []
 
@@ -55,7 +55,7 @@ async def test_trusted_sandbox_does_not_mark_shell_host_elevated(monkeypatch) ->
 
 @pytest.mark.asyncio
 async def test_ordinary_approval_result_does_not_carry_elevated_mode(monkeypatch) -> None:
-    from opensquilla.application.approval_queue import ApprovalQueue
+    from openstarry_code.application.approval_queue import ApprovalQueue
 
     queue = ApprovalQueue(db_path=":memory:")
     try:
@@ -72,8 +72,8 @@ async def test_ordinary_approval_result_does_not_carry_elevated_mode(monkeypatch
 
 @pytest.mark.asyncio
 async def test_warnlist_shell_uses_sandbox_gate_without_exec_approval(monkeypatch) -> None:
-    from opensquilla.gateway.approval_queue import get_approval_queue, reset_approval_queue
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.gateway.approval_queue import get_approval_queue, reset_approval_queue
+    from openstarry_code.tools.builtin import shell
 
     calls: list[tuple[str, object]] = []
     reset_approval_queue()
@@ -130,8 +130,8 @@ async def test_trusted_workspace_shell_cleanup_requires_exact_brokered_delete(
     monkeypatch,
     tmp_path,
 ) -> None:
-    from opensquilla.gateway.approval_queue import get_approval_queue, reset_approval_queue
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.gateway.approval_queue import get_approval_queue, reset_approval_queue
+    from openstarry_code.tools.builtin import shell
 
     calls: list[tuple[str, object]] = []
     reset_approval_queue()
@@ -198,8 +198,8 @@ async def test_trusted_workspace_code_delete_stays_out_of_locked_approval(
     monkeypatch,
     tmp_path,
 ) -> None:
-    from opensquilla.gateway.approval_queue import get_approval_queue, reset_approval_queue
-    from opensquilla.tools.builtin import code_exec
+    from openstarry_code.gateway.approval_queue import get_approval_queue, reset_approval_queue
+    from openstarry_code.tools.builtin import code_exec
 
     workspace = tmp_path / "workspace"
     workspace.mkdir()
@@ -277,8 +277,8 @@ async def _capture_trusted_code_exec_high_impact(
     tmp_path,
     code: str,
 ) -> bool:
-    from opensquilla.gateway.approval_queue import reset_approval_queue
-    from opensquilla.tools.builtin import code_exec
+    from openstarry_code.gateway.approval_queue import reset_approval_queue
+    from openstarry_code.tools.builtin import code_exec
 
     workspace = tmp_path / "workspace"
     workspace.mkdir()
@@ -390,10 +390,10 @@ async def test_trusted_code_delete_keeps_high_impact_when_target_proof_is_unsoun
 async def test_trusted_mode_allows_without_hidden_approval_wait(
     tmp_path,
 ) -> None:
-    from opensquilla.sandbox.config import SandboxSettings
-    from opensquilla.sandbox.integration import configure_runtime, gate_action, reset_runtime
-    from opensquilla.sandbox.policy import LevelHints
-    from opensquilla.sandbox.types import ALLOW
+    from openstarry_code.sandbox.config import SandboxSettings
+    from openstarry_code.sandbox.integration import configure_runtime, gate_action, reset_runtime
+    from openstarry_code.sandbox.policy import LevelHints
+    from openstarry_code.sandbox.types import ALLOW
 
     class _Queue:
         requests: list[dict | None]
@@ -445,8 +445,8 @@ async def test_trusted_mode_allows_without_hidden_approval_wait(
 
 @pytest.mark.asyncio
 async def test_backend_denial_suspends_before_any_host_retry(monkeypatch) -> None:
-    from opensquilla.sandbox.elevation import ElevationGateResult
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.sandbox.elevation import ElevationGateResult
+    from openstarry_code.tools.builtin import shell
 
     calls: list[str] = []
 
@@ -555,7 +555,7 @@ async def test_backend_denial_suspends_before_any_host_retry(monkeypatch) -> Non
 
 @pytest.mark.asyncio
 async def test_full_host_access_code_exec_resolves_host_python(monkeypatch, tmp_path) -> None:
-    from opensquilla.tools.builtin import code_exec
+    from openstarry_code.tools.builtin import code_exec
 
     resolve_calls: list[bool] = []
     child_env: dict[str, str] = {}
@@ -628,7 +628,7 @@ async def test_full_host_access_shell_uses_host_and_skips_sandbox_gates(
     monkeypatch,
     tmp_path,
 ) -> None:
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     calls: list[str] = []
 
@@ -675,7 +675,7 @@ async def test_full_host_access_shell_strips_managed_proxy_environment(
     monkeypatch,
     tmp_path,
 ) -> None:
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     seen_env: dict[str, str] = {}
 
@@ -688,7 +688,7 @@ async def test_full_host_access_shell_strips_managed_proxy_environment(
 
     monkeypatch.setenv("HTTP_PROXY", "http://127.0.0.1:48123")
     monkeypatch.setenv("HTTPS_PROXY", "http://127.0.0.1:48123")
-    monkeypatch.setenv("OPENSQUILLA_SANDBOX_NETWORK", "proxy_allowlist")
+    monkeypatch.setenv("OPENSTARRY_CODE_SANDBOX_NETWORK", "proxy_allowlist")
     monkeypatch.setattr(shell, "get_runtime", lambda: _Runtime())
     monkeypatch.setattr(shell, "_run_host_shell_command", _fake_host_shell_command)
     monkeypatch.setattr(
@@ -711,7 +711,7 @@ async def test_full_host_access_shell_strips_managed_proxy_environment(
     finally:
         current_tool_context.reset(token)
 
-    assert "OPENSQUILLA_SANDBOX_NETWORK" not in seen_env
+    assert "OPENSTARRY_CODE_SANDBOX_NETWORK" not in seen_env
     assert "HTTP_PROXY" not in seen_env
     assert "HTTPS_PROXY" not in seen_env
 
@@ -721,7 +721,7 @@ async def test_full_host_access_background_strips_managed_proxy_environment(
     monkeypatch,
     tmp_path,
 ) -> None:
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     seen_env: dict[str, str] = {}
 
@@ -742,7 +742,7 @@ async def test_full_host_access_background_strips_managed_proxy_environment(
 
     monkeypatch.setenv("HTTP_PROXY", "http://127.0.0.1:48123")
     monkeypatch.setenv("HTTPS_PROXY", "http://127.0.0.1:48123")
-    monkeypatch.setenv("OPENSQUILLA_SANDBOX_NETWORK", "proxy_allowlist")
+    monkeypatch.setenv("OPENSTARRY_CODE_SANDBOX_NETWORK", "proxy_allowlist")
     monkeypatch.setattr(shell, "get_runtime", lambda: _Runtime())
     monkeypatch.setattr(shell.asyncio, "create_subprocess_shell", _fake_create_subprocess_shell)
     monkeypatch.setattr(
@@ -769,6 +769,6 @@ async def test_full_host_access_background_strips_managed_proxy_environment(
     finally:
         current_tool_context.reset(token)
 
-    assert "OPENSQUILLA_SANDBOX_NETWORK" not in seen_env
+    assert "OPENSTARRY_CODE_SANDBOX_NETWORK" not in seen_env
     assert "HTTP_PROXY" not in seen_env
     assert "HTTPS_PROXY" not in seen_env

@@ -2,13 +2,13 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.gateway.config import GatewayConfig, LlmProviderProfile
-from opensquilla.provider.compat_policy import compat_policy_for_kind
-from opensquilla.provider.ensemble import build_ensemble_provider_from_config
-from opensquilla.provider.openai import _build_openai_wire_messages
-from opensquilla.provider.request_proof import project_final_request_payload
-from opensquilla.provider.selector import ProviderConfig
-from opensquilla.provider.types import ChatConfig, Message, ModelCapabilities
+from openstarry_code.gateway.config import GatewayConfig, LlmProviderProfile
+from openstarry_code.provider.compat_policy import compat_policy_for_kind
+from openstarry_code.provider.ensemble import build_ensemble_provider_from_config
+from openstarry_code.provider.openai import _build_openai_wire_messages
+from openstarry_code.provider.request_proof import project_final_request_payload
+from openstarry_code.provider.selector import ProviderConfig
+from openstarry_code.provider.types import ChatConfig, Message, ModelCapabilities
 
 
 def test_llm_ensemble_defaults_to_disabled_for_model_router_first_install() -> None:
@@ -135,11 +135,11 @@ def test_static_b5_mode_tables_agree_across_gateway_and_provider() -> None:
     # provider table exists on both sides; this pins them together.
     from typing import get_args
 
-    from opensquilla.gateway.config import (
+    from openstarry_code.gateway.config import (
         STATIC_B5_SELECTION_MODE_PROVIDERS,
         LlmEnsembleConfig,
     )
-    from opensquilla.provider.ensemble import STATIC_B5_PROFILES
+    from openstarry_code.provider.ensemble import STATIC_B5_PROFILES
 
     assert {
         mode: profile.provider_id for mode, profile in STATIC_B5_PROFILES.items()
@@ -777,7 +777,7 @@ def test_candidate_roles_normalize_and_reject_dual_aggregators() -> None:
 def test_custom_b5_lineup_ready_gates_on_member_credentials(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.provider.ensemble import custom_b5_lineup_ready
+    from openstarry_code.provider.ensemble import custom_b5_lineup_ready
 
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     cfg = GatewayConfig(
@@ -809,7 +809,7 @@ def test_custom_b5_lineup_ready_gates_on_member_credentials(
 def test_custom_b5_resolves_each_non_primary_member_from_its_profile(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.provider.ensemble import custom_b5_lineup_ready
+    from openstarry_code.provider.ensemble import custom_b5_lineup_ready
 
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
@@ -873,8 +873,8 @@ def test_custom_b5_resolves_each_non_primary_member_from_its_profile(
 
 
 def test_cross_provider_ensemble_disables_replay_on_internal_fallback_adapters() -> None:
-    from opensquilla.provider.anthropic import AnthropicProvider
-    from opensquilla.provider.openai import OpenAIProvider
+    from openstarry_code.provider.anthropic import AnthropicProvider
+    from openstarry_code.provider.openai import OpenAIProvider
 
     cfg = GatewayConfig(
         llm={
@@ -954,9 +954,9 @@ def test_cross_provider_ensemble_disables_replay_on_internal_fallback_adapters()
 async def test_cross_provider_ensemble_disables_late_plugin_selector_fallback_replay(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.engine.runtime import _SelectorFallbackProvider
-    from opensquilla.provider.selector import ModelSelector, SelectorConfig
-    from opensquilla.provider.types import DoneEvent, ErrorEvent, TextDeltaEvent
+    from openstarry_code.engine.runtime import _SelectorFallbackProvider
+    from openstarry_code.provider.selector import ModelSelector, SelectorConfig
+    from openstarry_code.provider.types import DoneEvent, ErrorEvent, TextDeltaEvent
 
     plugin_fallback_config = ProviderConfig(
         provider="anthropic",
@@ -996,7 +996,7 @@ async def test_cross_provider_ensemble_disables_late_plugin_selector_fallback_re
         return _PrimaryAdapter()
 
     monkeypatch.setattr(
-        "opensquilla.provider.selector._build_provider",
+        "openstarry_code.provider.selector._build_provider",
         build_selector_provider,
     )
 
@@ -1041,7 +1041,7 @@ async def test_cross_provider_ensemble_disables_late_plugin_selector_fallback_re
             )
 
     monkeypatch.setattr(
-        "opensquilla.provider.ensemble._build_provider",
+        "openstarry_code.provider.ensemble._build_provider",
         lambda provider_config: _MemberAdapter(provider_config.model),
     )
 
@@ -1111,17 +1111,17 @@ async def test_cross_provider_ensemble_disables_late_plugin_selector_fallback_re
 def test_custom_b5_uses_shared_session_pinned_profile_pool(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.engine.selector_override import (
+    from openstarry_code.engine.selector_override import (
         acquire_profile_credential,
         report_profile_credential_failure,
     )
-    from opensquilla.gateway.llm_runtime import (
+    from openstarry_code.gateway.llm_runtime import (
         reset_profile_credential_pools,
     )
-    from opensquilla.provider.ensemble import custom_b5_lineup_ready
+    from openstarry_code.provider.ensemble import custom_b5_lineup_ready
 
-    env_a = "OPENSQUILLA_TEST_ENSEMBLE_OPENAI_A"
-    env_b = "OPENSQUILLA_TEST_ENSEMBLE_OPENAI_B"
+    env_a = "OPENSTARRY_CODE_TEST_ENSEMBLE_OPENAI_A"
+    env_b = "OPENSTARRY_CODE_TEST_ENSEMBLE_OPENAI_B"
     key_a = "sk-test-ensemble-a"
     key_b = "sk-test-ensemble-b"
     monkeypatch.setenv(env_a, key_a)

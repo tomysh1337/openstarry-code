@@ -7,9 +7,9 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine import Agent, AgentConfig
-from opensquilla.engine.agent import _IterationStreamTimeoutError
-from opensquilla.engine.repetition_guard import (
+from openstarry_code.engine import Agent, AgentConfig
+from openstarry_code.engine.agent import _IterationStreamTimeoutError
+from openstarry_code.engine.repetition_guard import (
     MODEL_REPETITION_LOOP_CODE,
     ModelRepetitionLoopError,
     RepetitionDetection,
@@ -18,7 +18,7 @@ from opensquilla.engine.repetition_guard import (
     close_async_iterator_bounded,
     guard_provider_text_stream,
 )
-from opensquilla.engine.usage_accounting import (
+from openstarry_code.engine.usage_accounting import (
     UsageAccountingScope,
     UsageCallResult,
     UsageCallStart,
@@ -26,11 +26,11 @@ from opensquilla.engine.usage_accounting import (
     account_provider_stream,
     bind_usage_accounting_scope,
 )
-from opensquilla.provider import ChatConfig, Message
-from opensquilla.provider import DoneEvent as ProviderDone
-from opensquilla.provider import TextDeltaEvent as ProviderText
-from opensquilla.provider import ToolUseEndEvent as ProviderToolUseEnd
-from opensquilla.provider import ToolUseStartEvent as ProviderToolUseStart
+from openstarry_code.provider import ChatConfig, Message
+from openstarry_code.provider import DoneEvent as ProviderDone
+from openstarry_code.provider import TextDeltaEvent as ProviderText
+from openstarry_code.provider import ToolUseEndEvent as ProviderToolUseEnd
+from openstarry_code.provider import ToolUseStartEvent as ProviderToolUseStart
 
 
 def _feed_in_chunks(

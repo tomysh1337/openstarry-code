@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 
-from opensquilla.channels.types import IncomingMessage
-from opensquilla.gateway.boot import (
+from openstarry_code.channels.types import IncomingMessage
+from openstarry_code.gateway.boot import (
     _task_runtime_envelope_host_execute,
     _task_runtime_envelope_owner,
 )
-from opensquilla.gateway.routing import (
+from openstarry_code.gateway.routing import (
     PRINCIPAL_HOST_EXECUTE_METADATA_KEY,
     build_channel_route_envelope,
     build_cli_route_envelope,
@@ -16,12 +16,12 @@ from opensquilla.gateway.routing import (
     build_web_route_envelope,
     tool_context_from_envelope,
 )
-from opensquilla.sandbox.run_context import RunContext
-from opensquilla.sandbox.run_mode import RunMode
-from opensquilla.scheduler.handlers import _build_cron_tool_context
-from opensquilla.scheduler.types import CronJob, SessionTarget
-from opensquilla.tools.policy import ToolSurfaceCapabilities, resolve_runtime_tool_surface
-from opensquilla.tools.types import CallerKind, InteractionMode
+from openstarry_code.sandbox.run_context import RunContext
+from openstarry_code.sandbox.run_mode import RunMode
+from openstarry_code.scheduler.handlers import _build_cron_tool_context
+from openstarry_code.scheduler.types import CronJob, SessionTarget
+from openstarry_code.tools.policy import ToolSurfaceCapabilities, resolve_runtime_tool_surface
+from openstarry_code.tools.types import CallerKind, InteractionMode
 
 
 def test_route_envelopes_assign_expected_interaction_modes() -> None:

@@ -12,10 +12,10 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.gateway.boot import build_services
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.paths import media_root_from_config
-from opensquilla.sandbox.integration import reset_runtime
+from openstarry_code.gateway.boot import build_services
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.paths import media_root_from_config
+from openstarry_code.sandbox.integration import reset_runtime
 
 
 @pytest.fixture(autouse=True)
@@ -35,7 +35,7 @@ async def test_build_services_wires_media_root_into_session_manager(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     # Keep the build hermetic: redirect all state off the real user home.
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "state"))
 
     def fail_background_sandbox_setup(coro):
         close = getattr(coro, "close", None)
@@ -44,7 +44,7 @@ async def test_build_services_wires_media_root_into_session_manager(
         raise AssertionError("unit tests must not schedule real sandbox setup")
 
     monkeypatch.setattr(
-        "opensquilla.gateway.boot.create_background_task",
+        "openstarry_code.gateway.boot.create_background_task",
         fail_background_sandbox_setup,
     )
 

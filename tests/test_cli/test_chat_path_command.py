@@ -4,13 +4,13 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.cli.chat_cmd import (
+from openstarry_code.cli.chat_cmd import (
     _parse_path_command,
     _path_prompt_and_attachments,
     _path_strategy_hint,
 )
-from opensquilla.cli.repl.commands import REGISTRY
-from opensquilla.engine.commands import DEFAULT_REGISTRY, Surface
+from openstarry_code.cli.repl.commands import REGISTRY
+from openstarry_code.engine.commands import DEFAULT_REGISTRY, Surface
 
 
 def test_path_command_parses_quoted_path_with_prompt(tmp_path: Path) -> None:

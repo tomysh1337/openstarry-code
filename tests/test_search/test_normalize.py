@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from opensquilla.search.normalize import (
+from openstarry_code.search.normalize import (
     canonicalize_query_key,
     canonicalize_url,
     dedupe_hits_by_canonical_url,
     extract_domain,
 )
-from opensquilla.search.types import SearchHit
+from openstarry_code.search.types import SearchHit
 
 
 def test_canonicalize_url_removes_fragments_and_tracking_params() -> None:

@@ -5,17 +5,17 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.pipeline import TurnContext
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.engine.steps.vision_followup_gate import apply_vision_followup_gate
-from opensquilla.engine.usage_accounting import (
+from openstarry_code.engine.pipeline import TurnContext
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.engine.steps.vision_followup_gate import apply_vision_followup_gate
+from openstarry_code.engine.usage_accounting import (
     UsageCallResult,
     UsageCallStart,
     UsageExecutionContext,
 )
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.provider import auxiliary_budget
-from opensquilla.provider.types import (
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.provider import auxiliary_budget
+from openstarry_code.provider.types import (
     ChatConfig,
     DoneEvent,
     Message,

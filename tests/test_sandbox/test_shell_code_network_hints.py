@@ -15,23 +15,23 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.gateway.approval_queue import get_approval_queue, reset_approval_queue
-from opensquilla.sandbox.config import SandboxSettings
-from opensquilla.sandbox.integration import configure_runtime, get_runtime, reset_runtime
-from opensquilla.sandbox.network_runtime import NetworkPolicyRequest, NetworkProtocol
-from opensquilla.sandbox.run_context import (
+from openstarry_code.gateway.approval_queue import get_approval_queue, reset_approval_queue
+from openstarry_code.sandbox.config import SandboxSettings
+from openstarry_code.sandbox.integration import configure_runtime, get_runtime, reset_runtime
+from openstarry_code.sandbox.network_runtime import NetworkPolicyRequest, NetworkProtocol
+from openstarry_code.sandbox.run_context import (
     DomainGrant,
     PackageBundleGrant,
     RunContext,
     TemporaryGrant,
 )
-from opensquilla.sandbox.run_mode import RunMode
-from opensquilla.tools.types import CallerKind, ToolContext, current_tool_context
+from openstarry_code.sandbox.run_mode import RunMode
+from openstarry_code.tools.types import CallerKind, ToolContext, current_tool_context
 
 
 def test_shell_tools_publish_structured_elevation_fields() -> None:
-    from opensquilla.tools.builtin import shell  # noqa: F401
-    from opensquilla.tools.registry import get_default_registry
+    from openstarry_code.tools.builtin import shell  # noqa: F401
+    from openstarry_code.tools.registry import get_default_registry
 
     for tool_name in ("exec_command", "background_process"):
         registered = get_default_registry().get(tool_name)
@@ -46,8 +46,8 @@ def test_shell_tools_publish_structured_elevation_fields() -> None:
 
 
 def test_code_exec_publishes_structured_elevation_fields() -> None:
-    from opensquilla.tools.builtin import code_exec  # noqa: F401
-    from opensquilla.tools.registry import get_default_registry
+    from openstarry_code.tools.builtin import code_exec  # noqa: F401
+    from openstarry_code.tools.registry import get_default_registry
 
     registered = get_default_registry().get("execute_code")
     assert registered is not None
@@ -61,8 +61,8 @@ def test_code_exec_publishes_structured_elevation_fields() -> None:
 
 
 def test_default_tool_contract_does_not_advertise_experimental_codex_permissions() -> None:
-    from opensquilla.tools.builtin import code_exec, filesystem, patch, shell  # noqa: F401
-    from opensquilla.tools.registry import get_default_registry
+    from openstarry_code.tools.builtin import code_exec, filesystem, patch, shell  # noqa: F401
+    from openstarry_code.tools.registry import get_default_registry
 
     experimental = {
         "additional_permissions",
@@ -94,7 +94,7 @@ async def test_code_exec_exact_elevation_runs_host_once(
     managed_runtime: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.tools.builtin import code_exec, shell
+    from openstarry_code.tools.builtin import code_exec, shell
 
     code = "print('approved host code')"
     host_calls: list[tuple[tuple[object, ...], dict[str, object]]] = []
@@ -168,7 +168,7 @@ async def test_code_exec_changed_code_cannot_reuse_elevation(
     managed_runtime: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.tools.builtin import code_exec, shell
+    from openstarry_code.tools.builtin import code_exec, shell
 
     async def _host_must_not_run(*args: object, **kwargs: object) -> object:
         raise AssertionError("changed code must not execute on the host")
@@ -213,7 +213,7 @@ async def test_code_exec_credential_path_reaches_elevation_review(
     managed_runtime: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.tools.builtin import code_exec, shell
+    from openstarry_code.tools.builtin import code_exec, shell
 
     monkeypatch.setattr(shell, "_host_execution_allowed", lambda: False)
     token = current_tool_context.set(
@@ -247,7 +247,7 @@ async def test_trusted_shell_outside_write_requires_explicit_elevation(
     managed_runtime: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     target = managed_runtime.parent / "outside-default" / "probe.txt"
 
@@ -287,7 +287,7 @@ async def test_shell_exact_elevation_grant_runs_host_once(
     managed_runtime: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     target = managed_runtime.parent / "outside-approved" / "probe.txt"
     command = f"touch {shlex.quote(str(target))}"
@@ -359,7 +359,7 @@ async def test_shell_compound_delete_requires_separate_exact_actions_after_creat
     managed_runtime: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     outside = managed_runtime.parent / "outside-create-delete"
     target = outside / "probe.txt"
@@ -459,7 +459,7 @@ async def test_shell_changed_command_cannot_consume_elevation_grant(
     managed_runtime: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     target = managed_runtime.parent / "outside-changed" / "probe.txt"
     original = f"touch {shlex.quote(str(target))}"
@@ -518,7 +518,7 @@ async def test_background_process_uses_the_same_exact_elevation_contract(
     managed_runtime: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     original = (
         f"touch {shlex.quote(str(managed_runtime.parent / 'background-one.txt'))}"
@@ -616,8 +616,8 @@ async def test_shell_backend_request_preserves_resolved_run_mode(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.types import SandboxRequest
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.sandbox.types import SandboxRequest
+    from openstarry_code.tools.builtin import shell
 
     reset_approval_queue()
     configure_runtime(
@@ -672,8 +672,8 @@ async def test_trusted_windows_shell_receives_managed_proxy_without_network_hint
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.types import NetworkMode, SandboxRequest
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.sandbox.types import NetworkMode, SandboxRequest
+    from openstarry_code.tools.builtin import shell
 
     reset_approval_queue()
     configure_runtime(
@@ -766,8 +766,8 @@ async def test_trusted_linux_shell_receives_managed_proxy_without_network_hint(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.types import NetworkMode, SandboxRequest
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.sandbox.types import NetworkMode, SandboxRequest
+    from openstarry_code.tools.builtin import shell
 
     reset_approval_queue()
     configure_runtime(
@@ -791,7 +791,7 @@ async def test_trusted_linux_shell_receives_managed_proxy_without_network_hint(
             stdout=(
                 request.env["HTTP_PROXY"]
                 + "\n"
-                + request.env["OPENSQUILLA_SANDBOX_NETWORK"]
+                + request.env["OPENSTARRY_CODE_SANDBOX_NETWORK"]
                 + "\n"
             ),
             stderr="",
@@ -808,7 +808,7 @@ async def test_trusted_linux_shell_receives_managed_proxy_without_network_hint(
         lambda command: SimpleNamespace(allowed=True, needs_approval=False, reason=""),
     )
     monkeypatch.setattr(
-        "opensquilla.sandbox.integration._windows_proxy_allowlist_ready_or_repaired",
+        "openstarry_code.sandbox.integration._windows_proxy_allowlist_ready_or_repaired",
         _windows_ready_should_not_run,
     )
 
@@ -827,8 +827,8 @@ async def test_trusted_linux_shell_receives_managed_proxy_without_network_hint(
     )
     try:
         result = await shell.exec_command(
-            "sh -lc 'printf \"HTTP_PROXY=%s\\nOPENSQUILLA_SANDBOX_NETWORK=%s\\n\" "
-            "\"$HTTP_PROXY\" \"$OPENSQUILLA_SANDBOX_NETWORK\"'",
+            "sh -lc 'printf \"HTTP_PROXY=%s\\nOPENSTARRY_CODE_SANDBOX_NETWORK=%s\\n\" "
+            "\"$HTTP_PROXY\" \"$OPENSTARRY_CODE_SANDBOX_NETWORK\"'",
             workdir=str(tmp_path),
         )
     finally:
@@ -840,7 +840,7 @@ async def test_trusted_linux_shell_receives_managed_proxy_without_network_hint(
     assert backend_calls
     assert backend_calls[0].policy.network is NetworkMode.PROXY_ALLOWLIST
     assert backend_calls[0].env["HTTP_PROXY"].startswith("http://127.0.0.1:")
-    assert backend_calls[0].env["OPENSQUILLA_SANDBOX_NETWORK"] == "proxy_allowlist"
+    assert backend_calls[0].env["OPENSTARRY_CODE_SANDBOX_NETWORK"] == "proxy_allowlist"
 
 
 @pytest.mark.asyncio
@@ -848,8 +848,8 @@ async def test_trusted_windows_code_exec_receives_managed_proxy_without_network_
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.types import NetworkMode, NetworkProxySpec
-    from opensquilla.tools.builtin import code_exec, shell
+    from openstarry_code.sandbox.types import NetworkMode, NetworkProxySpec
+    from openstarry_code.tools.builtin import code_exec, shell
 
     reset_approval_queue()
     configure_runtime(
@@ -944,13 +944,13 @@ async def test_trusted_windows_code_exec_receives_managed_proxy_without_network_
 def test_trusted_windows_tools_collapse_host_network_to_managed_proxy(
     tmp_path: Path,
 ) -> None:
-    from opensquilla.sandbox.types import (
+    from openstarry_code.sandbox.types import (
         NetworkMode,
         ResourceLimits,
         SandboxPolicy,
         SecurityLevel,
     )
-    from opensquilla.tools.builtin import code_exec, shell
+    from openstarry_code.tools.builtin import code_exec, shell
 
     policy = SandboxPolicy(
         level=SecurityLevel.STANDARD,
@@ -987,7 +987,7 @@ def test_trusted_windows_tools_collapse_host_network_to_managed_proxy(
 
 
 def test_windows_direct_powershell_argv_injects_proxy_defaults() -> None:
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     argv = shell._windows_direct_powershell_argv(
         "Invoke-WebRequest -UseBasicParsing https://example.com"
@@ -1006,7 +1006,7 @@ def test_windows_direct_powershell_argv_injects_proxy_defaults() -> None:
 def test_windows_shell_host_handles_invoke_webrequest_status_via_managed_proxy(
     tmp_path: Path,
 ) -> None:
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     with _SingleResponseHttpProxy(
         b"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\nexample"
@@ -1043,7 +1043,7 @@ def test_windows_shell_host_handles_invoke_webrequest_status_via_managed_proxy(
 def test_windows_shell_host_handles_try_wrapped_invoke_webrequest_status_via_managed_proxy(
     tmp_path: Path,
 ) -> None:
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     with _SingleResponseHttpProxy(
         b"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\nexample"
@@ -1082,7 +1082,7 @@ def test_windows_shell_host_handles_try_wrapped_invoke_webrequest_status_via_man
 def test_windows_shell_host_handles_assigned_invoke_webrequest_status_via_managed_proxy(
     tmp_path: Path,
 ) -> None:
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     with _SingleResponseHttpProxy(
         b"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\nexample"
@@ -1121,7 +1121,7 @@ def test_windows_shell_host_handles_assigned_invoke_webrequest_status_via_manage
 def test_windows_shell_host_handles_assigned_curl_head_status_via_managed_proxy(
     tmp_path: Path,
 ) -> None:
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     with _SingleResponseHttpProxy(
         b"HTTP/1.1 200 OK\r\nX-Test: yes\r\n\r\n"
@@ -1159,7 +1159,7 @@ def test_windows_shell_host_handles_assigned_curl_head_status_via_managed_proxy(
 def test_windows_shell_host_handles_curl_head_via_managed_proxy(
     tmp_path: Path,
 ) -> None:
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     with _SingleResponseHttpProxy(
         b"HTTP/1.1 204 No Content\r\nX-Test: yes\r\n\r\n"
@@ -1194,7 +1194,7 @@ def test_windows_shell_host_handles_curl_head_via_managed_proxy(
 def test_windows_shell_host_handles_remove_item_then_test_path_without_powershell(
     tmp_path: Path,
 ) -> None:
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     target = tmp_path / "delete-me.txt"
     target.write_text("x", encoding="utf-8")
@@ -1226,7 +1226,7 @@ def test_windows_shell_host_handles_remove_item_then_test_path_without_powershel
 def test_windows_shell_host_leaves_output_expressions_to_powershell(
     tmp_path: Path,
 ) -> None:
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     result = subprocess.run(
         (
@@ -1283,7 +1283,7 @@ class _SingleResponseHttpProxy:
 
 
 def test_windows_direct_powershell_argv_does_not_install_socket_fallbacks() -> None:
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     argv = shell._windows_direct_powershell_argv(
         "curl.exe -I https://example.com"
@@ -1301,8 +1301,8 @@ async def test_code_exec_backend_request_preserves_resolved_run_mode(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.types import SandboxRequest
-    from opensquilla.tools.builtin import code_exec, shell
+    from openstarry_code.sandbox.types import SandboxRequest
+    from openstarry_code.tools.builtin import code_exec, shell
 
     reset_approval_queue()
     configure_runtime(
@@ -1356,7 +1356,7 @@ async def test_code_exec_backend_request_preserves_resolved_run_mode(
 
 @pytest.mark.asyncio
 async def test_shell_network_command_passes_network_hint(monkeypatch: pytest.MonkeyPatch) -> None:
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     calls: list[dict[str, object]] = []
 
@@ -1395,7 +1395,7 @@ async def test_shell_network_command_passes_network_hint(monkeypatch: pytest.Mon
 async def test_powershell_invoke_webrequest_passes_network_hint(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     calls: list[dict[str, object]] = []
 
@@ -1436,7 +1436,7 @@ async def test_powershell_invoke_webrequest_passes_network_hint(
 async def test_shell_url_text_does_not_pass_network_hint(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     calls: list[dict[str, object]] = []
 
@@ -1476,7 +1476,7 @@ async def test_code_with_url_literal_passes_network_hint(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.tools.builtin import code_exec, shell
+    from openstarry_code.tools.builtin import code_exec, shell
 
     calls: list[dict[str, object]] = []
 
@@ -1521,7 +1521,7 @@ async def test_code_plain_url_literal_does_not_pass_network_hint(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.tools.builtin import code_exec, shell
+    from openstarry_code.tools.builtin import code_exec, shell
 
     calls: list[dict[str, object]] = []
 
@@ -1564,7 +1564,7 @@ async def test_shell_unknown_explicit_url_runs_with_managed_proxy(
     managed_runtime: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     backend_requests: list[object] = []
 
@@ -1612,8 +1612,8 @@ async def test_windows_proxy_allowlist_runtime_skips_platform_network_boundary(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    from opensquilla.sandbox import integration as integration_mod
-    from opensquilla.sandbox.types import (
+    from openstarry_code.sandbox import integration as integration_mod
+    from openstarry_code.sandbox.types import (
         NetworkMode,
         NetworkProxySpec,
         ResourceLimits,
@@ -1680,8 +1680,8 @@ async def test_windows_unready_proxy_allowlist_blocks_network_workarounds(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    from opensquilla.sandbox import integration as integration_mod
-    from opensquilla.sandbox.types import (
+    from openstarry_code.sandbox import integration as integration_mod
+    from openstarry_code.sandbox.types import (
         NetworkMode,
         ResourceLimits,
         SandboxPolicy,
@@ -1743,8 +1743,8 @@ async def test_windows_proxy_allowlist_preflight_does_not_repair_during_command(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    from opensquilla.sandbox import integration as integration_mod
-    from opensquilla.sandbox.types import (
+    from openstarry_code.sandbox import integration as integration_mod
+    from openstarry_code.sandbox.types import (
         NetworkMode,
         ResourceLimits,
         SandboxPolicy,
@@ -1833,8 +1833,8 @@ async def test_windows_ready_proxy_allowlist_preflight_continues_to_proxy_runtim
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    from opensquilla.sandbox import integration as integration_mod
-    from opensquilla.sandbox.types import (
+    from openstarry_code.sandbox import integration as integration_mod
+    from openstarry_code.sandbox.types import (
         NetworkMode,
         ResourceLimits,
         SandboxPolicy,
@@ -1903,7 +1903,7 @@ async def test_shell_package_install_uses_default_open_proxy_without_approval(
     managed_runtime: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     async def _run_under_backend(request, *, runtime=None):
         return SimpleNamespace(returncode=0, stdout="ok\n", stderr="", backend_notes=())
@@ -1942,7 +1942,7 @@ async def test_uv_pip_install_uses_default_open_proxy_without_approval(
     managed_runtime: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     async def _run_under_backend(request, *, runtime=None):
         return SimpleNamespace(returncode=0, stdout="ok\n", stderr="", backend_notes=())
@@ -1981,8 +1981,8 @@ async def test_poetry_install_uses_default_open_proxy_without_approval(
     managed_runtime: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox import integration as integration_mod
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.sandbox import integration as integration_mod
+    from openstarry_code.tools.builtin import shell
 
     profile_calls: list[tuple[str, ...]] = []
 
@@ -2036,8 +2036,8 @@ async def test_composer_install_uses_default_open_proxy_without_approval(
     managed_runtime: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox import integration as integration_mod
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.sandbox import integration as integration_mod
+    from openstarry_code.tools.builtin import shell
 
     profile_calls: list[tuple[str, ...]] = []
 
@@ -2091,8 +2091,8 @@ async def test_trusted_uv_pip_install_receives_managed_proxy_without_prompt(
     managed_runtime: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox import integration as integration_mod
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.sandbox import integration as integration_mod
+    from openstarry_code.tools.builtin import shell
 
     class _FakeProxyServer:
         host = "127.0.0.1"
@@ -2160,7 +2160,7 @@ async def test_trusted_uv_pip_install_receives_managed_proxy_without_prompt(
     assert env["NODE_USE_ENV_PROXY"] == "1"
     assert env["CODEX_NETWORK_PROXY_ACTIVE"] == "1"
     assert env["CODEX_NETWORK_ALLOW_LOCAL_BINDING"] == "0"
-    assert env["OPENSQUILLA_SANDBOX_NETWORK"] == "proxy_allowlist"
+    assert env["OPENSTARRY_CODE_SANDBOX_NETWORK"] == "proxy_allowlist"
     assert "GIT_CONFIG_KEY_0" not in env
     assert "GIT_CONFIG_VALUE_0" not in env
 
@@ -2170,8 +2170,8 @@ async def test_trusted_python_explicit_url_uses_managed_proxy_before_execution(
     managed_runtime: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.types import NetworkMode, SandboxRequest
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.sandbox.types import NetworkMode, SandboxRequest
+    from openstarry_code.tools.builtin import shell
 
     backend_calls: list[SandboxRequest] = []
 
@@ -2231,8 +2231,8 @@ async def test_trusted_python_caught_network_error_still_uses_proxy_before_execu
     managed_runtime: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.types import NetworkMode, SandboxRequest
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.sandbox.types import NetworkMode, SandboxRequest
+    from openstarry_code.tools.builtin import shell
 
     backend_calls: list[SandboxRequest] = []
 
@@ -2295,8 +2295,8 @@ async def test_trusted_npm_view_uses_managed_proxy_before_execution(
     managed_runtime: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.types import NetworkMode, SandboxRequest
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.sandbox.types import NetworkMode, SandboxRequest
+    from openstarry_code.tools.builtin import shell
 
     backend_calls: list[SandboxRequest] = []
 
@@ -2350,8 +2350,8 @@ async def test_trusted_unknown_install_uses_managed_proxy_without_redundant_retr
     managed_runtime: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.types import SandboxRequest
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.sandbox.types import SandboxRequest
+    from openstarry_code.tools.builtin import shell
 
     backend_calls: list[SandboxRequest] = []
     cleanup_calls = 0
@@ -2433,7 +2433,7 @@ async def test_standard_network_failure_does_not_return_package_bundle_recovery_
     standard_runtime_no_preflight: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     backend_calls = 0
 
@@ -2483,7 +2483,7 @@ async def test_standard_network_failure_does_not_retry_explicit_url(
     standard_runtime_no_preflight: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     backend_calls = 0
 
@@ -2533,8 +2533,8 @@ async def test_standard_network_failure_does_not_retry_with_approved_bundle(
     standard_runtime_no_preflight: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.types import NetworkMode, SandboxRequest
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.sandbox.types import NetworkMode, SandboxRequest
+    from openstarry_code.tools.builtin import shell
 
     backend_calls: list[SandboxRequest] = []
     cleanup_calls = 0
@@ -2616,15 +2616,15 @@ async def test_standard_network_failure_does_not_consume_allow_once_grant(
     standard_runtime_no_preflight: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox import integration as integration_mod
-    from opensquilla.sandbox.types import (
+    from openstarry_code.sandbox import integration as integration_mod
+    from openstarry_code.sandbox.types import (
         NetworkMode,
         ResourceLimits,
         SandboxPolicy,
         SandboxRequest,
         SecurityLevel,
     )
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     command = "curl https://unknown.test/path"
     workdir = standard_runtime_no_preflight.resolve(strict=False)
@@ -2747,7 +2747,7 @@ async def test_trusted_hostless_private_network_failure_does_not_retry(
     managed_runtime: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     backend_calls = 0
 
@@ -2807,7 +2807,7 @@ async def test_trusted_metadata_target_is_not_auto_retried(
     managed_runtime: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     backend_calls = 0
 
@@ -2869,9 +2869,9 @@ async def test_trusted_network_failure_does_not_retry_after_managed_proxy_execut
     managed_runtime: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox import integration as integration_mod
-    from opensquilla.sandbox.types import NetworkMode
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.sandbox import integration as integration_mod
+    from openstarry_code.sandbox.types import NetworkMode
+    from openstarry_code.tools.builtin import shell
 
     class _FakeProxyServer:
         host = "127.0.0.1"
@@ -2960,8 +2960,8 @@ async def test_trusted_normal_user_path_denial_requests_broader_retry_review(
     tmp_path_factory: pytest.TempPathFactory,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.types import SandboxRequest
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.sandbox.types import SandboxRequest
+    from openstarry_code.tools.builtin import shell
 
     outside = tmp_path_factory.mktemp("outside-project")
     backend_calls: list[SandboxRequest] = []
@@ -3014,8 +3014,8 @@ async def test_trusted_read_path_denial_requests_broader_retry_review(
     tmp_path_factory: pytest.TempPathFactory,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.types import SandboxRequest
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.sandbox.types import SandboxRequest
+    from openstarry_code.tools.builtin import shell
 
     outside = tmp_path_factory.mktemp("outside-read")
     target = outside / "data.txt"
@@ -3069,8 +3069,8 @@ async def test_trusted_execve_path_denial_requests_broader_retry_review(
     tmp_path_factory: pytest.TempPathFactory,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.types import SandboxRequest
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.sandbox.types import SandboxRequest
+    from openstarry_code.tools.builtin import shell
 
     outside = tmp_path_factory.mktemp("outside-exec")
     target = outside / "tool"
@@ -3124,8 +3124,8 @@ async def test_trusted_managed_network_denial_requests_broader_retry_review(
     tmp_path_factory: pytest.TempPathFactory,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.types import SandboxRequest
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.sandbox.types import SandboxRequest
+    from openstarry_code.tools.builtin import shell
 
     outside = tmp_path_factory.mktemp("outside-path-network")
     backend_calls: list[SandboxRequest] = []
@@ -3205,14 +3205,14 @@ async def test_trusted_sensitive_path_denial_does_not_auto_retry(
     managed_runtime: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.types import (
+    from openstarry_code.sandbox.types import (
         DenialReason,
         DenialResult,
         SandboxRequest,
         SecurityLevel,
         SuggestedNextStep,
     )
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     backend_calls: list[SandboxRequest] = []
 
@@ -3273,7 +3273,7 @@ async def test_trusted_successful_network_failure_text_does_not_retry(
     managed_runtime: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     backend_calls = 0
 
@@ -3321,7 +3321,7 @@ async def test_timeout_wrapped_node_install_uses_default_open_proxy(
     managed_runtime: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     async def _run_under_backend(request, *, runtime=None):
         return SimpleNamespace(returncode=0, stdout="ok\n", stderr="", backend_notes=())
@@ -3359,8 +3359,8 @@ async def test_timeout_wrapped_node_install_uses_default_open_proxy(
 async def test_subprocess_network_approval_uses_session_workspace_for_external_cwd(
     managed_runtime: Path,
 ) -> None:
-    from opensquilla.sandbox import integration as integration_mod
-    from opensquilla.sandbox.types import (
+    from openstarry_code.sandbox import integration as integration_mod
+    from openstarry_code.sandbox.types import (
         NetworkMode,
         ResourceLimits,
         SandboxPolicy,
@@ -3417,8 +3417,8 @@ async def test_subprocess_network_approval_uses_session_workspace_for_external_c
 async def test_subprocess_network_once_grant_consumes_from_session_workspace(
     managed_runtime: Path,
 ) -> None:
-    from opensquilla.sandbox import integration as integration_mod
-    from opensquilla.sandbox.types import (
+    from openstarry_code.sandbox import integration as integration_mod
+    from openstarry_code.sandbox.types import (
         NetworkMode,
         ResourceLimits,
         SandboxPolicy,
@@ -3482,8 +3482,8 @@ async def test_background_shell_network_spawn_receives_managed_proxy(
     managed_runtime: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox import integration as integration_mod
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.sandbox import integration as integration_mod
+    from openstarry_code.tools.builtin import shell
 
     class _FakeProxyServer:
         host = "127.0.0.1"
@@ -3567,8 +3567,8 @@ async def test_code_network_subprocess_receives_managed_proxy_env(
     managed_runtime: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox import integration as integration_mod
-    from opensquilla.tools.builtin import code_exec, shell
+    from openstarry_code.sandbox import integration as integration_mod
+    from openstarry_code.tools.builtin import code_exec, shell
 
     class _FakeProxyServer:
         host = "127.0.0.1"
@@ -3656,8 +3656,8 @@ async def test_code_exec_prepares_managed_proxy_before_backend_run(
 ) -> None:
     import dataclasses
 
-    from opensquilla.sandbox.types import NetworkProxySpec
-    from opensquilla.tools.builtin import code_exec, shell
+    from openstarry_code.sandbox.types import NetworkProxySpec
+    from openstarry_code.tools.builtin import code_exec, shell
 
     class _Managed:
         def __init__(self, request) -> None:
@@ -3747,14 +3747,14 @@ async def test_trusted_code_exec_path_denial_escalates_without_retry(
     tmp_path_factory: pytest.TempPathFactory,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.types import (
+    from openstarry_code.sandbox.types import (
         DenialReason,
         DenialResult,
         SandboxRequest,
         SecurityLevel,
         SuggestedNextStep,
     )
-    from opensquilla.tools.builtin import code_exec, shell
+    from openstarry_code.tools.builtin import code_exec, shell
 
     outside = tmp_path_factory.mktemp("outside-code")
     backend_calls: list[SandboxRequest] = []
@@ -3811,9 +3811,9 @@ async def test_code_unknown_explicit_url_runs_with_managed_proxy(
     managed_runtime: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox import integration as integration_mod
-    from opensquilla.sandbox.types import SandboxRequest
-    from opensquilla.tools.builtin import code_exec, shell
+    from openstarry_code.sandbox import integration as integration_mod
+    from openstarry_code.sandbox.types import SandboxRequest
+    from openstarry_code.tools.builtin import code_exec, shell
 
     class _FakeProxyServer:
         host = "127.0.0.1"

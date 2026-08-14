@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.session.compaction import (
+from openstarry_code.session.compaction import (
     CompactionConfig,
     CompactionRequest,
     CompactionResult,
@@ -50,7 +50,7 @@ async def test_compact_context_returns_compaction_result():
 @pytest.mark.asyncio
 async def test_compact_context_delegates_to_new(monkeypatch):
     """compact_context calls compact_context_new (not any legacy path)."""
-    import opensquilla.session.compaction as compaction_mod
+    import openstarry_code.session.compaction as compaction_mod
 
     calls = []
 
@@ -176,7 +176,7 @@ async def test_new_can_cut_after_completed_tool_round(monkeypatch):
     — stay deterministic and offline instead of loading an optional tokenizer.
     """
     monkeypatch.setattr(
-        "opensquilla.session.compaction._estimate_tokens",
+        "openstarry_code.session.compaction._estimate_tokens",
         lambda text: max(1, len(text) // 4),
     )
     entries = [

@@ -17,10 +17,10 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.pipeline import TurnContext
-from opensquilla.engine.routing import RoutingDecision
-from opensquilla.engine.steps import router_decision_record, squilla_router
-from opensquilla.engine.steps.router_decision_record import (
+from openstarry_code.engine.pipeline import TurnContext
+from openstarry_code.engine.routing import RoutingDecision
+from openstarry_code.engine.steps import router_decision_record, squilla_router
+from openstarry_code.engine.steps.router_decision_record import (
     DECISION_ID_METADATA_KEY,
     PENDING_RECORD_KEY,
     build_trail,
@@ -31,17 +31,17 @@ from opensquilla.engine.steps.router_decision_record import (
     set_decision_writer,
     stage_router_decision,
 )
-from opensquilla.engine.steps.squilla_router import (
+from openstarry_code.engine.steps.squilla_router import (
     apply_squilla_router,
     seed_routing_history,
 )
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.observability.decision_log import (
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.observability.decision_log import (
     DecisionEntry,
     load_entries,
     write_decision_entry,
 )
-from opensquilla.persistence.router_decision_writer import RouterDecisionWriter
+from openstarry_code.persistence.router_decision_writer import RouterDecisionWriter
 
 PROMPT_SENTINEL = "our merger with Acme closes friday, draft the announcement"
 

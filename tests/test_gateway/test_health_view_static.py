@@ -2,8 +2,8 @@
 
 from pathlib import Path
 
-SHARED_ROUTES = Path("opensquilla-webui/src/router/sharedRoutes.ts")
-HEALTH_VIEW = Path("opensquilla-webui/src/views/HealthView.vue")
+SHARED_ROUTES = Path("openstarry-code-webui/src/router/sharedRoutes.ts")
+HEALTH_VIEW = Path("openstarry-code-webui/src/views/HealthView.vue")
 
 
 def test_health_deep_link_redirects_to_vue_overview() -> None:

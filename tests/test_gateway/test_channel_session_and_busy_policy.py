@@ -7,13 +7,13 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 from pydantic import ValidationError
 
-from opensquilla.channels.manager import ChannelManager
-from opensquilla.channels.types import IncomingMessage
-from opensquilla.gateway.channel_dispatch import _resolve_channel_busy_input_mode
-from opensquilla.gateway.config import DiscordChannelEntry
-from opensquilla.gateway.routing import RouteEnvelope, SourceKind
-from opensquilla.gateway.task_runtime import TaskRuntime
-from opensquilla.session.models import AgentTaskRecord, AgentTaskStatus
+from openstarry_code.channels.manager import ChannelManager
+from openstarry_code.channels.types import IncomingMessage
+from openstarry_code.gateway.channel_dispatch import _resolve_channel_busy_input_mode
+from openstarry_code.gateway.config import DiscordChannelEntry
+from openstarry_code.gateway.routing import RouteEnvelope, SourceKind
+from openstarry_code.gateway.task_runtime import TaskRuntime
+from openstarry_code.session.models import AgentTaskRecord, AgentTaskStatus
 
 
 def _group_message(sender_id: str, *, thread_id: str | None = None) -> IncomingMessage:

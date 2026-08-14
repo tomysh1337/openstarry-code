@@ -19,7 +19,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.engine.routing import (
+from openstarry_code.engine.routing import (
     BudgetGateInput,
     PolicyInputs,
     RoutingDecision,
@@ -28,7 +28,7 @@ from opensquilla.engine.routing import (
     budget_gate,
     route_class_for_tier,
 )
-from opensquilla.engine.steps.squilla_router import _session_accumulated_spend
+from openstarry_code.engine.steps.squilla_router import _session_accumulated_spend
 
 VALID_TIERS = ["c0", "c1", "c2", "c3"]
 

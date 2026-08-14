@@ -11,16 +11,16 @@ from typing import Any
 import httpx
 import pytest
 
-from opensquilla.provider.codex_auth import (
+from openstarry_code.provider.codex_auth import (
     CodexAuthError,
     load_codex_credentials,
     refresh_codex_credentials,
 )
-from opensquilla.provider.openai_codex import OpenAICodexProvider, _candidate_wire_digest
-from opensquilla.provider.protocol import project_provider_final_request
-from opensquilla.provider.registry import get_provider_spec
-from opensquilla.provider.selector import build_provider
-from opensquilla.provider.types import (
+from openstarry_code.provider.openai_codex import OpenAICodexProvider, _candidate_wire_digest
+from openstarry_code.provider.protocol import project_provider_final_request
+from openstarry_code.provider.registry import get_provider_spec
+from openstarry_code.provider.selector import build_provider
+from openstarry_code.provider.types import (
     ChatConfig,
     DoneEvent,
     ErrorEvent,
@@ -123,7 +123,7 @@ def _patch_codex_transport(monkeypatch, handler) -> None:
         kwargs["transport"] = transport
         return real(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai_codex.httpx.AsyncClient", patched)
+    monkeypatch.setattr("openstarry_code.provider.openai_codex.httpx.AsyncClient", patched)
 
 
 def _collect(provider: OpenAICodexProvider, *, tools=None, cfg=None):
@@ -270,7 +270,7 @@ def test_refresh_persists_new_tokens(tmp_path: Path, monkeypatch) -> None:
     transport = httpx.MockTransport(handler)
     real = httpx.AsyncClient
     monkeypatch.setattr(
-        "opensquilla.provider.codex_auth.httpx.AsyncClient",
+        "openstarry_code.provider.codex_auth.httpx.AsyncClient",
         lambda *a, **kw: real(*a, **{**kw, "transport": transport}),
     )
 
@@ -744,7 +744,7 @@ def test_401_refreshes_and_retries_once(tmp_path: Path, monkeypatch) -> None:
     transport = httpx.MockTransport(handler)
     real = httpx.AsyncClient
     monkeypatch.setattr(
-        "opensquilla.provider.codex_auth.httpx.AsyncClient",
+        "openstarry_code.provider.codex_auth.httpx.AsyncClient",
         lambda *a, **kw: real(*a, **{**kw, "transport": transport}),
     )
 

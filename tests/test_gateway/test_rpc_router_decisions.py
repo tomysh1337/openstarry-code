@@ -14,23 +14,23 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.engine.steps.router_decision_record import (
+from openstarry_code.engine.steps.router_decision_record import (
     get_decision_writer,
     set_decision_writer,
 )
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.protocol import ERROR_INVALID_REQUEST, ERROR_UNAUTHORIZED
-from opensquilla.gateway.rpc import get_dispatcher, validate_classification
-from opensquilla.gateway.rpc.registry import RpcContext
-from opensquilla.gateway.rpc_router import (
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.protocol import ERROR_INVALID_REQUEST, ERROR_UNAUTHORIZED
+from openstarry_code.gateway.rpc import get_dispatcher, validate_classification
+from openstarry_code.gateway.rpc.registry import RpcContext
+from openstarry_code.gateway.rpc_router import (
     _bounded_limit,
     _handle_router_decisions_list,
     _handle_router_feedback_submit,
 )
-from opensquilla.gateway.scopes import METHOD_SCOPES, READ_SCOPE, WRITE_SCOPE
-from opensquilla.persistence.migrator import apply_pending
-from opensquilla.persistence.router_decision_writer import (
+from openstarry_code.gateway.scopes import METHOD_SCOPES, READ_SCOPE, WRITE_SCOPE
+from openstarry_code.persistence.migrator import apply_pending
+from openstarry_code.persistence.router_decision_writer import (
     RouterDecisionWriter,
     open_router_decision_writer,
 )
@@ -154,16 +154,16 @@ async def test_live_router_enable_after_disabled_boot_persists_decisions(
     """
     from types import SimpleNamespace
 
-    from opensquilla.engine.routing import RoutingDecision
-    from opensquilla.engine.steps.router_decision_record import (
+    from openstarry_code.engine.routing import RoutingDecision
+    from openstarry_code.engine.steps.router_decision_record import (
         schedule_router_decision_flush,
         stage_router_decision,
     )
-    from opensquilla.gateway.boot import build_services
-    from opensquilla.gateway.rpc_onboarding import _router_configure
+    from openstarry_code.gateway.boot import build_services
+    from openstarry_code.gateway.rpc_onboarding import _router_configure
 
     monkeypatch.setattr(
-        "opensquilla.sandbox.integration.configure_runtime",
+        "openstarry_code.sandbox.integration.configure_runtime",
         lambda *_args, **_kwargs: SimpleNamespace(
             effective=SimpleNamespace(as_dict=lambda: {})
         ),
@@ -386,7 +386,7 @@ async def test_feedback_submit_records_to_sidecar(
     writer: RouterDecisionWriter, tmp_path: Path, monkeypatch
 ) -> None:
     """A rating resolves through V017 and lands in the per-agent sidecar."""
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path))
     writer.record_decision(_base_record())
     before = writer.list_decisions()
 
@@ -399,7 +399,7 @@ async def test_feedback_submit_records_to_sidecar(
     # The decision table itself is never mutated by feedback.
     assert writer.list_decisions() == before
 
-    from opensquilla.squilla_router.self_learning.feedback import load_feedback_map
+    from openstarry_code.squilla_router.self_learning.feedback import load_feedback_map
 
     fb = load_feedback_map("main", home=tmp_path)
     assert fb["d" * 32].rating == "down"
@@ -409,10 +409,10 @@ async def test_feedback_submit_records_to_sidecar(
 async def test_feedback_submit_uses_configured_retention_days(
     writer: RouterDecisionWriter, tmp_path: Path, monkeypatch
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path))
     writer.record_decision(_base_record())
 
-    from opensquilla.squilla_router.self_learning.feedback import (
+    from openstarry_code.squilla_router.self_learning.feedback import (
         load_feedback_map,
         write_feedback,
     )
@@ -442,7 +442,7 @@ async def test_feedback_submit_uses_configured_retention_days(
 async def test_feedback_submit_unknown_decision_is_soft_failure(
     writer: RouterDecisionWriter, tmp_path: Path, monkeypatch
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path))
     payload = await _handle_router_feedback_submit(
         {"decisionId": "f" * 32, "rating": "up"},
         RpcContext(conn_id="test"),
@@ -453,9 +453,9 @@ async def test_feedback_submit_unknown_decision_is_soft_failure(
 async def test_feedback_submit_last_write_wins_and_neutral_revokes(
     writer: RouterDecisionWriter, tmp_path: Path, monkeypatch
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path))
     writer.record_decision(_base_record())
-    from opensquilla.squilla_router.self_learning.feedback import load_feedback_map
+    from openstarry_code.squilla_router.self_learning.feedback import load_feedback_map
 
     ctx = RpcContext(conn_id="test")
     await _handle_router_feedback_submit({"decisionId": "d" * 32, "rating": "down"}, ctx)
@@ -473,7 +473,7 @@ async def test_feedback_submit_preserves_ensemble_kind(
     writer: RouterDecisionWriter, tmp_path: Path, monkeypatch
 ) -> None:
     """executed_kind rides from V017 into the sidecar for downstream gating."""
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path))
     writer.record_decision(_base_record(decision_id="e" * 32, executed_kind="ensemble"))
 
     await _handle_router_feedback_submit(
@@ -481,7 +481,7 @@ async def test_feedback_submit_preserves_ensemble_kind(
         RpcContext(conn_id="test"),
     )
 
-    from opensquilla.squilla_router.self_learning.feedback import load_feedback_map
+    from openstarry_code.squilla_router.self_learning.feedback import load_feedback_map
 
     fb = load_feedback_map("main", home=tmp_path)
     assert fb["e" * 32].executed_kind == "ensemble"
@@ -533,7 +533,7 @@ def test_feedback_handler_is_dormant_static() -> None:
     the routing engines themselves, and the self-learning mutation surfaces
     (training, promotion pointer writes, sample writes).
     """
-    source = Path("src/opensquilla/gateway/rpc_router.py").read_text(encoding="utf-8")
+    source = Path("src/openstarry_code/gateway/rpc_router.py").read_text(encoding="utf-8")
     assert "RoutingHistoryStore" not in source
     import_lines = [
         line.strip()
@@ -583,6 +583,6 @@ def test_router_rpc_methods_pass_boot_scope_audit() -> None:
     registry = get_dispatcher()
     assert "router.decisions.list" in registry.methods()
     assert "router.feedback.submit" in registry.methods()
-    # Same audit boot runs at the end of opensquilla.gateway.rpc.__init__;
+    # Same audit boot runs at the end of openstarry_code.gateway.rpc.__init__;
     # raises ScopeDriftError on declared-vs-table drift.
     validate_classification(registry)

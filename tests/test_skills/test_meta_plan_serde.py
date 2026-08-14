@@ -4,12 +4,12 @@ from __future__ import annotations
 
 import json
 
-from opensquilla.skills.meta.plan_serde import (
+from openstarry_code.skills.meta.plan_serde import (
     PLAN_SERDE_VERSION,
     from_jsonable,
     to_jsonable,
 )
-from opensquilla.skills.meta.types import (
+from openstarry_code.skills.meta.types import (
     ClarifyField,
     ClarifyStepConfig,
     MetaPlan,
@@ -190,10 +190,10 @@ def test_all_bundled_meta_skills_round_trip():
     """
     from pathlib import Path
 
-    from opensquilla.skills.loader import SkillLoader
-    from opensquilla.skills.meta.parser import parse_meta_plan
+    from openstarry_code.skills.loader import SkillLoader
+    from openstarry_code.skills.meta.parser import parse_meta_plan
 
-    bundled = Path("src/opensquilla/skills/bundled").resolve()
+    bundled = Path("src/openstarry_code/skills/bundled").resolve()
     loader = SkillLoader(bundled_dir=bundled)
     specs = [s for s in loader.load_all() if getattr(s, "kind", "") == "meta"]
 

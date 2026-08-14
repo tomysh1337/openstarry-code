@@ -13,9 +13,9 @@ from importlib import resources
 
 import pytest
 
-from opensquilla.provider import model_catalog as model_catalog_module
-from opensquilla.provider.catalog_types import ModelCatalogEntry
-from opensquilla.provider.model_catalog import (
+from openstarry_code.provider import model_catalog as model_catalog_module
+from openstarry_code.provider.catalog_types import ModelCatalogEntry
+from openstarry_code.provider.model_catalog import (
     ModelCatalog,
     resolve_effective_context_window,
 )
@@ -248,7 +248,7 @@ def test_corrections_drop_unknown_and_mistyped_fields() -> None:
 
 def test_packaged_corrections_file_parses_with_expected_tables() -> None:
     text = (
-        resources.files("opensquilla.provider")
+        resources.files("openstarry_code.provider")
         .joinpath("catalog_overrides.toml")
         .read_text(encoding="utf-8")
     )
@@ -320,7 +320,7 @@ def test_ladder_glob_rows_keep_specific_before_general_file_order() -> None:
     ladder provider table. Reordering rows would silently change matching.
     """
     payload = tomllib.loads(
-        resources.files("opensquilla.provider")
+        resources.files("openstarry_code.provider")
         .joinpath("catalog_overrides.toml")
         .read_text(encoding="utf-8")
     )

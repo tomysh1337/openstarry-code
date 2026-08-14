@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.gateway.approval_queue import ApprovalQueue
+from openstarry_code.gateway.approval_queue import ApprovalQueue
 
 
 def test_approval_queue_request_persists_across_queue_restart(tmp_path) -> None:
@@ -513,7 +513,7 @@ async def test_approval_queue_keeps_stale_resolved_claim_not_ready(tmp_path) -> 
 
 @pytest.mark.skipif(os.name != "nt", reason="Windows extended-length path contract")
 def test_approval_queue_persists_on_extended_length_state_path(tmp_path: Path) -> None:
-    from opensquilla.application.approval_queue import _native_db_path
+    from openstarry_code.application.approval_queue import _native_db_path
 
     long_root = tmp_path / "long-approval-state"
     parent = long_root
@@ -550,7 +550,7 @@ def test_approval_queue_persists_on_extended_length_state_path(tmp_path: Path) -
 def test_reset_approval_queue_accepts_memory_database(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.application import approval_queue as approval_queue_module
+    from openstarry_code.application import approval_queue as approval_queue_module
 
     queue = ApprovalQueue(db_path=":memory:")
     monkeypatch.setattr(approval_queue_module, "_queue", queue)

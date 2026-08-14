@@ -17,53 +17,53 @@ from unittest.mock import ANY, AsyncMock
 import pytest
 from starlette.websockets import WebSocketState
 
-from opensquilla.agents.registry import AgentRegistry
-from opensquilla.agents.scope import default_workspace_dir
-from opensquilla.attachment_refs import transcript_material_path
-from opensquilla.engine.types import DoneEvent, ErrorEvent
-from opensquilla.gateway import rpc_chat, rpc_sessions
-from opensquilla.gateway.agent_tasks import get_agent_task_registry
-from opensquilla.gateway.attachment_ingest import (
+from openstarry_code.agents.registry import AgentRegistry
+from openstarry_code.agents.scope import default_workspace_dir
+from openstarry_code.attachment_refs import transcript_material_path
+from openstarry_code.engine.types import DoneEvent, ErrorEvent
+from openstarry_code.gateway import rpc_chat, rpc_sessions
+from openstarry_code.gateway.agent_tasks import get_agent_task_registry
+from openstarry_code.gateway.attachment_ingest import (
     MAX_STAGED_PDF_BYTES,
     MAX_TOTAL_ATTACHMENT_BYTES,
 )
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.config import AgentEntryConfig, GatewayConfig, LlmProviderProfile
-from opensquilla.gateway.guest_rpc_policy import guest_owned_session_key
-from opensquilla.gateway.input_normalization import LARGE_PASTE_CHARS, estimate_text_tokens
-from opensquilla.gateway.routing import tool_context_from_envelope
-from opensquilla.gateway.rpc import RpcContext, get_dispatcher
-from opensquilla.gateway.rpc_sessions import _normalize_terminal_event_payload
-from opensquilla.gateway.scopes import METHOD_SCOPES, READ_SCOPE, WRITE_SCOPE
-from opensquilla.gateway.session_lifecycle import SessionTaskSnapshot
-from opensquilla.gateway.session_streams import SessionStreamRegistry, get_session_streams
-from opensquilla.gateway.uploads import set_upload_store
-from opensquilla.gateway.websocket import SubscriptionManager, WsConnection, get_registry
-from opensquilla.project_workspaces import ProjectWorkspaceStateError, project_path_key
-from opensquilla.provider.selector import ProviderConfig
-from opensquilla.provider.types import ProviderRequestCorrelation
-from opensquilla.sandbox.capability_service import CapabilityReport
-from opensquilla.sandbox.guest_profile import (
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.config import AgentEntryConfig, GatewayConfig, LlmProviderProfile
+from openstarry_code.gateway.guest_rpc_policy import guest_owned_session_key
+from openstarry_code.gateway.input_normalization import LARGE_PASTE_CHARS, estimate_text_tokens
+from openstarry_code.gateway.routing import tool_context_from_envelope
+from openstarry_code.gateway.rpc import RpcContext, get_dispatcher
+from openstarry_code.gateway.rpc_sessions import _normalize_terminal_event_payload
+from openstarry_code.gateway.scopes import METHOD_SCOPES, READ_SCOPE, WRITE_SCOPE
+from openstarry_code.gateway.session_lifecycle import SessionTaskSnapshot
+from openstarry_code.gateway.session_streams import SessionStreamRegistry, get_session_streams
+from openstarry_code.gateway.uploads import set_upload_store
+from openstarry_code.gateway.websocket import SubscriptionManager, WsConnection, get_registry
+from openstarry_code.project_workspaces import ProjectWorkspaceStateError, project_path_key
+from openstarry_code.provider.selector import ProviderConfig
+from openstarry_code.provider.types import ProviderRequestCorrelation
+from openstarry_code.sandbox.capability_service import CapabilityReport
+from openstarry_code.sandbox.guest_profile import (
     GuestProfileBoundaryError,
     cleanup_guest_profile_root,
 )
-from opensquilla.sandbox.run_context import RUN_CONTEXT_ORIGIN_KEY
-from opensquilla.session import storage as session_storage
-from opensquilla.session.compaction import CompactionConfig
-from opensquilla.session.goals import (
+from openstarry_code.sandbox.run_context import RUN_CONTEXT_ORIGIN_KEY
+from openstarry_code.session import storage as session_storage
+from openstarry_code.session.compaction import CompactionConfig
+from openstarry_code.session.goals import (
     GoalCommandRequest,
     StartGoalMutation,
     goal_snapshot,
     new_goal,
 )
-from opensquilla.session.models import (
+from openstarry_code.session.models import (
     AgentTaskRecord,
     AgentTaskStatus,
     SessionNode,
     TranscriptEntry,
 )
-from opensquilla.session.storage import SessionStorage
-from opensquilla.tools.visibility import guest_safe_tool_allowlist
+from openstarry_code.session.storage import SessionStorage
+from openstarry_code.tools.visibility import guest_safe_tool_allowlist
 
 _DEFAULT_PRINCIPAL = Principal(
     role="operator", scopes=frozenset(["operator.admin"]), is_owner=True, authenticated=True
@@ -126,7 +126,7 @@ def test_project_workspace_error_mapping_is_stable(
     reason: str,
     expected_code: str,
 ) -> None:
-    from opensquilla.gateway.project_workspace_runtime import (
+    from openstarry_code.gateway.project_workspace_runtime import (
         map_project_workspace_error,
     )
 
@@ -140,7 +140,7 @@ def test_project_workspace_error_mapping_is_stable(
 
 
 def test_project_workspace_error_mapping_does_not_leak_path_to_non_owner() -> None:
-    from opensquilla.gateway.project_workspace_runtime import (
+    from openstarry_code.gateway.project_workspace_runtime import (
         map_project_workspace_error,
     )
 
@@ -160,7 +160,7 @@ def test_project_workspace_error_mapping_does_not_leak_path_to_non_owner() -> No
 
 @pytest.mark.asyncio
 async def test_project_workspace_snapshot_retains_missing_binding_id() -> None:
-    from opensquilla.gateway.project_workspace_runtime import (
+    from openstarry_code.gateway.project_workspace_runtime import (
         project_workspace_snapshot,
     )
 
@@ -185,7 +185,7 @@ async def test_project_workspace_snapshot_retains_missing_binding_id() -> None:
 
 @pytest.mark.asyncio
 async def test_project_workspace_snapshot_retains_removed_name_and_path() -> None:
-    from opensquilla.gateway.project_workspace_runtime import (
+    from openstarry_code.gateway.project_workspace_runtime import (
         project_workspace_snapshot,
     )
 
@@ -539,7 +539,7 @@ def _checkpoint_receipt(
     entries: list[Any],
     status: str = "checkpoint_saved",
 ) -> SimpleNamespace:
-    from opensquilla.memory.checkpoint import checkpoint_coverage_hash, checkpoint_turn_id
+    from openstarry_code.memory.checkpoint import checkpoint_coverage_hash, checkpoint_turn_id
 
     return SimpleNamespace(
         session_key=session.session_key,
@@ -1309,7 +1309,7 @@ class TestSessionsList:
     async def test_list_keeps_default_opensquilla_workspace_flat(
         self, dispatcher, tmp_path, monkeypatch
     ):
-        monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "opensquilla-home"))
+        monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "opensquilla-home"))
         workspace = default_workspace_dir()
         workspace.mkdir(parents=True)
         session = FakeSession(
@@ -2443,8 +2443,8 @@ class TestSessionsSend:
 
     @pytest.mark.asyncio
     async def test_send_collect_keeps_preallocated_turn_identity(self, dispatcher, session):
-        from opensquilla.gateway.routing import RouteEnvelope, SourceKind
-        from opensquilla.gateway.task_runtime import TaskRuntime
+        from openstarry_code.gateway.routing import RouteEnvelope, SourceKind
+        from openstarry_code.gateway.task_runtime import TaskRuntime
 
         class RuntimeStorage:
             def __init__(self) -> None:
@@ -4008,11 +4008,11 @@ class TestSessionsSteer:
         dispatcher,
         tmp_path,
     ) -> None:
-        from opensquilla.gateway.routing import RouteEnvelope, SourceKind
-        from opensquilla.gateway.task_runtime import TaskRuntime
-        from opensquilla.session.manager import SessionManager
-        from opensquilla.session.models import SessionNode
-        from opensquilla.session.storage import SessionStorage
+        from openstarry_code.gateway.routing import RouteEnvelope, SourceKind
+        from openstarry_code.gateway.task_runtime import TaskRuntime
+        from openstarry_code.session.manager import SessionManager
+        from openstarry_code.session.models import SessionNode
+        from openstarry_code.session.storage import SessionStorage
 
         key = "agent:main:webchat:steer-v2"
         store = SessionStorage(str(tmp_path / "steer-v2.db"))
@@ -4516,11 +4516,11 @@ class TestSessionsAbort:
                 return 1
 
         monkeypatch.setattr(
-            "opensquilla.gateway.subagent_announce.cancel_background_completion_for_task",
+            "openstarry_code.gateway.subagent_announce.cancel_background_completion_for_task",
             cancel_task_background,
         )
         monkeypatch.setattr(
-            "opensquilla.gateway.approval_queue.get_approval_queue",
+            "openstarry_code.gateway.approval_queue.get_approval_queue",
             lambda: ApprovalQueue(),
         )
 
@@ -4650,11 +4650,11 @@ class TestSessionsAbort:
                 return 1
 
         monkeypatch.setattr(
-            "opensquilla.gateway.subagent_announce.cancel_background_completion_for_task",
+            "openstarry_code.gateway.subagent_announce.cancel_background_completion_for_task",
             cancel_task_background,
         )
         monkeypatch.setattr(
-            "opensquilla.gateway.approval_queue.get_approval_queue",
+            "openstarry_code.gateway.approval_queue.get_approval_queue",
             lambda: ApprovalQueue(),
         )
         runtime = Runtime()
@@ -4840,11 +4840,11 @@ class TestSessionsAbort:
             emitted.append((session_key, event_name, payload))
 
         monkeypatch.setattr(
-            "opensquilla.gateway.subagent_announce.cancel_background_completion_for_session",
+            "openstarry_code.gateway.subagent_announce.cancel_background_completion_for_session",
             cancel_background,
         )
         monkeypatch.setattr(
-            "opensquilla.gateway.approval_queue.get_approval_queue",
+            "openstarry_code.gateway.approval_queue.get_approval_queue",
             lambda: ApprovalQueue(),
         )
         monkeypatch.setattr(rpc_sessions, "_emit_to_subscribers", emit)
@@ -5112,7 +5112,7 @@ class TestSessionsAbort:
 
         monkeypatch.setattr(rpc_sessions, "_ABORT_RUNTIME_CANCEL_DRAIN_SECONDS", 0.05)
         monkeypatch.setattr(
-            "opensquilla.gateway.subagent_announce.cancel_background_completion_for_session",
+            "openstarry_code.gateway.subagent_announce.cancel_background_completion_for_session",
             cancel_background,
         )
         monkeypatch.setattr(rpc_sessions, "_emit_to_subscribers", emit)
@@ -5782,11 +5782,11 @@ class TestSessionsDelete:
         monkeypatch: pytest.MonkeyPatch,
         tmp_path,
     ):
-        from opensquilla.application.approval_queue import ApprovalQueue
+        from openstarry_code.application.approval_queue import ApprovalQueue
 
         queue = ApprovalQueue(db_path=str(tmp_path / "approval_queue.sqlite"))
         monkeypatch.setattr(
-            "opensquilla.gateway.approval_queue.get_approval_queue",
+            "openstarry_code.gateway.approval_queue.get_approval_queue",
             lambda: queue,
         )
         try:
@@ -7770,8 +7770,8 @@ class TestSessionsMessagesSubscribe:
         dispatcher,
         tmp_path: Path,
     ):
-        from opensquilla.session.models import SessionNode
-        from opensquilla.session.storage import SessionStorage
+        from openstarry_code.session.models import SessionNode
+        from openstarry_code.session.storage import SessionStorage
 
         key = "agent:main:webchat:legacy-subscribe-busy"
         store = SessionStorage(str(tmp_path / "legacy-subscribe-busy.db"))
@@ -8406,11 +8406,11 @@ class TestSessionsMessagesSubscribe:
             return SimpleNamespace(run_mode=SimpleNamespace(value="trusted"))
 
         monkeypatch.setattr(
-            "opensquilla.gateway.subagent_announce.active_background_completion_group_ids",
+            "openstarry_code.gateway.subagent_announce.active_background_completion_group_ids",
             _active_group_ids,
         )
         monkeypatch.setattr(
-            "opensquilla.gateway.subagent_announce."
+            "openstarry_code.gateway.subagent_announce."
             "active_background_completion_run_mode_override",
             _active_override,
         )
@@ -8439,7 +8439,7 @@ class TestSessionsMessagesSubscribe:
             return ["group-live"]
 
         monkeypatch.setattr(
-            "opensquilla.gateway.subagent_announce.active_background_completion_group_ids",
+            "openstarry_code.gateway.subagent_announce.active_background_completion_group_ids",
             _active_group_ids,
         )
 
@@ -8873,8 +8873,8 @@ class TestSessionsSearchRpc:
         from pathlib import Path
         from types import SimpleNamespace
 
-        from opensquilla.session.models import SessionNode, TranscriptEntry
-        from opensquilla.session.storage import SessionStorage
+        from openstarry_code.session.models import SessionNode, TranscriptEntry
+        from openstarry_code.session.storage import SessionStorage
 
         with tempfile.TemporaryDirectory() as tmpdir:
             store = SessionStorage(str(Path(tmpdir) / "s.db"))
@@ -8932,8 +8932,8 @@ class TestSessionsSearchRpc:
         from pathlib import Path
         from types import SimpleNamespace
 
-        from opensquilla.session.models import SessionNode, TranscriptEntry
-        from opensquilla.session.storage import SessionStorage
+        from openstarry_code.session.models import SessionNode, TranscriptEntry
+        from openstarry_code.session.storage import SessionStorage
 
         with tempfile.TemporaryDirectory() as tmpdir:
             store = SessionStorage(str(Path(tmpdir) / "s.db"))
@@ -8982,8 +8982,8 @@ class TestSessionsSearchRpc:
         from pathlib import Path
         from types import SimpleNamespace
 
-        from opensquilla.session.models import SessionNode
-        from opensquilla.session.storage import SessionStorage
+        from openstarry_code.session.models import SessionNode
+        from openstarry_code.session.storage import SessionStorage
 
         with tempfile.TemporaryDirectory() as tmpdir:
             store = SessionStorage(str(Path(tmpdir) / "s.db"))
@@ -9029,8 +9029,8 @@ class TestSessionsSearchRpc:
         from pathlib import Path
         from types import SimpleNamespace
 
-        from opensquilla.session.models import SessionNode, TranscriptEntry
-        from opensquilla.session.storage import SessionStorage
+        from openstarry_code.session.models import SessionNode, TranscriptEntry
+        from openstarry_code.session.storage import SessionStorage
 
         with tempfile.TemporaryDirectory() as tmpdir:
             store = SessionStorage(str(Path(tmpdir) / "s.db"))
@@ -9102,8 +9102,8 @@ class TestSessionsSearchRpc:
         from pathlib import Path
         from types import SimpleNamespace
 
-        from opensquilla.session.models import SessionNode, TranscriptEntry
-        from opensquilla.session.storage import SessionStorage
+        from openstarry_code.session.models import SessionNode, TranscriptEntry
+        from openstarry_code.session.storage import SessionStorage
 
         with tempfile.TemporaryDirectory() as tmpdir:
             store = SessionStorage(str(Path(tmpdir) / "s.db"))
@@ -9156,8 +9156,8 @@ class TestSessionsSearchRpc:
         from pathlib import Path
         from types import SimpleNamespace
 
-        from opensquilla.session.models import SessionNode
-        from opensquilla.session.storage import SessionStorage
+        from openstarry_code.session.models import SessionNode
+        from openstarry_code.session.storage import SessionStorage
 
         with tempfile.TemporaryDirectory() as tmpdir:
             store = SessionStorage(str(Path(tmpdir) / "s.db"))
@@ -9333,7 +9333,7 @@ class TestSessionsBootstrap:
         host_workspace = tmp_path / "real-project"
         calls: list[str] = []
 
-        from opensquilla.agents import scope as agent_scope
+        from openstarry_code.agents import scope as agent_scope
 
         def resolve_workspace(*_args, **_kwargs):
             calls.append("resolve_agent_workspace_dir")
@@ -9591,7 +9591,7 @@ def test_session_view_plugin_channel_type_degrades_to_unknown_surface():
     # docs/session-view-contract.md pins `surface` as a closed union: a
     # configured name mapping to an out-of-enum plugin type (entry-point
     # adapters) must degrade to "unknown", never widen the contract.
-    from opensquilla.gateway.session_view import build_session_view_item
+    from openstarry_code.gateway.session_view import build_session_view_item
 
     session = FakeSession(
         session_key="agent:main:whats-bot:direct:u-1",

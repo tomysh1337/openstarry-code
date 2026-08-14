@@ -2,13 +2,13 @@
 
 from types import SimpleNamespace
 
-from opensquilla.contrib.codetask import runner
-from opensquilla.contrib.codetask.types import (
+from openstarry_code.contrib.codetask import runner
+from openstarry_code.contrib.codetask.types import (
     AcceptanceCheck,
     RegressionResult,
     TaskState,
 )
-from opensquilla.contrib.codetask.verification import VerificationOutcome
+from openstarry_code.contrib.codetask.verification import VerificationOutcome
 
 
 class _Outcome:
@@ -44,7 +44,7 @@ def _vout(state, *, nf=None, failing=None):
 
 
 def _wire(monkeypatch, tmp_path, outcomes, collects=None):
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "state"))
     # Subagent-config assembly is kept hermetic by the package autouse fixture
     # (_isolate_agent_config_discovery), so solve()'s up-front build reads no
     # developer config/env.
@@ -188,7 +188,7 @@ def test_solve_blocks_early_on_invalid_agent_config(monkeypatch, tmp_path):
     persisted where the calling agent reads it (result.json + status.json)."""
     import json
 
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "state"))
 
     def _boom():
         raise runner.AgentConfigError(
@@ -221,7 +221,7 @@ def test_solve_blocks_before_clone_on_preflight_failure(monkeypatch, tmp_path):
     actionable reason persisted for the calling agent."""
     import json
 
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "state"))
     monkeypatch.setattr(
         runner, "provider_preflight", lambda *a, **k: (False, "provider X has no usable key")
     )

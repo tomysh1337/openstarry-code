@@ -6,15 +6,15 @@ import json
 import httpx
 import pytest
 
-from opensquilla.result_budget import ToolResultBudgetPolicy, ToolRunBudgetPolicy
-from opensquilla.tools.builtin.web_fetch import (
+from openstarry_code.result_budget import ToolResultBudgetPolicy, ToolRunBudgetPolicy
+from openstarry_code.tools.builtin.web_fetch import (
     _apply_max_chars,
     _cache,
     _resolve_effective_max_chars,
     _wrap_content,
     web_fetch,
 )
-from opensquilla.tools.types import ToolContext, current_tool_context
+from openstarry_code.tools.types import ToolContext, current_tool_context
 
 
 def test_wrap_content_escapes_external_content_boundaries() -> None:
@@ -87,8 +87,8 @@ async def test_web_fetch_timeout_returns_skipped_source_payload(
             raise httpx.ReadTimeout("timed out")
 
     _cache.clear()
-    monkeypatch.setattr("opensquilla.tools.builtin.web_fetch.httpx.AsyncClient", TimeoutClient)
-    monkeypatch.setattr("opensquilla.tools.builtin.web_fetch._check_ssrf", lambda url: None)
+    monkeypatch.setattr("openstarry_code.tools.builtin.web_fetch.httpx.AsyncClient", TimeoutClient)
+    monkeypatch.setattr("openstarry_code.tools.builtin.web_fetch._check_ssrf", lambda url: None)
 
     raw_web_fetch = inspect.unwrap(web_fetch)
     result = await raw_web_fetch("https://slow.example/page")
@@ -133,15 +133,15 @@ async def test_web_fetch_resolves_relative_redirect_against_logical_url(
             )
 
     _cache.clear()
-    monkeypatch.setattr("opensquilla.tools.builtin.web_fetch.httpx.AsyncClient", RedirectingClient)
+    monkeypatch.setattr("openstarry_code.tools.builtin.web_fetch.httpx.AsyncClient", RedirectingClient)
     monkeypatch.setattr(
-        "opensquilla.tools.builtin.web_fetch._check_ssrf", lambda url: ["93.184.216.34"]
+        "openstarry_code.tools.builtin.web_fetch._check_ssrf", lambda url: ["93.184.216.34"]
     )
     monkeypatch.setattr(
-        "opensquilla.tools.builtin.web_fetch._pinned_transport", lambda *args, **kwargs: object()
+        "openstarry_code.tools.builtin.web_fetch._pinned_transport", lambda *args, **kwargs: object()
     )
     monkeypatch.setattr(
-        "opensquilla.tools.builtin.web_fetch.managed_network_httpx_kwargs",
+        "openstarry_code.tools.builtin.web_fetch.managed_network_httpx_kwargs",
         lambda: {"trust_env": False},
     )
 

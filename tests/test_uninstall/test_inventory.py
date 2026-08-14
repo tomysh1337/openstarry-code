@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from opensquilla.uninstall import inventory
-from opensquilla.uninstall.inventory import (
+from openstarry_code.uninstall import inventory
+from openstarry_code.uninstall.inventory import (
     METHOD_DESKTOP,
     METHOD_DOCKER,
     METHOD_PIP,
@@ -22,9 +22,9 @@ from opensquilla.uninstall.inventory import (
 def _isolate_detection(monkeypatch) -> None:
     """Neutralize ambient signals so each detection test is deterministic."""
     for var in (
-        "OPENSQUILLA_INSTALL_METHOD",
-        "OPENSQUILLA_DESKTOP",
-        "OPENSQUILLA_RUNNING_IN_CONTAINER",
+        "OPENSTARRY_CODE_INSTALL_METHOD",
+        "OPENSTARRY_CODE_DESKTOP",
+        "OPENSTARRY_CODE_RUNNING_IN_CONTAINER",
     ):
         monkeypatch.delenv(var, raising=False)
     monkeypatch.setattr(inventory, "_docker_image_install", lambda: False)
@@ -43,7 +43,7 @@ def test_detect_docker_image_layout(monkeypatch) -> None:
 
 def test_running_in_container_env_is_docker(monkeypatch) -> None:
     _isolate_detection(monkeypatch)
-    monkeypatch.setenv("OPENSQUILLA_RUNNING_IN_CONTAINER", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_RUNNING_IN_CONTAINER", "1")
     assert inventory.detect_install_method() == METHOD_DOCKER
 
 
@@ -56,7 +56,7 @@ def test_pip_install_in_plain_container_is_not_docker(monkeypatch) -> None:
 
 def test_detect_desktop_env(monkeypatch) -> None:
     _isolate_detection(monkeypatch)
-    monkeypatch.setenv("OPENSQUILLA_DESKTOP", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_DESKTOP", "1")
     assert inventory.detect_install_method() == METHOD_DESKTOP
 
 
@@ -91,7 +91,7 @@ def test_detect_unknown_when_no_distribution(monkeypatch) -> None:
 def test_detect_explicit_source_env_maps_to_source(monkeypatch) -> None:
     _isolate_detection(monkeypatch)
     monkeypatch.setattr(inventory, "_has_distribution", lambda: False)
-    monkeypatch.setenv("OPENSQUILLA_INSTALL_METHOD", "source")
+    monkeypatch.setenv("OPENSTARRY_CODE_INSTALL_METHOD", "source")
     assert inventory.detect_install_method() == METHOD_SOURCE
 
 
@@ -119,7 +119,7 @@ def test_build_buckets_in_home_and_relocated(monkeypatch, tmp_path: Path) -> Non
     outside = tmp_path / "elsewhere" / "scheduler.db"
     outside.parent.mkdir(parents=True)
     outside.write_text("s")
-    monkeypatch.setenv("OPENSQUILLA_SCHEDULER_DB", str(outside))
+    monkeypatch.setenv("OPENSTARRY_CODE_SCHEDULER_DB", str(outside))
 
     buckets = build_data_buckets(home, config=None)
     by_name = {b.name: b for b in buckets}
@@ -138,7 +138,7 @@ def test_build_buckets_in_home_relocation_is_auto_purged(monkeypatch, tmp_path: 
     inhome = home / "relocated" / "scheduler.db"
     inhome.parent.mkdir(parents=True)
     inhome.write_text("s")
-    monkeypatch.setenv("OPENSQUILLA_SCHEDULER_DB", str(inhome))
+    monkeypatch.setenv("OPENSTARRY_CODE_SCHEDULER_DB", str(inhome))
 
     buckets = build_data_buckets(home, config=None)
     sched = next(b for b in buckets if b.name == "scheduler DB")
@@ -149,10 +149,10 @@ def test_build_buckets_in_home_relocation_is_auto_purged(monkeypatch, tmp_path: 
 
 def test_detect_services_reads_unit_files(monkeypatch, tmp_path: Path) -> None:
     monkeypatch.setenv("HOME", str(tmp_path))
-    plist = tmp_path / "Library/LaunchAgents/ai.opensquilla.gateway.plist"
+    plist = tmp_path / "Library/LaunchAgents/code.openstarry.gateway.plist"
     plist.parent.mkdir(parents=True)
     plist.write_text("<plist/>")
-    unit = tmp_path / ".config/systemd/user/opensquilla.service"
+    unit = tmp_path / ".config/systemd/user/openstarry-code.service"
     unit.parent.mkdir(parents=True)
     unit.write_text("[Unit]")
 

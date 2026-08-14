@@ -19,7 +19,7 @@ from pathlib import Path
 import pytest
 from yoyo import get_backend, read_migrations
 
-from opensquilla.persistence.migrator import apply_pending
+from openstarry_code.persistence.migrator import apply_pending
 
 MIGRATIONS_DIR = Path(__file__).resolve().parents[2] / "migrations"
 

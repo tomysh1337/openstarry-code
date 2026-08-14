@@ -4,11 +4,11 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 
-from opensquilla.engine.selector_override import apply_model_override
-from opensquilla.engine.steps.squilla_router import _flag_tier_provider_mismatch
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.onboarding.mutations import _cross_provider_tier_warnings, upsert_router
-from opensquilla.router_tiers import TierConfig
+from openstarry_code.engine.selector_override import apply_model_override
+from openstarry_code.engine.steps.squilla_router import _flag_tier_provider_mismatch
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.onboarding.mutations import _cross_provider_tier_warnings, upsert_router
+from openstarry_code.router_tiers import TierConfig
 
 # ---------------------------------------------------------------------------
 # TierConfig
@@ -192,7 +192,7 @@ def test_cross_provider_warning_matches_runtime_for_operator_owned_endpoints(
     """Save-time warnings mirror the runtime deployment resolver: an azure-style
     tier with the env key set but no profile base_url is vetoed at turn time,
     so the save must warn (previously the plain env lookup stayed silent)."""
-    from opensquilla.gateway.config import LlmProviderProfile
+    from openstarry_code.gateway.config import LlmProviderProfile
 
     monkeypatch.setenv("AZURE_OPENAI_API_KEY", "sk-azure-env")
     tiers = {"c2": {"provider": "azure", "model": "gpt-tier"}}
@@ -222,7 +222,7 @@ def test_cross_provider_warning_matches_runtime_for_operator_owned_endpoints(
 
 
 def test_cross_provider_warning_accepts_case_variant_profile_keys(monkeypatch) -> None:
-    from opensquilla.gateway.config import LlmProviderProfile
+    from openstarry_code.gateway.config import LlmProviderProfile
 
     monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
     tiers = {"c2": {"provider": "deepseek", "model": "deepseek-tier"}}

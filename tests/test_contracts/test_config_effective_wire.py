@@ -1,7 +1,7 @@
 """Wire-contract freeze for the ``config.effective`` provenance view.
 
 ``config.effective`` returns the effective LLM routing fields with per-field
-provenance. Clients (Web UI config screens, ``opensquilla config``) script
+provenance. Clients (Web UI config screens, ``openstarry-code config``) script
 against the envelope, the per-field record keys, the dotted field paths, and
 the source vocabulary, so all four are public protocol contracts (CLAUDE.md:
 public RPC field names are stable).
@@ -21,9 +21,9 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.gateway.config import GatewayConfig, LlmProviderConfig
-from opensquilla.gateway.rpc import RpcContext
-from opensquilla.gateway.rpc_config import _handle_config_effective
+from openstarry_code.gateway.config import GatewayConfig, LlmProviderConfig
+from openstarry_code.gateway.rpc import RpcContext
+from openstarry_code.gateway.rpc_config import _handle_config_effective
 
 # The full response envelope. Exactly one key: provenance data must never be
 # merged with other config surfaces without a new contract decision.
@@ -72,8 +72,8 @@ SYNTHETIC_SECRET = "sk-test-000"  # synthetic; never a real credential
 
 @pytest.fixture()
 def default_config(tmp_path, monkeypatch: pytest.MonkeyPatch) -> GatewayConfig:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "state"))
-    return GatewayConfig(config_path=str(tmp_path / "opensquilla.toml"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "state"))
+    return GatewayConfig(config_path=str(tmp_path / "openstarry-code.toml"))
 
 
 async def _effective(config: GatewayConfig) -> dict:
@@ -103,9 +103,9 @@ async def test_no_secret_value_ever_reaches_the_wire(
     # A config carrying explicit secrets across every secret-bearing surface
     # the resolver walks near: the response must not contain the marker
     # anywhere, in any key or value, at any nesting depth.
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "state"))
     cfg = GatewayConfig(
-        config_path=str(tmp_path / "opensquilla.toml"),
+        config_path=str(tmp_path / "openstarry-code.toml"),
         # provider named explicitly: a bare api_key would resolve to the
         # legacy openrouter default, whose curated ladder adds image_model
         # paths beyond EXPECTED_FIELD_PATHS.

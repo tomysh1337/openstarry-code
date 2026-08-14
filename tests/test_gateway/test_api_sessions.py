@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from starlette.testclient import TestClient
 
-from opensquilla.gateway.app import create_gateway_app
-from opensquilla.gateway.config import GatewayConfig
+from openstarry_code.gateway.app import create_gateway_app
+from openstarry_code.gateway.config import GatewayConfig
 
 
 class _FakeDispatchResult:
@@ -29,7 +29,7 @@ class _FakeDispatcher:
 
 def test_api_sessions_forwards_limit_and_view_query_params() -> None:
     dispatcher = _FakeDispatcher()
-    import opensquilla.gateway.app as gateway_app
+    import openstarry_code.gateway.app as gateway_app
 
     original = gateway_app.get_dispatcher
     gateway_app.get_dispatcher = lambda: dispatcher
@@ -50,7 +50,7 @@ def test_api_sessions_forwards_limit_and_view_query_params() -> None:
 
 def test_api_sessions_without_query_params_keeps_default_rpc_params() -> None:
     dispatcher = _FakeDispatcher()
-    import opensquilla.gateway.app as gateway_app
+    import openstarry_code.gateway.app as gateway_app
 
     original = gateway_app.get_dispatcher
     gateway_app.get_dispatcher = lambda: dispatcher

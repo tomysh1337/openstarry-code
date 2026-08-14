@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.cli.tui.adapters.native_bridge import NativeTerminalOutputHandle
-from opensquilla.cli.tui.native.renderer import NativeStreamRenderer
-from opensquilla.engine.commands import Surface
-from opensquilla.ui import ACCENT
+from openstarry_code.cli.tui.adapters.native_bridge import NativeTerminalOutputHandle
+from openstarry_code.cli.tui.native.renderer import NativeStreamRenderer
+from openstarry_code.engine.commands import Surface
+from openstarry_code.ui import ACCENT
 
 
 class _RecordingOutputHandle:
@@ -128,7 +128,7 @@ async def test_native_renderer_pulse_is_a_safe_no_op() -> None:
 async def test_native_renderer_escapes_bracketed_text_without_markup_error() -> None:
     # Real console + handle: bracketed model output (paths, markup-like tokens)
     # must render literally instead of raising MarkupError or being restyled.
-    from opensquilla.ui import console
+    from openstarry_code.ui import console
 
     handle = NativeTerminalOutputHandle(approval_surface=Surface.CLI_STANDALONE)
     renderer = NativeStreamRenderer(output_handle=handle)
@@ -203,12 +203,12 @@ async def test_native_renderer_strips_routing_directive_tags() -> None:
 
     await renderer.aappend_text("[[reply_to")
     await renderer.aappend_text("_current]]\n")
-    await renderer.aappend_text("My name is OpenSquilla.")
+    await renderer.aappend_text("My name is OpenStarry Code.")
     await renderer.afinalize()
 
     joined = "".join(output.writes)
     assert "reply_to_current" not in joined
-    assert "My name is OpenSquilla." in joined
+    assert "My name is OpenStarry Code." in joined
     # The logical buffer (TurnResult text) keeps the model's exact output.
     assert "[[reply_to_current]]" in renderer.buffer
 

@@ -7,14 +7,14 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.gateway.approval_queue import get_approval_queue, reset_approval_queue
-from opensquilla.sandbox import sensitive_paths
-from opensquilla.sandbox.config import SandboxSettings
-from opensquilla.sandbox.integration import configure_runtime, reset_runtime
-from opensquilla.sandbox.policy_models import SandboxPolicy
-from opensquilla.tools.builtin import patch as patch_tool
-from opensquilla.tools.registry import get_default_registry
-from opensquilla.tools.types import (
+from openstarry_code.gateway.approval_queue import get_approval_queue, reset_approval_queue
+from openstarry_code.sandbox import sensitive_paths
+from openstarry_code.sandbox.config import SandboxSettings
+from openstarry_code.sandbox.integration import configure_runtime, reset_runtime
+from openstarry_code.sandbox.policy_models import SandboxPolicy
+from openstarry_code.tools.builtin import patch as patch_tool
+from openstarry_code.tools.registry import get_default_registry
+from openstarry_code.tools.types import (
     InteractionMode,
     RetryableToolInputError,
     ToolContext,
@@ -87,7 +87,7 @@ async def test_patch_update_approval_backs_up_existing_target_before_apply(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.tools.builtin import filesystem
+    from openstarry_code.tools.builtin import filesystem
 
     workspace = tmp_path / "workspace"
     workspace.mkdir()
@@ -794,7 +794,7 @@ async def test_apply_patch_trusted_auto_grants_absolute_user_path_before_root_ch
         return None
 
     monkeypatch.setattr(
-        "opensquilla.tools.builtin.filesystem._run_sandbox_operation_if_required",
+        "openstarry_code.tools.builtin.filesystem._run_sandbox_operation_if_required",
         run_direct,
     )
     token = current_tool_context.set(

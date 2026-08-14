@@ -10,15 +10,15 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from opensquilla.attachment_refs import write_transcript_material
-from opensquilla.engine import Agent, AgentConfig
-from opensquilla.engine.pipeline import TurnContext
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.engine.steps.squilla_router import apply_squilla_router
-from opensquilla.engine.steps.vision_followup_gate import apply_vision_followup_gate
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.provider import ChatConfig, DoneEvent, Message, ModelCapabilities, TextDeltaEvent
-from opensquilla.provider.types import ContentBlockImage
+from openstarry_code.attachment_refs import write_transcript_material
+from openstarry_code.engine import Agent, AgentConfig
+from openstarry_code.engine.pipeline import TurnContext
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.engine.steps.squilla_router import apply_squilla_router
+from openstarry_code.engine.steps.vision_followup_gate import apply_vision_followup_gate
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.provider import ChatConfig, DoneEvent, Message, ModelCapabilities, TextDeltaEvent
+from openstarry_code.provider.types import ContentBlockImage
 
 
 @dataclass

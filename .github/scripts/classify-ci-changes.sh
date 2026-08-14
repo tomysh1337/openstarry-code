@@ -119,15 +119,15 @@ while IFS= read -r path || [[ -n "${path}" ]]; do
       mark_dependency_changed
       mark_toolchain_artifact_changed
       ;;
-    opensquilla-webui/*)
+    openstarry-code-webui/*)
       mark_frontend_changed
       ;;
-    src/opensquilla/gateway/static/dist/*)
+    src/openstarry_code/gateway/static/dist/*)
       # Generated WebUI files are forbidden in Git. Route a force-added file to
       # the frontend job, whose tracked-artifact guard reports the violation.
       mark_frontend_changed
       ;;
-    src/opensquilla/cli/tui/opentui/package/* | packages/opensquilla-tui-host/* | scripts/build_tui_host_companion.py | scripts/smoke_tui_host_companion.py)
+    src/openstarry_code/cli/tui/opentui/package/* | packages/openstarry-code-tui-host/* | scripts/build_tui_host_companion.py | scripts/smoke_tui_host_companion.py)
       mark_tui_changed
       ;;
     .github/workflows/ci.yml | .github/scripts/classify-ci-changes.sh | .github/scripts/check_ci_results.py | .github/scripts/windows_test_shards.py)
@@ -154,12 +154,12 @@ while IFS= read -r path || [[ -n "${path}" ]]; do
       mark_platform_sensitive_changed
       mark_toolchain_artifact_changed
       ;;
-    src/opensquilla/skills/toolchains/*)
+    src/openstarry_code/skills/toolchains/*)
       mark_runtime_changed
       mark_platform_sensitive_changed
       mark_toolchain_artifact_changed
       ;;
-    src/opensquilla/skills/runtime_env.py | src/opensquilla/skills/bundled/meta-paper-write/* | src/opensquilla/skills/bundled/paper-*/* | src/opensquilla/skills/bundled/meta-short-drama/* | src/opensquilla/skills/bundled/subtitle-burner/* | src/opensquilla/skills/bundled/video-still-animator/*)
+    src/openstarry_code/skills/runtime_env.py | src/openstarry_code/skills/bundled/meta-paper-write/* | src/openstarry_code/skills/bundled/paper-*/* | src/openstarry_code/skills/bundled/meta-short-drama/* | src/openstarry_code/skills/bundled/subtitle-burner/* | src/openstarry_code/skills/bundled/video-still-animator/*)
       mark_runtime_changed
       mark_platform_sensitive_changed
       mark_toolchain_artifact_changed
@@ -206,15 +206,15 @@ while IFS= read -r path || [[ -n "${path}" ]]; do
       mark_platform_sensitive_changed
       mark_desktop_changed
       ;;
-    src/opensquilla/uninstall/*)
+    src/openstarry_code/uninstall/*)
       mark_runtime_changed
       mark_release_changed
       ;;
-    src/opensquilla/recovery/* | src/opensquilla/migration/* | src/opensquilla/persistence/* | src/opensquilla/memory/* | src/opensquilla/session/* | src/opensquilla/scheduler/* | src/opensquilla/sandbox/* | src/opensquilla/tools/boundary.py | src/opensquilla/tools/builtin/code_exec.py | src/opensquilla/tools/builtin/filesystem.py | src/opensquilla/tools/builtin/git.py | src/opensquilla/tools/builtin/shell.py | src/opensquilla/tools/builtin/shell_policy.py | src/opensquilla/tools/path_* | src/opensquilla/tools/policy* | src/opensquilla/tools/write_*)
+    src/openstarry_code/recovery/* | src/openstarry_code/migration/* | src/openstarry_code/persistence/* | src/openstarry_code/memory/* | src/openstarry_code/session/* | src/openstarry_code/scheduler/* | src/openstarry_code/sandbox/* | src/openstarry_code/tools/boundary.py | src/openstarry_code/tools/builtin/code_exec.py | src/openstarry_code/tools/builtin/filesystem.py | src/openstarry_code/tools/builtin/git.py | src/openstarry_code/tools/builtin/shell.py | src/openstarry_code/tools/builtin/shell_policy.py | src/openstarry_code/tools/path_* | src/openstarry_code/tools/policy* | src/openstarry_code/tools/write_*)
       mark_runtime_changed
       mark_platform_sensitive_changed
       ;;
-    src/opensquilla/onboarding/* | src/opensquilla/provider/*)
+    src/openstarry_code/onboarding/* | src/openstarry_code/provider/*)
       mark_runtime_changed
       mark_platform_sensitive_changed
       ;;

@@ -225,9 +225,9 @@ jobs:
             fi
             cp -- "${matches[0]}" "${root}/${alias}"
           }
-          make_alias "OpenSquilla-*-mac-arm64.dmg" "OpenSquilla-mac-arm64.dmg"
-          make_alias "OpenSquilla-*-win-x64.exe" "OpenSquilla-win-x64.exe"
-          sha256sum "${root}/OpenSquilla-mac-arm64.dmg" "${root}/OpenSquilla-win-x64.exe"
+          make_alias "OpenStarry-Code-*-mac-arm64.dmg" "OpenStarry-Code-mac-arm64.dmg"
+          make_alias "OpenStarry-Code-*-win-x64.exe" "OpenStarry-Code-win-x64.exe"
+          sha256sum "${root}/OpenStarry-Code-mac-arm64.dmg" "${root}/OpenStarry-Code-win-x64.exe"
 
       - name: Install ossutil 2.0
         shell: bash
@@ -298,8 +298,8 @@ jobs:
           json_content_type="application/json; charset=utf-8"
           html_content_type="text/html; charset=utf-8"
           latest_aliases=(
-            OpenSquilla-mac-arm64.dmg
-            OpenSquilla-win-x64.exe
+              OpenStarry-Code-mac-arm64.dmg
+              OpenStarry-Code-win-x64.exe
           )
           backed_up_aliases=()
           promoted_aliases=()

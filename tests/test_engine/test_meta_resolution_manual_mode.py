@@ -7,9 +7,9 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.engine.pipeline import TurnContext
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.provider import ToolDefinition, ToolInputSchema
+from openstarry_code.engine.pipeline import TurnContext
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.provider import ToolDefinition, ToolInputSchema
 from tests.test_engine.test_runtime_meta_invoke_surfacing import _make_loader_with_meta
 
 
@@ -26,7 +26,7 @@ async def test_no_meta_match_when_auto_trigger_off(
         return ctx
 
     noop_router.__name__ = "apply_squilla_router"
-    monkeypatch.setattr("opensquilla.engine.steps.apply_squilla_router", noop_router)
+    monkeypatch.setattr("openstarry_code.engine.steps.apply_squilla_router", noop_router)
 
     loader = _make_loader_with_meta(tmp_path)
     runner = TurnRunner(provider_selector=None, config=_meta_cfg(auto_trigger=False))
@@ -55,7 +55,7 @@ async def test_meta_match_fires_when_auto_trigger_on(
         return ctx
 
     noop_router.__name__ = "apply_squilla_router"
-    monkeypatch.setattr("opensquilla.engine.steps.apply_squilla_router", noop_router)
+    monkeypatch.setattr("openstarry_code.engine.steps.apply_squilla_router", noop_router)
 
     loader = _make_loader_with_meta(tmp_path)
     runner = TurnRunner(provider_selector=None, config=_meta_cfg(auto_trigger=True))

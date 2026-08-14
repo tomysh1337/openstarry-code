@@ -9,15 +9,15 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from opensquilla.channels._util import ChannelAccessPolicy
-from opensquilla.channels.admission import decide_channel_admission
-from opensquilla.channels.types import (
+from openstarry_code.channels._util import ChannelAccessPolicy
+from openstarry_code.channels.admission import decide_channel_admission
+from openstarry_code.channels.types import (
     AuthenticatedPrincipal,
     IncomingMessage,
     IngressProvenance,
     IngressVerification,
 )
-from opensquilla.gateway.channel_dispatch import run_channel_dispatch
+from openstarry_code.gateway.channel_dispatch import run_channel_dispatch
 
 
 def test_ingress_provenance_defaults_legacy_and_is_immutable() -> None:
@@ -185,21 +185,21 @@ async def test_denied_group_event_has_zero_pre_admission_side_effects(
 
     with (
         patch(
-            "opensquilla.gateway.routing.build_channel_route_envelope"
+            "openstarry_code.gateway.routing.build_channel_route_envelope"
         ) as build_route,
         patch(
-            "opensquilla.gateway.channel_dispatch._maybe_resolve_channel_approval"
+            "openstarry_code.gateway.channel_dispatch._maybe_resolve_channel_approval"
         ) as approval_intercept,
         patch(
-            "opensquilla.gateway.channel_dispatch._dispatch_channel_slash_command",
+            "openstarry_code.gateway.channel_dispatch._dispatch_channel_slash_command",
             new=AsyncMock(),
         ) as slash_intercept,
         patch(
-            "opensquilla.gateway.channel_dispatch._record_delivery_context",
+            "openstarry_code.gateway.channel_dispatch._record_delivery_context",
             new=AsyncMock(),
         ) as record_context,
         patch(
-            "opensquilla.gateway.channel_dispatch._ingest_channel_message_attachments",
+            "openstarry_code.gateway.channel_dispatch._ingest_channel_message_attachments",
             new=AsyncMock(),
         ) as ingest_attachments,
     ):

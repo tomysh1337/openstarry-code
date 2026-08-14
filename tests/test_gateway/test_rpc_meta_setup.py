@@ -8,9 +8,9 @@ from types import SimpleNamespace
 
 import pytest
 
-import opensquilla.gateway.rpc_meta_runs as meta_rpc
-from opensquilla.gateway.rpc.registry import RpcContext
-from opensquilla.gateway.rpc_meta_runs import (
+import openstarry_code.gateway.rpc_meta_runs as meta_rpc
+from openstarry_code.gateway.rpc.registry import RpcContext
+from openstarry_code.gateway.rpc_meta_runs import (
     _META_SETUP_JOBS,
     _META_SETUP_LATEST,
     _META_SETUP_TASKS,
@@ -18,10 +18,10 @@ from opensquilla.gateway.rpc_meta_runs import (
     _handle_meta_setup_plan,
     _handle_meta_setup_status,
 )
-from opensquilla.gateway.scopes import ADMIN_SCOPE, METHOD_SCOPES, READ_SCOPE
-from opensquilla.skills.hub.deps import DepResult
-from opensquilla.skills.meta.readiness import MetaSetupAction, MetaSkillReadiness
-from opensquilla.skills.types import SkillInstallSpec, SkillPlatformMeta, SkillRequires
+from openstarry_code.gateway.scopes import ADMIN_SCOPE, METHOD_SCOPES, READ_SCOPE
+from openstarry_code.skills.hub.deps import DepResult
+from openstarry_code.skills.meta.readiness import MetaSetupAction, MetaSkillReadiness
+from openstarry_code.skills.types import SkillInstallSpec, SkillPlatformMeta, SkillRequires
 
 
 class _Loader:
@@ -135,7 +135,7 @@ def test_meta_setup_plan_uses_launch_equivalent_capability_readiness(monkeypatch
 def test_meta_setup_plan_does_not_project_media_key_into_untrusted_meta(monkeypatch) -> None:
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     monkeypatch.setenv(
-        "OPENSQUILLA_TEST_META_CUSTOM_KEY",
+        "OPENSTARRY_CODE_TEST_META_CUSTOM_KEY",
         "synthetic-openrouter-custom-env-key",
     )
     config = SimpleNamespace(
@@ -143,7 +143,7 @@ def test_meta_setup_plan_does_not_project_media_key_into_untrusted_meta(monkeypa
         llm=SimpleNamespace(
             provider="openrouter",
             api_key="",
-            api_key_env="OPENSQUILLA_TEST_META_CUSTOM_KEY",
+            api_key_env="OPENSTARRY_CODE_TEST_META_CUSTOM_KEY",
         ),
     )
 
@@ -163,7 +163,7 @@ def test_meta_setup_plan_does_not_project_media_key_into_untrusted_meta(monkeypa
 
 def test_meta_setup_install_requires_explicit_confirmation(monkeypatch) -> None:
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_meta_runs._meta_setup_plan",
+        "openstarry_code.gateway.rpc_meta_runs._meta_setup_plan",
         lambda name, ctx: (_blocked(), {}),
     )
     ctx = RpcContext(conn_id="test", config=_cfg(), skill_loader=_Loader())
@@ -200,8 +200,8 @@ def test_meta_setup_runs_in_background_and_verifies_before_completion(monkeypatc
             )
         ]
 
-    monkeypatch.setattr("opensquilla.gateway.rpc_meta_runs._meta_setup_plan", plan)
-    monkeypatch.setattr("opensquilla.gateway.rpc_meta_runs.install_deps", install)
+    monkeypatch.setattr("openstarry_code.gateway.rpc_meta_runs._meta_setup_plan", plan)
+    monkeypatch.setattr("openstarry_code.gateway.rpc_meta_runs.install_deps", install)
     ctx = RpcContext(conn_id="test", config=_cfg(), skill_loader=_Loader())
 
     async def scenario():
@@ -266,8 +266,8 @@ def test_concurrent_same_session_setup_reuses_job_after_readiness_await(monkeypa
             )
         ]
 
-    monkeypatch.setattr("opensquilla.gateway.rpc_meta_runs._meta_setup_plan", plan)
-    monkeypatch.setattr("opensquilla.gateway.rpc_meta_runs.install_deps", install)
+    monkeypatch.setattr("openstarry_code.gateway.rpc_meta_runs._meta_setup_plan", plan)
+    monkeypatch.setattr("openstarry_code.gateway.rpc_meta_runs.install_deps", install)
     monkeypatch.setattr(meta_rpc, "_META_SETUP_ACTIVE_JOB_LIMIT", 1)
     ctx = RpcContext(conn_id="test", config=_cfg(), skill_loader=_Loader())
     params = {
@@ -306,10 +306,10 @@ def test_meta_setup_failure_never_reports_completed(monkeypatch) -> None:
         ]
 
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_meta_runs._meta_setup_plan",
+        "openstarry_code.gateway.rpc_meta_runs._meta_setup_plan",
         lambda name, ctx: (_blocked(), {}),
     )
-    monkeypatch.setattr("opensquilla.gateway.rpc_meta_runs.install_deps", install)
+    monkeypatch.setattr("openstarry_code.gateway.rpc_meta_runs.install_deps", install)
     ctx = RpcContext(conn_id="test", config=_cfg(), skill_loader=_Loader())
 
     async def scenario():
@@ -335,7 +335,7 @@ def test_meta_setup_failure_never_reports_completed(monkeypatch) -> None:
 
 def test_meta_setup_status_is_bound_to_originating_session(monkeypatch) -> None:
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_meta_runs._meta_setup_plan",
+        "openstarry_code.gateway.rpc_meta_runs._meta_setup_plan",
         lambda name, ctx: (_blocked(), {}),
     )
     ctx = RpcContext(conn_id="test", config=_cfg(), skill_loader=_Loader())
@@ -379,10 +379,10 @@ def test_meta_setup_enforces_active_job_capacity(monkeypatch) -> None:
         ]
 
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_meta_runs._meta_setup_plan",
+        "openstarry_code.gateway.rpc_meta_runs._meta_setup_plan",
         lambda name, ctx: (_blocked(), {}),
     )
-    monkeypatch.setattr("opensquilla.gateway.rpc_meta_runs.install_deps", install)
+    monkeypatch.setattr("openstarry_code.gateway.rpc_meta_runs.install_deps", install)
     monkeypatch.setattr(meta_rpc, "_META_SETUP_ACTIVE_JOB_LIMIT", 1)
     ctx = RpcContext(conn_id="test", config=_cfg(), skill_loader=_Loader())
 
@@ -430,10 +430,10 @@ def test_meta_setup_ignores_progress_after_terminal_failure(monkeypatch) -> None
         ]
 
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_meta_runs._meta_setup_plan",
+        "openstarry_code.gateway.rpc_meta_runs._meta_setup_plan",
         lambda name, ctx: (_blocked(), {}),
     )
-    monkeypatch.setattr("opensquilla.gateway.rpc_meta_runs.install_deps", install)
+    monkeypatch.setattr("openstarry_code.gateway.rpc_meta_runs.install_deps", install)
     ctx = RpcContext(conn_id="test", config=_cfg(), skill_loader=_Loader())
 
     async def scenario():

@@ -6,11 +6,11 @@ from typing import Any
 
 import pytest
 
-from opensquilla.cli.tui import turn_bridge
-from opensquilla.engine.agent_injection import ListPendingInputProvider
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.engine.types import DoneEvent
-from opensquilla.tools.types import ToolContext
+from openstarry_code.cli.tui import turn_bridge
+from openstarry_code.engine.agent_injection import ListPendingInputProvider
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.engine.types import DoneEvent
+from openstarry_code.tools.types import ToolContext
 
 
 @pytest.mark.asyncio

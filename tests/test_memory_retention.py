@@ -4,9 +4,9 @@ import os
 import time
 from pathlib import Path
 
-from opensquilla.memory.retention import prune_expired_memory_files
-from opensquilla.memory.store import LongTermMemoryStore
-from opensquilla.memory.types import MemorySource
+from openstarry_code.memory.retention import prune_expired_memory_files
+from openstarry_code.memory.store import LongTermMemoryStore
+from openstarry_code.memory.types import MemorySource
 
 
 async def test_ttl_sweep_preserves_named_evergreen_notes(tmp_path: Path) -> None:

@@ -9,16 +9,16 @@ from typing import Any
 import httpx
 import pytest
 
-import opensquilla.provider.anthropic as anthropic_module
-import opensquilla.provider.ollama as ollama_module
-import opensquilla.provider.openai as openai_module
-import opensquilla.provider.openai_responses as responses_module
-from opensquilla.provider.anthropic import AnthropicProvider
-from opensquilla.provider.failures import ProviderFailureKind, classify_provider_error
-from opensquilla.provider.ollama import OllamaProvider
-from opensquilla.provider.openai import OpenAIProvider
-from opensquilla.provider.openai_responses import OpenAIResponsesProvider
-from opensquilla.provider.types import ChatConfig, ErrorEvent, Message
+import openstarry_code.provider.anthropic as anthropic_module
+import openstarry_code.provider.ollama as ollama_module
+import openstarry_code.provider.openai as openai_module
+import openstarry_code.provider.openai_responses as responses_module
+from openstarry_code.provider.anthropic import AnthropicProvider
+from openstarry_code.provider.failures import ProviderFailureKind, classify_provider_error
+from openstarry_code.provider.ollama import OllamaProvider
+from openstarry_code.provider.openai import OpenAIProvider
+from openstarry_code.provider.openai_responses import OpenAIResponsesProvider
+from openstarry_code.provider.types import ChatConfig, ErrorEvent, Message
 
 # Deliberately too short for shape-based long-token redaction.  Exact
 # provider-boundary replacement must protect it solely because it is the active
@@ -29,7 +29,7 @@ _RAW_UPSTREAM_DETAIL = "opaque upstream diagnostic sentence 731"
 
 
 def test_tiny_synthetic_key_does_not_corrupt_unrelated_error_words() -> None:
-    from opensquilla.provider.error_redaction import redact_upstream_error_text
+    from openstarry_code.provider.error_redaction import redact_upstream_error_text
 
     assert (
         redact_upstream_error_text("document block malformed", api_key="k")
@@ -40,10 +40,10 @@ def test_tiny_synthetic_key_does_not_corrupt_unrelated_error_words() -> None:
 def test_install_id_is_redacted_from_upstream_error_code(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.provider.error_redaction import redact_upstream_error_code
+    from openstarry_code.provider.error_redaction import redact_upstream_error_code
 
     monkeypatch.setattr(
-        "opensquilla.provider.error_redaction.redact_tokenrhythm_install_ids",
+        "openstarry_code.provider.error_redaction.redact_tokenrhythm_install_ids",
         lambda text: text.replace(_SHORT_INSTALL_ID, "***"),
     )
 
@@ -60,14 +60,14 @@ async def test_short_install_id_is_redacted_from_openai_chat_and_model_discovery
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(
-        "opensquilla.provider.error_redaction.redact_tokenrhythm_install_ids",
+        "openstarry_code.provider.error_redaction.redact_tokenrhythm_install_ids",
         lambda text: text.replace(_SHORT_INSTALL_ID, "***"),
     )
     monkeypatch.setattr(
         openai_module,
         "tokenrhythm_install_id_headers",
         lambda *_args, **_kwargs: {
-            "X-OpenSquilla-Install-Id": _SHORT_INSTALL_ID
+            "X-OpenStarry Code-Install-Id": _SHORT_INSTALL_ID
         },
     )
     provider = OpenAIProvider(
@@ -101,7 +101,7 @@ async def test_short_install_id_is_redacted_from_openai_chat_and_model_discovery
         await provider.list_models(raise_on_error=True)
     assert _SHORT_INSTALL_ID not in str(raised.value)
     assert "model discovery echoed ***" in str(raised.value)
-    assert raised.value.request.headers["X-OpenSquilla-Install-Id"] == "[PRESENT]"
+    assert raised.value.request.headers["X-OpenStarry Code-Install-Id"] == "[PRESENT]"
     assert _SHORT_INSTALL_ID not in repr(raised.value.request.headers)
     assert _SHORT_INSTALL_ID not in repr(raised.value.__context__)
 
@@ -109,10 +109,10 @@ async def test_short_install_id_is_redacted_from_openai_chat_and_model_discovery
 def test_http_status_error_clone_redacts_retained_request_and_response(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.provider.error_redaction import redacted_httpx_error
+    from openstarry_code.provider.error_redaction import redacted_httpx_error
 
     monkeypatch.setattr(
-        "opensquilla.provider.error_redaction.redact_tokenrhythm_install_ids",
+        "openstarry_code.provider.error_redaction.redact_tokenrhythm_install_ids",
         lambda text: text.replace(_SHORT_INSTALL_ID, "***"),
     )
     request = httpx.Request(
@@ -120,7 +120,7 @@ def test_http_status_error_clone_redacts_retained_request_and_response(
         f"https://tokenrhythm.studio/v1/models?echo={_SHORT_INSTALL_ID}",
         headers={
             "Authorization": f"Bearer {_API_KEY}",
-            "X-OpenSquilla-Install-Id": _SHORT_INSTALL_ID,
+            "X-OpenStarry Code-Install-Id": _SHORT_INSTALL_ID,
             "X-Upstream-Echo": _SHORT_INSTALL_ID,
         },
         content=f'{{"echo":"{_SHORT_INSTALL_ID}"}}',
@@ -144,7 +144,7 @@ def test_http_status_error_clone_redacts_retained_request_and_response(
 
     assert isinstance(safe, httpx.HTTPStatusError)
     assert safe.response.request is safe.request
-    assert safe.request.headers["X-OpenSquilla-Install-Id"] == "[PRESENT]"
+    assert safe.request.headers["X-OpenStarry Code-Install-Id"] == "[PRESENT]"
     retained = " ".join(
         (
             str(safe),
@@ -229,8 +229,8 @@ async def test_http_error_echoed_key_is_redacted_from_event_trace_and_log(
     tmp_path: Path,
 ) -> None:
     trace_path = tmp_path / f"{kind}.jsonl"
-    monkeypatch.setenv("OPENSQUILLA_LLM_TRACE_RECORDER", "full")
-    monkeypatch.setenv("OPENSQUILLA_LLM_TRACE_PATH", str(trace_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_TRACE_RECORDER", "full")
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_TRACE_PATH", str(trace_path))
     captured_log = _CapturedLog()
     provider, module, failure_provider = _provider_case(kind)
     monkeypatch.setattr(module, "log", captured_log)
@@ -283,8 +283,8 @@ async def test_transport_error_echoed_key_is_redacted_from_event_and_trace(
     tmp_path: Path,
 ) -> None:
     trace_path = tmp_path / f"{kind}-transport.jsonl"
-    monkeypatch.setenv("OPENSQUILLA_LLM_TRACE_RECORDER", "full")
-    monkeypatch.setenv("OPENSQUILLA_LLM_TRACE_PATH", str(trace_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_TRACE_RECORDER", "full")
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_TRACE_PATH", str(trace_path))
     provider, _, failure_provider = _provider_case(kind)
 
     def handler(request: httpx.Request) -> httpx.Response:
@@ -318,8 +318,8 @@ async def test_ollama_timeout_error_echoed_key_is_redacted_from_event_and_trace(
     tmp_path: Path,
 ) -> None:
     trace_path = tmp_path / "ollama-timeout.jsonl"
-    monkeypatch.setenv("OPENSQUILLA_LLM_TRACE_RECORDER", "full")
-    monkeypatch.setenv("OPENSQUILLA_LLM_TRACE_PATH", str(trace_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_TRACE_RECORDER", "full")
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_TRACE_PATH", str(trace_path))
     provider, _, _ = _provider_case("ollama")
 
     def handler(request: httpx.Request) -> httpx.Response:
@@ -348,8 +348,8 @@ async def test_success_status_error_frame_echoed_key_is_redacted_from_all_sinks(
     tmp_path: Path,
 ) -> None:
     trace_path = tmp_path / f"{kind}-error-frame.jsonl"
-    monkeypatch.setenv("OPENSQUILLA_LLM_TRACE_RECORDER", "full")
-    monkeypatch.setenv("OPENSQUILLA_LLM_TRACE_PATH", str(trace_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_TRACE_RECORDER", "full")
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_TRACE_PATH", str(trace_path))
     provider, module, failure_provider = _provider_case(kind)
     captured_log = _CapturedLog()
     monkeypatch.setattr(module, "log", captured_log)
@@ -447,8 +447,8 @@ async def test_stream_internal_exception_is_redacted_before_trace_event_and_log(
     tmp_path: Path,
 ) -> None:
     trace_path = tmp_path / f"{kind}-internal.jsonl"
-    monkeypatch.setenv("OPENSQUILLA_LLM_TRACE_RECORDER", "full")
-    monkeypatch.setenv("OPENSQUILLA_LLM_TRACE_PATH", str(trace_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_TRACE_RECORDER", "full")
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_TRACE_PATH", str(trace_path))
     provider, module, _ = _provider_case(kind)
     captured_log = _CapturedLog()
     monkeypatch.setattr(module, "log", captured_log)
@@ -500,7 +500,7 @@ _ACCESS_TOKEN = "synthetic-codex-access-token"
 
 
 def _codex_provider(tmp_path: Path) -> Any:
-    from opensquilla.provider.openai_codex import OpenAICodexProvider
+    from openstarry_code.provider.openai_codex import OpenAICodexProvider
 
     auth_path = tmp_path / "codex-auth.json"
     auth_path.write_text(

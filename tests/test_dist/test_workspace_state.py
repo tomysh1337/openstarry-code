@@ -2,15 +2,15 @@ from __future__ import annotations
 
 import importlib.util
 
-from opensquilla.channels.contract import PUBLIC_VENDOR_ADAPTERS
-from opensquilla.dist.workspace_state import BUNDLED_CHANNELS, build_workspace_state
+from openstarry_code.channels.contract import PUBLIC_VENDOR_ADAPTERS
+from openstarry_code.dist.workspace_state import BUNDLED_CHANNELS, build_workspace_state
 
 
 def test_bundled_channels_are_importable_adapter_modules() -> None:
     missing = [
         name
         for name in BUNDLED_CHANNELS
-        if importlib.util.find_spec(f"opensquilla.channels.{name}") is None
+        if importlib.util.find_spec(f"openstarry_code.channels.{name}") is None
     ]
 
     assert missing == []

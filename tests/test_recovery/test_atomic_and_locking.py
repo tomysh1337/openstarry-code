@@ -19,8 +19,8 @@ from types import SimpleNamespace
 
 import pytest
 
-import opensquilla.recovery.atomic as atomic_module
-from opensquilla.recovery import (
+import openstarry_code.recovery.atomic as atomic_module
+from openstarry_code.recovery import (
     AtomicStateUnknownError,
     CrossDeviceMoveError,
     DestinationExistsError,
@@ -31,7 +31,7 @@ from opensquilla.recovery import (
     native_move_no_replace,
     profile_lock_path,
 )
-from opensquilla.recovery.atomic import (
+from openstarry_code.recovery.atomic import (
     PathIdentity,
     _copy_windows_mount_point_no_follow,
     _linux_rename_no_replace,
@@ -44,8 +44,8 @@ from opensquilla.recovery.atomic import (
     _windows_rename_info,
     profile_no_follow_manifest,
 )
-from opensquilla.recovery.config_patch import ConfigSnapshot
-from opensquilla.recovery.locking import (
+from openstarry_code.recovery.config_patch import ConfigSnapshot
+from openstarry_code.recovery.locking import (
     LegacyGatewayLock,
     acquire_legacy_gateway_locks,
     profile_lock_key,
@@ -94,8 +94,8 @@ def _mount_point_buffer(
 def _contend_for_lock(home: str, state_root: str, queue: multiprocessing.Queue) -> None:
     import os
 
-    os.environ["OPENSQUILLA_USER_STATE_DIR"] = state_root
-    os.environ["OPENSQUILLA_TEST_PROFILE_LOCK_ROOT"] = "1"
+    os.environ["OPENSTARRY_CODE_USER_STATE_DIR"] = state_root
+    os.environ["OPENSTARRY_CODE_TEST_PROFILE_LOCK_ROOT"] = "1"
     try:
         with ProfileOperationLock(home):
             queue.put("acquired")
@@ -108,8 +108,8 @@ def test_user_state_override_is_ignored_without_the_explicit_test_gate(
     tmp_path: Path,
 ) -> None:
     override = tmp_path / "override"
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(override))
-    monkeypatch.delenv("OPENSQUILLA_TEST_PROFILE_LOCK_ROOT", raising=False)
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(override))
+    monkeypatch.delenv("OPENSTARRY_CODE_TEST_PROFILE_LOCK_ROOT", raising=False)
 
     assert user_state_dir() != override
 
@@ -119,8 +119,8 @@ def test_user_state_override_is_used_with_the_explicit_test_gate(
     tmp_path: Path,
 ) -> None:
     override = tmp_path / "override"
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(override))
-    monkeypatch.setenv("OPENSQUILLA_TEST_PROFILE_LOCK_ROOT", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(override))
+    monkeypatch.setenv("OPENSTARRY_CODE_TEST_PROFILE_LOCK_ROOT", "1")
 
     assert user_state_dir() == override
 
@@ -141,8 +141,8 @@ def test_profile_lock_does_not_require_descriptor_chmod(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "state"))
-    monkeypatch.setenv("OPENSQUILLA_TEST_PROFILE_LOCK_ROOT", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_TEST_PROFILE_LOCK_ROOT", "1")
     monkeypatch.delattr(os, "fchmod", raising=False)
 
     with ProfileOperationLock(tmp_path / "profile"):
@@ -150,7 +150,7 @@ def test_profile_lock_does_not_require_descriptor_chmod(
 
 
 def _contend_for_gateway(state_dir: str, queue: multiprocessing.Queue) -> None:
-    from opensquilla.gateway.pidlock import GatewayPidLock
+    from openstarry_code.gateway.pidlock import GatewayPidLock
 
     lock = GatewayPidLock(state_dir)
     try:
@@ -168,7 +168,7 @@ def test_profile_lock_is_same_process_reentrant_and_external(
 ) -> None:
     state_root = tmp_path / "user-state"
     home = tmp_path / "profile"
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(state_root))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(state_root))
 
     with ProfileOperationLock(home):
         with ProfileOperationLock(home):
@@ -194,7 +194,7 @@ def test_profile_lock_does_not_treat_another_thread_as_reentrant(
     tmp_path: Path,
 ) -> None:
     home = tmp_path / "profile"
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "user-state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "user-state"))
     result: list[str] = []
 
     def contend() -> None:
@@ -221,10 +221,10 @@ def test_profile_lock_refuses_app_state_symlink_without_external_write(
     user_state.mkdir()
     external.mkdir()
     try:
-        (user_state / "OpenSquilla").symlink_to(external, target_is_directory=True)
+        (user_state / "OpenStarry Code").symlink_to(external, target_is_directory=True)
     except OSError:
         pytest.skip("directory symlinks are unavailable")
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(user_state))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(user_state))
 
     with pytest.raises(UnsafePathError):
         ProfileOperationLock(tmp_path / "profile").acquire()
@@ -271,7 +271,7 @@ def test_config_snapshot_rejects_windows_reparse_attribute_before_open(
 
 
 def test_no_follow_manifest_can_keep_runtime_sandbox_opaque(tmp_path: Path) -> None:
-    from opensquilla.recovery.atomic import no_follow_manifest
+    from openstarry_code.recovery.atomic import no_follow_manifest
 
     root = tmp_path / "profile"
     sandbox = root / "sandbox"
@@ -415,7 +415,7 @@ def test_native_move_treats_unsafe_post_move_manifest_as_unknown(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    import opensquilla.recovery.atomic as atomic
+    import openstarry_code.recovery.atomic as atomic
 
     source = tmp_path / "source"
     destination = tmp_path / "destination"
@@ -495,8 +495,8 @@ def test_move_manifest_allows_only_selected_lock_mtime_change() -> None:
 
 @pytest.mark.skipif(sys.platform != "win32", reason="requires two native Windows volumes")
 def test_windows_native_move_refuses_real_cross_volume_move() -> None:
-    volume_a_value = os.environ.get("OPENSQUILLA_WINDOWS_TEST_VOLUME_A")
-    volume_b_value = os.environ.get("OPENSQUILLA_WINDOWS_TEST_VOLUME_B")
+    volume_a_value = os.environ.get("OPENSTARRY_CODE_WINDOWS_TEST_VOLUME_A")
+    volume_b_value = os.environ.get("OPENSTARRY_CODE_WINDOWS_TEST_VOLUME_B")
     if not volume_a_value or not volume_b_value:
         running_in_ci = os.environ.get("CI", "").strip().lower() not in {
             "",
@@ -817,7 +817,7 @@ def test_macos_no_replace_binds_source_and_destination_parent_handles(
             return 0
 
     monkeypatch.setattr(
-        "opensquilla.recovery.atomic.ctypes.CDLL",
+        "openstarry_code.recovery.atomic.ctypes.CDLL",
         lambda *_args, **_kwargs: SimpleNamespace(renameatx_np=FakeRenameAt()),
     )
 
@@ -865,10 +865,10 @@ def test_macos_no_replace_stops_if_open_parent_identity_changed(
         )
 
     monkeypatch.setattr(
-        "opensquilla.recovery.atomic.ctypes.CDLL",
+        "openstarry_code.recovery.atomic.ctypes.CDLL",
         lambda *_args, **_kwargs: SimpleNamespace(renameatx_np=FakeRenameAt()),
     )
-    monkeypatch.setattr("opensquilla.recovery.atomic.os.fstat", changed_fstat)
+    monkeypatch.setattr("openstarry_code.recovery.atomic.os.fstat", changed_fstat)
 
     with pytest.raises(UnsafePathError, match="identity changed"):
         _macos_rename_no_replace(source, destination)
@@ -957,7 +957,7 @@ def test_legacy_gateway_lock_does_not_treat_another_thread_as_reentrant(
     result: list[str] = []
 
     def contend() -> None:
-        from opensquilla.recovery.errors import LegacyGatewayRunningError
+        from openstarry_code.recovery.errors import LegacyGatewayRunningError
 
         try:
             with LegacyGatewayLock(home, timeout=0.05):
@@ -1012,8 +1012,8 @@ def test_legacy_gateway_lock_covers_external_effective_state(
 def test_multi_root_legacy_acquisition_is_sorted_and_releases_partial_claims(
     tmp_path: Path,
 ) -> None:
-    from opensquilla.gateway.pidlock import GatewayPidLock
-    from opensquilla.recovery.errors import LegacyGatewayRunningError
+    from openstarry_code.gateway.pidlock import GatewayPidLock
+    from openstarry_code.recovery.errors import LegacyGatewayRunningError
 
     home = tmp_path / "profile"
     canonical_state = home / "state"
@@ -1089,7 +1089,7 @@ def test_import_existing_source_lock_probe_preserves_bytes_and_mode(
 def test_windows_legacy_lock_handle_allows_share_delete_for_profile_swap(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.recovery.locking as locking_module
+    import openstarry_code.recovery.locking as locking_module
 
     create_calls: list[tuple[object, ...]] = []
     converted: list[tuple[int, int]] = []
@@ -1192,7 +1192,7 @@ def test_windows_real_recent_locked_profile_tree_moves_without_metadata_false_po
         (source / "config.toml").write_text("port = 18791\n", encoding="utf-8")
         (source / "workspace" / "SOUL.md").write_text("synthetic soul\n", encoding="utf-8")
         (source / "profile-migration-report.json").write_text("{}\n", encoding="utf-8")
-        (source / ".opensquilla-layout-v2.json").write_text("{}\n", encoding="utf-8")
+        (source / ".openstarry-code-layout-v2.json").write_text("{}\n", encoding="utf-8")
 
         move_profile_no_replace(source, destination)
 
@@ -1207,7 +1207,7 @@ def test_windows_handoff_reacquires_source_after_pre_mutation_failure(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    import opensquilla.recovery.locking as locking_module
+    import openstarry_code.recovery.locking as locking_module
 
     source = tmp_path / "source"
     destination = tmp_path / "destination"
@@ -1236,7 +1236,7 @@ def test_windows_handoff_fails_closed_when_destination_lock_cannot_be_reacquired
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    import opensquilla.recovery.locking as locking_module
+    import openstarry_code.recovery.locking as locking_module
 
     source = tmp_path / "source"
     destination = tmp_path / "destination"
@@ -1276,7 +1276,7 @@ def test_windows_handoff_treats_move_then_raise_as_unknown(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    import opensquilla.recovery.locking as locking_module
+    import openstarry_code.recovery.locking as locking_module
 
     source = tmp_path / "source"
     destination = tmp_path / "destination"
@@ -1307,7 +1307,7 @@ def test_windows_handoff_rejects_same_size_lock_content_change(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    import opensquilla.recovery.locking as locking_module
+    import openstarry_code.recovery.locking as locking_module
 
     source = tmp_path / "source"
     destination = tmp_path / "destination"
@@ -1337,7 +1337,7 @@ def test_windows_handoff_keeps_external_state_lock_open(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    import opensquilla.recovery.locking as locking_module
+    import openstarry_code.recovery.locking as locking_module
 
     source = tmp_path / "source"
     destination = tmp_path / "destination"
@@ -1403,7 +1403,7 @@ def test_moved_legacy_lock_can_be_rebound_without_dropping_exclusion(
 def test_moved_legacy_lock_rebind_rejects_tampered_destination_state(
     tmp_path: Path,
 ) -> None:
-    import opensquilla.recovery.locking as locking_module
+    import openstarry_code.recovery.locking as locking_module
 
     staging = tmp_path / "staging"
     target = tmp_path / "target"
@@ -1429,7 +1429,7 @@ def test_moved_legacy_lock_rebind_rejects_tampered_destination_state(
 def test_rebound_target_keeps_displaced_backup_lock_registered_until_release(
     tmp_path: Path,
 ) -> None:
-    import opensquilla.recovery.locking as locking_module
+    import openstarry_code.recovery.locking as locking_module
 
     staging = tmp_path / "staging"
     target = tmp_path / "target"
@@ -1448,7 +1448,7 @@ def test_rebound_target_keeps_displaced_backup_lock_registered_until_release(
 
 
 def test_windows_nt_create_relative_binds_child_name_to_parent_handle() -> None:
-    import opensquilla.recovery.locking as locking_module
+    import openstarry_code.recovery.locking as locking_module
 
     calls: list[tuple[object, ...]] = []
 
@@ -1503,10 +1503,10 @@ def test_windows_profile_lock_native_chain_pins_every_app_owned_component(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    import opensquilla.recovery.locking as locking_module
+    import openstarry_code.recovery.locking as locking_module
 
     root = tmp_path / "user-state"
-    path = root / "OpenSquilla" / "profile-locks" / "synthetic.lock"
+    path = root / "OpenStarry Code" / "profile-locks" / "synthetic.lock"
     paths_by_handle: dict[int, Path] = {}
     create_calls: list[tuple[object, ...]] = []
     relative_calls: list[tuple[int, str, int, int]] = []
@@ -1614,7 +1614,7 @@ def test_windows_profile_lock_native_chain_pins_every_app_owned_component(
     assert create_calls[0][2] == 0x00000001 | 0x00000002
     assert int(create_calls[0][5]) & 0x00200000
     assert [(parent, name) for parent, name, _share, _options in relative_calls] == [
-        (10, "OpenSquilla"),
+        (10, "OpenStarry Code"),
         (11, "profile-locks"),
         (12, "synthetic.lock"),
     ]
@@ -1628,10 +1628,10 @@ def test_windows_profile_lock_preparation_uses_native_handle_relative_opener(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    import opensquilla.recovery.locking as locking_module
+    import openstarry_code.recovery.locking as locking_module
 
     root = tmp_path / "user-state"
-    path = root / "OpenSquilla" / "profile-locks" / "synthetic.lock"
+    path = root / "OpenStarry Code" / "profile-locks" / "synthetic.lock"
     backing = tmp_path / "backing.lock"
     backing.write_bytes(b"\0")
     backing_fd = os.open(backing, os.O_RDWR)
@@ -1668,7 +1668,7 @@ def test_windows_profile_lock_real_native_chain_and_contention(
 ) -> None:
     user_state = tmp_path / "user-state"
     home = tmp_path / "profile"
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(user_state))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(user_state))
 
     with ProfileOperationLock(home):
         lock_path = profile_lock_path(home)
@@ -1696,7 +1696,7 @@ def test_import_source_does_not_inherit_target_process_state_override(
     target.mkdir()
     external_target_state.mkdir()
     monkeypatch.setenv(
-        "OPENSQUILLA_GATEWAY_STATE_DIR",
+        "OPENSTARRY_CODE_GATEWAY_STATE_DIR",
         str(external_target_state),
     )
 

@@ -1,7 +1,7 @@
 """Opt-in live Telegram channel smoke.
 
 This is a maintainer-only release gate. It sends one real message through the
-OpenSquilla Telegram adapter when explicitly enabled and credentialed.
+OpenStarry Code Telegram adapter when explicitly enabled and credentialed.
 """
 
 from __future__ import annotations
@@ -11,22 +11,22 @@ import time
 
 import pytest
 
-from opensquilla.channels.telegram import TelegramChannel, TelegramChannelConfig
-from opensquilla.channels.types import OutgoingMessage
+from openstarry_code.channels.telegram import TelegramChannel, TelegramChannelConfig
+from openstarry_code.channels.types import OutgoingMessage
 
 pytestmark = pytest.mark.live_channel
 
 
 @pytest.mark.asyncio
 async def test_telegram_adapter_can_send_real_message() -> None:
-    if os.environ.get("OPENSQUILLA_LIVE_TELEGRAM_E2E") != "1":
-        pytest.skip("set OPENSQUILLA_LIVE_TELEGRAM_E2E=1 to run live Telegram smoke")
-    token = os.environ.get("OPENSQUILLA_LIVE_TELEGRAM_BOT_TOKEN", "").strip()
-    chat_id = os.environ.get("OPENSQUILLA_LIVE_TELEGRAM_CHAT_ID", "").strip()
+    if os.environ.get("OPENSTARRY_CODE_LIVE_TELEGRAM_E2E") != "1":
+        pytest.skip("set OPENSTARRY_CODE_LIVE_TELEGRAM_E2E=1 to run live Telegram smoke")
+    token = os.environ.get("OPENSTARRY_CODE_LIVE_TELEGRAM_BOT_TOKEN", "").strip()
+    chat_id = os.environ.get("OPENSTARRY_CODE_LIVE_TELEGRAM_CHAT_ID", "").strip()
     if not token or not chat_id:
         pytest.skip("Telegram token/chat id not set")
 
-    marker = f"opensquilla live channel smoke {int(time.time())}"
+    marker = f"openstarry-code live channel smoke {int(time.time())}"
     channel = TelegramChannel(
         TelegramChannelConfig(
             token=token,

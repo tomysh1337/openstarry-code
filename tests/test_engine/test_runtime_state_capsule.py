@@ -4,21 +4,21 @@ import json
 import subprocess
 from pathlib import Path
 
-from opensquilla.engine.agent import Agent
-from opensquilla.engine.runtime_state_capsule import (
+from openstarry_code.engine.agent import Agent
+from openstarry_code.engine.runtime_state_capsule import (
     build_runtime_state_capsule,
     runtime_state_capsule_message,
 )
-from opensquilla.engine.turn_runner.agent_bootstrap_stage import (
+from openstarry_code.engine.turn_runner.agent_bootstrap_stage import (
     _runtime_state_capsule_mode_from_env,
 )
-from opensquilla.engine.types import AgentConfig
-from opensquilla.provider.types import Message
-from opensquilla.tools.mutation_receipts import (
+from openstarry_code.engine.types import AgentConfig
+from openstarry_code.provider.types import Message
+from openstarry_code.tools.mutation_receipts import (
     fingerprint_file,
     record_semantic_mutation_receipt,
 )
-from opensquilla.tools.types import ToolContext
+from openstarry_code.tools.types import ToolContext
 
 
 def _init_git_workspace(path: Path) -> None:
@@ -161,12 +161,12 @@ def test_agent_runtime_state_capsule_injection_is_opt_in(tmp_path: Path) -> None
 
 
 def test_runtime_state_capsule_mode_env_parser(monkeypatch) -> None:
-    monkeypatch.setenv("OPENSQUILLA_RUNTIME_STATE_CAPSULE_MODE", "inject")
+    monkeypatch.setenv("OPENSTARRY_CODE_RUNTIME_STATE_CAPSULE_MODE", "inject")
 
     assert _runtime_state_capsule_mode_from_env("off") == "inject"
 
-    monkeypatch.setenv("OPENSQUILLA_RUNTIME_STATE_CAPSULE_MODE", "bad")
+    monkeypatch.setenv("OPENSTARRY_CODE_RUNTIME_STATE_CAPSULE_MODE", "bad")
     assert _runtime_state_capsule_mode_from_env("inject") == "off"
 
-    monkeypatch.delenv("OPENSQUILLA_RUNTIME_STATE_CAPSULE_MODE")
+    monkeypatch.delenv("OPENSTARRY_CODE_RUNTIME_STATE_CAPSULE_MODE")
     assert _runtime_state_capsule_mode_from_env("log") == "log"

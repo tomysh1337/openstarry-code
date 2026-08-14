@@ -13,16 +13,16 @@ from typing import Any
 import pytest
 from websockets.protocol import State as WebSocketState
 
-from opensquilla.channels.approval_prompt import ApprovalPromptRequest, render_approval_prompt
-from opensquilla.channels.contract import ChannelCapabilities
-from opensquilla.channels.feishu import (
+from openstarry_code.channels.approval_prompt import ApprovalPromptRequest, render_approval_prompt
+from openstarry_code.channels.contract import ChannelCapabilities
+from openstarry_code.channels.feishu import (
     FeishuChannel,
     FeishuChannelConfig,
     FeishuWebSocketTransport,
     _feishu_sdk_websocket_is_open,
     _TokenState,
 )
-from opensquilla.channels.transports import InboundEventEnvelope
+from openstarry_code.channels.transports import InboundEventEnvelope
 
 
 class _Builder:
@@ -115,7 +115,7 @@ def _install_fake_lark_module(monkeypatch: pytest.MonkeyPatch) -> tuple[types.Mo
         LogLevel=types.SimpleNamespace(INFO="info"),
         ws=types.SimpleNamespace(Client=FakeClient),
     )
-    monkeypatch.setattr("opensquilla.channels.feishu._import_lark_oapi", lambda: fake_lark)
+    monkeypatch.setattr("openstarry_code.channels.feishu._import_lark_oapi", lambda: fake_lark)
     return sdk_module, FakeClient
 
 
@@ -577,7 +577,7 @@ async def test_feishu_websocket_bot_identity_error_log_is_redacted(
 
     monkeypatch.setattr(channel, "_refresh_bot_identity", fail_with_credentials)
     monkeypatch.setattr(
-        "opensquilla.channels.feishu.log",
+        "openstarry_code.channels.feishu.log",
         SimpleNamespace(warning=capture_warning),
     )
 

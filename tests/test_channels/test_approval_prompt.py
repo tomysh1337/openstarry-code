@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.channels.approval_prompt import (
+from openstarry_code.channels.approval_prompt import (
     ApprovalPromptRequest,
     bind_short_code,
     parse_approval_action,
@@ -13,8 +13,8 @@ from opensquilla.channels.approval_prompt import (
     reset_short_codes,
     resolve_short_code,
 )
-from opensquilla.channels.contract import ChannelCapabilityProfile
-from opensquilla.channels.types import IncomingMessage
+from openstarry_code.channels.contract import ChannelCapabilityProfile
+from openstarry_code.channels.types import IncomingMessage
 
 
 @pytest.fixture(autouse=True)

@@ -96,7 +96,7 @@ def run_live_long_context_smoke(
         }
 
     port = _free_port()
-    live_model = os.environ.get("OPENSQUILLA_LIVE_LLM_MODEL", "").strip()
+    live_model = os.environ.get("OPENSTARRY_CODE_LIVE_LLM_MODEL", "").strip()
     session_key = f"live-long-context:{int(time.time() * 1000)}"
     turns_spec = [
         {
@@ -126,21 +126,21 @@ def run_live_long_context_smoke(
 
         env = os.environ.copy()
         env["PYTHONPATH"] = str(SRC_DIR) + os.pathsep + env.get("PYTHONPATH", "")
-        env["OPENSQUILLA_GATEWAY_CONFIG_PATH"] = str(config_path)
-        env["OPENSQUILLA_STATE_DIR"] = str(tmp_path / "state")
-        env["OPENSQUILLA_MEMORY_DREAM_DISABLED"] = "1"
-        env["OPENSQUILLA_SANDBOX_SANDBOX"] = "false"
-        env["OPENSQUILLA_SANDBOX_SECURITY_GRADING"] = "false"
-        env["OPENSQUILLA_TURN_CALL_LOG"] = "1"
-        env["OPENSQUILLA_TURN_CALL_LOG_DIR"] = str(turn_log_dir)
+        env["OPENSTARRY_CODE_GATEWAY_CONFIG_PATH"] = str(config_path)
+        env["OPENSTARRY_CODE_STATE_DIR"] = str(tmp_path / "state")
+        env["OPENSTARRY_CODE_MEMORY_DREAM_DISABLED"] = "1"
+        env["OPENSTARRY_CODE_SANDBOX_SANDBOX"] = "false"
+        env["OPENSTARRY_CODE_SANDBOX_SECURITY_GRADING"] = "false"
+        env["OPENSTARRY_CODE_TURN_CALL_LOG"] = "1"
+        env["OPENSTARRY_CODE_TURN_CALL_LOG_DIR"] = str(turn_log_dir)
         if simulate_memory_distill_failure:
-            env["OPENSQUILLA_SESSION_FLUSH"] = "1"
+            env["OPENSTARRY_CODE_SESSION_FLUSH"] = "1"
 
         proc = subprocess.Popen(
             [
                 sys.executable,
                 "-m",
-                "opensquilla.cli.main",
+                "openstarry_code.cli.main",
                 "gateway",
                 "run",
                 "--port",

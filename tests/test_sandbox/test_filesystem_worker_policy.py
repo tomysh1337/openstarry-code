@@ -5,16 +5,16 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.sandbox.backend.filesystem_worker_policy import (
+from openstarry_code.sandbox.backend.filesystem_worker_policy import (
     build_filesystem_worker_policy,
 )
-from opensquilla.sandbox.operation_runtime import SandboxOperation
-from opensquilla.sandbox.permissions import (
+from openstarry_code.sandbox.operation_runtime import SandboxOperation
+from openstarry_code.sandbox.permissions import (
     FileSystemAccess,
     FileSystemPermissionEntry,
     FileSystemPermissionProfile,
 )
-from opensquilla.sandbox.types import (
+from openstarry_code.sandbox.types import (
     MountSpec,
     NetworkMode,
     ResourceLimits,

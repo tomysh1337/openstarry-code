@@ -4,16 +4,16 @@ import asyncio
 
 import pytest
 
-from opensquilla.engine.types import (
+from openstarry_code.engine.types import (
     MetaPreflightEvent,
     MetaRunAnnouncedEvent,
     MetaRunCompletedEvent,
     MetaStepStateEvent,
     ToolResultEvent,
 )
-from opensquilla.skills.meta.events import _StepDone
-from opensquilla.skills.meta.scheduler import _failure_hint, _failure_rescue_payload
-from opensquilla.skills.meta.types import (
+from openstarry_code.skills.meta.events import _StepDone
+from openstarry_code.skills.meta.scheduler import _failure_hint, _failure_rescue_payload
+from openstarry_code.skills.meta.types import (
     ClarifyField,
     ClarifyStepConfig,
     MetaMatch,
@@ -61,7 +61,7 @@ def fake_preface():
 
 
 async def _collect_all_events(match, dispatch, preface):
-    from opensquilla.skills.meta.scheduler import run_dag
+    from openstarry_code.skills.meta.scheduler import run_dag
 
     events = []
     async for ev in run_dag(

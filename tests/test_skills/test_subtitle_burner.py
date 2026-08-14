@@ -14,7 +14,7 @@ import yaml
 
 SCRIPT = (
     Path(__file__).parents[2]
-    / "src/opensquilla/skills/bundled/subtitle-burner/scripts/burn.py"
+    / "src/openstarry_code/skills/bundled/subtitle-burner/scripts/burn.py"
 )
 SKILL = SCRIPT.parents[1] / "SKILL.md"
 
@@ -84,7 +84,7 @@ def test_managed_font_directory_and_single_family_reach_libass(
 
     _fake_media_bins(module, monkeypatch)
     monkeypatch.setattr(module.subprocess, "run", run)
-    monkeypatch.setenv("OPENSQUILLA_MEDIA_FONTS_DIR", str(fonts))
+    monkeypatch.setenv("OPENSTARRY_CODE_MEDIA_FONTS_DIR", str(fonts))
     monkeypatch.setattr(
         sys,
         "argv",
@@ -113,7 +113,7 @@ def test_managed_font_directory_and_single_family_reach_libass(
     ("native_path", "filter_path"),
     [
         (r"C:\Managed Fonts\Noto", r"C\:/Managed Fonts/Noto"),
-        ("/opt/opensquilla/fonts", "/opt/opensquilla/fonts"),
+        ("/opt/openstarry_code/fonts", "/opt/openstarry_code/fonts"),
     ],
 )
 def test_subtitle_filter_paths_are_platform_neutral(

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from opensquilla.gateway.config import GatewayConfig
+from openstarry_code.gateway.config import GatewayConfig
 
 
 def test_audio_config_defaults_are_disabled_and_elevenlabs_ready() -> None:
@@ -54,7 +54,7 @@ def test_audio_config_accepts_nested_elevenlabs_overrides() -> None:
 def test_audio_config_to_toml_dict_omits_env_sourced_elevenlabs_api_key(
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_AUDIO_PROVIDERS__ELEVENLABS__API_KEY", "el-env")
+    monkeypatch.setenv("OPENSTARRY_CODE_AUDIO_PROVIDERS__ELEVENLABS__API_KEY", "el-env")
 
     cfg = GatewayConfig()
     audio = cfg.to_toml_dict()["audio"]

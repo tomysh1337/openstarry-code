@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from opensquilla.sandbox.capability_service import (
+from openstarry_code.sandbox.capability_service import (
     CapabilityReport,
     CapabilityService,
     capability_report_from_setup,
 )
-from opensquilla.sandbox.setup_state import SandboxSetupState, SetupResult
+from openstarry_code.sandbox.setup_state import SandboxSetupState, SetupResult
 
 
 def test_ready_setup_requires_live_capability_probe() -> None:

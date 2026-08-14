@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Run live gateway E2E checks for direct provider tier profiles.
 
-The check starts a temporary OpenSquilla gateway per provider, enables the
+The check starts a temporary OpenStarry Code gateway per provider, enables the
 matching legacy ``squilla_router.tier_profile`` or curated inline tier map,
 sends one turn for each text tier, and records routed model, response usage,
 and local cost estimates. Secrets are kept in environment variables and are
@@ -27,13 +27,13 @@ if str(REPO_ROOT) not in sys.path:
 if str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))
 
-from opensquilla.engine.pricing import estimate_cost, resolve_model_price  # noqa: E402
-from opensquilla.gateway.config import GatewayConfig  # noqa: E402
-from opensquilla.provider.preset_registry import (  # noqa: E402
+from openstarry_code.engine.pricing import estimate_cost, resolve_model_price  # noqa: E402
+from openstarry_code.gateway.config import GatewayConfig  # noqa: E402
+from openstarry_code.provider.preset_registry import (  # noqa: E402
     LEGACY_PROVIDER_PRESET_IDS,
     get_preset,
 )
-from opensquilla.provider.registry import get_provider_spec  # noqa: E402
+from openstarry_code.provider.registry import get_provider_spec  # noqa: E402
 from scripts.live_harness_security import (  # noqa: E402
     child_environment,
     classify_failure,
@@ -522,13 +522,13 @@ def _run_gateway_case_batch_in_temp(
         base_environment=os.environ,
     )
     env["PYTHONPATH"] = str(SRC_DIR) + os.pathsep + env.get("PYTHONPATH", "")
-    env["OPENSQUILLA_GATEWAY_CONFIG_PATH"] = str(config_path)
-    env["OPENSQUILLA_STATE_DIR"] = str(state_dir)
-    env["OPENSQUILLA_USER_STATE_DIR"] = str(user_state_dir)
-    env["OPENSQUILLA_TEST_PROFILE_LOCK_ROOT"] = "1"
-    env["OPENSQUILLA_MEMORY_DREAM_DISABLED"] = "1"
-    env["OPENSQUILLA_TURN_CALL_LOG"] = "1"
-    env["OPENSQUILLA_TURN_CALL_LOG_DIR"] = str(turn_log_dir)
+    env["OPENSTARRY_CODE_GATEWAY_CONFIG_PATH"] = str(config_path)
+    env["OPENSTARRY_CODE_STATE_DIR"] = str(state_dir)
+    env["OPENSTARRY_CODE_USER_STATE_DIR"] = str(user_state_dir)
+    env["OPENSTARRY_CODE_TEST_PROFILE_LOCK_ROOT"] = "1"
+    env["OPENSTARRY_CODE_MEMORY_DREAM_DISABLED"] = "1"
+    env["OPENSTARRY_CODE_TURN_CALL_LOG"] = "1"
+    env["OPENSTARRY_CODE_TURN_CALL_LOG_DIR"] = str(turn_log_dir)
 
     stdout_path = tmp_path / "gateway.stdout.log"
     stderr_path = tmp_path / "gateway.stderr.log"
@@ -539,7 +539,7 @@ def _run_gateway_case_batch_in_temp(
             [
                 sys.executable,
                 "-m",
-                "opensquilla.cli.main",
+                "openstarry_code.cli.main",
                 "gateway",
                 "run",
                 "--port",
@@ -1035,7 +1035,7 @@ def main() -> int:
     if not 32 <= args.max_tokens <= 64:
         parser.error("--max-tokens must be between 32 and 64")
 
-    if not args.no_env_file and os.environ.get("OPENSQUILLA_LIVE_DISABLE_DOTENV") != "1":
+    if not args.no_env_file and os.environ.get("OPENSTARRY_CODE_LIVE_DISABLE_DOTENV") != "1":
         _load_env_quietly()
     secrets = {
         name: os.environ.get(name, "")

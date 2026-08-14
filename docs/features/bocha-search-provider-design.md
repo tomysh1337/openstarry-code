@@ -39,7 +39,7 @@ search router.
 
 ## Provider Behavior
 
-Add `BochaSearchProvider` under `src/opensquilla/search/providers/bocha.py`.
+Add `BochaSearchProvider` under `src/openstarry_code/search/providers/bocha.py`.
 
 Expected API shape:
 

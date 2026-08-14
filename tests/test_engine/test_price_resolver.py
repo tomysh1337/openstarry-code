@@ -2,19 +2,19 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.engine.pricing import PriceEntry, _endpoint_price, resolve_model_price
-from opensquilla.provider.model_catalog import ModelCatalog, set_shared_catalog
+from openstarry_code.engine.pricing import PriceEntry, _endpoint_price, resolve_model_price
+from openstarry_code.provider.model_catalog import ModelCatalog, set_shared_catalog
 
 
 def test_local_provider_resolves_free(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("OPENSQUILLA_OPENROUTER_LIVE_PRICING", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING", "0")
     r = resolve_model_price("qwen3:4b", provider="lm_studio")
     assert r.source == "local_free"
     assert r.entry.input_per_m == 0.0 and r.entry.cache_read_per_m == 0.0
 
 
 def test_user_catalog_override_wins_over_static(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("OPENSQUILLA_OPENROUTER_LIVE_PRICING", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING", "0")
     catalog = ModelCatalog()
     catalog.set_user_overrides(
         {
@@ -42,7 +42,7 @@ def test_catalog_snapshot_wins_over_static_table_with_source(
     cost keys, so a provider-qualified lookup resolves through the catalog
     layer (matching the static table's official rate) instead of falling
     all the way to the static table."""
-    monkeypatch.setenv("OPENSQUILLA_OPENROUTER_LIVE_PRICING", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING", "0")
     r = resolve_model_price("deepseek/deepseek-v4-pro", provider="deepseek")
     assert r.source == "catalog"
     assert r.entry.input_per_m == pytest.approx(0.435)
@@ -54,14 +54,14 @@ def test_static_table_fallback_with_source(monkeypatch: pytest.MonkeyPatch) -> N
     suffix models.dev does not carry) still falls through to the static
     table — the catalog-first change above only wins when the snapshot
     actually knows the exact (provider, model)."""
-    monkeypatch.setenv("OPENSQUILLA_OPENROUTER_LIVE_PRICING", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING", "0")
     r = resolve_model_price("deepseek/deepseek-v4-pro-20260423", provider="deepseek")
     assert r.source == "static_table"
     assert r.entry.input_per_m == pytest.approx(0.435)
 
 
 def test_unknown_model_resolves_default_source(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("OPENSQUILLA_OPENROUTER_LIVE_PRICING", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING", "0")
     r = resolve_model_price("totally-unknown-model-xyz", provider="mistral")
     assert r.source == "default"
     assert r.entry == PriceEntry(3.0, 15.0)
@@ -69,10 +69,10 @@ def test_unknown_model_resolves_default_source(monkeypatch: pytest.MonkeyPatch) 
 
 def test_live_fetch_skipped_for_non_openrouter_provider(monkeypatch: pytest.MonkeyPatch) -> None:
     """A siliconflow 'deepseek-ai/...' id must not query the OpenRouter marketplace."""
-    monkeypatch.setenv("OPENSQUILLA_OPENROUTER_LIVE_PRICING", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING", "1")
     called: list[object] = []
     monkeypatch.setattr(
-        "opensquilla.engine.pricing._fetch_live_openrouter_price",
+        "openstarry_code.engine.pricing._fetch_live_openrouter_price",
         lambda *a, **k: called.append(a) or None,
     )
     resolve_model_price("deepseek-ai/DeepSeek-V3.2", provider="siliconflow")

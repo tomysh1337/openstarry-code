@@ -11,10 +11,10 @@ from pathlib import Path
 from typer.main import get_command
 from typer.testing import CliRunner
 
-from opensquilla.cli.main import app as root_app
-from opensquilla.cli.recovery_cmd import recovery_app
-from opensquilla.recovery.cleanup import cleanup_inspect
-from opensquilla.recovery.locking import ProfileOperationLock
+from openstarry_code.cli.main import app as root_app
+from openstarry_code.cli.recovery_cmd import recovery_app
+from openstarry_code.recovery.cleanup import cleanup_inspect
+from openstarry_code.recovery.locking import ProfileOperationLock
 
 
 def _workspace(path: Path, marker: str) -> Path:
@@ -73,16 +73,16 @@ def test_recovery_subprocess_routes_before_cwd_or_profile_dotenv(
         encoding="utf-8",
     )
     (cwd / ".env").write_text(
-        "OPENSQUILLA_RECOVERY_DOTENV_SENTINEL=loaded-from-cwd\n",
+        "OPENSTARRY_CODE_RECOVERY_DOTENV_SENTINEL=loaded-from-cwd\n",
         encoding="utf-8",
     )
     (home / ".env").write_text(
-        "OPENSQUILLA_RECOVERY_DOTENV_SENTINEL=loaded-from-profile\n",
+        "OPENSTARRY_CODE_RECOVERY_DOTENV_SENTINEL=loaded-from-profile\n",
         encoding="utf-8",
     )
     environment = os.environ.copy()
-    environment.pop("OPENSQUILLA_RECOVERY_OFFLINE", None)
-    environment.pop("OPENSQUILLA_RECOVERY_DOTENV_SENTINEL", None)
+    environment.pop("OPENSTARRY_CODE_RECOVERY_OFFLINE", None)
+    environment.pop("OPENSTARRY_CODE_RECOVERY_DOTENV_SENTINEL", None)
     completed = subprocess.run(
         [
             sys.executable,
@@ -90,8 +90,8 @@ def test_recovery_subprocess_routes_before_cwd_or_profile_dotenv(
             (
                 "import os, sys\n"
                 "sys.argv = ['opensquilla', *sys.argv[1:]]\n"
-                "from opensquilla.cli.main import app\n"
-                "assert 'OPENSQUILLA_RECOVERY_DOTENV_SENTINEL' not in os.environ\n"
+                "from openstarry_code.cli.main import app\n"
+                "assert 'OPENSTARRY_CODE_RECOVERY_DOTENV_SENTINEL' not in os.environ\n"
                 "app()\n"
             ),
             "recovery",
@@ -114,7 +114,7 @@ def test_recovery_subprocess_routes_before_cwd_or_profile_dotenv(
 
 
 def test_inspect_command_emits_fixed_json_protocol(tmp_path: Path) -> None:
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     workspace = _workspace(home / "workspace", "current identity")
     (home / "state").mkdir(parents=True)
     (home / "config.toml").write_text(
@@ -149,8 +149,8 @@ def test_recover_config_command_repairs_corrupt_config_over_json_protocol(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "user-state"))
-    home = tmp_path / "opensquilla"
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "user-state"))
+    home = tmp_path / "openstarry-code"
     _workspace(home / "workspace", "current identity")
     (home / "state").mkdir(parents=True)
     good = 'state_dir = "state"\nworkspace_dir = "workspace"\n'
@@ -180,8 +180,8 @@ def test_mutating_command_lock_timeout_waits_out_a_transient_writer(
     profile_lock_busy).
     """
 
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "user-state"))
-    home = tmp_path / "opensquilla"
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "user-state"))
+    home = tmp_path / "openstarry-code"
     _workspace(home / "workspace", "current identity")
     (home / "state").mkdir(parents=True)
     good = 'state_dir = "state"\nworkspace_dir = "workspace"\n'
@@ -230,7 +230,7 @@ def test_mutating_command_lock_timeout_waits_out_a_transient_writer(
 
 def test_cleanup_inspect_command_emits_complete_read_only_inventory(tmp_path: Path) -> None:
     user_data = tmp_path / "user-data"
-    home = user_data / "opensquilla"
+    home = user_data / "openstarry-code"
     home.mkdir(parents=True)
     credential = user_data / "desktop-credential.json"
     credential.write_text("{}\n", encoding="utf-8")
@@ -271,11 +271,11 @@ def test_delete_all_can_reinspect_only_after_offline_parent_exit(
     monkeypatch,
 ) -> None:
     user_data = tmp_path / "user-data"
-    home = user_data / "opensquilla"
+    home = user_data / "openstarry-code"
     (home / "state").mkdir(parents=True)
     credential = user_data / "desktop-credential.json"
     credential.write_text("{}\n", encoding="utf-8")
-    monkeypatch.setenv("OPENSQUILLA_RECOVERY_OFFLINE", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_RECOVERY_OFFLINE", "1")
     monkeypatch.setenv("XDG_STATE_HOME", str(tmp_path / "lock-state"))
     inspected = cleanup_inspect(
         user_data,
@@ -320,8 +320,8 @@ def test_parent_exit_cleanup_handoff_is_rejected_outside_offline_desktop(
     monkeypatch,
 ) -> None:
     user_data = tmp_path / "user-data"
-    (user_data / "opensquilla").mkdir(parents=True)
-    monkeypatch.delenv("OPENSQUILLA_RECOVERY_OFFLINE", raising=False)
+    (user_data / "openstarry-code").mkdir(parents=True)
+    monkeypatch.delenv("OPENSTARRY_CODE_RECOVERY_OFFLINE", raising=False)
 
     result = CliRunner().invoke(
         recovery_app,
@@ -346,20 +346,20 @@ def test_parent_exit_cleanup_handoff_is_rejected_outside_offline_desktop(
     )
 
     assert result.exit_code == 2
-    assert (user_data / "opensquilla").is_dir()
+    assert (user_data / "openstarry-code").is_dir()
 
 
 def test_delete_all_helper_waits_for_parent_pipe_eof_before_reinspection(
     tmp_path: Path,
 ) -> None:
     user_data = tmp_path / "user-data"
-    home = user_data / "opensquilla"
+    home = user_data / "openstarry-code"
     (home / "state").mkdir(parents=True)
     credential = user_data / "desktop-credential.json"
     credential.write_text("{}\n", encoding="utf-8")
     environment = os.environ.copy()
-    environment["OPENSQUILLA_RECOVERY_OFFLINE"] = "1"
-    environment["OPENSQUILLA_USER_STATE_DIR"] = str(tmp_path / "lock-state")
+    environment["OPENSTARRY_CODE_RECOVERY_OFFLINE"] = "1"
+    environment["OPENSTARRY_CODE_USER_STATE_DIR"] = str(tmp_path / "lock-state")
     inspected = cleanup_inspect(
         user_data,
         mode="delete-all-user-data",
@@ -373,7 +373,7 @@ def test_delete_all_helper_waits_for_parent_pipe_eof_before_reinspection(
             (
                 "import sys\n"
                 "sys.argv = ['opensquilla', *sys.argv[1:]]\n"
-                "from opensquilla.cli.main import app\n"
+                "from openstarry_code.cli.main import app\n"
                 "app()\n"
             ),
             "recovery",
@@ -425,7 +425,7 @@ def test_delete_all_helper_allows_confirmed_chromium_entry_to_disappear_at_exit(
     tmp_path: Path,
 ) -> None:
     user_data = tmp_path / "user-data"
-    home = user_data / "opensquilla"
+    home = user_data / "openstarry-code"
     (home / "state").mkdir(parents=True)
     credential = user_data / "desktop-credential.json"
     credential.write_text("{}\n", encoding="utf-8")
@@ -437,8 +437,8 @@ def test_delete_all_helper_allows_confirmed_chromium_entry_to_disappear_at_exit(
         profile_kind="primary",
     )
     environment = os.environ.copy()
-    environment["OPENSQUILLA_RECOVERY_OFFLINE"] = "1"
-    environment["OPENSQUILLA_USER_STATE_DIR"] = str(tmp_path / "lock-state")
+    environment["OPENSTARRY_CODE_RECOVERY_OFFLINE"] = "1"
+    environment["OPENSTARRY_CODE_USER_STATE_DIR"] = str(tmp_path / "lock-state")
     process = subprocess.Popen(
         [
             sys.executable,
@@ -446,7 +446,7 @@ def test_delete_all_helper_allows_confirmed_chromium_entry_to_disappear_at_exit(
             (
                 "import sys\n"
                 "sys.argv = ['opensquilla', *sys.argv[1:]]\n"
-                "from opensquilla.cli.main import app\n"
+                "from openstarry_code.cli.main import app\n"
                 "app()\n"
             ),
             "recovery",
@@ -497,7 +497,7 @@ def test_delete_all_helper_refuses_a_new_unconfirmed_scope_after_parent_exit(
     tmp_path: Path,
 ) -> None:
     user_data = tmp_path / "user-data"
-    home = user_data / "opensquilla"
+    home = user_data / "openstarry-code"
     (home / "state").mkdir(parents=True)
     credential = user_data / "desktop-credential.json"
     credential.write_text("{}\n", encoding="utf-8")
@@ -508,8 +508,8 @@ def test_delete_all_helper_refuses_a_new_unconfirmed_scope_after_parent_exit(
     )
     fingerprint = inspected.scope_fingerprint
     environment = os.environ.copy()
-    environment["OPENSQUILLA_RECOVERY_OFFLINE"] = "1"
-    environment["OPENSQUILLA_USER_STATE_DIR"] = str(tmp_path / "lock-state")
+    environment["OPENSTARRY_CODE_RECOVERY_OFFLINE"] = "1"
+    environment["OPENSTARRY_CODE_USER_STATE_DIR"] = str(tmp_path / "lock-state")
     process = subprocess.Popen(
         [
             sys.executable,
@@ -517,7 +517,7 @@ def test_delete_all_helper_refuses_a_new_unconfirmed_scope_after_parent_exit(
             (
                 "import sys\n"
                 "sys.argv = ['opensquilla', *sys.argv[1:]]\n"
-                "from opensquilla.cli.main import app\n"
+                "from openstarry_code.cli.main import app\n"
                 "app()\n"
             ),
             "recovery",

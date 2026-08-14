@@ -210,7 +210,7 @@ Use source install when you want a checkout-backed install:
 git lfs install
 git clone https://github.com/opensquilla/opensquilla.git
 cd opensquilla
-git lfs pull --include="src/opensquilla/squilla_router/models/**"
+git lfs pull --include="src/openstarry_code/squilla_router/models/**"
 bash scripts/install_source.sh
 ```
 
@@ -221,7 +221,7 @@ contain that console and do not require Node.js or npm.
 For development, use the repository virtual environment:
 
 ```sh
-cd opensquilla-webui
+cd openstarry-code-webui
 npm ci
 npm run build
 cd ..

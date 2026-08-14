@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-_BUNDLED = REPO / "src" / "opensquilla" / "skills" / "bundled"
+_BUNDLED = REPO / "src" / "openstarry_code" / "skills" / "bundled"
 PROPOSALS = _BUNDLED / "skill-creator-proposals" / "scripts" / "proposals.py"
 
 
@@ -41,7 +41,7 @@ composition:
 
 
 def test_write_proposal_creates_directory(tmp_path: Path) -> None:
-    home = tmp_path / ".opensquilla"
+    home = tmp_path / ".openstarry-code"
     out = _run(
         "write_proposal", home=home,
         skill_md_inline=SAMPLE_SKILL_MD,
@@ -58,7 +58,7 @@ def test_write_proposal_creates_directory(tmp_path: Path) -> None:
 
 
 def test_write_proposal_marks_ineligible_on_g3_fail(tmp_path: Path) -> None:
-    home = tmp_path / ".opensquilla"
+    home = tmp_path / ".openstarry-code"
     out = _run(
         "write_proposal", home=home,
         skill_md_inline=SAMPLE_SKILL_MD,
@@ -73,7 +73,7 @@ def test_write_proposal_marks_ineligible_on_g3_fail(tmp_path: Path) -> None:
 def test_write_proposal_marks_full_gated_ineligible_on_compare_loss(
     tmp_path: Path,
 ) -> None:
-    home = tmp_path / ".opensquilla"
+    home = tmp_path / ".openstarry-code"
     out = _run(
         "write_proposal", home=home,
         skill_md_inline=SAMPLE_SKILL_MD,
@@ -105,7 +105,7 @@ def test_write_proposal_marks_full_gated_ineligible_on_compare_loss(
 
 def test_accept_rejects_path_traversal_proposal_id(tmp_path: Path) -> None:
     """I1 regression: cmd_accept must reject proposal IDs that aren't 8 hex chars."""
-    home = tmp_path / ".opensquilla"
+    home = tmp_path / ".openstarry-code"
     home.mkdir()
     (home / "proposals").mkdir()
 
@@ -117,7 +117,7 @@ def test_accept_rejects_path_traversal_proposal_id(tmp_path: Path) -> None:
 
 def test_proposals_cli_works_without_explicit_home(monkeypatch, tmp_path: Path) -> None:
     """N17: --home is optional; defaults to default_opensquilla_home()."""
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path))
     # Run with NO --home; only --action and required action-specific args
     proc = subprocess.run(
         [sys.executable, str(PROPOSALS), "--action", "list"],

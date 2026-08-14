@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from opensquilla.observability.redact import scrub_text
+from openstarry_code.observability.redact import scrub_text
 
 FAKE_KEY = "sk-FAKE1234567890abcdef"
 
@@ -54,13 +54,13 @@ def test_masks_secret_shaped_assignments() -> None:
 
 def test_normalizes_home_directory() -> None:
     home = str(Path.home())
-    scrubbed = scrub_text(f"config loaded from {home}/.opensquilla/config.toml")
+    scrubbed = scrub_text(f"config loaded from {home}/.openstarry-code/config.toml")
     assert home not in scrubbed
-    assert "~/.opensquilla/config.toml" in scrubbed
+    assert "~/.openstarry-code/config.toml" in scrubbed
 
 
 def test_leaves_ordinary_text_alone() -> None:
-    text = "2026-07-07 [ERROR] opensquilla.engine: turn_runner.failed session_key='agent:x'"
+    text = "2026-07-07 [ERROR] openstarry_code.engine: turn_runner.failed session_key='agent:x'"
     assert scrub_text(text) == text
 
 

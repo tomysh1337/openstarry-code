@@ -18,9 +18,9 @@ from types import SimpleNamespace
 
 import pytest
 
-import opensquilla
-from opensquilla.gateway.rpc.registry import RpcContext, _gateway_identity_get, _status
-from opensquilla.provider.selector import ModelSelector, ProviderConfig, SelectorConfig
+import openstarry_code
+from openstarry_code.gateway.rpc.registry import RpcContext, _gateway_identity_get, _status
+from openstarry_code.provider.selector import ModelSelector, ProviderConfig, SelectorConfig
 
 
 def _ctx(**kwargs: object) -> RpcContext:
@@ -40,8 +40,8 @@ def _openrouter_selector() -> ModelSelector:
 
 
 def test_package_version_tracks_metadata_not_stale_literal() -> None:
-    assert opensquilla.__version__ == _pkg_version("opensquilla")
-    assert opensquilla.__version__ != "0.1.0"
+    assert openstarry_code.__version__ == _pkg_version("openstarry-code")
+    assert openstarry_code.__version__ != "0.1.0"
 
 
 def test_active_provider_id_reports_configured_id() -> None:
@@ -63,7 +63,7 @@ def test_active_provider_id_follows_failover() -> None:
 @pytest.mark.asyncio
 async def test_status_rpc_reports_metadata_version_and_configured_provider() -> None:
     result = await _status(None, _ctx(provider_selector=_openrouter_selector()))
-    assert result["version"] == opensquilla.__version__
+    assert result["version"] == openstarry_code.__version__
     # Configured id surfaced — NOT the "OpenAIProvider" backend class / "openai".
     assert result["provider"] == "openrouter"
 
@@ -72,10 +72,10 @@ async def test_status_rpc_reports_metadata_version_and_configured_provider() -> 
 async def test_status_rpc_provider_is_none_without_selector() -> None:
     result = await _status(None, _ctx(provider_selector=None))
     assert result["provider"] is None
-    assert result["version"] == opensquilla.__version__
+    assert result["version"] == openstarry_code.__version__
 
 
 @pytest.mark.asyncio
 async def test_gateway_identity_reports_metadata_version() -> None:
     result = await _gateway_identity_get(None, _ctx())
-    assert result["version"] == opensquilla.__version__
+    assert result["version"] == openstarry_code.__version__

@@ -4,10 +4,10 @@ from collections.abc import Awaitable, Callable
 
 import pytest
 
-from opensquilla.tools.builtin import filesystem
-from opensquilla.tools.builtin import patch as patch_tool
-from opensquilla.tools.registry import get_default_registry
-from opensquilla.tools.types import (
+from openstarry_code.tools.builtin import filesystem
+from openstarry_code.tools.builtin import patch as patch_tool
+from openstarry_code.tools.registry import get_default_registry
+from openstarry_code.tools.types import (
     RetryableToolInputError,
     SafeToolError,
     ToolContext,

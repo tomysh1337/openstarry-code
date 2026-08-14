@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.onboarding.memory_embedding_specs import (
+from openstarry_code.onboarding.memory_embedding_specs import (
     get_memory_embedding_provider_setup_spec,
     memory_embedding_provider_catalog_payload,
 )

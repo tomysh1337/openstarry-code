@@ -4,11 +4,11 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.rpc import RpcContext, RpcHandlerError
-from opensquilla.gateway.scopes import METHOD_SCOPES, READ_SCOPE, WRITE_SCOPE
-from opensquilla.sandbox.config import SandboxSettings
-from opensquilla.session.storage import SessionStorage
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.rpc import RpcContext, RpcHandlerError
+from openstarry_code.gateway.scopes import METHOD_SCOPES, READ_SCOPE, WRITE_SCOPE
+from openstarry_code.sandbox.config import SandboxSettings
+from openstarry_code.session.storage import SessionStorage
 
 
 def _principal(*, owner: bool) -> Principal:
@@ -43,7 +43,7 @@ def test_run_mode_preference_scope_contract() -> None:
 
 @pytest.mark.asyncio
 async def test_run_mode_preference_get_uses_configured_fallback() -> None:
-    from opensquilla.gateway import rpc_sandbox
+    from openstarry_code.gateway import rpc_sandbox
 
     storage = SessionStorage(":memory:")
     await storage.connect()
@@ -57,7 +57,7 @@ async def test_run_mode_preference_get_uses_configured_fallback() -> None:
 
 @pytest.mark.asyncio
 async def test_run_mode_preference_get_defaults_fresh_host_capable_profile_to_full() -> None:
-    from opensquilla.gateway import rpc_sandbox
+    from openstarry_code.gateway import rpc_sandbox
 
     storage = SessionStorage(":memory:")
     await storage.connect()
@@ -73,7 +73,7 @@ async def test_run_mode_preference_get_defaults_fresh_host_capable_profile_to_fu
 
 @pytest.mark.asyncio
 async def test_run_mode_preference_get_preserves_explicit_safe_config() -> None:
-    from opensquilla.gateway import rpc_sandbox
+    from openstarry_code.gateway import rpc_sandbox
 
     storage = SessionStorage(":memory:")
     await storage.connect()
@@ -91,7 +91,7 @@ async def test_run_mode_preference_get_preserves_explicit_safe_config() -> None:
 async def test_run_mode_preference_set_persists_before_broadcast(
     monkeypatch,
 ) -> None:
-    from opensquilla.gateway import rpc_sandbox
+    from openstarry_code.gateway import rpc_sandbox
 
     storage = SessionStorage(":memory:")
     await storage.connect()
@@ -128,7 +128,7 @@ async def test_run_mode_preference_set_persists_before_broadcast(
 
 @pytest.mark.asyncio
 async def test_run_mode_preference_get_keeps_full_for_host_capable_token() -> None:
-    from opensquilla.gateway import rpc_sandbox
+    from openstarry_code.gateway import rpc_sandbox
 
     storage = SessionStorage(":memory:")
     await storage.connect()
@@ -146,7 +146,7 @@ async def test_run_mode_preference_get_keeps_full_for_host_capable_token() -> No
 
 @pytest.mark.asyncio
 async def test_run_mode_preference_set_requires_owner() -> None:
-    from opensquilla.gateway import rpc_sandbox
+    from openstarry_code.gateway import rpc_sandbox
 
     storage = SessionStorage(":memory:")
     await storage.connect()
@@ -166,8 +166,8 @@ async def test_run_mode_preference_set_requires_owner() -> None:
 async def test_run_mode_preference_set_requires_sandbox_setup(
     monkeypatch,
 ) -> None:
-    from opensquilla.gateway import rpc_sandbox
-    from opensquilla.sandbox.capability_service import CapabilityReport
+    from openstarry_code.gateway import rpc_sandbox
+    from openstarry_code.sandbox.capability_service import CapabilityReport
 
     async def fake_status(config):
         return CapabilityReport(

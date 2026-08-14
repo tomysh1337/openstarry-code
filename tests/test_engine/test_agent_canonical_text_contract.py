@@ -8,19 +8,19 @@ from typing import Any
 import pytest
 import structlog.testing
 
-from opensquilla.engine import Agent, AgentConfig, ToolResult
-from opensquilla.provider import (
+from openstarry_code.engine import Agent, AgentConfig, ToolResult
+from openstarry_code.provider import (
     ChatConfig,
     Message,
     ToolDefinition,
     ToolInputSchema,
 )
-from opensquilla.provider import DoneEvent as ProviderDone
-from opensquilla.provider import ErrorEvent as ProviderError
-from opensquilla.provider import TextDeltaEvent as ProviderText
-from opensquilla.provider import ToolUseDeltaEvent as ProviderToolUseDelta
-from opensquilla.provider import ToolUseEndEvent as ProviderToolUseEnd
-from opensquilla.provider import ToolUseStartEvent as ProviderToolUseStart
+from openstarry_code.provider import DoneEvent as ProviderDone
+from openstarry_code.provider import ErrorEvent as ProviderError
+from openstarry_code.provider import TextDeltaEvent as ProviderText
+from openstarry_code.provider import ToolUseDeltaEvent as ProviderToolUseDelta
+from openstarry_code.provider import ToolUseEndEvent as ProviderToolUseEnd
+from openstarry_code.provider import ToolUseStartEvent as ProviderToolUseStart
 
 
 class _SequenceProvider:

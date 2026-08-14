@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 
-from opensquilla.channels.manager import ChannelManager
+from openstarry_code.channels.manager import ChannelManager
 
 
 def test_channel_session_key_prefers_explicit_direct_metadata() -> None:

@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from opensquilla.uninstall import inventory
-from opensquilla.uninstall.inventory import METHOD_PIP, METHOD_UNKNOWN, METHOD_UV_TOOL
-from opensquilla.uninstall.receipt import build_receipt, read_receipt, write_receipt
+from openstarry_code.uninstall import inventory
+from openstarry_code.uninstall.inventory import METHOD_PIP, METHOD_UNKNOWN, METHOD_UV_TOOL
+from openstarry_code.uninstall.receipt import build_receipt, read_receipt, write_receipt
 
 
 def test_receipt_round_trip(tmp_path: Path) -> None:
@@ -32,9 +32,9 @@ def test_read_receipt_missing_or_malformed(tmp_path: Path) -> None:
 
 def test_detect_uses_receipt_hint_only_when_unknown(monkeypatch) -> None:
     for var in (
-        "OPENSQUILLA_INSTALL_METHOD",
-        "OPENSQUILLA_DESKTOP",
-        "OPENSQUILLA_RUNNING_IN_CONTAINER",
+        "OPENSTARRY_CODE_INSTALL_METHOD",
+        "OPENSTARRY_CODE_DESKTOP",
+        "OPENSTARRY_CODE_RUNNING_IN_CONTAINER",
     ):
         monkeypatch.delenv(var, raising=False)
     monkeypatch.setattr(inventory, "_docker_image_install", lambda: False)

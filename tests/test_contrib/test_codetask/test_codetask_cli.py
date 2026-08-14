@@ -1,4 +1,4 @@
-"""Unit tests for the `opensquilla code-task` CLI subcommand."""
+"""Unit tests for the `openstarry-code code-task` CLI subcommand."""
 
 import subprocess
 import sys
@@ -7,8 +7,8 @@ from pathlib import Path
 import pytest
 from typer.testing import CliRunner
 
-import opensquilla.cli.codetask_cmd as codetask_cmd
-from opensquilla.cli.codetask_cmd import codetask_app
+import openstarry_code.cli.codetask_cmd as codetask_cmd
+from openstarry_code.cli.codetask_cmd import codetask_app
 
 runner = CliRunner()
 
@@ -178,8 +178,8 @@ def test_json_stdout_is_clean_with_marker_on_stderr(monkeypatch):
     # stderr so a consumer reading stdout alone still gets parseable JSON.
     import json as _json
 
-    import opensquilla.contrib.codetask.runner as ct_runner
-    from opensquilla.contrib.codetask.types import TaskResult, TaskState
+    import openstarry_code.contrib.codetask.runner as ct_runner
+    from openstarry_code.contrib.codetask.types import TaskResult, TaskState
 
     fake = TaskResult(
         task_slug="x",
@@ -236,8 +236,8 @@ def test_non_tty_stdin_refuses_confirm(monkeypatch):
 def test_non_tty_stdin_with_yes_proceeds(monkeypatch):
     """The non-TTY gate is bypassed when --yes is explicit — same as the
     interactive flow. Sanity-check that the gate isn't over-broad."""
-    import opensquilla.contrib.codetask.runner as ct_runner
-    from opensquilla.contrib.codetask.types import TaskResult, TaskState
+    import openstarry_code.contrib.codetask.runner as ct_runner
+    from openstarry_code.contrib.codetask.types import TaskResult, TaskState
 
     fake = TaskResult(
         task_slug="x", run_id="codetask-task-fake", state=TaskState.VERIFIED,
@@ -285,8 +285,8 @@ def test_cli_main_does_not_import_codetask():
             sys.executable,
             "-c",
             "import sys\n"
-            "import opensquilla.cli.main\n"
-            "assert 'opensquilla.contrib.codetask' not in sys.modules, "
+            "import openstarry_code.cli.main\n"
+            "assert 'openstarry_code.contrib.codetask' not in sys.modules, "
             "'CLI registration must stay lazy'\n",
         ],
         capture_output=True,

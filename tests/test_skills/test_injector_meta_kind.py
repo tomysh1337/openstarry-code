@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from opensquilla.skills.injector import SkillInjector
-from opensquilla.skills.types import SkillLayer, SkillSpec
+from openstarry_code.skills.injector import SkillInjector
+from openstarry_code.skills.types import SkillLayer, SkillSpec
 
 
 def _skill(name: str, *, kind: str = "skill") -> SkillSpec:

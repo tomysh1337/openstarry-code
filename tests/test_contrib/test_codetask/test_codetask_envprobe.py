@@ -1,6 +1,6 @@
-"""Unit tests for opensquilla.contrib.codetask.envprobe."""
+"""Unit tests for openstarry_code.contrib.codetask.envprobe."""
 
-from opensquilla.contrib.codetask import envprobe
+from openstarry_code.contrib.codetask import envprobe
 
 
 def _make_repo(tmp_path, files):

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from opensquilla.cli.repl.session_state import PromptState, _model_alias
+from openstarry_code.cli.repl.session_state import PromptState, _model_alias
 
 
 def test_alias_none_returns_ellipsis() -> None:

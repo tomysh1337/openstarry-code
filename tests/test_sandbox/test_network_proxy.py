@@ -7,8 +7,8 @@ from contextlib import suppress
 
 import pytest
 
-from opensquilla.sandbox.network_guard import NetworkDecision
-from opensquilla.sandbox.network_proxy import SandboxProxyServer
+from openstarry_code.sandbox.network_guard import NetworkDecision
+from openstarry_code.sandbox.network_proxy import SandboxProxyServer
 
 _UPSTREAM_PROXY_ENV_KEYS = (
     "HTTPS_PROXY",
@@ -57,7 +57,7 @@ def _fake_getaddrinfo(address: str):
 def test_proxy_resolver_allows_rfc2544_fake_ip_dns_by_default(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox import network_proxy as mod
+    from openstarry_code.sandbox import network_proxy as mod
 
     monkeypatch.setattr(mod.socket, "getaddrinfo", _fake_getaddrinfo("198.18.0.24"))
 
@@ -66,7 +66,7 @@ def test_proxy_resolver_allows_rfc2544_fake_ip_dns_by_default(
 
 @pytest.mark.parametrize("cgnat_ip", ["100.64.0.1", "100.127.255.254"])
 def test_proxy_resolver_fails_closed_on_rfc6598_cgnat_range(cgnat_ip: str) -> None:
-    from opensquilla.sandbox import network_proxy as mod
+    from openstarry_code.sandbox import network_proxy as mod
 
     trusted = mod._trusted_fake_ip_networks()
     reason = mod._unsafe_resolved_address_reason(ipaddress.ip_address(cgnat_ip), trusted)

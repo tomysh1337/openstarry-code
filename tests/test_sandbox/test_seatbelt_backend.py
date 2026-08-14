@@ -11,22 +11,22 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.sandbox.backend import seatbelt as seatbelt_mod
-from opensquilla.sandbox.backend import select_backend
-from opensquilla.sandbox.backend.seatbelt import (
+from openstarry_code.sandbox.backend import seatbelt as seatbelt_mod
+from openstarry_code.sandbox.backend import select_backend
+from openstarry_code.sandbox.backend.seatbelt import (
     SeatbeltBackend,
     _classify_denial,
     build_seatbelt_argv,
     render_seatbelt_profile,
 )
-from opensquilla.sandbox.config import SandboxSettings
-from opensquilla.sandbox.operation_runtime import SandboxOperation, SandboxOperationResult
-from opensquilla.sandbox.permissions import (
+from openstarry_code.sandbox.config import SandboxSettings
+from openstarry_code.sandbox.operation_runtime import SandboxOperation, SandboxOperationResult
+from openstarry_code.sandbox.permissions import (
     FileSystemAccess,
     FileSystemPermissionEntry,
     FileSystemPermissionProfile,
 )
-from opensquilla.sandbox.types import (
+from openstarry_code.sandbox.types import (
     MountSpec,
     NetworkMode,
     NetworkProxySpec,
@@ -149,7 +149,7 @@ def test_available_false_on_macos_when_sandbox_exec_missing(
 def test_auto_selects_seatbelt_on_macos_when_available(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox import backend as backend_mod
+    from openstarry_code.sandbox import backend as backend_mod
 
     monkeypatch.setattr(backend_mod.sys, "platform", "darwin")
     monkeypatch.setattr(backend_mod.SeatbeltBackend, "available", lambda self: True)
@@ -162,7 +162,7 @@ def test_auto_selects_seatbelt_on_macos_when_available(
 def test_explicit_seatbelt_fails_closed_when_unavailable(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox import backend as backend_mod
+    from openstarry_code.sandbox import backend as backend_mod
 
     monkeypatch.setattr(backend_mod.SeatbeltBackend, "available", lambda self: False)
 
@@ -1038,7 +1038,7 @@ def test_filesystem_worker_runtime_roots_cover_python_and_import_closure(
     base_bin = base_prefix / "bin"
     stdlib = tmp_path / "python" / "lib" / "stdlib"
     purelib = venv / "site-packages"
-    package = tmp_path / "checkout" / "src" / "opensquilla"
+    package = tmp_path / "checkout" / "src" / "openstarry_code"
     source = package.parent
     for root in (python_dir, base_bin, stdlib, purelib, package):
         root.mkdir(parents=True, exist_ok=True)
@@ -1100,7 +1100,7 @@ def test_filesystem_worker_argv_uses_python_module_outside_frozen_runtime(
     assert seatbelt_mod._filesystem_worker_argv() == (
         str(seatbelt_mod._python_executable()),
         "-m",
-        "opensquilla.sandbox.filesystem_worker",
+        "openstarry_code.sandbox.filesystem_worker",
         "-",
     )
 
@@ -1257,7 +1257,7 @@ async def test_run_injects_proxy_env_for_proxy_allowlist(
     ):
         assert env[key] == "http://127.0.0.1:18080"
     assert env["NODE_USE_ENV_PROXY"] == "1"
-    assert env["OPENSQUILLA_SANDBOX_NETWORK"] == "proxy_allowlist"
+    assert env["OPENSTARRY_CODE_SANDBOX_NETWORK"] == "proxy_allowlist"
     assert "http://attacker.invalid:1" not in env.values()
 
 
@@ -1359,9 +1359,9 @@ async def test_real_seatbelt_frozen_filesystem_worker_entry(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    binary = os.environ.get("OPENSQUILLA_PACKAGED_GATEWAY_BINARY", "")
+    binary = os.environ.get("OPENSTARRY_CODE_PACKAGED_GATEWAY_BINARY", "")
     if not binary:
-        pytest.skip("requires OPENSQUILLA_PACKAGED_GATEWAY_BINARY")
+        pytest.skip("requires OPENSTARRY_CODE_PACKAGED_GATEWAY_BINARY")
     packaged_gateway = Path(binary).resolve()
     if not packaged_gateway.is_file():
         pytest.skip("packaged gateway binary is unavailable")
@@ -1938,7 +1938,7 @@ async def test_run_operation_delegates_filesystem_to_seatbelt_worker(
     assert request.argv == (
         str(seatbelt_mod._python_executable()),
         "-m",
-        "opensquilla.sandbox.filesystem_worker",
+        "openstarry_code.sandbox.filesystem_worker",
         "-",
     )
     assert request.stdin == json.dumps(operation.to_payload(), ensure_ascii=False).encode("utf-8")
@@ -2009,7 +2009,7 @@ async def test_run_operation_delegates_filesystem_to_seatbelt_worker(
         "include": None,
         "maxResults": None,
     }
-    assert not (workspace / ".opensquilla-cache").exists()
+    assert not (workspace / ".openstarry-code-cache").exists()
 
 
 def test_filesystem_worker_transport_validator_binds_launch_capability(
@@ -2104,7 +2104,7 @@ async def test_run_operation_does_not_touch_inserted_cache_symlink(
     replacement = tmp_path / "replacement"
     workspace.mkdir()
     replacement.mkdir()
-    cache_link = workspace / ".opensquilla-cache"
+    cache_link = workspace / ".openstarry-code-cache"
     try:
         probe = tmp_path / "symlink-probe"
         probe.symlink_to(replacement, target_is_directory=True)
@@ -2171,7 +2171,7 @@ async def test_run_operation_fails_closed_without_resolved_profile(tmp_path: Pat
     workspace = tmp_path / "workspace"
     workspace.mkdir()
     target = workspace / "notes.txt"
-    worker_root = workspace / ".opensquilla-cache" / "fs-worker"
+    worker_root = workspace / ".openstarry-code-cache" / "fs-worker"
 
     with pytest.raises(
         ValueError,
@@ -2193,7 +2193,7 @@ def test_filesystem_operation_request_construction_has_no_host_side_effects(
     tmp_path: Path,
 ) -> None:
     workspace = tmp_path / "workspace"
-    worker_root = workspace / ".opensquilla-cache" / "fs-worker"
+    worker_root = workspace / ".openstarry-code-cache" / "fs-worker"
     target = workspace / "notes.txt"
     workspace.mkdir()
     profile = FileSystemPermissionProfile.workspace(workspace=workspace)
@@ -2221,7 +2221,7 @@ async def test_run_operation_preflights_denied_globs_without_side_effects(
     tmp_path: Path,
 ) -> None:
     workspace = tmp_path / "workspace"
-    worker_root = workspace / ".opensquilla-cache" / "fs-worker"
+    worker_root = workspace / ".openstarry-code-cache" / "fs-worker"
     target = workspace / "notes.txt"
     workspace.mkdir()
     target.write_text("hello", encoding="utf-8")
@@ -2249,7 +2249,7 @@ async def test_run_operation_preflights_unrelated_invalid_profile_path_without_s
     tmp_path: Path,
 ) -> None:
     workspace = tmp_path / "workspace"
-    worker_root = workspace / ".opensquilla-cache" / "fs-worker"
+    worker_root = workspace / ".openstarry-code-cache" / "fs-worker"
     target = workspace / "notes.txt"
     unsafe = tmp_path / "unrelated\x01path"
     workspace.mkdir()
@@ -2284,7 +2284,7 @@ def test_filesystem_preflight_rejects_every_control_character_in_profile_paths(
     tmp_path: Path,
 ) -> None:
     workspace = tmp_path / "workspace"
-    worker_root = workspace / ".opensquilla-cache" / "fs-worker"
+    worker_root = workspace / ".openstarry-code-cache" / "fs-worker"
     target = workspace / "notes.txt"
     unsafe = tmp_path / f"unrelated{control}path"
     workspace.mkdir()
@@ -2318,7 +2318,7 @@ def test_filesystem_operation_rejects_control_characters_in_targets_before_side_
     tmp_path: Path,
 ) -> None:
     workspace = tmp_path / "workspace"
-    worker_root = workspace / ".opensquilla-cache" / "fs-worker"
+    worker_root = workspace / ".openstarry-code-cache" / "fs-worker"
     target = workspace / f"unsafe{control}path"
     workspace.mkdir()
     operation = SandboxOperation.filesystem(
@@ -2423,7 +2423,7 @@ def test_apply_patch_preflights_each_logical_path_before_resolving_target(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    from opensquilla.tools.builtin import patch as patch_tool
+    from openstarry_code.tools.builtin import patch as patch_tool
 
     workspace = tmp_path / "workspace"
     original_target = workspace / "original-target"
@@ -2509,7 +2509,7 @@ async def test_run_operation_rejects_inconsistent_declared_paths_without_side_ef
     tmp_path: Path,
 ) -> None:
     workspace = tmp_path / "workspace"
-    worker_root = workspace / ".opensquilla-cache" / "fs-worker"
+    worker_root = workspace / ".openstarry-code-cache" / "fs-worker"
     actual = workspace / "actual.txt"
     other = workspace / "other.txt"
     workspace.mkdir()
@@ -2542,7 +2542,7 @@ async def test_run_operation_rejects_missing_path_without_side_effects(
     tmp_path: Path,
 ) -> None:
     workspace = tmp_path / "workspace"
-    worker_root = workspace / ".opensquilla-cache" / "fs-worker"
+    worker_root = workspace / ".openstarry-code-cache" / "fs-worker"
     workspace.mkdir()
     operation = SandboxOperation.filesystem(
         kind="read_file",
@@ -2561,7 +2561,7 @@ async def test_run_operation_derives_apply_patch_targets_from_patch_text(
     tmp_path: Path,
 ) -> None:
     workspace = tmp_path / "workspace"
-    worker_root = workspace / ".opensquilla-cache" / "fs-worker"
+    worker_root = workspace / ".openstarry-code-cache" / "fs-worker"
     actual = workspace / "created.txt"
     falsely_declared = workspace / "other.txt"
     workspace.mkdir()
@@ -2590,7 +2590,7 @@ async def test_run_operation_rejects_apply_patch_without_root_before_side_effect
     tmp_path: Path,
 ) -> None:
     workspace = tmp_path / "workspace"
-    worker_root = workspace / ".opensquilla-cache" / "fs-worker"
+    worker_root = workspace / ".openstarry-code-cache" / "fs-worker"
     workspace.mkdir()
     patch = """*** Begin Patch
 *** Add File: created.txt
@@ -2613,7 +2613,7 @@ def test_filesystem_operation_ignores_denied_legacy_cache_without_transport(
     tmp_path: Path,
 ) -> None:
     workspace = tmp_path / "workspace"
-    worker_root = workspace / ".opensquilla-cache" / "fs-worker"
+    worker_root = workspace / ".openstarry-code-cache" / "fs-worker"
     target = workspace / "notes.txt"
     workspace.mkdir()
     target.write_text("hello", encoding="utf-8")
@@ -2641,7 +2641,7 @@ def test_filesystem_operation_ignores_readonly_legacy_cache_without_transport(
     tmp_path: Path,
 ) -> None:
     workspace = tmp_path / "workspace"
-    worker_root = workspace / ".opensquilla-cache" / "fs-worker"
+    worker_root = workspace / ".openstarry-code-cache" / "fs-worker"
     target = workspace / "notes.txt"
     workspace.mkdir()
     profile = FileSystemPermissionProfile(
@@ -2702,7 +2702,7 @@ def test_filesystem_operation_rejects_denied_read_target_in_private_runtime(
     tmp_path: Path,
 ) -> None:
     workspace = tmp_path / "workspace"
-    worker_root = workspace / ".opensquilla-cache" / "fs-worker"
+    worker_root = workspace / ".openstarry-code-cache" / "fs-worker"
     runtime_root = tmp_path / "runtime"
     target = runtime_root / "secret.txt"
     workspace.mkdir()
@@ -2737,7 +2737,7 @@ def test_filesystem_operation_rejects_write_target_in_readonly_runtime(
     tmp_path: Path,
 ) -> None:
     workspace = tmp_path / "workspace"
-    worker_root = workspace / ".opensquilla-cache" / "fs-worker"
+    worker_root = workspace / ".openstarry-code-cache" / "fs-worker"
     runtime_root = tmp_path / "runtime"
     target = runtime_root / "generated.txt"
     workspace.mkdir()
@@ -2768,7 +2768,7 @@ def test_filesystem_operation_rejects_readonly_write_target_in_legacy_cache(
     tmp_path: Path,
 ) -> None:
     workspace = tmp_path / "workspace"
-    worker_root = workspace / ".opensquilla-cache" / "fs-worker"
+    worker_root = workspace / ".openstarry-code-cache" / "fs-worker"
     target = worker_root / "notes.txt"
     workspace.mkdir()
     profile = FileSystemPermissionProfile.read_only()
@@ -2790,7 +2790,7 @@ def test_filesystem_operation_allows_profile_write_target_in_legacy_cache(
     tmp_path: Path,
 ) -> None:
     workspace = tmp_path / "workspace"
-    worker_root = workspace / ".opensquilla-cache" / "fs-worker"
+    worker_root = workspace / ".openstarry-code-cache" / "fs-worker"
     target = worker_root / "notes.txt"
     workspace.mkdir()
     profile = FileSystemPermissionProfile(

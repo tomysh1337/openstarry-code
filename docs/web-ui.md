@@ -47,7 +47,7 @@ The source installers run the following automatically and then package the
 result with OpenSquilla:
 
 ```sh
-cd opensquilla-webui
+cd openstarry-code-webui
 npm ci
 npm run build
 ```

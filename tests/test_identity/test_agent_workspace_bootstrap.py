@@ -7,8 +7,8 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.identity.bootstrap import ensure_agent_workspace
-from opensquilla.identity.workspace import load_workspace_files
+from openstarry_code.identity.bootstrap import ensure_agent_workspace
+from openstarry_code.identity.workspace import load_workspace_files
 
 
 def _windows_native_path(path: Path) -> str:
@@ -66,7 +66,7 @@ def test_extended_length_workspace_bootstrap_keeps_logical_paths(tmp_path: Path)
         result = ensure_agent_workspace(workspace)
 
         assert result.workspace_dir == workspace
-        assert result.state_path == workspace / ".opensquilla" / "workspace-state.json"
+        assert result.state_path == workspace / ".openstarry-code" / "workspace-state.json"
         assert result.bootstrap_path == workspace / "BOOTSTRAP.md"
         assert not str(result.workspace_dir).startswith("\\\\?\\")
         assert os.path.isfile(_windows_native_path(workspace / "AGENTS.md"))

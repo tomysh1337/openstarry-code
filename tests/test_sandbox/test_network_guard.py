@@ -4,17 +4,17 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.sandbox.default_allowlist import default_allowlist_payload
-from opensquilla.sandbox.domain_validation import domain_matches
-from opensquilla.sandbox.network_guard import NetworkDecision, decide_network_access
-from opensquilla.sandbox.package_bundles import expand_package_bundle
-from opensquilla.sandbox.run_context import (
+from openstarry_code.sandbox.default_allowlist import default_allowlist_payload
+from openstarry_code.sandbox.domain_validation import domain_matches
+from openstarry_code.sandbox.network_guard import NetworkDecision, decide_network_access
+from openstarry_code.sandbox.package_bundles import expand_package_bundle
+from openstarry_code.sandbox.run_context import (
     DomainGrant,
     PackageBundleGrant,
     PublicNetworkGrant,
     RunContext,
 )
-from opensquilla.sandbox.run_mode import RunMode
+from openstarry_code.sandbox.run_mode import RunMode
 
 
 class _SessionManager:
@@ -191,7 +191,7 @@ def test_standard_public_network_grant_does_not_override_validation_block() -> N
 
 
 def test_default_open_domain_does_not_build_network_escalation() -> None:
-    from opensquilla.sandbox.escalation import build_network_approval_params
+    from openstarry_code.sandbox.escalation import build_network_approval_params
 
     decision = decide_network_access("example.com", _context())
 
@@ -206,7 +206,7 @@ def test_default_open_domain_does_not_build_network_escalation() -> None:
 
 
 def test_blocked_network_decision_has_no_escalation_choices() -> None:
-    from opensquilla.sandbox.escalation import build_network_approval_params
+    from openstarry_code.sandbox.escalation import build_network_approval_params
 
     decision = decide_network_access("127.0.0.1", _context())
 
@@ -342,8 +342,8 @@ def test_safe_sandbox_keeps_sources_for_recognized_hosts() -> None:
 
 @pytest.mark.asyncio
 async def test_trusted_sandbox_auto_trust_persists_chat_scoped_grant() -> None:
-    from opensquilla.sandbox.run_context import get_run_context
-    from opensquilla.sandbox.run_context_service import auto_add_trusted_domain_grant
+    from openstarry_code.sandbox.run_context import get_run_context
+    from openstarry_code.sandbox.run_context_service import auto_add_trusted_domain_grant
 
     manager = _SessionManager()
     config = SimpleNamespace(
@@ -377,8 +377,8 @@ async def test_trusted_sandbox_auto_trust_persists_chat_scoped_grant() -> None:
 
 @pytest.mark.asyncio
 async def test_trusted_sandbox_auto_trust_idempotent_second_call_does_not_mutate() -> None:
-    from opensquilla.sandbox.run_context import get_run_context
-    from opensquilla.sandbox.run_context_service import auto_add_trusted_domain_grant
+    from openstarry_code.sandbox.run_context import get_run_context
+    from openstarry_code.sandbox.run_context_service import auto_add_trusted_domain_grant
 
     manager = _SessionManager()
     config = SimpleNamespace(
@@ -437,8 +437,8 @@ async def test_trusted_sandbox_auto_trust_idempotent_second_call_does_not_mutate
 
 @pytest.mark.asyncio
 async def test_trusted_sandbox_auto_trust_does_not_persist_unsafe_hosts() -> None:
-    from opensquilla.sandbox.run_context import get_run_context
-    from opensquilla.sandbox.run_context_service import auto_add_trusted_domain_grant
+    from openstarry_code.sandbox.run_context import get_run_context
+    from openstarry_code.sandbox.run_context_service import auto_add_trusted_domain_grant
 
     config = SimpleNamespace(
         sandbox=SimpleNamespace(run_mode="trusted"),

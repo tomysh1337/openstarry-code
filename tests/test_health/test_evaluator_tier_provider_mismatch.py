@@ -13,7 +13,7 @@ from typing import Any
 
 import pytest
 
-from opensquilla.health.evaluator import evaluate_router
+from openstarry_code.health.evaluator import evaluate_router
 
 
 def router_payload(**overrides: Any) -> dict[str, Any]:
@@ -51,7 +51,7 @@ def test_mismatch_advisory_emitted_alongside_ready() -> None:
     assert advisory.evidence["mismatchedTierProviders"] == {"c2": "otherprov"}
     commands = [step.command for step in advisory.fix_steps if step.command]
     assert (
-        "opensquilla config set squilla_router.tier_provider_mismatch veto" in commands
+        "openstarry-code config set squilla_router.tier_provider_mismatch veto" in commands
     )
 
 
@@ -96,10 +96,10 @@ def test_legacy_payload_without_new_keys_is_unchanged() -> None:
 def test_router_payload_carries_mismatch_evidence(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.gateway.boot as boot
-    import opensquilla.gateway.rpc_doctor as rpc_doctor
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.gateway.rpc import RpcContext
+    import openstarry_code.gateway.boot as boot
+    import openstarry_code.gateway.rpc_doctor as rpc_doctor
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.gateway.rpc import RpcContext
 
     monkeypatch.setattr(boot, "validate_squilla_router_runtime", lambda config: None)
     monkeypatch.setattr(

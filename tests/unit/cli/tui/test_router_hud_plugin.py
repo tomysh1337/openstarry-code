@@ -5,27 +5,27 @@ from typing import Any
 
 import pytest
 
-from opensquilla.cli.chat.turn_stream import (
+from openstarry_code.cli.chat.turn_stream import (
     default_turn_stream_dependencies,
     stream_response_gateway,
     stream_response_turnrunner,
 )
-from opensquilla.cli.tui.adapters.turn_stream_defaults import router_hud_event_sink_factory
-from opensquilla.cli.tui.backend.domain_events import (
+from openstarry_code.cli.tui.adapters.turn_stream_defaults import router_hud_event_sink_factory
+from openstarry_code.cli.tui.backend.domain_events import (
     KIND_DONE,
     KIND_ROUTER_DECISION,
     KIND_TEXT_FLUSH,
     TuiDomainEvent,
     now_ms,
 )
-from opensquilla.cli.tui.backend.plugins import TuiPluginManager
-from opensquilla.cli.tui.plugins.router_hud import (
+from openstarry_code.cli.tui.backend.plugins import TuiPluginManager
+from openstarry_code.cli.tui.plugins.router_hud import (
     ROUTER_HUD_SLOT,
     RouterHudPlugin,
     RouterHudSnapshot,
 )
-from opensquilla.engine.types import DoneEvent, RouterDecisionEvent
-from opensquilla.tools.types import CallerKind, ToolContext
+from openstarry_code.engine.types import DoneEvent, RouterDecisionEvent
+from openstarry_code.tools.types import CallerKind, ToolContext
 
 ROUTER_PAYLOAD: dict[str, object] = {
     "tier": "t2",
@@ -115,7 +115,7 @@ async def test_turnrunner_stream_surfaces_matching_router_decision_domain_event(
 ) -> None:
     router_event = RouterDecisionEvent(**ROUTER_PAYLOAD)
     turn_runner = _TurnRunner([router_event, DoneEvent(model="anthropic/claude-sonnet-4.6")])
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", _TurnRunner)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", _TurnRunner)
     events: list[TuiDomainEvent] = []
     deps = default_turn_stream_dependencies(
         stream_wrapper=lambda stream, _svc: stream,

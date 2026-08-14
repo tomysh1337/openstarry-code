@@ -14,7 +14,7 @@ from unittest.mock import patch
 
 import pytest
 
-from opensquilla.gateway.transcripts import _atomic_write_bytes
+from openstarry_code.gateway.transcripts import _atomic_write_bytes
 
 # ---------------------------------------------------------------------------
 # write_uses_replace
@@ -25,7 +25,7 @@ def test_write_uses_replace(tmp_path: Path) -> None:
     target = tmp_path / "target.bin"
     data = b"hello atomic"
 
-    with patch("opensquilla.gateway.transcripts.os.replace", wraps=os.replace) as mock_replace:
+    with patch("openstarry_code.gateway.transcripts.os.replace", wraps=os.replace) as mock_replace:
         _atomic_write_bytes(target, data)
         mock_replace.assert_called_once()
         # First arg of the call must differ from target (it's the tmp path)

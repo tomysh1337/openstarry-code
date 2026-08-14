@@ -13,19 +13,19 @@ from typing import Any
 
 import pytest
 
-from opensquilla.gateway.boot import build_services
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.provider.model_catalog import set_shared_catalog
-from opensquilla.provider.tokenrhythm_catalog import (
+from openstarry_code.gateway.boot import build_services
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.provider.model_catalog import set_shared_catalog
+from openstarry_code.provider.tokenrhythm_catalog import (
     parse_tokenrhythm_declared,
     parse_tokenrhythm_published,
 )
-from opensquilla.sandbox.integration import reset_runtime
+from openstarry_code.sandbox.integration import reset_runtime
 
 
 @pytest.fixture(autouse=True)
 def _clear_shared_catalog():
-    from opensquilla.gateway.model_catalog_refresh import (
+    from openstarry_code.gateway.model_catalog_refresh import (
         install_tokenrhythm_catalog_coordinator,
     )
 
@@ -50,7 +50,7 @@ def _deny_background_sandbox_setup(monkeypatch: pytest.MonkeyPatch) -> None:
         raise AssertionError("unit tests must not schedule real sandbox setup")
 
     monkeypatch.setattr(
-        "opensquilla.gateway.boot.create_background_task",
+        "openstarry_code.gateway.boot.create_background_task",
         fail_background_sandbox_setup,
     )
 
@@ -59,7 +59,7 @@ def _deny_background_sandbox_setup(monkeypatch: pytest.MonkeyPatch) -> None:
 async def test_keyless_boot_never_fetches_live_catalog(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "state"))
 
     _deny_background_sandbox_setup(monkeypatch)
 
@@ -70,11 +70,11 @@ async def test_keyless_boot_never_fetches_live_catalog(
         return {}
 
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
         recording_fetch,
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
         recording_fetch,
     )
 
@@ -106,7 +106,7 @@ async def test_keyless_boot_never_fetches_live_catalog(
 async def test_configured_boot_ingests_live_qwen_limit(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "state"))
     _deny_background_sandbox_setup(monkeypatch)
 
     fetches: list[str] = []
@@ -142,11 +142,11 @@ async def test_configured_boot_ingests_live_qwen_limit(
         )
 
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
         fake_public,
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
         fake_declared,
     )
     config = GatewayConfig(
@@ -178,8 +178,8 @@ async def test_configured_boot_ingests_live_qwen_limit(
 async def test_desktop_deferred_warm_uses_key_saved_after_build(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "state"))
-    monkeypatch.setenv("OPENSQUILLA_DESKTOP_FAST_START", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_DESKTOP_FAST_START", "1")
     _deny_background_sandbox_setup(monkeypatch)
 
     fetches: list[str] = []
@@ -214,11 +214,11 @@ async def test_desktop_deferred_warm_uses_key_saved_after_build(
         )
 
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
         fake_public,
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
         fake_declared,
     )
     config = GatewayConfig(

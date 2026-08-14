@@ -9,11 +9,11 @@ import sys
 import threading
 from pathlib import Path
 
-from opensquilla.contrib.codetask import config, runner, verification
-from opensquilla.contrib.codetask.types import AgentOutcome, TaskState
-from opensquilla.paths import default_opensquilla_home
-from opensquilla.recovery.errors import ProfileLockBusyError
-from opensquilla.recovery.locking import ProfileOperationLock
+from openstarry_code.contrib.codetask import config, runner, verification
+from openstarry_code.contrib.codetask.types import AgentOutcome, TaskState
+from openstarry_code.paths import default_opensquilla_home
+from openstarry_code.recovery.errors import ProfileLockBusyError
+from openstarry_code.recovery.locking import ProfileOperationLock
 
 
 class _OfflineAdapter:
@@ -71,7 +71,7 @@ class _OfflineAdapter:
 def test_scratch_runner_e2e_offline_adapter_verifies(monkeypatch, tmp_path) -> None:
     run_id = "codetask-offline-e2e"
     runs_dir = tmp_path / "runs"
-    monkeypatch.setenv("OPENSQUILLA_CODETASK_RUNS_DIR", str(runs_dir))
+    monkeypatch.setenv("OPENSTARRY_CODE_CODETASK_RUNS_DIR", str(runs_dir))
     monkeypatch.setattr(runner, "LocalAdapter", _OfflineAdapter)
 
     result = runner.solve(
@@ -105,9 +105,9 @@ def test_runner_holds_profile_lock_while_adapter_runs(monkeypatch, tmp_path) -> 
     run_id = "codetask-lock-e2e"
     runs_dir = tmp_path / "runs"
     observed: list[str] = []
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "profile"))
-    monkeypatch.setenv("OPENSQUILLA_CODETASK_RUNS_DIR", str(runs_dir))
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "user-state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "profile"))
+    monkeypatch.setenv("OPENSTARRY_CODE_CODETASK_RUNS_DIR", str(runs_dir))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "user-state"))
 
     class _LockProbeAdapter(_OfflineAdapter):
         def run(self, prompt, *, repo: Path, scratch_dir: Path, artifact_dir: Path):

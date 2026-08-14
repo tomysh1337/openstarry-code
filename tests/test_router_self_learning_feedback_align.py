@@ -9,7 +9,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from opensquilla.squilla_router.self_learning.alignment import (
+from openstarry_code.squilla_router.self_learning.alignment import (
     REASON_CONFIDENCE_BACKOFF,
     REASON_EXPLICIT_DOWNVOTE,
     REASON_EXPLICIT_DOWNVOTE_ENSEMBLE,
@@ -21,8 +21,8 @@ from opensquilla.squilla_router.self_learning.alignment import (
     REASON_RETROSPECTIVE,
     align_session,
 )
-from opensquilla.squilla_router.self_learning.feedback import FeedbackEntry
-from opensquilla.squilla_router.self_learning.schema import (
+from openstarry_code.squilla_router.self_learning.feedback import FeedbackEntry
+from openstarry_code.squilla_router.self_learning.schema import (
     RouterTrainSample,
     encode_features,
 )
@@ -231,8 +231,8 @@ def test_upvote_overrides_backoff() -> None:
 
 def _weights_for(aligned_reasons_and_flags):
     """Build minimal AlignedSample list and run _compute_weights."""
-    from opensquilla.squilla_router.self_learning.alignment import AlignedSample
-    from opensquilla.squilla_router.self_learning.dataset import _compute_weights
+    from openstarry_code.squilla_router.self_learning.alignment import AlignedSample
+    from openstarry_code.squilla_router.self_learning.dataset import _compute_weights
 
     aligned = []
     for i, (reason, confirmed) in enumerate(aligned_reasons_and_flags):
@@ -280,8 +280,8 @@ def test_unconfirmed_downvote_halved() -> None:
 
 def test_upvote_flood_damping() -> None:
     """Identical feature vectors: repeated up-votes are damped like normals."""
-    from opensquilla.squilla_router.self_learning.alignment import AlignedSample
-    from opensquilla.squilla_router.self_learning.dataset import _compute_weights
+    from openstarry_code.squilla_router.self_learning.alignment import AlignedSample
+    from openstarry_code.squilla_router.self_learning.dataset import _compute_weights
 
     aligned = [
         AlignedSample(
@@ -307,9 +307,9 @@ def test_upvote_flood_damping() -> None:
 
 
 def test_build_dataset_joins_feedback(tmp_path) -> None:
-    from opensquilla.squilla_router.self_learning.dataset import build_training_dataset
-    from opensquilla.squilla_router.self_learning.feedback import write_feedback
-    from opensquilla.squilla_router.self_learning.store import write_sample
+    from openstarry_code.squilla_router.self_learning.dataset import build_training_dataset
+    from openstarry_code.squilla_router.self_learning.feedback import write_feedback
+    from openstarry_code.squilla_router.self_learning.store import write_sample
 
     for turn in range(3):
         write_sample(_sample(turn, route="R0", seed=float(turn)), "main", home=tmp_path)
@@ -333,8 +333,8 @@ def test_build_dataset_joins_feedback(tmp_path) -> None:
 
 def test_build_dataset_without_feedback_unchanged(tmp_path) -> None:
     """No sidecar present: dataset identical to the pre-feedback pipeline."""
-    from opensquilla.squilla_router.self_learning.dataset import build_training_dataset
-    from opensquilla.squilla_router.self_learning.store import write_sample
+    from openstarry_code.squilla_router.self_learning.dataset import build_training_dataset
+    from openstarry_code.squilla_router.self_learning.store import write_sample
 
     for turn in range(3):
         write_sample(_sample(turn, route="R0", seed=float(turn)), "main", home=tmp_path)
@@ -352,7 +352,7 @@ def test_build_dataset_without_feedback_unchanged(tmp_path) -> None:
 def test_downvote_rate_triggers_rollback() -> None:
     from types import SimpleNamespace
 
-    from opensquilla.squilla_router.self_learning.promotion import should_rollback
+    from openstarry_code.squilla_router.self_learning.promotion import should_rollback
 
     cfg = SimpleNamespace()
     # Complaint rate flat; downvote rate jumped 0.0 -> 0.4 on 6 ratings.
@@ -370,7 +370,7 @@ def test_downvote_rate_triggers_rollback() -> None:
 def test_downvote_trigger_respects_min_samples() -> None:
     from types import SimpleNamespace
 
-    from opensquilla.squilla_router.self_learning.promotion import should_rollback
+    from openstarry_code.squilla_router.self_learning.promotion import should_rollback
 
     assert not should_rollback(
         pre_complaint_rate=0.1,
@@ -386,7 +386,7 @@ def test_downvote_trigger_respects_min_samples() -> None:
 def test_complaint_trigger_unchanged() -> None:
     from types import SimpleNamespace
 
-    from opensquilla.squilla_router.self_learning.promotion import should_rollback
+    from openstarry_code.squilla_router.self_learning.promotion import should_rollback
 
     assert should_rollback(
         pre_complaint_rate=0.1,
@@ -408,9 +408,9 @@ def test_complaint_trigger_unchanged() -> None:
 
 
 def test_gate_counts_feedback_down_toward_volume() -> None:
-    from opensquilla.gateway.config import RouterSelfLearningConfig
-    from opensquilla.squilla_router.self_learning.gates import evaluate_training_gates
-    from opensquilla.squilla_router.self_learning.state import EventStoreStats, TrainState
+    from openstarry_code.gateway.config import RouterSelfLearningConfig
+    from openstarry_code.squilla_router.self_learning.gates import evaluate_training_gates
+    from openstarry_code.squilla_router.self_learning.state import EventStoreStats, TrainState
 
     cfg = RouterSelfLearningConfig(
         enabled=True, train_min_samples=10, idle_hours=0.0, cooldown_hours=0.0
@@ -438,7 +438,7 @@ def test_gate_counts_feedback_down_toward_volume() -> None:
 
 
 def _write_min_store(tmp_path, n_high=8) -> None:
-    from opensquilla.squilla_router.self_learning.store import write_sample
+    from openstarry_code.squilla_router.self_learning.store import write_sample
 
     for i in range(n_high):
         s = RouterTrainSample(
@@ -467,13 +467,13 @@ def _write_min_store(tmp_path, n_high=8) -> None:
 def test_orchestrator_records_and_clears_downvote_baseline(tmp_path) -> None:
     from datetime import UTC, datetime
 
-    from opensquilla.gateway.config import RouterSelfLearningConfig, SquillaRouterConfig
-    from opensquilla.squilla_router.self_learning.feedback import write_feedback
-    from opensquilla.squilla_router.self_learning.orchestrator import (
+    from openstarry_code.gateway.config import RouterSelfLearningConfig, SquillaRouterConfig
+    from openstarry_code.squilla_router.self_learning.feedback import write_feedback
+    from openstarry_code.squilla_router.self_learning.orchestrator import (
         in_process_trainer,
         maybe_run_update_router,
     )
-    from opensquilla.squilla_router.self_learning.state import load_train_state
+    from openstarry_code.squilla_router.self_learning.state import load_train_state
 
     now = datetime(2026, 6, 6, 12, 0, 0, tzinfo=UTC)
     _write_min_store(tmp_path)
@@ -527,12 +527,12 @@ def test_orchestrator_no_feedback_baseline_is_none(tmp_path) -> None:
     """Zero recorded ratings -> unmeasured baseline (None), never 0.0."""
     from datetime import UTC, datetime
 
-    from opensquilla.gateway.config import RouterSelfLearningConfig, SquillaRouterConfig
-    from opensquilla.squilla_router.self_learning.orchestrator import (
+    from openstarry_code.gateway.config import RouterSelfLearningConfig, SquillaRouterConfig
+    from openstarry_code.squilla_router.self_learning.orchestrator import (
         in_process_trainer,
         maybe_run_update_router,
     )
-    from opensquilla.squilla_router.self_learning.state import load_train_state
+    from openstarry_code.squilla_router.self_learning.state import load_train_state
 
     _write_min_store(tmp_path)
     cfg = SquillaRouterConfig(
@@ -564,7 +564,7 @@ def test_orchestrator_no_feedback_baseline_is_none(tmp_path) -> None:
     # burst of early downvotes (should_rollback skips it).
     from types import SimpleNamespace
 
-    from opensquilla.squilla_router.self_learning.promotion import should_rollback
+    from openstarry_code.squilla_router.self_learning.promotion import should_rollback
 
     assert not should_rollback(
         pre_complaint_rate=0.5,  # flat
@@ -579,9 +579,9 @@ def test_orchestrator_no_feedback_baseline_is_none(tmp_path) -> None:
 
 def test_ensemble_downvotes_do_not_open_volume_gate(tmp_path) -> None:
     """Design invariant: gate counts only label-producing (single) downvotes."""
-    from opensquilla.squilla_router.self_learning.feedback import write_feedback
-    from opensquilla.squilla_router.self_learning.orchestrator import _with_feedback_stats
-    from opensquilla.squilla_router.self_learning.state import EventStoreStats
+    from openstarry_code.squilla_router.self_learning.feedback import write_feedback
+    from openstarry_code.squilla_router.self_learning.orchestrator import _with_feedback_stats
+    from openstarry_code.squilla_router.self_learning.state import EventStoreStats
 
     for i in range(6):
         write_feedback(

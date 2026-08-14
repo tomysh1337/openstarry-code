@@ -6,10 +6,10 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.engine.steps.meta_resolution import _trigger_matches
-from opensquilla.skills.loader import SkillLoader
+from openstarry_code.engine.steps.meta_resolution import _trigger_matches
+from openstarry_code.skills.loader import SkillLoader
 
-BUNDLED = Path(__file__).resolve().parents[2] / "src" / "opensquilla" / "skills" / "bundled"
+BUNDLED = Path(__file__).resolve().parents[2] / "src" / "openstarry_code" / "skills" / "bundled"
 
 CREATOR_TRIGGERS = [
     "新增 meta 技能", "组合现有 skill 成 meta-skill", "synthesize meta-skill", "compose meta-skill",

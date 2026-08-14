@@ -6,20 +6,20 @@ from dataclasses import replace
 
 import pytest
 
-from opensquilla.engine.usage_accounting import (
+from openstarry_code.engine.usage_accounting import (
     UsageAccountingBusyError,
     UsageAccountingUnavailableError,
     UsageCallItem,
     UsageCallResult,
     UsageCallStart,
 )
-from opensquilla.gateway.boot import _auto_propose_usage_execution_context
-from opensquilla.gateway.usage_ledger_runtime import (
+from openstarry_code.gateway.boot import _auto_propose_usage_execution_context
+from openstarry_code.gateway.usage_ledger_runtime import (
     SessionUsageEventSink,
     UsageLedgerStorageError,
 )
-from opensquilla.provider.types import ProviderBillingReceipt
-from opensquilla.session.storage import SessionStorage, StorageBusyError
+from openstarry_code.provider.types import ProviderBillingReceipt
+from openstarry_code.session.storage import SessionStorage, StorageBusyError
 
 
 def _call(**overrides) -> UsageCallStart:

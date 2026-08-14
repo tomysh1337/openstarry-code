@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from opensquilla.provider.trace_recorder import LLMTraceRecorder
+from openstarry_code.provider.trace_recorder import LLMTraceRecorder
 
 
 def test_llm_trace_recorder_redacts_secret_values_in_strings(
@@ -11,8 +11,8 @@ def test_llm_trace_recorder_redacts_secret_values_in_strings(
 ) -> None:
     trace_path = tmp_path / "llm_calls.jsonl"
     secret = "sk-or-v1-abcdefghijklmnopqrstuvwxyz"
-    monkeypatch.setenv("OPENSQUILLA_LLM_TRACE_RECORDER", "full")
-    monkeypatch.setenv("OPENSQUILLA_LLM_TRACE_PATH", str(trace_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_TRACE_RECORDER", "full")
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_TRACE_PATH", str(trace_path))
 
     recorder = LLMTraceRecorder(
         provider="dashscope",

@@ -14,7 +14,7 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.recovery import (
+from openstarry_code.recovery import (
     AtomicStateUnknownError,
     InvalidWorkspaceError,
     RecoveryRequiredError,
@@ -24,8 +24,8 @@ from opensquilla.recovery import (
     inspect_profile,
     reconcile_profile,
 )
-from opensquilla.recovery.atomic import _native_io_path
-from opensquilla.recovery.config_patch import (
+from openstarry_code.recovery.atomic import _native_io_path
+from openstarry_code.recovery.config_patch import (
     state_override,
     workspace_override,
 )
@@ -58,22 +58,22 @@ def test_offline_cli_ignores_cwd_dotenv_but_reads_profile_override(
     _workspace(home / "workspace")
     _desktop_config(home)
     (cwd / ".env").write_text(
-        f"OPENSQUILLA_GATEWAY_WORKSPACE_DIR={tmp_path / 'wrong-cwd'}\n",
+        f"OPENSTARRY_CODE_GATEWAY_WORKSPACE_DIR={tmp_path / 'wrong-cwd'}\n",
         encoding="utf-8",
     )
     (home / ".env").write_text(
-        f"OPENSQUILLA_GATEWAY_WORKSPACE_DIR={external}\n",
+        f"OPENSTARRY_CODE_GATEWAY_WORKSPACE_DIR={external}\n",
         encoding="utf-8",
     )
     environment = os.environ.copy()
-    environment.pop("OPENSQUILLA_GATEWAY_WORKSPACE_DIR", None)
-    environment["OPENSQUILLA_STATE_DIR"] = str(home)
+    environment.pop("OPENSTARRY_CODE_GATEWAY_WORKSPACE_DIR", None)
+    environment["OPENSTARRY_CODE_STATE_DIR"] = str(home)
 
     completed = subprocess.run(
         [
             sys.executable,
             "-m",
-            "opensquilla.cli.main",
+            "openstarry_code.cli.main",
             "recovery",
             "inspect",
             "--home",
@@ -199,8 +199,8 @@ def test_unknown_profile_junction_is_not_followed_or_seeded(tmp_path: Path) -> N
 @pytest.mark.parametrize(
     ("override_name", "stable_code"),
     [
-        ("OPENSQUILLA_GATEWAY_WORKSPACE_DIR", "effective_state_missing"),
-        ("OPENSQUILLA_GATEWAY_STATE_DIR", "effective_state_missing"),
+        ("OPENSTARRY_CODE_GATEWAY_WORKSPACE_DIR", "effective_state_missing"),
+        ("OPENSTARRY_CODE_GATEWAY_STATE_DIR", "effective_state_missing"),
     ],
 )
 def test_empty_primary_with_missing_environment_override_is_not_fresh(
@@ -233,8 +233,8 @@ def test_recovery_profile_rejects_external_primary_data_roots(
     external_role: str,
     stable_code: str,
 ) -> None:
-    recovery_home = tmp_path / "recovery-profiles" / str(uuid.uuid4()) / "opensquilla"
-    primary_home = tmp_path / "opensquilla"
+    recovery_home = tmp_path / "recovery-profiles" / str(uuid.uuid4()) / "openstarry-code"
+    primary_home = tmp_path / "openstarry-code"
     primary_workspace = _workspace(primary_home / "workspace", "primary identity")
     primary_state = primary_home / "state"
     primary_state.mkdir()
@@ -263,7 +263,7 @@ def test_recovery_profile_rejects_external_primary_data_roots(
 def test_healthy_recovery_profile_cannot_be_repointed_to_external_workspace(
     tmp_path: Path,
 ) -> None:
-    recovery_home = tmp_path / "recovery-profiles" / str(uuid.uuid4()) / "opensquilla"
+    recovery_home = tmp_path / "recovery-profiles" / str(uuid.uuid4()) / "openstarry-code"
     canonical_workspace = _workspace(recovery_home / "workspace", "recovery identity")
     (recovery_home / "state").mkdir()
     _desktop_config(recovery_home, workspace=canonical_workspace)
@@ -295,9 +295,9 @@ def test_empty_recovery_profile_rejects_ambient_primary_override(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    recovery_home = tmp_path / "recovery-profiles" / str(uuid.uuid4()) / "opensquilla"
-    primary_workspace = _workspace(tmp_path / "opensquilla" / "workspace")
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_WORKSPACE_DIR", str(primary_workspace))
+    recovery_home = tmp_path / "recovery-profiles" / str(uuid.uuid4()) / "openstarry-code"
+    primary_workspace = _workspace(tmp_path / "openstarry-code" / "workspace")
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_WORKSPACE_DIR", str(primary_workspace))
 
     report = inspect_profile(recovery_home, profile_kind="desktop-recovery")
 
@@ -309,9 +309,9 @@ def test_empty_recovery_profile_rejects_ambient_primary_override(
 def test_recovery_profile_canonical_symlink_cannot_escape_to_primary(
     tmp_path: Path,
 ) -> None:
-    recovery_home = tmp_path / "recovery-profiles" / str(uuid.uuid4()) / "opensquilla"
+    recovery_home = tmp_path / "recovery-profiles" / str(uuid.uuid4()) / "openstarry-code"
     recovery_home.mkdir(parents=True)
-    primary_workspace = _workspace(tmp_path / "opensquilla" / "workspace")
+    primary_workspace = _workspace(tmp_path / "openstarry-code" / "workspace")
     try:
         (recovery_home / "workspace").symlink_to(primary_workspace, target_is_directory=True)
     except OSError:
@@ -331,7 +331,7 @@ def test_recovery_profile_canonical_symlink_cannot_escape_to_primary(
 
 
 def test_pinned_legacy_workspace_stays_in_place_and_is_attention(tmp_path: Path) -> None:
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     legacy = _workspace(home / "state" / "workspace", "legacy")
     _desktop_config(home, workspace=legacy)
 
@@ -346,7 +346,7 @@ def test_pinned_legacy_workspace_stays_in_place_and_is_attention(tmp_path: Path)
 
 
 def test_dual_workspace_preserves_configured_current_path(tmp_path: Path) -> None:
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     canonical = _workspace(home / "workspace", "canonical changed")
     legacy = _workspace(home / "state" / "workspace", "legacy changed")
     _desktop_config(home, workspace=legacy)
@@ -361,7 +361,7 @@ def test_dual_workspace_preserves_configured_current_path(tmp_path: Path) -> Non
 
 
 def test_clean_proven_legacy_workspace_moves_only_during_reconcile(tmp_path: Path) -> None:
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     legacy = _workspace(home / "state" / "workspace", "legacy")
     _desktop_config(home)
     legacy_env = home / "state" / ".env"
@@ -388,7 +388,7 @@ def test_clean_proven_legacy_workspace_moves_only_during_reconcile(tmp_path: Pat
 def test_primary_reconcile_finalizes_v2_marker_without_touching_config_or_database(
     tmp_path: Path,
 ) -> None:
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     _workspace(home / "workspace")
     _desktop_config(home)
     database = home / "state" / "sessions.db"
@@ -429,7 +429,7 @@ def test_recovery_or_required_profile_never_writes_primary_compatibility_marker(
 
 
 def test_marker_is_not_written_while_any_rc3_role_conflicts(tmp_path: Path) -> None:
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     _workspace(home / "workspace")
     _desktop_config(home)
     (home / "skills").mkdir()
@@ -442,7 +442,7 @@ def test_marker_is_not_written_while_any_rc3_role_conflicts(tmp_path: Path) -> N
 
 
 def test_explicit_legacy_workspace_pin_is_safe_for_marker_finalization(tmp_path: Path) -> None:
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     legacy = _workspace(home / "state" / "workspace")
     _desktop_config(home, workspace=legacy)
 
@@ -455,7 +455,7 @@ def test_explicit_legacy_workspace_pin_is_safe_for_marker_finalization(tmp_path:
 
 
 def test_unsafe_existing_marker_is_attention_and_never_overwritten(tmp_path: Path) -> None:
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     _workspace(home / "workspace")
     _desktop_config(home)
     outside = tmp_path / "outside-marker.json"
@@ -476,7 +476,7 @@ def test_unsafe_existing_marker_is_attention_and_never_overwritten(tmp_path: Pat
 def test_future_layout_marker_schema_is_attention_and_never_reinterpreted(
     tmp_path: Path,
 ) -> None:
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     _workspace(home / "workspace")
     _desktop_config(home)
     marker = home / "desktop-layout-v2.json"
@@ -494,7 +494,7 @@ def test_future_layout_marker_schema_is_attention_and_never_reinterpreted(
 
 
 def test_unproven_legacy_directory_is_never_guessed_or_moved(tmp_path: Path) -> None:
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     legacy = home / "state" / "workspace"
     legacy.mkdir(parents=True)
     (legacy / "arbitrary.bin").write_bytes(b"synthetic")
@@ -511,7 +511,7 @@ def test_unproven_legacy_directory_is_never_guessed_or_moved(tmp_path: Path) -> 
 def test_canonical_profile_user_dotenv_under_state_is_not_guessed_as_legacy(
     tmp_path: Path,
 ) -> None:
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     _workspace(home / "workspace")
     _desktop_config(home)
     legacy_env = home / "state" / ".env"
@@ -530,9 +530,9 @@ def test_raw_native_move_oserror_returns_recovery_protocol_state(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    import opensquilla.recovery.engine as recovery_engine
+    import openstarry_code.recovery.engine as recovery_engine
 
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     canonical = _workspace(home / "workspace")
     _workspace(home / "state" / "workspace", "legacy conflict")
     _desktop_config(home, workspace=canonical)
@@ -557,9 +557,9 @@ def test_post_move_verification_failure_never_becomes_ready(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    import opensquilla.recovery.engine as recovery_engine
+    import openstarry_code.recovery.engine as recovery_engine
 
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     _workspace(home / "workspace")
     _workspace(home / "state" / "workspace", "legacy conflict")
     _desktop_config(home)
@@ -583,7 +583,7 @@ def test_post_move_verification_failure_never_becomes_ready(
 
 
 def test_skills_conflict_is_attention_and_never_moved_or_merged(tmp_path: Path) -> None:
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     _workspace(home / "workspace")
     _desktop_config(home)
     legacy = home / "state" / "skills"
@@ -603,7 +603,7 @@ def test_skills_conflict_is_attention_and_never_moved_or_merged(tmp_path: Path) 
 
 
 def test_nested_state_conflict_is_attention_and_never_moved(tmp_path: Path) -> None:
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     _workspace(home / "workspace")
     _desktop_config(home)
     nested = home / "state" / "state" / "approvals.json"
@@ -623,7 +623,7 @@ def test_nested_state_conflict_is_attention_and_never_moved(tmp_path: Path) -> N
 def test_ancillary_legacy_symlink_is_attention_not_primary_recovery(
     tmp_path: Path,
 ) -> None:
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     _workspace(home / "workspace")
     _desktop_config(home)
     (home / "state").mkdir(exist_ok=True)
@@ -645,7 +645,7 @@ def test_ancillary_legacy_symlink_is_attention_not_primary_recovery(
 def test_existing_profile_with_missing_effective_workspace_requires_recovery(
     tmp_path: Path,
 ) -> None:
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     _desktop_config(home, workspace=tmp_path / "missing-external")
 
     report = inspect_profile(home)
@@ -658,7 +658,7 @@ def test_existing_profile_with_missing_effective_workspace_requires_recovery(
 def test_missing_external_state_blocks_before_a_new_chat_database_can_be_created(
     tmp_path: Path,
 ) -> None:
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     workspace = _workspace(home / "workspace")
     missing_state = tmp_path / "detached-state"
     _desktop_config(home, workspace=workspace)
@@ -682,16 +682,16 @@ def test_profile_dotenv_state_override_is_the_authoritative_chat_root(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     _workspace(home / "workspace")
     _desktop_config(home)
     external_state = tmp_path / "external-state"
     external_state.mkdir()
     (home / ".env").write_text(
-        f"OPENSQUILLA_GATEWAY_STATE_DIR={external_state}\n",
+        f"OPENSTARRY_CODE_GATEWAY_STATE_DIR={external_state}\n",
         encoding="utf-8",
     )
-    monkeypatch.delenv("OPENSQUILLA_GATEWAY_STATE_DIR", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_GATEWAY_STATE_DIR", raising=False)
 
     report = inspect_profile(home, profile_kind="desktop-primary")
 
@@ -705,7 +705,7 @@ def test_profile_dotenv_state_override_is_the_authoritative_chat_root(
 def test_extended_length_external_state_is_ready_for_gateway_startup(
     tmp_path: Path,
 ) -> None:
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     workspace = _workspace(home / "workspace")
     external_state = tmp_path / "external-state"
     index = 0
@@ -742,7 +742,7 @@ def test_extended_length_temp_root_does_not_invalidate_state_database(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     workspace = _workspace(home / "workspace")
     _desktop_config(home, workspace=workspace)
     database = home / "state" / "sessions.db"
@@ -785,8 +785,8 @@ def test_extended_length_home_dotenv_routes_remain_authoritative(
         index += 1
     os.makedirs(_native_io_path(home))
     dotenv = (
-        f"OPENSQUILLA_GATEWAY_WORKSPACE_DIR={external_workspace}\n"
-        f"OPENSQUILLA_GATEWAY_STATE_DIR={external_state}\n"
+        f"OPENSTARRY_CODE_GATEWAY_WORKSPACE_DIR={external_workspace}\n"
+        f"OPENSTARRY_CODE_GATEWAY_STATE_DIR={external_state}\n"
     )
     with open(_native_io_path(home / ".env"), "w", encoding="utf-8") as handle:
         handle.write(dotenv)
@@ -800,11 +800,11 @@ def test_extended_length_home_dotenv_routes_remain_authoritative(
     assert workspace_override(
         home,
         include_process_environment=False,
-    ) == ("OPENSQUILLA_GATEWAY_WORKSPACE_DIR", str(external_workspace))
+    ) == ("OPENSTARRY_CODE_GATEWAY_WORKSPACE_DIR", str(external_workspace))
     assert state_override(
         home,
         include_process_environment=False,
-    ) == ("OPENSQUILLA_GATEWAY_STATE_DIR", str(external_state))
+    ) == ("OPENSTARRY_CODE_GATEWAY_STATE_DIR", str(external_state))
 
     report = inspect_profile(home, profile_kind="desktop-primary")
 
@@ -827,7 +827,7 @@ def test_unsafe_session_database_blocks_before_gateway_migrations(
     database_setup: str,
     stable_code: str,
 ) -> None:
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     _workspace(home / "workspace")
     _desktop_config(home)
     database = home / "state" / "sessions.db"
@@ -853,7 +853,7 @@ def test_unsafe_session_database_blocks_before_gateway_migrations(
 def test_wal_database_without_shm_is_validated_from_private_read_only_source_snapshot(
     tmp_path: Path,
 ) -> None:
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     _workspace(home / "workspace")
     _desktop_config(home)
     database = home / "state" / "sessions.db"
@@ -895,7 +895,7 @@ def test_wal_database_without_shm_is_validated_from_private_read_only_source_sna
 
 
 def test_database_snapshot_preserves_binary_sqlite_bytes(tmp_path: Path) -> None:
-    import opensquilla.recovery.engine as recovery_engine
+    import openstarry_code.recovery.engine as recovery_engine
 
     source = tmp_path / "source.db"
     destination = tmp_path / "snapshot.db"
@@ -920,7 +920,7 @@ def test_database_snapshot_requests_binary_mode_for_every_crt_descriptor(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    import opensquilla.recovery.engine as recovery_engine
+    import openstarry_code.recovery.engine as recovery_engine
 
     source = tmp_path / "source.db"
     destination = tmp_path / "snapshot.db"
@@ -960,9 +960,9 @@ def test_database_snapshot_source_change_fails_closed_without_mutating_source(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    import opensquilla.recovery.engine as recovery_engine
+    import openstarry_code.recovery.engine as recovery_engine
 
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     _workspace(home / "workspace")
     _desktop_config(home)
     database = home / "state" / "sessions.db"
@@ -979,7 +979,7 @@ def test_database_snapshot_source_change_fails_closed_without_mutating_source(
 
 
 def test_database_wal_symlink_is_never_followed(tmp_path: Path) -> None:
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     _workspace(home / "workspace")
     _desktop_config(home)
     database = home / "state" / "sessions.db"
@@ -1005,13 +1005,13 @@ def test_workspace_choice_is_blocked_when_config_mutation_is_not_safe(
     tmp_path: Path,
     unsafe_state: str,
 ) -> None:
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     selected = _workspace(tmp_path / "selected")
     _workspace(home / "workspace")
     extra = "config_version = 999" if unsafe_state == "future-config" else ""
     _desktop_config(home, extra=extra)
     if unsafe_state == "transaction-incomplete":
-        (tmp_path / ".opensquilla.profile-replace.json").write_text(
+        (tmp_path / ".openstarry-code.profile-replace.json").write_text(
             '{"schema_version":1,"phase":"prepared"}\n',
             encoding="utf-8",
         )
@@ -1076,7 +1076,7 @@ def test_invalid_or_future_config_requires_recovery(
     stable_code: str,
     outcome: str,
 ) -> None:
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     home.mkdir()
     (home / "config.toml").write_text(config, encoding="utf-8")
 
@@ -1087,7 +1087,7 @@ def test_invalid_or_future_config_requires_recovery(
 
 
 def test_invalid_config_report_carries_sanitized_detail(tmp_path: Path) -> None:
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     home.mkdir()
     (home / "config.toml").write_text('workspace_dir = "unterminated\n', encoding="utf-8")
 
@@ -1113,7 +1113,7 @@ def test_unsafe_home_report_names_the_home_as_placeholder(tmp_path: Path) -> Non
 
 
 def test_replacement_journal_symlink_is_never_followed(tmp_path: Path) -> None:
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     _workspace(home / "workspace")
     _desktop_config(home)
     outside = tmp_path / "outside-journal.json"
@@ -1132,7 +1132,7 @@ def test_replacement_journal_symlink_is_never_followed(tmp_path: Path) -> None:
 
 
 def test_legacy_import_journal_blocks_without_automatic_mutation(tmp_path: Path) -> None:
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     workspace = _workspace(home / "workspace", "preserved identity")
     _desktop_config(home, workspace=workspace)
     journal = home.parent / f".{home.name}.import-commit.json"
@@ -1142,7 +1142,7 @@ def test_legacy_import_journal_blocks_without_automatic_mutation(tmp_path: Path)
                 "phase": "target-backed-up",
                 "target": str(home),
                 "backup": str(tmp_path / "opensquilla.backup.synthetic"),
-                "staging": str(tmp_path / ".opensquilla-import-synthetic"),
+                "staging": str(tmp_path / ".openstarry-code-import-synthetic"),
             },
             sort_keys=True,
         )
@@ -1166,7 +1166,7 @@ def test_legacy_import_journal_blocks_without_automatic_mutation(tmp_path: Path)
 def test_legacy_import_journal_prevents_missing_target_from_looking_fresh(
     tmp_path: Path,
 ) -> None:
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     journal = home.parent / f".{home.name}.import-commit.json"
     journal.write_text('{"phase":"target-backed-up"}\n', encoding="utf-8")
     before = journal.read_bytes()
@@ -1183,9 +1183,9 @@ def test_profile_root_special_path_warns_without_blocking(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.recovery.engine as recovery_engine
+    import openstarry_code.recovery.engine as recovery_engine
 
-    profile = tmp_path / "opensquilla"
+    profile = tmp_path / "openstarry-code"
     profile.write_text("not a profile directory\n", encoding="utf-8")
     monkeypatch.setattr(recovery_engine, "_elevated_windows_context", lambda: False)
 
@@ -1201,7 +1201,7 @@ def test_profile_root_link_resolves_to_target(tmp_path: Path) -> None:
     real = tmp_path / "real-profile"
     _workspace(real / "workspace")
     _desktop_config(real)
-    profile = tmp_path / "opensquilla"
+    profile = tmp_path / "openstarry-code"
     try:
         profile.symlink_to(real, target_is_directory=True)
     except OSError:
@@ -1217,9 +1217,9 @@ def test_profile_root_dangling_link_warns_without_blocking(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.recovery.engine as recovery_engine
+    import openstarry_code.recovery.engine as recovery_engine
 
-    profile = tmp_path / "opensquilla"
+    profile = tmp_path / "openstarry-code"
     try:
         profile.symlink_to(tmp_path / "does-not-exist", target_is_directory=True)
     except OSError:
@@ -1237,9 +1237,9 @@ def test_unsafe_profile_root_warns_even_with_pending_transaction(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.recovery.engine as recovery_engine
+    import openstarry_code.recovery.engine as recovery_engine
 
-    profile = tmp_path / "opensquilla"
+    profile = tmp_path / "openstarry-code"
     profile.write_text("not a profile directory\n", encoding="utf-8")
     journal = tmp_path / f".{profile.name}.profile-replace.json"
     journal.write_text('{"schema_version":1,"phase":"prepared"}\n', encoding="utf-8")
@@ -1256,9 +1256,9 @@ def test_future_config_gate_outranks_pending_cleanup_journal(
 ) -> None:
     """A pending journal must never soften the schema-too-new hard gate."""
     user_data = tmp_path / "user-data"
-    home = user_data / "opensquilla"
+    home = user_data / "openstarry-code"
     _desktop_config(home, workspace=home / "workspace", extra="config_version = 999")
-    (user_data / ".opensquilla.profile-cleanup.json").write_text(
+    (user_data / ".openstarry-code.profile-cleanup.json").write_text(
         "synthetic interrupted cleanup authority\n",
         encoding="utf-8",
     )
@@ -1273,9 +1273,9 @@ def test_unsafe_profile_root_still_blocks_when_elevated(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.recovery.engine as recovery_engine
+    import openstarry_code.recovery.engine as recovery_engine
 
-    profile = tmp_path / "opensquilla"
+    profile = tmp_path / "openstarry-code"
     profile.write_text("not a profile directory\n", encoding="utf-8")
     monkeypatch.setattr(recovery_engine, "_elevated_windows_context", lambda: True)
 
@@ -1289,7 +1289,7 @@ def test_config_link_warns_without_blocking_desktop_guard(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     _workspace(home / "workspace")
     _desktop_config(home)
     outside = tmp_path / "outside-config.toml"
@@ -1298,7 +1298,7 @@ def test_config_link_warns_without_blocking_desktop_guard(
         (home / "config.toml").symlink_to(outside)
     except OSError:
         pytest.skip("symlink creation is unavailable")
-    import opensquilla.recovery.engine as recovery_engine
+    import openstarry_code.recovery.engine as recovery_engine
 
     monkeypatch.setattr(recovery_engine, "_elevated_windows_context", lambda: False)
 
@@ -1308,14 +1308,14 @@ def test_config_link_warns_without_blocking_desktop_guard(
     assert report.stable_code == "config_unsafe_path"
     assert "choose-workspace" not in report.allowed_actions
 
-    monkeypatch.setenv("OPENSQUILLA_PROFILE_KIND", "desktop-primary")
+    monkeypatch.setenv("OPENSTARRY_CODE_PROFILE_KIND", "desktop-primary")
     guarded = guard_desktop_profile(home)
     assert guarded is not None
     assert guarded.stable_code == "config_unsafe_path"
 
 
 def test_choose_workspace_preserves_comments_unknown_keys_and_nested_key(tmp_path: Path) -> None:
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     legacy = _workspace(home / "state" / "workspace")
     selected = _workspace(tmp_path / "selected")
     _desktop_config(
@@ -1350,7 +1350,7 @@ def test_choose_workspace_preserves_comments_unknown_keys_and_nested_key(tmp_pat
 
 
 def test_choose_workspace_never_changes_chat_database_bytes_or_identity(tmp_path: Path) -> None:
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     legacy = _workspace(home / "state" / "workspace")
     selected = _workspace(tmp_path / "selected")
     _desktop_config(home, workspace=legacy)
@@ -1386,12 +1386,16 @@ def test_choose_workspace_never_changes_chat_database_bytes_or_identity(tmp_path
 
 @pytest.mark.skipif(not hasattr(os, "setxattr"), reason="filesystem xattrs are unavailable")
 def test_choose_workspace_preserves_config_extended_attributes(tmp_path: Path) -> None:
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     legacy = _workspace(home / "state" / "workspace")
     selected = _workspace(tmp_path / "selected")
     _desktop_config(home, workspace=legacy)
     config_path = home / "config.toml"
-    attribute = "com.opensquilla.synthetic" if sys.platform == "darwin" else "user.opensquilla"
+    attribute = (
+        "com.openstarry-code.synthetic"
+        if sys.platform == "darwin"
+        else "user.openstarry-code"
+    )
     try:
         os.setxattr(config_path, attribute, b"preserve", follow_symlinks=False)
     except OSError as exc:
@@ -1410,7 +1414,7 @@ def test_choose_workspace_preserves_config_extended_attributes(tmp_path: Path) -
 
 @pytest.mark.skipif(sys.platform != "darwin", reason="macOS ACL regression")
 def test_choose_workspace_preserves_macos_config_acl(tmp_path: Path) -> None:
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     legacy = _workspace(home / "state" / "workspace")
     selected = _workspace(tmp_path / "selected")
     _desktop_config(home, workspace=legacy)
@@ -1447,9 +1451,9 @@ def test_choose_workspace_preserves_macos_config_acl(tmp_path: Path) -> None:
 
 @pytest.mark.skipif(os.name != "nt", reason="Windows DACL regression")
 def test_choose_workspace_preserves_windows_config_dacl(tmp_path: Path) -> None:
-    from opensquilla.recovery.atomic import _windows_extended_path
+    from openstarry_code.recovery.atomic import _windows_extended_path
 
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     legacy = _workspace(home / "state" / "workspace")
     selected = _workspace(tmp_path / "selected")
     _desktop_config(home, workspace=legacy)
@@ -1517,12 +1521,12 @@ def test_workspace_env_override_blocks_config_patch(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     configured = _workspace(tmp_path / "configured")
     selected = _workspace(tmp_path / "selected")
     _desktop_config(home, workspace=configured)
     original = (home / "config.toml").read_bytes()
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_WORKSPACE_DIR", str(configured))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_WORKSPACE_DIR", str(configured))
     before = inspect_profile(home)
 
     with pytest.raises(WorkspaceOverrideError):
@@ -1540,9 +1544,9 @@ def test_config_publication_preserves_a_mutation_in_the_final_cas_window(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    import opensquilla.recovery.config_patch as config_patch
+    import openstarry_code.recovery.config_patch as config_patch
 
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     configured = _workspace(tmp_path / "configured")
     selected = _workspace(tmp_path / "selected")
     _desktop_config(home, workspace=configured)
@@ -1586,12 +1590,12 @@ def test_crashed_workspace_config_park_is_recovered_without_overwrite(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    import opensquilla.recovery.config_patch as config_patch
+    import openstarry_code.recovery.config_patch as config_patch
 
     class SimulatedCrash(BaseException):
         pass
 
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     configured = _workspace(tmp_path / "configured")
     selected = _workspace(tmp_path / "selected")
     _desktop_config(home, workspace=configured)
@@ -1636,13 +1640,13 @@ def test_crashed_workspace_config_park_is_recovered_without_overwrite(
 
 
 def test_bootstrap_guard_is_desktop_only(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     _desktop_config(home, workspace=tmp_path / "missing", extra="config_version = 999")
-    monkeypatch.delenv("OPENSQUILLA_PROFILE_KIND", raising=False)
-    monkeypatch.delenv("OPENSQUILLA_DESKTOP", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_PROFILE_KIND", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_DESKTOP", raising=False)
     assert guard_desktop_profile(home) is None
 
-    monkeypatch.setenv("OPENSQUILLA_PROFILE_KIND", "desktop-primary")
+    monkeypatch.setenv("OPENSTARRY_CODE_PROFILE_KIND", "desktop-primary")
     with pytest.raises(RecoveryRequiredError) as caught:
         guard_desktop_profile(home)
     assert caught.value.report.stable_code == "config_schema_too_new"
@@ -1652,9 +1656,9 @@ def test_bootstrap_guard_warns_but_starts_on_missing_workspace(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     _desktop_config(home, workspace=tmp_path / "missing")
-    monkeypatch.setenv("OPENSQUILLA_PROFILE_KIND", "desktop-primary")
+    monkeypatch.setenv("OPENSTARRY_CODE_PROFILE_KIND", "desktop-primary")
 
     report = guard_desktop_profile(home)
 
@@ -1664,12 +1668,12 @@ def test_bootstrap_guard_warns_but_starts_on_missing_workspace(
 
 
 def test_legacy_profile_dotenv_pin_prevents_workspace_move(tmp_path: Path) -> None:
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     legacy = _workspace(home / "state" / "workspace", "legacy identity")
     _desktop_config(home)
     legacy_env = home / "state" / ".env"
     legacy_env.write_text(
-        f"OPENSQUILLA_GATEWAY_WORKSPACE_DIR={legacy}\n",
+        f"OPENSTARRY_CODE_GATEWAY_WORKSPACE_DIR={legacy}\n",
         encoding="utf-8",
     )
 
@@ -1689,12 +1693,12 @@ def test_legacy_profile_dotenv_pin_prevents_workspace_move(tmp_path: Path) -> No
 
 
 def test_interpolated_profile_dotenv_override_fails_closed(tmp_path: Path) -> None:
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     legacy = _workspace(home / "state" / "workspace")
     _desktop_config(home)
     legacy_env = home / "state" / ".env"
     legacy_env.write_text(
-        "OPENSQUILLA_GATEWAY_WORKSPACE_DIR=${UNSAFE_DYNAMIC_ROOT}/workspace\n",
+        "OPENSTARRY_CODE_GATEWAY_WORKSPACE_DIR=${UNSAFE_DYNAMIC_ROOT}/workspace\n",
         encoding="utf-8",
     )
 

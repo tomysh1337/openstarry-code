@@ -4,7 +4,7 @@ import asyncio
 
 import pytest
 
-from opensquilla.channels.qq import QQChannel, QQChannelConfig
+from openstarry_code.channels.qq import QQChannel, QQChannelConfig
 
 
 def _channel() -> QQChannel:

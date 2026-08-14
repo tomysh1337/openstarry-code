@@ -3,8 +3,8 @@
 import subprocess
 import sys
 
-from opensquilla.contrib.codetask.report import render
-from opensquilla.contrib.codetask.types import (
+from openstarry_code.contrib.codetask.report import render
+from openstarry_code.contrib.codetask.types import (
     AcceptanceCheck,
     RegressionResult,
     TaskResult,
@@ -56,7 +56,7 @@ def test_opensquilla_import_does_not_load_codetask():
         [
             sys.executable,
             "-c",
-            "import sys, opensquilla\nassert 'opensquilla.contrib.codetask' not in sys.modules\n",
+            "import sys, opensquilla\nassert 'openstarry_code.contrib.codetask' not in sys.modules\n",
         ],
         capture_output=True,
         text=True,

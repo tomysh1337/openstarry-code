@@ -4,9 +4,9 @@ import json
 
 import httpx
 
-from opensquilla.channels._util import split_text_for_channel
-from opensquilla.channels.telegram import TelegramChannel, TelegramChannelConfig
-from opensquilla.channels.types import OutgoingMessage
+from openstarry_code.channels._util import split_text_for_channel
+from openstarry_code.channels.telegram import TelegramChannel, TelegramChannelConfig
+from openstarry_code.channels.types import OutgoingMessage
 
 _API_LIMIT = 4096
 

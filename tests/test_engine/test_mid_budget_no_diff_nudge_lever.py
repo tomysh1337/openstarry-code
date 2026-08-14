@@ -1,6 +1,6 @@
 """Opt-in mid-budget no-source-diff nudge lever.
 
-Covers OPENSQUILLA_MID_BUDGET_NO_DIFF_NUDGE (off by default). Motivation: a
+Covers OPENSTARRY_CODE_MID_BUDGET_NO_DIFF_NUDGE (off by default). Motivation: a
 run that spends most of its wall-clock budget investigating without ever
 editing a file usually ends with no diff at all; a one-shot progress nudge
 when 50% and again when 75% of the budget is spent with no workspace change
@@ -21,18 +21,18 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine import Agent, AgentConfig, ToolResult
-from opensquilla.provider import (
+from openstarry_code.engine import Agent, AgentConfig, ToolResult
+from openstarry_code.provider import (
     ChatConfig,
     Message,
     ToolDefinition,
     ToolInputSchema,
 )
-from opensquilla.provider import DoneEvent as ProviderDone
-from opensquilla.provider import TextDeltaEvent as ProviderText
-from opensquilla.provider import ToolUseEndEvent as ProviderToolUseEnd
-from opensquilla.provider import ToolUseStartEvent as ProviderToolUseStart
-from opensquilla.tools.types import CallerKind, ToolContext, current_tool_context
+from openstarry_code.provider import DoneEvent as ProviderDone
+from openstarry_code.provider import TextDeltaEvent as ProviderText
+from openstarry_code.provider import ToolUseEndEvent as ProviderToolUseEnd
+from openstarry_code.provider import ToolUseStartEvent as ProviderToolUseStart
+from openstarry_code.tools.types import CallerKind, ToolContext, current_tool_context
 
 _NUDGE_MARKER = "Progress check: about"
 
@@ -423,11 +423,11 @@ async def test_stacked_nudge_keeps_empty_response_retry_alive() -> None:
 
 
 def test_tail_shape_helper_skips_nudges_only() -> None:
-    from opensquilla.engine.agent import (
+    from openstarry_code.engine.agent import (
         _MID_BUDGET_NO_DIFF_NUDGE_TEMPLATE,
         _tail_has_tool_result_ignoring_nudges,
     )
-    from opensquilla.provider import ContentBlockToolResult
+    from openstarry_code.provider import ContentBlockToolResult
 
     tool_results = Message(
         role="user",
@@ -455,12 +455,12 @@ def test_tail_shape_helper_skips_nudges_only() -> None:
 def test_env_plumbing_for_mid_budget_nudge(monkeypatch: pytest.MonkeyPatch) -> None:
     # Helper-level check only; the full env -> bootstrap-stage -> AgentConfig
     # threading is covered in turn_runner/test_agent_bootstrap_stage_unit.py.
-    from opensquilla.engine.turn_runner.agent_bootstrap_stage import _bool_from_env
+    from openstarry_code.engine.turn_runner.agent_bootstrap_stage import _bool_from_env
 
-    monkeypatch.delenv("OPENSQUILLA_MID_BUDGET_NO_DIFF_NUDGE", raising=False)
-    assert _bool_from_env("OPENSQUILLA_MID_BUDGET_NO_DIFF_NUDGE", False) is False
-    monkeypatch.setenv("OPENSQUILLA_MID_BUDGET_NO_DIFF_NUDGE", "1")
-    assert _bool_from_env("OPENSQUILLA_MID_BUDGET_NO_DIFF_NUDGE", False) is True
+    monkeypatch.delenv("OPENSTARRY_CODE_MID_BUDGET_NO_DIFF_NUDGE", raising=False)
+    assert _bool_from_env("OPENSTARRY_CODE_MID_BUDGET_NO_DIFF_NUDGE", False) is False
+    monkeypatch.setenv("OPENSTARRY_CODE_MID_BUDGET_NO_DIFF_NUDGE", "1")
+    assert _bool_from_env("OPENSTARRY_CODE_MID_BUDGET_NO_DIFF_NUDGE", False) is True
 
 
 def test_agent_config_default_keeps_lever_off() -> None:

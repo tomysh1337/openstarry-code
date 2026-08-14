@@ -7,10 +7,10 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.engine.pipeline import TurnContext
-from opensquilla.engine.steps import skills_filter
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.skills.types import SkillLayer, SkillSpec
+from openstarry_code.engine.pipeline import TurnContext
+from openstarry_code.engine.steps import skills_filter
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.skills.types import SkillLayer, SkillSpec
 
 
 @pytest.mark.asyncio

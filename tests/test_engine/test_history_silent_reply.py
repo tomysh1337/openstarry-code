@@ -5,9 +5,9 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from opensquilla.engine.history import reconstruct_messages_from_entry
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.provider import (
+from openstarry_code.engine.history import reconstruct_messages_from_entry
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.provider import (
     ContentBlockText,
     ContentBlockToolResult,
     ContentBlockToolUse,

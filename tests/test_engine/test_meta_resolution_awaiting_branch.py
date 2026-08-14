@@ -13,10 +13,10 @@ from unittest.mock import MagicMock
 import pytest
 from yoyo import get_backend, read_migrations
 
-from opensquilla.engine.steps.meta_resolution import meta_resolution
-from opensquilla.persistence.meta_run_writer import MetaRunWriter
-from opensquilla.skills.meta.plan_serde import to_jsonable
-from opensquilla.skills.meta.types import (
+from openstarry_code.engine.steps.meta_resolution import meta_resolution
+from openstarry_code.persistence.meta_run_writer import MetaRunWriter
+from openstarry_code.skills.meta.plan_serde import to_jsonable
+from openstarry_code.skills.meta.types import (
     ClarifyField,
     ClarifyStepConfig,
     MetaPlan,
@@ -29,7 +29,7 @@ def _inline_to_thread_for_meta_resolution_tests(monkeypatch):
     """Keep meta_resolution CAS tests deterministic in the sandbox."""
     import importlib
 
-    mr_module = importlib.import_module("opensquilla.engine.steps.meta_resolution")
+    mr_module = importlib.import_module("openstarry_code.engine.steps.meta_resolution")
 
     async def _inline_to_thread(func, /, *args, **kwargs):
         return func(*args, **kwargs)
@@ -192,7 +192,7 @@ async def test_parse_success_calls_try_claim_resume_and_sets_meta_resume(tmp_pat
     """When the (stub) parser returns success, meta_resolution MUST perform
     try_claim_resume CAS and stash the ResumePayload on ctx.metadata."""
     import importlib
-    mr_module = importlib.import_module("opensquilla.engine.steps.meta_resolution")
+    mr_module = importlib.import_module("openstarry_code.engine.steps.meta_resolution")
 
     writer = _writer(tmp_path)
     _seed_awaiting(writer)
@@ -217,7 +217,7 @@ async def test_parse_success_calls_try_claim_resume_and_sets_meta_resume(tmp_pat
 async def test_parse_success_race_lost_sets_marker(tmp_path, monkeypatch):
     """Two concurrent calls: first wins CAS; second has no awaiting run to peek."""
     import importlib
-    mr_module = importlib.import_module("opensquilla.engine.steps.meta_resolution")
+    mr_module = importlib.import_module("openstarry_code.engine.steps.meta_resolution")
 
     writer = _writer(tmp_path)
     _seed_awaiting(writer)
@@ -1096,7 +1096,7 @@ def test_clarify_context_omits_history_when_metadata_missing() -> None:
     resolver must behave exactly as before — the
     ``conversation_history`` key is absent so the NL extractor sees
     today's prompt shape."""
-    from opensquilla.engine.steps.meta_resolution import _clarify_extract_context
+    from openstarry_code.engine.steps.meta_resolution import _clarify_extract_context
 
     awaiting = _awaiting_stub()
     ctx = _ctx_stub()  # no conversation_history key
@@ -1108,7 +1108,7 @@ def test_clarify_context_omits_history_when_metadata_missing() -> None:
 def test_clarify_context_omits_history_when_ctx_is_none() -> None:
     """Backwards compatibility: ``ctx`` is optional. Callers that
     haven't migrated yet still get a fully-formed context dict."""
-    from opensquilla.engine.steps.meta_resolution import _clarify_extract_context
+    from openstarry_code.engine.steps.meta_resolution import _clarify_extract_context
 
     out = _clarify_extract_context(_awaiting_stub(), [])
     assert "conversation_history" not in out
@@ -1118,7 +1118,7 @@ def test_clarify_context_renders_history_with_role_lines() -> None:
     """Three-turn slice (newest last) rendered as ``[role] text`` lines.
     Each turn is clipped to 200 chars; the OpenAI-style content-block
     list is flattened to plain text."""
-    from opensquilla.engine.steps.meta_resolution import _clarify_extract_context
+    from openstarry_code.engine.steps.meta_resolution import _clarify_extract_context
 
     long_user_text = "user said " * 80   # ~800 chars → must be clipped
     history = [
@@ -1151,7 +1151,7 @@ def test_clarify_context_renders_history_with_role_lines() -> None:
 def test_clarify_context_history_takes_last_three_turns_only() -> None:
     """A long backlog must be sliced to the last three turns so the
     prompt budget stays bounded."""
-    from opensquilla.engine.steps.meta_resolution import _clarify_extract_context
+    from openstarry_code.engine.steps.meta_resolution import _clarify_extract_context
 
     history = [
         {"role": "user", "content": f"turn {i}"} for i in range(10)
@@ -1171,7 +1171,7 @@ def test_clarify_context_history_skips_non_text_entries() -> None:
     """Malformed or unknown-shape entries must not break the channel —
     the resolver is fail-open by design so a bad history feed cannot
     block a clarify run."""
-    from opensquilla.engine.steps.meta_resolution import _clarify_extract_context
+    from openstarry_code.engine.steps.meta_resolution import _clarify_extract_context
 
     history = [
         "raw string with no role",  # not a Mapping
@@ -1189,7 +1189,7 @@ def test_clarify_context_history_ignores_non_list_metadata() -> None:
     """If a misconfigured upstream sets the metadata key to a string
     or dict instead of a list, the resolver must not crash. Ignoring
     it silently mirrors the existing fail-open contract."""
-    from opensquilla.engine.steps.meta_resolution import _clarify_extract_context
+    from openstarry_code.engine.steps.meta_resolution import _clarify_extract_context
 
     for bogus in ("not a list", {"role": "user"}, 42):
         ctx = _ctx_stub(conversation_history=bogus)
@@ -1208,7 +1208,7 @@ def test_clarify_context_history_uses_router_metadata_fallback() -> None:
     every turn). This is the C2 producer hook — without an extra
     ingress hop, every live-traffic clarify run automatically gets
     the last user turns + the last assistant reply."""
-    from opensquilla.engine.steps.meta_resolution import _clarify_extract_context
+    from openstarry_code.engine.steps.meta_resolution import _clarify_extract_context
 
     ctx = SimpleNamespace(metadata={
         "router_history_user_texts": [
@@ -1243,7 +1243,7 @@ def test_clarify_context_explicit_history_takes_priority_over_router_fallback() 
     inject a richer history (e.g. from a longer transcript window)
     fully replaces the router-derived fallback rather than
     appending to it."""
-    from opensquilla.engine.steps.meta_resolution import _clarify_extract_context
+    from openstarry_code.engine.steps.meta_resolution import _clarify_extract_context
 
     ctx = SimpleNamespace(metadata={
         "conversation_history": [
@@ -1262,7 +1262,7 @@ def test_clarify_context_history_router_fallback_assistant_only() -> None:
     """A turn with no user history (first turn after a reset, but the
     previous assistant reply survived) must still produce a useful
     one-line history block from the assistant text alone."""
-    from opensquilla.engine.steps.meta_resolution import _clarify_extract_context
+    from openstarry_code.engine.steps.meta_resolution import _clarify_extract_context
 
     ctx = SimpleNamespace(metadata={
         "router_prev_assistant_text": "I can help plan a Tokyo trip.",

@@ -22,10 +22,10 @@ from typing import Any
 
 import httpx
 
-from opensquilla.gateway import rpc_onboarding
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.rpc import RpcContext
-from opensquilla.gateway.scopes import ADMIN_SCOPE, METHOD_SCOPES
+from openstarry_code.gateway import rpc_onboarding
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.rpc import RpcContext
+from openstarry_code.gateway.scopes import ADMIN_SCOPE, METHOD_SCOPES
 
 # Top-level (and only) envelope. ``latencyMs`` remains the legacy end-to-end
 # duration, while ``totalMs`` names that duration explicitly and
@@ -66,7 +66,7 @@ def _patch_probe_response(monkeypatch: Any, response: httpx.Response) -> None:
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client)
 
 
 def _ok_probe_response() -> httpx.Response:
@@ -79,10 +79,10 @@ def _ok_probe_response() -> httpx.Response:
 
 def _ctx(tmp_path: Any) -> RpcContext:
     # config_path points at a nonexistent tmp file so the handler never reads
-    # the developer's real ~/.opensquilla config.
+    # the developer's real ~/.openstarry-code config.
     return RpcContext(
         conn_id="contract",
-        config=GatewayConfig(config_path=str(tmp_path / "opensquilla.toml")),
+        config=GatewayConfig(config_path=str(tmp_path / "openstarry-code.toml")),
     )
 
 

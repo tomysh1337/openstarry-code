@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from opensquilla.gateway.app import _human_actionable_approvals
+from openstarry_code.gateway.app import _human_actionable_approvals
 
 
 def test_human_approval_http_filter_hides_automatic_records() -> None:

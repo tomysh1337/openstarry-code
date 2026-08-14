@@ -7,10 +7,10 @@ import time
 
 import pytest
 
-from opensquilla.channels.discord import DiscordChannel, DiscordChannelConfig
-from opensquilla.channels.msteams import MSTeamsChannel, MSTeamsChannelConfig
-from opensquilla.channels.slack import SlackChannel
-from opensquilla.channels.types import IncomingMessage
+from openstarry_code.channels.discord import DiscordChannel, DiscordChannelConfig
+from openstarry_code.channels.msteams import MSTeamsChannel, MSTeamsChannelConfig
+from openstarry_code.channels.slack import SlackChannel
+from openstarry_code.channels.types import IncomingMessage
 
 
 class _BodyRequest:

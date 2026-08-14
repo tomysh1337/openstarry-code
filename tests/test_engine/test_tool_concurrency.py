@@ -14,19 +14,19 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine import Agent, AgentConfig, ToolResult
-from opensquilla.engine.runtime import _SAFE_TOOL_NAMES, _get_tool_concurrency_policy
-from opensquilla.engine.types import ToolCall
-from opensquilla.provider import (
+from openstarry_code.engine import Agent, AgentConfig, ToolResult
+from openstarry_code.engine.runtime import _SAFE_TOOL_NAMES, _get_tool_concurrency_policy
+from openstarry_code.engine.types import ToolCall
+from openstarry_code.provider import (
     ChatConfig,
     Message,
     ToolDefinition,
     ToolInputSchema,
 )
-from opensquilla.provider import DoneEvent as ProviderDone
-from opensquilla.provider import TextDeltaEvent as ProviderTextDelta
-from opensquilla.provider import ToolUseEndEvent as ProviderToolUseEnd
-from opensquilla.provider import ToolUseStartEvent as ProviderToolUseStart
+from openstarry_code.provider import DoneEvent as ProviderDone
+from openstarry_code.provider import TextDeltaEvent as ProviderTextDelta
+from openstarry_code.provider import ToolUseEndEvent as ProviderToolUseEnd
+from openstarry_code.provider import ToolUseStartEvent as ProviderToolUseStart
 
 # ---------------------------------------------------------------------------
 # Shared helpers
@@ -470,7 +470,7 @@ async def test_one_failing_tool_does_not_block_others() -> None:
     assert tool_c in completed, "tool_c did not complete"
 
     # All three tool result events were yielded (A as error, B+C as success)
-    from opensquilla.engine.types import ToolResultEvent
+    from openstarry_code.engine.types import ToolResultEvent
 
     result_events = [e for e in events if isinstance(e, ToolResultEvent)]
     assert len(result_events) == 3, (

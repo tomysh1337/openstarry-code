@@ -25,9 +25,9 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.hooks.types import CompactionState
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.engine.types import ErrorEvent
+from openstarry_code.engine.hooks.types import CompactionState
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.engine.types import ErrorEvent
 
 # Reuse upstream patch helpers from's equivalence harness — this
 # stage sits AFTER AgentBootstrapStage's slice so the same upstream
@@ -362,10 +362,10 @@ def _setup_runner(case: dict[str, Any]) -> tuple[TurnRunner, dict[str, list]]:
     if hook is not None:
         # Re-instantiate the stage with hooks; the production stage
         # exposes ``compaction_hooks`` via constructor only.
-        from opensquilla.engine.turn_runner.compaction_and_history_stage import (
+        from openstarry_code.engine.turn_runner.compaction_and_history_stage import (
             CompactionAndHistoryStage,
         )
-        from opensquilla.engine.turn_runner.harness import (
+        from openstarry_code.engine.turn_runner.harness import (
             _RequestContextPrependAdapter,
             _TurnRunnerHistoryLoaderAdapter,
             _TurnRunnerPreflightCompactionAdapter,

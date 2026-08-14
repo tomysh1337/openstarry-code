@@ -15,11 +15,11 @@ from __future__ import annotations
 import tomllib
 from types import SimpleNamespace
 
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.llm_runtime import resolve_llm_runtime_config
-from opensquilla.gateway.rpc_config import _handle_config_set
-from opensquilla.onboarding.config_store import persist_config
-from opensquilla.onboarding.mutations import upsert_llm_provider
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.llm_runtime import resolve_llm_runtime_config
+from openstarry_code.gateway.rpc_config import _handle_config_set
+from openstarry_code.onboarding.config_store import persist_config
+from openstarry_code.onboarding.mutations import upsert_llm_provider
 
 _ENV_URL = "https://corp-endpoint.example/v1"
 _USER_URL = "https://user-proxy.example/v1"

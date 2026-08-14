@@ -16,20 +16,20 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
-from opensquilla.engine.agent import Agent
-from opensquilla.engine.types import (
+from openstarry_code.engine.agent import Agent
+from openstarry_code.engine.types import (
     AgentConfig,
     DoneEvent,
     ErrorEvent,
     TextDeltaEvent,
     ToolResultEvent,
 )
-from opensquilla.provider.selector import build_provider
-from opensquilla.skills.injector import SkillInjector
-from opensquilla.skills.loader import SkillLoader
-from opensquilla.tools.builtin import meta_tools  # noqa: F401 - registers meta_invoke
-from opensquilla.tools.registry import get_default_registry
-from opensquilla.tools.types import ToolContext
+from openstarry_code.provider.selector import build_provider
+from openstarry_code.skills.injector import SkillInjector
+from openstarry_code.skills.loader import SkillLoader
+from openstarry_code.tools.builtin import meta_tools  # noqa: F401 - registers meta_invoke
+from openstarry_code.tools.registry import get_default_registry
+from openstarry_code.tools.types import ToolContext
 
 META_SKILL_NAME = "meta-live-soft-activation"
 EXPECTED_OUTPUT = "LIVE_OK"
@@ -112,7 +112,7 @@ def _make_agent(
     loader = _write_live_meta_skill(home)
     skills = loader.load_all()
     system_prompt = SkillInjector().inject_full(
-        "You are validating OpenSquilla meta-skill soft activation.",
+        "You are validating OpenStarry Code meta-skill soft activation.",
         skills,
     )
     registry = get_default_registry()

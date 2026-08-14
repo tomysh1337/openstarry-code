@@ -2,7 +2,7 @@
 
 These tests build a fake home dir under tmp_path, seed it with one or
 two synthetic proposals, and call each handler through the live
-``opensquilla.gateway.rpc`` dispatcher to verify the full path:
+``openstarry_code.gateway.rpc`` dispatcher to verify the full path:
 parameter validation → library call → JSON-ready return.
 
 LLM is not involved — proposals_lib is deterministic.
@@ -14,7 +14,7 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.skills import proposals_lib
+from openstarry_code.skills import proposals_lib
 
 _SAMPLE_SKILL_MD = """---
 name: synth-rpc-pipeline
@@ -69,16 +69,16 @@ def _mark_auto_enabled(home: Path, pid: str) -> None:
 @pytest.fixture
 def _isolated_home(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     """Redirect ``default_opensquilla_home`` to a tmp dir so the RPC
-    layer reads / writes there without touching the real ~/.opensquilla."""
-    from opensquilla.gateway.auto_propose_bridge import reset_runtime_for_test
+    layer reads / writes there without touching the real ~/.openstarry-code."""
+    from openstarry_code.gateway.auto_propose_bridge import reset_runtime_for_test
 
     reset_runtime_for_test()
-    home = tmp_path / ".opensquilla"
+    home = tmp_path / ".openstarry-code"
     home.mkdir()
     # ``proposals_lib`` invokes ``default_opensquilla_home()`` through the
     # RPC module; patch the import surface used by rpc_proposals.
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_proposals.default_opensquilla_home",
+        "openstarry_code.gateway.rpc_proposals.default_opensquilla_home",
         lambda: home,
     )
     return home
@@ -105,7 +105,7 @@ class _CountingLoader:
 
 @pytest.mark.asyncio
 async def test_pending_count_reflects_seeded_proposals(_isolated_home: Path) -> None:
-    from opensquilla.gateway.rpc_proposals import _handle_pending_count
+    from openstarry_code.gateway.rpc_proposals import _handle_pending_count
 
     out = await _handle_pending_count(None, _make_ctx())
     assert out == {"count": 0}
@@ -117,7 +117,7 @@ async def test_pending_count_reflects_seeded_proposals(_isolated_home: Path) -> 
 
 @pytest.mark.asyncio
 async def test_list_returns_proposal_rows(_isolated_home: Path) -> None:
-    from opensquilla.gateway.rpc_proposals import _handle_list
+    from openstarry_code.gateway.rpc_proposals import _handle_list
 
     pid1 = _seed(_isolated_home)
     pid2 = _seed(_isolated_home)
@@ -128,7 +128,7 @@ async def test_list_returns_proposal_rows(_isolated_home: Path) -> None:
 
 @pytest.mark.asyncio
 async def test_show_happy_path(_isolated_home: Path) -> None:
-    from opensquilla.gateway.rpc_proposals import _handle_show
+    from openstarry_code.gateway.rpc_proposals import _handle_show
 
     pid = _seed(_isolated_home)
     _mark_auto_enabled(_isolated_home, pid)
@@ -152,7 +152,7 @@ async def test_show_happy_path(_isolated_home: Path) -> None:
 async def test_show_camelcase_proposal_id_also_accepted(
     _isolated_home: Path,
 ) -> None:
-    from opensquilla.gateway.rpc_proposals import _handle_show
+    from openstarry_code.gateway.rpc_proposals import _handle_show
 
     pid = _seed(_isolated_home)
     out = await _handle_show({"proposalId": pid}, _make_ctx())
@@ -161,7 +161,7 @@ async def test_show_camelcase_proposal_id_also_accepted(
 
 @pytest.mark.asyncio
 async def test_invalid_proposal_id_raises_value_error(_isolated_home: Path) -> None:
-    from opensquilla.gateway.rpc_proposals import _handle_show
+    from openstarry_code.gateway.rpc_proposals import _handle_show
 
     with pytest.raises(ValueError):
         await _handle_show({"proposal_id": "../etc"}, _make_ctx())
@@ -173,7 +173,7 @@ async def test_invalid_proposal_id_raises_value_error(_isolated_home: Path) -> N
 
 @pytest.mark.asyncio
 async def test_accept_promotes_proposal(_isolated_home: Path) -> None:
-    from opensquilla.gateway.rpc_proposals import _handle_accept
+    from openstarry_code.gateway.rpc_proposals import _handle_accept
 
     loader = _CountingLoader()
     pid = _seed(_isolated_home)
@@ -189,7 +189,7 @@ async def test_accept_promotes_proposal(_isolated_home: Path) -> None:
 async def test_accept_with_force_overrides_gates(
     _isolated_home: Path,
 ) -> None:
-    from opensquilla.gateway.rpc_proposals import _handle_accept
+    from openstarry_code.gateway.rpc_proposals import _handle_accept
 
     bad_pid = proposals_lib.write_proposal(
         _isolated_home,
@@ -207,7 +207,7 @@ async def test_accept_with_force_overrides_gates(
 
 @pytest.mark.asyncio
 async def test_reject_removes_proposal(_isolated_home: Path) -> None:
-    from opensquilla.gateway.rpc_proposals import _handle_reject
+    from openstarry_code.gateway.rpc_proposals import _handle_reject
 
     pid = _seed(_isolated_home)
     out = await _handle_reject({"proposal_id": pid}, _make_ctx())
@@ -219,7 +219,7 @@ async def test_reject_removes_proposal(_isolated_home: Path) -> None:
 async def test_rejecting_unknown_proposal_returns_error(
     _isolated_home: Path,
 ) -> None:
-    from opensquilla.gateway.rpc_proposals import _handle_reject
+    from openstarry_code.gateway.rpc_proposals import _handle_reject
 
     out = await _handle_reject({"proposal_id": "deadbeef"}, _make_ctx())
     assert out["status"] == "error"
@@ -228,7 +228,7 @@ async def test_rejecting_unknown_proposal_returns_error(
 
 @pytest.mark.asyncio
 async def test_auto_enabled_list_and_disable_round_trip(_isolated_home: Path) -> None:
-    from opensquilla.gateway.rpc_proposals import (
+    from openstarry_code.gateway.rpc_proposals import (
         _handle_accept,
         _handle_auto_enabled_disable,
         _handle_auto_enabled_list,
@@ -259,8 +259,8 @@ async def test_auto_enabled_list_and_disable_round_trip(_isolated_home: Path) ->
 async def test_settings_get_returns_unavailable_when_runtime_not_registered(
     _isolated_home: Path,
 ) -> None:
-    from opensquilla.gateway.auto_propose_bridge import reset_runtime_for_test
-    from opensquilla.gateway.rpc_proposals import _handle_settings_get
+    from openstarry_code.gateway.auto_propose_bridge import reset_runtime_for_test
+    from openstarry_code.gateway.rpc_proposals import _handle_settings_get
 
     reset_runtime_for_test()
     out = await _handle_settings_get(None, _make_ctx())
@@ -272,17 +272,17 @@ async def test_settings_get_returns_unavailable_when_runtime_not_registered(
 async def test_settings_get_and_set_full_round_trip(
     _isolated_home: Path,
 ) -> None:
-    from opensquilla.gateway.auto_propose_bridge import (
+    from openstarry_code.gateway.auto_propose_bridge import (
         AutoProposeRuntime,
         register_runtime,
         reset_runtime_for_test,
     )
-    from opensquilla.gateway.config import MetaSkillAutoProposeConfig
-    from opensquilla.gateway.rpc_proposals import (
+    from openstarry_code.gateway.config import MetaSkillAutoProposeConfig
+    from openstarry_code.gateway.rpc_proposals import (
         _handle_settings_get,
         _handle_settings_set,
     )
-    from opensquilla.skills.proposals_lib import (
+    from openstarry_code.skills.proposals_lib import (
         read_auto_propose_settings,
     )
 
@@ -347,13 +347,13 @@ async def test_settings_get_and_set_full_round_trip(
 async def test_settings_set_partial_update_only_changes_supplied_keys(
     _isolated_home: Path,
 ) -> None:
-    from opensquilla.gateway.auto_propose_bridge import (
+    from openstarry_code.gateway.auto_propose_bridge import (
         AutoProposeRuntime,
         register_runtime,
         reset_runtime_for_test,
     )
-    from opensquilla.gateway.config import MetaSkillAutoProposeConfig
-    from opensquilla.gateway.rpc_proposals import _handle_settings_set
+    from openstarry_code.gateway.config import MetaSkillAutoProposeConfig
+    from openstarry_code.gateway.rpc_proposals import _handle_settings_set
 
     reset_runtime_for_test()
     cfg = MetaSkillAutoProposeConfig(enabled=True, on_dream_complete=True)
@@ -377,14 +377,14 @@ async def test_settings_set_partial_update_only_changes_supplied_keys(
 async def test_settings_set_rolls_back_when_scheduler_update_fails(
     _isolated_home: Path,
 ) -> None:
-    from opensquilla.gateway.auto_propose_bridge import (
+    from openstarry_code.gateway.auto_propose_bridge import (
         AutoProposeRuntime,
         register_runtime,
         reset_runtime_for_test,
     )
-    from opensquilla.gateway.config import MetaSkillAutoProposeConfig
-    from opensquilla.gateway.rpc_proposals import _handle_settings_set
-    from opensquilla.skills.proposals_lib import read_auto_propose_settings
+    from openstarry_code.gateway.config import MetaSkillAutoProposeConfig
+    from openstarry_code.gateway.rpc_proposals import _handle_settings_set
+    from openstarry_code.skills.proposals_lib import read_auto_propose_settings
 
     reset_runtime_for_test()
     cfg = MetaSkillAutoProposeConfig(enabled=False, on_dream_complete=False)
@@ -415,13 +415,13 @@ async def _noop() -> None:  # helper for partial-update test
 async def test_settings_set_rejects_non_boolean_values(
     _isolated_home: Path,
 ) -> None:
-    from opensquilla.gateway.auto_propose_bridge import (
+    from openstarry_code.gateway.auto_propose_bridge import (
         AutoProposeRuntime,
         register_runtime,
         reset_runtime_for_test,
     )
-    from opensquilla.gateway.config import MetaSkillAutoProposeConfig
-    from opensquilla.gateway.rpc_proposals import _handle_settings_set
+    from openstarry_code.gateway.config import MetaSkillAutoProposeConfig
+    from openstarry_code.gateway.rpc_proposals import _handle_settings_set
 
     reset_runtime_for_test()
     register_runtime(AutoProposeRuntime(
@@ -443,7 +443,7 @@ def test_proposal_read_methods_classified_under_operator_proposals_scope() -> No
     explicitly so the relationship between rpc_proposals.py and
     scopes.PROPOSALS_SCOPE is captured by a failing test if either side
     moves."""
-    from opensquilla.gateway.scopes import (
+    from openstarry_code.gateway.scopes import (
         METHOD_SCOPES,
         PROPOSALS_SCOPE,
     )
@@ -461,7 +461,7 @@ def test_proposal_read_methods_classified_under_operator_proposals_scope() -> No
 def test_proposal_mutation_methods_require_admin_scope() -> None:
     """Proposal promotion changes the managed skill layer, so remote
     no-auth operators must not be able to perform these mutations."""
-    from opensquilla.gateway.scopes import (
+    from openstarry_code.gateway.scopes import (
         ADMIN_SCOPE,
         METHOD_SCOPES,
     )

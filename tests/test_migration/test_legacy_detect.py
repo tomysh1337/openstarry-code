@@ -13,8 +13,8 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.migration import opensquilla_home
-from opensquilla.migration.legacy_detect import (
+from openstarry_code.migration import opensquilla_home
+from openstarry_code.migration.legacy_detect import (
     LegacyHomeCandidate,
     detect_legacy_home,
     detect_legacy_homes,
@@ -69,12 +69,12 @@ def test_default_target_honors_state_dir_env(
     monkeypatch.setattr(Path, "home", classmethod(lambda cls: fake_home))
 
     # Relocated install (e.g. a desktop spawn): ~/.opensquilla is a candidate.
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "relocated-home"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "relocated-home"))
     relocated = detect_legacy_home()
     assert relocated == LegacyHomeCandidate(path=legacy, kind="cli-home")
 
     # Default install: the target IS ~/.opensquilla, so nothing is offered.
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(legacy))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(legacy))
     assert detect_legacy_home() is None
 
 
@@ -226,7 +226,7 @@ def test_explicit_gateway_target_wins_over_ambient_default_home(
     )
     # An ambient shell setting points at Desktop, but the running gateway's
     # config-derived target is elsewhere. Discovery must use the latter.
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(desktop))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(desktop))
 
     assert detect_legacy_homes(tmp_path / "actual-gateway-target") == [
         LegacyHomeCandidate(path=desktop, kind="desktop-home")

@@ -52,7 +52,7 @@ TokenRhythm identifier policy apply to the next request without requiring a
 restart:
 
 ```sh
-OPENSQUILLA_PRIVACY_DISABLE_NETWORK_OBSERVABILITY=true
+OPENSTARRY_CODE_PRIVACY_DISABLE_NETWORK_OBSERVABILITY=true
 ```
 
 The same control can be set in configuration:
@@ -65,13 +65,13 @@ disable_network_observability = true
 Legacy environment variables remain honored for compatibility:
 
 ```sh
-OPENSQUILLA_TELEMETRY_DISABLED=true
-OPENSQUILLA_UPDATE_CHECK_DISABLED=true
+OPENSTARRY_CODE_TELEMETRY_DISABLED=true
+OPENSTARRY_CODE_UPDATE_CHECK_DISABLED=true
 ```
 
-`OPENSQUILLA_TELEMETRY_DISABLED=true` also suppresses the optional TokenRhythm
+`OPENSTARRY_CODE_TELEMETRY_DISABLED=true` also suppresses the optional TokenRhythm
 installation identifier. Setting only
-`OPENSQUILLA_UPDATE_CHECK_DISABLED=true` does not suppress it.
+`OPENSTARRY_CODE_UPDATE_CHECK_DISABLED=true` does not suppress it.
 
 Manual user-initiated actions may still contact network services after user
 intent, including release downloads and configured providers, search, channels,
@@ -107,7 +107,7 @@ content, file names, or file contents. Source IP addresses may be visible to
 HTTP servers at the transport layer, but are not part of the telemetry payload.
 
 Use the unified network observability switch above to opt out before startup.
-The legacy telemetry opt-out `OPENSQUILLA_TELEMETRY_DISABLED=true` remains
+The telemetry opt-out `OPENSTARRY_CODE_TELEMETRY_DISABLED=true` remains
 honored for compatibility.
 
 CI and test environments automatically suppress installation telemetry before

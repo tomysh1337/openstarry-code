@@ -14,8 +14,8 @@ from types import SimpleNamespace
 
 import pytest
 
-import opensquilla.channels.manager as manager_module
-from opensquilla.channels.manager import ChannelManager
+import openstarry_code.channels.manager as manager_module
+from openstarry_code.channels.manager import ChannelManager
 
 
 class _FakeAdapter:
@@ -42,7 +42,7 @@ class _FakeAdapter:
         await asyncio.Event().wait()
 
     async def health_check(self):  # pragma: no cover - not exercised
-        from opensquilla.channels.types import ChannelHealth
+        from openstarry_code.channels.types import ChannelHealth
 
         return ChannelHealth(connected=self.started)
 
@@ -245,7 +245,7 @@ async def test_concurrent_reconciles_never_orphan_tasks(manager: ChannelManager)
             return _SlowAdapter(entry)
         return _FakeAdapter(entry)
 
-    import opensquilla.channels.manager as mm
+    import openstarry_code.channels.manager as mm
 
     original = mm.build_managed_channel
     mm.build_managed_channel = _build

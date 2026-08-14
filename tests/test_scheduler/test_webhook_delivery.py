@@ -11,11 +11,11 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.scheduler.delivery import DeliveryChain, validate_webhook_url
-from opensquilla.scheduler.ops import SchedulerOps
-from opensquilla.scheduler.payloads import make_agent_turn_payload
-from opensquilla.scheduler.persistence import JobStore
-from opensquilla.scheduler.types import (
+from openstarry_code.scheduler.delivery import DeliveryChain, validate_webhook_url
+from openstarry_code.scheduler.ops import SchedulerOps
+from openstarry_code.scheduler.payloads import make_agent_turn_payload
+from openstarry_code.scheduler.persistence import JobStore
+from openstarry_code.scheduler.types import (
     CronJob,
     DeliveryConfig,
     DeliveryMode,
@@ -135,7 +135,7 @@ async def test_ops_add_allows_webhook_on_main_target(tmp_path: Path) -> None:
     store = JobStore(str(db))
     await store.open()
     try:
-        from opensquilla.scheduler.payloads import make_system_event_payload
+        from openstarry_code.scheduler.payloads import make_system_event_payload
 
         ops = SchedulerOps(store)
         job = await ops.add(

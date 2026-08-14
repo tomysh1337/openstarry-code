@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# install.sh - OpenSquilla release installer for Linux and macOS.
+# install.sh - OpenStarry Code release installer for Linux and macOS.
 #
 # This script is safe to pipe from the public install URL. It installs uv if
 # needed, installs a release wheel with uv tool, then prints the explicit next
@@ -8,8 +8,8 @@
 set -euo pipefail
 
 default_version="v0.5.3"
-repo_slug="${OPENSQUILLA_REPOSITORY:-opensquilla/opensquilla}"
-python_version="${OPENSQUILLA_PYTHON_VERSION:-3.12}"
+repo_slug="${OPENSTARRY_CODE_REPOSITORY:-tomysh1337/openstarry-code}"
+python_version="${OPENSTARRY_CODE_PYTHON_VERSION:-3.12}"
 original_path="${PATH:-}"
 
 cli_version=""
@@ -21,10 +21,10 @@ usage() {
 Usage: bash install.sh [--version v0.5.3|latest] [--profile recommended|core] [--extras name[,name]]
 
 Environment equivalents:
-  OPENSQUILLA_VERSION=v0.5.3
-  OPENSQUILLA_INSTALL_PROFILE=recommended|core
-  OPENSQUILLA_INSTALL_EXTRAS=matrix
-  OPENSQUILLA_INSTALL_DRY_RUN=1
+  OPENSTARRY_CODE_VERSION=v0.5.3
+  OPENSTARRY_CODE_INSTALL_PROFILE=recommended|core
+  OPENSTARRY_CODE_INSTALL_EXTRAS=matrix
+  OPENSTARRY_CODE_INSTALL_DRY_RUN=1
 HELP
 }
 
@@ -66,16 +66,16 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-release_selector="${cli_version:-${OPENSQUILLA_VERSION:-${default_version}}}"
-profile="${cli_profile:-${OPENSQUILLA_INSTALL_PROFILE:-recommended}}"
-dry_run="${OPENSQUILLA_INSTALL_DRY_RUN:-0}"
+release_selector="${cli_version:-${OPENSTARRY_CODE_VERSION:-${default_version}}}"
+profile="${cli_profile:-${OPENSTARRY_CODE_INSTALL_PROFILE:-recommended}}"
+dry_run="${OPENSTARRY_CODE_INSTALL_DRY_RUN:-0}"
 
 is_release_version() {
     [[ "$1" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+((a|b|rc)[0-9]+)?$ ]]
 }
 
 valid_extras=" matrix matrix-e2e document-extras "
-extras_csv="${OPENSQUILLA_INSTALL_EXTRAS:-}"
+extras_csv="${OPENSTARRY_CODE_INSTALL_EXTRAS:-}"
 if [[ -n "${cli_extras}" ]]; then
     extras_csv="${extras_csv}${extras_csv:+,}${cli_extras}"
 fi
@@ -115,7 +115,7 @@ case "${profile}" in
         target_extras=(recommended)
         ;;
     *)
-        echo "install.sh: unsupported OPENSQUILLA_INSTALL_PROFILE='${profile}'." >&2
+        echo "install.sh: unsupported OPENSTARRY_CODE_INSTALL_PROFILE='${profile}'." >&2
         echo "install.sh: supported profiles: core, recommended" >&2
         exit 1
         ;;
@@ -126,13 +126,13 @@ if (( ${#install_extras[@]} > 0 )); then
 fi
 
 if (( ${#target_extras[@]} > 0 )); then
-    package_name="opensquilla[$(IFS=,; echo "${target_extras[*]}")]"
+    package_name="openstarry-code[$(IFS=,; echo "${target_extras[*]}")]"
 else
-    package_name="opensquilla"
+    package_name="openstarry-code"
 fi
 
 if [[ "${release_selector}" != "latest" && "${release_selector}" != "stable" ]] && ! is_release_version "${release_selector}"; then
-    echo "install.sh: unsupported OPENSQUILLA_VERSION='${release_selector}'." >&2
+    echo "install.sh: unsupported OPENSTARRY_CODE_VERSION='${release_selector}'." >&2
     echo "install.sh: the release installer only supports latest, stable, or release versions like v0.5.3." >&2
     echo "install.sh: use git clone plus scripts/install_source.sh for main, dev, branch, or source installs." >&2
     exit 1
@@ -162,18 +162,18 @@ case "${release_selector}" in
             exit 1
         fi
         release_version="${latest_tag#v}"
-        wheel_url="https://github.com/${repo_slug}/releases/download/${latest_tag}/opensquilla-${release_version}-py3-none-any.whl"
+        wheel_url="https://github.com/${repo_slug}/releases/download/${latest_tag}/openstarry_code-${release_version}-py3-none-any.whl"
         display_version="${latest_tag}"
         ;;
     v*)
         release_version="${release_selector#v}"
-        wheel_url="https://github.com/${repo_slug}/releases/download/${release_selector}/opensquilla-${release_version}-py3-none-any.whl"
+        wheel_url="https://github.com/${repo_slug}/releases/download/${release_selector}/openstarry_code-${release_version}-py3-none-any.whl"
         display_version="${release_selector}"
         ;;
     *)
         release_version="${release_selector}"
         release_tag="v${release_version}"
-        wheel_url="https://github.com/${repo_slug}/releases/download/${release_tag}/opensquilla-${release_version}-py3-none-any.whl"
+        wheel_url="https://github.com/${repo_slug}/releases/download/${release_tag}/openstarry_code-${release_version}-py3-none-any.whl"
         display_version="${release_tag}"
         ;;
 esac
@@ -209,8 +209,8 @@ resolve_uv() {
 }
 
 if [[ "${dry_run}" == "1" ]]; then
-    echo "install.sh: dry-run - would install OpenSquilla ${display_version}"
-    echo "install.sh: dry-run - would run: uv tool install --python ${python_version} --force --reinstall-package opensquilla \"${install_spec}\""
+    echo "install.sh: dry-run - would install OpenStarry Code ${display_version}"
+    echo "install.sh: dry-run - would run: uv tool install --python ${python_version} --force --reinstall-package openstarry-code \"${install_spec}\""
     exit 0
 fi
 
@@ -227,15 +227,15 @@ if [[ -z "${uv_bin}" ]]; then
     exit 1
 fi
 
-echo "install.sh: installing OpenSquilla ${display_version} (${profile})"
-"${uv_bin}" tool install --python "${python_version}" --force --reinstall-package opensquilla "${install_spec}"
+echo "install.sh: installing OpenStarry Code ${display_version} (${profile})"
+"${uv_bin}" tool install --python "${python_version}" --force --reinstall-package openstarry-code "${install_spec}"
 
 tool_bin_dir="$("${uv_bin}" tool dir --bin 2>/dev/null || true)"
 
-# Write an install receipt to aid `opensquilla uninstall`. Best-effort: never
+# Write an install receipt to aid `openstarry-code uninstall`. Best-effort: never
 # fail the install if this cannot be written.
 write_install_receipt() {
-    home="${OPENSQUILLA_STATE_DIR:-${HOME}/.opensquilla}"
+    home="${OPENSTARRY_CODE_STATE_DIR:-${HOME}/.openstarry-code}"
     receipt="${home}/install-receipt.json"
     tool_dir="$("${uv_bin}" tool dir 2>/dev/null || true)"
     installed_at="$(date -u +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || echo "")"
@@ -245,8 +245,8 @@ write_install_receipt() {
   "version": 1,
   "install_method": "uv-tool",
   "installed_at": "${installed_at}",
-  "entrypoints": ["${tool_bin_dir}/opensquilla", "${tool_bin_dir}/gateway"],
-  "owned_paths": ["${tool_dir}/opensquilla", "${tool_bin_dir}/opensquilla", "${tool_bin_dir}/gateway"],
+  "entrypoints": ["${tool_bin_dir}/openstarry-code", "${tool_bin_dir}/gateway"],
+  "owned_paths": ["${tool_dir}/openstarry-code", "${tool_bin_dir}/openstarry-code", "${tool_bin_dir}/gateway"],
   "data_root": "${home}"
 }
 RECEIPT
@@ -256,11 +256,11 @@ write_install_receipt || true
 
 cat <<DONE
 ----------------------------------------------------------------------------
-OpenSquilla installed from ${display_version}.
+OpenStarry Code installed from ${display_version}.
 
 Next steps:
-  opensquilla onboard
-  opensquilla gateway run
+  openstarry-code onboard
+  openstarry-code gateway run
 
 Default gateway bind: 127.0.0.1:18791 (loopback only).
 Do not expose the gateway on 0.0.0.0 unless it is behind a trusted reverse
@@ -272,7 +272,7 @@ if [[ -n "${tool_bin_dir}" && ":${original_path}:" != *":${tool_bin_dir}:"* ]]; 
     cat <<PATHNOTE
 
 PATH note:
-  Your current shell may not find 'opensquilla' until PATH is refreshed.
+  Your current shell may not find 'openstarry-code' until PATH is refreshed.
   Run one of these, then retry the next steps:
 
     . "\$HOME/.local/bin/env"

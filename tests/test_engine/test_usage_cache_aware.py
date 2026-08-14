@@ -14,16 +14,16 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine import Agent, AgentConfig
-from opensquilla.engine.turn_runner.turn_finalizer_stage import _turn_usage_payload
-from opensquilla.engine.types import DoneEvent
-from opensquilla.engine.usage import SessionUsage, UsageTracker, usage_scope
-from opensquilla.provider import DoneEvent as ProviderDone
-from opensquilla.provider import TextDeltaEvent as ProviderText
+from openstarry_code.engine import Agent, AgentConfig
+from openstarry_code.engine.turn_runner.turn_finalizer_stage import _turn_usage_payload
+from openstarry_code.engine.types import DoneEvent
+from openstarry_code.engine.usage import SessionUsage, UsageTracker, usage_scope
+from openstarry_code.provider import DoneEvent as ProviderDone
+from openstarry_code.provider import TextDeltaEvent as ProviderText
 
 
 def test_issue_490_row_estimate_is_cache_aware(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("OPENSQUILLA_OPENROUTER_LIVE_PRICING", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING", "0")
     su = SessionUsage()
     su.add(
         11_559_964,
@@ -47,7 +47,7 @@ def test_issue_490_row_estimate_is_cache_aware(monkeypatch: pytest.MonkeyPatch) 
 
 
 def test_unknown_cache_rate_labels_cache_blind(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("OPENSQUILLA_OPENROUTER_LIVE_PRICING", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING", "0")
     su = SessionUsage()
     su.add(1_000_000, 0, model_id="kimi-latest", cache_read_tokens=900_000, provider="moonshot")
     row = su.model_breakdown[0]
@@ -60,7 +60,7 @@ def test_unknown_cache_rate_labels_cache_blind(monkeypatch: pytest.MonkeyPatch) 
 def test_billed_plus_unbilled_same_model_is_mixed_not_collapsed(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_OPENROUTER_LIVE_PRICING", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING", "0")
     su = SessionUsage()
     su.add(1000, 100, model_id="deepseek/deepseek-v4-pro", billed_cost=0.05, provider="openrouter")
     su.add(2_000_000, 0, model_id="deepseek/deepseek-v4-pro", provider="deepseek")
@@ -77,7 +77,7 @@ def test_billed_plus_unbilled_same_model_is_mixed_not_collapsed(
 def test_billed_only_row_has_null_basis_but_price_source(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_OPENROUTER_LIVE_PRICING", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING", "0")
     su = SessionUsage()
     su.add(1000, 50, model_id="claude-opus-4-7", billed_cost=0.05)
     row = su.model_breakdown[0]
@@ -91,7 +91,7 @@ def test_billed_only_row_has_null_basis_but_price_source(
 
 
 def test_local_free_row_labels_free_basis(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("OPENSQUILLA_OPENROUTER_LIVE_PRICING", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING", "0")
     su = SessionUsage()
     su.add(10_000, 500, model_id="qwen3:4b", provider="ollama")
     row = su.model_breakdown[0]
@@ -103,7 +103,7 @@ def test_local_free_row_labels_free_basis(monkeypatch: pytest.MonkeyPatch) -> No
 def test_unbilled_counters_accumulate_only_when_call_is_unbilled(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_OPENROUTER_LIVE_PRICING", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING", "0")
     su = SessionUsage()
     su.add(1000, 100, model_id="m", billed_cost=0.05, cache_read_tokens=300, cache_write_tokens=10)
     su.add(2000, 200, model_id="m", cache_read_tokens=500, cache_write_tokens=20)
@@ -123,7 +123,7 @@ def test_unbilled_counters_accumulate_only_when_call_is_unbilled(
 
 
 def test_scoped_usage_accumulates_unbilled_counters(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("OPENSQUILLA_OPENROUTER_LIVE_PRICING", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING", "0")
     tracker = UsageTracker()
     with usage_scope("subagent:researcher"):
         tracker.add("s1", 1000, 50, model_id="m", cache_read_tokens=400)
@@ -137,7 +137,7 @@ def test_scoped_usage_accumulates_unbilled_counters(monkeypatch: pytest.MonkeyPa
 
 
 def test_checkpoint_clone_preserves_unbilled_counters(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("OPENSQUILLA_OPENROUTER_LIVE_PRICING", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING", "0")
     tracker = UsageTracker()
     tracker.add("s1", 1000, 50, model_id="m", cache_read_tokens=400, cache_write_tokens=30)
     checkpoint = tracker.session_checkpoint("s1")
@@ -157,7 +157,7 @@ def test_checkpoint_clone_preserves_unbilled_counters(monkeypatch: pytest.Monkey
 def test_delta_snapshot_prices_unbilled_delta_cache_aware(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_OPENROUTER_LIVE_PRICING", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING", "0")
     tracker = UsageTracker()
     sk = "agent:main:delta"
     tracker.add(
@@ -190,7 +190,7 @@ def test_delta_snapshot_prices_unbilled_delta_cache_aware(
 def test_delta_snapshot_mixed_turn_adds_billed_and_estimate(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_OPENROUTER_LIVE_PRICING", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING", "0")
     tracker = UsageTracker()
     sk = "agent:main:mixed-delta"
     checkpoint = tracker.session_checkpoint(sk)
@@ -245,7 +245,7 @@ class _CachedUsageProvider:
 
 
 async def test_agent_turn_end_estimate_is_cache_aware(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("OPENSQUILLA_OPENROUTER_LIVE_PRICING", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING", "0")
     provider = _CachedUsageProvider(
         input_tokens=1_000_000,
         output_tokens=0,
@@ -267,7 +267,7 @@ async def test_agent_turn_end_estimate_is_cache_aware(monkeypatch: pytest.Monkey
 async def test_agent_turn_end_billed_cost_has_null_basis(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_OPENROUTER_LIVE_PRICING", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING", "0")
 
     class _BilledProvider(_CachedUsageProvider):
         async def _stream(self) -> AsyncIterator[Any]:

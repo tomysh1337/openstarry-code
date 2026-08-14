@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import PureWindowsPath
 
-from opensquilla.tools.path_aliases import resolve_workspace_alias
+from openstarry_code.tools.path_aliases import resolve_workspace_alias
 
 
 def test_workspace_alias_accepts_windows_root_relative_path(tmp_path):

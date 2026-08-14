@@ -6,11 +6,11 @@ from typing import Any
 
 import pytest
 
-from opensquilla.channels.contract import ChannelCapabilities, ChannelSendStatus
-from opensquilla.channels.matrix import MatrixChannel, MatrixChannelConfig
-from opensquilla.channels.slack import SlackChannel
-from opensquilla.channels.telegram import TelegramChannel, TelegramChannelConfig
-from opensquilla.channels.wecom import WeComChannel, WeComChannelConfig, _TokenState
+from openstarry_code.channels.contract import ChannelCapabilities, ChannelSendStatus
+from openstarry_code.channels.matrix import MatrixChannel, MatrixChannelConfig
+from openstarry_code.channels.slack import SlackChannel
+from openstarry_code.channels.telegram import TelegramChannel, TelegramChannelConfig
+from openstarry_code.channels.wecom import WeComChannel, WeComChannelConfig, _TokenState
 
 
 class _FakeResponse:

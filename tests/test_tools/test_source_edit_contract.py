@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.tools.source_edit_contract import (
+from openstarry_code.tools.source_edit_contract import (
     SourceEditContractError,
     apply_line_edits,
     build_diff_summary,

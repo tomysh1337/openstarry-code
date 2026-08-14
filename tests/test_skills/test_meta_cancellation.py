@@ -24,12 +24,12 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.types import AgentEvent, DoneEvent, TextDeltaEvent
-from opensquilla.persistence.migrator import apply_pending
-from opensquilla.skills.meta.orchestrator import MetaOrchestrator
-from opensquilla.skills.meta.parser import parse_meta_plan
-from opensquilla.skills.meta.types import MetaMatch
-from opensquilla.skills.types import SkillLayer, SkillSpec
+from openstarry_code.engine.types import AgentEvent, DoneEvent, TextDeltaEvent
+from openstarry_code.persistence.migrator import apply_pending
+from openstarry_code.skills.meta.orchestrator import MetaOrchestrator
+from openstarry_code.skills.meta.parser import parse_meta_plan
+from openstarry_code.skills.meta.types import MetaMatch
+from openstarry_code.skills.types import SkillLayer, SkillSpec
 
 MIGRATIONS_DIR = Path(__file__).resolve().parents[1].parent / "migrations"
 
@@ -136,7 +136,7 @@ async def test_orchestrator_cancelled_mid_step_cleans_up_running_tasks() -> None
 async def test_orchestrator_cancelled_writes_cancelled_status_to_db(tmp_path) -> None:
     """When a writer is wired, a cancelled run finalises with
     ``status='cancelled'`` — never stuck on ``running``."""
-    from opensquilla.persistence.meta_run_writer import open_meta_run_writer
+    from openstarry_code.persistence.meta_run_writer import open_meta_run_writer
 
     db_path = tmp_path / "runs.db"
     apply_pending(str(db_path), MIGRATIONS_DIR)
@@ -196,7 +196,7 @@ async def test_orchestrator_cancellation_yields_no_partial_meta_result() -> None
     ``MetaResult`` (that would be a lie about completion). Items yielded
     before the cancel point can be anything, but the terminal sentinel
     must not surface."""
-    from opensquilla.skills.meta.types import MetaResult
+    from openstarry_code.skills.meta.types import MetaResult
 
     spec = _make_meta_spec({
         "steps": [

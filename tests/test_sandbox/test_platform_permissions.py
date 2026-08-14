@@ -4,15 +4,15 @@ from pathlib import Path, PurePath, PurePosixPath, PureWindowsPath
 
 import pytest
 
-from opensquilla.sandbox import platform_permissions as platform_permissions_module
-from opensquilla.sandbox import policy as policy_module
-from opensquilla.sandbox.config import SandboxSettings
-from opensquilla.sandbox.permissions import (
+from openstarry_code.sandbox import platform_permissions as platform_permissions_module
+from openstarry_code.sandbox import policy as policy_module
+from openstarry_code.sandbox.config import SandboxSettings
+from openstarry_code.sandbox.permissions import (
     FileSystemAccess,
     FileSystemPermissionEntry,
     FileSystemPermissionProfile,
 )
-from opensquilla.sandbox.platform_permissions import (
+from openstarry_code.sandbox.platform_permissions import (
     WINDOWS_PLATFORM_READ_ROOTS,
     WINDOWS_PROFILE_READ_EXCLUSIONS,
     FileSystemPlatform,
@@ -22,8 +22,8 @@ from opensquilla.sandbox.platform_permissions import (
     resolve_special_path,
     resolve_temp_write_paths,
 )
-from opensquilla.sandbox.policy import build_policy
-from opensquilla.sandbox.types import SecurityLevel
+from openstarry_code.sandbox.policy import build_policy
+from openstarry_code.sandbox.types import SecurityLevel
 
 
 def _context(

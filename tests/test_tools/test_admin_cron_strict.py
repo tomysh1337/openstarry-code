@@ -12,11 +12,11 @@ from typing import Any
 
 import pytest
 
-import opensquilla.tools.builtin.admin as admin_mod
-from opensquilla.scheduler.types import SessionTarget
-from opensquilla.tools.builtin.admin import cron as cron_tool
-from opensquilla.tools.registry import get_default_registry
-from opensquilla.tools.types import ToolContext, ToolError, current_tool_context
+import openstarry_code.tools.builtin.admin as admin_mod
+from openstarry_code.scheduler.types import SessionTarget
+from openstarry_code.tools.builtin.admin import cron as cron_tool
+from openstarry_code.tools.registry import get_default_registry
+from openstarry_code.tools.types import ToolContext, ToolError, current_tool_context
 
 
 class _ToolFakeScheduler:

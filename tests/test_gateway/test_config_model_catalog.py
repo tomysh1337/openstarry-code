@@ -22,17 +22,17 @@ import pytest
 import tomli_w
 from pydantic import ValidationError
 
-from opensquilla.gateway.config import (
+from openstarry_code.gateway.config import (
     KNOWN_REASONING_FORMATS,
     GatewayConfig,
     ModelCatalogConfig,
     ModelOverrideConfig,
 )
-from opensquilla.gateway.config_migration import (
+from openstarry_code.gateway.config_migration import (
     LATEST_CONFIG_VERSION,
     migrate_config_payload,
 )
-from opensquilla.onboarding import config_store
+from openstarry_code.onboarding import config_store
 
 # ---------------------------------------------------------------------------
 # [model_catalog] schema
@@ -76,8 +76,8 @@ def test_model_catalog_stale_after_days_must_be_at_least_one(bad_days: int) -> N
 
 
 def test_model_catalog_env_prefix_binds(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("OPENSQUILLA_MODEL_CATALOG_REFRESH", "startup")
-    monkeypatch.setenv("OPENSQUILLA_MODEL_CATALOG_STALE_AFTER_DAYS", "10")
+    monkeypatch.setenv("OPENSTARRY_CODE_MODEL_CATALOG_REFRESH", "startup")
+    monkeypatch.setenv("OPENSTARRY_CODE_MODEL_CATALOG_STALE_AFTER_DAYS", "10")
 
     catalog = ModelCatalogConfig()
 

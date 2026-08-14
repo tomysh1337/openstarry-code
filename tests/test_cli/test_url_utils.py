@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from opensquilla.cli.url_utils import normalize_gateway_url
+from openstarry_code.cli.url_utils import normalize_gateway_url
 
 
 def test_normalize_gateway_url_preserves_query_and_fragment() -> None:

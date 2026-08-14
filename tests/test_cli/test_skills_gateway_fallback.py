@@ -10,11 +10,11 @@ import pytest
 import typer
 from typer.testing import CliRunner
 
-from opensquilla.cli import skills_cmd
-from opensquilla.cli.main import app
-from opensquilla.skills.hub.management import InstallResult
-from opensquilla.skills.hub.transaction import journal_path_for_state
-from opensquilla.skills.types import SkillLayer, SkillSpec
+from openstarry_code.cli import skills_cmd
+from openstarry_code.cli.main import app
+from openstarry_code.skills.hub.management import InstallResult
+from openstarry_code.skills.hub.transaction import journal_path_for_state
+from openstarry_code.skills.types import SkillLayer, SkillSpec
 
 
 class _GatewayClient:
@@ -49,7 +49,7 @@ def _gateway_client(monkeypatch: pytest.MonkeyPatch) -> None:
     _GatewayClient.called_params = {}
     _GatewayClient.token = None
     _GatewayClient.closed = False
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _GatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _GatewayClient)
     monkeypatch.setattr(skills_cmd, "default_gateway_token", lambda: "operator-token")
 
 
@@ -174,9 +174,9 @@ def test_offline_skills_list_marks_rows_validated_for_next_start(
         managed_dir=managed,
         get_user_invocable=lambda: [skill],
     )
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(profile_home))
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "lock-root"))
-    monkeypatch.setenv("OPENSQUILLA_TEST_PROFILE_LOCK_ROOT", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(profile_home))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "lock-root"))
+    monkeypatch.setenv("OPENSTARRY_CODE_TEST_PROFILE_LOCK_ROOT", "1")
     monkeypatch.setattr(
         skills_cmd,
         "_build_offline_skill_loader",
@@ -199,7 +199,7 @@ def test_offline_skills_list_fails_closed_during_writer_and_pending_recovery(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.profile_operation_lock import ProfileOperationLock
+    from openstarry_code.profile_operation_lock import ProfileOperationLock
 
     _GatewayClient.connect_error = ConnectionError("connection refused")
     profile_home = tmp_path / "profile"
@@ -224,9 +224,9 @@ def test_offline_skills_list_fails_closed_during_writer_and_pending_recovery(
         builds += 1
         return config, loader
 
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(profile_home))
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "lock-root"))
-    monkeypatch.setenv("OPENSQUILLA_TEST_PROFILE_LOCK_ROOT", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(profile_home))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "lock-root"))
+    monkeypatch.setenv("OPENSTARRY_CODE_TEST_PROFILE_LOCK_ROOT", "1")
     monkeypatch.setattr(
         skills_cmd,
         "_build_offline_skill_loader",
@@ -276,7 +276,7 @@ def test_offline_skills_doctor_fails_closed_before_building_loader_during_writer
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.profile_operation_lock import ProfileOperationLock
+    from openstarry_code.profile_operation_lock import ProfileOperationLock
 
     _GatewayClient.connect_error = ConnectionError("connection refused")
     profile_home = tmp_path / "profile"
@@ -287,9 +287,9 @@ def test_offline_skills_doctor_fails_closed_before_building_loader_during_writer
         builds += 1
         raise AssertionError("Doctor must not build a loader while the profile is busy")
 
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(profile_home))
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "lock-root"))
-    monkeypatch.setenv("OPENSQUILLA_TEST_PROFILE_LOCK_ROOT", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(profile_home))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "lock-root"))
+    monkeypatch.setenv("OPENSTARRY_CODE_TEST_PROFILE_LOCK_ROOT", "1")
     monkeypatch.setattr(
         skills_cmd,
         "_build_offline_skill_loader",
@@ -322,7 +322,7 @@ def test_offline_skills_doctor_fails_closed_before_building_loader_during_writer
 @pytest.mark.asyncio
 async def test_skill_mutation_falls_back_only_when_gateway_is_unreachable() -> None:
     _GatewayClient.connect_error = SystemExit(
-        "Cannot connect to OpenSquilla gateway at ws://localhost:18791/ws"
+        "Cannot connect to OpenStarry Code gateway at ws://localhost:18791/ws"
     )
 
     payload = await skills_cmd._try_gateway_skill_mutation(
@@ -391,7 +391,7 @@ def test_offline_install_human_output_preserves_non_activation_message(
 
     monkeypatch.setattr(skills_cmd, "_offline_management_service", _build_service)
     monkeypatch.setattr(
-        "opensquilla.profile_operation_lock.ProfileOperationLock",
+        "openstarry_code.profile_operation_lock.ProfileOperationLock",
         _NoopProfileLock,
     )
 

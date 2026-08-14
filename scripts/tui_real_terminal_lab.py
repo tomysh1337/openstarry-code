@@ -28,7 +28,7 @@ from tui_real_terminal.targets import (  # type: ignore[import-not-found]
 
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Run an OpenSquilla TUI real-terminal scenario."
+        description="Run an OpenStarry Code TUI real-terminal scenario."
     )
     parser.add_argument(
         "--scenario",
@@ -51,10 +51,10 @@ def _parser() -> argparse.ArgumentParser:
 def _assert_live_backend_enabled(backend: str) -> None:
     if backend != "live-opentui":
         return
-    if os.environ.get("OPENSQUILLA_TUI_LIVE_REAL") == "1":
+    if os.environ.get("OPENSTARRY_CODE_TUI_LIVE_REAL") == "1":
         return
     raise SystemExit(
-        "set OPENSQUILLA_TUI_LIVE_REAL=1 to run the real CLI/OpenTUI smoke"
+        "set OPENSTARRY_CODE_TUI_LIVE_REAL=1 to run the real CLI/OpenTUI smoke"
     )
 
 

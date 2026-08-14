@@ -1,13 +1,13 @@
 """Bootstrap-stage env threading for the tool-surface levers.
 
-Covers OPENSQUILLA_PROJECTION_SIGNAL_HINTS (off by default). Motivation: this
+Covers OPENSTARRY_CODE_PROJECTION_SIGNAL_HINTS (off by default). Motivation: this
 knob must flow through the single sanctioned parse site
 (agent_bootstrap_stage) into AgentConfig with the SAME on/off vocabulary the
 runtime gate uses, so an unrecognized value fails at bootstrap instead of
 surviving as False and then raising mid-turn when the agent re-reads the env.
 The other tool-surface levers intentionally have no AgentConfig field:
-OPENSQUILLA_REPEATED_CALL_NOTICE is read from the environment by the dispatch
-layer per call, and OPENSQUILLA_TOOL_DESCRIPTION_OVERRIDES is resolved by the
+OPENSTARRY_CODE_REPEATED_CALL_NOTICE is read from the environment by the dispatch
+layer per call, and OPENSTARRY_CODE_TOOL_DESCRIPTION_OVERRIDES is resolved by the
 runtime per turn — a config field for either would be dead state the manifest
 could misreport.
 """
@@ -16,11 +16,11 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.engine.types import AgentConfig
+from openstarry_code.engine.types import AgentConfig
 
 from .test_agent_bootstrap_stage_unit import _make_input, _make_stage
 
-_ENV = "OPENSQUILLA_PROJECTION_SIGNAL_HINTS"
+_ENV = "OPENSTARRY_CODE_PROJECTION_SIGNAL_HINTS"
 
 
 def test_agent_config_defaults_keep_tool_surface_levers_off() -> None:

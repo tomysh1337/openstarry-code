@@ -1,4 +1,4 @@
-"""CLI tests for `opensquilla providers`."""
+"""CLI tests for `openstarry-code providers`."""
 
 from __future__ import annotations
 
@@ -7,13 +7,13 @@ from pathlib import Path
 
 from typer.testing import CliRunner
 
-from opensquilla.cli.main import app
+from openstarry_code.cli.main import app
 
 runner = CliRunner()
 
 
 def test_providers_list_shows_all_supported(tmp_path: Path, monkeypatch):
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
     result = runner.invoke(app, ["providers", "list"])
     assert result.exit_code == 0
     out = result.stdout
@@ -22,7 +22,7 @@ def test_providers_list_shows_all_supported(tmp_path: Path, monkeypatch):
 
 
 def test_providers_list_marks_unsupported(tmp_path, monkeypatch):
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
     result = runner.invoke(app, ["providers", "list"])
     assert result.exit_code == 0
     assert "openai_codex" in result.stdout
@@ -31,7 +31,7 @@ def test_providers_list_marks_unsupported(tmp_path, monkeypatch):
 
 def test_providers_configure_writes_config(tmp_path, monkeypatch):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     result = runner.invoke(
         app,
         [
@@ -54,7 +54,7 @@ def test_providers_configure_writes_config(tmp_path, monkeypatch):
 
 
 def test_providers_configure_unsupported_fails(tmp_path, monkeypatch):
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
     result = runner.invoke(
         app, ["providers", "configure", "github_copilot", "--model", "x"]
     )
@@ -67,7 +67,7 @@ def test_providers_configure_unsupported_fails(tmp_path, monkeypatch):
 
 def test_providers_configure_ollama_no_key_required(tmp_path, monkeypatch):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     result = runner.invoke(
         app, ["providers", "configure", "ollama", "--model", "llama3"]
     )
@@ -78,7 +78,7 @@ def test_providers_configure_ollama_no_key_required(tmp_path, monkeypatch):
 def test_providers_configure_vllm_requires_base_url(tmp_path, monkeypatch):
     # vllm is experimental (registry-runnable, unverified): configurable, but
     # its explicit base_url requirement still validates.
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
     result = runner.invoke(
         app,
         ["providers", "configure", "vllm", "--model", "x", "--api-key", "k"],
@@ -106,7 +106,7 @@ def test_providers_configure_vllm_requires_base_url(tmp_path, monkeypatch):
 
 def test_providers_status_probe_column_surfaces_failure_kind(monkeypatch):
     monkeypatch.setattr(
-        "opensquilla.cli.providers_cmd.run_gateway_sync",
+        "openstarry_code.cli.providers_cmd.run_gateway_sync",
         lambda *_args, **_kwargs: {
             "providers": [
                 {

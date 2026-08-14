@@ -5,12 +5,12 @@ from typing import Any
 
 import pytest
 
-from opensquilla.sandbox.config import SandboxSettings
-from opensquilla.sandbox.integration import configure_runtime, reset_runtime
-from opensquilla.sandbox.permissions import FileSystemPermissionProfile
-from opensquilla.sandbox.types import SandboxResult
-from opensquilla.tools.builtin import git
-from opensquilla.tools.types import ToolContext, current_tool_context
+from openstarry_code.sandbox.config import SandboxSettings
+from openstarry_code.sandbox.integration import configure_runtime, reset_runtime
+from openstarry_code.sandbox.permissions import FileSystemPermissionProfile
+from openstarry_code.sandbox.types import SandboxResult
+from openstarry_code.tools.builtin import git
+from openstarry_code.tools.types import ToolContext, current_tool_context
 
 
 class _FakeProcess:
@@ -155,7 +155,7 @@ async def test_git_host_output_decodes_via_centralized_decoder(
         return "新建文件.txt (decoded)"
 
     monkeypatch.setattr(
-        "opensquilla.subprocess_encoding.decode_subprocess_output", fake_decode
+        "openstarry_code.subprocess_encoding.decode_subprocess_output", fake_decode
     )
 
     async def fake_create_subprocess_exec(*args: str, **kwargs: Any) -> _GbkProcess:

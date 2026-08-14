@@ -6,11 +6,11 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.sandbox.guest_profile import (
+from openstarry_code.sandbox.guest_profile import (
     GuestProfileFactory,
     cleanup_guest_profile_root,
 )
-from opensquilla.sandbox.run_mode import RunMode
+from openstarry_code.sandbox.run_mode import RunMode
 
 
 def test_guest_profile_mounts_default_workspace_and_bundled_runtime(tmp_path: Path) -> None:

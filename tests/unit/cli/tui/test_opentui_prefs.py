@@ -16,14 +16,14 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.cli.tui.opentui import prefs
-from opensquilla.cli.tui.opentui.messages import HostInputSubmit, HostThemeSelected
-from opensquilla.cli.tui.opentui.themes import DEFAULT_THEME, handle_theme_command
+from openstarry_code.cli.tui.opentui import prefs
+from openstarry_code.cli.tui.opentui.messages import HostInputSubmit, HostThemeSelected
+from openstarry_code.cli.tui.opentui.themes import DEFAULT_THEME, handle_theme_command
 
 
 @pytest.fixture(autouse=True)
 def _isolated_state_dir(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path))
     return tmp_path
 
 
@@ -190,8 +190,8 @@ async def test_theme_command_persists_direct_choice() -> None:
 
 
 async def test_surface_persists_picker_confirmation() -> None:
-    from opensquilla.cli.tui.opentui.surface import OpenTuiSurface
-    from opensquilla.engine.commands import Surface
+    from openstarry_code.cli.tui.opentui.surface import OpenTuiSurface
+    from openstarry_code.engine.commands import Surface
     from tests.unit.cli.tui.test_opentui_surface import FakeOpenTuiBridge
 
     bridge = FakeOpenTuiBridge()
@@ -209,8 +209,8 @@ async def test_surface_persists_picker_confirmation() -> None:
 
 
 def test_bridge_env_injection_prefers_explicit_env_over_pref() -> None:
-    from opensquilla.cli.tui.opentui.bridge import apply_theme_preference_env
-    from opensquilla.cli.tui.opentui.themes import THEME_ENV_VAR
+    from openstarry_code.cli.tui.opentui.bridge import apply_theme_preference_env
+    from openstarry_code.cli.tui.opentui.themes import THEME_ENV_VAR
 
     prefs.save_theme_preference("nord")
 
@@ -232,8 +232,8 @@ def test_bridge_env_injection_prefers_explicit_env_over_pref() -> None:
 
 
 def test_bridge_env_injection_without_preference_is_a_no_op() -> None:
-    from opensquilla.cli.tui.opentui.bridge import apply_theme_preference_env
-    from opensquilla.cli.tui.opentui.themes import THEME_ENV_VAR
+    from openstarry_code.cli.tui.opentui.bridge import apply_theme_preference_env
+    from openstarry_code.cli.tui.opentui.themes import THEME_ENV_VAR
 
     env: dict[str, str] = {}
     apply_theme_preference_env(env)

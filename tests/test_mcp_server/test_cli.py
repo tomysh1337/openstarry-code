@@ -3,7 +3,7 @@ from __future__ import annotations
 import click
 from typer.testing import CliRunner
 
-from opensquilla.cli.main import app
+from openstarry_code.cli.main import app
 
 
 def test_mcp_server_cli_help_exposes_real_bridge_without_benchmark_mode() -> None:

@@ -5,15 +5,15 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.application.approval_queue import ApprovalQueue
-from opensquilla.sandbox.elevation import (
+from openstarry_code.application.approval_queue import ApprovalQueue
+from openstarry_code.sandbox.elevation import (
     ApprovalDisplay,
     ElevationAction,
     consume_approved_elevation,
     gate_elevated_action,
     request_elevation,
 )
-from opensquilla.tools.types import ToolContext, current_tool_context
+from openstarry_code.tools.types import ToolContext, current_tool_context
 
 
 def _shell_action(command: str, *, cwd: str = "/workspace/opensquilla") -> ElevationAction:

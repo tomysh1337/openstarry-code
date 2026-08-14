@@ -2,7 +2,7 @@
 
 The default test suite skips this file. Run it with:
 
-    OPENSQUILLA_WEBUI_BROWSER_E2E=1 uv run pytest tests/functional/test_webui_browser_e2e.py -q -s
+    OPENSTARRY_CODE_WEBUI_BROWSER_E2E=1 uv run pytest tests/functional/test_webui_browser_e2e.py -q -s
 """
 
 from __future__ import annotations
@@ -88,8 +88,8 @@ def _stop_process(process: subprocess.Popen[str]) -> None:
 
 
 def test_control_ui_loads_in_real_browser(tmp_path: Path) -> None:
-    if os.environ.get("OPENSQUILLA_WEBUI_BROWSER_E2E") != "1":
-        pytest.skip("set OPENSQUILLA_WEBUI_BROWSER_E2E=1 to run browser smoke")
+    if os.environ.get("OPENSTARRY_CODE_WEBUI_BROWSER_E2E") != "1":
+        pytest.skip("set OPENSTARRY_CODE_WEBUI_BROWSER_E2E=1 to run browser smoke")
 
     port = _free_port()
     server_script = tmp_path / "webui_smoke_server.py"
@@ -138,8 +138,8 @@ def test_control_ui_loads_in_real_browser(tmp_path: Path) -> None:
             f"""
             import uvicorn
 
-            from opensquilla.gateway.app import create_gateway_app
-            from opensquilla.gateway.config import AuthConfig, GatewayConfig
+            from openstarry_code.gateway.app import create_gateway_app
+            from openstarry_code.gateway.config import AuthConfig, GatewayConfig
 
             config = GatewayConfig(
                 host="127.0.0.1",
@@ -205,7 +205,7 @@ def test_control_ui_loads_in_real_browser(tmp_path: Path) -> None:
     )
 
     env = os.environ.copy()
-    env["OPENSQUILLA_STATE_DIR"] = str(state_dir)
+    env["OPENSTARRY_CODE_STATE_DIR"] = str(state_dir)
     server = subprocess.Popen(
         [sys.executable, str(server_script)],
         cwd=Path.cwd(),
@@ -235,7 +235,7 @@ def test_control_ui_loads_in_real_browser(tmp_path: Path) -> None:
         _stop_process(server)
 
     assert payload["status"] == 200
-    assert payload["title"] == "Skills — OpenSquilla"
+    assert payload["title"] == "Skills — OpenStarry Code"
     assert payload["path"] == "/control/skills"
     assert payload["appCount"] == 1
     assert payload["basePath"] == "/control"

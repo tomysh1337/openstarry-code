@@ -5,21 +5,21 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from typing import Any, Literal
 
-from opensquilla.cli.chat.turn_stream import (
+from openstarry_code.cli.chat.turn_stream import (
     TurnStreamDependencies,
     handle_image_command_turnrunner,
     stream_response_gateway,
     stream_response_turnrunner,
 )
-from opensquilla.cli.tui.backend.domain_events import (
+from openstarry_code.cli.tui.backend.domain_events import (
     KIND_DONE,
     KIND_ROUTER_DECISION,
     KIND_TEXT_FLUSH,
     TuiDomainEvent,
 )
-from opensquilla.cli.tui.backend.streaming import StreamingFlushPolicy, StreamingPlane
-from opensquilla.engine.types import DoneEvent, RouterDecisionEvent, TextDeltaEvent
-from opensquilla.tools.types import CallerKind, ToolContext
+from openstarry_code.cli.tui.backend.streaming import StreamingFlushPolicy, StreamingPlane
+from openstarry_code.engine.types import DoneEvent, RouterDecisionEvent, TextDeltaEvent
+from openstarry_code.tools.types import CallerKind, ToolContext
 
 
 class MutableClock:
@@ -269,7 +269,7 @@ def test_turn_stream_keeps_one_delta_per_append_without_tui_streaming_surface() 
 def test_image_command_turnrunner_uses_tui_streaming_plane_and_events(
     monkeypatch,
 ) -> None:
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", _ImageTurnRunner)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", _ImageTurnRunner)
     renderer_factory = _RendererFactory()
     events: list[TuiDomainEvent] = []
     deps = TurnStreamDependencies(
@@ -371,7 +371,7 @@ def test_local_done_snapshot_can_authoritatively_clear_streamed_preview(
         DoneEvent(text="", text_snapshot=""),
     ]
     turn_runner = _ImageTurnRunner(events)
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", _ImageTurnRunner)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", _ImageTurnRunner)
     renderer_factory = _RendererFactory()
     deps = TurnStreamDependencies(
         renderer_factory=renderer_factory,
@@ -408,7 +408,7 @@ def test_image_done_snapshot_replaces_streamed_preview(monkeypatch) -> None:
         DoneEvent(text="canonical", text_snapshot="canonical"),
     ]
     turn_runner = _ImageTurnRunner(events)
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", _ImageTurnRunner)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", _ImageTurnRunner)
     renderer_factory = _RendererFactory()
     deps = TurnStreamDependencies(
         renderer_factory=renderer_factory,

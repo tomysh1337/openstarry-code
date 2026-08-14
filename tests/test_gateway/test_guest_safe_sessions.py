@@ -6,24 +6,24 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.routing import (
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.routing import (
     build_web_route_envelope,
     tool_context_from_envelope,
 )
-from opensquilla.gateway.rpc import RpcContext, RpcHandlerError
-from opensquilla.gateway.rpc_sessions import (
+from openstarry_code.gateway.rpc import RpcContext, RpcHandlerError
+from openstarry_code.gateway.rpc_sessions import (
     _guest_profile_for_principal,
     _is_remote_web_guest,
     _trusted_run_mode_hint,
 )
-from opensquilla.sandbox.guest_profile import (
+from openstarry_code.sandbox.guest_profile import (
     GuestProfileFactory,
     cleanup_guest_profile_root,
 )
-from opensquilla.tools.builtin.shell import _base_shell_environment
-from opensquilla.tools.types import ToolContext, current_tool_context
-from opensquilla.tools.visibility import guest_safe_tool_allowlist
+from openstarry_code.tools.builtin.shell import _base_shell_environment
+from openstarry_code.tools.types import ToolContext, current_tool_context
+from openstarry_code.tools.visibility import guest_safe_tool_allowlist
 
 
 def _guest_principal(*, invalid: bool = False) -> Principal:

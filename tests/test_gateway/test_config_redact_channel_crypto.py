@@ -14,7 +14,7 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.gateway.config import (
+from openstarry_code.gateway.config import (
     GatewayConfig,
     LlmProviderConfig,
     is_sensitive_config_key,
@@ -31,9 +31,9 @@ API_KEY_ENV_NAME = "SYNTHETIC_PROVIDER_API_KEY"
 @pytest.fixture()
 def full_dump_config(tmp_path, monkeypatch: pytest.MonkeyPatch) -> GatewayConfig:
     """A config carrying feishu + wecom channel tables, rc1-full-dump shaped."""
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "state"))
     return GatewayConfig(
-        config_path=str(tmp_path / "opensquilla.toml"),
+        config_path=str(tmp_path / "openstarry-code.toml"),
         llm=LlmProviderConfig(api_key_env=API_KEY_ENV_NAME),
         channels={
             "channels": [

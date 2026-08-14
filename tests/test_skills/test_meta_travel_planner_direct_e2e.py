@@ -12,16 +12,16 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.skills.loader import SkillLoader
-from opensquilla.skills.meta.events import _StepDone
-from opensquilla.skills.meta.orchestrator import MetaOrchestrator
-from opensquilla.skills.meta.parser import parse_meta_plan
-from opensquilla.skills.meta.types import MetaMatch
+from openstarry_code.skills.loader import SkillLoader
+from openstarry_code.skills.meta.events import _StepDone
+from openstarry_code.skills.meta.orchestrator import MetaOrchestrator
+from openstarry_code.skills.meta.parser import parse_meta_plan
+from openstarry_code.skills.meta.types import MetaMatch
 
 
 def _load_travel_planner_plan():
-    bundled = Path("src/opensquilla/skills/bundled").resolve()
-    exp = Path("src/opensquilla/skills/exp").resolve()
+    bundled = Path("src/openstarry_code/skills/bundled").resolve()
+    exp = Path("src/openstarry_code/skills/exp").resolve()
     loader = SkillLoader(bundled_dir=bundled, extra_dirs=[exp])
     specs = [s for s in loader.load_all() if getattr(s, "kind", "") == "meta"]
     for s in specs:

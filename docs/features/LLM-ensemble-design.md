@@ -50,7 +50,7 @@ get more proposers and stronger critics.
 There are three selection strategies, dispatched by
 `llm_ensemble.selection_mode` in
 `build_ensemble_provider_from_config`
-(`src/opensquilla/provider/ensemble.py`):
+(`src/openstarry_code/provider/ensemble.py`):
 
 | `selection_mode` | Family | Status |
 |------------------|--------|--------|
@@ -90,7 +90,7 @@ Both variants belong to the same **fixed-lineup defaults family**
 ## 1.1 Static presets
 
 Source: `_build_static_b5_members`, `STATIC_B5_PROFILES`
-(`src/opensquilla/provider/ensemble.py`).
+(`src/openstarry_code/provider/ensemble.py`).
 
 Each preset is a `StaticB5Profile` — four fixed proposers plus one aggregator,
 all bound to a single provider:
@@ -125,8 +125,8 @@ upstream with an empty bearer token.
 ## 1.2 Custom lineup (`custom_b5`)
 
 Source: `_build_custom_b5_members`, `_custom_b5_candidates`
-(`src/opensquilla/provider/ensemble.py`); schema `LlmEnsembleCandidateConfig`
-(`src/opensquilla/gateway/config.py`).
+(`src/openstarry_code/provider/ensemble.py`); schema `LlmEnsembleCandidateConfig`
+(`src/openstarry_code/gateway/config.py`).
 
 `custom_b5` lets an operator author the lineup explicitly via
 `llm_ensemble.candidates`. Each candidate row carries:
@@ -157,7 +157,7 @@ Lineup assembly (`_build_custom_b5_members`):
 ### Lineup bounds & validation
 
 Enforced by `LlmEnsembleConfig._validate_custom_b5_lineup`
-(`src/opensquilla/gateway/config.py`), checked **only** when
+(`src/openstarry_code/gateway/config.py`), checked **only** when
 `selection_mode == "custom_b5"` (presets carry fixed lineups; `router_dynamic`
 selects per turn):
 
@@ -330,7 +330,7 @@ lineup, it picks proposers and the aggregator **per turn**, driven by
 SquillaRouter's tier decision for that turn. Enable it with
 `llm_ensemble.selection_mode = "router_dynamic"`.
 
-Source: `src/opensquilla/provider/ensemble.py`
+Source: `src/openstarry_code/provider/ensemble.py`
 (`_candidate_pool`, `_score_dynamic_candidate`, `_select_dynamic_candidate`,
 `_build_router_dynamic_members`).
 

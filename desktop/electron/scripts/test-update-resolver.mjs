@@ -42,17 +42,17 @@ const channelManifest = (tag, version, prerelease = true) => ({
   baseVersion: version.replace(/-rc\d+$/, ''),
   prerelease,
   publishedAt: '2026-07-15T00:00:00Z',
-  releaseUrl: `https://github.com/opensquilla/opensquilla/releases/tag/${tag}`,
+  releaseUrl: `https://github.com/tomysh1337/openstarry-code/releases/tag/${tag}`,
   sha256sums: 'SHA256SUMS',
   platforms: {
     'darwin-arm64': {
       feed: 'latest-mac.yml',
-      archive: `OpenSquilla-${version}-mac-arm64.zip`,
-      installer: `OpenSquilla-${version}-mac-arm64.dmg`,
+      archive: `OpenStarry-Code-${version}-mac-arm64.zip`,
+      installer: `OpenStarry-Code-${version}-mac-arm64.dmg`,
     },
     'win32-x64': {
       feed: 'latest.yml',
-      installer: `OpenSquilla-${version}-win-x64.exe`,
+      installer: `OpenStarry-Code-${version}-win-x64.exe`,
     },
   },
 })
@@ -73,10 +73,10 @@ assert.equal(updateChannelPathForVersion('not-a-version'), null)
   )
   assert.equal(
     updateAssetUrl(mac, 'github'),
-    'https://github.com/opensquilla/opensquilla/releases/download/v0.5.0rc5/OpenSquilla-0.5.0-rc5-mac-arm64.dmg',
+    'https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.0rc5/OpenStarry-Code-0.5.0-rc5-mac-arm64.dmg',
   )
   const win = candidateFromUpdateChannel('0.5.0-rc4', manifest, 'win32-x64')
-  assert.equal(win?.installer, 'OpenSquilla-0.5.0-rc5-win-x64.exe')
+  assert.equal(win?.installer, 'OpenStarry-Code-0.5.0-rc5-win-x64.exe')
 }
 
 assert.equal(
@@ -149,13 +149,13 @@ assert.throws(
   () => validateUpdateChannelManifest({
     ...channelManifest('v0.5.0rc5', '0.5.0-rc5'),
     tag: 'v0.5.0-rc.5',
-    releaseUrl: 'https://github.com/opensquilla/opensquilla/releases/tag/v0.5.0-rc.5',
+    releaseUrl: 'https://github.com/tomysh1337/openstarry-code/releases/tag/v0.5.0-rc.5',
   }),
   /canonical/,
 )
 {
   const manifest = channelManifest('v0.5.0rc5', '0.5.0-rc5')
-  manifest.platforms['win32-x64'].installer = 'OpenSquilla-0.5.0-rc4-win-x64.exe'
+  manifest.platforms['win32-x64'].installer = 'OpenStarry-Code-0.5.0-rc4-win-x64.exe'
   assert.throws(() => validateUpdateChannelManifest(manifest), /platform assets/)
 }
 {
@@ -167,7 +167,7 @@ assert.throws(
 // Windows mirror downloads are trusted only after their bytes match the exact
 // asset entry in the canonical SHA256SUMS file mirrored to OSS.
 {
-  const asset = 'OpenSquilla-0.5.0-rc5-win-x64.exe'
+  const asset = 'OpenStarry-Code-0.5.0-rc5-win-x64.exe'
   const bytes = Buffer.from('verified windows installer bytes')
   const expected = createHash('sha256').update(bytes).digest('hex')
   const sums = `${'a'.repeat(64)}  another-asset.zip\n${expected.toUpperCase()} *${asset}\n`
@@ -227,7 +227,7 @@ assert.throws(
 }
 
 const withMacFeed = (tag) => ({ tag_name: tag, assets: [{ name: 'latest-mac.yml' }] })
-const noMacFeed = (tag) => ({ tag_name: tag, assets: [{ name: 'OpenSquilla-mac.zip' }] })
+const noMacFeed = (tag) => ({ tag_name: tag, assets: [{ name: 'OpenStarry-Code-mac.zip' }] })
 
 // 1. A resolver-enabled client on 0.5.0-rc1 sees v0.5.0rc2 (PEP440 tag).
 {
@@ -238,7 +238,7 @@ const noMacFeed = (tag) => ({ tag_name: tag, assets: [{ name: 'OpenSquilla-mac.z
   assert.ok(c, 'rc1 should find rc2')
   assert.equal(c.tag, 'v0.5.0rc2')
   assert.equal(c.version, '0.5.0-rc2')
-  assert.equal(c.feedUrl, 'https://github.com/opensquilla/opensquilla/releases/download/v0.5.0rc2')
+  assert.equal(c.feedUrl, 'https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.0rc2')
 }
 
 // 2. A resolver-enabled client on 0.5.0-rc2 sees v0.5.0rc3.
@@ -341,9 +341,9 @@ const releaseAssets = (version) => [
   { name: 'SHA256SUMS' },
   { name: 'latest-mac.yml' },
   { name: 'latest.yml' },
-  { name: `OpenSquilla-${version}-mac-arm64.zip` },
-  { name: `OpenSquilla-${version}-mac-arm64.dmg` },
-  { name: `OpenSquilla-${version}-win-x64.exe` },
+  { name: `OpenStarry-Code-${version}-mac-arm64.zip` },
+  { name: `OpenStarry-Code-${version}-mac-arm64.dmg` },
+  { name: `OpenStarry-Code-${version}-win-x64.exe` },
 ]
 const inventoryRelease = (tag, version, overrides = {}) => ({
   tag_name: tag,
@@ -370,10 +370,10 @@ const inventoryRelease = (tag, version, overrides = {}) => ({
   // The synthesized manifest satisfies the exact same contract as a mirrored one.
   assert.deepEqual(validateUpdateChannelManifest(manifest), manifest)
   const candidate = candidateFromUpdateChannel('0.5.0', manifest, 'win32-x64')
-  assert.equal(candidate?.installer, 'OpenSquilla-0.5.1-win-x64.exe')
+  assert.equal(candidate?.installer, 'OpenStarry-Code-0.5.1-win-x64.exe')
   assert.equal(
     updateAssetUrl(candidate, 'github'),
-    'https://github.com/opensquilla/opensquilla/releases/download/v0.5.1/OpenSquilla-0.5.1-win-x64.exe',
+    'https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.1/OpenStarry-Code-0.5.1-win-x64.exe',
   )
 }
 
@@ -382,7 +382,7 @@ const inventoryRelease = (tag, version, overrides = {}) => ({
 {
   const incomplete = inventoryRelease('v0.5.2', '0.5.2')
   incomplete.assets = incomplete.assets.filter(
-    (asset) => asset.name !== 'OpenSquilla-0.5.2-win-x64.exe',
+    (asset) => asset.name !== 'OpenStarry-Code-0.5.2-win-x64.exe',
   )
   const manifest = updateChannelManifestFromReleaseInventory('0.5.0', [
     incomplete,

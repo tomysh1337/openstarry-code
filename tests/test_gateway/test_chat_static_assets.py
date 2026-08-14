@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-INDEX_TEMPLATE = Path("src/opensquilla/gateway/templates/index.html")
+INDEX_TEMPLATE = Path("src/openstarry_code/gateway/templates/index.html")
 
 
 def test_control_index_loads_only_the_vue_entrypoint() -> None:

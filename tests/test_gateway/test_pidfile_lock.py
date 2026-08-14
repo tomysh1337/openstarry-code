@@ -11,9 +11,9 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.gateway import pidlock
-from opensquilla.gateway.pidlock import GatewayPidLock
-from opensquilla.recovery.atomic import _native_io_path
+from openstarry_code.gateway import pidlock
+from openstarry_code.gateway.pidlock import GatewayPidLock
+from openstarry_code.recovery.atomic import _native_io_path
 
 
 def test_pid_file_in_state_dir_not_parent(tmp_path: Path) -> None:

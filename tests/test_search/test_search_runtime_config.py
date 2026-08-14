@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import sys
 
-from opensquilla.search.providers.exa import ExaSearchProvider
-from opensquilla.search.runtime_config import SearchRuntimeConfig, resolve_search_runtime
-from opensquilla.search.types import SearchOptions, SearchProviderError
+from openstarry_code.search.providers.exa import ExaSearchProvider
+from openstarry_code.search.runtime_config import SearchRuntimeConfig, resolve_search_runtime
+from openstarry_code.search.types import SearchOptions, SearchProviderError
 
 
 def _clear_search_env(monkeypatch) -> None:
@@ -477,15 +477,15 @@ def test_resolver_provider_kwargs_include_proxy_and_diagnostics(monkeypatch) -> 
 def test_runtime_build_provider_registers_builtin_providers_in_fresh_process(
     monkeypatch,
 ) -> None:
-    import opensquilla.search.registry as registry
+    import openstarry_code.search.registry as registry
 
     for module_name in (
-        "opensquilla.search.providers.bocha",
-        "opensquilla.search.providers.iqs",
-        "opensquilla.search.providers.tavily",
-        "opensquilla.search.providers.brave",
-        "opensquilla.search.providers.exa",
-        "opensquilla.search.providers.duckduckgo",
+        "openstarry_code.search.providers.bocha",
+        "openstarry_code.search.providers.iqs",
+        "openstarry_code.search.providers.tavily",
+        "openstarry_code.search.providers.brave",
+        "openstarry_code.search.providers.exa",
+        "openstarry_code.search.providers.duckduckgo",
     ):
         monkeypatch.delitem(sys.modules, module_name, raising=False)
     monkeypatch.setattr(registry, "_providers", {})

@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.skills.hub.contracts import (
+from openstarry_code.skills.hub.contracts import (
     DiagnosticPhase,
     DiagnosticSeverity,
     SkillCompatibilityState,
@@ -18,18 +18,18 @@ from opensquilla.skills.hub.contracts import (
     SkillReadinessState,
     SkillSelectionState,
 )
-from opensquilla.skills.hub.installer import InstallResult
-from opensquilla.skills.hub.lockfile import LockEntry, Lockfile, compute_tree_sha256
-from opensquilla.skills.hub.management import SkillManagementService
-from opensquilla.skills.hub.router import SourceRouter, SourceSearchReport
-from opensquilla.skills.hub.scanner import ScanFinding, ScanResult
-from opensquilla.skills.hub.source import SkillMeta
-from opensquilla.skills.injector import SkillInjector
-from opensquilla.skills.loader import SkillLoader
-from opensquilla.skills.resources import SkillResources
-from opensquilla.tools.builtin import skill_tools as skill_tools_module
-from opensquilla.tools.registry import get_default_registry
-from opensquilla.tools.types import ToolContext, ToolError, current_tool_context
+from openstarry_code.skills.hub.installer import InstallResult
+from openstarry_code.skills.hub.lockfile import LockEntry, Lockfile, compute_tree_sha256
+from openstarry_code.skills.hub.management import SkillManagementService
+from openstarry_code.skills.hub.router import SourceRouter, SourceSearchReport
+from openstarry_code.skills.hub.scanner import ScanFinding, ScanResult
+from openstarry_code.skills.hub.source import SkillMeta
+from openstarry_code.skills.injector import SkillInjector
+from openstarry_code.skills.loader import SkillLoader
+from openstarry_code.skills.resources import SkillResources
+from openstarry_code.tools.builtin import skill_tools as skill_tools_module
+from openstarry_code.tools.registry import get_default_registry
+from openstarry_code.tools.types import ToolContext, ToolError, current_tool_context
 
 
 async def _skill_view(name: str, file_path: str | None = None) -> str:

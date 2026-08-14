@@ -10,11 +10,11 @@ from threading import Event
 from types import SimpleNamespace
 from typing import Any
 
-from opensquilla.observability import install_telemetry as telemetry
-from opensquilla.observability import network_policy
+from openstarry_code.observability import install_telemetry as telemetry
+from openstarry_code.observability import network_policy
 
 TEST_ENDPOINT = "https://telemetry.example.test/v1/install"
-PRODUCTION_ENDPOINT = "https://telemetry.opensquilla.ai/v1/install"
+PRODUCTION_ENDPOINT = "https://telemetry.openstarry-code.ai/v1/install"
 
 
 def _load(path: Path) -> dict[str, Any]:
@@ -292,7 +292,7 @@ def test_opensquilla_testing_env_skips_without_creating_state(tmp_path, monkeypa
 
     assert result.disabled is True
     assert result.sent is False
-    assert result.skipped_reason == "environment:OPENSQUILLA_TESTING"
+    assert result.skipped_reason == "environment:OPENSTARRY_CODE_TESTING"
     assert not state_path.exists()
 
 
@@ -343,7 +343,7 @@ def test_upload_failure_does_not_mark_install_uploaded(tmp_path, monkeypatch):
 def test_desktop_env_sets_install_method(monkeypatch):
     _enable_telemetry_for_test(monkeypatch)
     monkeypatch.delenv(telemetry.TELEMETRY_INSTALL_METHOD_ENV, raising=False)
-    monkeypatch.setenv("OPENSQUILLA_DESKTOP", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_DESKTOP", "1")
 
     assert telemetry._detect_install_method() == "desktop"
 
@@ -551,9 +551,9 @@ def test_concurrent_process_results_merge_without_holding_lock_across_network(
         ),
         encoding="utf-8",
     )
-    monkeypatch.setenv("OPENSQUILLA_TEST_PROFILE_LOCK_ROOT", "1")
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "lock-state"))
-    from opensquilla.profile_operation_lock import ProfileOperationLock
+    monkeypatch.setenv("OPENSTARRY_CODE_TEST_PROFILE_LOCK_ROOT", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "lock-state"))
+    from openstarry_code.profile_operation_lock import ProfileOperationLock
 
     # Seed the stable lock inode before the workers race. ProfileOperationLock
     # deliberately fails closed if two untrusted paths race first creation;
@@ -570,7 +570,7 @@ import sys
 import time
 from pathlib import Path
 
-from opensquilla.observability import install_telemetry as telemetry
+from openstarry_code.observability import install_telemetry as telemetry
 
 state_path = Path(sys.argv[1])
 ready_path = Path(sys.argv[2])

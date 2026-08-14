@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import numpy as np
 
-from opensquilla.skills.retrieval import HybridRetriever
-from opensquilla.skills.retrieval.semantic import SemanticIndex
-from opensquilla.skills.types import SkillLayer, SkillSpec
+from openstarry_code.skills.retrieval import HybridRetriever
+from openstarry_code.skills.retrieval.semantic import SemanticIndex
+from openstarry_code.skills.types import SkillLayer, SkillSpec
 
 
 def _skill(*, description: str, triggers: list[str]) -> SkillSpec:

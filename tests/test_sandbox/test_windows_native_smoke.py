@@ -9,20 +9,20 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.application.approval_queue import ApprovalQueue
-from opensquilla.sandbox.backend.windows_default import WindowsDefaultBackend
-from opensquilla.sandbox.config import SandboxSettings
-from opensquilla.sandbox.integration import configure_runtime, reset_runtime
-from opensquilla.sandbox.operation_runtime import SandboxOperation
-from opensquilla.sandbox.path_validation import decide_path_access
-from opensquilla.sandbox.permissions import (
+from openstarry_code.application.approval_queue import ApprovalQueue
+from openstarry_code.sandbox.backend.windows_default import WindowsDefaultBackend
+from openstarry_code.sandbox.config import SandboxSettings
+from openstarry_code.sandbox.integration import configure_runtime, reset_runtime
+from openstarry_code.sandbox.operation_runtime import SandboxOperation
+from openstarry_code.sandbox.path_validation import decide_path_access
+from openstarry_code.sandbox.permissions import (
     FileSystemAccess,
     FileSystemPermissionEntry,
     FileSystemPermissionProfile,
 )
-from opensquilla.sandbox.policy import build_policy
-from opensquilla.sandbox.run_mode import RunMode
-from opensquilla.sandbox.types import (
+from openstarry_code.sandbox.policy import build_policy
+from openstarry_code.sandbox.run_mode import RunMode
+from openstarry_code.sandbox.types import (
     NetworkMode,
     ResourceLimits,
     SandboxBackendError,
@@ -30,8 +30,8 @@ from opensquilla.sandbox.types import (
     SandboxRequest,
     SecurityLevel,
 )
-from opensquilla.tools.builtin import filesystem as fs
-from opensquilla.tools.types import CallerKind, ToolContext, current_tool_context
+from openstarry_code.tools.builtin import filesystem as fs
+from openstarry_code.tools.types import CallerKind, ToolContext, current_tool_context
 
 pytestmark = pytest.mark.skipif(
     not sys.platform.startswith("win"),
@@ -45,7 +45,7 @@ def _require_windows_native_setup(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     del _isolate_opensquilla_state
-    monkeypatch.delenv("OPENSQUILLA_STATE_DIR", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_STATE_DIR", raising=False)
     if sys.platform.startswith("win") and not WindowsDefaultBackend().available():
         pytest.skip("Windows native sandbox setup or identity marker is unavailable")
 

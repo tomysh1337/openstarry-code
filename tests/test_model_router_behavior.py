@@ -2,11 +2,11 @@ import logging
 
 import pytest
 
-from opensquilla.engine.pipeline import TurnContext
-from opensquilla.engine.steps import squilla_router as squilla_router_step
-from opensquilla.engine.steps.squilla_router import apply_squilla_router
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.squilla_router.v4_phase3 import V4Phase3Strategy
+from openstarry_code.engine.pipeline import TurnContext
+from openstarry_code.engine.steps import squilla_router as squilla_router_step
+from openstarry_code.engine.steps.squilla_router import apply_squilla_router
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.squilla_router.v4_phase3 import V4Phase3Strategy
 
 
 class FakeStrategy:
@@ -1223,7 +1223,7 @@ async def test_repeated_message_across_sessions_is_classified_each_time(
 async def test_required_router_runtime_failure_falls_back_to_heuristic_tiering(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.squilla_router.v4_phase3 as v4_phase3
+    import openstarry_code.squilla_router.v4_phase3 as v4_phase3
 
     monkeypatch.setattr(v4_phase3, "V4Phase3Strategy", ExplodingV4Strategy)
     ctx = make_context("Explain the setup steps.")
@@ -1244,7 +1244,7 @@ async def test_router_runtime_failure_emits_one_operator_warning(
     monkeypatch: pytest.MonkeyPatch,
     caplog: pytest.LogCaptureFixture,
 ) -> None:
-    import opensquilla.squilla_router.v4_phase3 as v4_phase3
+    import openstarry_code.squilla_router.v4_phase3 as v4_phase3
 
     monkeypatch.setattr(v4_phase3, "V4Phase3Strategy", ExplodingV4Strategy)
     caplog.set_level(logging.WARNING)
@@ -1266,7 +1266,7 @@ async def test_router_runtime_failure_emits_one_operator_warning(
     assert len(messages) == 1
     assert "safe router fallback" in messages[0]
     assert "https://aka.ms/vs/17/release/vc_redist.x64.exe" in messages[0]
-    assert "After installing, reopen PowerShell and restart OpenSquilla" in messages[0]
+    assert "After installing, reopen PowerShell and restart OpenStarry Code" in messages[0]
 
 
 @pytest.mark.asyncio
@@ -1274,7 +1274,7 @@ async def test_router_runtime_failure_emits_macos_libomp_guidance(
     monkeypatch: pytest.MonkeyPatch,
     caplog: pytest.LogCaptureFixture,
 ) -> None:
-    import opensquilla.squilla_router.v4_phase3 as v4_phase3
+    import openstarry_code.squilla_router.v4_phase3 as v4_phase3
 
     monkeypatch.setattr(v4_phase3, "V4Phase3Strategy", MacLibompExplodingV4Strategy)
     caplog.set_level(logging.WARNING)
@@ -1291,7 +1291,7 @@ async def test_router_runtime_failure_emits_macos_libomp_guidance(
     ]
     assert len(messages) == 1
     assert "default-tier routing" in messages[0]
-    assert "opensquilla gateway restart" in messages[0]
+    assert "openstarry-code gateway restart" in messages[0]
 
 
 @pytest.mark.asyncio

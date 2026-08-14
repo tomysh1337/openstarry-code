@@ -4,7 +4,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.sandbox.operation_runtime import (
+from openstarry_code.sandbox.operation_runtime import (
     ArtifactOperationRequest,
     FilesystemOperationRequest,
     MediaOperationRequest,
@@ -17,7 +17,7 @@ from opensquilla.sandbox.operation_runtime import (
     SandboxOperationRuntime,
     SandboxToolDescriptor,
 )
-from opensquilla.sandbox.types import (
+from openstarry_code.sandbox.types import (
     MountSpec,
     NetworkMode,
     ResourceLimits,

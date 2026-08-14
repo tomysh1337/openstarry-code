@@ -7,7 +7,7 @@ anthropic backend consumes.
 
 from __future__ import annotations
 
-from opensquilla.provider.registry import get_provider_spec, list_provider_specs
+from openstarry_code.provider.registry import get_provider_spec, list_provider_specs
 
 # Runtime-supported providers legitimately absent from the models.dev
 # catalog mapping. Every id must carry a reason; anything else that is

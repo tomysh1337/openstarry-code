@@ -12,7 +12,7 @@ from __future__ import annotations
 import pytest
 from pydantic import ValidationError
 
-from opensquilla.gateway.config import (
+from openstarry_code.gateway.config import (
     GatewayConfig,
     RouterBudgetConfig,
     SquillaRouterConfig,

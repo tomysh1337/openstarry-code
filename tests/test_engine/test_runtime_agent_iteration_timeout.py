@@ -8,10 +8,10 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from opensquilla.engine.agent import Agent, _IterationStreamTimeoutError
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.engine.types import AgentConfig, DoneEvent
-from opensquilla.gateway.config import GatewayConfig
+from openstarry_code.engine.agent import Agent, _IterationStreamTimeoutError
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.engine.types import AgentConfig, DoneEvent
+from openstarry_code.gateway.config import GatewayConfig
 
 
 class _SessionConfigManager:
@@ -25,7 +25,7 @@ class _SessionConfigManager:
 def test_resolve_agent_iteration_timeout_prefers_explicit_value(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_AGENT_ITERATION_TIMEOUT", "222")
+    monkeypatch.setenv("OPENSTARRY_CODE_AGENT_ITERATION_TIMEOUT", "222")
     runner = TurnRunner(
         provider_selector=None,
         session_manager=_SessionConfigManager(
@@ -40,7 +40,7 @@ def test_resolve_agent_iteration_timeout_prefers_explicit_value(
 def test_resolve_agent_iteration_timeout_prefers_session_config(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_AGENT_ITERATION_TIMEOUT", "222")
+    monkeypatch.setenv("OPENSTARRY_CODE_AGENT_ITERATION_TIMEOUT", "222")
     runner = TurnRunner(
         provider_selector=None,
         session_manager=_SessionConfigManager(
@@ -55,7 +55,7 @@ def test_resolve_agent_iteration_timeout_prefers_session_config(
 def test_resolve_agent_iteration_timeout_prefers_env_over_gateway_config(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_AGENT_ITERATION_TIMEOUT", "222")
+    monkeypatch.setenv("OPENSTARRY_CODE_AGENT_ITERATION_TIMEOUT", "222")
     runner = TurnRunner(
         provider_selector=None,
         session_manager=_SessionConfigManager(None),
@@ -68,7 +68,7 @@ def test_resolve_agent_iteration_timeout_prefers_env_over_gateway_config(
 def test_resolve_agent_iteration_timeout_uses_gateway_config(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.delenv("OPENSQUILLA_AGENT_ITERATION_TIMEOUT", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_AGENT_ITERATION_TIMEOUT", raising=False)
     runner = TurnRunner(
         provider_selector=None,
         config=GatewayConfig(agent_iteration_timeout_seconds=333.0),
@@ -80,7 +80,7 @@ def test_resolve_agent_iteration_timeout_uses_gateway_config(
 def test_resolve_agent_iteration_timeout_uses_agent_default_without_config(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.delenv("OPENSQUILLA_AGENT_ITERATION_TIMEOUT", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_AGENT_ITERATION_TIMEOUT", raising=False)
     runner = TurnRunner(provider_selector=None, config=None)
 
     assert (
@@ -92,7 +92,7 @@ def test_resolve_agent_iteration_timeout_uses_agent_default_without_config(
 def test_resolve_agent_iteration_timeout_invalid_env_falls_through(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_AGENT_ITERATION_TIMEOUT", "not-a-float")
+    monkeypatch.setenv("OPENSTARRY_CODE_AGENT_ITERATION_TIMEOUT", "not-a-float")
     runner = TurnRunner(
         provider_selector=None,
         session_manager=_SessionConfigManager(None),
@@ -105,7 +105,7 @@ def test_resolve_agent_iteration_timeout_invalid_env_falls_through(
 def test_resolve_agent_iteration_timeout_floors_to_5400_in_coding_mode(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.delenv("OPENSQUILLA_AGENT_ITERATION_TIMEOUT", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_AGENT_ITERATION_TIMEOUT", raising=False)
     cfg = GatewayConfig(agent_iteration_timeout_seconds=600.0)
     cfg.skills.coding_mode = True  # coding mode waits on code-task up to 90 min
     runner = TurnRunner(provider_selector=None, config=cfg)
@@ -116,7 +116,7 @@ def test_resolve_agent_iteration_timeout_floors_to_5400_in_coding_mode(
 def test_resolve_agent_iteration_timeout_no_floor_when_coding_off(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.delenv("OPENSQUILLA_AGENT_ITERATION_TIMEOUT", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_AGENT_ITERATION_TIMEOUT", raising=False)
     cfg = GatewayConfig(agent_iteration_timeout_seconds=600.0)
     runner = TurnRunner(provider_selector=None, config=cfg)
     # coding mode OFF -> the configured small value is preserved (no floor)
@@ -143,7 +143,7 @@ async def test_run_threads_iteration_timeout_into_agent_config(
     The existing isolation tests above exercise the resolver directly and
     so would not have caught the threading gap.
     """
-    from opensquilla.tools.types import ToolContext
+    from openstarry_code.tools.types import ToolContext
 
     seen_kwargs: list[dict[str, Any]] = []
     real_agent_config = AgentConfig
@@ -152,7 +152,7 @@ async def test_run_threads_iteration_timeout_into_agent_config(
         seen_kwargs.append(kwargs)
         return real_agent_config(**kwargs)
 
-    monkeypatch.setattr("opensquilla.engine.types.AgentConfig", recording_agent_config)
+    monkeypatch.setattr("openstarry_code.engine.types.AgentConfig", recording_agent_config)
 
     provider = MagicMock()
     provider.provider_name = "stub"

@@ -16,14 +16,14 @@ from typing import Any
 import pytest
 from rich.console import Console
 
-from opensquilla.onboarding import flow
-from opensquilla.onboarding.errors import UserCancelledError
-from opensquilla.onboarding.flow import OnboardOptions, _ask_provider_fields
-from opensquilla.onboarding.probe import (
+from openstarry_code.onboarding import flow
+from openstarry_code.onboarding.errors import UserCancelledError
+from openstarry_code.onboarding.flow import OnboardOptions, _ask_provider_fields
+from openstarry_code.onboarding.probe import (
     ProviderModelsDiscoverResult,
     ProviderProbeResult,
 )
-from opensquilla.onboarding.provider_specs import get_provider_setup_spec
+from openstarry_code.onboarding.provider_specs import get_provider_setup_spec
 
 
 class _Answer:
@@ -183,7 +183,7 @@ def test_discovery_without_models_keeps_free_text_prompt(monkeypatch):
 
 
 def test_unverified_catalog_still_probes_the_typed_model(monkeypatch):
-    from opensquilla.onboarding import probe as probe_module
+    from openstarry_code.onboarding import probe as probe_module
 
     output = _capture_console(monkeypatch)
     probe_calls: list[dict[str, Any]] = []
@@ -607,12 +607,12 @@ def test_wizard_probe_suppresses_provider_log_noise(monkeypatch, capsys):
     # duration of the probe and restore logging afterwards.
     import structlog
 
-    from opensquilla.onboarding import probe as probe_module
+    from openstarry_code.onboarding import probe as probe_module
 
     sentinel = object()
 
     async def _noisy_probe(**_kwargs: Any) -> Any:
-        structlog.get_logger("opensquilla.provider").warning(
+        structlog.get_logger("openstarry_code.provider").warning(
             "provider.chat_http_error", status_code=401, response_body="synthetic-401-body"
         )
         return sentinel
@@ -634,12 +634,12 @@ def test_wizard_probe_suppresses_provider_log_noise(monkeypatch, capsys):
 def test_wizard_discovery_suppresses_provider_log_noise(monkeypatch, capsys):
     import structlog
 
-    from opensquilla.onboarding import probe as probe_module
+    from openstarry_code.onboarding import probe as probe_module
 
     sentinel = object()
 
     async def _noisy_discovery(**_kwargs: Any) -> Any:
-        structlog.get_logger("opensquilla.provider").warning(
+        structlog.get_logger("openstarry_code.provider").warning(
             "provider.models_http_error", status_code=401
         )
         return sentinel
@@ -754,7 +754,7 @@ def test_probe_keyboard_interrupt_skips_the_check_not_the_wizard(monkeypatch):
     CHECK, not the setup session: ``_run_provider_probe`` must degrade to
     ``None`` (probe skipped) instead of letting KeyboardInterrupt reach the
     CLI boundary and discard the operator's typed answers."""
-    from opensquilla.onboarding import probe as probe_module
+    from openstarry_code.onboarding import probe as probe_module
 
     output = _capture_console(monkeypatch)
 
@@ -772,7 +772,7 @@ def test_probe_keyboard_interrupt_skips_the_check_not_the_wizard(monkeypatch):
 
 
 def test_discovery_keyboard_interrupt_skips_discovery_not_the_wizard(monkeypatch):
-    from opensquilla.onboarding import probe as probe_module
+    from openstarry_code.onboarding import probe as probe_module
 
     output = _capture_console(monkeypatch)
 
@@ -791,7 +791,7 @@ def test_router_check_interrupted_probe_saves_without_save_anyway_prompt(monkeyp
     """An interrupted probe is check-skipped inside _probe_and_confirm: the
     router-provider verification must continue to the save with no failure
     panel, no "Save anyway?" prompt, and no exception."""
-    from opensquilla.onboarding import probe as probe_module
+    from openstarry_code.onboarding import probe as probe_module
 
     output = _capture_console(monkeypatch)
 

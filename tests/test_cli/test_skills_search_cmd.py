@@ -6,14 +6,14 @@ import click
 import pytest
 from typer.testing import CliRunner
 
-from opensquilla.cli.main import app
-from opensquilla.skills.hub.contracts import (
+from openstarry_code.cli.main import app
+from openstarry_code.skills.hub.contracts import (
     DiagnosticPhase,
     DiagnosticSeverity,
     SkillDiagnostic,
 )
-from opensquilla.skills.hub.router import SourceSearchReport
-from opensquilla.skills.hub.source import SkillMeta
+from openstarry_code.skills.hub.router import SourceSearchReport
+from openstarry_code.skills.hub.source import SkillMeta
 
 _RESULT = SkillMeta(
     name="plotter",
@@ -64,7 +64,7 @@ def _install_router(monkeypatch: pytest.MonkeyPatch, report: SourceSearchReport)
             return report
 
     monkeypatch.setattr(
-        "opensquilla.skills.hub.defaults.get_default_skill_router",
+        "openstarry_code.skills.hub.defaults.get_default_skill_router",
         lambda: StaticRouter(),
     )
 
@@ -152,7 +152,7 @@ def test_skills_search_human_does_not_call_source_failure_zero_results(monkeypat
             )
 
     monkeypatch.setattr(
-        "opensquilla.skills.hub.defaults.get_default_skill_router",
+        "openstarry_code.skills.hub.defaults.get_default_skill_router",
         lambda: FailedRouter(),
     )
 

@@ -10,11 +10,11 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
-from opensquilla.scheduler.jobs import (
+from openstarry_code.scheduler.jobs import (
     _mark_schedule_compute_failed,
     set_schedule_failure_notifier,
 )
-from opensquilla.scheduler.types import CronJob, JobStatus
+from openstarry_code.scheduler.types import CronJob, JobStatus
 
 
 def test_notifier_called_when_schedule_compute_fails() -> None:

@@ -5,9 +5,9 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-import opensquilla.scheduler.heartbeat_service as heartbeat_service_module
-from opensquilla.engine.types import DoneEvent, TextDeltaEvent
-from opensquilla.scheduler.heartbeat_service import HeartbeatService
+import openstarry_code.scheduler.heartbeat_service as heartbeat_service_module
+from openstarry_code.engine.types import DoneEvent, TextDeltaEvent
+from openstarry_code.scheduler.heartbeat_service import HeartbeatService
 
 
 class _LegacyStreamingTurnRunner:

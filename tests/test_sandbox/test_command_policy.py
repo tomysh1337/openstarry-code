@@ -2,14 +2,14 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.sandbox.command_policy import (
+from openstarry_code.sandbox.command_policy import (
     CommandAction,
     decide_command,
     decide_shell_command,
     parse_shell_segments,
     validate_command_prefix,
 )
-from opensquilla.sandbox.policy_models import SandboxPolicy
+from openstarry_code.sandbox.policy_models import SandboxPolicy
 
 
 def test_auto_allow_beats_approval_and_builtin_high_risk() -> None:

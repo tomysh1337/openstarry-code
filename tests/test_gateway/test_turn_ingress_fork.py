@@ -12,13 +12,13 @@ from typing import Any
 
 import pytest
 
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.rpc import RpcContext, get_dispatcher
-from opensquilla.gateway.task_runtime import TaskRuntime
-from opensquilla.session.manager import SessionManager
-from opensquilla.session.storage import SessionStorage
-from opensquilla.session.turn_context import turn_context_scope
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.rpc import RpcContext, get_dispatcher
+from openstarry_code.gateway.task_runtime import TaskRuntime
+from openstarry_code.session.manager import SessionManager
+from openstarry_code.session.storage import SessionStorage
+from openstarry_code.session.turn_context import turn_context_scope
 
 PARENT_KEY = "agent:main:webchat:atomic-fork"
 CLIENT_REQUEST_ID = "atomic-fork-request"

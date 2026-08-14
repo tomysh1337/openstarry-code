@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from opensquilla.channels.approval_prompt import parse_approval_action
-from opensquilla.channels.feishu import FeishuChannel, FeishuChannelConfig
+from openstarry_code.channels.approval_prompt import parse_approval_action
+from openstarry_code.channels.feishu import FeishuChannel, FeishuChannelConfig
 
 
 def _channel() -> FeishuChannel:
@@ -71,7 +71,7 @@ def test_parse_always_decision_yields_universal_text_spelling() -> None:
 def test_group_card_action_rebuilds_group_session_key() -> None:
     # A group-origin approval card tap must land in the SAME session the
     # originating group message created, or the dispatch resolver rejects it.
-    from opensquilla.channels.manager import ChannelManager
+    from openstarry_code.channels.manager import ChannelManager
 
     channel = _channel()
     group_message_event = {
@@ -118,7 +118,7 @@ def test_group_card_action_rebuilds_group_session_key() -> None:
 def test_legacy_card_without_context_stays_direct() -> None:
     # Cards rendered before the chat-context contract carry no is_group /
     # chat_type; their session key must keep the previous DM shape.
-    from opensquilla.channels.manager import ChannelManager
+    from openstarry_code.channels.manager import ChannelManager
 
     channel = _channel()
     msg = channel._parse_approval_card_action(_card_event("approve", "AB12"))

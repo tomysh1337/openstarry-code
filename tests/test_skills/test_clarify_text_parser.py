@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from opensquilla.skills.meta.clarify_text import parse_clarify_reply
-from opensquilla.skills.meta.types import ClarifyField, ClarifyStepConfig
+from openstarry_code.skills.meta.clarify_text import parse_clarify_reply
+from openstarry_code.skills.meta.types import ClarifyField, ClarifyStepConfig
 
 
 def _schema(*fields: ClarifyField) -> ClarifyStepConfig:

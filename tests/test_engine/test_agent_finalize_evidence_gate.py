@@ -15,23 +15,23 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine import (
+from openstarry_code.engine import (
     Agent,
     AgentConfig,
     DoneEvent,
     ToolResult,
     WarningEvent,
 )
-from opensquilla.provider import ChatConfig, Message
-from opensquilla.provider import DoneEvent as ProviderDone
-from opensquilla.provider import TextDeltaEvent as ProviderText
-from opensquilla.provider import ToolUseEndEvent as ProviderToolUseEnd
-from opensquilla.provider import ToolUseStartEvent as ProviderToolUseStart
-from opensquilla.tools.mutation_receipts import (
+from openstarry_code.provider import ChatConfig, Message
+from openstarry_code.provider import DoneEvent as ProviderDone
+from openstarry_code.provider import TextDeltaEvent as ProviderText
+from openstarry_code.provider import ToolUseEndEvent as ProviderToolUseEnd
+from openstarry_code.provider import ToolUseStartEvent as ProviderToolUseStart
+from openstarry_code.tools.mutation_receipts import (
     fingerprint_path,
     record_semantic_mutation_receipt,
 )
-from opensquilla.tools.types import ToolContext
+from openstarry_code.tools.types import ToolContext
 
 _RED_MARKER = "fail-run"
 
@@ -588,7 +588,7 @@ async def test_gate_quiet_when_trailing_execution_was_denied(tmp_path) -> None:
 
 
 # ---------------------------------------------------------------------------
-# Strict mode (OPENSQUILLA_FINALIZE_EVIDENCE_STRICT)
+# Strict mode (OPENSTARRY_CODE_FINALIZE_EVIDENCE_STRICT)
 # ---------------------------------------------------------------------------
 
 

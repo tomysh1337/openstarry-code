@@ -12,7 +12,7 @@ import pytest
 def test_input_assets_has_no_raw_prompt_application_dependency(monkeypatch) -> None:
     monkeypatch.delitem(
         sys.modules,
-        "opensquilla.cli.repl.input_assets",
+        "openstarry_code.cli.repl.input_assets",
         raising=False,
     )
 
@@ -26,14 +26,14 @@ def test_input_assets_has_no_raw_prompt_application_dependency(monkeypatch) -> N
 
     monkeypatch.setattr("builtins.__import__", _guarded_import)
 
-    module = importlib.import_module("opensquilla.cli.repl.input_assets")
+    module = importlib.import_module("openstarry_code.cli.repl.input_assets")
     source = inspect.getsource(module)
 
     assert "ChatApplication" not in source
 
 
 def test_input_assets_wrap_existing_file_and_path_helpers(tmp_path: Path) -> None:
-    from opensquilla.cli.repl import input_assets
+    from openstarry_code.cli.repl import input_assets
 
     csv_path = tmp_path / "data.csv"
     csv_path.write_text("a,b\n1,2\n", encoding="utf-8")
@@ -64,7 +64,7 @@ def test_input_assets_wrap_existing_file_and_path_helpers(tmp_path: Path) -> Non
 def test_gateway_slash_adapter_uses_input_bridge_for_path(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.repl import slash_adapter
+    from openstarry_code.cli.repl import slash_adapter
 
     captured: dict[str, Any] = {}
 
@@ -88,8 +88,8 @@ def test_gateway_slash_adapter_uses_input_bridge_for_path(
 def test_turn_bridge_default_image_builder_uses_input_bridge(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.repl import turn_bridge
-    from opensquilla.cli.tui import turn_stream_defaults
+    from openstarry_code.cli.repl import turn_bridge
+    from openstarry_code.cli.tui import turn_stream_defaults
 
     captured: dict[str, str] = {}
 
@@ -113,7 +113,7 @@ def test_turn_bridge_default_image_builder_uses_input_bridge(
 def test_standalone_slash_adapter_uses_input_bridge_for_path(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.repl import standalone_slash_adapter
+    from openstarry_code.cli.repl import standalone_slash_adapter
 
     captured: dict[str, Any] = {}
 

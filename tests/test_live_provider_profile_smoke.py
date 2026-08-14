@@ -181,7 +181,7 @@ def test_live_smoke_uses_moonshot_temperature_required_by_kimi_k2_6() -> None:
 def test_cost_estimate_is_provider_aware_cache_aware_and_preserves_real_zero(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.engine.pricing import PriceEntry
+    from openstarry_code.engine.pricing import PriceEntry
 
     resolved_calls: list[tuple[str, str]] = []
 
@@ -312,7 +312,7 @@ def test_openai_responses_direct_smoke_uses_responses_protocol(monkeypatch: Any)
                     "output": [
                         {
                             "type": "message",
-                            "content": [{"type": "output_text", "text": "opensquilla response ok"}],
+                            "content": [{"type": "output_text", "text": "openstarry-code response ok"}],
                         }
                     ],
                     "usage": {"input_tokens": 2, "output_tokens": 3},
@@ -326,7 +326,7 @@ def test_openai_responses_direct_smoke_uses_responses_protocol(monkeypatch: Any)
             "gpt-test",
             "test-secret",
             "https://api.openai.com/v1",
-            "opensquilla response ok",
+            "openstarry-code response ok",
             32,
         )
     )
@@ -334,7 +334,7 @@ def test_openai_responses_direct_smoke_uses_responses_protocol(monkeypatch: Any)
     assert result[0] == "passed"
     assert captured["url"] == "https://api.openai.com/v1/responses"
     assert captured["payload"]["input"] == [
-        {"role": "user", "content": "Reply exactly with: opensquilla response ok"}
+        {"role": "user", "content": "Reply exactly with: openstarry-code response ok"}
     ]
     assert captured["payload"]["max_output_tokens"] == 32
     assert captured["payload"]["store"] is False
@@ -350,7 +350,7 @@ def test_adapter_stream_smoke_does_not_force_sampling_temperature(
     class FakeProvider:
         async def chat(self, messages: Any, *, config: Any):
             captured.update({"messages": messages, "config": config})
-            yield smoke.TextDeltaEvent(text="opensquilla openai_responses smoke ok")
+            yield smoke.TextDeltaEvent(text="openstarry-code openai_responses smoke ok")
             yield smoke.DoneEvent(input_tokens=2, output_tokens=3, model="gpt-test")
 
     monkeypatch.setattr(smoke, "_build_provider", lambda config: FakeProvider())
@@ -361,7 +361,7 @@ def test_adapter_stream_smoke_does_not_force_sampling_temperature(
             "gpt-test",
             "test-secret",
             "https://api.openai.com/v1",
-            "opensquilla openai_responses smoke ok",
+            "openstarry-code openai_responses smoke ok",
             32,
         )
     )

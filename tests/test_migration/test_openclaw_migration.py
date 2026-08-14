@@ -9,16 +9,16 @@ from threading import Event
 
 import pytest
 
-from opensquilla.engine.context import load_context_files
-from opensquilla.migration.openclaw import (
+from openstarry_code.engine.context import load_context_files
+from openstarry_code.migration.openclaw import (
     MigrationOptions,
     OpenClawMigrator,
     _ApplyRollback,
 )
-from opensquilla.onboarding.config_store import load_config, persist_config
-from opensquilla.provider.selector import build_provider
-from opensquilla.skills.loader import SkillLoader
-from opensquilla.skills.types import SkillLayer
+from openstarry_code.onboarding.config_store import load_config, persist_config
+from openstarry_code.provider.selector import build_provider
+from openstarry_code.skills.loader import SkillLoader
+from openstarry_code.skills.types import SkillLayer
 
 
 def _make_source(root: Path) -> Path:
@@ -112,7 +112,7 @@ def test_late_failure_preserves_concurrent_settings_save(
     home = tmp_path / "opensquilla-home"
     config_path = tmp_path / "config.toml"
     config_path.write_text("debug = false\n", encoding="utf-8")
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     report_started = Event()
     settings_saved = Event()
@@ -151,7 +151,7 @@ def test_dry_run_does_not_write_targets(tmp_path: Path, monkeypatch) -> None:
     source = _make_source(tmp_path)
     home = tmp_path / "opensquilla-home"
     config_path = tmp_path / "config.toml"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     report = OpenClawMigrator(
         MigrationOptions(source=source, config_path=config_path, apply=False)
@@ -177,7 +177,7 @@ def test_dry_run_does_not_upgrade_legacy_target_config(tmp_path: Path, monkeypat
     )
     shutil.copy2(fixture, config_path)
     original = config_path.read_bytes()
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     OpenClawMigrator(
         MigrationOptions(source=source, config_path=config_path, apply=False)
@@ -202,7 +202,7 @@ def test_apply_defers_legacy_target_config_upgrade_to_final_persist(
         "aggregator_timeout_seconds = 120.0\n"
     )
     config_path.write_text(original, encoding="utf-8")
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     OpenClawMigrator(
         MigrationOptions(
@@ -233,7 +233,7 @@ def test_apply_migrates_workspace_skills_config_and_allowlist(
     source = _make_source(tmp_path)
     home = tmp_path / "opensquilla-home"
     config_path = tmp_path / "config.toml"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     report = OpenClawMigrator(
         MigrationOptions(source=source, config_path=config_path, apply=True)
@@ -257,7 +257,7 @@ def test_apply_migrates_workspace_skills_config_and_allowlist(
     assert config["agent_runtime_timeout_seconds"] == 500
 
     env_text = (home / ".env").read_text(encoding="utf-8")
-    assert "OPENSQUILLA_SAFE_BIN_ALLOW=^git status$,^pytest " in env_text
+    assert "OPENSTARRY_CODE_SAFE_BIN_ALLOW=^git status$,^pytest " in env_text
     assert (Path(report["output_dir"]) / "report.json").is_file()
     assert (Path(report["output_dir"]) / "summary.md").is_file()
 
@@ -269,12 +269,12 @@ def test_explicit_state_dir_normalizes_default_workspace_paths(
     source = _make_source(tmp_path)
     home = tmp_path / "opensquilla-home"
     config_path = tmp_path / "config.toml"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
     config_path.write_text(
         'workspace_dir = "'
-        + str(Path.home() / ".opensquilla" / "workspace").replace("\\", "\\\\")
+        + str(Path.home() / ".openstarry-code" / "workspace").replace("\\", "\\\\")
         + '"\nstate_dir = "'
-        + str(Path.home() / ".opensquilla" / "state").replace("\\", "\\\\")
+        + str(Path.home() / ".openstarry-code" / "state").replace("\\", "\\\\")
         + '"\n',
         encoding="utf-8",
     )
@@ -298,7 +298,7 @@ def test_secrets_are_opt_in_and_reports_are_redacted(
     source = _make_source(tmp_path)
     (source / ".env").write_text("DEEPSEEK_API_KEY=sk-secret-value\n", encoding="utf-8")
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     no_secret_report = OpenClawMigrator(
         MigrationOptions(source=source, config_path=tmp_path / "no-secret.toml", apply=True)
@@ -334,7 +334,7 @@ def test_migrate_secrets_can_create_supported_channels(
     )
     home = tmp_path / "opensquilla-home"
     config_path = tmp_path / "config.toml"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     report = OpenClawMigrator(
         MigrationOptions(
@@ -361,7 +361,7 @@ def test_tts_assets_are_copied_and_tts_config_is_archived(
 ) -> None:
     source = _make_source(tmp_path)
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     report = OpenClawMigrator(
         MigrationOptions(source=source, config_path=tmp_path / "config.toml", apply=True)
@@ -382,7 +382,7 @@ def test_unmapped_openclaw_config_is_archived(tmp_path: Path, monkeypatch) -> No
     config["plugins"] = {"enabled": True, "entries": [{"id": "custom"}]}
     (source / "openclaw.json").write_text(json.dumps(config), encoding="utf-8")
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     report = OpenClawMigrator(
         MigrationOptions(source=source, config_path=tmp_path / "config.toml", apply=True)
@@ -412,7 +412,7 @@ def test_archive_redacts_secret_values_by_key_name(tmp_path: Path, monkeypatch) 
     }
     (source / "openclaw.json").write_text(json.dumps(config), encoding="utf-8")
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     report = OpenClawMigrator(
         MigrationOptions(source=source, config_path=tmp_path / "config.toml", apply=True)
@@ -436,7 +436,7 @@ def test_user_data_preset_skips_runtime_config_and_archives(
     (source / "openclaw.json").write_text(json.dumps(config), encoding="utf-8")
     home = tmp_path / "opensquilla-home"
     config_path = tmp_path / "config.toml"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     report = OpenClawMigrator(
         MigrationOptions(
@@ -468,7 +468,7 @@ def test_granular_archive_option_archives_only_selected_config(
     config["cron"] = {"jobs": [{"id": "nightly"}]}
     (source / "openclaw.json").write_text(json.dumps(config), encoding="utf-8")
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     report = OpenClawMigrator(
         MigrationOptions(
@@ -500,7 +500,7 @@ def test_imported_skill_without_frontmatter_is_reported_not_loadable(
     bad_skill.mkdir(parents=True)
     (bad_skill / "SKILL.md").write_text("Missing frontmatter body\n", encoding="utf-8")
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     report = OpenClawMigrator(
         MigrationOptions(
@@ -532,7 +532,7 @@ def test_crlf_skill_frontmatter_is_reported_loadable(
         encoding="utf-8",
     )
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     report = OpenClawMigrator(
         MigrationOptions(
@@ -570,7 +570,7 @@ def test_bom_encoded_openclaw_files_are_parsed(
     )
     home = tmp_path / "opensquilla-home"
     config_path = tmp_path / "config.toml"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     report = OpenClawMigrator(
         MigrationOptions(
@@ -605,7 +605,7 @@ def test_model_config_resolves_object_and_alias_catalog(
     (source / "openclaw.json").write_text(json.dumps(config), encoding="utf-8")
     home = tmp_path / "opensquilla-home"
     config_path = tmp_path / "config.toml"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     report = OpenClawMigrator(
         MigrationOptions(source=source, config_path=config_path, apply=True)
@@ -637,7 +637,7 @@ def test_provider_keys_can_migrate_from_provider_config_when_opted_in(
     (source / "openclaw.json").write_text(json.dumps(config), encoding="utf-8")
     home = tmp_path / "opensquilla-home"
     config_path = tmp_path / "config.toml"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     no_secret_report = OpenClawMigrator(
         MigrationOptions(source=source, config_path=tmp_path / "no-secret.toml", apply=True)
@@ -690,7 +690,7 @@ def test_zai_and_glm_models_migrate_to_zhipu_provider(
     (source / "openclaw.json").write_text(json.dumps(config), encoding="utf-8")
     home = tmp_path / "opensquilla-home"
     config_path = tmp_path / "config.toml"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     OpenClawMigrator(
         MigrationOptions(
@@ -734,7 +734,7 @@ def test_model_provider_conflict_with_existing_tier_profile_is_reported(
         ),
         encoding="utf-8",
     )
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     report = OpenClawMigrator(
         MigrationOptions(source=source, config_path=config_path, apply=True)
@@ -777,7 +777,7 @@ def test_model_provider_conflict_with_direct_provider_preserves_model(
         ),
         encoding="utf-8",
     )
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     report = OpenClawMigrator(
         MigrationOptions(source=source, config_path=config_path, apply=True)
@@ -816,7 +816,7 @@ def test_env_secret_migration_preserves_existing_lines_and_dedupes_keys(
         ),
         encoding="utf-8",
     )
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     OpenClawMigrator(
         MigrationOptions(
@@ -846,7 +846,7 @@ def test_memory_migration_deduplicates_and_archives_overflow(
     (workspace / "memory" / "2026-05-11.md").write_text("x" * 90_000, encoding="utf-8")
     home = tmp_path / "opensquilla-home"
     config_path = tmp_path / "config.toml"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     report = OpenClawMigrator(
         MigrationOptions(source=source, config_path=config_path, apply=True)
@@ -875,14 +875,14 @@ def test_workspace_text_is_rebranded_and_original_is_archived(
     )
     home = tmp_path / "opensquilla-home"
     config_path = tmp_path / "config.toml"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     report = OpenClawMigrator(
         MigrationOptions(source=source, config_path=config_path, apply=True)
     ).migrate()
 
     migrated = (home / "workspace" / "SOUL.md").read_text(encoding="utf-8")
-    assert "OpenSquilla should read .opensquilla paths" in migrated
+    assert "OpenSquilla should read .openstarry-code paths" in migrated
     assert "ClawdBot" not in migrated
     original = Path(report["output_dir"]) / "archive" / "files" / "workspace-original" / "SOUL.md"
     assert original.read_text(encoding="utf-8").startswith("OpenClaw should read .openclaw")
@@ -909,7 +909,7 @@ def test_rebrand_preserves_openclaw_source_references(
         encoding="utf-8",
     )
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     OpenClawMigrator(
         MigrationOptions(source=source, config_path=tmp_path / "config.toml", apply=True)
@@ -945,7 +945,7 @@ def test_agent_search_and_channel_semantics_are_mapped(
     (source / ".env").write_text("BRAVE_API_KEY=brave-secret\n", encoding="utf-8")
     home = tmp_path / "opensquilla-home"
     config_path = tmp_path / "config.toml"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     report = OpenClawMigrator(
         MigrationOptions(
@@ -982,7 +982,7 @@ def test_dry_run_report_includes_semantic_notes(
     config["messages"]["telegram"]["allowFrom"] = ["1001"]
     (source / "openclaw.json").write_text(json.dumps(config), encoding="utf-8")
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     report = OpenClawMigrator(
         MigrationOptions(source=source, config_path=tmp_path / "config.toml", apply=False)
@@ -1005,7 +1005,7 @@ def test_rebranded_daily_memory_original_is_archived(
         encoding="utf-8",
     )
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     report = OpenClawMigrator(
         MigrationOptions(source=source, config_path=tmp_path / "config.toml", apply=True)
@@ -1032,7 +1032,7 @@ def test_migrated_workspace_and_loadable_skills_are_consumed_by_opensquilla(
     home = tmp_path / "opensquilla-home"
     isolated_home = tmp_path / "isolated-home"
     isolated_home.mkdir()
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
     monkeypatch.setenv("HOME", str(isolated_home))
     monkeypatch.setenv("USERPROFILE", str(isolated_home))
 

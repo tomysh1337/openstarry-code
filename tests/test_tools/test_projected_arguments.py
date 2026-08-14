@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.provider.request_proof import (
+from openstarry_code.provider.request_proof import (
     _compact_argument_string,
     _compact_string,
     _compact_tail_string,
@@ -12,7 +12,7 @@ from opensquilla.provider.request_proof import (
     _hard_compact_string,
     _media_placeholder,
 )
-from opensquilla.tools.projected_arguments import find_projected_tool_argument
+from openstarry_code.tools.projected_arguments import find_projected_tool_argument
 
 _LONG_VALUE = "\n".join(f"line {index}: some file content under test" for index in range(200))
 

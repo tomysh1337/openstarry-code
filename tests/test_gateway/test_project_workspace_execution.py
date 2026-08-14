@@ -15,38 +15,38 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from opensquilla.application.approval_queue import ApprovalQueue
-from opensquilla.engine.types import DoneEvent
-from opensquilla.gateway import rpc_sessions
-from opensquilla.gateway.agent_tasks import get_agent_task_registry
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.boot import dispatch_task_runtime_turn
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.routing import build_cli_route_envelope
-from opensquilla.gateway.rpc import RpcContext, get_dispatcher
-from opensquilla.gateway.task_runtime import TaskRuntime
-from opensquilla.project_workspaces import ProjectWorkspaceStateError
-from opensquilla.sandbox.backend.bubblewrap import BubblewrapBackend
-from opensquilla.sandbox.backend.seatbelt import SeatbeltBackend
-from opensquilla.sandbox.backend.unavailable import UnavailableBackend
-from opensquilla.sandbox.capability_service import (
+from openstarry_code.application.approval_queue import ApprovalQueue
+from openstarry_code.engine.types import DoneEvent
+from openstarry_code.gateway import rpc_sessions
+from openstarry_code.gateway.agent_tasks import get_agent_task_registry
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.boot import dispatch_task_runtime_turn
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.routing import build_cli_route_envelope
+from openstarry_code.gateway.rpc import RpcContext, get_dispatcher
+from openstarry_code.gateway.task_runtime import TaskRuntime
+from openstarry_code.project_workspaces import ProjectWorkspaceStateError
+from openstarry_code.sandbox.backend.bubblewrap import BubblewrapBackend
+from openstarry_code.sandbox.backend.seatbelt import SeatbeltBackend
+from openstarry_code.sandbox.backend.unavailable import UnavailableBackend
+from openstarry_code.sandbox.capability_service import (
     REQUIRED_SAFE_CAPABILITIES,
     WINDOWS_REQUIRED_SAFE_CAPABILITIES,
     CapabilityReport,
 )
-from opensquilla.sandbox.config import SandboxSettings
-from opensquilla.sandbox.integration import configure_runtime, reset_runtime
-from opensquilla.sandbox.run_context import (
+from openstarry_code.sandbox.config import SandboxSettings
+from openstarry_code.sandbox.integration import configure_runtime, reset_runtime
+from openstarry_code.sandbox.run_context import (
     RUN_CONTEXT_ORIGIN_KEY,
     run_context_from_origin_payload,
 )
-from opensquilla.sandbox.run_mode import RunMode
-from opensquilla.session.manager import SessionManager
-from opensquilla.session.models import SessionNode
-from opensquilla.session.storage import SessionStorage
-from opensquilla.tools.builtin import filesystem as fs
-from opensquilla.tools.run_mode import full_host_access_for_context
-from opensquilla.tools.types import current_tool_context
+from openstarry_code.sandbox.run_mode import RunMode
+from openstarry_code.session.manager import SessionManager
+from openstarry_code.session.models import SessionNode
+from openstarry_code.session.storage import SessionStorage
+from openstarry_code.tools.builtin import filesystem as fs
+from openstarry_code.tools.run_mode import full_host_access_for_context
+from openstarry_code.tools.types import current_tool_context
 
 OWNER = Principal(
     role="operator",
@@ -1115,7 +1115,7 @@ async def test_direct_web_unbound_turn_refreshes_durable_context_before_typed_ov
                 captured.update(kwargs)
                 yield DoneEvent()
 
-        from opensquilla.gateway import routing
+        from openstarry_code.gateway import routing
 
         original_build_web_route_envelope = routing.build_web_route_envelope
         built_envelopes: list[Any] = []
@@ -1503,21 +1503,21 @@ async def test_project_turn_fresh_mode_controls_real_filesystem_and_network_enfo
     requested_mode: str,
     expected_mode: str,
 ) -> None:
-    from opensquilla.sandbox.escalation import (
+    from openstarry_code.sandbox.escalation import (
         current_tool_run_context,
         remember_resolved_run_context,
         reset_resolved_run_context_overlays,
     )
-    from opensquilla.sandbox.network_guard import decide_network_access
-    from opensquilla.sandbox.operation_runtime import SandboxOperationResult
-    from opensquilla.sandbox.run_context import (
+    from openstarry_code.sandbox.network_guard import decide_network_access
+    from openstarry_code.sandbox.operation_runtime import SandboxOperationResult
+    from openstarry_code.sandbox.run_context import (
         DomainGrant,
         MountGrant,
         PackageBundleGrant,
         RunContext,
     )
-    from opensquilla.tools.builtin import filesystem
-    from opensquilla.tools.types import current_tool_context
+    from openstarry_code.tools.builtin import filesystem
+    from openstarry_code.tools.types import current_tool_context
 
     reset_resolved_run_context_overlays()
     async with open_stack(tmp_path / f"enforcement-{requested_mode}.db") as stack:
@@ -1666,15 +1666,15 @@ async def test_runtime_send_rehydrates_unbound_session_before_real_enforcement(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    from opensquilla.sandbox.escalation import (
+    from openstarry_code.sandbox.escalation import (
         current_tool_run_context,
         reset_resolved_run_context_overlays,
     )
-    from opensquilla.sandbox.network_guard import decide_network_access
-    from opensquilla.sandbox.operation_runtime import SandboxOperationResult
-    from opensquilla.sandbox.run_context import RunContext
-    from opensquilla.tools.builtin import filesystem
-    from opensquilla.tools.types import current_tool_context
+    from openstarry_code.sandbox.network_guard import decide_network_access
+    from openstarry_code.sandbox.operation_runtime import SandboxOperationResult
+    from openstarry_code.sandbox.run_context import RunContext
+    from openstarry_code.tools.builtin import filesystem
+    from openstarry_code.tools.types import current_tool_context
 
     reset_resolved_run_context_overlays()
     storage = await SessionStorage.open(str(tmp_path / "runtime-send.db"))
@@ -1834,8 +1834,8 @@ async def test_runtime_send_rehydrates_unbound_session_before_real_enforcement(
 
 
 def test_only_trusted_envelope_freshness_reaches_tool_context() -> None:
-    from opensquilla.gateway.routing import tool_context_from_envelope
-    from opensquilla.sandbox.run_context import RunContext
+    from openstarry_code.gateway.routing import tool_context_from_envelope
+    from openstarry_code.sandbox.run_context import RunContext
 
     envelope = build_cli_route_envelope(
         session_key="agent:main:cli:freshness-marker",
@@ -2303,7 +2303,7 @@ async def test_legacy_messages_subscribe_preserves_project_workspace_snapshot(
             await asyncio.Event().wait()
 
         monkeypatch.setattr(
-            "opensquilla.gateway.project_workspace_runtime."
+            "openstarry_code.gateway.project_workspace_runtime."
             "resolve_validated_project_workspace",
             _hanging_validation,
         )

@@ -38,8 +38,8 @@ def _ctx() -> SimpleNamespace:
 
 @pytest.mark.asyncio
 async def test_sandbox_setup_status_returns_platform_payload(monkeypatch) -> None:
-    from opensquilla.gateway import rpc_sandbox
-    from opensquilla.sandbox.setup_state import SandboxSetupState, SetupResult
+    from openstarry_code.gateway import rpc_sandbox
+    from openstarry_code.sandbox.setup_state import SandboxSetupState, SetupResult
 
     async def fake_status(config):
         return SetupResult(
@@ -59,8 +59,8 @@ async def test_sandbox_setup_status_returns_platform_payload(monkeypatch) -> Non
 
 @pytest.mark.asyncio
 async def test_sandbox_setup_status_returns_setting_up_payload(monkeypatch) -> None:
-    from opensquilla.gateway import rpc_sandbox
-    from opensquilla.sandbox.setup_state import SandboxSetupState, SetupResult
+    from openstarry_code.gateway import rpc_sandbox
+    from openstarry_code.sandbox.setup_state import SandboxSetupState, SetupResult
 
     async def fake_status(config):
         return SetupResult(
@@ -81,8 +81,8 @@ async def test_sandbox_setup_status_returns_setting_up_payload(monkeypatch) -> N
 
 @pytest.mark.asyncio
 async def test_sandbox_capability_status_forwards_explicit_refresh(monkeypatch) -> None:
-    from opensquilla.gateway import rpc_sandbox
-    from opensquilla.sandbox.capability_service import (
+    from openstarry_code.gateway import rpc_sandbox
+    from openstarry_code.sandbox.capability_service import (
         REQUIRED_SAFE_CAPABILITIES,
         WINDOWS_REQUIRED_SAFE_CAPABILITIES,
         CapabilityReport,
@@ -111,8 +111,8 @@ async def test_sandbox_capability_status_forwards_explicit_refresh(monkeypatch) 
 
 @pytest.mark.asyncio
 async def test_sandbox_setup_ensure_returns_platform_payload(monkeypatch) -> None:
-    from opensquilla.gateway import rpc_sandbox
-    from opensquilla.sandbox.setup_state import SandboxSetupState, SetupResult
+    from openstarry_code.gateway import rpc_sandbox
+    from openstarry_code.sandbox.setup_state import SandboxSetupState, SetupResult
 
     async def fake_ensure(config):
         return SetupResult(
@@ -132,9 +132,9 @@ async def test_sandbox_setup_ensure_returns_platform_payload(monkeypatch) -> Non
 
 @pytest.mark.asyncio
 async def test_run_context_set_requires_setup_for_sandbox_modes(monkeypatch) -> None:
-    from opensquilla.gateway import rpc_sandbox
-    from opensquilla.gateway.rpc import RpcHandlerError
-    from opensquilla.sandbox.capability_service import CapabilityReport
+    from openstarry_code.gateway import rpc_sandbox
+    from openstarry_code.gateway.rpc import RpcHandlerError
+    from openstarry_code.sandbox.capability_service import CapabilityReport
 
     async def fake_status(config):
         return CapabilityReport(

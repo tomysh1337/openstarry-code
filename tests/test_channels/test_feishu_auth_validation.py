@@ -10,8 +10,8 @@ import pytest
 from Crypto.Cipher import AES
 from starlette.requests import Request
 
-from opensquilla.channels._util import EventDedupeCache
-from opensquilla.channels.feishu import (
+from openstarry_code.channels._util import EventDedupeCache
+from openstarry_code.channels.feishu import (
     FeishuApiError,
     FeishuAuthError,
     FeishuChannel,

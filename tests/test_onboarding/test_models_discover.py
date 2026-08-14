@@ -9,16 +9,16 @@ from typing import Any
 import httpx
 import pytest
 
-from opensquilla.gateway import rpc_onboarding
-from opensquilla.gateway.config import GatewayConfig, LlmProviderConfig
-from opensquilla.gateway.rpc import RpcContext
-from opensquilla.onboarding import probe as probe_module
-from opensquilla.onboarding.probe import (
+from openstarry_code.gateway import rpc_onboarding
+from openstarry_code.gateway.config import GatewayConfig, LlmProviderConfig
+from openstarry_code.gateway.rpc import RpcContext
+from openstarry_code.onboarding import probe as probe_module
+from openstarry_code.onboarding.probe import (
     ProviderModelsDiscoverResult,
     discover_provider_models,
     discover_selectable_provider_models,
 )
-from opensquilla.provider.failures import ProviderFailureKind
+from openstarry_code.provider.failures import ProviderFailureKind
 
 
 def _patch_response(monkeypatch: Any, response_factory) -> list[httpx.Request]:
@@ -36,7 +36,7 @@ def _patch_response(monkeypatch: Any, response_factory) -> list[httpx.Request]:
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client)
     return seen
 
 
@@ -53,7 +53,7 @@ def _patch_transport_error(monkeypatch: Any, exc: Exception) -> None:
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client)
 
 
 def _models_response() -> httpx.Response:
@@ -172,7 +172,7 @@ def test_custom_openai_slot_supports_local_plain_http_catalog(
 def test_tokenrhythm_selectable_discovery_uses_catalog_coordinator(
     monkeypatch: Any,
 ) -> None:
-    from opensquilla.gateway import model_catalog_refresh
+    from openstarry_code.gateway import model_catalog_refresh
 
     calls: list[dict[str, Any]] = []
     catalog_config = object()
@@ -392,7 +392,7 @@ def test_selectable_discovery_accepts_official_subdomains(
 
 
 def test_tokenrhythm_discovery_accepts_official_subdomains(monkeypatch: Any) -> None:
-    from opensquilla.gateway import model_catalog_refresh
+    from openstarry_code.gateway import model_catalog_refresh
 
     calls: list[str] = []
 
@@ -509,7 +509,7 @@ def test_discover_row_context_window_prefers_user_override(monkeypatch: Any) -> 
     Discovery rows must show the window budgeting will actually use, so the
     operator-declared value wins even when the provider reports its own.
     """
-    from opensquilla.provider.model_catalog import ModelCatalog, set_shared_catalog
+    from openstarry_code.provider.model_catalog import ModelCatalog, set_shared_catalog
 
     catalog = ModelCatalog()
     catalog.set_user_overrides({"openai/test-model-a": {"context_window": 32_000}})
@@ -533,7 +533,7 @@ async def test_discover_rpc_reuses_stored_credentials_when_blank(
     provider — upsert_llm_provider's "leave blank to keep current" semantics."""
     seen = _patch_response(monkeypatch, _models_response)
     cfg = GatewayConfig(
-        config_path=str(tmp_path / "opensquilla.toml"),
+        config_path=str(tmp_path / "openstarry-code.toml"),
         llm=LlmProviderConfig(provider="openrouter", model="m", api_key="sk-stored"),
     )
     ctx = RpcContext(conn_id="t", config=cfg)
@@ -554,11 +554,11 @@ async def test_discover_rpc_propagates_force_and_persists_only_active_identity(
         return ProviderModelsDiscoverResult(ok=True, provider_id="openrouter")
 
     monkeypatch.setattr(
-        "opensquilla.onboarding.probe.discover_selectable_provider_models",
+        "openstarry_code.onboarding.probe.discover_selectable_provider_models",
         fake_discover,
     )
     cfg = GatewayConfig(
-        config_path=str(tmp_path / "opensquilla.toml"),
+        config_path=str(tmp_path / "openstarry-code.toml"),
         llm=LlmProviderConfig(provider="openrouter", model="m", api_key="sk-stored"),
     )
 
@@ -583,11 +583,11 @@ async def test_discover_rpc_explicit_saved_connection_is_not_treated_as_draft(
         return ProviderModelsDiscoverResult(ok=True, provider_id="tokenrhythm")
 
     monkeypatch.setattr(
-        "opensquilla.onboarding.probe.discover_selectable_provider_models",
+        "openstarry_code.onboarding.probe.discover_selectable_provider_models",
         fake_discover,
     )
     cfg = GatewayConfig(
-        config_path=str(tmp_path / "opensquilla.toml"),
+        config_path=str(tmp_path / "openstarry-code.toml"),
         llm=LlmProviderConfig(
             provider="tokenrhythm",
             model="qwen3.8-max",
@@ -623,11 +623,11 @@ async def test_discover_rpc_changed_connection_remains_ephemeral(
         return ProviderModelsDiscoverResult(ok=True, provider_id="tokenrhythm")
 
     monkeypatch.setattr(
-        "opensquilla.onboarding.probe.discover_selectable_provider_models",
+        "openstarry_code.onboarding.probe.discover_selectable_provider_models",
         fake_discover,
     )
     cfg = GatewayConfig(
-        config_path=str(tmp_path / "opensquilla.toml"),
+        config_path=str(tmp_path / "openstarry-code.toml"),
         llm=LlmProviderConfig(
             provider="tokenrhythm",
             model="qwen3.8-max",
@@ -657,7 +657,7 @@ async def test_discover_rpc_reuses_stored_key_for_same_origin_path_change(
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     seen = _patch_response(monkeypatch, _models_response)
     cfg = GatewayConfig(
-        config_path=str(tmp_path / "opensquilla.toml"),
+        config_path=str(tmp_path / "openstarry-code.toml"),
         llm=LlmProviderConfig(
             provider="openrouter",
             model="m",
@@ -688,7 +688,7 @@ async def test_discover_rpc_never_reuses_key_for_cross_origin_endpoint(
     monkeypatch.setenv("OPENROUTER_API_KEY", "sk-default-origin-a")
     seen = _patch_response(monkeypatch, _models_response)
     cfg = GatewayConfig(
-        config_path=str(tmp_path / "opensquilla.toml"),
+        config_path=str(tmp_path / "openstarry-code.toml"),
         llm=LlmProviderConfig(
             provider="openrouter",
             model="m",
@@ -718,7 +718,7 @@ async def test_discover_rpc_never_reuses_stored_env_for_cross_origin_endpoint(
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     seen = _patch_response(monkeypatch, _models_response)
     cfg = GatewayConfig(
-        config_path=str(tmp_path / "opensquilla.toml"),
+        config_path=str(tmp_path / "openstarry-code.toml"),
         llm=LlmProviderConfig(
             provider="openrouter",
             model="m",
@@ -752,11 +752,11 @@ async def test_discover_rpc_custom_cross_origin_never_passes_stored_key(
         return ProviderModelsDiscoverResult(ok=True, provider_id="custom")
 
     monkeypatch.setattr(
-        "opensquilla.onboarding.probe.discover_selectable_provider_models",
+        "openstarry_code.onboarding.probe.discover_selectable_provider_models",
         fake_discover,
     )
     cfg = GatewayConfig(
-        config_path=str(tmp_path / "opensquilla.toml"),
+        config_path=str(tmp_path / "openstarry-code.toml"),
         llm=LlmProviderConfig(
             provider="custom",
             model="m",
@@ -791,7 +791,7 @@ async def test_discover_rpc_does_not_leak_stored_credentials_across_providers(
     # provider with blank credentials must not send the stored key.
     monkeypatch.delenv("TOKENRHYTHM_API_KEY", raising=False)
     cfg = GatewayConfig(
-        config_path=str(tmp_path / "opensquilla.toml"),
+        config_path=str(tmp_path / "openstarry-code.toml"),
         llm=LlmProviderConfig(provider="openrouter", model="m", api_key="sk-stored"),
     )
     ctx = RpcContext(conn_id="t", config=cfg)
@@ -807,7 +807,7 @@ async def test_discover_rpc_explicit_credentials_override_stored(
 ) -> None:
     seen = _patch_response(monkeypatch, _models_response)
     cfg = GatewayConfig(
-        config_path=str(tmp_path / "opensquilla.toml"),
+        config_path=str(tmp_path / "openstarry-code.toml"),
         llm=LlmProviderConfig(provider="openrouter", model="m", api_key="sk-stored"),
     )
     ctx = RpcContext(conn_id="t", config=cfg)

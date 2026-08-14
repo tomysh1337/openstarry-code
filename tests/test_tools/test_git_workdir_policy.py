@@ -5,8 +5,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.tools.builtin import git
-from opensquilla.tools.types import ToolContext, ToolError, current_tool_context
+from openstarry_code.tools.builtin import git
+from openstarry_code.tools.types import ToolContext, ToolError, current_tool_context
 
 
 def test_git_effective_workdir_resolves_context_workspace(tmp_path: Path) -> None:

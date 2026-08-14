@@ -3,7 +3,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.engine.agent import Agent
+from openstarry_code.engine.agent import Agent
 
 
 class _BlockingProviderStream:

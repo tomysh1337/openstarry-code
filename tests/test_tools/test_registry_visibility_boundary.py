@@ -3,16 +3,16 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
-from opensquilla.provider.types import ToolDefinition, ToolInputSchema
-from opensquilla.tools.policy import ToolSurfaceCapabilities
-from opensquilla.tools.types import (
+from openstarry_code.provider.types import ToolDefinition, ToolInputSchema
+from openstarry_code.tools.policy import ToolSurfaceCapabilities
+from openstarry_code.tools.types import (
     CallerKind,
     InteractionMode,
     RegisteredTool,
     ToolContext,
     ToolSpec,
 )
-from opensquilla.tools.visibility import (
+from openstarry_code.tools.visibility import (
     ToolProfile,
     effective_tool_context,
     filter_by_profile,
@@ -22,8 +22,8 @@ from opensquilla.tools.visibility import (
 )
 
 ROOT = Path(__file__).resolve().parents[2]
-REGISTRY = ROOT / "src/opensquilla/tools/registry.py"
-VISIBILITY = ROOT / "src/opensquilla/tools/visibility.py"
+REGISTRY = ROOT / "src/openstarry_code/tools/registry.py"
+VISIBILITY = ROOT / "src/openstarry_code/tools/visibility.py"
 
 
 async def _handler() -> str:
@@ -96,7 +96,7 @@ def _top_level_assignments(path: Path) -> set[str]:
 def test_registry_delegates_visibility_policy_to_tools_visibility_boundary() -> None:
     imports = _imports_from(REGISTRY)
 
-    assert ("opensquilla.tools", "visibility") in imports
+    assert ("openstarry_code.tools", "visibility") in imports
 
     registry_classes = _top_level_classes(REGISTRY)
     registry_functions = _top_level_functions(REGISTRY)

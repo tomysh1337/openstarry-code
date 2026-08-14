@@ -242,8 +242,8 @@ def test_aliyun_oss_release_mirror_workflow_contract() -> None:
     assert '--cache-control "${cache_control}"' in workflow
     assert '"release-assets/SHA256SUMS" "SHA256SUMS"' in workflow
     assert "Build moving installer aliases" in workflow
-    assert 'make_alias "OpenSquilla-*-mac-arm64.dmg" "OpenSquilla-mac-arm64.dmg"' in workflow
-    assert 'make_alias "OpenSquilla-*-win-x64.exe" "OpenSquilla-win-x64.exe"' in workflow
+    assert 'make_alias "OpenStarry Code-*-mac-arm64.dmg" "OpenStarry Code-mac-arm64.dmg"' in workflow
+    assert 'make_alias "OpenStarry Code-*-win-x64.exe" "OpenStarry Code-win-x64.exe"' in workflow
     assert 'latest_prefix="${mirror_root}/latest"' in workflow
     assert 'channels_prefix="${mirror_root}/channels"' in workflow
     assert (

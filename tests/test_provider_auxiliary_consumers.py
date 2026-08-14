@@ -6,16 +6,16 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.types import AgentConfig
-from opensquilla.gateway.rpc_memory_import import _GatewayFusionCompletion
-from opensquilla.memory.dream.runner import _run_complete
-from opensquilla.memory.session_flush import ProviderCompletionError, _provider_complete
-from opensquilla.provider import auxiliary_budget
-from opensquilla.provider.auxiliary_budget import AuxiliaryRequestTooLargeError
-from opensquilla.provider.protocol import ProviderMetadata
-from opensquilla.provider.types import ChatConfig, DoneEvent, Message, TextDeltaEvent
-from opensquilla.skills.meta.orchestrator import make_llm_chat_from_provider
-from opensquilla.tools.builtin.media import _complete_from_stream
+from openstarry_code.engine.types import AgentConfig
+from openstarry_code.gateway.rpc_memory_import import _GatewayFusionCompletion
+from openstarry_code.memory.dream.runner import _run_complete
+from openstarry_code.memory.session_flush import ProviderCompletionError, _provider_complete
+from openstarry_code.provider import auxiliary_budget
+from openstarry_code.provider.auxiliary_budget import AuxiliaryRequestTooLargeError
+from openstarry_code.provider.protocol import ProviderMetadata
+from openstarry_code.provider.types import ChatConfig, DoneEvent, Message, TextDeltaEvent
+from openstarry_code.skills.meta.orchestrator import make_llm_chat_from_provider
+from openstarry_code.tools.builtin.media import _complete_from_stream
 
 
 class _Catalog:

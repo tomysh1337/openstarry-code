@@ -4,11 +4,11 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.application.approval_queue import ApprovalQueue
-from opensquilla.sandbox.backup_vault import BackupVault
-from opensquilla.sandbox.destructive_backup import DestructiveBackupGate
-from opensquilla.sandbox.elevation import ApprovalDisplay, ElevationAction
-from opensquilla.sandbox.policy_models import SandboxPolicy
+from openstarry_code.application.approval_queue import ApprovalQueue
+from openstarry_code.sandbox.backup_vault import BackupVault
+from openstarry_code.sandbox.destructive_backup import DestructiveBackupGate
+from openstarry_code.sandbox.elevation import ApprovalDisplay, ElevationAction
+from openstarry_code.sandbox.policy_models import SandboxPolicy
 
 
 def _policy(*, enabled: bool = True, quota: int = 1024) -> SandboxPolicy:

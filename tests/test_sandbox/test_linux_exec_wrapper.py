@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 
-from opensquilla.sandbox.backend import linux_exec_wrapper
+from openstarry_code.sandbox.backend import linux_exec_wrapper
 
 
 def test_exec_wrapper_limits_skip_address_space_cap(monkeypatch) -> None:

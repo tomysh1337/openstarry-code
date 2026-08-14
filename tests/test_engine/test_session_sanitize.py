@@ -8,17 +8,17 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine import Agent, AgentConfig, ToolResult, ToolResultEvent
-from opensquilla.engine.history import limit_turns
-from opensquilla.engine.session_sanitize import (
+from openstarry_code.engine import Agent, AgentConfig, ToolResult, ToolResultEvent
+from openstarry_code.engine.history import limit_turns
+from openstarry_code.engine.session_sanitize import (
     project_historical_tool_payloads,
     recoverable_tool_result_reference,
     sanitize_session_messages,
 )
-from opensquilla.engine.tool_result_store import ToolResultStore
-from opensquilla.engine.types import ThinkingLevel
-from opensquilla.memory.session_flush import _usage_from_complete_response
-from opensquilla.provider import (
+from openstarry_code.engine.tool_result_store import ToolResultStore
+from openstarry_code.engine.types import ThinkingLevel
+from openstarry_code.memory.session_flush import _usage_from_complete_response
+from openstarry_code.provider import (
     ChatConfig,
     ContentBlockText,
     ContentBlockToolResult,
@@ -28,19 +28,19 @@ from opensquilla.provider import (
     ToolDefinition,
     ToolInputSchema,
 )
-from opensquilla.provider import (
+from openstarry_code.provider import (
     DoneEvent as ProviderDone,
 )
-from opensquilla.provider import (
+from openstarry_code.provider import (
     TextDeltaEvent as ProviderText,
 )
-from opensquilla.provider import (
+from openstarry_code.provider import (
     ToolUseEndEvent as ProviderToolUseEnd,
 )
-from opensquilla.provider import (
+from openstarry_code.provider import (
     ToolUseStartEvent as ProviderToolUseStart,
 )
-from opensquilla.provider.types import ContentBlockImage
+from openstarry_code.provider.types import ContentBlockImage
 
 
 def _tool_definition(name: str) -> ToolDefinition:
@@ -2043,7 +2043,7 @@ def test_limit_turns_ignores_synthetic_user_messages_when_counting_turns() -> No
 
 
 def test_turn_runner_keeps_dynamic_prompt_out_of_system_when_cache_enabled() -> None:
-    from opensquilla.engine.runtime import TurnRunner
+    from openstarry_code.engine.runtime import TurnRunner
 
     runner = TurnRunner.__new__(TurnRunner)
     turn = SimpleNamespace(
@@ -2059,7 +2059,7 @@ def test_turn_runner_keeps_dynamic_prompt_out_of_system_when_cache_enabled() -> 
 
 
 def test_turn_runner_preserves_joined_system_prompt_when_cache_disabled() -> None:
-    from opensquilla.engine.runtime import TurnRunner
+    from openstarry_code.engine.runtime import TurnRunner
 
     runner = TurnRunner.__new__(TurnRunner)
     turn = SimpleNamespace(
@@ -2660,11 +2660,11 @@ async def test_agent_inline_strict_flush_receipt_refuses_destructive_compaction(
     compact_called = False
 
     monkeypatch.setattr(
-        "opensquilla.memory.flush.should_flush",
+        "openstarry_code.memory.flush.should_flush",
         lambda **_kwargs: True,
     )
     monkeypatch.setattr(
-        "opensquilla.memory.flush.resolve_flush_plan",
+        "openstarry_code.memory.flush.resolve_flush_plan",
         lambda **_kwargs: SimpleNamespace(relative_path="flush.md"),
     )
 
@@ -2687,7 +2687,7 @@ async def test_agent_inline_strict_flush_receipt_refuses_destructive_compaction(
 
     monkeypatch.setattr(agent, "_run_flush", degraded_flush)
     monkeypatch.setattr(
-        "opensquilla.engine.agent.compact_context",
+        "openstarry_code.engine.agent.compact_context",
         compact_context_should_not_run,
     )
 

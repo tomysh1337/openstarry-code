@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.tools.path_policy import is_foreign_host_path
+from openstarry_code.tools.path_policy import is_foreign_host_path
 
 
 @pytest.mark.parametrize(

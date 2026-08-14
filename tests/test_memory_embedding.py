@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.memory.embedding import LocalEmbeddingProvider, OpenAIEmbeddingProvider
+from openstarry_code.memory.embedding import LocalEmbeddingProvider, OpenAIEmbeddingProvider
 
 
 class _FakeEmbeddingResponse:
@@ -44,7 +44,7 @@ class _FakeEmbeddingClient:
 
 def _patch_embedding_client(monkeypatch, captured: dict[str, object]) -> None:
     monkeypatch.setattr(
-        "opensquilla.memory.embedding.httpx.AsyncClient",
+        "openstarry_code.memory.embedding.httpx.AsyncClient",
         lambda **kwargs: _FakeEmbeddingClient(captured),
     )
 
@@ -91,7 +91,7 @@ async def test_openai_embedding_provider_adds_openrouter_app_attribution_for_que
     assert captured["headers"] == {
         "Authorization": "Bearer or-test",
         "HTTP-Referer": "https://opensquilla.ai",
-        "X-Title": "OpenSquilla",
+        "X-Title": "OpenStarry Code",
     }
 
 

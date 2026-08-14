@@ -1764,7 +1764,7 @@ wheels = [
 ]
 
 [[package]]
-name = "opensquilla"
+name = "openstarry-code"
 version = "0.5.3"
 source = { editable = "." }
 dependencies = [

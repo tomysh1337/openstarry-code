@@ -9,18 +9,18 @@ from typing import Any
 import pytest
 from starlette.testclient import TestClient
 
-import opensquilla.gateway.app as app_module
-from opensquilla.application.approval_queue import ApprovalQueue
-from opensquilla.gateway import rpc_approvals
-from opensquilla.gateway.approval_events import (
+import openstarry_code.gateway.app as app_module
+from openstarry_code.application.approval_queue import ApprovalQueue
+from openstarry_code.gateway import rpc_approvals
+from openstarry_code.gateway.approval_events import (
     approval_event_name,
     build_approval_event_payload,
     build_approval_snapshot_item,
     register_approval_event_bridge,
 )
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.event_bridge import EventBridge
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.event_bridge import EventBridge
 
 
 class _FakeConn:
@@ -632,7 +632,7 @@ def test_approvals_http_snapshot_uses_safe_display_projection(
     tmp_path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "state"))
     queue = ApprovalQueue(db_path=":memory:")
     monkeypatch.setattr(app_module, "get_approval_queue", lambda: queue)
     monkeypatch.setattr(rpc_approvals, "get_approval_queue", lambda: queue)

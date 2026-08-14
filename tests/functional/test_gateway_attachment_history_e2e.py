@@ -18,26 +18,26 @@ from typing import Any
 import httpx
 import pytest
 
-import opensquilla.engine.steps.squilla_router as squilla_router_step
-from opensquilla.attachment_refs import transcript_material_path
-from opensquilla.engine import Agent, AgentConfig
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.gateway import rpc_sessions as _rpc_sessions  # noqa: F401
-from opensquilla.gateway.agent_tasks import get_agent_task_registry
-from opensquilla.gateway.app import create_gateway_app
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.rpc import RpcContext, get_dispatcher
-from opensquilla.gateway.uploads import (
+import openstarry_code.engine.steps.squilla_router as squilla_router_step
+from openstarry_code.attachment_refs import transcript_material_path
+from openstarry_code.engine import Agent, AgentConfig
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.gateway import rpc_sessions as _rpc_sessions  # noqa: F401
+from openstarry_code.gateway.agent_tasks import get_agent_task_registry
+from openstarry_code.gateway.app import create_gateway_app
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.rpc import RpcContext, get_dispatcher
+from openstarry_code.gateway.uploads import (
     AttachmentNotFoundError,
     UploadStore,
     set_upload_store,
 )
-from opensquilla.gateway.websocket import SubscriptionManager, get_registry
-from opensquilla.provider import ChatConfig, DoneEvent, Message, ModelCapabilities
-from opensquilla.provider.types import ContentBlockImage, ModelInfo, TextDeltaEvent
-from opensquilla.session.manager import SessionManager
-from opensquilla.session.storage import SessionStorage
+from openstarry_code.gateway.websocket import SubscriptionManager, get_registry
+from openstarry_code.provider import ChatConfig, DoneEvent, Message, ModelCapabilities
+from openstarry_code.provider.types import ContentBlockImage, ModelInfo, TextDeltaEvent
+from openstarry_code.session.manager import SessionManager
+from openstarry_code.session.storage import SessionStorage
 
 _PNG_BYTES = (
     b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01"
@@ -302,7 +302,7 @@ def _file_uuid_attachment(file_uuid: str) -> dict[str, str]:
 
 @pytest.fixture
 async def _e2e_stack(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
-    monkeypatch.setenv("OPENSQUILLA_OPENROUTER_LIVE_PRICING", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING", "0")
     config = _configure_gateway(tmp_path)
     store = UploadStore(marker_dir=tmp_path / "upload-markers")
     set_upload_store(store)

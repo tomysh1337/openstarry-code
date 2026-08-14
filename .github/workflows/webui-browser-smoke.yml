@@ -12,8 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
-      OPENSQUILLA_WEBUI_BROWSER_E2E: "1"
-      OPENSQUILLA_TURN_CALL_LOG: "0"
+      OPENSTARRY_CODE_WEBUI_BROWSER_E2E: "1"
+      OPENSTARRY_CODE_TURN_CALL_LOG: "0"
       TMPDIR: /tmp
 
     steps:
@@ -22,7 +22,7 @@ jobs:
 
       - name: Configure runtime directories
         shell: bash
-        run: printf 'OPENSQUILLA_LOG_DIR=%s/opensquilla-logs\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+        run: printf 'OPENSTARRY_CODE_LOG_DIR=%s/opensquilla-logs\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -32,16 +32,16 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version-file: opensquilla-webui/.node-version
+          node-version-file: openstarry-code-webui/.node-version
           cache: npm
-          cache-dependency-path: opensquilla-webui/package-lock.json
+          cache-dependency-path: openstarry-code-webui/package-lock.json
 
       - name: Install Web UI dependencies
-        working-directory: opensquilla-webui
+        working-directory: openstarry-code-webui
         run: npm ci
 
       - name: Build and verify Web UI
-        working-directory: opensquilla-webui
+        working-directory: openstarry-code-webui
         run: npm run build
 
       - name: Set up uv

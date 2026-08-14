@@ -18,18 +18,18 @@ import pytest
 from pypdf import PdfReader
 from reportlab.pdfgen import canvas
 
-from opensquilla.engine.types import AgentEvent, DoneEvent, TextDeltaEvent
-from opensquilla.skills.loader import SkillLoader
-from opensquilla.skills.meta.events import _StepDone
-from opensquilla.skills.meta.executors.agent import run_step_with_skill_stream
-from opensquilla.skills.meta.executors.user_input import _render_clarify_config
-from opensquilla.skills.meta.orchestrator import MetaOrchestrator
-from opensquilla.skills.meta.parser import parse_meta_plan
-from opensquilla.skills.meta.types import MetaMatch, MetaResult, MetaStep
-from opensquilla.skills.types import SkillSpec
+from openstarry_code.engine.types import AgentEvent, DoneEvent, TextDeltaEvent
+from openstarry_code.skills.loader import SkillLoader
+from openstarry_code.skills.meta.events import _StepDone
+from openstarry_code.skills.meta.executors.agent import run_step_with_skill_stream
+from openstarry_code.skills.meta.executors.user_input import _render_clarify_config
+from openstarry_code.skills.meta.orchestrator import MetaOrchestrator
+from openstarry_code.skills.meta.parser import parse_meta_plan
+from openstarry_code.skills.meta.types import MetaMatch, MetaResult, MetaStep
+from openstarry_code.skills.types import SkillSpec
 
 REPO = Path(__file__).resolve().parents[2]
-BUNDLED = REPO / "src" / "opensquilla" / "skills" / "bundled"
+BUNDLED = REPO / "src" / "openstarry_code" / "skills" / "bundled"
 
 
 @pytest.mark.asyncio

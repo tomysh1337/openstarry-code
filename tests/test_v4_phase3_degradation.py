@@ -12,7 +12,7 @@ import json
 
 import pytest
 
-from opensquilla.squilla_router.v4_phase3 import V4Phase3Strategy
+from openstarry_code.squilla_router.v4_phase3 import V4Phase3Strategy
 
 
 def _make_unavailable_classifier(tmp_path):

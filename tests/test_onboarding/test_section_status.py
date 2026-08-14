@@ -4,13 +4,13 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.gateway.config import (
+from openstarry_code.gateway.config import (
     GatewayConfig,
     LlmProviderConfig,
     MemoryEmbeddingConfig,
     SlackChannelEntry,
 )
-from opensquilla.onboarding.section_status import (
+from openstarry_code.onboarding.section_status import (
     SectionStatus,
     channels_section_status,
     ensemble_section_status,
@@ -21,7 +21,7 @@ from opensquilla.onboarding.section_status import (
     router_section_status,
     search_section_status,
 )
-from opensquilla.onboarding.status import get_onboarding_status
+from openstarry_code.onboarding.status import get_onboarding_status
 
 
 @pytest.fixture()
@@ -126,7 +126,7 @@ def test_ensemble_disabled_is_optional(cfg):
 def test_ensemble_never_blocks_onboarding(cfg):
     # The ensemble reuses the provider credential; there is nothing section-
     # local to verify, so it must never produce a blocking/action state.
-    from opensquilla.onboarding.status import get_onboarding_status
+    from openstarry_code.onboarding.status import get_onboarding_status
 
     for enabled in (True, False):
         cfg.llm_ensemble.enabled = enabled
@@ -261,7 +261,7 @@ def test_llm_credential_status_reports_env_key(cfg, monkeypatch):
 
 def test_llm_credential_status_reports_missing_env(cfg, monkeypatch):
     monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
-    monkeypatch.setenv("OPENSQUILLA_LLM_API_KEY", "synthetic-generic-key")
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_API_KEY", "synthetic-generic-key")
     cfg.llm = LlmProviderConfig(
         provider="deepseek",
         model="deepseek-v4-flash",
@@ -307,8 +307,8 @@ def test_llm_credential_status_treats_runtime_secret_cache_as_env(cfg, monkeypat
 
 def test_llm_credential_status_hides_runtime_cache_when_env_missing(cfg, monkeypatch):
     monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
-    monkeypatch.delenv("OPENSQUILLA_LLM_API_KEY", raising=False)
-    monkeypatch.delenv("OPENSQUILLA_LLM_API_KEY_ENV", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_LLM_API_KEY", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_LLM_API_KEY_ENV", raising=False)
     cfg.llm = LlmProviderConfig(
         provider="deepseek",
         model="deepseek-v4-flash",
@@ -397,7 +397,7 @@ def test_optional_llm_credential_status_without_key_is_not_required(cfg, monkeyp
 
 def test_optional_llm_credential_status_reports_configured_missing_env(cfg, monkeypatch):
     monkeypatch.delenv("PRIVATE_CUSTOM_KEY", raising=False)
-    monkeypatch.setenv("OPENSQUILLA_LLM_API_KEY", "synthetic-generic-key")
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_API_KEY", "synthetic-generic-key")
     cfg.llm = LlmProviderConfig(
         provider="custom",
         model="test-model",
@@ -443,7 +443,7 @@ def test_search_brave_without_credentials_is_missing(cfg, monkeypatch):
 
 
 def test_search_brave_with_default_env_var_is_ok(cfg, monkeypatch):
-    from opensquilla.onboarding.search_specs import get_search_provider_setup_spec
+    from openstarry_code.onboarding.search_specs import get_search_provider_setup_spec
 
     # No explicit key/env declared, but the provider's default env var resolves.
     cfg.search_provider = "brave"
@@ -914,7 +914,7 @@ def test_image_generation_provider_resolution_has_a_single_implementation():
     The two modules once carried textually diverging copies of this ~50-line
     helper; pin the import so any future re-fork fails loudly.
     """
-    from opensquilla.onboarding import section_status, status
+    from openstarry_code.onboarding import section_status, status
 
     assert (
         status._configured_image_generation_provider_ids
@@ -923,8 +923,8 @@ def test_image_generation_provider_resolution_has_a_single_implementation():
 
 
 def test_default_image_generation_primary_matches_config_default():
-    from opensquilla.gateway.config import ImageGenerationConfig
-    from opensquilla.onboarding.section_status import DEFAULT_IMAGE_GENERATION_PRIMARY
+    from openstarry_code.gateway.config import ImageGenerationConfig
+    from openstarry_code.onboarding.section_status import DEFAULT_IMAGE_GENERATION_PRIMARY
 
     assert (
         DEFAULT_IMAGE_GENERATION_PRIMARY
@@ -935,8 +935,8 @@ def test_default_image_generation_primary_matches_config_default():
 
 def test_both_call_sites_resolve_the_same_providers(cfg, monkeypatch):
     """Verifier and status annotations must agree on the resolved providers."""
-    from opensquilla.onboarding import section_status
-    from opensquilla.onboarding.status import get_onboarding_status
+    from openstarry_code.onboarding import section_status
+    from openstarry_code.onboarding.status import get_onboarding_status
 
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     cfg.image_generation.enabled = True

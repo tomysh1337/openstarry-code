@@ -2,13 +2,13 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.session.manager import SessionManager
-from opensquilla.session.openai_responses_state import (
+from openstarry_code.session.manager import SessionManager
+from openstarry_code.session.openai_responses_state import (
     OPENAI_RESPONSES_COMPACTED_WINDOW_STATE_KIND,
     build_openai_responses_input_items,
     openai_responses_compacted_window_state,
 )
-from opensquilla.session.storage import SessionStorage
+from openstarry_code.session.storage import SessionStorage
 
 
 @pytest.mark.asyncio

@@ -5,12 +5,12 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from opensquilla.skills.hub.lockfile import LockEntry, Lockfile
-from opensquilla.skills.loader import SkillLoader
-from opensquilla.skills.types import SkillLayer
+from openstarry_code.skills.hub.lockfile import LockEntry, Lockfile
+from openstarry_code.skills.loader import SkillLoader
+from openstarry_code.skills.types import SkillLayer
 
 ROOT = Path(__file__).resolve().parents[1]
-BUNDLED = ROOT / "src" / "opensquilla" / "skills" / "bundled"
+BUNDLED = ROOT / "src" / "openstarry_code" / "skills" / "bundled"
 
 
 def _write_skill(dir_path: Path, name: str, body: str) -> None:

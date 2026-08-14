@@ -97,8 +97,8 @@ def run_real_terminal_scenario(
         if tui_backend == "live-opentui":
             if scenario.family != "live_prompt":
                 pytest.skip("live-opentui backend only runs live_prompt scenarios")
-            if os.environ.get("OPENSQUILLA_TUI_LIVE_REAL") != "1":
-                pytest.skip("set OPENSQUILLA_TUI_LIVE_REAL=1 to run the real CLI/OpenTUI smoke")
+            if os.environ.get("OPENSTARRY_CODE_TUI_LIVE_REAL") != "1":
+                pytest.skip("set OPENSTARRY_CODE_TUI_LIVE_REAL=1 to run the real CLI/OpenTUI smoke")
 
         capabilities = probe_terminal_capabilities()
         if capabilities.preferred_driver == "none":
@@ -122,9 +122,9 @@ def run_real_terminal_scenario(
             capability_miss(target.skip_reason or f"TUI backend {tui_backend!r} unavailable")
         if (
             target.backend_id == "live-opentui"
-            and os.environ.get("OPENSQUILLA_TUI_LIVE_REAL") != "1"
+            and os.environ.get("OPENSTARRY_CODE_TUI_LIVE_REAL") != "1"
         ):
-            pytest.skip("set OPENSQUILLA_TUI_LIVE_REAL=1 to run the real CLI/OpenTUI smoke")
+            pytest.skip("set OPENSTARRY_CODE_TUI_LIVE_REAL=1 to run the real CLI/OpenTUI smoke")
         if (
             scenario.required_backend_id is not None
             and target.backend_id != scenario.required_backend_id

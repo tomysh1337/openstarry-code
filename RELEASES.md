@@ -1,8 +1,15 @@
-# OpenSquilla Releases
+# OpenStarry Code Releases
+
+The OpenStarry Code fork publishes the `openstarry-code` distribution and CLI
+with the `openstarry_code` Python import from
+[`tomysh1337/openstarry-code`](https://github.com/tomysh1337/openstarry-code).
+The fork's first source-first release publishes the verified Python wheel,
+source archive, and `SHA256SUMS`. Desktop source uses the new identity, while a
+bundled installer waits for the packaged gateway and platform Python runtime.
 
 | Version | Tag | Date | Notes |
 |---|---|---|---|
-| 0.5.3 | v0.5.3 | 2026-08-13 | Maintenance: durable Goals and follow-ups, resilient long-running chats, Skills and schedule workflows, safer recovery, and Web/Desktop refinements |
+| 0.5.3 | v0.5.3 | 2026-08-14 | OpenStarry Code: four custom API slots, automatic model discovery, B5 stacking, rebranded documentation, dependency fixes, and the inherited 0.5.3 runtime improvements |
 | 0.5.2 | v0.5.2 | 2026-07-30 | Maintenance: same-turn steering, responsive startup and session history, safer recovery and usage accounting, and Desktop/provider/UI fixes |
 | 0.5.1 | v0.5.1 | 2026-07-29 | Maintenance: Full host/Cron reliability, Plan mode and project workspaces, artifact previews, desktop recovery, and provider/UI improvements |
 | 0.5.0 | v0.5.0 | 2026-07-23 | Stable: Model Ensemble and multi-provider routing, safer upgrades and profile protection, signed macOS desktop updates, usage reporting, and the OSS download mirror |
@@ -18,28 +25,16 @@
 | 0.2.0rc1 | v0.2.0rc1 | 2026-05-19 | Second public preview |
 | 0.1.0rc1 | v0.1.0rc1 | 2026-05-12 | First public preview |
 
-0.5.x releases (previews and the stable) publish Electron desktop installers,
-updater metadata, the versioned Python wheel, and `SHA256SUMS`:
+OpenStarry Code v0.5.3 publishes exactly these source-first artifacts:
 
-- `OpenSquilla-<version>-mac-arm64.dmg`
-- `OpenSquilla-<version>-mac-arm64.zip`
-- `OpenSquilla-<version>-win-x64.exe`
-- `latest-mac.yml`
-- `latest.yml`
-- `*.blockmap`
-- `opensquilla-<version>-py3-none-any.whl`
+- `openstarry_code-0.5.3-py3-none-any.whl`
+- `openstarry_code-0.5.3.tar.gz`
 - `SHA256SUMS`
 
-0.5.x preview releases are GitHub pre-releases and must not be marked as Latest;
-stable releases such as 0.5.3 are normal releases and may be marked Latest
-once verified.
-They do not publish Windows portable zips, Windows portable latest aliases,
-public wheelhouse zips, or separately branded macOS or Linux portable bundles.
-The listed macOS `.zip` is the Electron desktop and updater artifact, not a
-portable distribution.
-Existing 0.4.x release pages keep their legacy Windows portable downloads for
-historical compatibility, while new 0.5.x releases publish only the listed
-Electron desktop artifacts, updater metadata, versioned wheel, and checksums.
+The release is marked stable after the wheel contents, compiled Web UI,
+entry points, source archive, and checksums pass verification. It does not
+advertise a DMG, EXE, updater feed, portable archive, or container image that
+was not built from the tagged OpenStarry Code source.
 
 For Windows Desktop upgrades from RC3 to RC4 or later, users must install the
 new version directly over the existing installation and must not uninstall RC3
@@ -75,7 +70,7 @@ editable installs remain available without that build. Release notes should
 call this out whenever the source build contract changes.
 
 Release docs must describe the unified non-user-initiated network observability
-switch. `OPENSQUILLA_PRIVACY_DISABLE_NETWORK_OBSERVABILITY=true` or:
+switch. `OPENSTARRY_CODE_PRIVACY_DISABLE_NETWORK_OBSERVABILITY=true` or:
 
 ```toml
 [privacy]
@@ -84,9 +79,9 @@ disable_network_observability = true
 
 disables automatic install telemetry, passive update checks, and automatic
 desktop update checks at startup and, while the app remains open, at most once
-per day. The legacy compatibility environment variables
-`OPENSQUILLA_TELEMETRY_DISABLED=true` and
-`OPENSQUILLA_UPDATE_CHECK_DISABLED=true` remain honored. Manual user-initiated
+per day. The current environment variables
+`OPENSTARRY_CODE_TELEMETRY_DISABLED=true` and
+`OPENSTARRY_CODE_UPDATE_CHECK_DISABLED=true` remain honored. Manual user-initiated
 update-availability checks do not bypass these controls. Opening a release page
 or downloading an asset is a separate user-initiated action and may still
 contact GitHub.

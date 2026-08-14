@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.gateway.config import (
+from openstarry_code.gateway.config import (
     GatewayConfig,
     LlmEnsembleCandidateConfig,
     LlmProviderConfig,
@@ -49,12 +49,12 @@ class TestLlmThinkingAliasChoices:
         assert cfg.thinking is None
 
     def test_env_var_thinking_level(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        monkeypatch.setenv("OPENSQUILLA_LLM_THINKING_LEVEL", "xhigh")
+        monkeypatch.setenv("OPENSTARRY_CODE_LLM_THINKING_LEVEL", "xhigh")
         cfg = LlmProviderConfig()
         assert cfg.thinking == "xhigh"
 
     def test_env_var_thinking(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        monkeypatch.setenv("OPENSQUILLA_LLM_THINKING", "adaptive")
+        monkeypatch.setenv("OPENSTARRY_CODE_LLM_THINKING", "adaptive")
         cfg = LlmProviderConfig()
         assert cfg.thinking == "adaptive"
 
@@ -138,8 +138,8 @@ class TestCustomB5ThinkingPropagation:
         )
 
     def test_candidate_thinking_reaches_member(self) -> None:
-        from opensquilla.provider.ensemble import _build_custom_b5_members
-        from opensquilla.provider.selector import ProviderConfig
+        from openstarry_code.provider.ensemble import _build_custom_b5_members
+        from openstarry_code.provider.selector import ProviderConfig
 
         candidates = [
             *_TWO_PROPOSERS,
@@ -163,8 +163,8 @@ class TestCustomB5ThinkingPropagation:
         assert aggregator.thinking == "medium"
 
     def test_candidate_without_thinking_inherits(self) -> None:
-        from opensquilla.provider.ensemble import _build_custom_b5_members
-        from opensquilla.provider.selector import ProviderConfig
+        from openstarry_code.provider.ensemble import _build_custom_b5_members
+        from openstarry_code.provider.selector import ProviderConfig
 
         cfg = self._make_config(
             [
@@ -193,13 +193,13 @@ class TestCustomB5ThinkingPropagation:
 
 class TestProviderForcedThinkingPolicy:
     def test_dashscope_has_forced_thinking_prefixes(self) -> None:
-        from opensquilla.provider.compat_policy import compat_policy_for_kind
+        from openstarry_code.provider.compat_policy import compat_policy_for_kind
 
         policy = compat_policy_for_kind("dashscope")
         assert policy.thinking_required_model_prefixes
 
     def test_non_dashscope_has_no_forced_prefixes(self) -> None:
-        from opensquilla.provider.compat_policy import compat_policy_for_kind
+        from openstarry_code.provider.compat_policy import compat_policy_for_kind
 
         for kind in ("openai", "openrouter", "deepseek", "gemini"):
             policy = compat_policy_for_kind(kind)
@@ -207,7 +207,7 @@ class TestProviderForcedThinkingPolicy:
 
     def test_forced_thinking_prefix_is_prefix_match(self) -> None:
         """Verify the guard uses startswith, not exact match."""
-        from opensquilla.provider.compat_policy import compat_policy_for_kind
+        from openstarry_code.provider.compat_policy import compat_policy_for_kind
 
         policy = compat_policy_for_kind("dashscope")
         prefixes = policy.thinking_required_model_prefixes
@@ -235,7 +235,7 @@ class TestServerSideCandidateMerge:
 
     def test_ui_payload_preserves_thinking_level(self) -> None:
         """A 5-key UI payload must not erase a stored thinking_level."""
-        from opensquilla.onboarding.mutations import upsert_llm_ensemble
+        from openstarry_code.onboarding.mutations import upsert_llm_ensemble
 
         cfg = self._base_config(
             [
@@ -282,7 +282,7 @@ class TestServerSideCandidateMerge:
 
     def test_ui_payload_can_update_thinking_level(self) -> None:
         """When the UI explicitly sends thinking_level, it overrides."""
-        from opensquilla.onboarding.mutations import upsert_llm_ensemble
+        from openstarry_code.onboarding.mutations import upsert_llm_ensemble
 
         cfg = self._base_config(
             [
@@ -324,7 +324,7 @@ class TestServerSideCandidateMerge:
 
     def test_deleted_candidate_not_resurrected(self) -> None:
         """A candidate removed from the UI payload stays deleted."""
-        from opensquilla.onboarding.mutations import upsert_llm_ensemble
+        from openstarry_code.onboarding.mutations import upsert_llm_ensemble
 
         cfg = self._base_config(
             [
@@ -373,7 +373,7 @@ class TestServerSideCandidateMerge:
 
     def test_new_candidate_gets_defaults(self) -> None:
         """A brand-new candidate (not in stored) gets field defaults."""
-        from opensquilla.onboarding.mutations import upsert_llm_ensemble
+        from openstarry_code.onboarding.mutations import upsert_llm_ensemble
 
         cfg = self._base_config(
             [

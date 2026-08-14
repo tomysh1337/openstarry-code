@@ -4,12 +4,12 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.channels.manager import ChannelManager
+from openstarry_code.channels.manager import ChannelManager
 
 
 class _FailingChannel:
     async def start(self) -> None:
-        raise RuntimeError("Feishu adapter dependency missing — reinstall OpenSquilla")
+        raise RuntimeError("Feishu adapter dependency missing — reinstall OpenStarry Code")
 
 
 class _SlowChannel:
@@ -46,9 +46,9 @@ async def test_start_all_retains_start_exception_details():
     assert results == {"feishu": False}
     assert manager.start_errors()["feishu"] == {
         "error_type": "RuntimeError",
-        "error": "Feishu adapter dependency missing — reinstall OpenSquilla",
+        "error": "Feishu adapter dependency missing — reinstall OpenStarry Code",
         "exception": (
-            "RuntimeError('Feishu adapter dependency missing — reinstall OpenSquilla')"
+            "RuntimeError('Feishu adapter dependency missing — reinstall OpenStarry Code')"
         ),
     }
 

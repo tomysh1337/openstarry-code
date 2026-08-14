@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from opensquilla.skills.meta.inputs import make_meta_inputs
+from openstarry_code.skills.meta.inputs import make_meta_inputs
 
 
 def test_make_meta_inputs_includes_empty_collected_namespace():
@@ -50,7 +50,7 @@ def test_make_meta_inputs_surfaces_supplied_audience_and_language_preferences():
 
 
 def test_meta_input_overrides_ignore_generic_preferences_metadata():
-    from opensquilla.skills.meta.inputs import meta_input_overrides_from_metadata
+    from openstarry_code.skills.meta.inputs import meta_input_overrides_from_metadata
 
     overrides = meta_input_overrides_from_metadata({
         "preferences": {"briefing_depth": "compact"},
@@ -63,7 +63,7 @@ def test_meta_input_overrides_ignore_generic_preferences_metadata():
 
 
 def test_meta_input_overrides_accept_explicit_meta_preferences_only():
-    from opensquilla.skills.meta.inputs import meta_input_overrides_from_metadata
+    from openstarry_code.skills.meta.inputs import meta_input_overrides_from_metadata
 
     overrides = meta_input_overrides_from_metadata({
         "meta_audience": "executive team",
@@ -83,7 +83,7 @@ def test_meta_input_overrides_accept_explicit_meta_preferences_only():
 
 
 def test_meta_input_overrides_filters_secret_and_large_text_fields():
-    from opensquilla.skills.meta.inputs import meta_input_overrides_from_metadata
+    from openstarry_code.skills.meta.inputs import meta_input_overrides_from_metadata
 
     assert meta_input_overrides_from_metadata({
         "meta_audience": "sk-secret-12345678",

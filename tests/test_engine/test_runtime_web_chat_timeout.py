@@ -8,16 +8,16 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 from pydantic import ValidationError
 
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.engine.types import AgentConfig
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.provider import DoneEvent
-from opensquilla.tools.types import CallerKind, InteractionMode, ToolContext
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.engine.types import AgentConfig
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.provider import DoneEvent
+from openstarry_code.tools.types import CallerKind, InteractionMode, ToolContext
 
 
 @pytest.fixture(autouse=True)
 def _clear_runtime_timeout_env(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("OPENSQUILLA_TURN_TIMEOUT", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_TURN_TIMEOUT", raising=False)
 
 
 def _web_context() -> ToolContext:
@@ -174,7 +174,7 @@ async def test_web_chat_runtime_timeout_reaches_agent_config(
         seen_configs.append(kwargs)
         return real_agent_config(**kwargs)
 
-    monkeypatch.setattr("opensquilla.engine.types.AgentConfig", recording_agent_config)
+    monkeypatch.setattr("openstarry_code.engine.types.AgentConfig", recording_agent_config)
     provider = MagicMock(provider_name="stub")
 
     async def _chat(*args: Any, **kwargs: Any) -> AsyncIterator[Any]:

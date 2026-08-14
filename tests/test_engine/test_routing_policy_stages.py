@@ -1,6 +1,6 @@
 """Unit tests for the post-classifier routing policy stages.
 
-Each stage of :mod:`opensquilla.engine.routing.policy` is exercised directly
+Each stage of :mod:`openstarry_code.engine.routing.policy` is exercised directly
 on plain data — no classifier bundle, no TurnContext, no network. Old-vs-new
 equivalence of the composed pipeline is covered separately by
 ``test_routing_policy_parity.py``; these tests pin each stage's trigger and
@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 
-from opensquilla.engine.routing import (
+from openstarry_code.engine.routing import (
     PolicyInputs,
     RoutingDecision,
     RoutingPolicyEngine,
@@ -27,7 +27,7 @@ from opensquilla.engine.routing import (
     provider_mismatch,
     reconcile_controller_with_final_tier,
 )
-from opensquilla.engine.routing.policy_data import COMPLAINT_TERMS
+from openstarry_code.engine.routing.policy_data import COMPLAINT_TERMS
 
 VALID_TIERS = ["c0", "c1", "c2", "c3"]
 

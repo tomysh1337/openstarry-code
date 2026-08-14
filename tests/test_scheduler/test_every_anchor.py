@@ -9,11 +9,11 @@ from __future__ import annotations
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
-from opensquilla.scheduler.jobs import _next_run
-from opensquilla.scheduler.ops import SchedulerOps
-from opensquilla.scheduler.payloads import make_agent_turn_payload
-from opensquilla.scheduler.persistence import JobStore
-from opensquilla.scheduler.types import CronJob, ScheduleKind, SessionTarget
+from openstarry_code.scheduler.jobs import _next_run
+from openstarry_code.scheduler.ops import SchedulerOps
+from openstarry_code.scheduler.payloads import make_agent_turn_payload
+from openstarry_code.scheduler.persistence import JobStore
+from openstarry_code.scheduler.types import CronJob, ScheduleKind, SessionTarget
 
 
 def _every_job(interval_seconds: int, anchor_at: datetime | None) -> CronJob:

@@ -65,7 +65,7 @@ def _cache_request_payload(model: str, system_text: str) -> dict[str, Any]:
 
 def _large_system_prompt() -> str:
     stable_line = (
-        "OpenSquilla explicit cache smoke stable prefix. "
+        "OpenStarry Code explicit cache smoke stable prefix. "
         "This text is synthetic public test material. "
     )
     return stable_line * 260
@@ -85,7 +85,7 @@ def _post_once(
             "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json",
             "HTTP-Referer": "https://opensquilla.ai",
-            "X-Title": "OpenSquilla cache smoke",
+            "X-Title": "OpenStarry Code cache smoke",
         },
         json=_cache_request_payload(model, system_text),
     )

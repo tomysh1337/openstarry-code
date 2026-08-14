@@ -1,7 +1,7 @@
 """End-to-end check that the advertised search recovery one-liner is safe.
 
 ``onboard status`` and the next-steps guidance advertise
-``opensquilla onboard configure search --search-provider duckduckgo`` as the
+``openstarry-code onboard configure search --search-provider duckduckgo`` as the
 headless recovery path. Re-running it on a config that already carries
 operator-tuned global search settings must keep those settings (keep-current
 semantics for every omitted flag), otherwise the recovery advice itself
@@ -12,9 +12,9 @@ from __future__ import annotations
 
 from typer.testing import CliRunner
 
-from opensquilla.cli.main import app
-from opensquilla.onboarding.config_store import load_config
-from opensquilla.onboarding.next_steps import headless_setup_command
+from openstarry_code.cli.main import app
+from openstarry_code.onboarding.config_store import load_config
+from openstarry_code.onboarding.next_steps import headless_setup_command
 
 runner = CliRunner()
 

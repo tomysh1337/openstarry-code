@@ -14,11 +14,11 @@ import json
 
 import pytest
 
-import opensquilla.tools.builtin.admin as admin_mod
-from opensquilla.onboarding.config_store import load_config
-from opensquilla.onboarding.mutations import upsert_audio_provider
-from opensquilla.tools.builtin.admin import gateway as gateway_tool
-from opensquilla.tools.types import ToolError
+import openstarry_code.tools.builtin.admin as admin_mod
+from openstarry_code.onboarding.config_store import load_config
+from openstarry_code.onboarding.mutations import upsert_audio_provider
+from openstarry_code.tools.builtin.admin import gateway as gateway_tool
+from openstarry_code.tools.types import ToolError
 
 SECRET = "elevenlabs-key-9z8y7x6w"
 
@@ -26,7 +26,7 @@ SECRET = "elevenlabs-key-9z8y7x6w"
 @pytest.fixture()
 def wired_config(tmp_path, monkeypatch):
     target = tmp_path / "config.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     monkeypatch.delenv("ELEVENLABS_API_KEY", raising=False)
     cfg = load_config(path=target)
     cfg = upsert_audio_provider(cfg, provider_id="elevenlabs", api_key=SECRET).config

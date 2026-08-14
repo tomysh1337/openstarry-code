@@ -18,11 +18,11 @@ from __future__ import annotations
 from types import SimpleNamespace
 from typing import Any
 
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.config import GatewayConfig, SquillaRouterConfig
-from opensquilla.gateway.rpc import RpcContext, get_dispatcher
-from opensquilla.gateway.scopes import ADMIN_SCOPE, METHOD_SCOPES, READ_SCOPE
-from opensquilla.router_control import (
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.config import GatewayConfig, SquillaRouterConfig
+from openstarry_code.gateway.rpc import RpcContext, get_dispatcher
+from openstarry_code.gateway.scopes import ADMIN_SCOPE, METHOD_SCOPES, READ_SCOPE
+from openstarry_code.router_control import (
     DEFAULT_HOLD_TTL_SECONDS,
     DEFAULT_HOLD_TURNS,
     RouterControlHoldStore,
@@ -311,7 +311,7 @@ async def test_rpc_operates_on_the_turn_runner_store() -> None:
     # The RPC must mutate the exact store instance the router step consults:
     # TurnRunner forwards self._router_control_hold_store into turn metadata
     # (engine/runtime.py), and the public property exposes that same object.
-    from opensquilla.engine.runtime import TurnRunner
+    from openstarry_code.engine.runtime import TurnRunner
 
     runner = TurnRunner(provider_selector=None)
     assert runner.router_control_hold_store is runner._router_control_hold_store

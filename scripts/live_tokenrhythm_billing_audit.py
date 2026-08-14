@@ -32,16 +32,16 @@ if str(REPO_ROOT) not in sys.path:
 if str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))
 
-from opensquilla.engine.pricing import estimate_cost, resolve_model_price  # noqa: E402
-from opensquilla.gateway.config import GatewayConfig  # noqa: E402
-from opensquilla.provider.ensemble import (  # noqa: E402
+from openstarry_code.engine.pricing import estimate_cost, resolve_model_price  # noqa: E402
+from openstarry_code.gateway.config import GatewayConfig  # noqa: E402
+from openstarry_code.provider.ensemble import (  # noqa: E402
     EnsembleProvider,
     build_ensemble_provider_from_config,
 )
-from opensquilla.provider.preset_registry import get_preset  # noqa: E402
-from opensquilla.provider.registry import get_provider_spec  # noqa: E402
-from opensquilla.provider.selector import ProviderConfig, _build_provider  # noqa: E402
-from opensquilla.provider.types import (  # noqa: E402
+from openstarry_code.provider.preset_registry import get_preset  # noqa: E402
+from openstarry_code.provider.registry import get_provider_spec  # noqa: E402
+from openstarry_code.provider.selector import ProviderConfig, _build_provider  # noqa: E402
+from openstarry_code.provider.types import (  # noqa: E402
     ChatConfig,
     DoneEvent,
     ErrorEvent,

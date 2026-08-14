@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from opensquilla.sandbox.run_mode import RunMode
+from openstarry_code.sandbox.run_mode import RunMode
 
 
 def test_standard_auto_grants_required_and_asks_for_expansion(tmp_path: Path) -> None:
-    from opensquilla.sandbox.backend.windows_default_acl import (
+    from openstarry_code.sandbox.backend.windows_default_acl import (
         AclAccess,
         AclGrant,
         AclGrantKind,
@@ -33,7 +33,7 @@ def test_standard_auto_grants_required_and_asks_for_expansion(tmp_path: Path) ->
 
 
 def test_trusted_auto_grants_non_sensitive_expansion(tmp_path: Path) -> None:
-    from opensquilla.sandbox.backend.windows_default_acl import (
+    from openstarry_code.sandbox.backend.windows_default_acl import (
         AclAccess,
         AclGrant,
         AclGrantKind,
@@ -54,7 +54,7 @@ def test_trusted_auto_grants_non_sensitive_expansion(tmp_path: Path) -> None:
 
 
 def test_sensitive_expansion_is_denied_in_trusted(tmp_path: Path) -> None:
-    from opensquilla.sandbox.backend.windows_default_acl import (
+    from openstarry_code.sandbox.backend.windows_default_acl import (
         AclAccess,
         AclGrant,
         AclGrantKind,
@@ -76,7 +76,7 @@ def test_sensitive_expansion_is_denied_in_trusted(tmp_path: Path) -> None:
 
 
 def test_policy_grants_bypass_legacy_marker_but_expansions_do_not(tmp_path: Path) -> None:
-    from opensquilla.sandbox.backend.windows_default_acl import (
+    from openstarry_code.sandbox.backend.windows_default_acl import (
         AclAccess,
         AclGrant,
         AclGrantKind,
@@ -100,7 +100,7 @@ def test_policy_grants_bypass_legacy_marker_but_expansions_do_not(tmp_path: Path
 
 
 def test_full_host_access_has_no_acl_refresh(tmp_path: Path) -> None:
-    from opensquilla.sandbox.backend.windows_default_acl import (
+    from openstarry_code.sandbox.backend.windows_default_acl import (
         AclAccess,
         AclGrant,
         AclGrantKind,

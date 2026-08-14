@@ -1,8 +1,8 @@
 """Opt-in levers: thinking fallback, deadline thinking cutoff, reasoning cap.
 
-Covers OPENSQUILLA_REASONING_ONLY_THINKING_FALLBACK,
-OPENSQUILLA_DEADLINE_THINKING_OFF_MARGIN_SECONDS and
-OPENSQUILLA_REASONING_STREAM_CHAR_CAP (all off by default). Motivation: with
+Covers OPENSTARRY_CODE_REASONING_ONLY_THINKING_FALLBACK,
+OPENSTARRY_CODE_DEADLINE_THINKING_OFF_MARGIN_SECONDS and
+OPENSTARRY_CODE_REASONING_STREAM_CHAR_CAP (all off by default). Motivation: with
 some providers a reasoning-only response is best retried with thinking
 disabled (the retry otherwise re-enters a long reasoning stream),
 deadline-capped runs can spend their whole final margin inside one reasoning
@@ -19,19 +19,19 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine import Agent, AgentConfig, ThinkingLevel, ToolResult
-from opensquilla.provider import (
+from openstarry_code.engine import Agent, AgentConfig, ThinkingLevel, ToolResult
+from openstarry_code.provider import (
     ChatConfig,
     Message,
     ToolDefinition,
     ToolInputSchema,
 )
-from opensquilla.provider import DoneEvent as ProviderDone
-from opensquilla.provider import ErrorEvent as ProviderError
-from opensquilla.provider import ReasoningDeltaEvent as ProviderReasoning
-from opensquilla.provider import TextDeltaEvent as ProviderText
-from opensquilla.provider import ToolUseEndEvent as ProviderToolUseEnd
-from opensquilla.provider import ToolUseStartEvent as ProviderToolUseStart
+from openstarry_code.provider import DoneEvent as ProviderDone
+from openstarry_code.provider import ErrorEvent as ProviderError
+from openstarry_code.provider import ReasoningDeltaEvent as ProviderReasoning
+from openstarry_code.provider import TextDeltaEvent as ProviderText
+from openstarry_code.provider import ToolUseEndEvent as ProviderToolUseEnd
+from openstarry_code.provider import ToolUseStartEvent as ProviderToolUseStart
 
 
 class _SequenceProvider:
@@ -825,23 +825,23 @@ async def test_reasoning_stream_char_cap_default_off() -> None:
 def test_env_plumbing_for_both_levers(monkeypatch: pytest.MonkeyPatch) -> None:
     # Helper-level check only; the full env -> bootstrap-stage -> AgentConfig
     # threading is covered in turn_runner/test_agent_bootstrap_stage_unit.py.
-    from opensquilla.engine.turn_runner.agent_bootstrap_stage import (
+    from openstarry_code.engine.turn_runner.agent_bootstrap_stage import (
         _bool_from_env,
         _nonnegative_int_from_env,
     )
 
-    monkeypatch.delenv("OPENSQUILLA_REASONING_ONLY_THINKING_FALLBACK", raising=False)
-    monkeypatch.delenv("OPENSQUILLA_DEADLINE_THINKING_OFF_MARGIN_SECONDS", raising=False)
-    assert _bool_from_env("OPENSQUILLA_REASONING_ONLY_THINKING_FALLBACK", False) is False
+    monkeypatch.delenv("OPENSTARRY_CODE_REASONING_ONLY_THINKING_FALLBACK", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_DEADLINE_THINKING_OFF_MARGIN_SECONDS", raising=False)
+    assert _bool_from_env("OPENSTARRY_CODE_REASONING_ONLY_THINKING_FALLBACK", False) is False
     assert (
-        _nonnegative_int_from_env("OPENSQUILLA_DEADLINE_THINKING_OFF_MARGIN_SECONDS", 0)
+        _nonnegative_int_from_env("OPENSTARRY_CODE_DEADLINE_THINKING_OFF_MARGIN_SECONDS", 0)
         == 0
     )
-    monkeypatch.setenv("OPENSQUILLA_REASONING_ONLY_THINKING_FALLBACK", "1")
-    monkeypatch.setenv("OPENSQUILLA_DEADLINE_THINKING_OFF_MARGIN_SECONDS", "480")
-    assert _bool_from_env("OPENSQUILLA_REASONING_ONLY_THINKING_FALLBACK", False) is True
+    monkeypatch.setenv("OPENSTARRY_CODE_REASONING_ONLY_THINKING_FALLBACK", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_DEADLINE_THINKING_OFF_MARGIN_SECONDS", "480")
+    assert _bool_from_env("OPENSTARRY_CODE_REASONING_ONLY_THINKING_FALLBACK", False) is True
     assert (
-        _nonnegative_int_from_env("OPENSQUILLA_DEADLINE_THINKING_OFF_MARGIN_SECONDS", 0)
+        _nonnegative_int_from_env("OPENSTARRY_CODE_DEADLINE_THINKING_OFF_MARGIN_SECONDS", 0)
         == 480
     )
 
@@ -849,15 +849,15 @@ def test_env_plumbing_for_both_levers(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_env_plumbing_for_reasoning_stream_char_cap(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.engine.turn_runner.agent_bootstrap_stage import (
+    from openstarry_code.engine.turn_runner.agent_bootstrap_stage import (
         _nonnegative_int_from_env,
     )
 
-    monkeypatch.delenv("OPENSQUILLA_REASONING_STREAM_CHAR_CAP", raising=False)
-    assert _nonnegative_int_from_env("OPENSQUILLA_REASONING_STREAM_CHAR_CAP", 0) == 0
-    monkeypatch.setenv("OPENSQUILLA_REASONING_STREAM_CHAR_CAP", "15000")
+    monkeypatch.delenv("OPENSTARRY_CODE_REASONING_STREAM_CHAR_CAP", raising=False)
+    assert _nonnegative_int_from_env("OPENSTARRY_CODE_REASONING_STREAM_CHAR_CAP", 0) == 0
+    monkeypatch.setenv("OPENSTARRY_CODE_REASONING_STREAM_CHAR_CAP", "15000")
     assert (
-        _nonnegative_int_from_env("OPENSQUILLA_REASONING_STREAM_CHAR_CAP", 0) == 15000
+        _nonnegative_int_from_env("OPENSTARRY_CODE_REASONING_STREAM_CHAR_CAP", 0) == 15000
     )
 
 
@@ -873,11 +873,11 @@ def test_agent_config_defaults_keep_both_levers_off() -> None:
 def test_provider_error_thinking_fallback_env_is_strict(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.engine.turn_runner.agent_bootstrap_stage import (
+    from openstarry_code.engine.turn_runner.agent_bootstrap_stage import (
         _strict_bool_from_env,
     )
 
-    name = "OPENSQUILLA_PROVIDER_ERROR_THINKING_FALLBACK"
+    name = "OPENSTARRY_CODE_PROVIDER_ERROR_THINKING_FALLBACK"
     monkeypatch.delenv(name, raising=False)
     assert _strict_bool_from_env(name, True) is True
     monkeypatch.setenv(name, "off")

@@ -10,16 +10,16 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from opensquilla.gateway.config import RouterSelfLearningConfig, SquillaRouterConfig
-from opensquilla.squilla_router.self_learning import (
+from openstarry_code.gateway.config import RouterSelfLearningConfig, SquillaRouterConfig
+from openstarry_code.squilla_router.self_learning import (
     decode_features,
     encode_features,
     iter_samples,
     self_learning_disabled_by_env,
     write_sample,
 )
-from opensquilla.squilla_router.self_learning.capture import build_train_sample
-from opensquilla.squilla_router.self_learning.store import (
+from openstarry_code.squilla_router.self_learning.capture import build_train_sample
+from openstarry_code.squilla_router.self_learning.store import (
     ENV_DISABLE,
     agent_data_dir,
     read_cursor,
@@ -206,7 +206,7 @@ def test_capture_disabled_by_default() -> None:
 
 
 def test_capture_flags_helper() -> None:
-    from opensquilla.engine.steps.squilla_router import _capture_flags
+    from openstarry_code.engine.steps.squilla_router import _capture_flags
 
     assert _capture_flags(SquillaRouterConfig()) == (False, False)
     on = SquillaRouterConfig(self_learning=RouterSelfLearningConfig(enabled=True))
@@ -263,7 +263,7 @@ def _fake_inference_result(*, with_features: bool):
 
 
 def test_map_result_surfaces_features_under_private_key() -> None:
-    from opensquilla.squilla_router.v4_phase3 import V4Phase3Strategy
+    from openstarry_code.squilla_router.v4_phase3 import V4Phase3Strategy
 
     strat = V4Phase3Strategy(bundle_dir="/nonexistent-bundle")  # init fails -> unavailable
     strat._feature_schema_version = "schemaX"
@@ -278,7 +278,7 @@ def test_map_result_surfaces_features_under_private_key() -> None:
 
 
 def test_map_result_omits_features_when_not_emitted() -> None:
-    from opensquilla.squilla_router.v4_phase3 import V4Phase3Strategy
+    from openstarry_code.squilla_router.v4_phase3 import V4Phase3Strategy
 
     strat = V4Phase3Strategy(bundle_dir="/nonexistent-bundle")
     _, _, _, extra = strat._map_result(
@@ -312,9 +312,9 @@ class _FeatureFakeStrategy:
 
 @pytest.mark.asyncio
 async def test_router_step_pops_features_out_of_routing_extra(monkeypatch) -> None:
-    from opensquilla.engine.pipeline import TurnContext
-    from opensquilla.engine.steps import squilla_router as step
-    from opensquilla.gateway.config import GatewayConfig
+    from openstarry_code.engine.pipeline import TurnContext
+    from openstarry_code.engine.steps import squilla_router as step
+    from openstarry_code.gateway.config import GatewayConfig
 
     monkeypatch.setattr(step, "_get_strategy", lambda _config: _FeatureFakeStrategy())
     config = GatewayConfig()

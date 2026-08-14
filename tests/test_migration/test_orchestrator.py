@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.migration import orchestrator
+from openstarry_code.migration import orchestrator
 
 
 def test_run_migration_batch_uses_canonical_source_order(monkeypatch, tmp_path):
@@ -77,7 +77,7 @@ def test_detected_portable_kind_reaches_opensquilla_migrator(
     monkeypatch.setenv("LOCALAPPDATA", str(portable_base))
     monkeypatch.delenv("TEMP", raising=False)
     target = tmp_path / "target-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(target))
 
     detected = orchestrator.detect_default_sources()
 
@@ -110,9 +110,9 @@ def test_detected_desktop_kind_reaches_opensquilla_migrator(
     monkeypatch.delenv("LOCALAPPDATA", raising=False)
     monkeypatch.delenv("TEMP", raising=False)
     target = tmp_path / "target-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(target))
     monkeypatch.setattr(
-        "opensquilla.migration.opensquilla_home.detect_desktop_home",
+        "openstarry_code.migration.opensquilla_home.detect_desktop_home",
         lambda _target=None: desktop,
     )
 

@@ -4,17 +4,17 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.sandbox.operation_runtime import SandboxOperation
-from opensquilla.sandbox.permissions import (
+from openstarry_code.sandbox.operation_runtime import SandboxOperation
+from openstarry_code.sandbox.permissions import (
     FileSystemAccess,
     FileSystemPermissionEntry,
     FileSystemPermissionProfile,
 )
-from opensquilla.sandbox.types import SandboxBackendError
+from openstarry_code.sandbox.types import SandboxBackendError
 
 
 def test_windows_filesystem_targets_use_actual_path_not_declared_paths(tmp_path: Path) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend import windows_default as mod
 
     actual = tmp_path / "actual.txt"
     declared = tmp_path / "declared.txt"
@@ -35,7 +35,7 @@ def test_windows_filesystem_targets_use_actual_path_not_declared_paths(tmp_path:
 
 
 def test_windows_filesystem_targets_derive_apply_patch_paths(tmp_path: Path) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend import windows_default as mod
 
     actual = tmp_path / "created.txt"
     patch = """*** Begin Patch
@@ -58,7 +58,7 @@ def test_windows_filesystem_targets_derive_apply_patch_paths(tmp_path: Path) -> 
 
 
 def test_windows_filesystem_profile_denies_write_to_readonly_target(tmp_path: Path) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend import windows_default as mod
 
     target = tmp_path / "readonly" / "notes.txt"
     target.parent.mkdir()
@@ -78,4 +78,4 @@ def test_windows_filesystem_profile_denies_write_to_readonly_target(tmp_path: Pa
         mod._filesystem_operation_request(operation)
 
     assert not target.exists()
-    assert not (tmp_path / ".opensquilla-cache").exists()
+    assert not (tmp_path / ".openstarry-code-cache").exists()

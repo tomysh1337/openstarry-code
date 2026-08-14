@@ -8,17 +8,17 @@ from typing import Any, ClassVar
 
 import pytest
 
-from opensquilla.skills.hub.clawhub import ClawHubSource
-from opensquilla.skills.hub.github import GitHubSource
-from opensquilla.skills.hub.lockfile import Lockfile
-from opensquilla.skills.hub.management import SkillManagementService
-from opensquilla.skills.hub.router import SourceRouter
-from opensquilla.skills.hub.source import (
+from openstarry_code.skills.hub.clawhub import ClawHubSource
+from openstarry_code.skills.hub.github import GitHubSource
+from openstarry_code.skills.hub.lockfile import Lockfile
+from openstarry_code.skills.hub.management import SkillManagementService
+from openstarry_code.skills.hub.router import SourceRouter
+from openstarry_code.skills.hub.source import (
     SkillBundle,
     SkillSourceFetchError,
     SourceResolution,
 )
-from opensquilla.skills.manifest import parse_skill_frontmatter
+from openstarry_code.skills.manifest import parse_skill_frontmatter
 
 _COMMIT = "b" * 40
 
@@ -101,11 +101,11 @@ def _mock_httpx(monkeypatch, responses: dict[str, _Response]) -> None:
     _AsyncClient.responses = responses
     monkeypatch.setattr(httpx, "AsyncClient", _AsyncClient)
     monkeypatch.setattr(
-        "opensquilla.skills.hub.clawhub._validate_artifact_url",
+        "openstarry_code.skills.hub.clawhub._validate_artifact_url",
         lambda _url: ["203.0.113.10"],
     )
     monkeypatch.setattr(
-        "opensquilla.skills.hub.clawhub._artifact_transport",
+        "openstarry_code.skills.hub.clawhub._artifact_transport",
         lambda _url, _ips, **_kwargs: None,
     )
 
@@ -1054,7 +1054,7 @@ async def test_archive_fetch_rejects_ssrf_target_before_download(monkeypatch) ->
         raise ValueError("blocked private target")
 
     monkeypatch.setattr(
-        "opensquilla.skills.hub.clawhub._validate_artifact_url",
+        "openstarry_code.skills.hub.clawhub._validate_artifact_url",
         blocked,
     )
 

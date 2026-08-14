@@ -11,7 +11,7 @@ from dataclasses import replace
 
 import pytest
 
-from opensquilla.engine.finalize_evidence_gate import (
+from openstarry_code.engine.finalize_evidence_gate import (
     FINALIZE_EVIDENCE_GATE_CHALLENGE_LIMIT,
     FinalizeEvidenceTracker,
     classify_gate_command,

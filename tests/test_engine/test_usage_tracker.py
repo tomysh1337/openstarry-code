@@ -2,7 +2,7 @@
 
 import pytest
 
-from opensquilla.engine.usage import ModelUsage, SessionUsage, UsageTracker
+from openstarry_code.engine.usage import ModelUsage, SessionUsage, UsageTracker
 
 
 def test_session_usage_accumulates_cache_tokens() -> None:
@@ -450,7 +450,7 @@ def test_session_total_cost_same_model_mixed_calls_adds_estimate(
     """One model, one billed call plus one unbilled call: total_cost must be
     billed + estimate-of-unbilled, not the old billed-only collapse. The
     breakdown row flips to 'mixed' and still sums to total_cost."""
-    monkeypatch.setenv("OPENSQUILLA_OPENROUTER_LIVE_PRICING", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING", "0")
     usage = SessionUsage()
     usage.add(1000, 50, "claude-opus-4-7", billed_cost=0.05)
     usage.add(2000, 80, "claude-opus-4-7")  # provider returned no cost

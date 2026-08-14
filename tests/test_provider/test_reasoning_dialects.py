@@ -13,16 +13,16 @@ from __future__ import annotations
 
 from typing import Any
 
-from opensquilla.engine.types import ThinkingLevel
-from opensquilla.provider.compat_policy import compat_policy_for_kind, known_policy_kinds
-from opensquilla.provider.reasoning_dialects import (
+from openstarry_code.engine.types import ThinkingLevel
+from openstarry_code.provider.compat_policy import compat_policy_for_kind, known_policy_kinds
+from openstarry_code.provider.reasoning_dialects import (
     DIALECTS,
     ReasoningDisableArgs,
     ReasoningEnableArgs,
     apply_reasoning_disable,
     apply_reasoning_enable,
 )
-from opensquilla.provider.registry import list_provider_specs
+from openstarry_code.provider.registry import list_provider_specs
 
 # Every reasoning_format value reachable today, with where each comes from:
 #   "openrouter" — compat_policy: openrouter policy replay_reasoning_format;

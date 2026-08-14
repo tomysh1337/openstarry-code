@@ -3,8 +3,8 @@ from __future__ import annotations
 import httpx
 import pytest
 
-from opensquilla.skills.hub.contracts import DiagnosticPhase
-from opensquilla.skills.hub.source import (
+from openstarry_code.skills.hub.contracts import DiagnosticPhase
+from openstarry_code.skills.hub.source import (
     SkillSourceFetchError,
     raise_for_source_http_status,
 )

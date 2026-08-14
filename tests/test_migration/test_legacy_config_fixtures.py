@@ -18,10 +18,10 @@ from pathlib import Path
 
 import pytest
 
-import opensquilla.gateway.config as config_module
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.config_migration import migrate_config_payload
-from opensquilla.migration.opensquilla_home import (
+import openstarry_code.gateway.config as config_module
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.config_migration import migrate_config_payload
+from openstarry_code.migration.opensquilla_home import (
     OpenSquillaHomeMigrator,
     OpenSquillaMigrationOptions,
 )

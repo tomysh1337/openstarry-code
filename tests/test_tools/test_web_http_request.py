@@ -10,8 +10,8 @@ from typing import cast
 import httpx
 import pytest
 
-from opensquilla.tools.builtin import web
-from opensquilla.tools.types import ToolError
+from openstarry_code.tools.builtin import web
+from openstarry_code.tools.types import ToolError
 
 HttpRequestCallable = Callable[..., Awaitable[str]]
 
@@ -278,7 +278,7 @@ async def test_http_request_output_path_rejects_foreign_posix_path_on_windows(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    from opensquilla.tools.builtin import web
+    from openstarry_code.tools.builtin import web
 
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(web.os, "name", "nt")

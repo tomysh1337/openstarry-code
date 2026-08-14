@@ -26,13 +26,13 @@ from typing import Any
 import pytest
 from router_fixtures import ALL_CASES, RouterCase, migration_assistant
 
-from opensquilla.engine.types import AgentEvent
-from opensquilla.skills.loader import SkillLoader
-from opensquilla.skills.meta.executors.llm_classify import run_llm_classify_step
-from opensquilla.skills.meta.parser import parse_meta_plan
-from opensquilla.skills.meta.types import MetaStep
+from openstarry_code.engine.types import AgentEvent
+from openstarry_code.skills.loader import SkillLoader
+from openstarry_code.skills.meta.executors.llm_classify import run_llm_classify_step
+from openstarry_code.skills.meta.parser import parse_meta_plan
+from openstarry_code.skills.meta.types import MetaStep
 
-_SKILLS_DIR = Path(__file__).resolve().parents[2] / "src" / "opensquilla" / "skills"
+_SKILLS_DIR = Path(__file__).resolve().parents[2] / "src" / "openstarry_code" / "skills"
 _BUNDLED_DIR = _SKILLS_DIR / "bundled"
 _EXP_DIR = _SKILLS_DIR / "exp"
 

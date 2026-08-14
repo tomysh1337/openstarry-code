@@ -14,4 +14,4 @@ def _no_local_tui_findings(monkeypatch: pytest.MonkeyPatch) -> None:
     doctor`` would otherwise be environment-dependent. Tests for the TUI
     finding itself re-set ``_local_tui_findings`` explicitly.
     """
-    monkeypatch.setattr("opensquilla.cli.doctor_cmd._local_tui_findings", lambda: [])
+    monkeypatch.setattr("openstarry_code.cli.doctor_cmd._local_tui_findings", lambda: [])

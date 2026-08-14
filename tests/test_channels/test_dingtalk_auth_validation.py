@@ -9,7 +9,7 @@ from typing import Any
 import pytest
 import requests
 
-from opensquilla.channels.dingtalk import DingTalkChannel, DingTalkChannelConfig
+from openstarry_code.channels.dingtalk import DingTalkChannel, DingTalkChannelConfig
 
 
 @pytest.fixture

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Shared helpers for the OpenSquilla experiment ledger."""
+"""Shared helpers for the OpenStarry Code experiment ledger."""
 
 from __future__ import annotations
 
@@ -35,7 +35,7 @@ DEFAULT_REQUIRED_SECRET_ENV = {
 
 EXP_ID_RE = re.compile(r"^[a-z0-9][a-z0-9._-]*$")
 SECRET_KEY_RE = re.compile(r"(api[_-]?key|token|secret|password|credential)", re.I)
-TRACKED_ENV_PREFIXES = ("OPENSQUILLA_",)
+TRACKED_ENV_PREFIXES = ("OPENSTARRY_CODE_",)
 
 
 class LedgerError(RuntimeError):
@@ -59,8 +59,8 @@ def now_iso() -> str:
 def ledger_root_from_env() -> Path:
     return Path(
         os.environ.get(
-            "OPENSQUILLA_EXPERIMENT_LEDGER_ROOT",
-            os.environ.get("OPENSQUILLA_SWE_EXPERIMENT_LEDGER_ROOT", DEFAULT_LEDGER_ROOT),
+            "OPENSTARRY_CODE_EXPERIMENT_LEDGER_ROOT",
+            os.environ.get("OPENSTARRY_CODE_SWE_EXPERIMENT_LEDGER_ROOT", DEFAULT_LEDGER_ROOT),
         )
     )
 

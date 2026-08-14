@@ -3,13 +3,13 @@ from __future__ import annotations
 import subprocess
 from pathlib import Path
 
-from opensquilla.tools.source_diff_candidates import (
+from openstarry_code.tools.source_diff_candidates import (
     MAX_PATCH_CHARS,
     capture_source_diff_candidate,
     latest_recoverable_source_candidate,
     mark_source_diff_candidates_lost,
 )
-from opensquilla.tools.types import ToolContext
+from openstarry_code.tools.types import ToolContext
 
 
 def _run_git(workspace: Path, *args: str) -> None:

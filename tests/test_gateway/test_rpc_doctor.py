@@ -4,9 +4,9 @@ from typing import Any
 
 import pytest
 
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.rpc import RpcContext, get_dispatcher
-from opensquilla.gateway.scopes import METHOD_SCOPES, READ_SCOPE
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.rpc import RpcContext, get_dispatcher
+from openstarry_code.gateway.scopes import METHOD_SCOPES, READ_SCOPE
 
 
 async def _ready_memory(params: dict[str, Any], ctx: RpcContext) -> dict[str, Any]:
@@ -107,7 +107,7 @@ def _patch_ready_support_surfaces(monkeypatch: pytest.MonkeyPatch, rpc_doctor: A
 def _reset_router_strategy_cache():
     # The squilla_router doctor surface reads the turn loop's strategy cache;
     # keep these tests independent of whatever other tests left in it.
-    from opensquilla.engine.steps import squilla_router as squilla_router_step
+    from openstarry_code.engine.steps import squilla_router as squilla_router_step
 
     squilla_router_step._strategy = None
     squilla_router_step._strategy_key = None
@@ -123,7 +123,7 @@ async def test_doctor_status_is_read_scoped() -> None:
 
 @pytest.mark.asyncio
 async def test_doctor_status_combines_runtime_findings(monkeypatch) -> None:
-    import opensquilla.gateway.rpc_doctor as rpc_doctor
+    import openstarry_code.gateway.rpc_doctor as rpc_doctor
 
     async def provider_status(params: dict[str, Any], ctx: RpcContext) -> dict[str, Any]:
         return {
@@ -143,12 +143,12 @@ async def test_doctor_status_combines_runtime_findings(monkeypatch) -> None:
     _patch_ready_support_surfaces(monkeypatch, rpc_doctor)
 
     cfg = GatewayConfig()
-    cfg.config_path = "/tmp/custom-opensquilla.toml"
+    cfg.config_path = "/tmp/custom-openstarry-code.toml"
     ctx = RpcContext(conn_id="test", config=cfg)
     response = await get_dispatcher().dispatch("req-1", "doctor.status", {}, ctx)
 
     assert response.ok is True
-    assert response.payload["configPath"] == "/tmp/custom-opensquilla.toml"
+    assert response.payload["configPath"] == "/tmp/custom-openstarry-code.toml"
     assert response.payload["status"] == "action_required"
     assert response.payload["ready"] is False
     ids = [finding["id"] for finding in response.payload["findings"]]
@@ -161,16 +161,16 @@ async def test_doctor_status_combines_runtime_findings(monkeypatch) -> None:
     )
     commands = [step["command"] for step in provider_finding["fixSteps"] if "command" in step]
     assert (
-        "opensquilla providers configure openrouter --api-key YOUR_API_KEY "
-        "--config /tmp/custom-opensquilla.toml"
+        "openstarry-code providers configure openrouter --api-key YOUR_API_KEY "
+        "--config /tmp/custom-openstarry-code.toml"
     ) in commands
-    assert "opensquilla gateway restart --config /tmp/custom-opensquilla.toml" in commands
+    assert "openstarry-code gateway restart --config /tmp/custom-openstarry-code.toml" in commands
     assert response.payload["agentId"] == "main"
 
 
 @pytest.mark.asyncio
 async def test_doctor_status_scopes_config_set_recovery_commands(monkeypatch) -> None:
-    import opensquilla.gateway.rpc_doctor as rpc_doctor
+    import openstarry_code.gateway.rpc_doctor as rpc_doctor
 
     async def provider_status(params: dict[str, Any], ctx: RpcContext) -> dict[str, Any]:
         return {
@@ -190,7 +190,7 @@ async def test_doctor_status_scopes_config_set_recovery_commands(monkeypatch) ->
     monkeypatch.setattr(rpc_doctor, "_build_logs_status", _disabled_file_logs)
 
     cfg = GatewayConfig()
-    cfg.config_path = "/tmp/custom-opensquilla.toml"
+    cfg.config_path = "/tmp/custom-openstarry-code.toml"
     response = await get_dispatcher().dispatch(
         "req-1",
         "doctor.status",
@@ -206,17 +206,17 @@ async def test_doctor_status_scopes_config_set_recovery_commands(monkeypatch) ->
     )
     commands = [step["command"] for step in finding["fixSteps"] if "command" in step]
     assert (
-        "opensquilla config set log_file_enabled true "
-        "--config /tmp/custom-opensquilla.toml"
+        "openstarry-code config set log_file_enabled true "
+        "--config /tmp/custom-openstarry-code.toml"
     ) in commands
-    assert "opensquilla gateway restart --config /tmp/custom-opensquilla.toml" in commands
+    assert "openstarry-code gateway restart --config /tmp/custom-openstarry-code.toml" in commands
 
 
 @pytest.mark.asyncio
 async def test_doctor_status_includes_search_and_image_generation_findings(
     monkeypatch,
 ) -> None:
-    import opensquilla.gateway.rpc_doctor as rpc_doctor
+    import openstarry_code.gateway.rpc_doctor as rpc_doctor
 
     async def provider_status(params: dict[str, Any], ctx: RpcContext) -> dict[str, Any]:
         return {
@@ -291,7 +291,7 @@ async def test_doctor_status_includes_search_and_image_generation_findings(
 async def test_doctor_status_explains_missing_image_generation_env_key(
     monkeypatch,
 ) -> None:
-    import opensquilla.gateway.rpc_doctor as rpc_doctor
+    import openstarry_code.gateway.rpc_doctor as rpc_doctor
 
     async def provider_status(params: dict[str, Any], ctx: RpcContext) -> dict[str, Any]:
         return {
@@ -348,7 +348,7 @@ async def test_doctor_status_explains_missing_image_generation_env_key(
 async def test_doctor_status_reports_unknown_search_provider_as_reconfigurable(
     monkeypatch,
 ) -> None:
-    import opensquilla.gateway.rpc_doctor as rpc_doctor
+    import openstarry_code.gateway.rpc_doctor as rpc_doctor
 
     async def provider_status(params: dict[str, Any], ctx: RpcContext) -> dict[str, Any]:
         return {
@@ -378,7 +378,7 @@ async def test_doctor_status_reports_unknown_search_provider_as_reconfigurable(
     )
 
     cfg = GatewayConfig()
-    cfg.config_path = "/tmp/custom-opensquilla.toml"
+    cfg.config_path = "/tmp/custom-openstarry-code.toml"
 
     response = await get_dispatcher().dispatch(
         "req-1",
@@ -395,10 +395,10 @@ async def test_doctor_status_reports_unknown_search_provider_as_reconfigurable(
     )
     assert search_finding["id"] == "search.provider.unknown"
     commands = [step["command"] for step in search_finding["fixSteps"]]
-    assert "opensquilla search list --json" in commands
+    assert "openstarry-code search list --json" in commands
     assert (
-        "opensquilla configure search --search-provider duckduckgo "
-        "--config /tmp/custom-opensquilla.toml"
+        "openstarry-code configure search --search-provider duckduckgo "
+        "--config /tmp/custom-openstarry-code.toml"
     ) in commands
 
 
@@ -406,7 +406,7 @@ async def test_doctor_status_reports_unknown_search_provider_as_reconfigurable(
 async def test_doctor_status_includes_router_and_memory_embedding_findings(
     monkeypatch,
 ) -> None:
-    import opensquilla.gateway.rpc_doctor as rpc_doctor
+    import openstarry_code.gateway.rpc_doctor as rpc_doctor
 
     async def provider_status(params: dict[str, Any], ctx: RpcContext) -> dict[str, Any]:
         return {
@@ -465,8 +465,8 @@ async def test_doctor_status_includes_router_and_memory_embedding_findings(
 def test_router_payload_deep_mode_loads_runtime_and_classifies_native_error(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.gateway.boot as boot
-    import opensquilla.gateway.rpc_doctor as rpc_doctor
+    import openstarry_code.gateway.boot as boot
+    import openstarry_code.gateway.rpc_doctor as rpc_doctor
 
     calls: list[str] = []
 
@@ -498,7 +498,7 @@ def test_router_payload_deep_mode_loads_runtime_and_classifies_native_error(
 
 @pytest.mark.asyncio
 async def test_doctor_status_accepts_deep_memory_flag(monkeypatch) -> None:
-    import opensquilla.gateway.rpc_doctor as rpc_doctor
+    import openstarry_code.gateway.rpc_doctor as rpc_doctor
 
     seen_memory_params: dict[str, Any] = {}
 
@@ -537,7 +537,7 @@ async def test_doctor_status_accepts_deep_memory_flag(monkeypatch) -> None:
 
 @pytest.mark.asyncio
 async def test_doctor_status_defaults_to_deep_memory_diagnostics(monkeypatch) -> None:
-    import opensquilla.gateway.rpc_doctor as rpc_doctor
+    import openstarry_code.gateway.rpc_doctor as rpc_doctor
 
     seen_memory_params: dict[str, Any] = {}
 
@@ -561,7 +561,7 @@ async def test_doctor_status_defaults_to_deep_memory_diagnostics(monkeypatch) ->
 
 @pytest.mark.asyncio
 async def test_doctor_status_can_skip_deep_memory_diagnostics(monkeypatch) -> None:
-    import opensquilla.gateway.rpc_doctor as rpc_doctor
+    import openstarry_code.gateway.rpc_doctor as rpc_doctor
 
     seen_memory_params: dict[str, Any] = {}
 
@@ -587,7 +587,7 @@ async def test_doctor_status_can_skip_deep_memory_diagnostics(monkeypatch) -> No
 async def test_doctor_provider_probe_is_disabled_by_default_and_opt_in(
     monkeypatch,
 ) -> None:
-    import opensquilla.gateway.rpc_doctor as rpc_doctor
+    import openstarry_code.gateway.rpc_doctor as rpc_doctor
 
     seen_probe_values: list[bool] = []
 
@@ -624,7 +624,7 @@ async def test_doctor_provider_probe_is_disabled_by_default_and_opt_in(
 
 @pytest.mark.asyncio
 async def test_doctor_status_explains_recovery_when_collection_fails(monkeypatch) -> None:
-    import opensquilla.gateway.rpc_doctor as rpc_doctor
+    import openstarry_code.gateway.rpc_doctor as rpc_doctor
 
     async def provider_status(params: dict[str, Any], ctx: RpcContext) -> dict[str, Any]:
         raise RuntimeError("provider status crashed")
@@ -650,15 +650,15 @@ async def test_doctor_status_explains_recovery_when_collection_fails(monkeypatch
     assert provider_finding["severity"] == "error"
     commands = [step["command"] for step in provider_finding["fixSteps"]]
     assert commands == [
-        "opensquilla providers status --json",
-        "opensquilla diagnostics status",
-        "opensquilla gateway restart",
+        "openstarry-code providers status --json",
+        "openstarry-code diagnostics status",
+        "openstarry-code gateway restart",
     ]
 
 
 @pytest.mark.asyncio
 async def test_doctor_status_degrades_when_noncritical_collection_fails(monkeypatch) -> None:
-    import opensquilla.gateway.rpc_doctor as rpc_doctor
+    import openstarry_code.gateway.rpc_doctor as rpc_doctor
 
     async def provider_status(params: dict[str, Any], ctx: RpcContext) -> dict[str, Any]:
         return {
@@ -702,7 +702,7 @@ async def test_doctor_status_degrades_when_noncritical_collection_fails(monkeypa
 
 @pytest.mark.asyncio
 async def test_doctor_status_treats_dead_channel_as_surface_degradation(monkeypatch) -> None:
-    import opensquilla.gateway.rpc_doctor as rpc_doctor
+    import openstarry_code.gateway.rpc_doctor as rpc_doctor
 
     async def provider_status(params: dict[str, Any], ctx: RpcContext) -> dict[str, Any]:
         return {
@@ -734,7 +734,7 @@ async def test_doctor_status_treats_dead_channel_as_surface_degradation(monkeypa
     monkeypatch.setattr(rpc_doctor, "_handle_channels_status", channels_status)
 
     cfg = GatewayConfig()
-    cfg.config_path = "/tmp/custom-opensquilla.toml"
+    cfg.config_path = "/tmp/custom-openstarry-code.toml"
 
     response = await get_dispatcher().dispatch(
         "req-1",
@@ -755,12 +755,12 @@ async def test_doctor_status_treats_dead_channel_as_surface_degradation(monkeypa
     assert channel_finding["readinessImpact"] == "degrades"
     commands = [step["command"] for step in channel_finding["fixSteps"] if "command" in step]
     assert (
-        "opensquilla channels restart feishu --yes "
-        "--config /tmp/custom-opensquilla.toml"
+        "openstarry-code channels restart feishu --yes "
+        "--config /tmp/custom-openstarry-code.toml"
     ) in commands
     assert (
-        "opensquilla channels status feishu --json "
-        "--config /tmp/custom-opensquilla.toml"
+        "openstarry-code channels status feishu --json "
+        "--config /tmp/custom-openstarry-code.toml"
     ) in commands
 
 
@@ -768,7 +768,7 @@ async def test_doctor_status_treats_dead_channel_as_surface_degradation(monkeypa
 async def test_doctor_status_reports_dingtalk_auth_invalid_without_stopped_duplicate(
     monkeypatch,
 ) -> None:
-    import opensquilla.gateway.rpc_doctor as rpc_doctor
+    import openstarry_code.gateway.rpc_doctor as rpc_doctor
 
     async def provider_status(params: dict[str, Any], ctx: RpcContext) -> dict[str, Any]:
         return {
@@ -808,7 +808,7 @@ async def test_doctor_status_reports_dingtalk_auth_invalid_without_stopped_dupli
     monkeypatch.setattr(rpc_doctor, "_handle_channels_status", channels_status)
 
     cfg = GatewayConfig()
-    cfg.config_path = "/tmp/custom-opensquilla.toml"
+    cfg.config_path = "/tmp/custom-openstarry-code.toml"
 
     response = await get_dispatcher().dispatch(
         "req-1",
@@ -831,15 +831,15 @@ async def test_doctor_status_reports_dingtalk_auth_invalid_without_stopped_dupli
     assert "AppKey/AppSecret" in channel_finding["detail"]
     commands = [step["command"] for step in channel_finding["fixSteps"] if "command" in step]
     assert (
-        "opensquilla channels status dingtalk --json "
-        "--config /tmp/custom-opensquilla.toml"
+        "openstarry-code channels status dingtalk --json "
+        "--config /tmp/custom-openstarry-code.toml"
     ) in commands
-    assert "opensquilla gateway restart --config /tmp/custom-opensquilla.toml" in commands
+    assert "openstarry-code gateway restart --config /tmp/custom-openstarry-code.toml" in commands
 
 
 @pytest.mark.asyncio
 async def test_doctor_status_treats_no_channels_as_optional_setup(monkeypatch) -> None:
-    import opensquilla.gateway.rpc_doctor as rpc_doctor
+    import openstarry_code.gateway.rpc_doctor as rpc_doctor
 
     async def provider_status(params: dict[str, Any], ctx: RpcContext) -> dict[str, Any]:
         return {
@@ -879,7 +879,7 @@ async def test_doctor_status_treats_no_channels_as_optional_setup(monkeypatch) -
     assert channel_finding["severity"] == "info"
     assert channel_finding["readinessImpact"] == "optional"
     assert channel_finding["fixSteps"][0]["command"] == (
-        "opensquilla configure --section channels"
+        "openstarry-code configure --section channels"
     )
 
 
@@ -914,7 +914,7 @@ def _patch_all_but_llm_ensemble(monkeypatch: pytest.MonkeyPatch, rpc_doctor: Any
 async def test_doctor_status_warns_when_static_b5_ensemble_has_no_credential(
     monkeypatch,
 ) -> None:
-    import opensquilla.gateway.rpc_doctor as rpc_doctor
+    import openstarry_code.gateway.rpc_doctor as rpc_doctor
 
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     _patch_all_but_llm_ensemble(monkeypatch, rpc_doctor)
@@ -942,15 +942,15 @@ async def test_doctor_status_warns_when_static_b5_ensemble_has_no_credential(
     assert finding["evidence"]["activeProvider"] == "groq"
     assert finding["evidence"]["credentialAvailable"] is False
     commands = [step["command"] for step in finding["fixSteps"] if "command" in step]
-    assert "opensquilla config set llm_ensemble.enabled false" in commands
-    assert "opensquilla gateway restart" in commands
+    assert "openstarry-code config set llm_ensemble.enabled false" in commands
+    assert "openstarry-code gateway restart" in commands
 
 
 @pytest.mark.asyncio
 async def test_doctor_status_reports_static_b5_ensemble_ready_when_keyed(
     monkeypatch,
 ) -> None:
-    import opensquilla.gateway.rpc_doctor as rpc_doctor
+    import openstarry_code.gateway.rpc_doctor as rpc_doctor
 
     monkeypatch.setenv("OPENROUTER_API_KEY", "sk-or-synthetic")
     _patch_all_but_llm_ensemble(monkeypatch, rpc_doctor)
@@ -978,7 +978,7 @@ async def test_doctor_status_reports_static_b5_ensemble_ready_when_keyed(
 async def test_doctor_status_warns_when_static_tokenrhythm_b5_has_no_credential(
     monkeypatch,
 ) -> None:
-    import opensquilla.gateway.rpc_doctor as rpc_doctor
+    import openstarry_code.gateway.rpc_doctor as rpc_doctor
 
     monkeypatch.delenv("TOKENRHYTHM_API_KEY", raising=False)
     # An OpenRouter key must NOT satisfy the tokenrhythm profile.
@@ -1012,7 +1012,7 @@ async def test_doctor_status_warns_when_static_tokenrhythm_b5_has_no_credential(
 async def test_doctor_status_reports_static_tokenrhythm_b5_ready_when_keyed(
     monkeypatch,
 ) -> None:
-    import opensquilla.gateway.rpc_doctor as rpc_doctor
+    import openstarry_code.gateway.rpc_doctor as rpc_doctor
 
     monkeypatch.setenv("TOKENRHYTHM_API_KEY", "sk-tr-synthetic")
     _patch_all_but_llm_ensemble(monkeypatch, rpc_doctor)
@@ -1038,7 +1038,7 @@ async def test_doctor_status_reports_static_tokenrhythm_b5_ready_when_keyed(
 async def test_doctor_status_skips_ensemble_finding_when_ensemble_disabled(
     monkeypatch,
 ) -> None:
-    import opensquilla.gateway.rpc_doctor as rpc_doctor
+    import openstarry_code.gateway.rpc_doctor as rpc_doctor
 
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     _patch_all_but_llm_ensemble(monkeypatch, rpc_doctor)
@@ -1067,7 +1067,7 @@ def _fake_runtime_status(status: dict[str, Any]):
 
 
 def _patch_runtime_status(monkeypatch: pytest.MonkeyPatch, status: dict[str, Any]) -> None:
-    from opensquilla.engine.steps import squilla_router as squilla_router_step
+    from openstarry_code.engine.steps import squilla_router as squilla_router_step
 
     monkeypatch.setattr(
         squilla_router_step, "router_runtime_status", _fake_runtime_status(status)
@@ -1078,7 +1078,7 @@ def _patch_runtime_status(monkeypatch: pytest.MonkeyPatch, status: dict[str, Any
 async def test_doctor_status_warns_persistently_when_required_router_runtime_failed(
     monkeypatch,
 ) -> None:
-    import opensquilla.gateway.rpc_doctor as rpc_doctor
+    import openstarry_code.gateway.rpc_doctor as rpc_doctor
 
     _patch_all_but_llm_ensemble(monkeypatch, rpc_doctor)
     _patch_runtime_status(
@@ -1117,7 +1117,7 @@ async def test_doctor_status_warns_persistently_when_required_router_runtime_fai
     assert "brew install libomp" in finding["detail"]
     commands = [step["command"] for step in finding["fixSteps"] if "command" in step]
     assert "brew install libomp" in commands
-    assert "opensquilla gateway restart" in commands
+    assert "openstarry-code gateway restart" in commands
     # OQ#11: the flag surfaces loudly but never blocks startup/readiness.
     assert response.payload["ready"] is True
     assert response.payload["status"] == "degraded"
@@ -1127,7 +1127,7 @@ async def test_doctor_status_warns_persistently_when_required_router_runtime_fai
 async def test_doctor_status_reports_router_runtime_ready_when_loaded(
     monkeypatch,
 ) -> None:
-    import opensquilla.gateway.rpc_doctor as rpc_doctor
+    import openstarry_code.gateway.rpc_doctor as rpc_doctor
 
     _patch_all_but_llm_ensemble(monkeypatch, rpc_doctor)
     _patch_runtime_status(
@@ -1164,7 +1164,7 @@ async def test_doctor_status_reports_router_runtime_ready_when_loaded(
 async def test_doctor_status_softens_router_runtime_finding_when_flag_false(
     monkeypatch,
 ) -> None:
-    import opensquilla.gateway.rpc_doctor as rpc_doctor
+    import openstarry_code.gateway.rpc_doctor as rpc_doctor
 
     _patch_all_but_llm_ensemble(monkeypatch, rpc_doctor)
     _patch_runtime_status(
@@ -1207,7 +1207,7 @@ async def test_doctor_status_softens_router_runtime_finding_when_flag_false(
 async def test_doctor_status_stays_silent_before_router_strategy_initializes(
     monkeypatch,
 ) -> None:
-    import opensquilla.gateway.rpc_doctor as rpc_doctor
+    import openstarry_code.gateway.rpc_doctor as rpc_doctor
 
     _patch_all_but_llm_ensemble(monkeypatch, rpc_doctor)
     # No _patch_runtime_status: the autouse fixture guarantees an
@@ -1233,7 +1233,7 @@ async def test_doctor_status_stays_silent_before_router_strategy_initializes(
 async def test_doctor_status_skips_router_runtime_surface_when_router_disabled(
     monkeypatch,
 ) -> None:
-    import opensquilla.gateway.rpc_doctor as rpc_doctor
+    import openstarry_code.gateway.rpc_doctor as rpc_doctor
 
     _patch_all_but_llm_ensemble(monkeypatch, rpc_doctor)
     _patch_runtime_status(
@@ -1268,7 +1268,7 @@ async def test_doctor_status_skips_router_runtime_surface_when_router_disabled(
 
 @pytest.mark.asyncio
 async def test_doctor_status_has_no_migration_discovery_surface(monkeypatch) -> None:
-    import opensquilla.gateway.rpc_doctor as rpc_doctor
+    import openstarry_code.gateway.rpc_doctor as rpc_doctor
 
     async def provider_status(params: dict[str, Any], ctx: RpcContext) -> dict[str, Any]:
         return {

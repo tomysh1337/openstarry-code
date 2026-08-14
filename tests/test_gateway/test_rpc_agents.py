@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.agents.registry import AgentRegistry
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.rpc import RpcContext, get_dispatcher
+from openstarry_code.agents.registry import AgentRegistry
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.rpc import RpcContext, get_dispatcher
 
 
 class _FailingModelSelector:
@@ -157,8 +157,8 @@ async def test_models_rpc_list_selector_crash_returns_empty() -> None:
 
 class _DetailedModelSelector:
     async def list_models_detailed(self):
-        from opensquilla.provider.selector import ModelListResult, ProviderListError
-        from opensquilla.provider.types import ModelInfo
+        from openstarry_code.provider.selector import ModelListResult, ProviderListError
+        from openstarry_code.provider.types import ModelInfo
 
         return ModelListResult(
             models=[
@@ -209,9 +209,9 @@ async def test_models_rpc_list_filters_rows_but_keeps_errors() -> None:
 
 @pytest.mark.asyncio
 async def test_models_rpc_non_tokenrhythm_enrichment_ignores_warm_shared_catalog() -> None:
-    from opensquilla.provider.model_catalog import ModelCatalog, set_shared_catalog
-    from opensquilla.provider.selector import ModelListResult
-    from opensquilla.provider.types import ModelInfo
+    from openstarry_code.provider.model_catalog import ModelCatalog, set_shared_catalog
+    from openstarry_code.provider.selector import ModelListResult
+    from openstarry_code.provider.types import ModelInfo
 
     model_id = "synthetic-non-tokenrhythm-cold-boundary"
     shared = ModelCatalog()
@@ -413,9 +413,9 @@ async def test_agents_rpc_update_agent_dir_camelcase_persists() -> None:
     result = await get_dispatcher().dispatch(
         "r1",
         "agents.update",
-        {"id": "ops", "agentDir": ".opensquilla/ops-dir"},
+        {"id": "ops", "agentDir": ".openstarry-code/ops-dir"},
         _ctx(cfg, registry),
     )
 
     assert result.error is None, result.error
-    assert cfg.agents[0].agent_dir == ".opensquilla/ops-dir"
+    assert cfg.agents[0].agent_dir == ".openstarry-code/ops-dir"

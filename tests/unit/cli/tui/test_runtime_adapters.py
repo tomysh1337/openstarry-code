@@ -17,15 +17,15 @@ from typing import Any, cast
 import pytest
 from rich.console import Console
 
-from opensquilla.cli.chat.turn import TurnResult, UsageSummary
-from opensquilla.cli.tui.adapters import native_bridge, slash_standalone
-from opensquilla.cli.tui.backend.contracts import TuiOutputHandle
-from opensquilla.engine.commands import Surface
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.project_workspaces import project_path_key
-from opensquilla.sandbox.run_context import RUN_CONTEXT_ORIGIN_KEY
-from opensquilla.session.manager import SessionManager
-from opensquilla.session.storage import SessionStorage
+from openstarry_code.cli.chat.turn import TurnResult, UsageSummary
+from openstarry_code.cli.tui.adapters import native_bridge, slash_standalone
+from openstarry_code.cli.tui.backend.contracts import TuiOutputHandle
+from openstarry_code.engine.commands import Surface
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.project_workspaces import project_path_key
+from openstarry_code.sandbox.run_context import RUN_CONTEXT_ORIGIN_KEY
+from openstarry_code.session.manager import SessionManager
+from openstarry_code.session.storage import SessionStorage
 
 
 class _FakeSessionManager:
@@ -98,7 +98,7 @@ def _standalone_deps(
     output_console: Any,
     error_panel_factory: Any,
 ) -> Any:
-    from opensquilla.cli.tui import standalone_runtime
+    from openstarry_code.cli.tui import standalone_runtime
 
     return standalone_runtime.StandaloneRuntimeDependencies(
         stream_response=stream_response,
@@ -118,9 +118,9 @@ def _patch_standalone_services(monkeypatch: pytest.MonkeyPatch) -> _FakeServices
     async def fake_build_services() -> _FakeServices:
         return services
 
-    monkeypatch.setattr("opensquilla.gateway.build_services", fake_build_services)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", fake_build_services)
     monkeypatch.setattr(
-        "opensquilla.gateway.build_turn_runner_from_services",
+        "openstarry_code.gateway.build_turn_runner_from_services",
         lambda _services: object(),
     )
     return services
@@ -229,7 +229,7 @@ async def test_standalone_dispatch_never_feeds_routed_model_back(
 ) -> None:
     # Without --model every turn must dispatch with model=None so per-turn
     # routing stays live; the routed result is display-only state.
-    from opensquilla.cli.tui import standalone_runtime
+    from openstarry_code.cli.tui import standalone_runtime
 
     _patch_standalone_services(monkeypatch)
     models_seen: list[str | None] = []
@@ -287,7 +287,7 @@ async def test_standalone_dispatch_uses_bound_project_workspace_over_tampered_or
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    from opensquilla.cli.tui import standalone_runtime
+    from openstarry_code.cli.tui import standalone_runtime
 
     storage = await SessionStorage.open(str(tmp_path / "tui-project.db"))
     manager = SessionManager(storage, inject_time_prefix=False)
@@ -320,9 +320,9 @@ async def test_standalone_dispatch_uses_bound_project_workspace_over_tampered_or
     async def fake_build_services() -> _FakeServices:
         return services
 
-    monkeypatch.setattr("opensquilla.gateway.build_services", fake_build_services)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", fake_build_services)
     monkeypatch.setattr(
-        "opensquilla.gateway.build_turn_runner_from_services",
+        "openstarry_code.gateway.build_turn_runner_from_services",
         lambda _services: object(),
     )
     captured_contexts: list[Any] = []
@@ -370,7 +370,7 @@ async def test_standalone_dispatch_refreshes_unbound_saved_context(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    from opensquilla.cli.tui import standalone_runtime
+    from openstarry_code.cli.tui import standalone_runtime
 
     storage = await SessionStorage.open(str(tmp_path / "tui-unbound.db"))
     manager = SessionManager(storage, inject_time_prefix=False)
@@ -402,9 +402,9 @@ async def test_standalone_dispatch_refreshes_unbound_saved_context(
     async def fake_build_services() -> _FakeServices:
         return services
 
-    monkeypatch.setattr("opensquilla.gateway.build_services", fake_build_services)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", fake_build_services)
     monkeypatch.setattr(
-        "opensquilla.gateway.build_turn_runner_from_services",
+        "openstarry_code.gateway.build_turn_runner_from_services",
         lambda _services: object(),
     )
     captured_contexts: list[Any] = []
@@ -459,7 +459,7 @@ async def test_standalone_dispatch_revalidates_project_on_every_input(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    from opensquilla.cli.tui import standalone_runtime
+    from openstarry_code.cli.tui import standalone_runtime
 
     storage = await SessionStorage.open(str(tmp_path / "tui-retarget.db"))
     manager = SessionManager(storage, inject_time_prefix=False)
@@ -493,9 +493,9 @@ async def test_standalone_dispatch_revalidates_project_on_every_input(
     async def fake_build_services() -> _FakeServices:
         return services
 
-    monkeypatch.setattr("opensquilla.gateway.build_services", fake_build_services)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", fake_build_services)
     monkeypatch.setattr(
-        "opensquilla.gateway.build_turn_runner_from_services",
+        "openstarry_code.gateway.build_turn_runner_from_services",
         lambda _services: object(),
     )
     calls: list[str] = []
@@ -547,7 +547,7 @@ async def test_standalone_revalidates_session_replaced_by_slash_command_before_e
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    from opensquilla.cli.tui import standalone_runtime
+    from openstarry_code.cli.tui import standalone_runtime
 
     storage = await SessionStorage.open(str(tmp_path / "tui-replaced-session.db"))
     manager = SessionManager(storage, inject_time_prefix=False)
@@ -597,9 +597,9 @@ async def test_standalone_revalidates_session_replaced_by_slash_command_before_e
     async def fake_build_services() -> _FakeServices:
         return services
 
-    monkeypatch.setattr("opensquilla.gateway.build_services", fake_build_services)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", fake_build_services)
     monkeypatch.setattr(
-        "opensquilla.gateway.build_turn_runner_from_services",
+        "openstarry_code.gateway.build_turn_runner_from_services",
         lambda _services: object(),
     )
     calls: list[tuple[str, str]] = []
@@ -653,7 +653,7 @@ async def test_standalone_revalidates_session_replaced_by_slash_command_before_e
 async def test_standalone_requested_model_follows_model_command_not_routing(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.tui import standalone_runtime
+    from openstarry_code.cli.tui import standalone_runtime
 
     _patch_standalone_services(monkeypatch)
     models_seen: list[str | None] = []
@@ -712,7 +712,7 @@ async def test_standalone_requested_model_follows_model_command_not_routing(
 async def test_standalone_dispatch_maps_stream_errors_to_error_panel(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.tui import standalone_runtime
+    from openstarry_code.cli.tui import standalone_runtime
 
     _patch_standalone_services(monkeypatch)
     output_console = _RecordingConsole()
@@ -770,7 +770,7 @@ async def test_standalone_dispatch_maps_stream_errors_to_error_panel(
 async def test_standalone_dispatch_maps_slash_errors_to_error_panel(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.tui import standalone_runtime
+    from openstarry_code.cli.tui import standalone_runtime
 
     _patch_standalone_services(monkeypatch)
     output_console = _RecordingConsole()
@@ -836,9 +836,9 @@ async def test_standalone_dispatch_maps_slash_errors_to_error_panel(
 def test_chat_compat_default_deps_follow_selected_backend(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.tui.adapters import chat_compat, runtime_bridge
-    from opensquilla.cli.tui.native.renderer import NativeStreamRenderer
-    from opensquilla.cli.tui.opentui.renderer import OpenTuiStreamRenderer
+    from openstarry_code.cli.tui.adapters import chat_compat, runtime_bridge
+    from openstarry_code.cli.tui.native.renderer import NativeStreamRenderer
+    from openstarry_code.cli.tui.opentui.renderer import OpenTuiStreamRenderer
 
     monkeypatch.setattr(
         runtime_bridge,
@@ -859,6 +859,6 @@ def test_chat_compat_default_deps_follow_selected_backend(
 
 
 def test_chat_compat_no_longer_exports_tool_compress_wrapper() -> None:
-    from opensquilla.cli.tui.adapters import chat_compat
+    from openstarry_code.cli.tui.adapters import chat_compat
 
     assert not hasattr(chat_compat, "handle_tool_compress_command")

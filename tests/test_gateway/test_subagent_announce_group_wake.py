@@ -5,8 +5,8 @@ from types import SimpleNamespace
 
 import pytest
 
-import opensquilla.gateway.subagent_announce as subagent_announce_module
-from opensquilla.gateway.subagent_announce import (
+import openstarry_code.gateway.subagent_announce as subagent_announce_module
+from openstarry_code.gateway.subagent_announce import (
     _build_subagent_group_outcome,
     _build_terminal_group_payloads,
     _format_parent_wake_message,
@@ -15,8 +15,8 @@ from opensquilla.gateway.subagent_announce import (
     close_subagent_spawn_group,
     set_background_completion_manager,
 )
-from opensquilla.gateway.task_runtime import SubagentCompletionEvent
-from opensquilla.session.models import AgentTaskStatus, SessionStatus
+from openstarry_code.gateway.task_runtime import SubagentCompletionEvent
+from openstarry_code.session.models import AgentTaskStatus, SessionStatus
 
 PARENT = "agent:main:webchat:parent"
 PARENT_TASK = "task-parent"

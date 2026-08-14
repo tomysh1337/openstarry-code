@@ -1,7 +1,7 @@
 """Tests for the scratch verify-mirror and finalize variant-challenge levers.
 
-Covers OPENSQUILLA_SCRATCH_VERIFY_MIRROR and
-OPENSQUILLA_FINALIZE_VARIANT_CHALLENGE (both off by default): bootstrap env
+Covers OPENSTARRY_CODE_SCRATCH_VERIFY_MIRROR and
+OPENSTARRY_CODE_FINALIZE_VARIANT_CHALLENGE (both off by default): bootstrap env
 parsing, deny-message mirror guidance, the anti-weakening hash guard that
 withholds evidence credit when mirror copies diverge from their workspace
 originals, and the one-shot variant-sweep challenge injection.
@@ -16,28 +16,28 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine import (
+from openstarry_code.engine import (
     Agent,
     AgentConfig,
     DoneEvent,
     ToolResult,
     WarningEvent,
 )
-from opensquilla.engine.finalize_evidence_gate import FinalizeEvidenceTracker
-from opensquilla.engine.turn_runner.agent_bootstrap_stage import (
+from openstarry_code.engine.finalize_evidence_gate import FinalizeEvidenceTracker
+from openstarry_code.engine.turn_runner.agent_bootstrap_stage import (
     _finalize_variant_challenge_from_env,
     _scratch_verify_mirror_from_env,
 )
-from opensquilla.provider import ChatConfig, Message
-from opensquilla.provider import DoneEvent as ProviderDone
-from opensquilla.provider import TextDeltaEvent as ProviderText
-from opensquilla.provider import ToolUseEndEvent as ProviderToolUseEnd
-from opensquilla.provider import ToolUseStartEvent as ProviderToolUseStart
-from opensquilla.tools import write_policy
-from opensquilla.tools.types import ToolContext
+from openstarry_code.provider import ChatConfig, Message
+from openstarry_code.provider import DoneEvent as ProviderDone
+from openstarry_code.provider import TextDeltaEvent as ProviderText
+from openstarry_code.provider import ToolUseEndEvent as ProviderToolUseEnd
+from openstarry_code.provider import ToolUseStartEvent as ProviderToolUseStart
+from openstarry_code.tools import write_policy
+from openstarry_code.tools.types import ToolContext
 
-_MIRROR_ENV = "OPENSQUILLA_SCRATCH_VERIFY_MIRROR"
-_VARIANT_ENV = "OPENSQUILLA_FINALIZE_VARIANT_CHALLENGE"
+_MIRROR_ENV = "OPENSTARRY_CODE_SCRATCH_VERIFY_MIRROR"
+_VARIANT_ENV = "OPENSTARRY_CODE_FINALIZE_VARIANT_CHALLENGE"
 
 
 # ---------------------------------------------------------------------------

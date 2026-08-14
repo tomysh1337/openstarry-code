@@ -6,9 +6,9 @@ from typing import Any
 
 import httpx
 
-from opensquilla.provider.ollama import _OLLAMA_DEFAULT_NUM_CTX, OllamaProvider
-from opensquilla.provider.selector import ProviderConfig, _build_provider
-from opensquilla.provider.types import (
+from openstarry_code.provider.ollama import _OLLAMA_DEFAULT_NUM_CTX, OllamaProvider
+from openstarry_code.provider.selector import ProviderConfig, _build_provider
+from openstarry_code.provider.types import (
     ChatConfig,
     ContentBlockImage,
     ContentBlockText,
@@ -56,7 +56,7 @@ def _patch_stream(monkeypatch: Any, captured: dict[str, Any], body: bytes = _DEF
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.ollama.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.ollama.httpx.AsyncClient", patched_async_client)
 
 
 def _collect(
@@ -378,7 +378,7 @@ def test_stream_candidate_mode_demotes_oversized_tool_name(monkeypatch: Any) -> 
 def test_stream_candidate_mode_rejects_rendered_artifact_over_total_limit(
     monkeypatch: Any,
 ) -> None:
-    from opensquilla.provider.candidate_artifact import CandidateArtifactBuilder
+    from openstarry_code.provider.candidate_artifact import CandidateArtifactBuilder
 
     captured: dict[str, Any] = {}
     body = _ndjson(
@@ -405,7 +405,7 @@ def test_stream_candidate_mode_rejects_rendered_artifact_over_total_limit(
     )
     _patch_stream(monkeypatch, captured, body)
     monkeypatch.setattr(
-        "opensquilla.provider.ollama.CandidateArtifactBuilder",
+        "openstarry_code.provider.ollama.CandidateArtifactBuilder",
         lambda: CandidateArtifactBuilder(max_total_chars=180),
     )
     provider = OllamaProvider(model="llama3")

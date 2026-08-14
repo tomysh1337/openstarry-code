@@ -19,8 +19,8 @@ def test_bare_chat_default_runs_live_opentui_architecture_prompt_in_tmux(
     tui_backend: str,
     tui_driver: str,
 ) -> None:
-    if os.environ.get("OPENSQUILLA_TUI_LIVE_REAL") != "1":
-        pytest.skip("set OPENSQUILLA_TUI_LIVE_REAL=1 to run the real CLI/OpenTUI tmux smoke")
+    if os.environ.get("OPENSTARRY_CODE_TUI_LIVE_REAL") != "1":
+        pytest.skip("set OPENSTARRY_CODE_TUI_LIVE_REAL=1 to run the real CLI/OpenTUI tmux smoke")
     if tui_backend != "live-opentui":
         pytest.skip("run with --tui-backend=live-opentui")
     if tui_driver == "pty":

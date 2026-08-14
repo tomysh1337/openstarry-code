@@ -17,8 +17,8 @@ synthetic engine events — no gateway, channel, or network involved.
 
 from __future__ import annotations
 
-from opensquilla.engine.types import EnsembleProgressEvent, RouterDecisionEvent
-from opensquilla.gateway.channel_dispatch import (
+from openstarry_code.engine.types import EnsembleProgressEvent, RouterDecisionEvent
+from openstarry_code.gateway.channel_dispatch import (
     _ensemble_progress_payload,
     _router_decision_payload,
 )

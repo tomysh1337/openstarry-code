@@ -14,8 +14,8 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.turn_runner.outcome import StageOutcome
-from opensquilla.engine.turn_runner.prompt_assembler_stage import (
+from openstarry_code.engine.turn_runner.outcome import StageOutcome
+from openstarry_code.engine.turn_runner.prompt_assembler_stage import (
     MemoryFingerprintPort,
     PipelineExecutionPort,
     PromptAssemblerPort,
@@ -27,9 +27,9 @@ from opensquilla.engine.turn_runner.prompt_assembler_stage import (
     RunPipelineRequest,
     SessionIdResolverPort,
 )
-from opensquilla.observability.prompt_report import PromptReport
-from opensquilla.session.goals import GoalTurnContext
-from opensquilla.tools.types import CallerKind, ToolContext
+from openstarry_code.observability.prompt_report import PromptReport
+from openstarry_code.session.goals import GoalTurnContext
+from openstarry_code.tools.types import CallerKind, ToolContext
 
 # ---------------------------------------------------------------------------
 # Recording fakes (one per port)

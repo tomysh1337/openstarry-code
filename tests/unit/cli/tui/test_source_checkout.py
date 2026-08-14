@@ -3,13 +3,13 @@ from __future__ import annotations
 import shlex
 from pathlib import Path
 
-from opensquilla.cli.tui.source_checkout import resolve_tui_source_checkout_hint
+from openstarry_code.cli.tui.source_checkout import resolve_tui_source_checkout_hint
 
 
 def _write_checkout(tmp_path: Path, *, git_marker: bool = True) -> Path:
     root = tmp_path / "checkout"
-    module = root / "src" / "opensquilla" / "cli" / "tui" / "source_checkout.py"
-    package = root / "src" / "opensquilla" / "cli" / "tui" / "opentui" / "package"
+    module = root / "src" / "openstarry_code" / "cli" / "tui" / "source_checkout.py"
+    package = root / "src" / "openstarry_code" / "cli" / "tui" / "opentui" / "package"
     module.parent.mkdir(parents=True)
     (package / "src").mkdir(parents=True)
     module.write_text("# test\n", encoding="utf-8")
@@ -34,9 +34,9 @@ def test_source_checkout_hint_accepts_git_worktree_file(tmp_path: Path) -> None:
 
     assert hint is not None
     assert "bun install --frozen-lockfile --cwd" in hint.install_command
-    assert "OPENSQUILLA_TUI_DEV_SOURCE_HOST=1" in hint.launch_command
+    assert "OPENSTARRY_CODE_TUI_DEV_SOURCE_HOST=1" in hint.launch_command
     assert f"uv --directory {shlex.quote(str(tmp_path / 'checkout'))}" in hint.launch_command
-    assert hint.launch_command.endswith("run opensquilla chat --ui tui")
+    assert hint.launch_command.endswith("run openstarry-code chat --ui tui")
 
 
 def test_source_archive_without_git_marker_stays_quiet(tmp_path: Path) -> None:

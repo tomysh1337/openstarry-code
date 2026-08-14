@@ -1,7 +1,7 @@
 import json
 
-from opensquilla.engine.runtime import _persisted_tool_result_segment
-from opensquilla.engine.types import ToolResultEvent
+from openstarry_code.engine.runtime import _persisted_tool_result_segment
+from openstarry_code.engine.types import ToolResultEvent
 
 
 def test_persisted_tool_result_keeps_oversized_json_parseable_with_provider() -> None:
@@ -49,7 +49,7 @@ def test_persisted_web_search_result_promotes_nested_diagnostics() -> None:
     result = json.dumps(
         {
             "ok": True,
-            "query": "OpenSquilla search architecture",
+            "query": "OpenStarry Code search architecture",
             "mode": "technical",
             "provider_attempts": [
                 {"provider": "exa", "status": "error", "error_kind": "network"},

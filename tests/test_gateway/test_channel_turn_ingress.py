@@ -15,11 +15,11 @@ from typing import Any
 
 import pytest
 
-import opensquilla.gateway.channel_dispatch as channel_dispatch_module
-from opensquilla.channels.types import IncomingMessage, OutgoingMessage
-from opensquilla.gateway._debounce import _DefaultDebounceCoordinator
-from opensquilla.gateway.attachment_ingest import AttachmentIngestResult
-from opensquilla.gateway.channel_dispatch import (
+import openstarry_code.gateway.channel_dispatch as channel_dispatch_module
+from openstarry_code.channels.types import IncomingMessage, OutgoingMessage
+from openstarry_code.gateway._debounce import _DefaultDebounceCoordinator
+from openstarry_code.gateway.attachment_ingest import AttachmentIngestResult
+from openstarry_code.gateway.channel_dispatch import (
     _accept_channel_runtime_turn,
     _channel_ingress_identity,
     _channel_native_request_id,
@@ -27,24 +27,24 @@ from opensquilla.gateway.channel_dispatch import (
     _RuntimeChannelStreamRelay,
     run_channel_dispatch,
 )
-from opensquilla.gateway.goal_service import GoalService
-from opensquilla.gateway.routing import RouteEnvelope, build_channel_route_envelope
-from opensquilla.gateway.task_runtime import TaskRuntime
-from opensquilla.gateway.websocket import get_registry
-from opensquilla.project_workspaces import project_path_key
-from opensquilla.session.goals import (
+from openstarry_code.gateway.goal_service import GoalService
+from openstarry_code.gateway.routing import RouteEnvelope, build_channel_route_envelope
+from openstarry_code.gateway.task_runtime import TaskRuntime
+from openstarry_code.gateway.websocket import get_registry
+from openstarry_code.project_workspaces import project_path_key
+from openstarry_code.session.goals import (
     GoalCommandRequest,
     GoalTurnContext,
     StartGoalMutation,
     new_goal,
 )
-from opensquilla.session.manager import SessionIntent, SessionManager
-from opensquilla.session.models import (
+from openstarry_code.session.manager import SessionIntent, SessionManager
+from openstarry_code.session.models import (
     AgentTaskRecord,
     AgentTaskStatus,
     TranscriptEntry,
 )
-from opensquilla.session.storage import (
+from openstarry_code.session.storage import (
     SessionStorage,
     StaleEpochError,
     StorageBusyError,
@@ -673,7 +673,7 @@ async def test_channel_succeeded_receipt_replays_exact_persisted_assistant_reply
         # The task's compact outbox payload also survives a same-key reset,
         # even though the original transcript identity is archived and removed.
         monkeypatch.setenv(
-            "OPENSQUILLA_SESSION_ARCHIVE_DIR",
+            "OPENSTARRY_CODE_SESSION_ARCHIVE_DIR",
             str(tmp_path / "archives"),
         )
         await stack.manager.apply_intent(SESSION_KEY, SessionIntent.RESET_SAME_KEY)

@@ -15,8 +15,8 @@ from io import StringIO
 import pytest
 from rich.console import Console
 
-from opensquilla.onboarding import flow
-from opensquilla.onboarding.config_store import persist_config
+from openstarry_code.onboarding import flow
+from openstarry_code.onboarding.config_store import persist_config
 
 pytestmark = pytest.mark.skipif(
     os.name == "nt" or (hasattr(os, "geteuid") and os.geteuid() == 0),
@@ -81,7 +81,7 @@ def test_preflight_probes_the_same_directory_persist_config_writes(
 
     flow._ensure_config_dir_writable(link)  # must not raise
 
-    from opensquilla.onboarding.config_store import load_config
+    from openstarry_code.onboarding.config_store import load_config
 
     cfg = load_config(link)
     result = persist_config(cfg, path=link, backup=False)

@@ -6,8 +6,8 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.sandbox.backend import linux_helper
-from opensquilla.sandbox.backend.linux_payload import (
+from openstarry_code.sandbox.backend import linux_helper
+from openstarry_code.sandbox.backend.linux_payload import (
     FilesystemHelperPayload,
     HelperPayload,
     ProcessHelperPayload,
@@ -16,15 +16,15 @@ from opensquilla.sandbox.backend.linux_payload import (
     decode_payload,
     encode_payload,
 )
-from opensquilla.sandbox.config import SandboxSettings
-from opensquilla.sandbox.operation_runtime import SandboxOperation
-from opensquilla.sandbox.permissions import (
+from openstarry_code.sandbox.config import SandboxSettings
+from openstarry_code.sandbox.operation_runtime import SandboxOperation
+from openstarry_code.sandbox.permissions import (
     FileSystemAccess,
     FileSystemPermissionEntry,
     FileSystemPermissionProfile,
 )
-from opensquilla.sandbox.policy import build_policy
-from opensquilla.sandbox.types import (
+from openstarry_code.sandbox.policy import build_policy
+from openstarry_code.sandbox.types import (
     MountSpec,
     NetworkMode,
     ResourceLimits,
@@ -70,7 +70,7 @@ def test_filesystem_payload_round_trips() -> None:
         action_kind="fs.worker.write_text",
         run_mode="trusted",
         session_id="s1",
-        cwd="/repo/.opensquilla-cache/fs-worker",
+        cwd="/repo/.openstarry-code-cache/fs-worker",
         env={"PATH": "/usr/bin", "PYTHONPATH": "/repo/src"},
         policy={
             "network": "none",
@@ -82,7 +82,7 @@ def test_filesystem_payload_round_trips() -> None:
         process=None,
         filesystem=FilesystemHelperPayload(
             kind="write_text",
-            worker_payload_path="/repo/.opensquilla-cache/fs-worker/payload.json",
+            worker_payload_path="/repo/.openstarry-code-cache/fs-worker/payload.json",
             worker_payload={
                 "kind": "write_text",
                 "path": "/repo/out.txt",
@@ -355,7 +355,7 @@ def test_build_filesystem_helper_payload_from_operation(tmp_path: Path) -> None:
         operation,
         policy=_policy(tmp_path),
         session_id="s1",
-        worker_payload_path=tmp_path / ".opensquilla-cache" / "fs-worker" / "payload.json",
+        worker_payload_path=tmp_path / ".openstarry-code-cache" / "fs-worker" / "payload.json",
     )
 
     assert payload.operation_type == "filesystem"

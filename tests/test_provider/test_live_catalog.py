@@ -15,13 +15,13 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import httpx
 import pytest
 
-from opensquilla.provider.live_catalog import (
+from openstarry_code.provider.live_catalog import (
     _TOKENRHYTHM_CNY_PER_USD,
     fetch_live_catalog_entries,
     parse_tokenrhythm_models,
     warm_live_provider_catalogs,
 )
-from opensquilla.provider.model_catalog import DEFAULT_MAX_TOKENS, ModelCatalog
+from openstarry_code.provider.model_catalog import DEFAULT_MAX_TOKENS, ModelCatalog
 
 
 def _tokenrhythm_row(**overrides: Any) -> dict[str, Any]:
@@ -390,10 +390,10 @@ async def test_fetch_live_catalog_entries_uses_url_verbatim_without_auth() -> No
     mock_response.json.return_value = {"code": 0, "data": [_tokenrhythm_row()]}
 
     with (
-        patch("opensquilla.provider.live_catalog.httpx.AsyncClient") as mock_client_cls,
+        patch("openstarry_code.provider.live_catalog.httpx.AsyncClient") as mock_client_cls,
         patch(
-            "opensquilla.provider.live_catalog.tokenrhythm_install_id_headers",
-            return_value={"X-OpenSquilla-Install-Id": "synthetic-install-id"},
+            "openstarry_code.provider.live_catalog.tokenrhythm_install_id_headers",
+            return_value={"X-OpenStarry Code-Install-Id": "synthetic-install-id"},
         ),
     ):
         mock_client = AsyncMock()
@@ -417,8 +417,8 @@ async def test_fetch_live_catalog_entries_uses_url_verbatim_without_auth() -> No
     headers = captured["kwargs"]["headers"]
     assert headers == {
         "HTTP-Referer": "https://opensquilla.ai",
-        "X-Title": "OpenSquilla",
-        "X-OpenSquilla-Install-Id": "synthetic-install-id",
+        "X-Title": "OpenStarry Code",
+        "X-OpenStarry Code-Install-Id": "synthetic-install-id",
     }
     assert "Authorization" not in headers
     mock_response.json.assert_called_once_with(parse_float=Decimal)
@@ -440,12 +440,12 @@ async def test_fetch_live_catalog_omits_install_id_with_explicit_proxy() -> None
         **_kwargs: Any,
     ) -> dict[str, str]:
         helper_proxies.append(proxy)
-        return {} if proxy else {"X-OpenSquilla-Install-Id": "must-not-send"}
+        return {} if proxy else {"X-OpenStarry Code-Install-Id": "must-not-send"}
 
     with (
-        patch("opensquilla.provider.live_catalog.httpx.AsyncClient") as mock_client_cls,
+        patch("openstarry_code.provider.live_catalog.httpx.AsyncClient") as mock_client_cls,
         patch(
-            "opensquilla.provider.live_catalog.tokenrhythm_install_id_headers",
+            "openstarry_code.provider.live_catalog.tokenrhythm_install_id_headers",
             side_effect=install_headers,
         ),
     ):
@@ -468,7 +468,7 @@ async def test_fetch_live_catalog_omits_install_id_with_explicit_proxy() -> None
         )
 
     assert helper_proxies == ["http://company-proxy.example:8080"]
-    assert "X-OpenSquilla-Install-Id" not in captured["headers"]
+    assert "X-OpenStarry Code-Install-Id" not in captured["headers"]
     assert mock_client_cls.call_args.kwargs["proxy"] == "http://company-proxy.example:8080"
 
 
@@ -494,13 +494,13 @@ async def test_fetch_live_catalog_redacts_install_id_from_http_error(
 
     monkeypatch.setattr(httpx, "AsyncClient", patched_async_client)
     monkeypatch.setattr(
-        "opensquilla.provider.live_catalog.tokenrhythm_install_id_headers",
+        "openstarry_code.provider.live_catalog.tokenrhythm_install_id_headers",
         lambda *_args, **_kwargs: {
-            "X-OpenSquilla-Install-Id": install_id
+            "X-OpenStarry Code-Install-Id": install_id
         },
     )
     monkeypatch.setattr(
-        "opensquilla.provider.error_redaction.redact_tokenrhythm_install_ids",
+        "openstarry_code.provider.error_redaction.redact_tokenrhythm_install_ids",
         lambda text: text.replace(install_id, "***"),
     )
 
@@ -511,7 +511,7 @@ async def test_fetch_live_catalog_redacts_install_id_from_http_error(
         )
 
     assert raised.value.__context__ is None
-    assert raised.value.request.headers["X-OpenSquilla-Install-Id"] == "[PRESENT]"
+    assert raised.value.request.headers["X-OpenStarry Code-Install-Id"] == "[PRESENT]"
     retained = " ".join(
         (
             repr(raised.value.request.headers),
@@ -543,7 +543,7 @@ async def test_fetch_live_catalog_invalid_json_drops_retained_install_id(
 
     monkeypatch.setattr(httpx, "AsyncClient", patched_async_client)
     monkeypatch.setattr(
-        "opensquilla.provider.live_catalog.redact_tokenrhythm_install_ids",
+        "openstarry_code.provider.live_catalog.redact_tokenrhythm_install_ids",
         lambda text: text.replace(install_id, "***"),
     )
 
@@ -584,7 +584,7 @@ async def test_warm_ingests_only_providers_with_live_catalog_metadata(
         return {"deepseek-v4-pro": {"context_window": 900_000}}
 
     monkeypatch.setattr(
-        "opensquilla.provider.live_catalog.fetch_live_catalog_entries", fake_fetch
+        "openstarry_code.provider.live_catalog.fetch_live_catalog_entries", fake_fetch
     )
     catalog = _RecordingCatalog()
 
@@ -611,14 +611,14 @@ async def test_warm_degrades_per_provider_on_fetch_failure(
         raise OSError(f"network unreachable {install_id}")
 
     monkeypatch.setattr(
-        "opensquilla.provider.live_catalog.fetch_live_catalog_entries", failing_fetch
+        "openstarry_code.provider.live_catalog.fetch_live_catalog_entries", failing_fetch
     )
     monkeypatch.setattr(
-        "opensquilla.provider.live_catalog.redact_tokenrhythm_install_ids",
+        "openstarry_code.provider.live_catalog.redact_tokenrhythm_install_ids",
         lambda text: text.replace(install_id, "***"),
     )
     captured_log = MagicMock()
-    monkeypatch.setattr("opensquilla.provider.live_catalog.log", captured_log)
+    monkeypatch.setattr("openstarry_code.provider.live_catalog.log", captured_log)
     catalog = _RecordingCatalog()
 
     counts = await warm_live_provider_catalogs(catalog, ["tokenrhythm"])

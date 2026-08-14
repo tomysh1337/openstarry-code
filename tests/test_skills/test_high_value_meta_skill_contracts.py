@@ -9,14 +9,14 @@ from types import SimpleNamespace
 import pytest
 import yaml
 
-from opensquilla.engine.steps.meta_resolution import meta_resolution
-from opensquilla.skills.loader import SkillLoader
-from opensquilla.skills.meta.executors.user_input import (
+from openstarry_code.engine.steps.meta_resolution import meta_resolution
+from openstarry_code.skills.loader import SkillLoader
+from openstarry_code.skills.meta.executors.user_input import (
     _localize_clarify_config,
     _render_clarify_config,
 )
-from opensquilla.skills.meta.parser import parse_meta_plan
-from opensquilla.skills.meta.templating import evaluate_when, render_with_args
+from openstarry_code.skills.meta.parser import parse_meta_plan
+from openstarry_code.skills.meta.templating import evaluate_when, render_with_args
 
 BUNDLED = (
     Path(__file__).resolve().parents[2]
@@ -25,7 +25,7 @@ BUNDLED = (
     / "skills"
     / "bundled"
 )
-EXP = Path(__file__).resolve().parents[2] / "src" / "opensquilla" / "skills" / "exp"
+EXP = Path(__file__).resolve().parents[2] / "src" / "openstarry_code" / "skills" / "exp"
 
 SHORT_DRAMA_PAID_STEP_IDS = {
     "reference_image",
@@ -1848,7 +1848,7 @@ def test_a8_high_risk_skill_declares_risk_and_capabilities(
     skill_name: str,
 ) -> None:
     """A8: every high-risk experimental meta-skill must declare
-    ``metadata.opensquilla.risk: high`` AND a non-empty
+    ``metadata.openstarry-code.risk: high`` AND a non-empty
     ``capabilities`` list. The fields are advisory in P0 (runtime
     enforcement lands with E5 + narrowed ``ToolContext`` in P1), but
     pinning them now means the auto-propose risk classifier
@@ -1858,11 +1858,11 @@ def test_a8_high_risk_skill_declares_risk_and_capabilities(
     metadata = fm.get("metadata") or {}
     omc = metadata.get("opensquilla") or {}
     assert omc.get("risk") == "high", (
-        f"{skill_name} must declare ``metadata.opensquilla.risk: high``; "
+        f"{skill_name} must declare ``metadata.openstarry-code.risk: high``; "
         f"got {omc.get('risk')!r}"
     )
     capabilities = omc.get("capabilities") or []
     assert isinstance(capabilities, list) and capabilities, (
         f"{skill_name} must declare a non-empty "
-        f"``metadata.opensquilla.capabilities`` list; got {capabilities!r}"
+        f"``metadata.openstarry-code.capabilities`` list; got {capabilities!r}"
     )

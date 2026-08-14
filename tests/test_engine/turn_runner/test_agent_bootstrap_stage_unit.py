@@ -14,7 +14,7 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.turn_runner.agent_bootstrap_stage import (
+from openstarry_code.engine.turn_runner.agent_bootstrap_stage import (
     AgentBootstrapStage,
     AgentBootstrapStageInput,
     AgentConfigBuilderPort,
@@ -27,8 +27,8 @@ from opensquilla.engine.turn_runner.agent_bootstrap_stage import (
     _ResolvedBudgets,
     _ResolvedCatalog,
 )
-from opensquilla.engine.turn_runner.outcome import StageOutcome
-from opensquilla.engine.types import ThinkingLevel
+from openstarry_code.engine.turn_runner.outcome import StageOutcome
+from openstarry_code.engine.types import ThinkingLevel
 
 # ---------------------------------------------------------------------------
 # Recording fakes (one per port)
@@ -363,9 +363,9 @@ async def test_post_write_convergence_env_threads_to_agent_config(monkeypatch) -
     default_out = await stage.run(_make_input())
     assert default_out.output.agent_config.post_write_convergence_enabled is False
 
-    monkeypatch.setenv("OPENSQUILLA_POST_WRITE_CONVERGENCE", "1")
-    monkeypatch.setenv("OPENSQUILLA_POST_WRITE_CONVERGENCE_WARN_THRESHOLD", "4")
-    monkeypatch.setenv("OPENSQUILLA_POST_WRITE_CONVERGENCE_FINALIZE_AFTER_WARNING", "2")
+    monkeypatch.setenv("OPENSTARRY_CODE_POST_WRITE_CONVERGENCE", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_POST_WRITE_CONVERGENCE_WARN_THRESHOLD", "4")
+    monkeypatch.setenv("OPENSTARRY_CODE_POST_WRITE_CONVERGENCE_FINALIZE_AFTER_WARNING", "2")
     enabled_out = await stage.run(_make_input())
 
     assert enabled_out.output.agent_config.post_write_convergence_enabled is True
@@ -379,7 +379,7 @@ async def test_post_write_convergence_env_threads_to_agent_config(monkeypatch) -
 @pytest.mark.asyncio
 async def test_tool_repeat_nudge_threshold_env_zero_disables_recovery(monkeypatch) -> None:
     stage = _make_stage()
-    monkeypatch.setenv("OPENSQUILLA_TOOL_REPEAT_NUDGE_THRESHOLD", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_TOOL_REPEAT_NUDGE_THRESHOLD", "0")
     out = await stage.run(_make_input())
 
     assert out.output.agent_config.repeated_tool_call_recovery_threshold == 0
@@ -390,14 +390,14 @@ async def test_placeholder_escalation_and_wrapup_env_thread_to_agent_config(
     monkeypatch,
 ) -> None:
     stage = _make_stage()
-    monkeypatch.delenv("OPENSQUILLA_PLACEHOLDER_ESCALATION_THRESHOLD", raising=False)
-    monkeypatch.delenv("OPENSQUILLA_DEADLINE_WRAPUP_MARGIN_SECONDS", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_PLACEHOLDER_ESCALATION_THRESHOLD", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_DEADLINE_WRAPUP_MARGIN_SECONDS", raising=False)
     default_out = await stage.run(_make_input())
     assert default_out.output.agent_config.placeholder_escalation_threshold == 0
     assert default_out.output.agent_config.deadline_wrapup_margin_seconds == 0
 
-    monkeypatch.setenv("OPENSQUILLA_PLACEHOLDER_ESCALATION_THRESHOLD", "2")
-    monkeypatch.setenv("OPENSQUILLA_DEADLINE_WRAPUP_MARGIN_SECONDS", "360")
+    monkeypatch.setenv("OPENSTARRY_CODE_PLACEHOLDER_ESCALATION_THRESHOLD", "2")
+    monkeypatch.setenv("OPENSTARRY_CODE_DEADLINE_WRAPUP_MARGIN_SECONDS", "360")
     enabled_out = await stage.run(_make_input())
 
     assert enabled_out.output.agent_config.placeholder_escalation_threshold == 2
@@ -409,14 +409,14 @@ async def test_final_diff_salvage_and_endgame_freeze_env_thread_to_agent_config(
     monkeypatch,
 ) -> None:
     stage = _make_stage()
-    monkeypatch.delenv("OPENSQUILLA_FINAL_DIFF_SALVAGE", raising=False)
-    monkeypatch.delenv("OPENSQUILLA_ENDGAME_GIT_FREEZE_MARGIN_SECONDS", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_FINAL_DIFF_SALVAGE", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_ENDGAME_GIT_FREEZE_MARGIN_SECONDS", raising=False)
     default_out = await stage.run(_make_input())
     assert default_out.output.agent_config.final_diff_salvage is False
     assert default_out.output.agent_config.endgame_git_freeze_margin_seconds == 0
 
-    monkeypatch.setenv("OPENSQUILLA_FINAL_DIFF_SALVAGE", "1")
-    monkeypatch.setenv("OPENSQUILLA_ENDGAME_GIT_FREEZE_MARGIN_SECONDS", "300")
+    monkeypatch.setenv("OPENSTARRY_CODE_FINAL_DIFF_SALVAGE", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_ENDGAME_GIT_FREEZE_MARGIN_SECONDS", "300")
     enabled_out = await stage.run(_make_input())
 
     assert enabled_out.output.agent_config.final_diff_salvage is True
@@ -428,21 +428,21 @@ async def test_reasoning_cap_and_mid_budget_nudge_env_thread_to_agent_config(
     monkeypatch,
 ) -> None:
     stage = _make_stage()
-    monkeypatch.delenv("OPENSQUILLA_REASONING_STREAM_CHAR_CAP", raising=False)
-    monkeypatch.delenv("OPENSQUILLA_MID_BUDGET_NO_DIFF_NUDGE", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_REASONING_STREAM_CHAR_CAP", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_MID_BUDGET_NO_DIFF_NUDGE", raising=False)
     default_out = await stage.run(_make_input())
     assert default_out.output.agent_config.reasoning_stream_char_cap == 0
     assert default_out.output.agent_config.mid_budget_no_diff_nudge is False
 
-    monkeypatch.setenv("OPENSQUILLA_REASONING_STREAM_CHAR_CAP", "20000")
-    monkeypatch.setenv("OPENSQUILLA_MID_BUDGET_NO_DIFF_NUDGE", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_REASONING_STREAM_CHAR_CAP", "20000")
+    monkeypatch.setenv("OPENSTARRY_CODE_MID_BUDGET_NO_DIFF_NUDGE", "1")
     enabled_out = await stage.run(_make_input())
     assert enabled_out.output.agent_config.reasoning_stream_char_cap == 20000
     assert enabled_out.output.agent_config.mid_budget_no_diff_nudge is True
 
     # Garbage values fall back to the defaults instead of raising.
-    monkeypatch.setenv("OPENSQUILLA_REASONING_STREAM_CHAR_CAP", "banana")
-    monkeypatch.setenv("OPENSQUILLA_MID_BUDGET_NO_DIFF_NUDGE", "banana")
+    monkeypatch.setenv("OPENSTARRY_CODE_REASONING_STREAM_CHAR_CAP", "banana")
+    monkeypatch.setenv("OPENSTARRY_CODE_MID_BUDGET_NO_DIFF_NUDGE", "banana")
     garbage_out = await stage.run(_make_input())
     assert garbage_out.output.agent_config.reasoning_stream_char_cap == 0
     assert garbage_out.output.agent_config.mid_budget_no_diff_nudge is False
@@ -450,7 +450,7 @@ async def test_reasoning_cap_and_mid_budget_nudge_env_thread_to_agent_config(
 
 @pytest.mark.asyncio
 async def test_source_diff_preservation_config_threads_to_agent_config(monkeypatch) -> None:
-    monkeypatch.delenv("OPENSQUILLA_SOURCE_DIFF_PRESERVATION_MODE", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_SOURCE_DIFF_PRESERVATION_MODE", raising=False)
     builder = _RecordingAgentConfigBuilder(
         aux=_default_aux(source_diff_preservation_mode="block")
     )
@@ -462,7 +462,7 @@ async def test_source_diff_preservation_config_threads_to_agent_config(monkeypat
 
 @pytest.mark.asyncio
 async def test_source_diff_preservation_env_overrides_config(monkeypatch) -> None:
-    monkeypatch.setenv("OPENSQUILLA_SOURCE_DIFF_PRESERVATION_MODE", "off")
+    monkeypatch.setenv("OPENSTARRY_CODE_SOURCE_DIFF_PRESERVATION_MODE", "off")
     builder = _RecordingAgentConfigBuilder(
         aux=_default_aux(source_diff_preservation_mode="block")
     )
@@ -474,7 +474,7 @@ async def test_source_diff_preservation_env_overrides_config(monkeypatch) -> Non
 
 @pytest.mark.asyncio
 async def test_source_diff_candidate_config_threads_to_agent_config(monkeypatch) -> None:
-    monkeypatch.delenv("OPENSQUILLA_SOURCE_DIFF_CANDIDATE_MODE", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_SOURCE_DIFF_CANDIDATE_MODE", raising=False)
     builder = _RecordingAgentConfigBuilder(
         aux=_default_aux(source_diff_candidate_mode="warn_model")
     )
@@ -486,7 +486,7 @@ async def test_source_diff_candidate_config_threads_to_agent_config(monkeypatch)
 
 @pytest.mark.asyncio
 async def test_source_diff_candidate_env_overrides_config(monkeypatch) -> None:
-    monkeypatch.setenv("OPENSQUILLA_SOURCE_DIFF_CANDIDATE_MODE", "off")
+    monkeypatch.setenv("OPENSTARRY_CODE_SOURCE_DIFF_CANDIDATE_MODE", "off")
     builder = _RecordingAgentConfigBuilder(
         aux=_default_aux(source_diff_candidate_mode="warn_model")
     )
@@ -721,9 +721,9 @@ async def test_case06_model_with_capabilities_and_projection_limit() -> None:
 
 @pytest.mark.asyncio
 async def test_fresh_diagnostic_env_overrides_agent_token_config(monkeypatch) -> None:
-    monkeypatch.setenv("OPENSQUILLA_TOOL_RESULT_FRESH_DIAGNOSTIC_POLICY_ENABLED", "true")
-    monkeypatch.setenv("OPENSQUILLA_TOOL_RESULT_DIAGNOSTIC_RETRIEVAL_GATE_ENABLED", "1")
-    monkeypatch.setenv("OPENSQUILLA_TOOL_RESULT_FRESH_DIAGNOSTIC_INLINE_MAX_CHARS", "2048")
+    monkeypatch.setenv("OPENSTARRY_CODE_TOOL_RESULT_FRESH_DIAGNOSTIC_POLICY_ENABLED", "true")
+    monkeypatch.setenv("OPENSTARRY_CODE_TOOL_RESULT_DIAGNOSTIC_RETRIEVAL_GATE_ENABLED", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_TOOL_RESULT_FRESH_DIAGNOSTIC_INLINE_MAX_CHARS", "2048")
     aux_builder = _RecordingAgentConfigBuilder(
         aux=replace(
             _default_aux(),
@@ -743,7 +743,7 @@ async def test_fresh_diagnostic_env_overrides_agent_token_config(monkeypatch) ->
 
 @pytest.mark.asyncio
 async def test_text_only_tool_recovery_env_overrides_config(monkeypatch) -> None:
-    monkeypatch.setenv("OPENSQUILLA_TEXT_ONLY_TOOL_RECOVERY_MODE", "warn_model")
+    monkeypatch.setenv("OPENSTARRY_CODE_TEXT_ONLY_TOOL_RECOVERY_MODE", "warn_model")
     stage = _make_stage(
         aux=_RecordingAgentConfigBuilder(
             aux=_default_aux(text_only_tool_recovery_mode="off")
@@ -757,7 +757,7 @@ async def test_text_only_tool_recovery_env_overrides_config(monkeypatch) -> None
 
 @pytest.mark.asyncio
 async def test_finalize_evidence_gate_config_value_propagates(monkeypatch) -> None:
-    monkeypatch.delenv("OPENSQUILLA_FINALIZE_EVIDENCE_GATE", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_FINALIZE_EVIDENCE_GATE", raising=False)
     stage = _make_stage(
         aux=_RecordingAgentConfigBuilder(
             aux=replace(_default_aux(), finalize_evidence_gate=True)
@@ -771,7 +771,7 @@ async def test_finalize_evidence_gate_config_value_propagates(monkeypatch) -> No
 
 @pytest.mark.asyncio
 async def test_finalize_evidence_gate_env_off_overrides_config(monkeypatch) -> None:
-    monkeypatch.setenv("OPENSQUILLA_FINALIZE_EVIDENCE_GATE", "off")
+    monkeypatch.setenv("OPENSTARRY_CODE_FINALIZE_EVIDENCE_GATE", "off")
     stage = _make_stage(
         aux=_RecordingAgentConfigBuilder(
             aux=replace(_default_aux(), finalize_evidence_gate=True)

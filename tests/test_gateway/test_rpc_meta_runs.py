@@ -8,15 +8,15 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.engine.steps.meta_command import (
+from openstarry_code.engine.steps.meta_command import (
     pending_meta_replay_count,
     pending_meta_replay_pop,
 )
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.protocol import ERROR_INVALID_REQUEST, ERROR_UNAUTHORIZED
-from opensquilla.gateway.rpc import get_dispatcher
-from opensquilla.gateway.rpc.registry import RpcContext
-from opensquilla.gateway.rpc_meta_runs import (
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.protocol import ERROR_INVALID_REQUEST, ERROR_UNAUTHORIZED
+from openstarry_code.gateway.rpc import get_dispatcher
+from openstarry_code.gateway.rpc.registry import RpcContext
+from openstarry_code.gateway.rpc_meta_runs import (
     _bounded_limit,
     _handle_meta_runs_confirm_preflight,
     _handle_meta_runs_cost,
@@ -30,14 +30,14 @@ from opensquilla.gateway.rpc_meta_runs import (
     _handle_meta_runs_show,
     _handle_meta_runs_validate,
 )
-from opensquilla.gateway.scopes import ADMIN_SCOPE, METHOD_SCOPES, READ_SCOPE
-from opensquilla.persistence.meta_run_writer import open_meta_run_writer
-from opensquilla.persistence.migrator import apply_pending
-from opensquilla.session.manager import SessionManager
-from opensquilla.session.storage import SessionStorage
-from opensquilla.skills.meta.inputs import make_meta_inputs
-from opensquilla.skills.meta.scheduler import _preflight_missing_fields
-from opensquilla.skills.meta.types import MetaPlan, MetaResult, MetaStep
+from openstarry_code.gateway.scopes import ADMIN_SCOPE, METHOD_SCOPES, READ_SCOPE
+from openstarry_code.persistence.meta_run_writer import open_meta_run_writer
+from openstarry_code.persistence.migrator import apply_pending
+from openstarry_code.session.manager import SessionManager
+from openstarry_code.session.storage import SessionStorage
+from openstarry_code.skills.meta.inputs import make_meta_inputs
+from openstarry_code.skills.meta.scheduler import _preflight_missing_fields
+from openstarry_code.skills.meta.types import MetaPlan, MetaResult, MetaStep
 
 MIGRATIONS_DIR = Path(__file__).resolve().parents[2] / "migrations"
 
@@ -103,7 +103,7 @@ def _seed_writer(
 
 
 def _seed_paid_failed_writer(tmp_path: Path, *, safe_no_submit: bool):
-    from opensquilla.skills.meta.replay_safety import encode_paid_replay_safety
+    from openstarry_code.skills.meta.replay_safety import encode_paid_replay_safety
 
     db = str(tmp_path / "paid-runs.db")
     apply_pending(db, MIGRATIONS_DIR)
@@ -946,7 +946,7 @@ def test_fresh_run_replay_does_not_return_paid_resubmit_command(tmp_path: Path) 
 
 
 def test_live_replay_commit_revalidates_paid_submit_safety(tmp_path: Path) -> None:
-    from opensquilla.skills.meta.replay_safety import encode_paid_replay_safety
+    from openstarry_code.skills.meta.replay_safety import encode_paid_replay_safety
 
     writer, run_id = _seed_paid_failed_writer(tmp_path, safe_no_submit=True)
     ctx = RpcContext(conn_id="test", meta_run_writer=writer)
@@ -1043,7 +1043,7 @@ def test_meta_runs_live_replay_ticket_expires_before_commit(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.gateway.rpc_meta_runs as rpc_meta_runs
+    import openstarry_code.gateway.rpc_meta_runs as rpc_meta_runs
 
     writer, run_id = _seed_writer(
         tmp_path,
@@ -1407,12 +1407,12 @@ def test_meta_runs_rpc_limit_is_bounded() -> None:
 
 
 def test_meta_runs_rpc_does_not_import_cli_private_helpers() -> None:
-    source = Path("src/opensquilla/gateway/rpc_meta_runs.py").read_text()
-    assert "opensquilla.cli.skills_meta_cmd" not in source
+    source = Path("src/openstarry_code/gateway/rpc_meta_runs.py").read_text()
+    assert "openstarry_code.cli.skills_meta_cmd" not in source
     assert "_meta_run_writer" not in source
 
 
 def test_meta_runs_cli_uses_neutral_report_helpers() -> None:
-    source = Path("src/opensquilla/cli/skills_meta_cmd.py").read_text(encoding="utf-8")
-    assert "opensquilla.gateway.rpc_meta_runs" not in source
-    assert "opensquilla.skills.meta.run_reports" in source
+    source = Path("src/openstarry_code/cli/skills_meta_cmd.py").read_text(encoding="utf-8")
+    assert "openstarry_code.gateway.rpc_meta_runs" not in source
+    assert "openstarry_code.skills.meta.run_reports" in source

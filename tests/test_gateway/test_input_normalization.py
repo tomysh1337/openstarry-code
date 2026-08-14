@@ -4,7 +4,7 @@ import base64
 
 import pytest
 
-from opensquilla.gateway.input_normalization import (
+from openstarry_code.gateway.input_normalization import (
     INLINE_TEXT_ATTACHMENT_MAX_BYTES,
     LARGE_PASTE_CHARS,
     LARGE_PASTE_PLACEHOLDER,

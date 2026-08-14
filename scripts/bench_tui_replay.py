@@ -10,8 +10,8 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
 
-from opensquilla.cli.tui.backend.streaming import StreamingPlane
-from opensquilla.cli.tui.backend.transcript import (
+from openstarry_code.cli.tui.backend.streaming import StreamingPlane
+from openstarry_code.cli.tui.backend.transcript import (
     MessageItem,
     RouterDecisionItem,
     ToolItem,
@@ -22,7 +22,7 @@ from opensquilla.cli.tui.backend.transcript import (
     build_output_preview,
     project_viewport,
 )
-from opensquilla.cli.tui.renderers.selection import get_renderer_backend
+from openstarry_code.cli.tui.renderers.selection import get_renderer_backend
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 FIXTURE_PATH = PROJECT_ROOT / "tests" / "unit" / "cli" / "tui" / "replay_fixtures.py"

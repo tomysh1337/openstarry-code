@@ -7,9 +7,9 @@ import asyncio
 import re
 from pathlib import Path
 
-from opensquilla.gateway.token_store import TokenStore
-from opensquilla.session.models import SessionNode, SessionStatus
-from opensquilla.session.storage import SessionStorage
+from openstarry_code.gateway.token_store import TokenStore
+from openstarry_code.session.models import SessionNode, SessionStatus
+from openstarry_code.session.storage import SessionStorage
 
 SESSION_KEY = "agent:main:local-upgrade-rehearsal"
 TOKEN_NAME = "local-upgrade-rehearsal"

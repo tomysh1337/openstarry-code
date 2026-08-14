@@ -14,12 +14,12 @@ import time
 from pathlib import Path
 from typing import Any
 
-from opensquilla.engine.routing.calibration import calibration_path, load_calibration
-from opensquilla.engine.routing.calibration_service import (
+from openstarry_code.engine.routing.calibration import calibration_path, load_calibration
+from openstarry_code.engine.routing.calibration_service import (
     RouterCalibrationService,
     collect_decision_records,
 )
-from opensquilla.persistence.router_decision_writer import RouterDecisionWriter
+from openstarry_code.persistence.router_decision_writer import RouterDecisionWriter
 
 _CREATE_TABLE = (
     "CREATE TABLE router_decisions ("
@@ -83,7 +83,7 @@ def test_collect_decision_records_respects_max(tmp_path: Path) -> None:
 
 
 def test_run_once_writes_calibration(tmp_path: Path, monkeypatch: Any) -> None:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "home"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "home"))
     writer = _writer(tmp_path, count=30)
     try:
         service = RouterCalibrationService(
@@ -101,7 +101,7 @@ def test_run_once_writes_calibration(tmp_path: Path, monkeypatch: Any) -> None:
 
 
 async def test_start_stop_is_clean(tmp_path: Path, monkeypatch: Any) -> None:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "home"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "home"))
     writer = _writer(tmp_path, count=5)
     service = RouterCalibrationService(
         writer=writer, interval_seconds=3600.0, clock=lambda: 1_700_000_000_000
@@ -116,7 +116,7 @@ async def test_background_calibration_does_not_block_event_loop(
     tmp_path: Path,
     monkeypatch: Any,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "home"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "home"))
     writer = _writer(tmp_path, count=1)
     service = RouterCalibrationService(writer=writer, interval_seconds=3600.0)
     started = threading.Event()

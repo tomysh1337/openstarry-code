@@ -5,9 +5,9 @@ from __future__ import annotations
 import sqlite3
 from pathlib import Path
 
-from opensquilla.persistence.migrator import apply_pending
-from opensquilla.session.models import SessionNode
-from opensquilla.session.storage import SessionStorage
+from openstarry_code.persistence.migrator import apply_pending
+from openstarry_code.session.models import SessionNode
+from openstarry_code.session.storage import SessionStorage
 
 MIGRATIONS_DIR = Path(__file__).resolve().parents[2] / "migrations"
 

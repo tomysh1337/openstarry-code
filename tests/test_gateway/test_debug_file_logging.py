@@ -6,9 +6,9 @@ from logging.handlers import RotatingFileHandler
 
 import structlog
 
-from opensquilla.gateway.boot import _setup_file_logging
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.observability.cli_logging import configure_cli_structlog
+from openstarry_code.gateway.boot import _setup_file_logging
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.observability.cli_logging import configure_cli_structlog
 
 
 def _remove_debug_handlers() -> None:
@@ -34,8 +34,8 @@ def test_setup_file_logging_uses_rotation_without_forcing_root_debug(tmp_path, m
     opensquilla_logger = logging.getLogger("opensquilla")
     original_root_level = root.level
     original_opensquilla_level = opensquilla_logger.level
-    monkeypatch.setenv("OPENSQUILLA_LOG_DIR", str(tmp_path))
-    monkeypatch.setenv("OPENSQUILLA_LOG_LEVEL", "INFO")
+    monkeypatch.setenv("OPENSTARRY_CODE_LOG_DIR", str(tmp_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_LOG_LEVEL", "INFO")
 
     try:
         _setup_file_logging(
@@ -72,9 +72,9 @@ def test_setup_file_logging_can_be_disabled(tmp_path, monkeypatch) -> None:
     _remove_console_handlers()
     opensquilla_logger = logging.getLogger("opensquilla")
     original_opensquilla_level = opensquilla_logger.level
-    monkeypatch.setenv("OPENSQUILLA_LOG_DIR", str(tmp_path))
-    monkeypatch.delenv("OPENSQUILLA_LOG_FILE_ENABLED", raising=False)
-    monkeypatch.delenv("OPENSQUILLA_LOG_LEVEL", raising=False)
+    monkeypatch.setenv("OPENSTARRY_CODE_LOG_DIR", str(tmp_path))
+    monkeypatch.delenv("OPENSTARRY_CODE_LOG_FILE_ENABLED", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_LOG_LEVEL", raising=False)
 
     try:
         _setup_file_logging(GatewayConfig(log_file_enabled=False))
@@ -108,9 +108,9 @@ def test_disabled_file_logging_still_bridges_info_to_console(tmp_path, monkeypat
     old_config = structlog.get_config()
     opensquilla_logger = logging.getLogger("opensquilla")
     original_level = opensquilla_logger.level
-    monkeypatch.setenv("OPENSQUILLA_LOG_DIR", str(tmp_path))
-    monkeypatch.delenv("OPENSQUILLA_LOG_FILE_ENABLED", raising=False)
-    monkeypatch.setenv("OPENSQUILLA_LOG_LEVEL", "INFO")
+    monkeypatch.setenv("OPENSTARRY_CODE_LOG_DIR", str(tmp_path))
+    monkeypatch.delenv("OPENSTARRY_CODE_LOG_FILE_ENABLED", raising=False)
+    monkeypatch.setenv("OPENSTARRY_CODE_LOG_LEVEL", "INFO")
     try:
         structlog.reset_defaults()
         _setup_file_logging(GatewayConfig(log_file_enabled=False))
@@ -141,8 +141,8 @@ def test_structlog_events_reach_debug_log_with_traceback(tmp_path, monkeypatch) 
     old_config = structlog.get_config()
     opensquilla_logger = logging.getLogger("opensquilla")
     original_level = opensquilla_logger.level
-    monkeypatch.setenv("OPENSQUILLA_LOG_DIR", str(tmp_path))
-    monkeypatch.setenv("OPENSQUILLA_LOG_LEVEL", "DEBUG")
+    monkeypatch.setenv("OPENSTARRY_CODE_LOG_DIR", str(tmp_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_LOG_LEVEL", "DEBUG")
     try:
         structlog.reset_defaults()
         _setup_file_logging(GatewayConfig())
@@ -171,8 +171,8 @@ def test_structlog_bridge_respects_log_level(tmp_path, monkeypatch) -> None:
     old_config = structlog.get_config()
     opensquilla_logger = logging.getLogger("opensquilla")
     original_level = opensquilla_logger.level
-    monkeypatch.setenv("OPENSQUILLA_LOG_DIR", str(tmp_path))
-    monkeypatch.setenv("OPENSQUILLA_LOG_LEVEL", "INFO")
+    monkeypatch.setenv("OPENSTARRY_CODE_LOG_DIR", str(tmp_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_LOG_LEVEL", "INFO")
     try:
         structlog.reset_defaults()
         _setup_file_logging(GatewayConfig())
@@ -200,8 +200,8 @@ def test_bridge_overrides_cli_structlog_default(tmp_path, monkeypatch) -> None:
     was_configured = structlog.is_configured()
     opensquilla_logger = logging.getLogger("opensquilla")
     original_level = opensquilla_logger.level
-    monkeypatch.setenv("OPENSQUILLA_LOG_DIR", str(tmp_path))
-    monkeypatch.setenv("OPENSQUILLA_LOG_LEVEL", "DEBUG")
+    monkeypatch.setenv("OPENSTARRY_CODE_LOG_DIR", str(tmp_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_LOG_LEVEL", "DEBUG")
     try:
         configure_cli_structlog()
         _setup_file_logging(GatewayConfig())
@@ -229,8 +229,8 @@ def test_bridge_respects_non_cli_explicit_configuration(tmp_path, monkeypatch) -
     was_configured = structlog.is_configured()
     opensquilla_logger = logging.getLogger("opensquilla")
     original_level = opensquilla_logger.level
-    monkeypatch.setenv("OPENSQUILLA_LOG_DIR", str(tmp_path))
-    monkeypatch.setenv("OPENSQUILLA_LOG_LEVEL", "DEBUG")
+    monkeypatch.setenv("OPENSTARRY_CODE_LOG_DIR", str(tmp_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_LOG_LEVEL", "DEBUG")
     try:
         sentinel_factory = structlog.ReturnLoggerFactory()
         structlog.configure(logger_factory=sentinel_factory)
@@ -249,8 +249,8 @@ def test_bridge_respects_non_cli_explicit_configuration(tmp_path, monkeypatch) -
 def test_bridge_failure_does_not_block_setup(tmp_path, monkeypatch) -> None:
     _remove_debug_handlers()
     _remove_console_handlers()
-    monkeypatch.setenv("OPENSQUILLA_LOG_DIR", str(tmp_path))
-    import opensquilla.gateway.boot as boot_module
+    monkeypatch.setenv("OPENSTARRY_CODE_LOG_DIR", str(tmp_path))
+    import openstarry_code.gateway.boot as boot_module
 
     def _boom() -> None:
         raise RuntimeError("synthetic bridge failure")

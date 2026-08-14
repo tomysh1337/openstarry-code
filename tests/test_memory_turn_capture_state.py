@@ -5,8 +5,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.memory.manager import _migrate_legacy_turn_archives
-from opensquilla.memory.turn_capture import TurnCaptureService
+from openstarry_code.memory.manager import _migrate_legacy_turn_archives
+from openstarry_code.memory.turn_capture import TurnCaptureService
 
 
 @pytest.mark.asyncio

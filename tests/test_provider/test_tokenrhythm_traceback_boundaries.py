@@ -10,24 +10,24 @@ from typing import Any
 import httpx
 import pytest
 
-from opensquilla.onboarding import image_generation_model_discovery as image_discovery
-from opensquilla.provider import (
+from openstarry_code.onboarding import image_generation_model_discovery as image_discovery
+from openstarry_code.provider import (
     image_generation,
     live_catalog,
     openai,
     tokenrhythm_catalog,
 )
-from opensquilla.provider.image_generation import (
+from openstarry_code.provider.image_generation import (
     ImageGenerationRequest,
     OpenAIImageGenerationProvider,
     OpenRouterImageGenerationProvider,
     TokenRhythmImageGenerationProvider,
 )
-from opensquilla.provider.openai import OpenAIProvider
-from opensquilla.provider.types import ChatConfig, Message
+from openstarry_code.provider.openai import OpenAIProvider
+from openstarry_code.provider.types import ChatConfig, Message
 
 _INSTALL_ID = "synthetic-install-id-frame-boundary"
-_HEADER = "X-OpenSquilla-Install-Id"
+_HEADER = "X-OpenStarry Code-Install-Id"
 
 
 def _retained_value_text(
@@ -127,7 +127,7 @@ def _patch_install_header(monkeypatch: pytest.MonkeyPatch, case: str) -> None:
         lambda *_args, **_kwargs: {_HEADER: _INSTALL_ID},
     )
     monkeypatch.setattr(
-        "opensquilla.provider.error_redaction.redact_tokenrhythm_install_ids",
+        "openstarry_code.provider.error_redaction.redact_tokenrhythm_install_ids",
         lambda text: text.replace(_INSTALL_ID, "***"),
     )
     monkeypatch.setattr(

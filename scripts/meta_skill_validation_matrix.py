@@ -33,8 +33,8 @@ CASE_FILE = FIXTURE_ROOT / "meta_validation_cases.json"
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from opensquilla.provider.selector import build_provider
-from opensquilla.provider.types import ChatConfig, DoneEvent, ErrorEvent, Message, TextDeltaEvent
+from openstarry_code.provider.selector import build_provider
+from openstarry_code.provider.types import ChatConfig, DoneEvent, ErrorEvent, Message, TextDeltaEvent
 
 
 def _load_env_file(path: Path | None) -> None:
@@ -254,7 +254,7 @@ def _scrub_live_result(value: Any) -> Any:
 
 def _judge_prompt(bundle: dict[str, Any]) -> str:
     return (
-        "You are judging an OpenSquilla meta-skill E2E validation bundle.\n"
+        "You are judging an OpenStarry Code meta-skill E2E validation bundle.\n"
         "Return only JSON with integer scores from 0 to 5. Do not include markdown.\n\n"
         "Rubric:\n"
         "- activation: expected meta-skill selected, or no meta-skill for negative case.\n"

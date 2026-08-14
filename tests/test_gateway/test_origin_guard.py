@@ -24,8 +24,8 @@ from starlette.responses import JSONResponse
 from starlette.routing import Route
 from starlette.testclient import TestClient
 
-from opensquilla.gateway.app import create_gateway_app
-from opensquilla.gateway.config import GatewayConfig
+from openstarry_code.gateway.app import create_gateway_app
+from openstarry_code.gateway.config import GatewayConfig
 
 # A loopback peer on a loopback-bound, no-auth gateway is the proven owner
 # (see gateway.auth.OpenScopeResolver).
@@ -71,12 +71,12 @@ _PROTECTED_ENDPOINTS = [
 def _hermetic_config(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     config_path = tmp_path / "synthetic-config.toml"
     config_path.write_text("# synthetic origin-guard-test config\n", encoding="utf-8")
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(config_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(config_path))
     home = tmp_path / "state"
     (home / "logs").mkdir(parents=True)
     (home / "logs" / "debug.log").write_text("2026-07-08 [INFO] opensquilla: ok\n")
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
-    monkeypatch.setenv("OPENSQUILLA_LOG_DIR", str(home / "logs"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_LOG_DIR", str(home / "logs"))
 
 
 def _client(config: GatewayConfig | None = None) -> TestClient:

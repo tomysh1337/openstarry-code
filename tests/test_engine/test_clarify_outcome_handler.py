@@ -12,10 +12,10 @@ import json
 
 import pytest
 
-from opensquilla.engine.agent import Agent
-from opensquilla.engine.types import AgentConfig
-from opensquilla.skills.meta.plan_serde import clarify_config_to_jsonable
-from opensquilla.skills.meta.types import ClarifyField, ClarifyStepConfig
+from openstarry_code.engine.agent import Agent
+from openstarry_code.engine.types import AgentConfig
+from openstarry_code.skills.meta.plan_serde import clarify_config_to_jsonable
+from openstarry_code.skills.meta.types import ClarifyField, ClarifyStepConfig
 
 
 class _FakeAwaiting:

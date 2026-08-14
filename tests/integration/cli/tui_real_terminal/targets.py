@@ -13,7 +13,7 @@ import pytest
 from tui_real_terminal.driver import TerminalSize
 
 TuiBackendId = Literal["opentui", "live-opentui"]
-PACKAGED_GATE_ENV = "OPENSQUILLA_TUI_PACKAGED_GATE"
+PACKAGED_GATE_ENV = "OPENSTARRY_CODE_TUI_PACKAGED_GATE"
 # A source-host run still pays for a cold Python import, Bun startup, the
 # authenticated host handshake, and completion-catalog hydration.  Keep the
 # harness budget identical to the packaged gate so machine load cannot turn a
@@ -65,14 +65,14 @@ def opentui_host_skip_reason(env: Mapping[str, str]) -> str | None:
     Kept separate from ``TuiTarget.available`` so target construction keeps
     describing the target rather than the machine it would run on.
     """
-    from opensquilla.cli.tui.opentui.bridge import (  # type: ignore[import-untyped]
+    from openstarry_code.cli.tui.opentui.bridge import (  # type: ignore[import-untyped]
         DEFAULT_HOST_PACKAGE_DIR,
         check_opentui_host_available,
     )
-    from opensquilla.cli.tui.opentui.host_runtime import (  # type: ignore[import-untyped]
+    from openstarry_code.cli.tui.opentui.host_runtime import (  # type: ignore[import-untyped]
         source_host_requested,
     )
-    from opensquilla.cli.tui.renderers.selection import (  # type: ignore[import-untyped]
+    from openstarry_code.cli.tui.renderers.selection import (  # type: ignore[import-untyped]
         RendererBackendUnavailableReason,
     )
 
@@ -131,30 +131,30 @@ def _base_env(context: TargetContext, *, isolate_state: bool = True) -> dict[str
         # checkout-local PYTHONPATH or source-host override would silently turn
         # this back into a source test.
         env.pop("PYTHONPATH", None)
-        env.pop("OPENSQUILLA_TUI_DEV_SOURCE_HOST", None)
+        env.pop("OPENSTARRY_CODE_TUI_DEV_SOURCE_HOST", None)
         env.pop("BUN_INSTALL", None)
     else:
         src_path = str(context.project_root / "src")
         env["PYTHONPATH"] = src_path + os.pathsep + env.get("PYTHONPATH", "")
-        env["OPENSQUILLA_TUI_DEV_SOURCE_HOST"] = "1"
+        env["OPENSTARRY_CODE_TUI_DEV_SOURCE_HOST"] = "1"
     if isolate_state:
-        env["OPENSQUILLA_STATE_DIR"] = str(context.artifact_dir / "state")
-    env["OPENSQUILLA_LOG_DIR"] = str(context.artifact_dir / "logs")
-    env["OPENSQUILLA_TURN_CALL_LOG"] = "0"
+        env["OPENSTARRY_CODE_STATE_DIR"] = str(context.artifact_dir / "state")
+    env["OPENSTARRY_CODE_LOG_DIR"] = str(context.artifact_dir / "logs")
+    env["OPENSTARRY_CODE_TURN_CALL_LOG"] = "0"
     env.setdefault("TERM", "xterm-256color")
     return env
 
 
 def _host_gateway_config_path(project_root: Path) -> str:
-    explicit = os.environ.get("OPENSQUILLA_GATEWAY_CONFIG_PATH", "").strip()
+    explicit = os.environ.get("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", "").strip()
     if explicit:
         return explicit
 
-    cwd_config = project_root / "opensquilla.toml"
+    cwd_config = project_root / "openstarry-code.toml"
     if cwd_config.is_file():
         return str(cwd_config)
 
-    from opensquilla.paths import default_opensquilla_home  # type: ignore[import-untyped]
+    from openstarry_code.paths import default_opensquilla_home  # type: ignore[import-untyped]
 
     user_config = default_opensquilla_home() / "config.toml"
     return str(user_config) if user_config.is_file() else ""
@@ -166,13 +166,13 @@ def _opentui_target(context: TargetContext) -> TuiTarget:
     env = _base_env(context)
     env.update(
         {
-            "OPENSQUILLA_TUI_FAKE_SCENARIO": context.scenario_id,
-            "OPENSQUILLA_TUI_FAKE_APP_LOG": str(app_log),
-            "OPENSQUILLA_TUI_FAKE_PHASE_ACK_DIR": str(
+            "OPENSTARRY_CODE_TUI_FAKE_SCENARIO": context.scenario_id,
+            "OPENSTARRY_CODE_TUI_FAKE_APP_LOG": str(app_log),
+            "OPENSTARRY_CODE_TUI_FAKE_PHASE_ACK_DIR": str(
                 context.artifact_dir / "phase-acks"
             ),
-            "OPENSQUILLA_TUI_READY_MARKER": "OPEN_SQUILLA_TUI_READY",
-            "OPENSQUILLA_TUI_BACKEND": "opentui",
+            "OPENSTARRY_CODE_TUI_READY_MARKER": "OPEN_SQUILLA_TUI_READY",
+            "OPENSTARRY_CODE_TUI_BACKEND": "opentui",
         }
     )
     if context.scenario_id in {
@@ -189,8 +189,8 @@ def _opentui_target(context: TargetContext) -> TuiTarget:
         # NO_COLOR setting into this deterministic pre-rollout gate.
         env.update(
             {
-                "OPENSQUILLA_TUI_THEME": "opensquilla-dark",
-                "OPENSQUILLA_TUI_COLOR": "truecolor",
+                "OPENSTARRY_CODE_TUI_THEME": "opensquilla-dark",
+                "OPENSTARRY_CODE_TUI_COLOR": "truecolor",
             }
         )
     return TuiTarget(
@@ -209,25 +209,25 @@ def _live_opentui_target(context: TargetContext) -> TuiTarget:
     # Exercise the *default* public CLI policy, even when the parent test
     # process has a compatibility backend override from another launch-contract
     # test. Explicit ``--ui tui`` remains covered by the launch/selection suite;
-    # this real-terminal target is the rollout gate for bare ``opensquilla chat``.
-    env.pop("OPENSQUILLA_TUI_BACKEND", None)
+    # this real-terminal target is the rollout gate for bare ``openstarry-code chat``.
+    env.pop("OPENSTARRY_CODE_TUI_BACKEND", None)
     env.update(
         {
-            "OPENSQUILLA_TUI_READY_MARKER": "OPEN_SQUILLA_TUI_READY",
-            "OPENSQUILLA_MEMORY_DREAM_DISABLED": "1",
-            "OPENSQUILLA_OPENROUTER_LIVE_PRICING": "0",
+            "OPENSTARRY_CODE_TUI_READY_MARKER": "OPEN_SQUILLA_TUI_READY",
+            "OPENSTARRY_CODE_MEMORY_DREAM_DISABLED": "1",
+            "OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING": "0",
         }
     )
     config_path = _host_gateway_config_path(context.project_root)
     if config_path:
-        env["OPENSQUILLA_GATEWAY_CONFIG_PATH"] = config_path
+        env["OPENSTARRY_CODE_GATEWAY_CONFIG_PATH"] = config_path
     return TuiTarget(
         backend_id="live-opentui",
         command=[
             sys.executable,
             "-u",
             "-m",
-            "opensquilla.cli.main",
+            "openstarry_code.cli.main",
             "chat",
             "--standalone",
             "--workspace",

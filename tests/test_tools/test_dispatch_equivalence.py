@@ -1,6 +1,6 @@
 """Equivalence harness — policy-pipeline self-comparison.
 
-Both control and candidate are :func:`opensquilla.tools.dispatch.build_tool_handler`
+Both control and candidate are :func:`openstarry_code.tools.dispatch.build_tool_handler`
 (the policy pipeline). This is a determinism/infrastructure smoke-test: two
 independent factory calls must produce byte-for-byte identical results for every
 corpus case. Any shared mutable state, contextvar leak, or non-deterministic
@@ -24,12 +24,12 @@ import structlog.testing
 from laboratory import Experiment
 from test_tools.dispatch_corpus import ALL_CASES, CorpusCase  # noqa: E402
 
-from opensquilla.tool_boundary import ToolResult
-from opensquilla.tools.dispatch import build_tool_handler as _build_candidate
+from openstarry_code.tool_boundary import ToolResult
+from openstarry_code.tools.dispatch import build_tool_handler as _build_candidate
 
 # Both sides use the policy-pipeline factory.
-from opensquilla.tools.dispatch import build_tool_handler as _build_control
-from opensquilla.tools.types import ToolContext, current_tool_context
+from openstarry_code.tools.dispatch import build_tool_handler as _build_control
+from openstarry_code.tools.types import ToolContext, current_tool_context
 
 # -----------------------------------------------------------------------
 # Envelope comparator
@@ -46,7 +46,7 @@ def _parse_content(content: Any) -> dict[str, Any] | str:
 
 def _envelope_eq(a: ToolResult, b: ToolResult) -> bool:
     """Compare two ToolResult envelopes for dispatch-contract equivalence."""
-    from opensquilla.execution_status import normalize_execution_status
+    from openstarry_code.execution_status import normalize_execution_status
 
     if type(a) is not type(b):
         return False

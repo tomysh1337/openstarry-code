@@ -9,17 +9,17 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.skills import eligibility, runtime_env
-from opensquilla.skills.hub import deps
-from opensquilla.skills.meta.executors import skill_exec
-from opensquilla.skills.meta.types import MetaStep
-from opensquilla.skills.runtime_env import MEDIA_FONTS_DIR_ENV
-from opensquilla.skills.toolchains import ActiveComponentStatus, DownloadVerificationError
-from opensquilla.skills.toolchains.manager import (
+from openstarry_code.skills import eligibility, runtime_env
+from openstarry_code.skills.hub import deps
+from openstarry_code.skills.meta.executors import skill_exec
+from openstarry_code.skills.meta.types import MetaStep
+from openstarry_code.skills.runtime_env import MEDIA_FONTS_DIR_ENV
+from openstarry_code.skills.toolchains import ActiveComponentStatus, DownloadVerificationError
+from openstarry_code.skills.toolchains.manager import (
     managed_toolchain_state_scope,
     toolchains_root,
 )
-from opensquilla.skills.types import (
+from openstarry_code.skills.types import (
     SkillInstallSpec,
     SkillLayer,
     SkillPlatformMeta,

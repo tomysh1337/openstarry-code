@@ -6,26 +6,26 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.gateway import rpc_skills
-from opensquilla.gateway.rpc import RpcContext
-from opensquilla.skills.hub.contracts import (
+from openstarry_code.gateway import rpc_skills
+from openstarry_code.gateway.rpc import RpcContext
+from openstarry_code.skills.hub.contracts import (
     DiagnosticPhase,
     DiagnosticSeverity,
     SkillDiagnostic,
 )
-from opensquilla.skills.hub.deps import DepResult
-from opensquilla.skills.hub.installer import InstallResult
-from opensquilla.skills.hub.lockfile import LockEntry, Lockfile, compute_sha256
-from opensquilla.skills.hub.management import SkillManagementService
-from opensquilla.skills.hub.router import SourceRouter
-from opensquilla.skills.hub.source import (
+from openstarry_code.skills.hub.deps import DepResult
+from openstarry_code.skills.hub.installer import InstallResult
+from openstarry_code.skills.hub.lockfile import LockEntry, Lockfile, compute_sha256
+from openstarry_code.skills.hub.management import SkillManagementService
+from openstarry_code.skills.hub.router import SourceRouter
+from openstarry_code.skills.hub.source import (
     SkillBundle,
     SkillMeta,
     SkillSource,
     SourceResolution,
 )
-from opensquilla.skills.loader import SkillLoader
-from opensquilla.skills.types import SkillLayer, SkillPlatformMeta, SkillRequires, SkillSpec
+from openstarry_code.skills.loader import SkillLoader
+from openstarry_code.skills.types import SkillLayer, SkillPlatformMeta, SkillRequires, SkillSpec
 
 
 def _write_skill(dir_path: Path, name: str, body: str) -> None:
@@ -137,7 +137,7 @@ async def test_lifecycle_list_adds_tracked_shadowed_candidate_without_changing_d
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path))
     managed = tmp_path / "managed"
     workspace = tmp_path / "workspace"
     _write_skill(
@@ -200,7 +200,7 @@ async def test_skills_doctor_rpc_is_read_only_and_reports_constraints(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path))
     managed = tmp_path / "managed"
     _write_skill(
         managed,
@@ -252,7 +252,7 @@ async def test_skills_doctor_preserves_startup_recovery_failure_without_loader(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path))
     managed = tmp_path / "managed"
     managed.mkdir()
     diagnostic = SkillDiagnostic(
@@ -735,7 +735,7 @@ metadata:
     loader = SkillLoader(bundled_dir=tmp_path, snapshot_path=tmp_path / "snapshot.json")
     ctx = RpcContext(conn_id="test", skill_loader=loader)
 
-    from opensquilla.engine.steps import skills_filter
+    from openstarry_code.engine.steps import skills_filter
 
     skills_filter._elig_ctx.has_bin_cache["helper"] = False
     skills_filter._elig_ctx.env_cache["HELPER_TOKEN"] = None
@@ -762,7 +762,7 @@ async def test_rpc_skills_deps_install_uses_exact_shadowed_install(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path))
     managed = tmp_path / "managed"
     for directory, action in (("first", "first-action"), ("second", "second-action")):
         _write_skill(
@@ -852,7 +852,7 @@ async def test_exact_rpc_identity_rejects_duplicate_install_ids(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path))
     managed = tmp_path / "managed"
     _write_needs_key_skill(managed)
     _write_skill(

@@ -9,16 +9,16 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from opensquilla.engine.types import ErrorEvent
-from opensquilla.gateway.boot import (
+from openstarry_code.engine.types import ErrorEvent
+from openstarry_code.gateway.boot import (
     TaskRuntimeStreamError,
     _emit_task_runtime_stream_events,
     dispatch_task_runtime_turn,
 )
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.routing import RouteEnvelope, SourceKind
-from opensquilla.gateway.task_runtime import SubagentCompletionEvent, TaskRuntime
-from opensquilla.session.models import AgentTaskRecord, AgentTaskStatus
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.routing import RouteEnvelope, SourceKind
+from openstarry_code.gateway.task_runtime import SubagentCompletionEvent, TaskRuntime
+from openstarry_code.session.models import AgentTaskRecord, AgentTaskStatus
 
 
 def _make_envelope(

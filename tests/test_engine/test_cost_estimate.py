@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.engine.pricing import CostEstimate, PriceEntry, estimate_cost
+from openstarry_code.engine.pricing import CostEstimate, PriceEntry, estimate_cost
 
 
 def test_cache_aware_four_bucket_math():

@@ -4,14 +4,14 @@ import json
 import httpx
 import pytest
 
-from opensquilla.provider.anthropic import (
+from openstarry_code.provider.anthropic import (
     AnthropicProvider,
     _anthropic_input_token_counts,
     _anthropic_iteration_token_counts,
     _build_message_payload,
 )
-from opensquilla.provider.selector import build_provider
-from opensquilla.provider.types import (
+from openstarry_code.provider.selector import build_provider
+from openstarry_code.provider.types import (
     ChatConfig,
     ContentBlockCompaction,
     DoneEvent,
@@ -156,7 +156,7 @@ def test_anthropic_compatible_endpoints_use_authorization_bearer(
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.anthropic.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.anthropic.httpx.AsyncClient", patched_async_client)
 
     provider = build_provider(
         provider=provider_id,
@@ -215,7 +215,7 @@ def test_direct_construction_defaults_to_x_api_key(monkeypatch) -> None:
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.anthropic.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.anthropic.httpx.AsyncClient", patched_async_client)
 
     provider = AnthropicProvider(api_key="test-key", model="claude-test")
 
@@ -294,7 +294,7 @@ def test_anthropic_done_event_carries_cache_write_tokens(monkeypatch) -> None:
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.anthropic.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.anthropic.httpx.AsyncClient", patched_async_client)
 
     provider = AnthropicProvider(api_key="test", model="claude-opus-4-7")
 
@@ -313,8 +313,8 @@ def test_anthropic_done_event_carries_cache_write_tokens(monkeypatch) -> None:
 
 def test_anthropic_provider_writes_llm_trace(monkeypatch, tmp_path) -> None:
     trace_path = tmp_path / "anthropic-llm-calls.jsonl"
-    monkeypatch.setenv("OPENSQUILLA_LLM_TRACE_RECORDER", "full")
-    monkeypatch.setenv("OPENSQUILLA_LLM_TRACE_PATH", str(trace_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_TRACE_RECORDER", "full")
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_TRACE_PATH", str(trace_path))
     sse_events = [
         {
             "type": "message_start",
@@ -358,7 +358,7 @@ def test_anthropic_provider_writes_llm_trace(monkeypatch, tmp_path) -> None:
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.anthropic.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.anthropic.httpx.AsyncClient", patched_async_client)
     provider = AnthropicProvider(api_key="test", model="claude-opus-4-7")
 
     async def _collect() -> list[object]:
@@ -423,7 +423,7 @@ def test_anthropic_done_event_includes_compaction_iteration_usage(monkeypatch) -
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.anthropic.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.anthropic.httpx.AsyncClient", patched_async_client)
 
     provider = AnthropicProvider(api_key="test", model="claude-opus-4-7")
 
@@ -486,7 +486,7 @@ def test_anthropic_done_event_cache_write_handles_both_shapes(
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.anthropic.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.anthropic.httpx.AsyncClient", patched_async_client)
 
     provider = AnthropicProvider(api_key="test", model="claude-opus-4-7")
 
@@ -542,7 +542,7 @@ def test_anthropic_split_message_delta_frames_merge_into_one_terminal(monkeypatc
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.anthropic.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.anthropic.httpx.AsyncClient", patched_async_client)
 
     provider = AnthropicProvider(api_key="test", model="claude-opus-4-7")
 
@@ -604,7 +604,7 @@ def test_anthropic_stop_reason_survives_a_usage_only_epilogue_delta(monkeypatch)
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.anthropic.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.anthropic.httpx.AsyncClient", patched_async_client)
 
     provider = AnthropicProvider(api_key="test", model="claude-opus-4-7")
 
@@ -638,7 +638,7 @@ def test_anthropic_http_error_with_non_utf8_body_yields_error_event(monkeypatch)
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.anthropic.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.anthropic.httpx.AsyncClient", patched_async_client)
     provider = AnthropicProvider(api_key="test", model="claude-opus-4-7")
 
     async def _collect() -> list[object]:

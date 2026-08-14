@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 
-from opensquilla.memory.flush_status import classify_flush_receipt
+from openstarry_code.memory.flush_status import classify_flush_receipt
 
 
 def _receipt(**overrides):

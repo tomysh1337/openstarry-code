@@ -8,10 +8,10 @@ in the test process.
 import tomllib
 from pathlib import Path
 
-from opensquilla.tools.policy_config import expand_selectors
+from openstarry_code.tools.policy_config import expand_selectors
 
 _ROOT = Path(__file__).resolve().parents[3]
-CODETASK_CONFIG = _ROOT / "src/opensquilla/contrib/codetask/data/agent_config/config.toml"
+CODETASK_CONFIG = _ROOT / "src/openstarry_code/contrib/codetask/data/agent_config/config.toml"
 
 _AVAIL = frozenset(
     {

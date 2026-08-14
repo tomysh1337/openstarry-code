@@ -6,13 +6,13 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.artifacts import ArtifactStore
-from opensquilla.channels.artifact_delivery import (
+from openstarry_code.artifacts import ArtifactStore
+from openstarry_code.channels.artifact_delivery import (
     can_deliver_channel_files,
     deliver_artifacts_as_channel_files,
     strip_delivered_artifact_image_references,
 )
-from opensquilla.channels.contract import (
+from openstarry_code.channels.contract import (
     PUBLIC_VENDOR_ADAPTERS,
     ChannelCapabilities,
     ChannelCapabilityProfile,
@@ -27,18 +27,18 @@ from opensquilla.channels.contract import (
     normalize_channel_send_result,
     run_channel_contract,
 )
-from opensquilla.channels.dingtalk import DingTalkChannel, DingTalkChannelConfig
-from opensquilla.channels.discord import DiscordChannel, DiscordChannelConfig
-from opensquilla.channels.feishu import FeishuChannel, FeishuChannelConfig
-from opensquilla.channels.manager import ChannelManager
-from opensquilla.channels.matrix import MatrixChannel, MatrixChannelConfig
-from opensquilla.channels.msteams import MSTeamsChannel, MSTeamsChannelConfig
-from opensquilla.channels.qq import QQChannel, QQChannelConfig
-from opensquilla.channels.slack import SlackChannel
-from opensquilla.channels.telegram import TelegramChannel, TelegramChannelConfig
-from opensquilla.channels.types import IncomingMessage
-from opensquilla.channels.wecom import WeComChannel, WeComChannelConfig
-from opensquilla.gateway.routing import build_channel_route_envelope
+from openstarry_code.channels.dingtalk import DingTalkChannel, DingTalkChannelConfig
+from openstarry_code.channels.discord import DiscordChannel, DiscordChannelConfig
+from openstarry_code.channels.feishu import FeishuChannel, FeishuChannelConfig
+from openstarry_code.channels.manager import ChannelManager
+from openstarry_code.channels.matrix import MatrixChannel, MatrixChannelConfig
+from openstarry_code.channels.msteams import MSTeamsChannel, MSTeamsChannelConfig
+from openstarry_code.channels.qq import QQChannel, QQChannelConfig
+from openstarry_code.channels.slack import SlackChannel
+from openstarry_code.channels.telegram import TelegramChannel, TelegramChannelConfig
+from openstarry_code.channels.types import IncomingMessage
+from openstarry_code.channels.wecom import WeComChannel, WeComChannelConfig
+from openstarry_code.gateway.routing import build_channel_route_envelope
 
 PlatformCapabilityExpectation = dict[
     str,
@@ -59,7 +59,7 @@ def test_channel_capabilities_cover_structured_delivery_and_events() -> None:
 
 @pytest.mark.parametrize("adapter_name", PUBLIC_VENDOR_ADAPTERS)
 def test_public_vendor_adapters_keep_shared_channel_contract(adapter_name: str) -> None:
-    module = importlib.import_module(f"opensquilla.channels.{adapter_name}")
+    module = importlib.import_module(f"openstarry_code.channels.{adapter_name}")
 
     run_channel_contract(module)
 

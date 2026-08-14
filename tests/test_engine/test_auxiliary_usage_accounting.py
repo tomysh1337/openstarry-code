@@ -7,7 +7,7 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.usage_accounting import (
+from openstarry_code.engine.usage_accounting import (
     UsageAccountingScope,
     UsageCallResult,
     UsageCallStart,
@@ -15,11 +15,11 @@ from opensquilla.engine.usage_accounting import (
     account_provider_stream,
     bind_usage_accounting_scope,
 )
-from opensquilla.memory.dream.runner import _run_complete
-from opensquilla.memory.session_flush import ProviderCompletionError, _provider_complete
-from opensquilla.onboarding.probe import probe_llm_provider
-from opensquilla.provider.types import DoneEvent, ErrorEvent, Message, TextDeltaEvent
-from opensquilla.tools.builtin.media import _complete_from_stream
+from openstarry_code.memory.dream.runner import _run_complete
+from openstarry_code.memory.session_flush import ProviderCompletionError, _provider_complete
+from openstarry_code.onboarding.probe import probe_llm_provider
+from openstarry_code.provider.types import DoneEvent, ErrorEvent, Message, TextDeltaEvent
+from openstarry_code.tools.builtin.media import _complete_from_stream
 
 
 @dataclass
@@ -259,7 +259,7 @@ async def test_onboarding_probe_accounts_when_it_inherits_a_turn_scope(
     sink = _RecordingSink()
     provider = _StreamProvider([DoneEvent(input_tokens=1, output_tokens=1)])
     monkeypatch.setattr(
-        "opensquilla.onboarding.probe.build_provider",
+        "openstarry_code.onboarding.probe.build_provider",
         lambda *args, **kwargs: provider,
     )
 

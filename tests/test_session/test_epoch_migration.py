@@ -12,9 +12,9 @@ import asyncio
 import pytest
 import pytest_asyncio
 
-from opensquilla.compat import aiosqlite
-from opensquilla.session.models import SessionNode, TranscriptEntry
-from opensquilla.session.storage import SCHEMA_VERSION, SessionStorage, StaleEpochError
+from openstarry_code.compat import aiosqlite
+from openstarry_code.session.models import SessionNode, TranscriptEntry
+from openstarry_code.session.storage import SCHEMA_VERSION, SessionStorage, StaleEpochError
 
 # ── fixtures ────────────────────────────────────────────────────────────────
 
@@ -354,7 +354,7 @@ async def test_epoch_in_event_payload(storage):
     """
     from types import SimpleNamespace
 
-    from opensquilla.gateway.rpc_sessions import _emit_to_subscribers
+    from openstarry_code.gateway.rpc_sessions import _emit_to_subscribers
 
     node = await _make_session(storage)
     key = node.session_key
@@ -393,7 +393,7 @@ async def test_epoch_in_event_payload(storage):
         session_manager=FakeSessionMgr(),
     )
 
-    import opensquilla.gateway.websocket as _ws_module
+    import openstarry_code.gateway.websocket as _ws_module
     original_get_registry = _ws_module.get_registry
 
     def _patched_registry():

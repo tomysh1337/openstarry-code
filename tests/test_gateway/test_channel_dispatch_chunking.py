@@ -11,12 +11,12 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.channels.contract import (
+from openstarry_code.channels.contract import (
     ChannelCapabilityProfile,
     ChannelLengthUnit,
 )
-from opensquilla.channels.types import Attachment, OutgoingMessage
-from opensquilla.gateway.channel_dispatch import (
+from openstarry_code.channels.types import Attachment, OutgoingMessage
+from openstarry_code.gateway.channel_dispatch import (
     _as_chunk_message,
     _deliver_reply_or_notify,
     _plan_outbound_pieces,
@@ -50,7 +50,7 @@ def _no_sleep(monkeypatch: pytest.MonkeyPatch) -> None:
     async def _instant(_delay: float) -> None:
         return None
 
-    monkeypatch.setattr("opensquilla.gateway.channel_dispatch.asyncio.sleep", _instant)
+    monkeypatch.setattr("openstarry_code.gateway.channel_dispatch.asyncio.sleep", _instant)
 
 
 def test_in_budget_reply_is_sent_whole() -> None:

@@ -4,9 +4,9 @@ import json
 
 import httpx
 
-from opensquilla.sandbox.types import SandboxBackendError
-from opensquilla.tools.envelope import build_tool_failure_envelope
-from opensquilla.tools.types import RetryableToolInputError, SafeToolError
+from openstarry_code.sandbox.types import SandboxBackendError
+from openstarry_code.tools.envelope import build_tool_failure_envelope
+from openstarry_code.tools.types import RetryableToolInputError, SafeToolError
 
 
 def test_type_error_tool_failure_is_model_retriable_without_raw_traceback() -> None:

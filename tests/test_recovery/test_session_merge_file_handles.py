@@ -18,12 +18,12 @@ from urllib.parse import unquote, urlsplit
 
 import pytest
 
-from opensquilla.cli.session_schema import prepare_session_schema
-from opensquilla.recovery.session_merge import (
+from openstarry_code.cli.session_schema import prepare_session_schema
+from openstarry_code.recovery.session_merge import (
     SessionMergeResult,
     snapshot_session_database,
 )
-from opensquilla.recovery.session_merge import (
+from openstarry_code.recovery.session_merge import (
     merge_session_database as _merge_session_database,
 )
 

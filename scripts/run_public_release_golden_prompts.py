@@ -10,7 +10,7 @@ from typing import Any
 
 import yaml
 
-from opensquilla.cli.gateway_client import GatewayClient
+from openstarry_code.cli.gateway_client import GatewayClient
 
 
 def _load_cases(path: Path) -> list[dict[str, Any]]:

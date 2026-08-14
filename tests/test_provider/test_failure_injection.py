@@ -15,16 +15,16 @@ from typing import Any
 import pytest
 import structlog.testing
 
-from opensquilla.engine import Agent, AgentConfig
-from opensquilla.provider import DoneEvent as ProviderDone
-from opensquilla.provider import TextDeltaEvent as ProviderText
-from opensquilla.provider.failures import (
+from openstarry_code.engine import Agent, AgentConfig
+from openstarry_code.provider import DoneEvent as ProviderDone
+from openstarry_code.provider import TextDeltaEvent as ProviderText
+from openstarry_code.provider.failures import (
     ProviderFailureKind,
     ProviderRecoveryAction,
     classify_provider_error,
     decide_recovery_action,
 )
-from opensquilla.provider.types import ChatConfig, FailureInjector, Message, synthetic_failure_event
+from openstarry_code.provider.types import ChatConfig, FailureInjector, Message, synthetic_failure_event
 
 
 class _FakeProvider:
@@ -182,7 +182,7 @@ def test_injected_kinds_map_to_rotation_decisions() -> None:
 
 
 def test_fallback_model_rotation_order_after_exhaustion() -> None:
-    from opensquilla.engine.fallback import FallbackPolicy
+    from openstarry_code.engine.fallback import FallbackPolicy
 
     policy = FallbackPolicy(
         max_retries=1,

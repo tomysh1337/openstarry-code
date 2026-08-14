@@ -6,10 +6,10 @@ from typing import Any, cast
 
 import pytest
 
-from opensquilla.cli import chat_cmd
-from opensquilla.cli.repl.stream import TurnResult
-from opensquilla.cli.tui.contracts import TuiOutputHandle
-from opensquilla.engine.commands import Surface
+from openstarry_code.cli import chat_cmd
+from openstarry_code.cli.repl.stream import TurnResult
+from openstarry_code.cli.tui.contracts import TuiOutputHandle
+from openstarry_code.engine.commands import Surface
 
 
 class _RecordingOutputHandle:
@@ -119,7 +119,7 @@ def _sandbox_config() -> SimpleNamespace:
 
 
 def test_default_turn_stream_dependencies_preserves_explicit_falsey_overrides() -> None:
-    from opensquilla.cli.repl import turn_stream
+    from openstarry_code.cli.repl import turn_stream
 
     renderer_factory = _FalseyCallable()
     output_console = _FalseyConsole()
@@ -134,7 +134,7 @@ def test_default_turn_stream_dependencies_preserves_explicit_falsey_overrides() 
 
 
 def test_turn_stream_dependencies_preserve_frontend_owned_approval_surfaces() -> None:
-    from opensquilla.cli.repl import turn_stream
+    from openstarry_code.cli.repl import turn_stream
 
     gateway_surface = object()
     standalone_surface = object()
@@ -149,7 +149,7 @@ def test_turn_stream_dependencies_preserve_frontend_owned_approval_surfaces() ->
 
 
 def test_turn_stream_approval_surface_uses_structural_output_handle_value() -> None:
-    from opensquilla.cli.repl import turn_stream
+    from openstarry_code.cli.repl import turn_stream
 
     output = _RecordingOutputHandle()
     default_surface = object()
@@ -161,7 +161,7 @@ def test_turn_stream_approval_surface_uses_structural_output_handle_value() -> N
 
 
 def test_tui_turn_bridge_supplies_cli_approval_surface_defaults() -> None:
-    from opensquilla.cli.repl import turn_bridge
+    from openstarry_code.cli.repl import turn_bridge
 
     deps = turn_bridge.default_turn_stream_dependencies()
 
@@ -170,7 +170,7 @@ def test_tui_turn_bridge_supplies_cli_approval_surface_defaults() -> None:
 
 
 def test_tui_turn_bridge_rejects_non_surface_output_approval_value() -> None:
-    from opensquilla.cli.repl import turn_bridge
+    from openstarry_code.cli.repl import turn_bridge
 
     assert (
         turn_bridge.approval_surface_for_tui_output(
@@ -185,8 +185,8 @@ def test_tui_turn_bridge_rejects_non_surface_output_approval_value() -> None:
 async def test_tui_gateway_stream_coerces_invalid_output_approval_surface(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.repl import turn_bridge
-    from opensquilla.cli.tui import turn_stream_defaults
+    from openstarry_code.cli.repl import turn_bridge
+    from openstarry_code.cli.tui import turn_stream_defaults
 
     captured: dict[str, Any] = {}
 
@@ -220,10 +220,10 @@ async def test_local_approval_resolver_threads_sandbox_choice(
     tmp_path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.repl import turn_stream
-    from opensquilla.gateway.approval_queue import get_approval_queue, reset_approval_queue
-    from opensquilla.sandbox.escalation import build_path_approval_params
-    from opensquilla.sandbox.path_validation import MountDecision
+    from openstarry_code.cli.repl import turn_stream
+    from openstarry_code.gateway.approval_queue import get_approval_queue, reset_approval_queue
+    from openstarry_code.sandbox.escalation import build_path_approval_params
+    from openstarry_code.sandbox.path_validation import MountDecision
 
     reset_approval_queue()
     manager = _SessionManager()
@@ -266,7 +266,7 @@ async def test_local_approval_resolver_threads_sandbox_choice(
         )
 
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_approvals.apply_sandbox_approval_choice",
+        "openstarry_code.gateway.rpc_approvals.apply_sandbox_approval_choice",
         fake_apply_sandbox_approval_choice,
     )
 
@@ -294,7 +294,7 @@ async def test_local_approval_resolver_threads_sandbox_choice(
 async def test_turn_stream_adapter_threads_gateway_tui_output_without_chat_cmd(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.repl import turn_stream
+    from openstarry_code.cli.repl import turn_stream
 
     captured: dict[str, Any] = {}
 
@@ -343,7 +343,7 @@ async def test_turn_stream_adapter_threads_gateway_tui_output_without_chat_cmd(
 
 
 def test_turn_stream_adapter_has_no_raw_prompt_application_dependency() -> None:
-    from opensquilla.cli.repl import turn_stream
+    from openstarry_code.cli.repl import turn_stream
 
     source = inspect.getsource(turn_stream)
     blocked_module = "prompt" + "_toolkit"
@@ -356,9 +356,9 @@ def test_turn_stream_adapter_has_no_raw_prompt_application_dependency() -> None:
 async def test_chat_cmd_stream_wrapper_uses_bridge_owned_renderer_dependency(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.repl import turn_stream
-    from opensquilla.cli.tui.adapters import runtime_bridge
-    from opensquilla.cli.tui.opentui import renderer as opentui_renderer
+    from openstarry_code.cli.repl import turn_stream
+    from openstarry_code.cli.tui.adapters import runtime_bridge
+    from openstarry_code.cli.tui.opentui import renderer as opentui_renderer
 
     captured: dict[str, Any] = {}
 

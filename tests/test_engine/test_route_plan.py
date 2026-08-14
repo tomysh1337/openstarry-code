@@ -4,10 +4,10 @@ from dataclasses import FrozenInstanceError
 
 import pytest
 
-from opensquilla.engine.pipeline import TurnContext
-from opensquilla.engine.route_plan import pin_route_plan
-from opensquilla.engine.router_decision import build_router_decision_event
-from opensquilla.provider.types import ModelCapabilities
+from openstarry_code.engine.pipeline import TurnContext
+from openstarry_code.engine.route_plan import pin_route_plan
+from openstarry_code.engine.router_decision import build_router_decision_event
+from openstarry_code.provider.types import ModelCapabilities
 
 
 def _turn() -> TurnContext:

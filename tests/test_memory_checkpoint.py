@@ -3,15 +3,15 @@ from pathlib import Path
 
 import pytest
 
-import opensquilla.memory.checkpoint as checkpoint
-from opensquilla.memory.checkpoint import (
+import openstarry_code.memory.checkpoint as checkpoint
+from openstarry_code.memory.checkpoint import (
     CheckpointEvent,
     append_checkpoint_events,
     build_checkpoint_events,
     checkpoint_event_hash,
     checkpoint_relative_path,
 )
-from opensquilla.provider import ContentBlockText, Message
+from openstarry_code.provider import ContentBlockText, Message
 
 
 def _checkpoint_event(

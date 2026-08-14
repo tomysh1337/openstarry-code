@@ -39,9 +39,9 @@ expectEqual(build.nsis?.installerIcon, 'assets/icon.ico', 'build.nsis.installerI
 expectEqual(build.nsis?.uninstallerIcon, 'assets/icon.ico', 'build.nsis.uninstallerIcon')
 
 if (failures.length > 0) {
-  console.error('OpenSquilla desktop icon verification failed:')
+  console.error('OpenStarry Code desktop icon verification failed:')
   for (const failure of failures) console.error(`- ${failure}`)
   process.exit(1)
 }
 
-console.log('OpenSquilla desktop icon verification passed.')
+console.log('OpenStarry Code desktop icon verification passed.')

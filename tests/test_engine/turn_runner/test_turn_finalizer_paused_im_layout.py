@@ -7,10 +7,10 @@ reply-format example, default markers). The simpler smoke coverage in
 
 from __future__ import annotations
 
-from opensquilla.engine.turn_runner.turn_finalizer_stage import (
+from openstarry_code.engine.turn_runner.turn_finalizer_stage import (
     render_paused_outcome,
 )
-from opensquilla.skills.meta.types import (
+from openstarry_code.skills.meta.types import (
     ClarifyField,
     ClarifyStepConfig,
     MetaPaused,

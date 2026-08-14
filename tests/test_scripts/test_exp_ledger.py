@@ -118,7 +118,7 @@ def _init_args(source: Path, handoff: Path, exp_id: str = "qwen-ledger-smoke") -
         "--eval-workers",
         "10",
         "--env",
-        "OPENSQUILLA_FINAL_DIFF_CONTRACT_MODE=warn_model",
+        "OPENSTARRY_CODE_FINAL_DIFF_CONTRACT_MODE=warn_model",
     ]
 
 
@@ -216,7 +216,7 @@ def test_init_writes_manifest_snapshots_and_redacts_secret(
     handoff = tmp_path / "handoff"
     _git_repo(source)
     _handoff_repo(handoff)
-    monkeypatch.setenv("OPENSQUILLA_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
+    monkeypatch.setenv("OPENSTARRY_CODE_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
 
     rc = init.main(
         [
@@ -248,7 +248,7 @@ def test_init_rejects_dirty_source_and_config_directory(tmp_path: Path, monkeypa
     _git_repo(source)
     _handoff_repo(handoff)
     (source / "dirty.txt").write_text("dirty\n", encoding="utf-8")
-    monkeypatch.setenv("OPENSQUILLA_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
+    monkeypatch.setenv("OPENSTARRY_CODE_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
 
     assert init.main(_init_args(source, handoff, "dirty-source")) == 2
     subprocess.run(["git", "add", "dirty.txt"], cwd=source, check=True)
@@ -280,7 +280,7 @@ def test_init_dry_run_does_not_create_run_dir(tmp_path: Path, monkeypatch) -> No
     handoff = tmp_path / "handoff"
     _git_repo(source)
     _handoff_repo(handoff)
-    monkeypatch.setenv("OPENSQUILLA_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
+    monkeypatch.setenv("OPENSTARRY_CODE_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
 
     rc = init.main([*_init_args(source, handoff, "dry-run-exp"), "--dry-run"])
 
@@ -315,7 +315,7 @@ def test_status_reports_baseline_and_stale_active(tmp_path: Path, monkeypatch, c
         ),
         encoding="utf-8",
     )
-    monkeypatch.setenv("OPENSQUILLA_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
+    monkeypatch.setenv("OPENSTARRY_CODE_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
 
     rc = status.main(["--source-root", str(source), "--handoff-root", str(handoff)])
 
@@ -335,7 +335,7 @@ def test_run_records_failure_and_clears_active(tmp_path: Path, monkeypatch) -> N
     handoff = tmp_path / "handoff"
     _git_repo(source)
     _handoff_repo(handoff)
-    monkeypatch.setenv("OPENSQUILLA_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
+    monkeypatch.setenv("OPENSTARRY_CODE_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
     assert init.main(_init_args(source, handoff, "run-fails")) == 0
     command = ledger / "runs/run-fails/command.sh"
     command.write_text("#!/usr/bin/env bash\nexit 7\n", encoding="utf-8")
@@ -359,7 +359,7 @@ def test_run_rejects_changed_snapshot_hash(tmp_path: Path, monkeypatch) -> None:
     handoff = tmp_path / "handoff"
     _git_repo(source)
     _handoff_repo(handoff)
-    monkeypatch.setenv("OPENSQUILLA_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
+    monkeypatch.setenv("OPENSTARRY_CODE_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
     assert init.main(_init_args(source, handoff, "bad-snapshot")) == 0
     snapshot = ledger / "runs/bad-snapshot/config_snapshot/qwen/config.toml"
     snapshot.write_text("[llm]\nmodel='changed'\n", encoding="utf-8")
@@ -376,7 +376,7 @@ def test_finalize_writes_metrics_and_updates_baseline(tmp_path: Path, monkeypatc
     batch = tmp_path / "batch"
     _git_repo(source)
     _handoff_repo(handoff)
-    monkeypatch.setenv("OPENSQUILLA_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
+    monkeypatch.setenv("OPENSTARRY_CODE_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
     assert init.main(_init_args(source, handoff, "finalize-smoke")) == 0
     run_dir = ledger / "runs/finalize-smoke"
     manifest = json.loads((run_dir / "manifest.json").read_text())
@@ -407,13 +407,13 @@ def test_finalize_writes_metrics_and_updates_baseline(tmp_path: Path, monkeypatc
         batch.parent,
         "qwen-run",
         "a__b-1",
-        {"OPENSQUILLA_FINAL_DIFF_CONTRACT_MODE": "warn_model"},
+        {"OPENSTARRY_CODE_FINAL_DIFF_CONTRACT_MODE": "warn_model"},
     )
     _write_fake_instance_metadata(
         batch.parent,
         "qwen-verified-run",
         "c__d-2",
-        {"OPENSQUILLA_FINAL_DIFF_CONTRACT_MODE": "warn_model"},
+        {"OPENSTARRY_CODE_FINAL_DIFF_CONTRACT_MODE": "warn_model"},
     )
 
     rc = finalize.main(
@@ -451,7 +451,7 @@ def test_finalize_rejects_mismatched_batch(tmp_path: Path, monkeypatch) -> None:
     batch = tmp_path / "batch"
     _git_repo(source)
     _handoff_repo(handoff)
-    monkeypatch.setenv("OPENSQUILLA_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
+    monkeypatch.setenv("OPENSTARRY_CODE_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
     assert init.main(_init_args(source, handoff, "mismatch")) == 0
     manifest = json.loads((ledger / "runs/mismatch/manifest.json").read_text())
     report = tmp_path / "eval.json"
@@ -492,13 +492,13 @@ def test_finalize_rejects_missing_manifest_env_delivery(
     batch = tmp_path / "artifacts" / "batch"
     _git_repo(source)
     _handoff_repo(handoff)
-    monkeypatch.setenv("OPENSQUILLA_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
+    monkeypatch.setenv("OPENSTARRY_CODE_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
     assert (
         init.main(
             [
                 *_init_args(source, handoff, "missing-env-delivery"),
                 "--env",
-                "OPENSQUILLA_FINALIZE_EVIDENCE_GATE=on",
+                "OPENSTARRY_CODE_FINALIZE_EVIDENCE_GATE=on",
             ]
         )
         == 0
@@ -520,7 +520,7 @@ def test_finalize_rejects_missing_manifest_env_delivery(
         batch.parent,
         run_id,
         "a__b-1",
-        {"OPENSQUILLA_FINAL_DIFF_CONTRACT_MODE": "warn_model"},
+        {"OPENSTARRY_CODE_FINAL_DIFF_CONTRACT_MODE": "warn_model"},
     )
 
     assert (
@@ -568,7 +568,7 @@ def test_finalize_rejects_env_delivery_with_no_resolvable_run_dirs(
     batch = tmp_path / "batch"
     _git_repo(source)
     _handoff_repo(handoff)
-    monkeypatch.setenv("OPENSQUILLA_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
+    monkeypatch.setenv("OPENSTARRY_CODE_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
     assert init.main(_init_args(source, handoff, "no-run-dirs")) == 0
     manifest = json.loads((ledger / "runs/no-run-dirs/manifest.json").read_text())
     report = tmp_path / "eval.json"
@@ -624,7 +624,7 @@ def test_finalize_rejects_adopting_quarantined_batch_as_baseline(
     batch = tmp_path / "quarantined-batch"
     _git_repo(source)
     _handoff_repo(handoff)
-    monkeypatch.setenv("OPENSQUILLA_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
+    monkeypatch.setenv("OPENSTARRY_CODE_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
     ledger.mkdir(parents=True)
     (ledger / "contaminations.json").write_text(
         json.dumps(
@@ -654,13 +654,13 @@ def test_finalize_rejects_adopting_quarantined_batch_as_baseline(
         batch.parent,
         "qwen-run",
         "a__b-1",
-        {"OPENSQUILLA_FINAL_DIFF_CONTRACT_MODE": "warn_model"},
+        {"OPENSTARRY_CODE_FINAL_DIFF_CONTRACT_MODE": "warn_model"},
     )
     _write_fake_instance_metadata(
         batch.parent,
         "qwen-verified-run",
         "c__d-2",
-        {"OPENSQUILLA_FINAL_DIFF_CONTRACT_MODE": "warn_model"},
+        {"OPENSTARRY_CODE_FINAL_DIFF_CONTRACT_MODE": "warn_model"},
     )
 
     rc = finalize.main(
@@ -693,7 +693,7 @@ def test_finalize_requires_invalid_or_stopped_for_nonzero_infer(
     batch = tmp_path / "batch"
     _git_repo(source)
     _handoff_repo(handoff)
-    monkeypatch.setenv("OPENSQUILLA_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
+    monkeypatch.setenv("OPENSTARRY_CODE_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
     assert init.main(_init_args(source, handoff, "nonzero-infer")) == 0
     manifest = json.loads((ledger / "runs/nonzero-infer/manifest.json").read_text())
     report = tmp_path / "eval.json"
@@ -744,7 +744,7 @@ def test_finalize_flags_nonzero_nonstandard_exit_code(tmp_path: Path, monkeypatc
     batch = tmp_path / "batch"
     _git_repo(source)
     _handoff_repo(handoff)
-    monkeypatch.setenv("OPENSQUILLA_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
+    monkeypatch.setenv("OPENSTARRY_CODE_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
     assert init.main(_init_args(source, handoff, "nonstd-exit")) == 0
     manifest = json.loads((ledger / "runs/nonstd-exit/manifest.json").read_text())
     report = tmp_path / "eval.json"
@@ -802,7 +802,7 @@ def test_finalize_rejects_changed_instance_content(tmp_path: Path, monkeypatch) 
     batch = tmp_path / "batch"
     _git_repo(source)
     _handoff_repo(handoff)
-    monkeypatch.setenv("OPENSQUILLA_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
+    monkeypatch.setenv("OPENSTARRY_CODE_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
     assert init.main(_init_args(source, handoff, "changed-instances")) == 0
     manifest = json.loads((ledger / "runs/changed-instances/manifest.json").read_text())
     report = tmp_path / "eval.json"
@@ -903,7 +903,7 @@ def test_run_rejects_changed_runner(tmp_path: Path, monkeypatch) -> None:
     handoff = tmp_path / "handoff"
     _git_repo(source)
     _handoff_repo(handoff)
-    monkeypatch.setenv("OPENSQUILLA_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
+    monkeypatch.setenv("OPENSTARRY_CODE_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
     assert init.main(_init_args(source, handoff, "changed-runner")) == 0
     runner = handoff / "scripts/run_tool_policy_validation_stdin_keys.sh"
     runner.write_text("#!/usr/bin/env bash\necho tampered\n", encoding="utf-8")
@@ -920,7 +920,7 @@ def test_finalize_requires_invalid_or_stopped_without_eval(tmp_path: Path, monke
     batch = tmp_path / "batch"
     _git_repo(source)
     _handoff_repo(handoff)
-    monkeypatch.setenv("OPENSQUILLA_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
+    monkeypatch.setenv("OPENSTARRY_CODE_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
     assert init.main(_init_args(source, handoff, "missing-eval")) == 0
     manifest = json.loads((ledger / "runs/missing-eval/manifest.json").read_text())
     _write_fake_batch(batch, manifest, None)

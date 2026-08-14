@@ -5,11 +5,11 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.engine.types import ToolCall
-from opensquilla.session.plans import PlanRunConflictError
-from opensquilla.tools.dispatch import build_tool_handler, preflight_tool_call
-from opensquilla.tools.registry import ToolRegistry, get_default_registry, tool
-from opensquilla.tools.types import (
+from openstarry_code.engine.types import ToolCall
+from openstarry_code.session.plans import PlanRunConflictError
+from openstarry_code.tools.dispatch import build_tool_handler, preflight_tool_call
+from openstarry_code.tools.registry import ToolRegistry, get_default_registry, tool
+from openstarry_code.tools.types import (
     InteractionMode,
     PlanAccess,
     ToolContext,
@@ -240,7 +240,7 @@ async def test_terminating_control_ends_turn_only_after_success() -> None:
 @pytest.mark.asyncio
 async def test_request_user_input_emits_canonical_interactive_protocol() -> None:
     # Import registers the built-in control in the process default registry.
-    from opensquilla.tools.builtin import plan_control as _plan_control  # noqa: F401
+    from openstarry_code.tools.builtin import plan_control as _plan_control  # noqa: F401
 
     registered = get_default_registry().get("request_user_input")
     assert registered is not None
@@ -310,7 +310,7 @@ async def test_request_user_input_emits_canonical_interactive_protocol() -> None
 
 
 def test_plan_control_schema_exposes_runtime_limits_and_server_owned_next_step() -> None:
-    from opensquilla.tools.builtin import plan_control as _plan_control  # noqa: F401
+    from openstarry_code.tools.builtin import plan_control as _plan_control  # noqa: F401
 
     request = get_default_registry().get("request_user_input")
     submit = get_default_registry().get("submit_plan")
@@ -336,7 +336,7 @@ def test_plan_control_schema_exposes_runtime_limits_and_server_owned_next_step()
 
 @pytest.mark.asyncio
 async def test_duplicate_user_input_option_labels_return_retryable_correction() -> None:
-    from opensquilla.tools.builtin import plan_control as _plan_control  # noqa: F401
+    from openstarry_code.tools.builtin import plan_control as _plan_control  # noqa: F401
 
     registered = get_default_registry().get("request_user_input")
     assert registered is not None
@@ -379,7 +379,7 @@ async def test_duplicate_user_input_option_labels_return_retryable_correction() 
 
 @pytest.mark.asyncio
 async def test_request_user_input_failure_does_not_end_plan_turn() -> None:
-    from opensquilla.tools.builtin import plan_control as _plan_control  # noqa: F401
+    from openstarry_code.tools.builtin import plan_control as _plan_control  # noqa: F401
 
     registered = get_default_registry().get("request_user_input")
     assert registered is not None
@@ -410,7 +410,7 @@ async def test_request_user_input_failure_does_not_end_plan_turn() -> None:
 
 @pytest.mark.asyncio
 async def test_out_of_order_plan_checkpoint_returns_actionable_retry_contract() -> None:
-    from opensquilla.tools.builtin import plan_control as _plan_control  # noqa: F401
+    from openstarry_code.tools.builtin import plan_control as _plan_control  # noqa: F401
 
     registered = get_default_registry().get("plan_run_checkpoint")
     assert registered is not None
@@ -483,7 +483,7 @@ async def test_out_of_order_plan_checkpoint_returns_actionable_retry_contract() 
 
 @pytest.mark.asyncio
 async def test_plan_checkpoint_event_failure_does_not_undo_committed_state() -> None:
-    from opensquilla.tools.builtin import plan_control as _plan_control  # noqa: F401
+    from openstarry_code.tools.builtin import plan_control as _plan_control  # noqa: F401
 
     registered = get_default_registry().get("plan_run_checkpoint")
     assert registered is not None

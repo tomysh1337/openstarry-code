@@ -11,13 +11,13 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.sandbox.permissions import (
+from openstarry_code.sandbox.permissions import (
     FileSystemAccess,
     FileSystemPermissionEntry,
     FileSystemPermissionProfile,
 )
-from opensquilla.sandbox.run_mode import RunMode
-from opensquilla.sandbox.types import (
+from openstarry_code.sandbox.run_mode import RunMode
+from openstarry_code.sandbox.types import (
     MountSpec,
     NetworkMode,
     ResourceLimits,
@@ -26,7 +26,7 @@ from opensquilla.sandbox.types import (
     SandboxRequest,
     SecurityLevel,
 )
-from opensquilla.tools.types import ToolContext, current_tool_context
+from openstarry_code.tools.types import ToolContext, current_tool_context
 
 
 def _directory_link(link: Path, target: Path) -> None:
@@ -85,11 +85,11 @@ async def test_windows_guest_process_is_rejected_before_support_or_acl_work(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
-    from opensquilla.sandbox.integration import run_under_backend
-    from opensquilla.tools.types import ToolContext, current_tool_context
+    from openstarry_code.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.integration import run_under_backend
+    from openstarry_code.tools.types import ToolContext, current_tool_context
 
-    request = replace(_request(tmp_path), env={"OPENSQUILLA_GUEST_SAFE": "0"})
+    request = replace(_request(tmp_path), env={"OPENSTARRY_CODE_GUEST_SAFE": "0"})
     runtime = SimpleNamespace(backend=mod.WindowsDefaultBackend())
 
     def unexpected_support_probe() -> bool:
@@ -112,7 +112,7 @@ def test_windows_acl_plan_compiles_profile_reads_writes_and_denies(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend import windows_default as mod
 
     readable = tmp_path / "readable"
     workspace = tmp_path / "workspace"
@@ -162,7 +162,7 @@ def test_windows_acl_plan_never_grants_read_access_on_filesystem_root(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend import windows_default as mod
 
     filesystem_root = Path(tmp_path.anchor)
     workspace = tmp_path / "workspace"
@@ -195,7 +195,7 @@ def test_windows_acl_plan_never_grants_required_mount_on_filesystem_root(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend import windows_default as mod
 
     filesystem_root = Path(tmp_path.anchor)
     workspace = tmp_path / "workspace"
@@ -252,7 +252,7 @@ def test_windows_filesystem_worker_uses_cached_deny_acl_validation(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend import windows_default as mod
 
     workspace = tmp_path / "workspace"
     workspace.mkdir()
@@ -277,7 +277,7 @@ def test_capability_filesystem_worker_uses_worker_acl_and_path_policy(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend import windows_default as mod
 
     workspace = tmp_path / "workspace"
     workspace.mkdir()
@@ -310,7 +310,7 @@ def test_capability_filesystem_worker_uses_worker_acl_and_path_policy(
 def test_windows_acl_filter_resolves_parent_segments_before_root_check(
     tmp_path: Path,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend import windows_default as mod
 
     disguised_root = Path(tmp_path.anchor) / "missing-segment" / ".."
 
@@ -338,7 +338,7 @@ def test_windows_acl_filter_resolves_parent_segments_before_root_check(
 def test_windows_acl_filter_resolves_directory_link_before_root_check(
     tmp_path: Path,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend import windows_default as mod
 
     root_alias = tmp_path / "root-alias"
     _directory_link(root_alias, Path(tmp_path.anchor))
@@ -355,7 +355,7 @@ def test_windows_acl_plan_preserves_lexical_and_canonical_denied_paths(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend import windows_default as mod
 
     target = tmp_path / "target-secret"
     lexical = tmp_path / "configured-secret"
@@ -385,7 +385,7 @@ def test_windows_acl_plan_preserves_lexical_and_canonical_denied_paths(
 def test_windows_effective_profile_entries_keep_aliases_and_override_same_spelling(
     tmp_path: Path,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend import windows_default as mod
 
     target = tmp_path / "target"
     first_alias = tmp_path / "first-alias"
@@ -425,7 +425,7 @@ def test_windows_acl_plan_protects_metadata_link_and_target(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend import windows_default as mod
 
     workspace = tmp_path / "workspace"
     target = tmp_path / "outside-git"
@@ -460,7 +460,7 @@ def test_windows_acl_plan_protects_metadata_link_and_target(
 def test_windows_write_acl_variants_do_not_follow_retargeted_alias(
     tmp_path: Path,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend import windows_default as mod
 
     workspace = tmp_path / "workspace"
     frozen_target = tmp_path / "frozen-target"
@@ -494,7 +494,7 @@ def test_windows_acl_plan_denies_write_through_lexical_and_canonical_aliases(
     monkeypatch: pytest.MonkeyPatch,
     carveout_access: FileSystemAccess,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend import windows_default as mod
 
     workspace = tmp_path / "real-workspace"
     alias = tmp_path / "workspace-alias"
@@ -540,7 +540,7 @@ def test_windows_acl_plan_removes_exact_conflicting_alias_write_authority(
     monkeypatch: pytest.MonkeyPatch,
     restricted_access: FileSystemAccess,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend import windows_default as mod
 
     target = tmp_path / "shared-target"
     writable_alias = tmp_path / "writable-alias"
@@ -588,7 +588,7 @@ def test_windows_acl_plan_removes_exact_conflicting_alias_write_authority(
 def test_windows_acl_plan_protects_reparse_ancestor_when_target_is_outside_write(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend import windows_default as mod
 
     workspace = tmp_path / "workspace"
     outside = tmp_path / "outside"
@@ -627,11 +627,11 @@ def test_windows_acl_plan_protects_reparse_ancestor_when_target_is_outside_write
 def test_windows_acl_plan_protects_internal_state_under_broad_home_write(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend import windows_default as mod
 
     home = tmp_path / "home"
     home.mkdir()
-    marker = home / ".opensquilla" / "sandbox" / "setup_marker.json"
+    marker = home / ".openstarry-code" / "sandbox" / "setup_marker.json"
     profile = FileSystemPermissionProfile.workspace(
         workspace=home,
         host_root_readonly=False,
@@ -655,8 +655,8 @@ def test_windows_acl_plan_protects_internal_state_under_broad_home_write(
 
     assert {
         str(marker.parent),
-        str(home / ".opensquilla" / "sandbox-secrets"),
-        str(home / ".opensquilla" / "sandbox-bin"),
+        str(home / ".openstarry-code" / "sandbox-secrets"),
+        str(home / ".openstarry-code" / "sandbox-bin"),
     } <= set(plan["denyWritePaths"])
 
 
@@ -665,7 +665,7 @@ def test_windows_acl_plan_protects_junction_and_canonical_target(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend import windows_default as mod
 
     workspace = tmp_path / "real-workspace"
     junction = tmp_path / "workspace-alias"
@@ -709,7 +709,7 @@ def test_windows_acl_plan_requests_access_namespaced_capability_sids(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend import windows_default as mod
 
     readable = tmp_path / "readable"
     writable = tmp_path / "writable"
@@ -743,7 +743,7 @@ def test_windows_acl_plan_rejects_writable_descendant_reopen(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend import windows_default as mod
 
     workspace = tmp_path / "workspace"
     readonly = workspace / ".git"
@@ -779,7 +779,7 @@ def test_windows_acl_plan_rejects_writable_descendant_reopen(
 def test_windows_acl_plan_rejects_retargeted_writable_root(
     tmp_path: Path,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend import windows_default as mod
 
     workspace = tmp_path / "workspace"
     writable_root = tmp_path / "writable-root"
@@ -807,7 +807,7 @@ def test_windows_acl_plan_does_not_make_readonly_cwd_writable(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend import windows_default as mod
 
     profile = FileSystemPermissionProfile(
         entries=(FileSystemPermissionEntry(tmp_path, FileSystemAccess.READ),)
@@ -842,7 +842,7 @@ def test_windows_acl_plan_does_not_make_readonly_cwd_writable(
 
 
 def test_windows_acl_plan_requires_resolved_filesystem_profile(tmp_path: Path) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend import windows_default as mod
 
     with pytest.raises(SandboxBackendError, match="resolved filesystem profile"):
         mod._acl_plan_payload(_request(tmp_path).with_policy(_policy()))
@@ -851,7 +851,7 @@ def test_windows_acl_plan_requires_resolved_filesystem_profile(tmp_path: Path) -
 def test_windows_acl_plan_fails_closed_for_unprojected_default_access(
     tmp_path: Path,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend import windows_default as mod
 
     profile = FileSystemPermissionProfile(
         entries=(),
@@ -867,7 +867,7 @@ def test_windows_acl_plan_accepts_implicit_full_disk_read_baseline(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend import windows_default as mod
 
     workspace = tmp_path / "workspace"
     workspace.mkdir()
@@ -895,7 +895,7 @@ def test_windows_profile_grants_keep_final_pure_windows_declaration(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend import windows_default as mod
 
     windows_root = PureWindowsPath(r"D:\\workspace")
     profile = FileSystemPermissionProfile(
@@ -919,7 +919,7 @@ def test_payload_contains_cache_env_and_run_mode(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend import windows_default as mod
 
     monkeypatch.setattr(mod, "_support_ready", lambda: True)
     monkeypatch.setattr(mod, "_capability_store_path", lambda: tmp_path / "cap_sids.json")
@@ -929,22 +929,22 @@ def test_payload_contains_cache_env_and_run_mode(
     assert payload["backend"] == "windows_default"
     assert payload["runMode"] == "safe"
     assert payload["cwd"] == str(tmp_path)
-    assert payload["env"]["TEMP"] == str(tmp_path / ".opensquilla-cache" / "temp")
-    assert payload["env"]["PIP_CACHE_DIR"] == str(tmp_path / ".opensquilla-cache" / "pip")
+    assert payload["env"]["TEMP"] == str(tmp_path / ".openstarry-code-cache" / "temp")
+    assert payload["env"]["PIP_CACHE_DIR"] == str(tmp_path / ".openstarry-code-cache" / "pip")
     assert payload["env"]["APPDATA"] == str(
-        tmp_path / ".opensquilla-cache" / "home" / "AppData" / "Roaming"
+        tmp_path / ".openstarry-code-cache" / "home" / "AppData" / "Roaming"
     )
     assert payload["env"]["LOCALAPPDATA"] == str(
-        tmp_path / ".opensquilla-cache" / "home" / "AppData" / "Local"
+        tmp_path / ".openstarry-code-cache" / "home" / "AppData" / "Local"
     )
     assert payload["env"]["npm_config_prefix"] == str(
-        tmp_path / ".opensquilla-cache" / "npm" / "prefix"
+        tmp_path / ".openstarry-code-cache" / "npm" / "prefix"
     )
     assert payload["policy"]["network"] == "none"
 
 
 def test_session_mounts_skip_missing_paths(tmp_path: Path) -> None:
-    from opensquilla.sandbox import integration as mod
+    from openstarry_code.sandbox import integration as mod
 
     missing = tmp_path / "deleted-probe.txt"
     token = current_tool_context.set(
@@ -963,7 +963,7 @@ def test_windows_acl_payload_skips_missing_private_mounts(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend import windows_default as mod
 
     missing = tmp_path / "deleted-probe.txt"
     policy = _policy()
@@ -997,7 +997,7 @@ def test_payload_rehomes_user_state_for_regular_windows_commands(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend import windows_default as mod
 
     policy = SandboxPolicy(
         level=SecurityLevel.STANDARD,
@@ -1019,7 +1019,7 @@ def test_payload_rehomes_user_state_for_regular_windows_commands(
         policy=policy,
         env={
             "PATH": r"C:\Program Files\Git\cmd",
-            "HOME": r"C:\SandboxUser\me\.opensquilla",
+            "HOME": r"C:\SandboxUser\me\.openstarry-code",
             "USERPROFILE": r"C:\SandboxUser\me",
             "HOMEDRIVE": "C:",
             "HOMEPATH": r"\SandboxUser\me",
@@ -1031,13 +1031,13 @@ def test_payload_rehomes_user_state_for_regular_windows_commands(
 
     payload = mod._payload_for_request(request)
 
-    home = tmp_path / ".opensquilla-cache" / "home"
+    home = tmp_path / ".openstarry-code-cache" / "home"
     assert payload["env"]["HOME"] == str(home)
     assert payload["env"]["USERPROFILE"] == str(home)
     assert payload["env"]["HOMEDRIVE"] == home.drive
     assert payload["env"]["HOMEPATH"] == str(home)[len(home.drive) :]
     assert payload["env"]["GIT_CONFIG_GLOBAL"] == str(
-        tmp_path / ".opensquilla-cache" / "git" / "config"
+        tmp_path / ".openstarry-code-cache" / "git" / "config"
     )
 
 
@@ -1045,7 +1045,7 @@ def test_payload_preserves_windows_process_base_env(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend import windows_default as mod
 
     windows_root = tmp_path / "Windows"
     windows_root.mkdir()
@@ -1068,7 +1068,7 @@ def test_payload_prepends_real_windows_tool_paths_and_grants_user_tool_acl(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend import windows_default as mod
 
     workspace = tmp_path / "workspace"
     workspace.mkdir()
@@ -1137,7 +1137,7 @@ def test_payload_discovers_codex_bundled_git_and_node_tools(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend import windows_default as mod
 
     workspace = tmp_path / "workspace"
     workspace.mkdir()
@@ -1201,7 +1201,7 @@ def test_payload_encodes_stdin_as_base64(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend import windows_default as mod
 
     request = _request(tmp_path)
     request = SandboxRequest(
@@ -1226,8 +1226,8 @@ async def test_backend_fails_closed_when_setup_is_not_ready(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
-    from opensquilla.sandbox.backend.windows_default import WindowsDefaultBackend
+    from openstarry_code.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend.windows_default import WindowsDefaultBackend
 
     monkeypatch.setattr(mod, "_support_ready", lambda: False)
 
@@ -1240,8 +1240,8 @@ async def test_backend_validates_profile_before_preparing_cache(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
-    from opensquilla.sandbox.backend.windows_default import WindowsDefaultBackend
+    from openstarry_code.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend.windows_default import WindowsDefaultBackend
 
     calls: list[Path] = []
     monkeypatch.setattr(mod, "_support_ready", lambda: True)
@@ -1258,8 +1258,8 @@ async def test_backend_readonly_cwd_does_not_prepare_or_rehome_cache(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
-    from opensquilla.sandbox.backend.windows_default import WindowsDefaultBackend
+    from openstarry_code.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend.windows_default import WindowsDefaultBackend
 
     class _Proc:
         returncode = 0
@@ -1295,8 +1295,8 @@ async def test_backend_readonly_cwd_does_not_prepare_or_rehome_cache(
     assert calls == []
     helper_env = captured["env"]
     assert isinstance(helper_env, dict)
-    payload = json.loads(helper_env["OPENSQUILLA_WINDOWS_DEFAULT_PAYLOAD"])
-    assert ".opensquilla-cache" not in json.dumps(payload["env"])
+    payload = json.loads(helper_env["OPENSTARRY_CODE_WINDOWS_DEFAULT_PAYLOAD"])
+    assert ".openstarry-code-cache" not in json.dumps(payload["env"])
 
 
 @pytest.mark.asyncio
@@ -1304,8 +1304,8 @@ async def test_backend_returns_helper_result(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
-    from opensquilla.sandbox.backend.windows_default import WindowsDefaultBackend
+    from openstarry_code.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend.windows_default import WindowsDefaultBackend
 
     class _Proc:
         returncode = 7
@@ -1330,9 +1330,9 @@ async def test_backend_returns_helper_result(
     assert result.stdout == "out"
     assert result.stderr == "err"
     assert result.backend_used == "windows_default"
-    assert "opensquilla.sandbox.backend.windows_default_runner" in captured["argv"]
+    assert "openstarry_code.sandbox.backend.windows_default_runner" in captured["argv"]
     assert "--payload-env" in captured["argv"]
-    payload_env = captured["env"]["OPENSQUILLA_WINDOWS_DEFAULT_PAYLOAD"]
+    payload_env = captured["env"]["OPENSTARRY_CODE_WINDOWS_DEFAULT_PAYLOAD"]
     assert '"argv":["python","-c","print(\'ok\')"]' in payload_env
 
 
@@ -1341,8 +1341,8 @@ async def test_backend_cancellation_kills_and_reaps_helper(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
-    from opensquilla.sandbox.backend.windows_default import WindowsDefaultBackend
+    from openstarry_code.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend.windows_default import WindowsDefaultBackend
 
     communicating = asyncio.Event()
     never_finishes = asyncio.Event()
@@ -1390,8 +1390,8 @@ async def test_frozen_backend_uses_internal_child_role(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
-    from opensquilla.sandbox.backend.windows_default import WindowsDefaultBackend
+    from openstarry_code.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend.windows_default import WindowsDefaultBackend
 
     class _Proc:
         returncode = 0
@@ -1425,15 +1425,15 @@ async def test_backend_raises_terminal_error_for_authenticated_helper_failure(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
-    from opensquilla.sandbox.backend.windows_default import WindowsDefaultBackend
+    from openstarry_code.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend.windows_default import WindowsDefaultBackend
 
     class _Proc:
         returncode = 1
 
         async def communicate(self):
             marker = (
-                "OPENSQUILLA_WINDOWS_DEFAULT_HELPER_ERROR "
+                "OPENSTARRY_CODE_WINDOWS_DEFAULT_HELPER_ERROR "
                 '{"nonce":"nonce-123","message":"execution lease is busy"}\n'
             )
             return b"", marker.encode()
@@ -1455,8 +1455,8 @@ async def test_backend_waits_for_helper_grace_beyond_command_timeout(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
-    from opensquilla.sandbox.backend.windows_default import WindowsDefaultBackend
+    from openstarry_code.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend.windows_default import WindowsDefaultBackend
 
     class _Proc:
         returncode = 0
@@ -1482,7 +1482,7 @@ async def test_backend_waits_for_helper_grace_beyond_command_timeout(
 
     result = await WindowsDefaultBackend().run(request)
 
-    payload = json.loads(captured["env"]["OPENSQUILLA_WINDOWS_DEFAULT_PAYLOAD"])
+    payload = json.loads(captured["env"]["OPENSTARRY_CODE_WINDOWS_DEFAULT_PAYLOAD"])
     assert result.returncode == 0
     assert payload["timeout"] == request.policy.limits.wall_timeout_s
     assert captured["wait_timeout"] > payload["timeout"]
@@ -1492,7 +1492,7 @@ def test_payload_contains_profile_workspace_and_required_runtime_acl_plan(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend import windows_default as mod
 
     monkeypatch.setattr(mod, "_support_ready", lambda: True)
     monkeypatch.setattr(
@@ -1518,7 +1518,7 @@ def test_capability_probe_does_not_project_host_tool_path_acl_roots(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend import windows_default as mod
 
     monkeypatch.setattr(mod, "_support_ready", lambda: True)
     monkeypatch.setattr(mod, "_capability_store_path", lambda: tmp_path / "cap_sids.json")
@@ -1543,8 +1543,8 @@ def test_capability_filesystem_worker_keeps_probe_marker(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
-    from opensquilla.sandbox.operation_runtime import SandboxOperation
+    from openstarry_code.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.operation_runtime import SandboxOperation
 
     workspace = tmp_path / "workspace"
     workspace.mkdir()
@@ -1553,7 +1553,7 @@ def test_capability_filesystem_worker_keeps_probe_marker(
     runtime_scripts.mkdir(parents=True)
     python_exe = runtime_scripts / "python.exe"
     python_exe.write_text("", encoding="utf-8")
-    source_root = tmp_path / "src" / "opensquilla"
+    source_root = tmp_path / "src" / "openstarry_code"
     source_root.mkdir(parents=True)
     monkeypatch.setattr(mod, "_python_executable", lambda: python_exe)
     monkeypatch.setattr(mod, "_opensquilla_import_roots", lambda: (source_root,))
@@ -1582,7 +1582,7 @@ def test_payload_skips_windows_reserved_device_expansion_roots(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend import windows_default as mod
 
     reserved_device = tmp_path / "nul"
     external = tmp_path / "external-cache"
@@ -1595,7 +1595,7 @@ def test_payload_skips_windows_reserved_device_expansion_roots(
         policy=request.policy,
         env={
             **request.env,
-            "OPENSQUILLA_WINDOWS_SANDBOX_EXPANSION_ROOTS": (f"{reserved_device};{external}"),
+            "OPENSTARRY_CODE_WINDOWS_SANDBOX_EXPANSION_ROOTS": (f"{reserved_device};{external}"),
         },
         run_mode=request.run_mode,
     )
@@ -1625,9 +1625,9 @@ def test_payload_includes_offline_identity_boundary_when_marker_has_network(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
-    from opensquilla.sandbox.backend.windows_default_network import WindowsNetworkSetup
-    from opensquilla.sandbox.backend.windows_default_setup import write_setup_marker
+    from openstarry_code.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend.windows_default_network import WindowsNetworkSetup
+    from openstarry_code.sandbox.backend.windows_default_setup import write_setup_marker
 
     marker = tmp_path / "setup_marker.json"
     write_setup_marker(
@@ -1657,10 +1657,10 @@ def test_payload_adds_runtime_readonly_roots_as_deny_write_paths(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend import windows_default as mod
 
     runtime_scripts = tmp_path / "runtime" / "Scripts"
-    source_root = tmp_path / "src" / "opensquilla"
+    source_root = tmp_path / "src" / "openstarry_code"
     runtime_scripts.mkdir(parents=True)
     source_root.mkdir(parents=True)
 
@@ -1685,7 +1685,7 @@ def test_payload_adds_readonly_private_mounts_as_deny_write_paths(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend import windows_default as mod
 
     readonly_root = tmp_path / "readonly"
     readonly_root.mkdir()
@@ -1735,9 +1735,9 @@ def test_payload_grants_opensquilla_workspace_parent_for_traversal(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend import windows_default as mod
 
-    state_root = tmp_path / ".opensquilla"
+    state_root = tmp_path / ".openstarry-code"
     workspace = state_root / "workspace"
     workspace.mkdir(parents=True)
     request = _request(workspace)
@@ -1758,7 +1758,7 @@ def test_payload_grants_process_runtime_roots_rx(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend import windows_default as mod
 
     powershell_root = tmp_path / "Windows" / "System32" / "WindowsPowerShell" / "v1.0"
     program_files = tmp_path / "Program Files"
@@ -1799,7 +1799,7 @@ def test_payload_grants_process_runtime_roots_rx(
 
 
 def test_guest_request_never_discovers_host_tool_paths(tmp_path: Path) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend import windows_default as mod
 
     request = _request(tmp_path)
     request = SandboxRequest(
@@ -1809,7 +1809,7 @@ def test_guest_request_never_discovers_host_tool_paths(tmp_path: Path) -> None:
         policy=request.policy,
         env={
             **request.env,
-            "OPENSQUILLA_GUEST_SAFE": "1",
+            "OPENSTARRY_CODE_GUEST_SAFE": "1",
             "PATH": str(tmp_path / "bundled-runtime"),
         },
         run_mode=request.run_mode,
@@ -1822,7 +1822,7 @@ def test_guest_acl_plan_keeps_only_system_and_explicit_runtime_rx_roots(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend import windows_default as mod
 
     workspace = tmp_path / "guest-workspace"
     bundled_runtime = tmp_path / "bundled-runtime"
@@ -1847,7 +1847,7 @@ def test_guest_acl_plan_keeps_only_system_and_explicit_runtime_rx_roots(
         policy=request.policy,
         env={
             **request.env,
-            "OPENSQUILLA_GUEST_SAFE": "1",
+            "OPENSTARRY_CODE_GUEST_SAFE": "1",
             "SystemRoot": str(windows_root),
         },
         run_mode=request.run_mode,
@@ -1878,7 +1878,7 @@ def test_payload_does_not_acl_grant_windows_platform_roots(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend import windows_default as mod
 
     windows_root = tmp_path / "Windows"
     system32 = windows_root / "System32"
@@ -1922,7 +1922,7 @@ def test_trusted_non_sensitive_expansion_auto_grants(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend import windows_default as mod
 
     external = tmp_path.parent / f"{tmp_path.name}-external-cache"
     external.mkdir()
@@ -1932,7 +1932,7 @@ def test_trusted_non_sensitive_expansion_auto_grants(
         cwd=request.cwd,
         action_kind=request.action_kind,
         policy=request.policy,
-        env={"OPENSQUILLA_WINDOWS_SANDBOX_EXPANSION_ROOTS": str(external)},
+        env={"OPENSTARRY_CODE_WINDOWS_SANDBOX_EXPANSION_ROOTS": str(external)},
         run_mode=RunMode.SAFE.value,
     )
     monkeypatch.setattr(mod, "_support_ready", lambda: True)
@@ -1948,7 +1948,7 @@ def test_missing_expansion_roots_are_ignored(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend import windows_default as mod
 
     missing = tmp_path.parent / f"{tmp_path.name}-deleted-probe.txt"
     request = _request(tmp_path)
@@ -1957,7 +1957,7 @@ def test_missing_expansion_roots_are_ignored(
         cwd=request.cwd,
         action_kind=request.action_kind,
         policy=request.policy,
-        env={"OPENSQUILLA_WINDOWS_SANDBOX_EXPANSION_ROOTS": str(missing)},
+        env={"OPENSTARRY_CODE_WINDOWS_SANDBOX_EXPANSION_ROOTS": str(missing)},
         run_mode=RunMode.SAFE.value,
     )
     monkeypatch.setattr(mod, "_support_ready", lambda: True)
@@ -1973,7 +1973,7 @@ def test_safe_non_sensitive_expansion_is_automatically_granted(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.backend import windows_default as mod
 
     external = tmp_path.parent / f"{tmp_path.name}-external-cache"
     external.mkdir()
@@ -1983,7 +1983,7 @@ def test_safe_non_sensitive_expansion_is_automatically_granted(
         cwd=request.cwd,
         action_kind=request.action_kind,
         policy=request.policy,
-        env={"OPENSQUILLA_WINDOWS_SANDBOX_EXPANSION_ROOTS": str(external)},
+        env={"OPENSTARRY_CODE_WINDOWS_SANDBOX_EXPANSION_ROOTS": str(external)},
         run_mode=RunMode.SAFE.value,
     )
     monkeypatch.setattr(mod, "_support_ready", lambda: True)
@@ -1999,8 +1999,8 @@ def test_windows_filesystem_operation_request_uses_stdin_and_shared_profile(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
-    from opensquilla.sandbox.operation_runtime import SandboxOperation
+    from openstarry_code.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.operation_runtime import SandboxOperation
 
     workspace = tmp_path / "workspace"
     workspace.mkdir()
@@ -2009,7 +2009,7 @@ def test_windows_filesystem_operation_request_uses_stdin_and_shared_profile(
     runtime_scripts.mkdir(parents=True)
     python_exe = runtime_scripts / "python.exe"
     python_exe.write_text("", encoding="utf-8")
-    source_root = tmp_path / "src" / "opensquilla"
+    source_root = tmp_path / "src" / "openstarry_code"
     source_root.mkdir(parents=True)
 
     monkeypatch.setattr(mod, "_python_executable", lambda: python_exe)
@@ -2036,7 +2036,7 @@ def test_windows_filesystem_operation_request_uses_stdin_and_shared_profile(
     assert mounts[str(runtime_scripts)] == "ro"
     assert mounts[str(runtime_scripts.parent)] == "ro"
     assert mounts[str(source_root)] == "ro"
-    worker_temp = workspace / ".opensquilla-cache" / "filesystem-worker-temp"
+    worker_temp = workspace / ".openstarry-code-cache" / "filesystem-worker-temp"
     assert mounts[str(worker_temp)] == "rw"
     assert request.env["TEMP"] == str(worker_temp)
     assert request.env["TMP"] == str(worker_temp)
@@ -2047,7 +2047,7 @@ def test_windows_filesystem_operation_request_uses_stdin_and_shared_profile(
     assert request.argv == (
         str(python_exe),
         "-m",
-        "opensquilla.sandbox.filesystem_worker",
+        "openstarry_code.sandbox.filesystem_worker",
         "-",
     )
     assert request.stdin is not None
@@ -2066,8 +2066,8 @@ def test_windows_filesystem_operation_request_serializes_logical_profile_path(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
-    from opensquilla.sandbox.operation_runtime import SandboxOperation
+    from openstarry_code.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.operation_runtime import SandboxOperation
 
     workspace = tmp_path / "workspace"
     workspace.mkdir()
@@ -2119,8 +2119,8 @@ def test_windows_filesystem_target_checks_logical_path_before_canonicalizing(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
-    from opensquilla.sandbox.operation_runtime import SandboxOperation
+    from openstarry_code.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.operation_runtime import SandboxOperation
 
     workspace = tmp_path / "workspace"
     canonical_parent = workspace / "canonical"
@@ -2156,8 +2156,8 @@ def test_windows_relative_filesystem_target_is_based_on_workspace(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
-    from opensquilla.sandbox.operation_runtime import SandboxOperation
+    from openstarry_code.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.operation_runtime import SandboxOperation
 
     workspace = tmp_path / "workspace"
     outside = tmp_path / "outside"
@@ -2192,8 +2192,8 @@ def test_windows_source_target_maps_execution_workspace_alias(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
-    from opensquilla.sandbox.operation_runtime import SandboxOperation
+    from openstarry_code.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.operation_runtime import SandboxOperation
 
     workspace = tmp_path / "workspace"
     workspace.mkdir()
@@ -2223,8 +2223,8 @@ def test_windows_apply_patch_checks_each_logical_path_relative_to_root(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
-    from opensquilla.sandbox.operation_runtime import SandboxOperation
+    from openstarry_code.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.operation_runtime import SandboxOperation
 
     workspace = tmp_path / "workspace"
     canonical_parent = workspace / "canonical"
@@ -2264,8 +2264,8 @@ def test_windows_filesystem_operation_request_preserves_minimal_home_environment
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
-    from opensquilla.sandbox.operation_runtime import SandboxOperation
+    from openstarry_code.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.operation_runtime import SandboxOperation
 
     workspace = tmp_path / "workspace"
     workspace.mkdir()
@@ -2309,8 +2309,8 @@ def test_windows_filesystem_worker_does_not_expand_general_tool_paths(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
-    from opensquilla.sandbox.operation_runtime import SandboxOperation
+    from openstarry_code.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.operation_runtime import SandboxOperation
 
     workspace = tmp_path / "workspace"
     workspace.mkdir()
@@ -2364,8 +2364,8 @@ def test_windows_filesystem_operation_missing_read_target_fails_before_acl(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
-    from opensquilla.sandbox.operation_runtime import SandboxOperation
+    from openstarry_code.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.operation_runtime import SandboxOperation
 
     workspace = tmp_path / "workspace"
     workspace.mkdir()
@@ -2390,12 +2390,12 @@ def test_windows_filesystem_operation_missing_read_target_fails_before_acl(
 
     with pytest.raises(FileNotFoundError, match="File not found"):
         mod._filesystem_operation_request(operation)
-    assert not (workspace / ".opensquilla-cache").exists()
+    assert not (workspace / ".openstarry-code-cache").exists()
 
 
 def test_windows_filesystem_worker_file_not_found_preserves_error_type() -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
-    from opensquilla.sandbox.types import SandboxResult
+    from openstarry_code.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.types import SandboxResult
 
     result = SandboxResult(
         returncode=1,
@@ -2414,8 +2414,8 @@ def test_windows_filesystem_operation_denies_runtime_readonly_target(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
-    from opensquilla.sandbox.operation_runtime import SandboxOperation
+    from openstarry_code.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.operation_runtime import SandboxOperation
 
     workspace = tmp_path / "workspace"
     workspace.mkdir()
@@ -2440,7 +2440,7 @@ def test_windows_filesystem_operation_denies_runtime_readonly_target(
 
     with pytest.raises(SandboxBackendError, match="read-only runtime"):
         mod._filesystem_operation_request(operation)
-    assert not (workspace / ".opensquilla-cache").exists()
+    assert not (workspace / ".openstarry-code-cache").exists()
 
 
 @pytest.mark.asyncio
@@ -2448,8 +2448,8 @@ async def test_windows_filesystem_operation_rejects_mismatched_paths_without_cac
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default as mod
-    from opensquilla.sandbox.operation_runtime import SandboxOperation
+    from openstarry_code.sandbox.backend import windows_default as mod
+    from openstarry_code.sandbox.operation_runtime import SandboxOperation
 
     workspace = tmp_path / "workspace"
     workspace.mkdir()
@@ -2473,4 +2473,4 @@ async def test_windows_filesystem_operation_rejects_mismatched_paths_without_cac
         await mod.WindowsDefaultBackend().run_operation(operation)
 
     assert not actual.exists()
-    assert not (workspace / ".opensquilla-cache").exists()
+    assert not (workspace / ".openstarry-code-cache").exists()

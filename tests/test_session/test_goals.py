@@ -7,7 +7,7 @@ import uuid
 
 import pytest
 
-from opensquilla.session.goals import (
+from openstarry_code.session.goals import (
     GOAL_STATUSES,
     GOAL_TERMINAL_STATUSES,
     GOAL_UNFINISHED_STATUSES,

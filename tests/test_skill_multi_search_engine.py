@@ -9,11 +9,11 @@ from pathlib import Path
 import httpx
 import pytest
 
-from opensquilla.skills.eligibility import EligibilityContext, check_eligibility
-from opensquilla.skills.loader import SkillLoader
+from openstarry_code.skills.eligibility import EligibilityContext, check_eligibility
+from openstarry_code.skills.loader import SkillLoader
 
 ROOT = Path(__file__).resolve().parents[1]
-BUNDLED = ROOT / "src" / "opensquilla" / "skills" / "bundled"
+BUNDLED = ROOT / "src" / "openstarry_code" / "skills" / "bundled"
 SCRIPTS = BUNDLED / "multi-search-engine" / "scripts"
 
 
@@ -38,7 +38,7 @@ def test_skill_loads() -> None:
 
 def test_eligibility_with_python(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(
-        "opensquilla.skills.eligibility.shutil.which",
+        "openstarry_code.skills.eligibility.shutil.which",
         lambda name: "/usr/bin/python3" if name in {"python", "python3"} else None,
     )
     spec = _spec()
@@ -64,7 +64,7 @@ def test_brave_without_key_fails_soft(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def test_brave_accepts_current_search_env_key(monkeypatch: pytest.MonkeyPatch) -> None:
-    """OpenSquilla config uses BRAVE_SEARCH_API_KEY; the skill must honor it."""
+    """OpenStarry Code config uses BRAVE_SEARCH_API_KEY; the skill must honor it."""
     monkeypatch.setenv("BRAVE_SEARCH_API_KEY", "brave-current")
     monkeypatch.delenv("BRAVE_API_KEY", raising=False)
     search = _search_module()

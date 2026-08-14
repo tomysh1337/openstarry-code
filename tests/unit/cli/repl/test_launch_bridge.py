@@ -36,7 +36,7 @@ def _ui_selection(
     *,
     fallback: Any | None = None,
 ) -> Any:
-    from opensquilla.cli.tui.renderers.selection import ChatUiSelection
+    from openstarry_code.cli.tui.renderers.selection import ChatUiSelection
 
     return ChatUiSelection(
         requested_mode="auto" if fallback is not None else backend_id,
@@ -46,7 +46,7 @@ def _ui_selection(
 
 
 def _missing_host_selection() -> Any:
-    from opensquilla.cli.tui.renderers.selection import (
+    from openstarry_code.cli.tui.renderers.selection import (
         ChatUiFallback,
         RendererBackendUnavailableReason,
     )
@@ -63,14 +63,14 @@ def _missing_host_selection() -> Any:
 def test_bare_chat_preflight_selects_opentui(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.tui.adapters import launch_bridge
-    from opensquilla.cli.tui.opentui import bridge as opentui_bridge
-    from opensquilla.cli.tui.renderers.selection import (
-        OPENSQUILLA_TUI_BACKEND_ENV,
+    from openstarry_code.cli.tui.adapters import launch_bridge
+    from openstarry_code.cli.tui.opentui import bridge as opentui_bridge
+    from openstarry_code.cli.tui.renderers.selection import (
+        OPENSTARRY_CODE_TUI_BACKEND_ENV,
         RendererBackendAvailability,
     )
 
-    original_backend = os.environ.pop(OPENSQUILLA_TUI_BACKEND_ENV, None)
+    original_backend = os.environ.pop(OPENSTARRY_CODE_TUI_BACKEND_ENV, None)
     monkeypatch.setattr(
         opentui_bridge.OpenTuiRendererBackend,
         "is_available",
@@ -81,25 +81,25 @@ def test_bare_chat_preflight_selects_opentui(
         backend_id = launch_bridge.validate_tui_backend_or_exit()
 
         assert backend_id == "opentui"
-        assert os.environ[OPENSQUILLA_TUI_BACKEND_ENV] == "opentui"
+        assert os.environ[OPENSTARRY_CODE_TUI_BACKEND_ENV] == "opentui"
     finally:
-        os.environ.pop(OPENSQUILLA_TUI_BACKEND_ENV, None)
+        os.environ.pop(OPENSTARRY_CODE_TUI_BACKEND_ENV, None)
         if original_backend is not None:
-            os.environ[OPENSQUILLA_TUI_BACKEND_ENV] = original_backend
+            os.environ[OPENSTARRY_CODE_TUI_BACKEND_ENV] = original_backend
 
 
 def test_bare_chat_ignores_stale_internal_backend_and_falls_back(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.tui.adapters import launch_bridge
-    from opensquilla.cli.tui.opentui import bridge as opentui_bridge
-    from opensquilla.cli.tui.renderers.selection import (
-        OPENSQUILLA_TUI_BACKEND_ENV,
+    from openstarry_code.cli.tui.adapters import launch_bridge
+    from openstarry_code.cli.tui.opentui import bridge as opentui_bridge
+    from openstarry_code.cli.tui.renderers.selection import (
+        OPENSTARRY_CODE_TUI_BACKEND_ENV,
         RendererBackendAvailability,
         RendererBackendUnavailableReason,
     )
 
-    monkeypatch.setenv(OPENSQUILLA_TUI_BACKEND_ENV, "opentui")
+    monkeypatch.setenv(OPENSTARRY_CODE_TUI_BACKEND_ENV, "opentui")
     monkeypatch.setattr(
         opentui_bridge.OpenTuiRendererBackend,
         "is_available",
@@ -115,7 +115,7 @@ def test_bare_chat_ignores_stale_internal_backend_and_falls_back(
     assert selection.requested_mode == "auto"
     assert selection.backend.backend_id == "native"
     assert selection.fallback is not None
-    assert os.environ[OPENSQUILLA_TUI_BACKEND_ENV] == "native"
+    assert os.environ[OPENSTARRY_CODE_TUI_BACKEND_ENV] == "native"
 
 
 def test_bare_chat_installed_fallback_notice_shows_once_per_version_and_reason(
@@ -123,17 +123,17 @@ def test_bare_chat_installed_fallback_notice_shows_once_per_version_and_reason(
     tmp_path: Path,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    from opensquilla.cli.tui import source_checkout
-    from opensquilla.cli.tui.adapters import launch_bridge
-    from opensquilla.cli.tui.opentui import bridge as opentui_bridge
-    from opensquilla.cli.tui.renderers.selection import (
-        OPENSQUILLA_TUI_BACKEND_ENV,
+    from openstarry_code.cli.tui import source_checkout
+    from openstarry_code.cli.tui.adapters import launch_bridge
+    from openstarry_code.cli.tui.opentui import bridge as opentui_bridge
+    from openstarry_code.cli.tui.renderers.selection import (
+        OPENSTARRY_CODE_TUI_BACKEND_ENV,
         RendererBackendAvailability,
         RendererBackendUnavailableReason,
     )
 
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path))
-    original_backend = os.environ.pop(OPENSQUILLA_TUI_BACKEND_ENV, None)
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path))
+    original_backend = os.environ.pop(OPENSTARRY_CODE_TUI_BACKEND_ENV, None)
     reason_code = RendererBackendUnavailableReason.MISSING
     monkeypatch.setattr(
         opentui_bridge.OpenTuiRendererBackend,
@@ -185,12 +185,12 @@ def test_bare_chat_installed_fallback_notice_shows_once_per_version_and_reason(
         # remedy pointer, after the screen clear.
         launch()
         assert events == ["validate", "preflight", "clear", "run"]
-        assert os.environ[OPENSQUILLA_TUI_BACKEND_ENV] == "native"
+        assert os.environ[OPENSTARRY_CODE_TUI_BACKEND_ENV] == "native"
         assert len(output_console.prints) == 1
         notice = str(output_console.prints[0])
         assert "Full-screen TUI unavailable" in notice
         assert "using plain mode" in notice
-        assert "opensquilla doctor" in notice
+        assert "openstarry-code doctor" in notice
 
         # Second launch with the same version and reason: quiet again.
         launch()
@@ -205,16 +205,16 @@ def test_bare_chat_installed_fallback_notice_shows_once_per_version_and_reason(
         assert captured.out == ""
         assert captured.err == ""
     finally:
-        os.environ.pop(OPENSQUILLA_TUI_BACKEND_ENV, None)
+        os.environ.pop(OPENSTARRY_CODE_TUI_BACKEND_ENV, None)
         if original_backend is not None:
-            os.environ[OPENSQUILLA_TUI_BACKEND_ENV] = original_backend
+            os.environ[OPENSTARRY_CODE_TUI_BACKEND_ENV] = original_backend
 
 
 def test_bare_chat_advertises_source_host_only_in_checkout(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.tui import source_checkout
-    from opensquilla.cli.tui.adapters import launch_bridge
+    from openstarry_code.cli.tui import source_checkout
+    from openstarry_code.cli.tui.adapters import launch_bridge
 
     console = FakeConsole()
     monkeypatch.setattr(
@@ -231,8 +231,8 @@ def test_bare_chat_advertises_source_host_only_in_checkout(
         lambda: source_checkout.TuiSourceCheckoutHint(
             install_command="bun install --frozen-lockfile --cwd /repo/package",
             launch_command=(
-                "OPENSQUILLA_TUI_DEV_SOURCE_HOST=1 "
-                "uv --directory /repo run opensquilla chat --ui tui"
+                "OPENSTARRY_CODE_TUI_DEV_SOURCE_HOST=1 "
+                "uv --directory /repo run openstarry-code chat --ui tui"
             ),
         ),
     )
@@ -256,8 +256,8 @@ def test_bare_chat_advertises_source_host_only_in_checkout(
     notice = "\n".join(str(payload) for payload in console.prints)
     assert "Full-screen TUI source is available in this checkout" in notice
     assert "bun install --frozen-lockfile" in notice
-    assert "OPENSQUILLA_TUI_DEV_SOURCE_HOST=1" in notice
-    assert "opensquilla chat --ui tui" in notice
+    assert "OPENSTARRY_CODE_TUI_DEV_SOURCE_HOST=1" in notice
+    assert "openstarry-code chat --ui tui" in notice
     assert "Continuing in plain mode for this launch" in notice
     assert console.print_options == [{}, {}, {"soft_wrap": True}, {"soft_wrap": True}, {}]
 
@@ -267,13 +267,13 @@ def test_source_hint_commands_are_not_hard_wrapped(
 ) -> None:
     from rich.console import Console
 
-    from opensquilla.cli.tui import source_checkout
-    from opensquilla.cli.tui.adapters import launch_bridge
+    from openstarry_code.cli.tui import source_checkout
+    from openstarry_code.cli.tui.adapters import launch_bridge
 
     install_command = "bun install --frozen-lockfile --cwd '/tmp/Open Squilla/package'"
     launch_command = (
-        "OPENSQUILLA_TUI_DEV_SOURCE_HOST=1 uv --directory '/tmp/Open Squilla' "
-        "run opensquilla chat --ui tui"
+        "OPENSTARRY_CODE_TUI_DEV_SOURCE_HOST=1 uv --directory '/tmp/Open Squilla' "
+        "run openstarry-code chat --ui tui"
     )
     monkeypatch.setattr(
         source_checkout,
@@ -301,8 +301,8 @@ def test_source_hint_commands_are_not_hard_wrapped(
 def test_explicit_auto_fallback_does_not_advertise_install(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.tui import source_checkout
-    from opensquilla.cli.tui.adapters import launch_bridge
+    from openstarry_code.cli.tui import source_checkout
+    from openstarry_code.cli.tui.adapters import launch_bridge
 
     console = FakeConsole()
     monkeypatch.setattr(
@@ -339,8 +339,8 @@ def test_explicit_auto_fallback_does_not_advertise_install(
 
 
 def test_explicit_auto_fallback_sanitizes_terminal_controls() -> None:
-    from opensquilla.cli.tui.adapters import launch_bridge
-    from opensquilla.cli.tui.renderers.selection import (
+    from openstarry_code.cli.tui.adapters import launch_bridge
+    from openstarry_code.cli.tui.renderers.selection import (
         ChatUiFallback,
         RendererBackendUnavailableReason,
     )
@@ -368,7 +368,7 @@ def test_explicit_auto_fallback_sanitizes_terminal_controls() -> None:
 def test_explicit_plain_keeps_quiet_rescue_renderer_contract(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.tui.adapters import launch_bridge
+    from openstarry_code.cli.tui.adapters import launch_bridge
 
     console = FakeConsole()
     modes: list[str] = []
@@ -404,7 +404,7 @@ def test_explicit_plain_keeps_quiet_rescue_renderer_contract(
 def test_launch_bridge_prepares_terminal_and_quiets_logs(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.tui.adapters import launch_bridge
+    from openstarry_code.cli.tui.adapters import launch_bridge
 
     calls: list[str] = []
 
@@ -436,14 +436,14 @@ def test_launch_bridge_routes_interactive_structlog_to_file(
 ) -> None:
     import structlog
 
-    from opensquilla.cli.tui.adapters import launch_bridge
+    from openstarry_code.cli.tui.adapters import launch_bridge
 
     original_config = structlog.get_config()
     root = logging.getLogger()
     original_root_handlers = list(root.handlers)
     original_root_level = root.level
-    monkeypatch.setenv("OPENSQUILLA_LOG_DIR", str(tmp_path))
-    monkeypatch.delenv("OPENSQUILLA_LOG_LEVEL", raising=False)
+    monkeypatch.setenv("OPENSTARRY_CODE_LOG_DIR", str(tmp_path))
+    monkeypatch.delenv("OPENSTARRY_CODE_LOG_LEVEL", raising=False)
     for handler in original_root_handlers:
         root.removeHandler(handler)
     terminal_stream = FakeTerminalStream()
@@ -479,7 +479,7 @@ def test_launch_bridge_routes_interactive_structlog_to_file(
 
 
 def test_launch_bridge_rejects_non_interactive_input() -> None:
-    from opensquilla.cli.tui.adapters import launch_bridge
+    from openstarry_code.cli.tui.adapters import launch_bridge
 
     class FakeStdin:
         def isatty(self) -> bool:
@@ -497,7 +497,7 @@ def test_launch_bridge_rejects_non_interactive_input() -> None:
 def test_launch_bridge_prints_standalone_banner_and_runs_standalone(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.tui.adapters import launch_bridge
+    from openstarry_code.cli.tui.adapters import launch_bridge
 
     calls: list[dict[str, Any]] = []
     console = FakeConsole(is_terminal=True)
@@ -526,7 +526,7 @@ def test_launch_bridge_prints_standalone_banner_and_runs_standalone(
     )
 
     assert len(console.prints) == 3
-    assert "OpenSquilla Chat" in str(console.prints[0].renderable)
+    assert "OpenStarry Code Chat" in str(console.prints[0].renderable)
     assert console.prints[1] == "[dim]Model: openai/test[/dim]"
     assert console.prints[2] == "[dim]Session: agent:main:test[/dim]"
     assert calls == [
@@ -545,7 +545,7 @@ def test_launch_bridge_suppresses_native_banner_for_opentui_backend(
 ) -> None:
     # The OpenTUI host draws its own full-screen footer; printing the native
     # banner first only makes it flash for ~1s before OpenTUI takes the screen.
-    from opensquilla.cli.tui.adapters import launch_bridge
+    from openstarry_code.cli.tui.adapters import launch_bridge
 
     calls: list[dict[str, Any]] = []
     console = FakeConsole(is_terminal=True)
@@ -582,7 +582,7 @@ def test_launch_bridge_suppresses_native_banner_for_opentui_backend(
 def test_launch_bridge_warns_gateway_workspace_options_without_forwarding(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.tui.adapters import launch_bridge
+    from openstarry_code.cli.tui.adapters import launch_bridge
 
     calls: list[dict[str, Any]] = []
     console = FakeConsole(is_terminal=True)
@@ -619,7 +619,7 @@ def test_launch_bridge_warns_gateway_workspace_options_without_forwarding(
 def test_launch_bridge_rejects_non_tty_before_gateway_preflight(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.tui.adapters import launch_bridge
+    from openstarry_code.cli.tui.adapters import launch_bridge
 
     class FakeStdin:
         def isatty(self) -> bool:
@@ -658,11 +658,11 @@ def test_launch_bridge_rejects_non_tty_before_gateway_preflight(
 
 
 def test_launch_chat_command_uses_typed_overrides() -> None:
-    from opensquilla.cli.chat.launch import (
+    from openstarry_code.cli.chat.launch import (
         ChatCommandLaunchOverrides,
         ChatCommandRequest,
     )
-    from opensquilla.cli.tui.adapters import launch_bridge
+    from openstarry_code.cli.tui.adapters import launch_bridge
 
     calls: list[dict[str, Any]] = []
 
@@ -707,8 +707,8 @@ def test_launch_chat_command_uses_typed_overrides() -> None:
 
 
 def test_launch_chat_command_keeps_legacy_override_mapping() -> None:
-    from opensquilla.cli.chat.launch import ChatCommandRequest
-    from opensquilla.cli.tui.adapters import launch_bridge
+    from openstarry_code.cli.chat.launch import ChatCommandRequest
+    from openstarry_code.cli.tui.adapters import launch_bridge
 
     calls: list[dict[str, Any]] = []
 
@@ -753,8 +753,8 @@ def test_launch_chat_command_keeps_legacy_override_mapping() -> None:
 
 
 def test_fallback_notice_phrases_key_only_stable_reason_codes() -> None:
-    from opensquilla.cli.tui.adapters.launch_bridge import _FALLBACK_NOTICE_PHRASES
-    from opensquilla.cli.tui.renderers.selection import RendererBackendUnavailableReason
+    from openstarry_code.cli.tui.adapters.launch_bridge import _FALLBACK_NOTICE_PHRASES
+    from openstarry_code.cli.tui.renderers.selection import RendererBackendUnavailableReason
 
     codes = {reason.value for reason in RendererBackendUnavailableReason}
     assert set(_FALLBACK_NOTICE_PHRASES) <= codes
@@ -764,14 +764,14 @@ def test_fallback_notice_prints_raw_code_for_unmapped_reason(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    from opensquilla.cli.tui import source_checkout
-    from opensquilla.cli.tui.adapters import launch_bridge
-    from opensquilla.cli.tui.renderers.selection import (
+    from openstarry_code.cli.tui import source_checkout
+    from openstarry_code.cli.tui.adapters import launch_bridge
+    from openstarry_code.cli.tui.renderers.selection import (
         ChatUiFallback,
         RendererBackendUnavailableReason,
     )
 
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path))
     monkeypatch.setattr(source_checkout, "resolve_tui_source_checkout_hint", lambda: None)
     console = FakeConsole()
     selection = SimpleNamespace(
@@ -794,18 +794,18 @@ def test_fallback_notice_repeats_when_the_record_cannot_be_written(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    from opensquilla.cli.tui import source_checkout
-    from opensquilla.cli.tui.adapters import launch_bridge
-    from opensquilla.cli.tui.opentui import prefs
-    from opensquilla.cli.tui.renderers.selection import (
+    from openstarry_code.cli.tui import source_checkout
+    from openstarry_code.cli.tui.adapters import launch_bridge
+    from openstarry_code.cli.tui.opentui import prefs
+    from openstarry_code.cli.tui.renderers.selection import (
         ChatUiFallback,
         RendererBackendUnavailableReason,
     )
 
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path))
     monkeypatch.setattr(source_checkout, "resolve_tui_source_checkout_hint", lambda: None)
     monkeypatch.setattr(
-        "opensquilla.cli.tui.opentui.prefs._store",
+        "openstarry_code.cli.tui.opentui.prefs._store",
         lambda _prefs: None,  # simulate a write that silently fails
     )
     console = FakeConsole()

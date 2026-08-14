@@ -16,9 +16,9 @@ import sys
 import time
 from typing import Any
 
-from opensquilla.provider.codex_auth import CodexAuthError, codex_auth_path, load_codex_credentials
-from opensquilla.provider.openai_codex import OpenAICodexProvider
-from opensquilla.provider.types import (
+from openstarry_code.provider.codex_auth import CodexAuthError, codex_auth_path, load_codex_credentials
+from openstarry_code.provider.openai_codex import OpenAICodexProvider
+from openstarry_code.provider.types import (
     ChatConfig,
     DoneEvent,
     ErrorEvent,

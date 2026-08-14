@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.recovery import inspect_profile
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.recovery import inspect_profile
 
 
 def test_relative_profile_roots_are_config_relative_not_cwd_relative(
@@ -41,8 +41,8 @@ def test_relative_environment_profile_roots_use_the_same_config_base(
         encoding="utf-8",
     )
     monkeypatch.chdir(elsewhere)
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_STATE_DIR", "external-state")
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_WORKSPACE_DIR", "external-workspace")
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_STATE_DIR", "external-state")
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_WORKSPACE_DIR", "external-workspace")
 
     loaded = GatewayConfig.load(config)
 
@@ -68,8 +68,8 @@ def test_recovery_and_runtime_share_path_override_precedence(
         'state_dir = "toml-state"\nworkspace_dir = "toml-workspace"\n',
         encoding="utf-8",
     )
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_STATE_DIR", "env-state")
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_WORKSPACE_DIR", "env-workspace")
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_STATE_DIR", "env-state")
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_WORKSPACE_DIR", "env-workspace")
 
     loaded = GatewayConfig.load(config)
     inspected = inspect_profile(profile, profile_kind="desktop-primary")
@@ -93,8 +93,8 @@ def test_legacy_workspace_environment_alias_matches_recovery(
     (workspace / "SOUL.md").write_text("synthetic\n", encoding="utf-8")
     config = profile / "config.toml"
     config.write_text('workspace_dir = "toml-workspace"\n', encoding="utf-8")
-    monkeypatch.delenv("OPENSQUILLA_GATEWAY_WORKSPACE_DIR", raising=False)
-    monkeypatch.setenv("OPENSQUILLA_WORKSPACE_DIR", "alias-workspace")
+    monkeypatch.delenv("OPENSTARRY_CODE_GATEWAY_WORKSPACE_DIR", raising=False)
+    monkeypatch.setenv("OPENSTARRY_CODE_WORKSPACE_DIR", "alias-workspace")
 
     loaded = GatewayConfig.load(config)
     inspected = inspect_profile(profile, profile_kind="desktop-primary")

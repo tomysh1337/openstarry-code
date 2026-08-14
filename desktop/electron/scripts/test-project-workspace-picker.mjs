@@ -5,12 +5,12 @@ import { projectDirectoryDialogOptions } from '../dist/project-directory-picker.
 const main = readFileSync(new URL('../src/main.ts', import.meta.url), 'utf8')
 const preload = readFileSync(new URL('../src/preload.cts', import.meta.url), 'utf8')
 const desktopPlatform = readFileSync(
-  new URL('../../../opensquilla-webui/src/platform/desktop.ts', import.meta.url),
+  new URL('../../../openstarry-code-webui/src/platform/desktop.ts', import.meta.url),
   'utf8',
 )
 const picker = readFileSync(
   new URL(
-    '../../../opensquilla-webui/src/components/ProjectWorkspacePickerDialog.vue',
+    '../../../openstarry-code-webui/src/components/ProjectWorkspacePickerDialog.vue',
     import.meta.url,
   ),
   'utf8',

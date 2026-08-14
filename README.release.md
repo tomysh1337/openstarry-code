@@ -21,13 +21,13 @@ a Git checkout.
 Run the onboarding command before starting the gateway:
 
 ```sh
-opensquilla onboard --if-needed
+openstarry-code onboard --if-needed
 ```
 
 Then start the local gateway:
 
 ```sh
-opensquilla gateway run
+openstarry-code gateway run
 ```
 
 ## Project Links

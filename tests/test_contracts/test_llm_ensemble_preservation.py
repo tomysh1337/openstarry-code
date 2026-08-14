@@ -29,9 +29,9 @@ from types import SimpleNamespace
 
 import tomli_w
 
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.rpc_config import _handle_config_patch
-from opensquilla.onboarding.mutations import (
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.rpc_config import _handle_config_patch
+from openstarry_code.onboarding.mutations import (
     upsert_llm_ensemble,
     upsert_llm_provider,
     upsert_router,
@@ -164,7 +164,7 @@ async def test_config_patch_provider_realign_preserves_llm_ensemble_subtree(
 ) -> None:
     """A provider patch that fires the auto-router-profile realigner must not
     touch the [llm_ensemble] subtree — in memory or in the persisted file."""
-    from opensquilla.onboarding.config_store import persist_config
+    from openstarry_code.onboarding.config_store import persist_config
 
     cfg = GatewayConfig(
         config_path=str(tmp_path / "config.toml"),

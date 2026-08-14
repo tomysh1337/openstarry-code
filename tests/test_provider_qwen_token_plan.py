@@ -7,20 +7,20 @@ from typing import Any
 import httpx
 import pytest
 
-from opensquilla.engine.types import ThinkingLevel
-from opensquilla.provider.anthropic import AnthropicProvider
-from opensquilla.provider.model_catalog import ModelCatalog
-from opensquilla.provider.openai import OpenAIProvider
-from opensquilla.provider.preset_registry import get_preset
-from opensquilla.provider.qwen_token_plan import (
+from openstarry_code.engine.types import ThinkingLevel
+from openstarry_code.provider.anthropic import AnthropicProvider
+from openstarry_code.provider.model_catalog import ModelCatalog
+from openstarry_code.provider.openai import OpenAIProvider
+from openstarry_code.provider.preset_registry import get_preset
+from openstarry_code.provider.qwen_token_plan import (
     QWEN_TOKEN_PLAN_ANTHROPIC_BASE_URL,
     QWEN_TOKEN_PLAN_IMAGE_MODEL_IDS,
     QWEN_TOKEN_PLAN_MODEL_IDS,
     QWEN_TOKEN_PLAN_OPENAI_BASE_URL,
 )
-from opensquilla.provider.registry import get_provider_spec
-from opensquilla.provider.selector import ProviderConfig, _build_provider
-from opensquilla.provider.types import (
+from openstarry_code.provider.registry import get_provider_spec
+from openstarry_code.provider.selector import ProviderConfig, _build_provider
+from openstarry_code.provider.types import (
     ChatConfig,
     ContentBlockToolUse,
     Message,
@@ -68,7 +68,7 @@ def _patch_transport(
         return real_async_client(*args, **kwargs)
 
     monkeypatch.setattr(
-        f"opensquilla.provider.{module}.httpx.AsyncClient",
+        f"openstarry_code.provider.{module}.httpx.AsyncClient",
         patched_async_client,
     )
 
@@ -127,7 +127,7 @@ async def test_openai_protocol_model_discovery_excludes_native_image_models(
         return real_async_client(*args, **kwargs)
 
     monkeypatch.setattr(
-        "opensquilla.provider.openai.httpx.AsyncClient",
+        "openstarry_code.provider.openai.httpx.AsyncClient",
         patched_async_client,
     )
     provider = _build_provider(

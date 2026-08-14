@@ -14,15 +14,15 @@ from typing import Any
 import pytest
 from pptx import Presentation
 
-import opensquilla.engine.agent as agent_module
-from opensquilla.artifacts import ArtifactStore, artifact_payload
-from opensquilla.engine import Agent, AgentConfig, ToolCall, ToolResult
-from opensquilla.engine.artifact_delivery import (
+import openstarry_code.engine.agent as agent_module
+from openstarry_code.artifacts import ArtifactStore, artifact_payload
+from openstarry_code.engine import Agent, AgentConfig, ToolCall, ToolResult
+from openstarry_code.engine.artifact_delivery import (
     artifact_delivery_publish_target_key,
     auto_publish_omitted_workspace_artifacts,
 )
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.engine.types import (
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.engine.types import (
     ArtifactEvent,
     DoneEvent,
     ErrorEvent,
@@ -31,26 +31,26 @@ from opensquilla.engine.types import (
     ToolResultEvent,
     ToolUseStartEvent,
 )
-from opensquilla.gateway.config import AttachmentsConfig, GatewayConfig, SquillaRouterConfig
-from opensquilla.provider import (
+from openstarry_code.gateway.config import AttachmentsConfig, GatewayConfig, SquillaRouterConfig
+from openstarry_code.provider import (
     ContentBlockToolResult,
     Message,
     ModelInfo,
     ToolDefinition,
     ToolInputSchema,
 )
-from opensquilla.provider import DoneEvent as ProviderDone
-from opensquilla.provider import ErrorEvent as ProviderError
-from opensquilla.provider import ReasoningDeltaEvent as ProviderReasoning
-from opensquilla.provider import TextDeltaEvent as ProviderText
-from opensquilla.provider import ToolUseEndEvent as ProviderToolUseEnd
-from opensquilla.provider import ToolUseStartEvent as ProviderToolUseStart
-from opensquilla.session.manager import SessionManager
-from opensquilla.session.storage import SessionStorage
-from opensquilla.tools.builtin import filesystem
-from opensquilla.tools.builtin import patch as patch_tools
-from opensquilla.tools.registry import ToolRegistry, ToolSpec
-from opensquilla.tools.types import (
+from openstarry_code.provider import DoneEvent as ProviderDone
+from openstarry_code.provider import ErrorEvent as ProviderError
+from openstarry_code.provider import ReasoningDeltaEvent as ProviderReasoning
+from openstarry_code.provider import TextDeltaEvent as ProviderText
+from openstarry_code.provider import ToolUseEndEvent as ProviderToolUseEnd
+from openstarry_code.provider import ToolUseStartEvent as ProviderToolUseStart
+from openstarry_code.session.manager import SessionManager
+from openstarry_code.session.storage import SessionStorage
+from openstarry_code.tools.builtin import filesystem
+from openstarry_code.tools.builtin import patch as patch_tools
+from openstarry_code.tools.registry import ToolRegistry, ToolSpec
+from openstarry_code.tools.types import (
     CallerKind,
     RetryableToolInputError,
     ToolContext,
@@ -2219,7 +2219,7 @@ def test_auto_publish_validates_and_publishes_pptx_from_same_bytes(
     tmp_path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.engine.artifact_delivery as artifact_delivery
+    import openstarry_code.engine.artifact_delivery as artifact_delivery
 
     workspace = tmp_path / "workspace"
     workspace.mkdir()
@@ -2499,7 +2499,7 @@ def test_auto_publish_oversized_pptx_preflights_before_read_or_validation(
     tmp_path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.engine.artifact_delivery as artifact_delivery
+    import openstarry_code.engine.artifact_delivery as artifact_delivery
 
     workspace = tmp_path / "workspace"
     workspace.mkdir()
@@ -3335,7 +3335,7 @@ async def test_goal_post_publish_router_decides_once_for_the_whole_normal_loop(
         return turn
 
     route_once.__name__ = "apply_squilla_router"
-    monkeypatch.setattr("opensquilla.engine.steps.apply_squilla_router", route_once)
+    monkeypatch.setattr("openstarry_code.engine.steps.apply_squilla_router", route_once)
     provider = _GoalPostPublishLoopProvider()
     selector = _GoalArtifactTopologySelector(provider)
 
@@ -3402,7 +3402,7 @@ async def test_goal_post_publish_ensemble_runs_each_normal_decision_once(
         return provider
 
     monkeypatch.setattr(
-        "opensquilla.provider.ensemble.build_ensemble_provider_from_config",
+        "openstarry_code.provider.ensemble.build_ensemble_provider_from_config",
         build_ensemble,
     )
 

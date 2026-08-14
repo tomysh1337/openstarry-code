@@ -8,18 +8,18 @@ from typing import Any
 import pytest
 import tomli_w
 
-import opensquilla.gateway.rpc_config as rpc_config
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.llm_runtime import resolve_llm_runtime_config
-from opensquilla.gateway.rpc import RpcContext
-from opensquilla.gateway.rpc_config import (
+import openstarry_code.gateway.rpc_config as rpc_config
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.llm_runtime import resolve_llm_runtime_config
+from openstarry_code.gateway.rpc import RpcContext
+from openstarry_code.gateway.rpc_config import (
     _handle_config_apply,
     _handle_config_patch,
     _handle_config_reload,
     _handle_config_set,
 )
-from opensquilla.provider.model_catalog import ModelCatalog, set_shared_catalog
-from opensquilla.provider.tokenrhythm_catalog import (
+from openstarry_code.provider.model_catalog import ModelCatalog, set_shared_catalog
+from openstarry_code.provider.tokenrhythm_catalog import (
     parse_tokenrhythm_declared,
     parse_tokenrhythm_published,
 )
@@ -122,11 +122,11 @@ async def test_config_hot_apply_refreshes_when_live_catalog_key_becomes_availabl
         )
 
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
         fake_public,
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
         fake_declared,
     )
     config = GatewayConfig(
@@ -150,7 +150,7 @@ async def test_config_hot_apply_refreshes_when_live_catalog_key_becomes_availabl
         await _handle_config_set({"path": "naming.enabled", "value": False}, ctx)
         assert fetches == ["published", "declared"]
     finally:
-        from opensquilla.gateway.model_catalog_refresh import (
+        from openstarry_code.gateway.model_catalog_refresh import (
             install_tokenrhythm_catalog_coordinator,
         )
 
@@ -193,11 +193,11 @@ async def test_generic_config_profile_credential_change_reconciles_after_persist
 
     monkeypatch.setattr(rpc_config, "_persist_config", recording_persist)
     monkeypatch.setattr(
-        "opensquilla.gateway.llm_runtime.discard_profile_credential_pool",
+        "openstarry_code.gateway.llm_runtime.discard_profile_credential_pool",
         lambda provider: events.append(f"discard:{provider}"),
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.reconcile_tokenrhythm_profile_transition",
+        "openstarry_code.gateway.model_catalog_refresh.reconcile_tokenrhythm_profile_transition",
         recording_reconcile,
     )
 
@@ -258,11 +258,11 @@ async def test_config_reload_is_explicit_live_catalog_retry(
         )
 
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
         fake_public,
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
         fake_declared,
     )
 
@@ -273,7 +273,7 @@ async def test_config_reload_is_explicit_live_catalog_retry(
         assert fetches == ["published", "declared"]
         assert catalog.resolve_entry("qwen3.7-max", provider="tokenrhythm").source == "live"
     finally:
-        from opensquilla.gateway.model_catalog_refresh import (
+        from openstarry_code.gateway.model_catalog_refresh import (
             install_tokenrhythm_catalog_coordinator,
         )
 
@@ -295,7 +295,7 @@ async def test_config_mutation_refreshes_from_authoritative_live_config(
         seen.append(refreshed_config)
 
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_config._refresh_live_catalog_after_change",
+        "openstarry_code.gateway.rpc_config._refresh_live_catalog_after_change",
         fake_refresh,
     )
     ctx = RpcContext(conn_id="test", config=config)
@@ -318,7 +318,7 @@ async def test_config_reload_refreshes_from_authoritative_live_config(
         captured.append(refreshed_config)
 
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.refresh_live_model_catalog",
+        "openstarry_code.gateway.model_catalog_refresh.refresh_live_model_catalog",
         fake_refresh,
     )
     ctx = RpcContext(conn_id="test", config=config)
@@ -339,7 +339,7 @@ async def test_persist_failure_does_not_sync_live_selector(
     selector = _RecordingSelector()
     ctx = RpcContext(conn_id="test", config=config, provider_selector=selector)
 
-    import opensquilla.onboarding.config_store as config_store
+    import openstarry_code.onboarding.config_store as config_store
 
     def _fail_replace(*args: Any, **kwargs: Any) -> None:
         raise OSError("disk full")

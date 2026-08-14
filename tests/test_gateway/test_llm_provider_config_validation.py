@@ -8,8 +8,8 @@ spec-derived resolution rather than raising UnknownProviderError.
 
 from __future__ import annotations
 
-from opensquilla.gateway.config import GatewayConfig, LlmProviderConfig
-from opensquilla.gateway.llm_runtime import resolve_llm_runtime_config
+from openstarry_code.gateway.config import GatewayConfig, LlmProviderConfig
+from openstarry_code.gateway.llm_runtime import resolve_llm_runtime_config
 
 
 def test_unknown_provider_resolves_degraded_instead_of_raising() -> None:
@@ -27,7 +27,7 @@ def test_unknown_provider_resolves_degraded_instead_of_raising() -> None:
 
 
 def test_unset_provider_resolves_degraded_instead_of_raising(monkeypatch) -> None:
-    monkeypatch.delenv("OPENSQUILLA_LLM_PROXY", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_LLM_PROXY", raising=False)
     cfg = GatewayConfig()
     cfg.llm = LlmProviderConfig(provider="", model="", api_key="", base_url="")
     runtime = resolve_llm_runtime_config(cfg)

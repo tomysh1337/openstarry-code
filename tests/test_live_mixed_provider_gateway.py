@@ -9,9 +9,9 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.onboarding.mutations import upsert_llm_profile
-from opensquilla.provider.deployment import resolve_provider_deployment
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.onboarding.mutations import upsert_llm_profile
+from openstarry_code.provider.deployment import resolve_provider_deployment
 
 
 def _load_script():
@@ -126,10 +126,10 @@ def test_gateway_environment_contains_only_selected_file_credentials() -> None:
             "ALL_PROXY": "socks5://proxy.invalid",
             "NO_PROXY": "*",
             "GITHUB_TOKEN": "unrelated-token",
-            "OPENSQUILLA_UNRELATED_OVERRIDE": "must-not-pass",
+            "OPENSTARRY_CODE_UNRELATED_OVERRIDE": "must-not-pass",
             "GEMINI_API_KEY": "ambient-gemini-must-not-pass",
             "OPENAI_BASE_URL": "https://override.invalid/v1",
-            "OPENSQUILLA_LLM_API_KEY": "ambient-primary-must-not-pass",
+            "OPENSTARRY_CODE_LLM_API_KEY": "ambient-primary-must-not-pass",
         },
     )
     assert env["DEEPSEEK_API_KEY"] == "synthetic-ds"
@@ -137,15 +137,15 @@ def test_gateway_environment_contains_only_selected_file_credentials() -> None:
     assert env["TMPDIR"] == "/private/var/synthetic-temp"
     assert "GEMINI_API_KEY" not in env
     assert "OPENAI_BASE_URL" not in env
-    assert "OPENSQUILLA_LLM_API_KEY" not in env
+    assert "OPENSTARRY_CODE_LLM_API_KEY" not in env
     assert "HOME" not in env
     assert "HTTPS_PROXY" not in env
     assert "ALL_PROXY" not in env
     assert "NO_PROXY" not in env
     assert "GITHUB_TOKEN" not in env
-    assert "OPENSQUILLA_UNRELATED_OVERRIDE" not in env
+    assert "OPENSTARRY_CODE_UNRELATED_OVERRIDE" not in env
     assert live.MISSING_ENV_SENTINEL not in env
-    assert env["OPENSQUILLA_LIVE_DISABLE_DOTENV"] == "1"
+    assert env["OPENSTARRY_CODE_LIVE_DISABLE_DOTENV"] == "1"
 
 
 def test_render_config_references_env_names_and_official_endpoints_not_secrets() -> None:
@@ -1026,8 +1026,8 @@ async def test_isolated_gateway_scopes_user_state_and_profile_lock_root(
 
     env = captured["env"]
     assert isinstance(env, dict)
-    assert env["OPENSQUILLA_USER_STATE_DIR"] == str(temp_root / "user-state")
-    assert env["OPENSQUILLA_TEST_PROFILE_LOCK_ROOT"] == "1"
+    assert env["OPENSTARRY_CODE_USER_STATE_DIR"] == str(temp_root / "user-state")
+    assert env["OPENSTARRY_CODE_TEST_PROFILE_LOCK_ROOT"] == "1"
     assert (temp_root / "user-state").is_dir()
     assert captured["cwd"] == temp_root
     assert result["failure_class"] == "implementation"

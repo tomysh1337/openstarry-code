@@ -10,14 +10,14 @@ from pathlib import Path
 # creator_fixtures is on sys.path via tests/test_skills/conftest.py
 from creator_fixtures import INTENT_PDF_DIGEST, INTENT_TRIP_PLANNER, synth_decision_log
 
-from opensquilla.engine.types import TextDeltaEvent
-from opensquilla.skills.loader import SkillLoader
-from opensquilla.skills.meta.orchestrator import MetaOrchestrator
-from opensquilla.skills.meta.parser import parse_meta_plan
-from opensquilla.skills.meta.types import MetaMatch, MetaResult
+from openstarry_code.engine.types import TextDeltaEvent
+from openstarry_code.skills.loader import SkillLoader
+from openstarry_code.skills.meta.orchestrator import MetaOrchestrator
+from openstarry_code.skills.meta.parser import parse_meta_plan
+from openstarry_code.skills.meta.types import MetaMatch, MetaResult
 
 REPO = Path(__file__).resolve().parents[2]
-_BUNDLED_BASE = REPO / "src" / "opensquilla" / "skills" / "bundled"
+_BUNDLED_BASE = REPO / "src" / "openstarry_code" / "skills" / "bundled"
 PROPOSALS = _BUNDLED_BASE / "skill-creator-proposals" / "scripts" / "proposals.py"
 LINT = _BUNDLED_BASE / "skill-creator-linter" / "scripts" / "lint.py"
 BUNDLED = _BUNDLED_BASE
@@ -31,7 +31,7 @@ def test_creator_catalog_excludes_outer_creator_helper_skills() -> None:
     can put proposal persistence inside the candidate meta-skill and runtime
     E2E will correctly fail.
     """
-    from opensquilla.skills.creator import proposer
+    from openstarry_code.skills.creator import proposer
 
     catalog = proposer._build_catalog_summary()
 
@@ -46,11 +46,11 @@ def test_creator_catalog_excludes_outer_creator_helper_skills() -> None:
 def test_e2e_p1_proposal_lint_pass(tmp_path, monkeypatch) -> None:
     """Stub each LLM step + run the full pipeline; verify proposal is
     auto_enable_eligible."""
-    home = tmp_path / ".opensquilla"
+    home = tmp_path / ".openstarry-code"
     log_dir = home / "logs"
     synth_decision_log(log_dir, INTENT_PDF_DIGEST["co_occurrence_seed"])
 
-    from opensquilla.skills.creator import proposer
+    from openstarry_code.skills.creator import proposer
 
     canned_slots = {
         "name": "synth-pdf-digest-pipeline",
@@ -119,7 +119,7 @@ def test_e2e_p1_proposal_lint_pass(tmp_path, monkeypatch) -> None:
 def test_creator_preserves_required_triggers_and_prior_step_context(monkeypatch) -> None:
     """Creator output must keep explicit trigger requirements and complete
     the evidence chain for sequential templates."""
-    from opensquilla.skills.creator import proposer
+    from openstarry_code.skills.creator import proposer
 
     canned_slots = {
         "name": "traceback-debug-orchestrator",
@@ -217,10 +217,10 @@ def test_manual_creator_persist_auto_enables_when_setting_is_on(tmp_path) -> Non
     """The manual meta-skill-creator persist tool should use the same
     conservative auto-enable path as cron/dream auto-propose when the
     operator has enabled it in runtime settings."""
-    home = tmp_path / ".opensquilla"
+    home = tmp_path / ".openstarry-code"
 
-    from opensquilla.skills import proposals_lib
-    from opensquilla.skills.creator import proposer
+    from openstarry_code.skills import proposals_lib
+    from openstarry_code.skills.creator import proposer
 
     proposals_lib.write_auto_propose_settings(
         home,
@@ -270,10 +270,10 @@ def test_auto_propose_persist_can_defer_manual_auto_enable(tmp_path) -> None:
     but auto-propose injects ``auto_enable_manual=False`` so it can patch
     auto_cron/auto_dream provenance before attempting promotion.
     """
-    home = tmp_path / ".opensquilla"
+    home = tmp_path / ".openstarry-code"
 
-    from opensquilla.skills import proposals_lib
-    from opensquilla.skills.creator import proposer
+    from openstarry_code.skills import proposals_lib
+    from openstarry_code.skills.creator import proposer
 
     proposals_lib.write_auto_propose_settings(
         home,
@@ -318,10 +318,10 @@ composition:
 
 async def test_orchestrator_drives_creator_dag_end_to_end(tmp_path, monkeypatch) -> None:
     """Full DAG through MetaOrchestrator with stubbed downstream runners."""
-    home = tmp_path / ".opensquilla"
+    home = tmp_path / ".openstarry-code"
     log_dir = home / "logs"
     synth_decision_log(log_dir, INTENT_PDF_DIGEST["co_occurrence_seed"])
-    monkeypatch.setenv("OPENSQUILLA_LOG_DIR", str(log_dir))
+    monkeypatch.setenv("OPENSTARRY_CODE_LOG_DIR", str(log_dir))
 
     loader = SkillLoader(bundled_dir=BUNDLED, snapshot_path=tmp_path / "snap.json")
     loader.invalidate_cache()
@@ -374,7 +374,7 @@ async def test_orchestrator_drives_creator_dag_end_to_end(tmp_path, monkeypatch)
                 ],
             })
         if tool_name == "meta_skill_assemble":
-            from opensquilla.skills.creator.proposer import meta_skill_assemble
+            from openstarry_code.skills.creator.proposer import meta_skill_assemble
             return meta_skill_assemble(args["pattern_id"], args["slots_json"])
         return f"<stub:{tool_name}>"
 
@@ -468,10 +468,10 @@ async def test_creator_dag_stops_when_clarify_routes_normal_skill(tmp_path) -> N
 
 async def test_orchestrator_p2_fan_out_merge_proposal(tmp_path, monkeypatch) -> None:
     """P2 fan-out-merge topology: two parallel branches + merge step."""
-    home = tmp_path / ".opensquilla"
+    home = tmp_path / ".openstarry-code"
     log_dir = home / "logs"
     synth_decision_log(log_dir, INTENT_TRIP_PLANNER["co_occurrence_seed"])
-    monkeypatch.setenv("OPENSQUILLA_LOG_DIR", str(log_dir))
+    monkeypatch.setenv("OPENSTARRY_CODE_LOG_DIR", str(log_dir))
 
     loader = SkillLoader(bundled_dir=BUNDLED, snapshot_path=tmp_path / "snap.json")
     loader.invalidate_cache()
@@ -524,7 +524,7 @@ async def test_orchestrator_p2_fan_out_merge_proposal(tmp_path, monkeypatch) -> 
                 "tail": None,
             })
         if tool_name == "meta_skill_assemble":
-            from opensquilla.skills.creator.proposer import meta_skill_assemble
+            from openstarry_code.skills.creator.proposer import meta_skill_assemble
             return meta_skill_assemble(args["pattern_id"], args["slots_json"])
         return f"<stub:{tool_name}>"
 

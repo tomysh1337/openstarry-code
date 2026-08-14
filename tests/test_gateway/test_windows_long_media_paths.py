@@ -7,18 +7,18 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.artifacts import (
+from openstarry_code.artifacts import (
     ArtifactBundle,
     ArtifactBundleSourceFile,
     ArtifactStore,
 )
-from opensquilla.attachment_refs import (
+from openstarry_code.attachment_refs import (
     copy_transcript_material,
     make_attachment_ref,
     read_attachment_ref_bytes,
     write_transcript_material,
 )
-from opensquilla.paths import native_io_path
+from openstarry_code.paths import native_io_path
 
 pytestmark = pytest.mark.skipif(os.name != "nt", reason="Windows long-path regression")
 
@@ -41,10 +41,10 @@ def _app(media_root: Path):
     pytest.importorskip("starlette.testclient")
     from starlette.applications import Starlette
 
-    from opensquilla.gateway.artifacts import register_artifact_routes
-    from opensquilla.gateway.attachments import register_attachment_routes
-    from opensquilla.gateway.config import AttachmentsConfig, AuthConfig, GatewayConfig
-    from opensquilla.gateway.middleware import AuthMiddleware
+    from openstarry_code.gateway.artifacts import register_artifact_routes
+    from openstarry_code.gateway.attachments import register_attachment_routes
+    from openstarry_code.gateway.config import AttachmentsConfig, AuthConfig, GatewayConfig
+    from openstarry_code.gateway.middleware import AuthMiddleware
 
     config = GatewayConfig(
         auth=AuthConfig(mode="token", token="secret"),

@@ -9,10 +9,10 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.skills import file_hash
-from opensquilla.skills import loader as skill_loader_module
-from opensquilla.skills.file_hash import _TreeChangedDuringHashError
-from opensquilla.skills.loader import MAX_SKILL_FILE_BYTES, SkillLoader
+from openstarry_code.skills import file_hash
+from openstarry_code.skills import loader as skill_loader_module
+from openstarry_code.skills.file_hash import _TreeChangedDuringHashError
+from openstarry_code.skills.loader import MAX_SKILL_FILE_BYTES, SkillLoader
 
 
 def _write_skill(root: Path, name: str, description: str = "description") -> Path:

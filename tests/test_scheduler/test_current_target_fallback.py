@@ -1,6 +1,6 @@
 """sessionTarget=current fail-soft fallback.
 
-OpenSquilla preserves CURRENT in storage and resolves the bound key at
+OpenStarry Code preserves CURRENT in storage and resolves the bound key at
 fire-time using stored ``session_key``/``origin_session_key`` (see existing
 RPC tests). This file covers the creation-time guard: when CURRENT is
 requested but neither binding is present (e.g. headless CLI use),
@@ -11,10 +11,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from opensquilla.scheduler.ops import SchedulerOps
-from opensquilla.scheduler.payloads import make_agent_turn_payload
-from opensquilla.scheduler.persistence import JobStore
-from opensquilla.scheduler.types import ScheduleKind, SessionTarget
+from openstarry_code.scheduler.ops import SchedulerOps
+from openstarry_code.scheduler.payloads import make_agent_turn_payload
+from openstarry_code.scheduler.persistence import JobStore
+from openstarry_code.scheduler.types import ScheduleKind, SessionTarget
 
 
 async def test_current_target_with_no_binding_falls_back_to_isolated(tmp_path: Path) -> None:

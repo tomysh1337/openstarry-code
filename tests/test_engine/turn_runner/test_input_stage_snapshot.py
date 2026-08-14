@@ -16,7 +16,7 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.runtime import TurnRunner
+from openstarry_code.engine.runtime import TurnRunner
 
 from .test_input_stage_unit import CORPUS, CORPUS_BY_ID, _RecordingSessionAppend, _Snapshot
 

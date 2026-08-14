@@ -9,10 +9,10 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.recovery import inspect_profile
-from opensquilla.recovery.errors import RecoveryError, StaleRecoveryTransactionError
-from opensquilla.recovery.restore import _identity_payload
-from opensquilla.recovery.transaction import recover_profile_transaction
+from openstarry_code.recovery import inspect_profile
+from openstarry_code.recovery.errors import RecoveryError, StaleRecoveryTransactionError
+from openstarry_code.recovery.restore import _identity_payload
+from openstarry_code.recovery.transaction import recover_profile_transaction
 
 
 def _normalized_path(path: Path) -> str:
@@ -23,7 +23,7 @@ def _contend_for_transaction_gateway(
     state_dir: str,
     queue: multiprocessing.Queue,
 ) -> None:
-    from opensquilla.gateway.pidlock import GatewayPidLock
+    from openstarry_code.gateway.pidlock import GatewayPidLock
 
     lock = GatewayPidLock(state_dir)
     try:
@@ -57,9 +57,9 @@ def _write_journal(home: Path, payload: dict[str, object]) -> Path:
 def test_typed_import_target_parked_can_be_rolled_back_without_reimport(
     tmp_path: Path,
 ) -> None:
-    import opensquilla.migration.opensquilla_home as migration_module
+    import openstarry_code.migration.opensquilla_home as migration_module
 
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     source = _profile(tmp_path / "source", "source must remain untouched")
     transaction_id = str(uuid.uuid4())
     backup = _profile(home.with_name(f"{home.name}.backup.{transaction_id}"), "original")
@@ -125,9 +125,9 @@ def test_typed_import_target_parked_can_be_rolled_back_without_reimport(
 def test_import_recovery_handles_candidate_move_before_phase_update(
     tmp_path: Path,
 ) -> None:
-    import opensquilla.migration.opensquilla_home as migration_module
+    import openstarry_code.migration.opensquilla_home as migration_module
 
-    home = _profile(tmp_path / "opensquilla", "published candidate")
+    home = _profile(tmp_path / "openstarry-code", "published candidate")
     source = _profile(tmp_path / "source", "source")
     transaction_id = str(uuid.uuid4())
     backup = _profile(home.with_name(f"{home.name}.backup.{transaction_id}"), "original")
@@ -173,9 +173,9 @@ def test_import_recovery_handles_candidate_move_before_phase_update(
 def test_import_recovery_is_idempotent_after_paths_were_already_rolled_back(
     tmp_path: Path,
 ) -> None:
-    import opensquilla.migration.opensquilla_home as migration_module
+    import openstarry_code.migration.opensquilla_home as migration_module
 
-    home = _profile(tmp_path / "opensquilla", "original")
+    home = _profile(tmp_path / "openstarry-code", "original")
     source = _profile(tmp_path / "source", "source")
     candidate = _profile(tmp_path / "candidate-probe", "candidate")
     candidate_identity = _identity_payload(candidate)
@@ -226,9 +226,9 @@ def test_transaction_recovery_locks_parked_backup_before_restoring_target(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    import opensquilla.migration.opensquilla_home as migration_module
+    import openstarry_code.migration.opensquilla_home as migration_module
 
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     source = _profile(tmp_path / "source", "source")
     transaction_id = str(uuid.uuid4())
     backup = _profile(home.with_name(f"{home.name}.backup.{transaction_id}"), "original")
@@ -295,7 +295,7 @@ def test_transaction_recovery_locks_parked_backup_before_restoring_target(
 def test_typed_restore_target_parked_restores_current_target_and_keeps_selection(
     tmp_path: Path,
 ) -> None:
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     transaction_id = str(uuid.uuid4())
     selected = _profile(tmp_path / "opensquilla.backup.selected", "selected")
     current_backup = _profile(
@@ -340,7 +340,7 @@ def test_typed_restore_target_parked_restores_current_target_and_keeps_selection
 def test_restore_recovery_is_idempotent_after_both_moves_completed(
     tmp_path: Path,
 ) -> None:
-    home = _profile(tmp_path / "opensquilla", "current")
+    home = _profile(tmp_path / "openstarry-code", "current")
     transaction_id = str(uuid.uuid4())
     selected = _profile(tmp_path / "opensquilla.backup.selected", "selected")
     current_backup = home.with_name(f"{home.name}.backup.{transaction_id}")
@@ -382,7 +382,7 @@ def test_restore_recovery_is_idempotent_after_both_moves_completed(
 def test_untyped_or_tampered_journal_has_no_automatic_recovery_action(
     tmp_path: Path,
 ) -> None:
-    home = _profile(tmp_path / "opensquilla", "current")
+    home = _profile(tmp_path / "openstarry-code", "current")
     _write_journal(
         home,
         {
@@ -404,7 +404,7 @@ def test_almost_typed_import_journal_is_read_only_and_not_recoverable(
     tmp_path: Path,
     tamper: str,
 ) -> None:
-    home = _profile(tmp_path / "opensquilla", "current")
+    home = _profile(tmp_path / "openstarry-code", "current")
     source = _profile(tmp_path / "source", "source")
     transaction_id = str(uuid.uuid4())
     staging = _profile(
@@ -462,7 +462,7 @@ def test_almost_typed_import_journal_is_read_only_and_not_recoverable(
 def test_recovery_revision_rejects_a_typed_journal_replaced_after_inspection(
     tmp_path: Path,
 ) -> None:
-    home = tmp_path / "opensquilla"
+    home = tmp_path / "openstarry-code"
     first_id = str(uuid.uuid4())
     second_id = str(uuid.uuid4())
     first_source = _profile(tmp_path / "source-first", "first source")

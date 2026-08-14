@@ -6,14 +6,14 @@ from pathlib import Path
 import pytest
 import yaml
 
-from opensquilla.gateway.config import ROUTER_TIER_PROFILE_IDS
+from openstarry_code.gateway.config import ROUTER_TIER_PROFILE_IDS
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DIRECT_ROUTER_PROFILE_IDS = sorted(ROUTER_TIER_PROFILE_IDS - {"openrouter"})
 
 
 def _squilla_router_config_cls():
-    config_path = REPO_ROOT / "src" / "opensquilla" / "gateway" / "config.py"
+    config_path = REPO_ROOT / "src" / "openstarry_code" / "gateway" / "config.py"
     spec = spec_from_file_location("opensquilla_gateway_config_under_test", config_path)
     assert spec is not None
     assert spec.loader is not None
@@ -31,7 +31,7 @@ def _squilla_router_config_cls():
 
 
 def _gateway_config_cls():
-    from opensquilla.gateway.config import GatewayConfig
+    from openstarry_code.gateway.config import GatewayConfig
 
     return GatewayConfig
 
@@ -138,7 +138,7 @@ def test_provider_profile_accepts_matching_llm_provider() -> None:
 
 @pytest.mark.parametrize("provider_id", DIRECT_ROUTER_PROFILE_IDS)
 def test_unset_tier_profile_uses_matching_direct_provider_profile(provider_id: str) -> None:
-    from opensquilla.gateway.config import _router_tier_profile_defaults
+    from openstarry_code.gateway.config import _router_tier_profile_defaults
 
     gateway_config_cls = _gateway_config_cls()
 
@@ -153,7 +153,7 @@ def test_unset_tier_profile_uses_matching_direct_provider_profile(provider_id: s
 
 @pytest.mark.parametrize("provider_id", DIRECT_ROUTER_PROFILE_IDS)
 def test_direct_legacy_openrouter_router_defaults_are_migrated(provider_id: str) -> None:
-    from opensquilla.gateway.config import _router_tier_profile_defaults
+    from openstarry_code.gateway.config import _router_tier_profile_defaults
 
     gateway_config_cls = _gateway_config_cls()
 
@@ -192,7 +192,7 @@ def test_unset_tier_profile_seeds_tokenrhythm_curated_inline_tiers() -> None:
 
 
 def test_tokenrhythm_direct_legacy_openrouter_router_defaults_are_migrated() -> None:
-    from opensquilla.gateway.config import _router_tier_profile_defaults
+    from openstarry_code.gateway.config import _router_tier_profile_defaults
 
     gateway_config_cls = _gateway_config_cls()
 
@@ -379,7 +379,7 @@ def test_profile_preserves_explicit_provider_compatible_image_model() -> None:
 
 
 def test_example_toml_enables_runtime_router_defaults() -> None:
-    example = REPO_ROOT / "opensquilla.toml.example"
+    example = REPO_ROOT / "openstarry-code.toml.example"
 
     data = tomllib.loads(example.read_text(encoding="utf-8"))
     squilla_router = data["squilla_router"]

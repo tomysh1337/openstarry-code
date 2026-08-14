@@ -11,12 +11,12 @@ import sys
 
 import pytest
 
-from opensquilla.cli.tui.adapters import native_bridge
-from opensquilla.cli.tui.adapters.native_bridge import (
+from openstarry_code.cli.tui.adapters import native_bridge
+from openstarry_code.cli.tui.adapters.native_bridge import (
     NativeTerminalSurface,
     open_native_terminal_surface,
 )
-from opensquilla.engine.commands import Surface
+from openstarry_code.engine.commands import Surface
 
 
 @pytest.mark.asyncio

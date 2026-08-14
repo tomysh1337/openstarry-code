@@ -24,11 +24,11 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.engine.turn_runner.harness import _TurnRunnerAgentFactoryAdapter
-from opensquilla.engine.types import AgentConfig, ErrorEvent
-from opensquilla.tools.registry import ToolRegistry
-from opensquilla.tools.types import ToolContext
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.engine.turn_runner.harness import _TurnRunnerAgentFactoryAdapter
+from openstarry_code.engine.types import AgentConfig, ErrorEvent
+from openstarry_code.tools.registry import ToolRegistry
+from openstarry_code.tools.types import ToolContext
 
 # ---------------------------------------------------------------------------
 # Shared stubs
@@ -492,17 +492,17 @@ async def _drive(runner, case, monkeypatch):
     # at module level, and the adapter lazy-imports inside the function body.
     # Patch both so the runtime path and adapter path see the same value.
     monkeypatch.setattr(
-        "opensquilla.engine.runtime.allows_private_memory_prompt_injection",
+        "openstarry_code.engine.runtime.allows_private_memory_prompt_injection",
         _allows,
     )
     monkeypatch.setattr(
-        "opensquilla.session.keys.allows_private_memory_prompt_injection",
+        "openstarry_code.session.keys.allows_private_memory_prompt_injection",
         _allows,
     )
 
     # If the case calls for a pre-existing snapshot, seed the dict
     if case["snapshot_pre_existing"]:
-        from opensquilla.engine.runtime import MemorySnapshot
+        from openstarry_code.engine.runtime import MemorySnapshot
 
         runner._memory_snapshots[("agent:main", "agent:main:s1")] = MemorySnapshot()
 

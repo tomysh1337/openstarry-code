@@ -33,8 +33,8 @@ class CustomBuildHook(BuildHookInterface):
             )
 
             verify_dist(
-                root / "src/opensquilla/gateway/static/dist",
-                webui_root=root / "opensquilla-webui",
+                root / "src/openstarry_code/gateway/static/dist",
+                webui_root=root / "openstarry-code-webui",
                 # Source archives are easy to redistribute accidentally. Keep
                 # standard sdists privacy-safe even when a checkout contains
                 # ignored personal music; direct local wheels may still embed
@@ -42,7 +42,7 @@ class CustomBuildHook(BuildHookInterface):
                 forbid_personal_bgm=self.target_name == "sdist",
             )
             if self.target_name == "sdist":
-                verify_sdist_source_inventory(root / "opensquilla-webui")
+                verify_sdist_source_inventory(root / "openstarry-code-webui")
         except (ImportError, OSError, RuntimeError) as exc:
             privacy_note = (
                 " Standard sdists intentionally reject personal BGM; build a "
@@ -53,7 +53,7 @@ class CustomBuildHook(BuildHookInterface):
             raise RuntimeError(
                 "A verified WebUI artifact is required for standard wheel/sdist builds. "
                 "From a repository checkout, run "
-                "`cd opensquilla-webui && npm ci && npm run build`, then retry. "
+                "`cd openstarry-code-webui && npm ci && npm run build`, then retry. "
                 "VCS URL installs cannot build the untracked generated artifact; use "
                 "an official release wheel, or clone the repository and run "
                 "`bash scripts/install_source.sh` (`powershell -ExecutionPolicy "

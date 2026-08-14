@@ -14,7 +14,7 @@ import pytest
 
 PYPROJECT = Path(__file__).resolve().parents[2] / "pyproject.toml"
 UV_LOCK = Path(__file__).resolve().parents[2] / "uv.lock"
-FORMULA = Path(__file__).resolve().parents[2] / "Formula" / "opensquilla.rb"
+FORMULA = Path(__file__).resolve().parents[2] / "Formula" / "openstarry-code.rb"
 
 
 @pytest.fixture(scope="module")
@@ -26,7 +26,9 @@ def project_table() -> dict:
 @pytest.fixture(scope="module")
 def lock_package() -> dict:
     data = tomllib.loads(UV_LOCK.read_text(encoding="utf-8"))
-    return next(package for package in data["package"] if package["name"] == "opensquilla")
+    return next(
+        package for package in data["package"] if package["name"] == "openstarry-code"
+    )
 
 
 def _dep_names(specs: list[str]) -> set[str]:
@@ -130,7 +132,7 @@ def test_html_coder_reference_files_are_packaged() -> None:
     references_dir = (
         PYPROJECT.parent
         / "src"
-        / "opensquilla"
+        / "openstarry_code"
         / "skills"
         / "bundled"
         / "html-coder"
@@ -156,13 +158,13 @@ def test_standard_distributions_require_verified_generated_webui() -> None:
     data = tomllib.loads(PYPROJECT.read_text(encoding="utf-8"))
     build = data["build-system"]
     hatch = data["tool"]["hatch"]["build"]
-    artifact_rule = "src/opensquilla/gateway/static/dist/**"
+    artifact_rule = "src/openstarry_code/gateway/static/dist/**"
 
     assert build["requires"] == ["hatchling>=1.31,<2"]
     assert "custom" in hatch["hooks"]
     assert artifact_rule in hatch["targets"]["wheel"]["artifacts"]
     assert artifact_rule in hatch["targets"]["sdist"]["artifacts"]
-    assert "opensquilla-webui/public/music/**" not in hatch["targets"]["sdist"][
+    assert "openstarry-code-webui/public/music/**" not in hatch["targets"]["sdist"][
         "artifacts"
     ]
     assert (PYPROJECT.parent / "hatch_build.py").is_file()

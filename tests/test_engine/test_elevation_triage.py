@@ -3,10 +3,10 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-from opensquilla.engine.elevation_triage import local_elevation_assessment
-from opensquilla.provider import Message
-from opensquilla.sandbox.elevation import ElevationAction
-from opensquilla.tools.builtin import code_exec, shell
+from openstarry_code.engine.elevation_triage import local_elevation_assessment
+from openstarry_code.provider import Message
+from openstarry_code.sandbox.elevation import ElevationAction
+from openstarry_code.tools.builtin import code_exec, shell
 
 
 def _action(

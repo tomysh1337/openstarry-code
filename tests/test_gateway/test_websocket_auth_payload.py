@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-import opensquilla.gateway.websocket as websocket
-from opensquilla.gateway.auth import Principal
-from opensquilla.sandbox.run_mode_policy import hello_auth_payload
+import openstarry_code.gateway.websocket as websocket
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.sandbox.run_mode_policy import hello_auth_payload
 
 
 def test_owner_hello_auth_payload_allows_full_by_default() -> None:

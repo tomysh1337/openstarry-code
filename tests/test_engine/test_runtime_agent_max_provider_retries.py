@@ -4,9 +4,9 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.engine.types import AgentConfig
-from opensquilla.gateway.config import GatewayConfig
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.engine.types import AgentConfig
+from openstarry_code.gateway.config import GatewayConfig
 
 
 class _SessionConfigManager:
@@ -20,7 +20,7 @@ class _SessionConfigManager:
 def test_resolve_agent_max_provider_retries_prefers_explicit_value(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_AGENT_MAX_PROVIDER_RETRIES", "2")
+    monkeypatch.setenv("OPENSTARRY_CODE_AGENT_MAX_PROVIDER_RETRIES", "2")
     runner = TurnRunner(
         provider_selector=None,
         session_manager=_SessionConfigManager(
@@ -35,7 +35,7 @@ def test_resolve_agent_max_provider_retries_prefers_explicit_value(
 def test_resolve_agent_max_provider_retries_prefers_session_config(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_AGENT_MAX_PROVIDER_RETRIES", "2")
+    monkeypatch.setenv("OPENSTARRY_CODE_AGENT_MAX_PROVIDER_RETRIES", "2")
     runner = TurnRunner(
         provider_selector=None,
         session_manager=_SessionConfigManager(
@@ -50,7 +50,7 @@ def test_resolve_agent_max_provider_retries_prefers_session_config(
 def test_resolve_agent_max_provider_retries_prefers_env_over_gateway_config(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_AGENT_MAX_PROVIDER_RETRIES", "2")
+    monkeypatch.setenv("OPENSTARRY_CODE_AGENT_MAX_PROVIDER_RETRIES", "2")
     runner = TurnRunner(
         provider_selector=None,
         session_manager=_SessionConfigManager(None),
@@ -63,7 +63,7 @@ def test_resolve_agent_max_provider_retries_prefers_env_over_gateway_config(
 def test_resolve_agent_max_provider_retries_uses_gateway_config(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.delenv("OPENSQUILLA_AGENT_MAX_PROVIDER_RETRIES", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_AGENT_MAX_PROVIDER_RETRIES", raising=False)
     runner = TurnRunner(
         provider_selector=None,
         config=GatewayConfig(agent_max_provider_retries=3),
@@ -75,7 +75,7 @@ def test_resolve_agent_max_provider_retries_uses_gateway_config(
 def test_resolve_agent_max_provider_retries_uses_agent_default_without_config(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.delenv("OPENSQUILLA_AGENT_MAX_PROVIDER_RETRIES", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_AGENT_MAX_PROVIDER_RETRIES", raising=False)
     runner = TurnRunner(provider_selector=None, config=None)
 
     assert (
@@ -87,7 +87,7 @@ def test_resolve_agent_max_provider_retries_uses_agent_default_without_config(
 def test_resolve_agent_max_provider_retries_invalid_env_falls_through(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_AGENT_MAX_PROVIDER_RETRIES", "not-an-int")
+    monkeypatch.setenv("OPENSTARRY_CODE_AGENT_MAX_PROVIDER_RETRIES", "not-an-int")
     runner = TurnRunner(
         provider_selector=None,
         session_manager=_SessionConfigManager(None),
@@ -100,7 +100,7 @@ def test_resolve_agent_max_provider_retries_invalid_env_falls_through(
 def test_resolve_agent_max_provider_retries_accepts_zero(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.delenv("OPENSQUILLA_AGENT_MAX_PROVIDER_RETRIES", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_AGENT_MAX_PROVIDER_RETRIES", raising=False)
     runner = TurnRunner(provider_selector=None, config=GatewayConfig())
 
     assert runner._resolve_agent_max_provider_retries("agent:main:test", 0) == 0

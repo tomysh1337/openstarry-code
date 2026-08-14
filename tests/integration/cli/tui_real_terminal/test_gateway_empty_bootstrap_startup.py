@@ -38,7 +38,7 @@ def test_empty_gateway_bootstrap_keeps_complete_first_screen(
             ),
         ),
         expected_text=(
-            "OpenSquilla",
+            "OpenStarry Code",
             "Build with your agent. Stay in the flow.",
             "Fresh Gateway session",
             "AGENT",
@@ -52,7 +52,7 @@ def test_empty_gateway_bootstrap_keeps_complete_first_screen(
     assert result.status == "pass"
     frames = result.run_dir / "frames"
     frame = next(frames.glob("*-gateway-bootstrap-first-screen.txt")).read_text(encoding="utf-8")
-    assert frame.count("OpenSquilla") == 1
+    assert frame.count("OpenStarry Code") == 1
     assert frame.count("send a message") == 1
     assert (result.run_dir / "opentui-app.log").is_file()
 

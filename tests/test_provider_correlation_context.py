@@ -4,11 +4,11 @@ import asyncio
 
 import pytest
 
-from opensquilla.provider.correlation_context import (
+from openstarry_code.provider.correlation_context import (
     bind_provider_request_correlation,
     current_provider_request_correlation,
 )
-from opensquilla.provider.types import ProviderRequestCorrelation
+from openstarry_code.provider.types import ProviderRequestCorrelation
 
 
 def _correlation(label: str) -> ProviderRequestCorrelation:

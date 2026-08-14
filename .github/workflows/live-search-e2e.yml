@@ -24,8 +24,8 @@ jobs:
 
     env:
       PYTHONPATH: ${{ github.workspace }}
-      OPENSQUILLA_TURN_CALL_LOG: "0"
-      OPENSQUILLA_LIVE_SEARCH: "1"
+      OPENSTARRY_CODE_TURN_CALL_LOG: "0"
+      OPENSTARRY_CODE_LIVE_SEARCH: "1"
       OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
       OPENROUTER_BASE_URL: ${{ vars.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1' }}
       LLM_TEST_MODEL: ${{ vars.LLM_TEST_MODEL || 'openai/gpt-4o-mini' }}
@@ -41,8 +41,8 @@ jobs:
       - name: Configure runtime directories
         shell: bash
         run: |
-          printf 'OPENSQUILLA_STATE_DIR=%s/opensquilla-state\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
-          printf 'OPENSQUILLA_LOG_DIR=%s/opensquilla-logs\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'OPENSTARRY_CODE_STATE_DIR=%s/opensquilla-state\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'OPENSTARRY_CODE_LOG_DIR=%s/opensquilla-logs\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -93,7 +93,7 @@ jobs:
       - name: Run extended live search matrix
         if: ${{ inputs.run_extended_matrix }}
         env:
-          OPENSQUILLA_LIVE_SEARCH_MATRIX: "1"
+          OPENSTARRY_CODE_LIVE_SEARCH_MATRIX: "1"
         run: |
           timeout 240s uv run pytest \
             tests/live/test_search_api_matrix_live.py \

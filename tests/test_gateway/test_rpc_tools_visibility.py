@@ -6,12 +6,12 @@ from typing import Any
 
 import pytest
 
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.rpc import RpcContext, get_dispatcher
-from opensquilla.gateway.scopes import READ_SCOPE
-from opensquilla.tools.registry import ToolRegistry
-from opensquilla.tools.types import ToolSpec
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.rpc import RpcContext, get_dispatcher
+from openstarry_code.gateway.scopes import READ_SCOPE
+from openstarry_code.tools.registry import ToolRegistry
+from openstarry_code.tools.types import ToolSpec
 
 
 async def _handler() -> str:
@@ -39,8 +39,8 @@ def _tool_names(payload: dict[str, Any]) -> set[str]:
 
 
 def test_tools_rpc_delegates_payloads_to_tools_boundary() -> None:
-    from opensquilla.gateway import rpc_tools
-    from opensquilla.tools import registry
+    from openstarry_code.gateway import rpc_tools
+    from openstarry_code.tools import registry
 
     source = Path(rpc_tools.__file__).read_text(encoding="utf-8")
     tree = ast.parse(source)
@@ -68,8 +68,8 @@ def test_tools_rpc_delegates_payloads_to_tools_boundary() -> None:
     }
 
     assert {
-        ("opensquilla.tools.rpc_payload", "tools_catalog_payload"),
-        ("opensquilla.tools.rpc_payload", "tools_effective_payload"),
+        ("openstarry_code.tools.rpc_payload", "tools_catalog_payload"),
+        ("openstarry_code.tools.rpc_payload", "tools_effective_payload"),
     } <= imports
     assert {
         "tools_catalog_payload",
@@ -173,10 +173,10 @@ async def test_tools_rpc_subagent_visibility_respects_principal_ownership(
 @pytest.mark.asyncio
 @pytest.mark.parametrize("method", ["tools.catalog", "tools.effective"])
 async def test_default_tools_rpc_hides_owner_only_tools_from_non_owner(method: str) -> None:
-    import opensquilla.tools.builtin  # noqa: F401
-    from opensquilla.gateway.config import ImageGenerationConfig, LlmProviderConfig
-    from opensquilla.tools.builtin.media import configure_image_generation
-    from opensquilla.tools.registry import get_default_registry
+    import openstarry_code.tools.builtin  # noqa: F401
+    from openstarry_code.gateway.config import ImageGenerationConfig, LlmProviderConfig
+    from openstarry_code.tools.builtin.media import configure_image_generation
+    from openstarry_code.tools.registry import get_default_registry
 
     configure_image_generation(
         ImageGenerationConfig(enabled=True),
@@ -216,8 +216,8 @@ async def test_default_tools_rpc_hides_owner_only_tools_from_non_owner(method: s
 @pytest.mark.asyncio
 @pytest.mark.parametrize("method", ["tools.catalog", "tools.effective"])
 async def test_default_channel_tools_rpc_exposes_structured_file_authoring(method: str) -> None:
-    import opensquilla.tools.builtin  # noqa: F401
-    from opensquilla.tools.registry import get_default_registry
+    import openstarry_code.tools.builtin  # noqa: F401
+    from openstarry_code.tools.registry import get_default_registry
 
     result = await get_dispatcher().dispatch(
         "r1",

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from opensquilla.safety.secret_redaction import redact_secret_text, redact_secret_value
+from openstarry_code.safety.secret_redaction import redact_secret_text, redact_secret_value
 
 
 def test_redact_secret_text_masks_env_assignments_and_provider_keys() -> None:

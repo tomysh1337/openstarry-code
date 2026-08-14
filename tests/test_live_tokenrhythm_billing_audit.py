@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.provider.types import DoneEvent, ProviderBillingReceipt
+from openstarry_code.provider.types import DoneEvent, ProviderBillingReceipt
 
 
 def _load_audit_module():
@@ -60,7 +60,7 @@ def test_physical_item_validates_confirmed_zero_and_four_bucket_estimate(
 ) -> None:
     from types import SimpleNamespace
 
-    from opensquilla.engine.pricing import PriceEntry
+    from openstarry_code.engine.pricing import PriceEntry
 
     monkeypatch.setattr(
         audit,

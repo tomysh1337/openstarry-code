@@ -6,12 +6,12 @@ import tomllib
 
 import pytest
 
-import opensquilla.gateway.rpc_onboarding as rpc_onboarding  # noqa: F401
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.rpc import RpcContext, get_dispatcher
-from opensquilla.gateway.scopes import ADMIN_SCOPE, METHOD_SCOPES
-from opensquilla.onboarding.probe import (
+import openstarry_code.gateway.rpc_onboarding as rpc_onboarding  # noqa: F401
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.rpc import RpcContext, get_dispatcher
+from openstarry_code.gateway.scopes import ADMIN_SCOPE, METHOD_SCOPES
+from openstarry_code.onboarding.probe import (
     ProviderModelsDiscoverResult,
     ProviderProbeResult,
 )
@@ -50,7 +50,7 @@ async def test_profile_probe_rpcs_bind_physical_usage_accounting(
     method: str,
     params: dict[str, str],
 ) -> None:
-    from opensquilla.engine.usage_accounting import current_usage_accounting_scope
+    from openstarry_code.engine.usage_accounting import current_usage_accounting_scope
 
     cfg = GatewayConfig(
         config_path=str(tmp_path / "config.toml"),
@@ -65,7 +65,7 @@ async def test_profile_probe_rpcs_bind_physical_usage_accounting(
         observed.append(scope.context)
         return ProviderProbeResult(ok=True, provider_id="openai", model="gpt-mini")
 
-    monkeypatch.setattr("opensquilla.onboarding.probe.probe_llm_provider", fake_probe)
+    monkeypatch.setattr("openstarry_code.onboarding.probe.probe_llm_provider", fake_probe)
     ctx = _admin_ctx(cfg)
     ctx.usage_event_sink = object()
 
@@ -122,7 +122,7 @@ async def test_profile_upsert_discards_pool_only_when_credential_source_changes(
     )
     discarded: list[str] = []
     monkeypatch.setattr(
-        "opensquilla.gateway.llm_runtime.discard_profile_credential_pool",
+        "openstarry_code.gateway.llm_runtime.discard_profile_credential_pool",
         lambda provider: discarded.append(provider),
     )
 
@@ -169,10 +169,10 @@ async def test_profile_remove_discards_pool_only_after_persist(
         return result
 
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_onboarding._persist", recording_persist
+        "openstarry_code.gateway.rpc_onboarding._persist", recording_persist
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.llm_runtime.discard_profile_credential_pool",
+        "openstarry_code.gateway.llm_runtime.discard_profile_credential_pool",
         lambda _provider: events.append("discard"),
     )
 
@@ -197,13 +197,13 @@ async def test_profile_upsert_persist_failure_preserves_pool(
     )
     discarded: list[str] = []
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_onboarding._persist",
+        "openstarry_code.gateway.rpc_onboarding._persist",
         lambda *args, **kwargs: (_ for _ in ()).throw(
             OSError("synthetic write failure")
         ),
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.llm_runtime.discard_profile_credential_pool",
+        "openstarry_code.gateway.llm_runtime.discard_profile_credential_pool",
         lambda provider: discarded.append(provider),
     )
 
@@ -304,19 +304,19 @@ async def test_active_profile_remove_persists_and_hot_syncs_once(
         return real_persist(*args, **kwargs)
 
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_onboarding._persist",
+        "openstarry_code.gateway.rpc_onboarding._persist",
         recording_persist,
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_onboarding._sync_provider_selector",
+        "openstarry_code.gateway.rpc_onboarding._sync_provider_selector",
         lambda _ctx, llm: syncs.append(("selector", llm.provider)),
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_onboarding._sync_image_generation",
+        "openstarry_code.gateway.rpc_onboarding._sync_image_generation",
         lambda config: syncs.append(("media", config.llm.provider)),
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.llm_runtime.discard_profile_credential_pool",
+        "openstarry_code.gateway.llm_runtime.discard_profile_credential_pool",
         lambda provider: syncs.append(("discard", provider)),
     )
 
@@ -330,7 +330,7 @@ async def test_active_profile_remove_persists_and_hot_syncs_once(
         )
 
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.reconcile_tokenrhythm_profile_transition",
+        "openstarry_code.gateway.model_catalog_refresh.reconcile_tokenrhythm_profile_transition",
         fake_reconcile,
     )
 
@@ -338,7 +338,7 @@ async def test_active_profile_remove_persists_and_hot_syncs_once(
         syncs.append(("catalog", config.llm.provider))
 
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.refresh_live_model_catalog",
+        "openstarry_code.gateway.model_catalog_refresh.refresh_live_model_catalog",
         fake_refresh,
     )
 
@@ -412,19 +412,19 @@ async def test_active_profile_remove_reference_failure_does_not_partially_activa
     before = cfg.model_dump(mode="python")
     mutation_attempts: list[str] = []
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_onboarding._persist",
+        "openstarry_code.gateway.rpc_onboarding._persist",
         lambda *args, **kwargs: mutation_attempts.append("persist"),
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_onboarding._apply_inplace",
+        "openstarry_code.gateway.rpc_onboarding._apply_inplace",
         lambda *args, **kwargs: mutation_attempts.append("apply"),
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_onboarding._sync_provider_selector",
+        "openstarry_code.gateway.rpc_onboarding._sync_provider_selector",
         lambda *args: mutation_attempts.append("selector"),
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_onboarding._sync_image_generation",
+        "openstarry_code.gateway.rpc_onboarding._sync_image_generation",
         lambda *args: mutation_attempts.append("media"),
     )
 
@@ -432,7 +432,7 @@ async def test_active_profile_remove_reference_failure_does_not_partially_activa
         mutation_attempts.append("catalog")
 
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.refresh_live_model_catalog",
+        "openstarry_code.gateway.model_catalog_refresh.refresh_live_model_catalog",
         unexpected_refresh,
     )
 
@@ -470,7 +470,7 @@ async def test_profile_probe_rejects_unstored_provider_even_with_registry_env(
         raise AssertionError(f"probe must not run: {sorted(kwargs)}")
 
     monkeypatch.setattr(
-        "opensquilla.onboarding.probe.probe_llm_provider",
+        "openstarry_code.onboarding.probe.probe_llm_provider",
         unexpected_probe,
     )
     response = await get_dispatcher().dispatch(
@@ -497,7 +497,7 @@ async def test_profile_discovery_rejects_unstored_provider_even_with_registry_en
         raise AssertionError(f"discovery must not run: {sorted(kwargs)}")
 
     monkeypatch.setattr(
-        "opensquilla.onboarding.probe.discover_selectable_provider_models",
+        "openstarry_code.onboarding.probe.discover_selectable_provider_models",
         unexpected_discover,
     )
     response = await get_dispatcher().dispatch(
@@ -534,7 +534,7 @@ async def test_profile_probe_uses_resolved_profile_without_secret_in_result(
             first_response_ms=7,
         )
 
-    monkeypatch.setattr("opensquilla.onboarding.probe.probe_llm_provider", fake_probe)
+    monkeypatch.setattr("openstarry_code.onboarding.probe.probe_llm_provider", fake_probe)
     response = await get_dispatcher().dispatch(
         "profile-probe",
         "onboarding.llmProfile.probe",
@@ -582,7 +582,7 @@ async def test_profile_draft_probe_uses_unsaved_deployment_without_persisting(
             first_response_ms=11,
         )
 
-    monkeypatch.setattr("opensquilla.onboarding.probe.probe_llm_provider", fake_probe)
+    monkeypatch.setattr("openstarry_code.onboarding.probe.probe_llm_provider", fake_probe)
     response = await get_dispatcher().dispatch(
         "profile-draft-probe",
         "onboarding.llmProfile.draft.probe",
@@ -639,7 +639,7 @@ async def test_profile_draft_probe_never_reuses_secret_across_endpoint_origins(
         raise AssertionError(f"probe must not run: {sorted(kwargs)}")
 
     monkeypatch.setattr(
-        "opensquilla.onboarding.probe.probe_llm_provider",
+        "openstarry_code.onboarding.probe.probe_llm_provider",
         unexpected_probe,
     )
     response = await get_dispatcher().dispatch(
@@ -668,11 +668,11 @@ async def test_profile_probe_uses_and_parks_shared_pool_credentials(
     tmp_path,
     monkeypatch,
 ) -> None:
-    from opensquilla.gateway.llm_runtime import reset_profile_credential_pools
-    from opensquilla.provider.failures import ProviderFailureKind
+    from openstarry_code.gateway.llm_runtime import reset_profile_credential_pools
+    from openstarry_code.provider.failures import ProviderFailureKind
 
-    env_a = "OPENSQUILLA_TEST_PROFILE_RPC_POOL_A"
-    env_b = "OPENSQUILLA_TEST_PROFILE_RPC_POOL_B"
+    env_a = "OPENSTARRY_CODE_TEST_PROFILE_RPC_POOL_A"
+    env_b = "OPENSTARRY_CODE_TEST_PROFILE_RPC_POOL_B"
     key_a = "synthetic-profile-rpc-key-a"
     key_b = "synthetic-profile-rpc-key-b"
     monkeypatch.setenv(env_a, key_a)
@@ -696,7 +696,7 @@ async def test_profile_probe_uses_and_parks_shared_pool_credentials(
             )
         return ProviderProbeResult(ok=True, provider_id="openai", model="gpt-mini")
 
-    monkeypatch.setattr("opensquilla.onboarding.probe.probe_llm_provider", fake_probe)
+    monkeypatch.setattr("openstarry_code.onboarding.probe.probe_llm_provider", fake_probe)
     try:
         first = await get_dispatcher().dispatch(
             "profile-probe-pool-first",
@@ -743,7 +743,7 @@ async def test_profile_model_discovery_uses_resolved_profile(
         )
 
     monkeypatch.setattr(
-        "opensquilla.onboarding.probe.discover_selectable_provider_models",
+        "openstarry_code.onboarding.probe.discover_selectable_provider_models",
         fake_discover,
     )
     response = await get_dispatcher().dispatch(
@@ -792,7 +792,7 @@ async def test_profile_draft_model_discovery_uses_unsaved_deployment_without_per
         )
 
     monkeypatch.setattr(
-        "opensquilla.onboarding.probe.discover_selectable_provider_models",
+        "openstarry_code.onboarding.probe.discover_selectable_provider_models",
         fake_discover,
     )
     response = await get_dispatcher().dispatch(
@@ -855,7 +855,7 @@ async def test_profile_activate_persists_then_hot_syncs_without_secret_echo(
     media_syncs: list[str] = []
     catalog_syncs: list[str] = []
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_onboarding._sync_image_generation",
+        "openstarry_code.gateway.rpc_onboarding._sync_image_generation",
         lambda config: media_syncs.append(config.llm.provider),
     )
 
@@ -863,7 +863,7 @@ async def test_profile_activate_persists_then_hot_syncs_without_secret_echo(
         catalog_syncs.append(config.llm.provider)
 
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.refresh_live_model_catalog",
+        "openstarry_code.gateway.model_catalog_refresh.refresh_live_model_catalog",
         fake_refresh,
     )
 
@@ -921,7 +921,7 @@ async def test_profile_activate_rpc_accepts_openrouter_image_default_intent(
         return None
 
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.refresh_live_model_catalog",
+        "openstarry_code.gateway.model_catalog_refresh.refresh_live_model_catalog",
         fake_refresh,
     )
     response = await get_dispatcher().dispatch(
@@ -963,7 +963,7 @@ async def test_profile_activate_rpc_omits_model_and_uses_provider_default(
         return None
 
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.refresh_live_model_catalog",
+        "openstarry_code.gateway.model_catalog_refresh.refresh_live_model_catalog",
         fake_refresh,
     )
     response = await get_dispatcher().dispatch(
@@ -1007,8 +1007,8 @@ async def test_profile_activate_restart_round_trip_preserves_router_and_ensemble
     tier_overrides,
     expect_inline_tiers,
 ) -> None:
-    from opensquilla.onboarding.config_store import persist_config
-    from opensquilla.tools.builtin import media
+    from openstarry_code.onboarding.config_store import persist_config
+    from openstarry_code.tools.builtin import media
 
     config_path = tmp_path / "config.toml"
     cfg = GatewayConfig(
@@ -1062,7 +1062,7 @@ async def test_profile_activate_restart_round_trip_preserves_router_and_ensemble
         return None
 
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.refresh_live_model_catalog",
+        "openstarry_code.gateway.model_catalog_refresh.refresh_live_model_catalog",
         fake_refresh,
     )
     try:
@@ -1093,7 +1093,7 @@ async def test_profile_activate_hot_media_sync_resolves_demoted_primary_profile(
     tmp_path,
     monkeypatch,
 ) -> None:
-    from opensquilla.tools.builtin import media
+    from openstarry_code.tools.builtin import media
 
     cfg = GatewayConfig(
         config_path=str(tmp_path / "config.toml"),
@@ -1127,7 +1127,7 @@ async def test_profile_activate_hot_media_sync_resolves_demoted_primary_profile(
         return None
 
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.refresh_live_model_catalog",
+        "openstarry_code.gateway.model_catalog_refresh.refresh_live_model_catalog",
         fake_refresh,
     )
     try:
@@ -1231,7 +1231,7 @@ async def test_profile_activate_router_action_is_applied_atomically(
         return None
 
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.refresh_live_model_catalog",
+        "openstarry_code.gateway.model_catalog_refresh.refresh_live_model_catalog",
         fake_refresh,
     )
     response = await get_dispatcher().dispatch(
@@ -1270,15 +1270,15 @@ async def test_profile_activate_persist_failure_leaves_live_runtime_untouched(
     ctx = _admin_ctx(cfg)
     sync_attempts: list[str] = []
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_onboarding._persist",
+        "openstarry_code.gateway.rpc_onboarding._persist",
         lambda *args, **kwargs: (_ for _ in ()).throw(OSError("synthetic write failure")),
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_onboarding._sync_provider_selector",
+        "openstarry_code.gateway.rpc_onboarding._sync_provider_selector",
         lambda *args: sync_attempts.append("selector"),
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_onboarding._sync_image_generation",
+        "openstarry_code.gateway.rpc_onboarding._sync_image_generation",
         lambda *args: sync_attempts.append("media"),
     )
 

@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from opensquilla.skills.loader import SkillLoader
+from openstarry_code.skills.loader import SkillLoader
 
 ROOT = Path(__file__).resolve().parents[1]
-SKILLS_DIR = ROOT / "src" / "opensquilla" / "skills"
+SKILLS_DIR = ROOT / "src" / "openstarry_code" / "skills"
 BUNDLED = SKILLS_DIR / "bundled"
 EXP = SKILLS_DIR / "exp"
 DEFAULTS = {"skill-creator", "pptx", "memory", "cron", "github"}
@@ -24,7 +24,7 @@ def test_default_bundled_skills_have_release_provenance(tmp_path: Path) -> None:
             "clawhub-mit",
             "clawhub-mit0",
         }
-        assert provenance.maintained_by == "OpenSquilla"
+        assert provenance.maintained_by == "OpenStarry Code"
         if provenance.origin == "bundled-derived":
             assert provenance.upstream_url.startswith("https://")
             assert provenance.license == "MIT"

@@ -5,7 +5,7 @@ import importlib
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[4]
-SRC_ROOT = PROJECT_ROOT / "src/opensquilla/cli"
+SRC_ROOT = PROJECT_ROOT / "src/openstarry_code/cli"
 TUI_ROOT = SRC_ROOT / "tui"
 REMOVED_TEXT_BACKEND = "text" + "ual"
 REMOVED_TERMINAL = "terminal"
@@ -61,15 +61,15 @@ def test_removed_frontend_files_are_absent() -> None:
 
 def test_live_tui_modules_do_not_import_removed_frontends() -> None:
     forbidden_prefixes = (
-        f"opensquilla.cli.tui.{REMOVED_TERMINAL}",
-        f"opensquilla.cli.tui.{REMOVED_TEXT_BACKEND}",
-        f"opensquilla.cli.tui.adapters.{REMOVED_TERMINAL}_bridge",
-        f"opensquilla.cli.tui.adapters.{REMOVED_TERMINAL}_chat_adapter",
-        f"opensquilla.cli.tui.adapters.{REMOVED_TEXT_BACKEND}_bridge",
-        f"opensquilla.cli.repl.{REMOVED_TERMINAL}_bridge",
-        f"opensquilla.cli.repl.{REMOVED_TERMINAL}_chat_adapter",
-        f"opensquilla.cli.repl.{REMOVED_TERMINAL}_renderer",
-        f"opensquilla.cli.repl.{REMOVED_TERMINAL}_surface",
+        f"openstarry_code.cli.tui.{REMOVED_TERMINAL}",
+        f"openstarry_code.cli.tui.{REMOVED_TEXT_BACKEND}",
+        f"openstarry_code.cli.tui.adapters.{REMOVED_TERMINAL}_bridge",
+        f"openstarry_code.cli.tui.adapters.{REMOVED_TERMINAL}_chat_adapter",
+        f"openstarry_code.cli.tui.adapters.{REMOVED_TEXT_BACKEND}_bridge",
+        f"openstarry_code.cli.repl.{REMOVED_TERMINAL}_bridge",
+        f"openstarry_code.cli.repl.{REMOVED_TERMINAL}_chat_adapter",
+        f"openstarry_code.cli.repl.{REMOVED_TERMINAL}_renderer",
+        f"openstarry_code.cli.repl.{REMOVED_TERMINAL}_surface",
         PROMPT_TOOLKIT,
         REMOVED_TEXT_BACKEND,
     )
@@ -93,17 +93,17 @@ def test_live_tui_modules_do_not_import_removed_frontends() -> None:
 
 def test_shared_tui_contracts_remain_importable() -> None:
     modules = (
-        "opensquilla.cli.tui.backend.contracts",
-        "opensquilla.cli.tui.backend.runtime",
-        "opensquilla.cli.tui.backend.streaming",
-        "opensquilla.cli.tui.backend.transcript",
-        "opensquilla.cli.tui.backend.render_summary",
-        "opensquilla.cli.tui.plugins",
-        "opensquilla.cli.tui.plugins.router_hud",
-        "opensquilla.cli.tui.adapters.runtime_helpers",
-        "opensquilla.cli.tui.adapters.runtime_bridge",
-        "opensquilla.cli.tui.opentui.runtime",
-        "opensquilla.cli.tui.opentui.renderer",
+        "openstarry_code.cli.tui.backend.contracts",
+        "openstarry_code.cli.tui.backend.runtime",
+        "openstarry_code.cli.tui.backend.streaming",
+        "openstarry_code.cli.tui.backend.transcript",
+        "openstarry_code.cli.tui.backend.render_summary",
+        "openstarry_code.cli.tui.plugins",
+        "openstarry_code.cli.tui.plugins.router_hud",
+        "openstarry_code.cli.tui.adapters.runtime_helpers",
+        "openstarry_code.cli.tui.adapters.runtime_bridge",
+        "openstarry_code.cli.tui.opentui.runtime",
+        "openstarry_code.cli.tui.opentui.renderer",
     )
 
     for module in modules:
@@ -111,7 +111,7 @@ def test_shared_tui_contracts_remain_importable() -> None:
 
 
 def test_tui_package_exports_only_neutral_and_opentui_surfaces() -> None:
-    import opensquilla.cli.tui as tui
+    import openstarry_code.cli.tui as tui
 
     exported = set(tui.__all__)
 

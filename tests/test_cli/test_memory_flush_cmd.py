@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from opensquilla.cli.memory_flush_cmd import (
+from openstarry_code.cli.memory_flush_cmd import (
     MemoryFlushSessionResult,
     _emit_text_result,
     _receipt_is_complete_flush,
@@ -14,7 +14,7 @@ from opensquilla.cli.memory_flush_cmd import (
     memory_flush_session_cmd,
     run_memory_flush_session,
 )
-from opensquilla.gateway.config import GatewayConfig
+from openstarry_code.gateway.config import GatewayConfig
 
 
 def test_receipt_is_complete_flush_rejects_raw_and_degraded_llm() -> None:
@@ -107,11 +107,11 @@ def test_memory_flush_command_holds_profile_lease_during_service_lifetime(
         )
 
     monkeypatch.setattr(
-        "opensquilla.recovery.guarded_desktop_profile",
+        "openstarry_code.recovery.guarded_desktop_profile",
         guarded_profile,
     )
     monkeypatch.setattr(
-        "opensquilla.cli.memory_flush_cmd.run_memory_flush_session",
+        "openstarry_code.cli.memory_flush_cmd.run_memory_flush_session",
         run_flush,
     )
 
@@ -166,7 +166,7 @@ async def test_flush_session_uses_durable_session_correlation(monkeypatch) -> No
     async def build_services(**_kwargs):
         return services
 
-    monkeypatch.setattr("opensquilla.gateway.build_services", build_services)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", build_services)
 
     result = await run_memory_flush_session(
         key="agent:main:webchat:test",

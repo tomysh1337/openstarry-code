@@ -12,8 +12,8 @@ from typing import Any
 
 import pytest
 
-import opensquilla.sandbox.upgrade_migration as upgrade_migration
-from opensquilla.sandbox.upgrade_migration import SandboxUpgradeCoordinator
+import openstarry_code.sandbox.upgrade_migration as upgrade_migration
+from openstarry_code.sandbox.upgrade_migration import SandboxUpgradeCoordinator
 
 
 @pytest.mark.parametrize(
@@ -170,9 +170,9 @@ def _mock_windows_acl(
             )
         environment = kwargs["env"]
         assert isinstance(environment, dict)
-        path = Path(environment["OPENSQUILLA_UPGRADE_ACL_TARGET"])
-        assert environment["OPENSQUILLA_UPGRADE_ACL_USER_SID"] == "S-1-5-21-1234"
-        assert environment["OPENSQUILLA_UPGRADE_ACL_IS_DIRECTORY"] in {"0", "1"}
+        path = Path(environment["OPENSTARRY_CODE_UPGRADE_ACL_TARGET"])
+        assert environment["OPENSTARRY_CODE_UPGRADE_ACL_USER_SID"] == "S-1-5-21-1234"
+        assert environment["OPENSTARRY_CODE_UPGRADE_ACL_IS_DIRECTORY"] in {"0", "1"}
         event = ("acl", path, tuple(command))
         events.append(event)
         failed = fail_when is not None and fail_when(path, events)

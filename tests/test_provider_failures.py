@@ -3,15 +3,15 @@ from __future__ import annotations
 import pytest
 import structlog
 
-from opensquilla.engine.fallback import FallbackPolicy
-from opensquilla.provider.failures import (
+from openstarry_code.engine.fallback import FallbackPolicy
+from openstarry_code.provider.failures import (
     FailureMatcher,
     ProviderFailureKind,
     ProviderRecoveryAction,
     classify_provider_error,
     decide_recovery_action,
 )
-from opensquilla.provider.openai import _http_error_body_text
+from openstarry_code.provider.openai import _http_error_body_text
 
 
 def test_http_error_body_text_prefixes_top_level_code() -> None:

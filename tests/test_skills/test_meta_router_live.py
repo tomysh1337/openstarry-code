@@ -7,12 +7,12 @@ skill + per-language accuracy.
 Maintainer-only; never on the default PR path. Gated by:
 
 * ``@pytest.mark.llm_router_acc`` marker (declared in pyproject).
-* ``OPENSQUILLA_RUN_LLM_ROUTER_ACC=1`` explicit opt-in.
+* ``OPENSTARRY_CODE_RUN_LLM_ROUTER_ACC=1`` explicit opt-in.
 * ``OPENROUTER_API_KEY`` env var (loaded from ``~/.env`` if present).
 
 Usage::
 
-    OPENSQUILLA_RUN_LLM_ROUTER_ACC=1 \\
+    OPENSTARRY_CODE_RUN_LLM_ROUTER_ACC=1 \\
       uv run pytest tests/test_skills/test_meta_router_live.py -v -s \\
       -m llm_router_acc
 
@@ -33,15 +33,15 @@ from pathlib import Path
 import pytest
 from router_fixtures import ALL_CASES, RouterCase
 
-from opensquilla.engine.types import AgentConfig, AgentEvent
-from opensquilla.provider.openai import OpenAIProvider
-from opensquilla.skills.loader import SkillLoader
-from opensquilla.skills.meta.executors.llm_classify import run_llm_classify_step
-from opensquilla.skills.meta.orchestrator import make_llm_chat_from_provider
-from opensquilla.skills.meta.parser import parse_meta_plan
+from openstarry_code.engine.types import AgentConfig, AgentEvent
+from openstarry_code.provider.openai import OpenAIProvider
+from openstarry_code.skills.loader import SkillLoader
+from openstarry_code.skills.meta.executors.llm_classify import run_llm_classify_step
+from openstarry_code.skills.meta.orchestrator import make_llm_chat_from_provider
+from openstarry_code.skills.meta.parser import parse_meta_plan
 
 _BUNDLED_DIR = (
-    Path(__file__).resolve().parents[2] / "src" / "opensquilla" / "skills" / "bundled"
+    Path(__file__).resolve().parents[2] / "src" / "openstarry_code" / "skills" / "bundled"
 )
 
 _OPENROUTER_BASE = "https://openrouter.ai/api/v1"
@@ -60,8 +60,8 @@ _MODELS = [
 _MIN_TOTAL_ACCURACY = 0.50
 
 pytestmark = pytest.mark.skipif(
-    os.environ.get("OPENSQUILLA_RUN_LLM_ROUTER_ACC") != "1",
-    reason="set OPENSQUILLA_RUN_LLM_ROUTER_ACC=1 to run live router accuracy",
+    os.environ.get("OPENSTARRY_CODE_RUN_LLM_ROUTER_ACC") != "1",
+    reason="set OPENSTARRY_CODE_RUN_LLM_ROUTER_ACC=1 to run live router accuracy",
 )
 
 
@@ -71,12 +71,12 @@ def _load_home_env_into_environ() -> None:
     The default candidate is ``Path.home() / ".env"``. When the test is
     invoked as a different OS user than the one that owns the API key
     (e.g. ``sudo``, dev container running as root, CI runners), set
-    ``OPENSQUILLA_DEVELOPER_ENV_FILE`` to the absolute path of the
+    ``OPENSTARRY_CODE_DEVELOPER_ENV_FILE`` to the absolute path of the
     ``.env`` to consult — that path is read in addition to the home
     default. Existing environment variables are never overwritten.
     """
     candidates: list[Path] = [Path.home() / ".env"]
-    extra = os.environ.get("OPENSQUILLA_DEVELOPER_ENV_FILE", "").strip()
+    extra = os.environ.get("OPENSTARRY_CODE_DEVELOPER_ENV_FILE", "").strip()
     if extra:
         extra_path = Path(extra)
         if extra_path not in candidates:

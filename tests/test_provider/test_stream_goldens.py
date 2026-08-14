@@ -14,7 +14,7 @@ deltas only between their Start and End, joined argument fragments parsing to
 the End arguments, joined reasoning deltas equalling
 ``DoneEvent.reasoning_content``, and a single terminal ``DoneEvent``.
 
-Regenerate goldens with ``OPENSQUILLA_REGEN_GOLDENS=1`` (see the README in
+Regenerate goldens with ``OPENSTARRY_CODE_REGEN_GOLDENS=1`` (see the README in
 ``tests/test_provider/golden/streams/``). A golden diff is a provider-decode
 behavior change and must be intentional.
 """
@@ -32,11 +32,11 @@ from typing import Any
 import httpx
 import pytest
 
-from opensquilla.provider.anthropic import AnthropicProvider
-from opensquilla.provider.ollama import OllamaProvider
-from opensquilla.provider.openai import OpenAIProvider
-from opensquilla.provider.openai_responses import OpenAIResponsesProvider
-from opensquilla.provider.types import (
+from openstarry_code.provider.anthropic import AnthropicProvider
+from openstarry_code.provider.ollama import OllamaProvider
+from openstarry_code.provider.openai import OpenAIProvider
+from openstarry_code.provider.openai_responses import OpenAIResponsesProvider
+from openstarry_code.provider.types import (
     ChatConfig,
     DoneEvent,
     ErrorEvent,
@@ -50,15 +50,15 @@ from opensquilla.provider.types import (
 )
 
 _STREAMS_DIR = Path(__file__).resolve().parent / "golden" / "streams"
-_REGEN_ENV = "OPENSQUILLA_REGEN_GOLDENS"
+_REGEN_ENV = "OPENSTARRY_CODE_REGEN_GOLDENS"
 
 # Environment knobs that could perturb the decode path on a developer machine.
 _NEUTRALIZED_ENV = (
-    "OPENSQUILLA_LLM_PROXY",
-    "OPENSQUILLA_PROVIDER_REQUEST_PROOF_MAX_CHARS",
-    "OPENSQUILLA_TRACE_ROUTING",
-    "OPENSQUILLA_LLM_STREAM_CONNECT_TIMEOUT_SECONDS",
-    "OPENSQUILLA_LLM_STREAM_WRITE_TIMEOUT_SECONDS",
+    "OPENSTARRY_CODE_LLM_PROXY",
+    "OPENSTARRY_CODE_PROVIDER_REQUEST_PROOF_MAX_CHARS",
+    "OPENSTARRY_CODE_TRACE_ROUTING",
+    "OPENSTARRY_CODE_LLM_STREAM_CONNECT_TIMEOUT_SECONDS",
+    "OPENSTARRY_CODE_LLM_STREAM_WRITE_TIMEOUT_SECONDS",
 )
 
 Collector = Callable[[pytest.MonkeyPatch, bytes], Awaitable[list[Any]]]
@@ -146,8 +146,8 @@ def _openai_collector(
 ) -> Collector:
     async def collect(monkeypatch: pytest.MonkeyPatch, body: bytes) -> list[Any]:
         if deterministic_uuid:
-            _patch_uuid4(monkeypatch, "opensquilla.provider.openai")
-        _patch_transport(monkeypatch, "opensquilla.provider.openai", body, "text/event-stream")
+            _patch_uuid4(monkeypatch, "openstarry_code.provider.openai")
+        _patch_transport(monkeypatch, "openstarry_code.provider.openai", body, "text/event-stream")
         provider_base_url = (
             "https://tokenrhythm.studio/v1"
             if provider_kind == "tokenrhythm"
@@ -166,7 +166,7 @@ def _openai_collector(
 
 def _anthropic_collector(*, tools: list[ToolDefinition] | None = None) -> Collector:
     async def collect(monkeypatch: pytest.MonkeyPatch, body: bytes) -> list[Any]:
-        _patch_transport(monkeypatch, "opensquilla.provider.anthropic", body, "text/event-stream")
+        _patch_transport(monkeypatch, "openstarry_code.provider.anthropic", body, "text/event-stream")
         provider = AnthropicProvider(api_key="sk-test-000", model="claude-test")
         return await _collect_events(provider, tools)
 
@@ -175,7 +175,7 @@ def _anthropic_collector(*, tools: list[ToolDefinition] | None = None) -> Collec
 
 def _ollama_collector(*, tools: list[ToolDefinition] | None = None) -> Collector:
     async def collect(monkeypatch: pytest.MonkeyPatch, body: bytes) -> list[Any]:
-        _patch_transport(monkeypatch, "opensquilla.provider.ollama", body, "application/x-ndjson")
+        _patch_transport(monkeypatch, "openstarry_code.provider.ollama", body, "application/x-ndjson")
         provider = OllamaProvider(model="test-model")
         return await _collect_events(provider, tools)
 
@@ -186,7 +186,7 @@ def _responses_collector(*, tools: list[ToolDefinition] | None = None) -> Collec
     async def collect(monkeypatch: pytest.MonkeyPatch, body: bytes) -> list[Any]:
         _patch_transport(
             monkeypatch,
-            "opensquilla.provider.openai_responses",
+            "openstarry_code.provider.openai_responses",
             body,
             "application/json",
         )

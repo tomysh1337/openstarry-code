@@ -19,10 +19,10 @@ from types import SimpleNamespace
 import pytest
 import structlog.testing
 
-import opensquilla.gateway.rpc_config as rpc_config
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.rpc import RpcContext
-from opensquilla.gateway.rpc_config import (
+import openstarry_code.gateway.rpc_config as rpc_config
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.rpc import RpcContext
+from openstarry_code.gateway.rpc_config import (
     _handle_config_apply,
     _handle_config_patch,
     _handle_config_patch_safe,
@@ -32,7 +32,7 @@ from opensquilla.gateway.rpc_config import (
 
 @pytest.fixture()
 def cfg_path(tmp_path, monkeypatch: pytest.MonkeyPatch):
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "state"))
     return tmp_path / "config.toml"
 
 
@@ -220,7 +220,7 @@ async def test_persist_failure_leaves_live_config_and_disk_unchanged(
     cfg = GatewayConfig.load(str(cfg_path))
     naming_before = cfg.naming.enabled
 
-    import opensquilla.onboarding.config_store as config_store
+    import openstarry_code.onboarding.config_store as config_store
 
     def _boom(*args, **kwargs):
         raise OSError("disk full")
@@ -295,7 +295,7 @@ async def test_safe_patch_persists_the_gateway_channel_notice_locale(cfg_path) -
 
 
 async def test_set_heartbeats_persists_sparsely_and_atomically(cfg_path) -> None:
-    import opensquilla.gateway.rpc_system as rpc_system
+    import openstarry_code.gateway.rpc_system as rpc_system
 
     _write_small_config(cfg_path)
     cfg = GatewayConfig.load(str(cfg_path))
@@ -318,7 +318,7 @@ async def test_set_heartbeats_validation_failure_leaves_live_config_clean(
 ) -> None:
     """A ValueError on the second parameter must not leave the first one
     half-applied on the live config (the old code mutated field-by-field)."""
-    import opensquilla.gateway.rpc_system as rpc_system
+    import openstarry_code.gateway.rpc_system as rpc_system
 
     _write_small_config(cfg_path)
     cfg = GatewayConfig.load(str(cfg_path))
@@ -341,7 +341,7 @@ async def test_env_absorbed_memory_embedding_key_never_persisted(
     cfg_path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     secret = "sk-envonly-memembed"
-    monkeypatch.setenv("OPENSQUILLA_MEMORY_EMBEDDING__REMOTE__API_KEY", secret)
+    monkeypatch.setenv("OPENSTARRY_CODE_MEMORY_EMBEDDING__REMOTE__API_KEY", secret)
     _write_small_config(cfg_path)
     cfg = GatewayConfig.load(str(cfg_path))
     assert cfg.memory.embedding.remote.api_key == secret
@@ -370,7 +370,7 @@ async def test_explicit_memory_key_equal_to_env_is_persisted(
     cfg_path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     secret = "sk-explicit-equals-env"
-    monkeypatch.setenv("OPENSQUILLA_MEMORY_EMBEDDING__REMOTE__API_KEY", secret)
+    monkeypatch.setenv("OPENSTARRY_CODE_MEMORY_EMBEDDING__REMOTE__API_KEY", secret)
     _write_small_config(cfg_path)
     cfg = GatewayConfig.load(str(cfg_path))
 
@@ -378,7 +378,7 @@ async def test_explicit_memory_key_equal_to_env_is_persisted(
         {"path": "memory.embedding.remote.api_key", "value": secret}, _ctx(cfg)
     )
 
-    monkeypatch.delenv("OPENSQUILLA_MEMORY_EMBEDDING__REMOTE__API_KEY")
+    monkeypatch.delenv("OPENSTARRY_CODE_MEMORY_EMBEDDING__REMOTE__API_KEY")
     assert GatewayConfig.load(str(cfg_path)).memory.embedding.remote.api_key == secret
 
 
@@ -388,8 +388,8 @@ async def test_explicit_memory_key_equal_to_env_is_persisted(
 async def test_onboarding_persist_failure_leaves_live_config_unchanged(
     cfg_path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    import opensquilla.gateway.rpc_onboarding as rpc_onboarding
-    import opensquilla.onboarding.config_store as config_store
+    import openstarry_code.gateway.rpc_onboarding as rpc_onboarding
+    import openstarry_code.onboarding.config_store as config_store
 
     _write_small_config(cfg_path)
     cfg = GatewayConfig.load(str(cfg_path))
@@ -409,7 +409,7 @@ async def test_onboarding_persist_failure_leaves_live_config_unchanged(
 
 
 async def test_onboarding_live_snapshot_advances_after_successful_persist(cfg_path) -> None:
-    import opensquilla.gateway.rpc_onboarding as rpc_onboarding
+    import openstarry_code.gateway.rpc_onboarding as rpc_onboarding
 
     _write_small_config(cfg_path)
     cfg = GatewayConfig.load(str(cfg_path))
@@ -433,13 +433,13 @@ async def test_onboarding_live_snapshot_advances_after_successful_persist(cfg_pa
 async def test_onboarding_first_save_establishes_path_and_snapshot(
     tmp_path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    import opensquilla.gateway.rpc_onboarding as rpc_onboarding
+    import openstarry_code.gateway.rpc_onboarding as rpc_onboarding
 
     home = tmp_path / "home"
     target = home / "config.toml"
     monkeypatch.chdir(tmp_path)
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
-    monkeypatch.delenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", raising=False)
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
+    monkeypatch.delenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", raising=False)
     cfg = GatewayConfig.load(None)
     assert cfg.config_path is None
     ctx = _ctx(cfg)
@@ -462,7 +462,7 @@ async def test_onboarding_first_save_establishes_path_and_snapshot(
 
 
 async def test_heartbeat_live_snapshot_advances_after_successful_persist(cfg_path) -> None:
-    import opensquilla.gateway.rpc_system as rpc_system
+    import openstarry_code.gateway.rpc_system as rpc_system
 
     _write_small_config(cfg_path)
     cfg = GatewayConfig.load(str(cfg_path))
@@ -482,7 +482,7 @@ async def test_heartbeat_live_snapshot_advances_after_successful_persist(cfg_pat
 def test_rpc_config_persist_delegates_to_sparse_persister(
     tmp_path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    import opensquilla.onboarding.config_store as config_store
+    import openstarry_code.onboarding.config_store as config_store
 
     cfg = GatewayConfig()
     cfg.config_path = str(tmp_path / "config.toml")

@@ -1,6 +1,6 @@
 """Repeated-identical-call notice at the dispatch layer.
 
-Covers OPENSQUILLA_REPEATED_CALL_NOTICE (off by default). When armed with a
+Covers OPENSTARRY_CODE_REPEATED_CALL_NOTICE (off by default). When armed with a
 threshold N, a read-only tool call whose canonicalized arguments and raw
 result are byte-identical to the previous identical call gets a notice
 injected into the finalized content from the Nth repeat onward, plus a
@@ -15,11 +15,11 @@ import json
 
 import pytest
 
-from opensquilla.engine.types import ToolCall
-from opensquilla.result_budget import ToolResultBudgetPolicy
-from opensquilla.tools.dispatch import build_tool_handler
-from opensquilla.tools.registry import ToolRegistry
-from opensquilla.tools.types import ToolContext, ToolSpec, current_tool_context
+from openstarry_code.engine.types import ToolCall
+from openstarry_code.result_budget import ToolResultBudgetPolicy
+from openstarry_code.tools.dispatch import build_tool_handler
+from openstarry_code.tools.registry import ToolRegistry
+from openstarry_code.tools.types import ToolContext, ToolSpec, current_tool_context
 
 _NOTICE_PREFIX = "[repeated_call_notice]"
 
@@ -88,7 +88,7 @@ def _notice_events(events: list[dict[str, object]]) -> list[dict[str, object]]:
 async def test_default_off_results_are_byte_identical_and_no_event(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.delenv("OPENSQUILLA_REPEATED_CALL_NOTICE", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_REPEATED_CALL_NOTICE", raising=False)
     events: list[dict[str, object]] = []
     handler = build_tool_handler(
         _build_registry(),
@@ -108,7 +108,7 @@ async def test_default_off_results_are_byte_identical_and_no_event(
 @pytest.mark.asyncio
 async def test_invalid_gate_values_stay_off(monkeypatch: pytest.MonkeyPatch) -> None:
     for raw in ("0", "abc", "-2", "  "):
-        monkeypatch.setenv("OPENSQUILLA_REPEATED_CALL_NOTICE", raw)
+        monkeypatch.setenv("OPENSTARRY_CODE_REPEATED_CALL_NOTICE", raw)
         events: list[dict[str, object]] = []
         handler = build_tool_handler(
             _build_registry(),
@@ -126,7 +126,7 @@ async def test_invalid_gate_values_stay_off(monkeypatch: pytest.MonkeyPatch) -> 
 async def test_threshold_three_notices_from_third_identical_call(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_REPEATED_CALL_NOTICE", "3")
+    monkeypatch.setenv("OPENSTARRY_CODE_REPEATED_CALL_NOTICE", "3")
     events: list[dict[str, object]] = []
     handler = build_tool_handler(
         _build_registry(),
@@ -170,7 +170,7 @@ async def test_threshold_three_notices_from_third_identical_call(
 async def test_changed_result_resets_the_counter(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_REPEATED_CALL_NOTICE", "2")
+    monkeypatch.setenv("OPENSTARRY_CODE_REPEATED_CALL_NOTICE", "2")
     events: list[dict[str, object]] = []
     handler = build_tool_handler(
         _build_registry(read_file_results=["body-a", "body-b", "body-c", "body-c"]),
@@ -195,7 +195,7 @@ async def test_changed_result_resets_the_counter(
 async def test_error_results_and_non_allowlisted_tools_are_never_noticed(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_REPEATED_CALL_NOTICE", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_REPEATED_CALL_NOTICE", "1")
     events: list[dict[str, object]] = []
     handler = build_tool_handler(
         _build_registry(),
@@ -231,7 +231,7 @@ async def test_error_results_and_non_allowlisted_tools_are_never_noticed(
 async def test_json_dict_content_gets_notice_as_key_and_stays_parseable(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_REPEATED_CALL_NOTICE", "2")
+    monkeypatch.setenv("OPENSTARRY_CODE_REPEATED_CALL_NOTICE", "2")
     events: list[dict[str, object]] = []
     handler = build_tool_handler(
         _build_registry(read_file_results=["y" * 2000]),
@@ -264,7 +264,7 @@ async def test_json_dict_content_gets_notice_as_key_and_stays_parseable(
 async def test_session_keys_track_independent_counters(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_REPEATED_CALL_NOTICE", "2")
+    monkeypatch.setenv("OPENSTARRY_CODE_REPEATED_CALL_NOTICE", "2")
     events: list[dict[str, object]] = []
     handler = build_tool_handler(_build_registry())
     parent_ctx = ToolContext(
@@ -311,7 +311,7 @@ async def test_json_file_body_keeps_exact_bytes_with_text_prefix(
     # the structured result_truncated wrapper: the notice must land as a text
     # prefix and the original bytes must survive verbatim, or a later
     # edit_file old_text taken from the displayed content will not match.
-    monkeypatch.setenv("OPENSQUILLA_REPEATED_CALL_NOTICE", "2")
+    monkeypatch.setenv("OPENSTARRY_CODE_REPEATED_CALL_NOTICE", "2")
     file_body = '{\n  "name": "pkg",\n  "version": "1.0.0"\n}'
     events: list[dict[str, object]] = []
     handler = build_tool_handler(
@@ -340,7 +340,7 @@ async def test_no_session_identity_is_never_counted(
     # fallbacks alias across unrelated callers (id reuse after GC; every None
     # ctx shares one id), so identity-less traffic must stay notice-free
     # rather than share a merged counter.
-    monkeypatch.setenv("OPENSQUILLA_REPEATED_CALL_NOTICE", "2")
+    monkeypatch.setenv("OPENSTARRY_CODE_REPEATED_CALL_NOTICE", "2")
     events: list[dict[str, object]] = []
     handler = build_tool_handler(
         _build_registry(),

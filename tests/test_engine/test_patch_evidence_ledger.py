@@ -4,9 +4,9 @@ import json
 import subprocess
 from pathlib import Path
 
-from opensquilla.engine.patch_evidence_ledger import PatchEvidenceLedger
-from opensquilla.tools.types import ToolContext, current_tool_context
-from opensquilla.tools.write_tracking import record_workspace_file_read
+from openstarry_code.engine.patch_evidence_ledger import PatchEvidenceLedger
+from openstarry_code.tools.types import ToolContext, current_tool_context
+from openstarry_code.tools.write_tracking import record_workspace_file_read
 
 
 def test_patch_evidence_ledger_writes_observe_only_snapshot(tmp_path: Path) -> None:

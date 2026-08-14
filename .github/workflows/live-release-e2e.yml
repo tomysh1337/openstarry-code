@@ -24,12 +24,12 @@ jobs:
 
     env:
       PYTHONPATH: ${{ github.workspace }}
-      OPENSQUILLA_TURN_CALL_LOG: "0"
+      OPENSTARRY_CODE_TURN_CALL_LOG: "0"
       OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
       OPENROUTER_BASE_URL: ${{ vars.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1' }}
       LLM_TEST_MODEL: ${{ vars.LLM_TEST_MODEL || 'openai/gpt-4o-mini' }}
-      OPENSQUILLA_LIVE_TELEGRAM_BOT_TOKEN: ${{ secrets.OPENSQUILLA_LIVE_TELEGRAM_BOT_TOKEN }}
-      OPENSQUILLA_LIVE_TELEGRAM_CHAT_ID: ${{ secrets.OPENSQUILLA_LIVE_TELEGRAM_CHAT_ID }}
+      OPENSTARRY_CODE_LIVE_TELEGRAM_BOT_TOKEN: ${{ secrets.OPENSTARRY_CODE_LIVE_TELEGRAM_BOT_TOKEN }}
+      OPENSTARRY_CODE_LIVE_TELEGRAM_CHAT_ID: ${{ secrets.OPENSTARRY_CODE_LIVE_TELEGRAM_CHAT_ID }}
 
     steps:
       - name: Check out repository
@@ -38,8 +38,8 @@ jobs:
       - name: Configure runtime directories
         shell: bash
         run: |
-          printf 'OPENSQUILLA_STATE_DIR=%s/opensquilla-state\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
-          printf 'OPENSQUILLA_LOG_DIR=%s/opensquilla-logs\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'OPENSTARRY_CODE_STATE_DIR=%s/opensquilla-state\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'OPENSTARRY_CODE_LOG_DIR=%s/opensquilla-logs\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -64,22 +64,22 @@ jobs:
         if: ${{ inputs.run_telegram_channel }}
         shell: bash
         run: |
-          if [ -z "$OPENSQUILLA_LIVE_TELEGRAM_BOT_TOKEN" ]; then
-            echo "OPENSQUILLA_LIVE_TELEGRAM_BOT_TOKEN GitHub secret is required when Telegram smoke is enabled"
+          if [ -z "$OPENSTARRY_CODE_LIVE_TELEGRAM_BOT_TOKEN" ]; then
+            echo "OPENSTARRY_CODE_LIVE_TELEGRAM_BOT_TOKEN GitHub secret is required when Telegram smoke is enabled"
             exit 1
           fi
-          if [ -z "$OPENSQUILLA_LIVE_TELEGRAM_CHAT_ID" ]; then
-            echo "OPENSQUILLA_LIVE_TELEGRAM_CHAT_ID GitHub secret is required when Telegram smoke is enabled"
+          if [ -z "$OPENSTARRY_CODE_LIVE_TELEGRAM_CHAT_ID" ]; then
+            echo "OPENSTARRY_CODE_LIVE_TELEGRAM_CHAT_ID GitHub secret is required when Telegram smoke is enabled"
             exit 1
           fi
 
       - name: Run gateway LLM e2e
         env:
-          OPENSQUILLA_GATEWAY_LLM_E2E: "1"
+          OPENSTARRY_CODE_GATEWAY_LLM_E2E: "1"
         run: uv run pytest tests/functional/test_gateway_llm_e2e.py -q -s
 
       - name: Run live Telegram channel smoke
         if: ${{ inputs.run_telegram_channel }}
         env:
-          OPENSQUILLA_LIVE_TELEGRAM_E2E: "1"
+          OPENSTARRY_CODE_LIVE_TELEGRAM_E2E: "1"
         run: uv run pytest tests/functional/test_live_channel_telegram_smoke.py -q -s

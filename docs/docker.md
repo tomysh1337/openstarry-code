@@ -239,7 +239,7 @@ defaults to a self-built `opensquilla:local` image (override with
 sudo apt install -y git git-lfs
 git clone https://github.com/opensquilla/opensquilla.git
 cd opensquilla
-git lfs pull --include="src/opensquilla/squilla_router/models/**"
+git lfs pull --include="src/openstarry_code/squilla_router/models/**"
 docker build -t opensquilla:local .
 docker compose up -d
 ```

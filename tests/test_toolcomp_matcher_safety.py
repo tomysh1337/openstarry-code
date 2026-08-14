@@ -2,12 +2,12 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.plugins.tokenjuice.matcher import command_argv, rule_matches, select_rule
-from opensquilla.plugins.tokenjuice.plugin import reduce_tool_result
-from opensquilla.plugins.tokenjuice.rules import load_rules
-from opensquilla.plugins.tokenjuice.types import Rule
+from openstarry_code.plugins.tokenjuice.matcher import command_argv, rule_matches, select_rule
+from openstarry_code.plugins.tokenjuice.plugin import reduce_tool_result
+from openstarry_code.plugins.tokenjuice.rules import load_rules
+from openstarry_code.plugins.tokenjuice.types import Rule
 
-STRICT_ENV = "OPENSQUILLA_TOOLCOMP_MATCHER_STRICT"
+STRICT_ENV = "OPENSTARRY_CODE_TOOLCOMP_MATCHER_STRICT"
 
 
 @pytest.fixture(autouse=True)

@@ -1,6 +1,6 @@
 """Unit + integration tests for the SOP→DAG compiler.
 
-The compiler lives at ``src/opensquilla/skills/meta/sop_compiler.py``.
+The compiler lives at ``src/openstarry_code/skills/meta/sop_compiler.py``.
 This file mirrors its four stages (lexer / parser / resolver / emitter)
 plus integration and acceptance tests.
 """
@@ -12,7 +12,7 @@ from typing import Any
 
 import pytest
 
-from opensquilla.skills.meta.parser import MetaPlanError
+from openstarry_code.skills.meta.parser import MetaPlanError
 
 # ---------------------------------------------------------------------------
 # Stage 0: Foundation types
@@ -20,7 +20,7 @@ from opensquilla.skills.meta.parser import MetaPlanError
 
 
 def test_source_span_carries_line_and_excerpt() -> None:
-    from opensquilla.skills.meta.sop_compiler import SourceSpan
+    from openstarry_code.skills.meta.sop_compiler import SourceSpan
 
     span = SourceSpan(
         start_line=42,
@@ -36,7 +36,7 @@ def test_source_span_carries_line_and_excerpt() -> None:
 def test_sop_compile_error_is_meta_plan_error() -> None:
     """SOPCompileError is a MetaPlanError so the loader's existing failure
     path catches it via its current except clause."""
-    from opensquilla.skills.meta.sop_compiler import SOPCompileError
+    from openstarry_code.skills.meta.sop_compiler import SOPCompileError
 
     exc = SOPCompileError(
         skill_name="meta-x",
@@ -52,7 +52,7 @@ def test_sop_compile_error_is_meta_plan_error() -> None:
 
 
 def test_sop_compile_error_renders_excerpt() -> None:
-    from opensquilla.skills.meta.sop_compiler import SOPCompileError, SourceSpan
+    from openstarry_code.skills.meta.sop_compiler import SOPCompileError, SourceSpan
 
     span = SourceSpan(
         start_line=10,
@@ -78,7 +78,7 @@ def test_sop_compile_error_renders_excerpt() -> None:
 
 
 def test_lex_recognizes_phase_heading() -> None:
-    from opensquilla.skills.meta.sop_compiler import TokenType, _lex
+    from openstarry_code.skills.meta.sop_compiler import TokenType, _lex
 
     body = "## Phase 1: Search\n\nRun `multi-search-engine`. Save as `s`.\n"
     tokens = list(_lex(body))
@@ -90,7 +90,7 @@ def test_lex_recognizes_phase_heading() -> None:
 
 
 def test_lex_recognizes_phase_heading_with_annotations() -> None:
-    from opensquilla.skills.meta.sop_compiler import TokenType, _lex
+    from openstarry_code.skills.meta.sop_compiler import TokenType, _lex
 
     body = "## Phase 3: Drafting [parallel for_each: section]\n"
     tokens = list(_lex(body))
@@ -100,7 +100,7 @@ def test_lex_recognizes_phase_heading_with_annotations() -> None:
 
 
 def test_lex_recognizes_invocation_and_with_bullets() -> None:
-    from opensquilla.skills.meta.sop_compiler import TokenType, _lex
+    from openstarry_code.skills.meta.sop_compiler import TokenType, _lex
 
     body = (
         "## Phase 1: Search\n"
@@ -117,7 +117,7 @@ def test_lex_recognizes_invocation_and_with_bullets() -> None:
 
 
 def test_lex_skips_fenced_code_blocks_except_for_each() -> None:
-    from opensquilla.skills.meta.sop_compiler import TokenType, _lex
+    from openstarry_code.skills.meta.sop_compiler import TokenType, _lex
 
     body = (
         "## Phase 1: Search\n"
@@ -134,7 +134,7 @@ def test_lex_skips_fenced_code_blocks_except_for_each() -> None:
 
 
 def test_lex_captures_fenced_for_each_yaml() -> None:
-    from opensquilla.skills.meta.sop_compiler import TokenType, _lex
+    from openstarry_code.skills.meta.sop_compiler import TokenType, _lex
 
     body = (
         "## Phase 5: Drafting [parallel for_each: section]\n"
@@ -157,7 +157,7 @@ def test_lex_captures_fenced_for_each_yaml() -> None:
 
 
 def test_lex_returns_source_spans_with_correct_line_numbers() -> None:
-    from opensquilla.skills.meta.sop_compiler import TokenType, _lex
+    from openstarry_code.skills.meta.sop_compiler import TokenType, _lex
 
     body = (
         "Hello\n"               # line 1
@@ -178,7 +178,7 @@ def test_lex_returns_source_spans_with_correct_line_numbers() -> None:
 
 
 def test_parse_single_sequential_phase() -> None:
-    from opensquilla.skills.meta.sop_compiler import _lex, _parse
+    from openstarry_code.skills.meta.sop_compiler import _lex, _parse
 
     body = (
         "## Phase 1: Search\n"
@@ -199,7 +199,7 @@ def test_parse_single_sequential_phase() -> None:
 
 
 def test_parse_invoke_with_kind_and_args() -> None:
-    from opensquilla.skills.meta.sop_compiler import _lex, _parse
+    from openstarry_code.skills.meta.sop_compiler import _lex, _parse
 
     body = (
         "## Phase 1: Outline\n"
@@ -217,7 +217,7 @@ def test_parse_invoke_with_kind_and_args() -> None:
 
 
 def test_parse_parallel_annotation() -> None:
-    from opensquilla.skills.meta.sop_compiler import _lex, _parse
+    from openstarry_code.skills.meta.sop_compiler import _lex, _parse
 
     body = (
         "## Phase 1: First\n"
@@ -233,7 +233,7 @@ def test_parse_parallel_annotation() -> None:
 
 
 def test_parse_for_each_annotation_with_items() -> None:
-    from opensquilla.skills.meta.sop_compiler import _lex, _parse
+    from openstarry_code.skills.meta.sop_compiler import _lex, _parse
 
     body = (
         "## Phase 5: Drafting [parallel for_each: section]\n"
@@ -256,7 +256,7 @@ def test_parse_for_each_annotation_with_items() -> None:
 
 
 def test_parse_depends_on_annotation_single() -> None:
-    from opensquilla.skills.meta.sop_compiler import _lex, _parse
+    from openstarry_code.skills.meta.sop_compiler import _lex, _parse
 
     body = (
         "## Phase 1: A\n"
@@ -270,7 +270,7 @@ def test_parse_depends_on_annotation_single() -> None:
 
 
 def test_parse_when_annotation_rejected() -> None:
-    from opensquilla.skills.meta.sop_compiler import SOPCompileError, _lex, _parse
+    from openstarry_code.skills.meta.sop_compiler import SOPCompileError, _lex, _parse
 
     body = (
         "## Phase 1: A [when: outputs.x == 'yes']\n"
@@ -281,7 +281,7 @@ def test_parse_when_annotation_rejected() -> None:
 
 
 def test_parse_missing_save_as_rejected() -> None:
-    from opensquilla.skills.meta.sop_compiler import SOPCompileError, _lex, _parse
+    from openstarry_code.skills.meta.sop_compiler import SOPCompileError, _lex, _parse
 
     body = (
         "## Phase 1: A\n"
@@ -294,7 +294,7 @@ def test_parse_missing_save_as_rejected() -> None:
 
 
 def test_parse_stdin_prose_rejected() -> None:
-    from opensquilla.skills.meta.sop_compiler import SOPCompileError, _lex, _parse
+    from openstarry_code.skills.meta.sop_compiler import SOPCompileError, _lex, _parse
 
     body = (
         "## Phase 1: Refbib\n"
@@ -322,7 +322,7 @@ class _StubSkillLoader:
         spec = self._specs.get(name)
         if spec is None:
             return None
-        from opensquilla.skills.types import SkillLayer, SkillSpec
+        from openstarry_code.skills.types import SkillLayer, SkillSpec
 
         return SkillSpec(
             name=name,
@@ -337,7 +337,7 @@ class _StubSkillLoader:
 
 
 def test_resolve_kind_skill_exec_when_skill_has_entrypoint() -> None:
-    from opensquilla.skills.meta.sop_compiler import (
+    from openstarry_code.skills.meta.sop_compiler import (
         SOPInvocation,
         SourceSpan,
         _resolve_kind,
@@ -356,7 +356,7 @@ def test_resolve_kind_skill_exec_when_skill_has_entrypoint() -> None:
 
 
 def test_resolve_kind_agent_when_no_entrypoint() -> None:
-    from opensquilla.skills.meta.sop_compiler import (
+    from openstarry_code.skills.meta.sop_compiler import (
         SOPInvocation,
         SourceSpan,
         _resolve_kind,
@@ -374,7 +374,7 @@ def test_resolve_kind_agent_when_no_entrypoint() -> None:
 
 
 def test_resolve_kind_explicit_as_agent_overrides_entrypoint() -> None:
-    from opensquilla.skills.meta.sop_compiler import (
+    from openstarry_code.skills.meta.sop_compiler import (
         SOPInvocation,
         SourceSpan,
         _resolve_kind,
@@ -392,7 +392,7 @@ def test_resolve_kind_explicit_as_agent_overrides_entrypoint() -> None:
 
 
 def test_resolve_kind_unknown_skill_raises() -> None:
-    from opensquilla.skills.meta.sop_compiler import (
+    from openstarry_code.skills.meta.sop_compiler import (
         SOPCompileError,
         SOPInvocation,
         SourceSpan,
@@ -417,7 +417,7 @@ def test_resolve_kind_unknown_skill_raises() -> None:
 
 
 def test_emit_sequential_phases_default_depends_on() -> None:
-    from opensquilla.skills.meta.sop_compiler import _emit, _lex, _parse
+    from openstarry_code.skills.meta.sop_compiler import _emit, _lex, _parse
 
     body = (
         "## Phase 1: First\n"
@@ -449,7 +449,7 @@ def test_emit_sequential_phases_default_depends_on() -> None:
 
 
 def test_emit_parallel_phase_yields_sibling_steps() -> None:
-    from opensquilla.skills.meta.sop_compiler import _emit, _lex, _parse
+    from openstarry_code.skills.meta.sop_compiler import _emit, _lex, _parse
 
     body = (
         "## Phase 1: First\n"
@@ -478,7 +478,7 @@ def test_emit_parallel_phase_yields_sibling_steps() -> None:
 
 
 def test_emit_for_each_expands_into_n_steps_with_loop_substitution() -> None:
-    from opensquilla.skills.meta.sop_compiler import _emit, _lex, _parse
+    from openstarry_code.skills.meta.sop_compiler import _emit, _lex, _parse
 
     body = (
         "## Phase 1: First\n"
@@ -518,7 +518,7 @@ def test_emit_for_each_expands_into_n_steps_with_loop_substitution() -> None:
 def test_emit_for_each_field_omission_drops_missing_keys() -> None:
     """The acceptance case: figure_path is only emitted for items that
     define it. Other items have NO figure_path key in their with_args."""
-    from opensquilla.skills.meta.sop_compiler import _emit, _lex, _parse
+    from openstarry_code.skills.meta.sop_compiler import _emit, _lex, _parse
 
     body = (
         "## Phase 1: Drafting [parallel for_each: section]\n"
@@ -547,7 +547,7 @@ def test_emit_for_each_field_omission_drops_missing_keys() -> None:
 def test_emit_for_each_mixed_template_rejected() -> None:
     """A bullet that mixes a missing loop-var ref with other content must
     raise — silent emission with empty interpolation would be confusing."""
-    from opensquilla.skills.meta.sop_compiler import SOPCompileError, _emit, _lex, _parse
+    from openstarry_code.skills.meta.sop_compiler import SOPCompileError, _emit, _lex, _parse
 
     body = (
         "## Phase 1: Drafting [parallel for_each: section]\n"
@@ -568,7 +568,7 @@ def test_emit_for_each_mixed_template_rejected() -> None:
 def test_emit_for_each_duplicate_generated_id_rejected() -> None:
     """If loop expansion produces a step id that clashes with an existing
     step elsewhere, raise with a clear cross-reference."""
-    from opensquilla.skills.meta.sop_compiler import SOPCompileError, _emit, _lex, _parse
+    from openstarry_code.skills.meta.sop_compiler import SOPCompileError, _emit, _lex, _parse
 
     body = (
         "## Phase 1: First\n"
@@ -594,7 +594,7 @@ def test_emit_for_each_duplicate_generated_id_rejected() -> None:
 
 
 def test_emit_depends_on_single_id_override() -> None:
-    from opensquilla.skills.meta.sop_compiler import _emit, _lex, _parse
+    from openstarry_code.skills.meta.sop_compiler import _emit, _lex, _parse
 
     body = (
         "## Phase 1: A\n"
@@ -618,7 +618,7 @@ def test_emit_depends_on_single_id_override() -> None:
 
 
 def test_emit_depends_on_list_override() -> None:
-    from opensquilla.skills.meta.sop_compiler import _emit, _lex, _parse
+    from openstarry_code.skills.meta.sop_compiler import _emit, _lex, _parse
 
     body = (
         "## Phase 1: A\n"
@@ -642,7 +642,7 @@ def test_emit_depends_on_list_override() -> None:
 
 
 def test_emit_depends_on_unknown_id_rejected() -> None:
-    from opensquilla.skills.meta.sop_compiler import SOPCompileError, _emit, _lex, _parse
+    from openstarry_code.skills.meta.sop_compiler import SOPCompileError, _emit, _lex, _parse
 
     body = (
         "## Phase 1: A\n"
@@ -667,8 +667,8 @@ def test_emit_depends_on_unknown_id_rejected() -> None:
 
 
 def test_compile_produces_meta_spec_from_meta_sop() -> None:
-    from opensquilla.skills.meta.sop_compiler import compile as sop_compile
-    from opensquilla.skills.types import SkillLayer, SkillSpec
+    from openstarry_code.skills.meta.sop_compiler import compile as sop_compile
+    from openstarry_code.skills.types import SkillLayer, SkillSpec
 
     body = (
         "## Phase 1: First\n"
@@ -700,8 +700,8 @@ def test_compile_produces_meta_spec_from_meta_sop() -> None:
 
 
 def test_compile_preserves_triggers_and_priority() -> None:
-    from opensquilla.skills.meta.sop_compiler import compile as sop_compile
-    from opensquilla.skills.types import SkillLayer, SkillSpec
+    from openstarry_code.skills.meta.sop_compiler import compile as sop_compile
+    from openstarry_code.skills.types import SkillLayer, SkillSpec
 
     body = (
         "## Phase 1: Only\n"
@@ -725,8 +725,8 @@ def test_compile_preserves_triggers_and_priority() -> None:
 
 def test_compile_rejects_non_meta_sop_input() -> None:
     """Calling compile on a regular meta skill is a programmer error."""
-    from opensquilla.skills.meta.sop_compiler import compile as sop_compile
-    from opensquilla.skills.types import SkillLayer, SkillSpec
+    from openstarry_code.skills.meta.sop_compiler import compile as sop_compile
+    from openstarry_code.skills.types import SkillLayer, SkillSpec
 
     spec_in = SkillSpec(
         name="meta-regular",
@@ -777,7 +777,7 @@ def test_loader_compiles_meta_sop_at_load_time(tmp_path: Path) -> None:
         "Run `tiny-runner`. Save as `s1`.\n",
     )
 
-    from opensquilla.skills.loader import SkillLoader
+    from openstarry_code.skills.loader import SkillLoader
 
     snapshot = tmp_path / "snap.json"
     loader = SkillLoader(bundled_dir=bundled, snapshot_path=snapshot)
@@ -822,7 +822,7 @@ def test_loader_skips_malformed_meta_sop(tmp_path: Path) -> None:
         "Run `tiny-runner`. Save as `s1`.\n",
     )
 
-    from opensquilla.skills.loader import SkillLoader
+    from openstarry_code.skills.loader import SkillLoader
 
     snapshot = tmp_path / "snap.json"
     loader = SkillLoader(bundled_dir=bundled, snapshot_path=snapshot)
@@ -839,7 +839,7 @@ def test_loader_skips_malformed_meta_sop(tmp_path: Path) -> None:
 
 
 def test_cli_skills_inspect_prints_compiled_dag(tmp_path: Path) -> None:
-    """`opensquilla skills inspect <name>` writes the compiled composition to stdout."""
+    """`openstarry-code skills inspect <name>` writes the compiled composition to stdout."""
 
     bundled = tmp_path / "bundled"
     bundled.mkdir()
@@ -853,7 +853,7 @@ def test_cli_skills_inspect_prints_compiled_dag(tmp_path: Path) -> None:
         "## Phase 1: First\nRun `tiny-runner`. Save as `s1`.\n",
     )
 
-    from opensquilla.cli.skills_cmd import inspect_compiled_dag
+    from openstarry_code.cli.skills_cmd import inspect_compiled_dag
 
     output = inspect_compiled_dag(name="meta-tiny", bundled_dir=bundled)
     assert "s1" in output
@@ -867,7 +867,7 @@ def test_cli_skills_inspect_finds_managed_layer_skill(
 
     Regression: the helper used to build SkillLoader(bundled_dir=...) only,
     leaving managed_dir=None, so a user meta-skill installed under
-    ~/.opensquilla/skills was always reported "not loaded".
+    ~/.openstarry-code/skills was always reported "not loaded".
     """
 
     managed = tmp_path / "managed"
@@ -889,8 +889,8 @@ def test_cli_skills_inspect_finds_managed_layer_skill(
         "# body\n",
     )
 
-    from opensquilla.skills import paths as paths_mod
-    from opensquilla.skills.paths import SkillLayerDirs
+    from openstarry_code.skills import paths as paths_mod
+    from openstarry_code.skills.paths import SkillLayerDirs
 
     monkeypatch.setattr(
         paths_mod,
@@ -898,7 +898,7 @@ def test_cli_skills_inspect_finds_managed_layer_skill(
         lambda **_kw: SkillLayerDirs(bundled_dir=None, managed_dir=managed),
     )
 
-    from opensquilla.cli.skills_cmd import inspect_compiled_dag
+    from openstarry_code.cli.skills_cmd import inspect_compiled_dag
 
     output = inspect_compiled_dag(name="meta-managed")
     assert "not loaded" not in output, output
@@ -941,11 +941,11 @@ def test_acceptance_meta_paper_write_sop_compiles_to_equivalent_dag() -> None:
     acceptance test still verifies the active bundled plan parses and retains
     the paper quality gates."""
 
-    from opensquilla.skills.loader import SkillLoader
-    from opensquilla.skills.meta.parser import parse_meta_plan
+    from openstarry_code.skills.loader import SkillLoader
+    from openstarry_code.skills.meta.parser import parse_meta_plan
 
     project_root = Path(__file__).resolve().parents[2]
-    bundled = project_root / "src" / "opensquilla" / "skills" / "bundled"
+    bundled = project_root / "src" / "openstarry_code" / "skills" / "bundled"
 
     snapshot = Path("/tmp/_sop_acceptance_snap.json")
     if snapshot.exists():
@@ -979,7 +979,7 @@ def test_acceptance_meta_paper_write_sop_compiles_to_equivalent_dag() -> None:
     fm_yaml, _, _ = after_frontmatter.partition("---")
     fm = _yaml.safe_load(fm_yaml)
 
-    from opensquilla.skills.types import SkillLayer, SkillSpec
+    from openstarry_code.skills.types import SkillLayer, SkillSpec
 
     handwritten_spec = SkillSpec(
         name=fm["name"],

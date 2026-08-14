@@ -4,10 +4,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from opensquilla.uninstall import actions
-from opensquilla.uninstall.actions import ActionResult, _safe_remove, execute
-from opensquilla.uninstall.inventory import Inventory
-from opensquilla.uninstall.plan import Action, UninstallPlan
+from openstarry_code.uninstall import actions
+from openstarry_code.uninstall.actions import ActionResult, _safe_remove, execute
+from openstarry_code.uninstall.inventory import Inventory
+from openstarry_code.uninstall.plan import Action, UninstallPlan
 
 
 def _bare_inventory(home: Path) -> Inventory:
@@ -161,7 +161,7 @@ def test_execute_runs_package_uninstall(monkeypatch, tmp_path: Path) -> None:
 
 def test_execute_unregister_service_removes_unit(monkeypatch, tmp_path: Path) -> None:
     monkeypatch.setenv("HOME", str(tmp_path))
-    unit = tmp_path / ".config/systemd/user/opensquilla.service"
+    unit = tmp_path / ".config/systemd/user/openstarry-code.service"
     unit.parent.mkdir(parents=True)
     unit.write_text("[Unit]")
     monkeypatch.setattr(
@@ -177,7 +177,9 @@ def test_execute_unregister_service_removes_unit(monkeypatch, tmp_path: Path) ->
             "unregister-service",
             "Unregister systemd",
             paths=[str(unit)],
-            commands=[["systemctl", "--user", "disable", "--now", "opensquilla.service"]],
+            commands=[
+                ["systemctl", "--user", "disable", "--now", "openstarry-code.service"]
+            ],
         ),
     ]
     result = execute(plan, _bare_inventory(tmp_path / "home"))
@@ -191,8 +193,8 @@ def test_quiesce_fails_closed_on_live_gateway_pidfile(monkeypatch, tmp_path: Pat
     import os
     from types import SimpleNamespace
 
-    from opensquilla.cli import gateway_lifecycle as gl
-    from opensquilla.gateway import config as gwconfig
+    from openstarry_code.cli import gateway_lifecycle as gl
+    from openstarry_code.gateway import config as gwconfig
 
     home = tmp_path / "home"
     state = home / "state"
@@ -220,8 +222,8 @@ def test_quiesce_ok_when_gateway_pidfile_is_stale(monkeypatch, tmp_path: Path) -
     import json
     from types import SimpleNamespace
 
-    from opensquilla.cli import gateway_lifecycle as gl
-    from opensquilla.gateway import config as gwconfig
+    from openstarry_code.cli import gateway_lifecycle as gl
+    from openstarry_code.gateway import config as gwconfig
 
     home = tmp_path / "home"
     state = home / "state"

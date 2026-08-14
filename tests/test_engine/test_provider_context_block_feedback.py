@@ -1,7 +1,7 @@
 """Opt-in levers: blocked-call rejection feedback + identical-request breaker.
 
-Covers OPENSQUILLA_PROVIDER_CONTEXT_BLOCK_FEEDBACK and
-OPENSQUILLA_IDENTICAL_REQUEST_LOOP_BREAK (both off by default). Motivation:
+Covers OPENSTARRY_CODE_PROVIDER_CONTEXT_BLOCK_FEEDBACK and
+OPENSTARRY_CODE_IDENTICAL_REQUEST_LOOP_BREAK (both off by default). Motivation:
 when blocked compacted-placeholder tool calls are stripped from the provider
 projection together with their error tool_results, the model never sees the
 rejection and can re-emit byte-identical requests until the iteration cap.
@@ -12,13 +12,13 @@ from __future__ import annotations
 from collections.abc import AsyncIterator
 from typing import Any
 
-from opensquilla.engine import Agent, AgentConfig
-from opensquilla.engine.agent import (
+from openstarry_code.engine import Agent, AgentConfig
+from openstarry_code.engine.agent import (
     _IDENTICAL_REQUEST_LOOP_NUDGE,
     _INVALID_PROVIDER_CONTEXT_ARGUMENTS_KEY,
     _PROVIDER_CONTEXT_REPAIR_PROMPT,
 )
-from opensquilla.provider import (
+from openstarry_code.provider import (
     ChatConfig,
     ContentBlockText,
     ContentBlockToolResult,
@@ -295,18 +295,18 @@ def test_append_nudge_appends_new_message_when_trailing_is_assistant() -> None:
 
 
 def test_env_plumbing_for_both_levers(monkeypatch) -> None:
-    from opensquilla.engine.turn_runner.agent_bootstrap_stage import (
+    from openstarry_code.engine.turn_runner.agent_bootstrap_stage import (
         _bool_from_env,
         _nonnegative_int_from_env,
     )
 
-    assert _bool_from_env("OPENSQUILLA_PROVIDER_CONTEXT_BLOCK_FEEDBACK", False) is False
+    assert _bool_from_env("OPENSTARRY_CODE_PROVIDER_CONTEXT_BLOCK_FEEDBACK", False) is False
     assert (
-        _nonnegative_int_from_env("OPENSQUILLA_IDENTICAL_REQUEST_LOOP_BREAK", 0) == 0
+        _nonnegative_int_from_env("OPENSTARRY_CODE_IDENTICAL_REQUEST_LOOP_BREAK", 0) == 0
     )
-    monkeypatch.setenv("OPENSQUILLA_PROVIDER_CONTEXT_BLOCK_FEEDBACK", "1")
-    monkeypatch.setenv("OPENSQUILLA_IDENTICAL_REQUEST_LOOP_BREAK", "3")
-    assert _bool_from_env("OPENSQUILLA_PROVIDER_CONTEXT_BLOCK_FEEDBACK", False) is True
+    monkeypatch.setenv("OPENSTARRY_CODE_PROVIDER_CONTEXT_BLOCK_FEEDBACK", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_IDENTICAL_REQUEST_LOOP_BREAK", "3")
+    assert _bool_from_env("OPENSTARRY_CODE_PROVIDER_CONTEXT_BLOCK_FEEDBACK", False) is True
     assert (
-        _nonnegative_int_from_env("OPENSQUILLA_IDENTICAL_REQUEST_LOOP_BREAK", 0) == 3
+        _nonnegative_int_from_env("OPENSTARRY_CODE_IDENTICAL_REQUEST_LOOP_BREAK", 0) == 3
     )

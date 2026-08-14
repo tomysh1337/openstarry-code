@@ -7,13 +7,13 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.prompt_cache_keepalive import PromptCacheKeepaliveCandidate
-from opensquilla.gateway.prompt_cache_keepalive import PromptCacheKeepaliveService
-from opensquilla.gateway.routing import RouteEnvelope, SourceKind
-from opensquilla.gateway.rpc import RpcContext, get_dispatcher
-from opensquilla.gateway.scopes import METHOD_SCOPES, READ_SCOPE, WRITE_SCOPE
-from opensquilla.gateway.task_runtime import TaskRuntime
-from opensquilla.provider import ChatConfig, DoneEvent, Message
+from openstarry_code.engine.prompt_cache_keepalive import PromptCacheKeepaliveCandidate
+from openstarry_code.gateway.prompt_cache_keepalive import PromptCacheKeepaliveService
+from openstarry_code.gateway.routing import RouteEnvelope, SourceKind
+from openstarry_code.gateway.rpc import RpcContext, get_dispatcher
+from openstarry_code.gateway.scopes import METHOD_SCOPES, READ_SCOPE, WRITE_SCOPE
+from openstarry_code.gateway.task_runtime import TaskRuntime
+from openstarry_code.provider import ChatConfig, DoneEvent, Message
 
 
 class _IdleRuntime:

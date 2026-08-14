@@ -1,6 +1,6 @@
 """Tests for secret redaction helpers."""
 
-from opensquilla.onboarding.redaction import (
+from openstarry_code.onboarding.redaction import (
     REDACTED_PLACEHOLDER,
     redact_channel_entry,
     redact_memory_embedding_payload,

@@ -12,9 +12,9 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.skills import eligibility
-from opensquilla.skills.meta.executors.agent import run_step_with_skill_text_only
-from opensquilla.skills.meta.executors.skill_exec import run_skill_exec_step
+from openstarry_code.skills import eligibility
+from openstarry_code.skills.meta.executors.agent import run_step_with_skill_text_only
+from openstarry_code.skills.meta.executors.skill_exec import run_skill_exec_step
 
 
 @pytest.fixture(autouse=True)

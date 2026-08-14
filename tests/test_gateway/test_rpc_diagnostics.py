@@ -2,18 +2,18 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.diagnostics import DiagnosticsState
-from opensquilla.gateway.rpc import RpcContext, get_dispatcher
-from opensquilla.gateway.scopes import ADMIN_SCOPE, METHOD_SCOPES, READ_SCOPE
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.diagnostics import DiagnosticsState
+from openstarry_code.gateway.rpc import RpcContext, get_dispatcher
+from openstarry_code.gateway.scopes import ADMIN_SCOPE, METHOD_SCOPES, READ_SCOPE
 
 
 @pytest.mark.asyncio
 async def test_diagnostics_status_is_read_scoped_and_reports_standard_default(
     monkeypatch,
 ) -> None:
-    monkeypatch.delenv("OPENSQUILLA_TURN_CALL_LOG", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_TURN_CALL_LOG", raising=False)
     state = DiagnosticsState.from_config(GatewayConfig(diagnostics_enabled=True))
     ctx = RpcContext(
         conn_id="test",
@@ -33,7 +33,7 @@ async def test_diagnostics_status_is_read_scoped_and_reports_standard_default(
 
 @pytest.mark.asyncio
 async def test_diagnostics_set_requires_admin_and_enables_runtime_raw(monkeypatch) -> None:
-    monkeypatch.delenv("OPENSQUILLA_TURN_CALL_LOG", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_TURN_CALL_LOG", raising=False)
     state = DiagnosticsState.from_config(GatewayConfig())
     ctx = RpcContext(conn_id="test", config=GatewayConfig(), diagnostics_state=state)
 
@@ -58,7 +58,7 @@ async def test_diagnostics_set_requires_admin_and_enables_runtime_raw(monkeypatc
 
 @pytest.mark.asyncio
 async def test_diagnostics_status_read_scope_but_set_requires_admin(monkeypatch) -> None:
-    monkeypatch.delenv("OPENSQUILLA_TURN_CALL_LOG", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_TURN_CALL_LOG", raising=False)
     read_principal = Principal(
         role="operator",
         scopes=frozenset({READ_SCOPE}),
@@ -88,7 +88,7 @@ async def test_diagnostics_status_read_scope_but_set_requires_admin(monkeypatch)
 
 @pytest.mark.asyncio
 async def test_diagnostics_set_attaches_fallback_state_to_context(monkeypatch) -> None:
-    monkeypatch.delenv("OPENSQUILLA_TURN_CALL_LOG", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_TURN_CALL_LOG", raising=False)
     ctx = RpcContext(conn_id="test", config=GatewayConfig())
 
     setter = await get_dispatcher().dispatch(
@@ -109,7 +109,7 @@ async def test_diagnostics_set_attaches_fallback_state_to_context(monkeypatch) -
 async def test_diagnostics_off_clears_runtime_state_but_reports_env_forced_raw(
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_TURN_CALL_LOG", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_TURN_CALL_LOG", "1")
     state = DiagnosticsState.from_config(GatewayConfig())
     state.set_runtime(enabled=True, raw=True)
     ctx = RpcContext(conn_id="test", config=GatewayConfig(), diagnostics_state=state)
@@ -131,7 +131,7 @@ async def test_diagnostics_off_clears_runtime_state_but_reports_env_forced_raw(
         "source": "env",
         "env_override": True,
     }
-    assert response.payload["warning"] == "OPENSQUILLA_TURN_CALL_LOG still forces raw capture"
+    assert response.payload["warning"] == "OPENSTARRY_CODE_TURN_CALL_LOG still forces raw capture"
 
     second = await get_dispatcher().dispatch(
         "req-2",

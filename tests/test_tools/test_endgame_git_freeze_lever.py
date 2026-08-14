@@ -1,6 +1,6 @@
 """Endgame git freeze lever: shell-side blocking of workspace-reverting git.
 
-Covers the tools half of OPENSQUILLA_ENDGAME_GIT_FREEZE_MARGIN_SECONDS: the
+Covers the tools half of OPENSTARRY_CODE_ENDGAME_GIT_FREEZE_MARGIN_SECONDS: the
 engine arms ToolContext.endgame_git_freeze_active near the turn deadline, and
 the shell tools then block destructive git commands — restore, path/branch
 checkouts, hard resets, force-clean, stash push/drop/clear — outright, with
@@ -16,15 +16,15 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.gateway.approval_queue import reset_approval_queue
-from opensquilla.sandbox.integration import reset_runtime
-from opensquilla.tools import source_diff_preservation
-from opensquilla.tools.builtin import shell
-from opensquilla.tools.source_diff_preservation import (
+from openstarry_code.gateway.approval_queue import reset_approval_queue
+from openstarry_code.sandbox.integration import reset_runtime
+from openstarry_code.tools import source_diff_preservation
+from openstarry_code.tools.builtin import shell
+from openstarry_code.tools.source_diff_preservation import (
     endgame_git_freeze_block_json,
     endgame_git_freeze_decision,
 )
-from opensquilla.tools.types import (
+from openstarry_code.tools.types import (
     CallerKind,
     InteractionMode,
     ToolContext,
@@ -278,7 +278,7 @@ async def test_exec_command_blocks_checkout_when_frozen_under_host_execution(
 
 
 # ---------------------------------------------------------------------------
-# Instrumentation exemption (OPENSQUILLA_ENDGAME_GIT_FREEZE_INSTRUMENTATION_EXEMPT)
+# Instrumentation exemption (OPENSTARRY_CODE_ENDGAME_GIT_FREEZE_INSTRUMENTATION_EXEMPT)
 # ---------------------------------------------------------------------------
 
 

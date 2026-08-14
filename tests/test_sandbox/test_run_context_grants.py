@@ -73,7 +73,7 @@ def _identified_tool_context(
     execution_id: str = "execution-test",
     fresh: bool = True,
 ):
-    from opensquilla.tools.types import ToolContext
+    from openstarry_code.tools.types import ToolContext
 
     context = ToolContext(
         is_owner=True,
@@ -97,8 +97,8 @@ class _FailingUpdateSessionManager(_SessionManager):
 
 @pytest.mark.asyncio
 async def test_mount_domain_and_bundle_grants_persist(tmp_path):
-    from opensquilla.sandbox.run_context import get_run_context
-    from opensquilla.sandbox.run_context_service import (
+    from openstarry_code.sandbox.run_context import get_run_context
+    from openstarry_code.sandbox.run_context_service import (
         add_domain_grant,
         add_mount_grant,
         enable_bundle_grant,
@@ -152,8 +152,8 @@ async def test_mount_domain_and_bundle_grants_persist(tmp_path):
 async def test_workspace_domain_grant_does_not_write_user_store_when_session_persist_fails(
     tmp_path,
 ):
-    from opensquilla.sandbox.run_context_service import add_domain_grant
-    from opensquilla.sandbox.user_grants import load_user_grants_payload
+    from openstarry_code.sandbox.run_context_service import add_domain_grant
+    from openstarry_code.sandbox.user_grants import load_user_grants_payload
 
     workspace = tmp_path / "workspace"
     workspace.mkdir()
@@ -176,8 +176,8 @@ async def test_workspace_domain_grant_does_not_write_user_store_when_session_per
 async def test_workspace_mount_grant_does_not_write_user_store_when_session_persist_fails(
     tmp_path,
 ):
-    from opensquilla.sandbox.run_context_service import add_mount_grant
-    from opensquilla.sandbox.user_grants import load_user_grants_payload
+    from openstarry_code.sandbox.run_context_service import add_mount_grant
+    from openstarry_code.sandbox.user_grants import load_user_grants_payload
 
     workspace = tmp_path / "workspace"
     workspace.mkdir()
@@ -203,8 +203,8 @@ async def test_workspace_mount_grant_does_not_write_user_store_when_session_pers
 async def test_workspace_bundle_grant_does_not_write_user_store_when_session_persist_fails(
     tmp_path,
 ):
-    from opensquilla.sandbox.run_context_service import enable_bundle_grant
-    from opensquilla.sandbox.user_grants import load_user_grants_payload
+    from openstarry_code.sandbox.run_context_service import enable_bundle_grant
+    from openstarry_code.sandbox.user_grants import load_user_grants_payload
 
     manager = _FailingUpdateSessionManager()
 
@@ -225,8 +225,8 @@ async def test_workspace_bundle_grant_does_not_write_user_store_when_session_per
 async def test_workspace_public_network_grant_does_not_write_user_store_when_session_persist_fails(
     tmp_path,
 ):
-    from opensquilla.sandbox.run_context_service import add_public_network_grant
-    from opensquilla.sandbox.user_grants import load_user_grants_payload
+    from openstarry_code.sandbox.run_context_service import add_public_network_grant
+    from openstarry_code.sandbox.user_grants import load_user_grants_payload
 
     manager = _FailingUpdateSessionManager()
 
@@ -249,8 +249,8 @@ async def test_get_run_context_migrates_user_grants_from_long_state_dir(
     monkeypatch: pytest.MonkeyPatch,
     request: pytest.FixtureRequest,
 ) -> None:
-    from opensquilla.paths import native_io_path, state_dir
-    from opensquilla.sandbox.run_context import get_run_context
+    from openstarry_code.paths import native_io_path, state_dir
+    from openstarry_code.sandbox.run_context import get_run_context
 
     long_root = tmp_path / "long-user-grants"
     home = long_root
@@ -258,7 +258,7 @@ async def test_get_run_context_migrates_user_grants_from_long_state_dir(
     while len(str(home / "state" / "sandbox_user_grants.sqlite")) <= 280:
         home /= f"segment-{index:02d}-" + ("g" * 40)
         index += 1
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     def cleanup() -> None:
         native_root = native_io_path(long_root)
@@ -298,7 +298,7 @@ async def test_get_run_context_migrates_user_grants_from_long_state_dir(
 
 
 def test_user_grants_store_round_trips_payloads(tmp_path):
-    from opensquilla.sandbox.user_grants import (
+    from openstarry_code.sandbox.user_grants import (
         load_user_grants_payload,
         remove_bundle_grant,
         remove_domain_grant,
@@ -350,8 +350,8 @@ def test_user_grants_store_round_trips_payloads(tmp_path):
 
 
 def test_user_grants_store_migrates_legacy_json(tmp_path):
-    from opensquilla.paths import state_dir
-    from opensquilla.sandbox.user_grants import load_user_grants_payload
+    from openstarry_code.paths import state_dir
+    from openstarry_code.sandbox.user_grants import load_user_grants_payload
 
     mount_path = str((tmp_path / "outside").resolve(strict=False))
     legacy_path = state_dir("sandbox_user_grants.json")
@@ -405,8 +405,8 @@ def test_user_grants_store_migration_tolerates_concurrent_legacy_unlink(
 ):
     from pathlib import Path
 
-    from opensquilla.paths import state_dir
-    from opensquilla.sandbox.user_grants import load_user_grants_payload
+    from openstarry_code.paths import state_dir
+    from openstarry_code.sandbox.user_grants import load_user_grants_payload
 
     legacy_path = state_dir("sandbox_user_grants.json")
     legacy_path.parent.mkdir(parents=True, exist_ok=True)
@@ -442,9 +442,9 @@ def test_user_grants_store_migration_tolerates_concurrent_legacy_unlink(
 
 @pytest.mark.asyncio
 async def test_durable_user_domain_is_not_materialized_into_session_origin(tmp_path):
-    from opensquilla.sandbox.run_context import get_run_context
-    from opensquilla.sandbox.run_context_service import add_domain_grant, remove_domain_grant
-    from opensquilla.sandbox.user_grants import upsert_domain_grant
+    from openstarry_code.sandbox.run_context import get_run_context
+    from openstarry_code.sandbox.run_context_service import add_domain_grant, remove_domain_grant
+    from openstarry_code.sandbox.user_grants import upsert_domain_grant
 
     workspace = tmp_path / "workspace"
     workspace.mkdir()
@@ -485,8 +485,8 @@ async def test_durable_user_domain_is_not_materialized_into_session_origin(tmp_p
 
 @pytest.mark.asyncio
 async def test_user_domain_revoke_in_fresh_session_does_not_leave_saved_copy(tmp_path):
-    from opensquilla.sandbox.run_context import get_run_context
-    from opensquilla.sandbox.run_context_service import add_domain_grant, remove_domain_grant
+    from openstarry_code.sandbox.run_context import get_run_context
+    from openstarry_code.sandbox.run_context_service import add_domain_grant, remove_domain_grant
 
     workspace = tmp_path / "workspace"
     workspace.mkdir()
@@ -524,7 +524,7 @@ async def test_user_domain_revoke_in_fresh_session_does_not_leave_saved_copy(tmp
 
 @pytest.mark.asyncio
 async def test_legacy_materialized_user_grants_in_origin_are_ignored(tmp_path):
-    from opensquilla.sandbox.run_context import (
+    from openstarry_code.sandbox.run_context import (
         PackageBundleGrant,
         PublicNetworkGrant,
         get_run_context,
@@ -614,10 +614,10 @@ async def test_workspace_domain_grant_persists_to_fresh_session_user_store(
     tmp_path,
     monkeypatch: pytest.MonkeyPatch,
 ):
-    from opensquilla.sandbox.run_context import DomainGrant, get_run_context
-    from opensquilla.sandbox.run_context_service import add_domain_grant
+    from openstarry_code.sandbox.run_context import DomainGrant, get_run_context
+    from openstarry_code.sandbox.run_context_service import add_domain_grant
 
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "home"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "home"))
     workspace = tmp_path / "workspace"
     workspace.mkdir()
     manager = _manager_with_session_key("agent:main:webchat:first")
@@ -647,10 +647,10 @@ async def test_workspace_mount_grant_persists_to_fresh_session_user_store(
     tmp_path,
     monkeypatch: pytest.MonkeyPatch,
 ):
-    from opensquilla.sandbox.run_context import MountGrant, get_run_context
-    from opensquilla.sandbox.run_context_service import add_mount_grant
+    from openstarry_code.sandbox.run_context import MountGrant, get_run_context
+    from openstarry_code.sandbox.run_context_service import add_mount_grant
 
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "home"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "home"))
     workspace = tmp_path / "workspace"
     workspace.mkdir()
     outside = tmp_path / "outside"
@@ -690,10 +690,10 @@ async def test_workspace_bundle_grant_persists_to_fresh_session_user_store(
     tmp_path,
     monkeypatch: pytest.MonkeyPatch,
 ):
-    from opensquilla.sandbox.run_context import PackageBundleGrant, get_run_context
-    from opensquilla.sandbox.run_context_service import enable_bundle_grant
+    from openstarry_code.sandbox.run_context import PackageBundleGrant, get_run_context
+    from openstarry_code.sandbox.run_context_service import enable_bundle_grant
 
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "home"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "home"))
     manager = _manager_with_session_key("agent:main:webchat:first")
 
     await enable_bundle_grant(
@@ -728,8 +728,8 @@ async def test_workspace_grant_removals_update_user_store(
     tmp_path,
     monkeypatch: pytest.MonkeyPatch,
 ):
-    from opensquilla.sandbox.run_context import get_run_context
-    from opensquilla.sandbox.run_context_service import (
+    from openstarry_code.sandbox.run_context import get_run_context
+    from openstarry_code.sandbox.run_context_service import (
         add_domain_grant,
         add_mount_grant,
         disable_bundle_grant,
@@ -738,7 +738,7 @@ async def test_workspace_grant_removals_update_user_store(
         remove_mount_grant,
     )
 
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "home"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "home"))
     workspace = tmp_path / "workspace"
     workspace.mkdir()
     outside = tmp_path / "outside"
@@ -810,7 +810,7 @@ async def test_workspace_grant_removals_update_user_store(
 
 @pytest.mark.asyncio
 async def test_credential_named_mount_is_allowed_by_permission_model(tmp_path):
-    from opensquilla.sandbox.run_context_service import add_mount_grant
+    from openstarry_code.sandbox.run_context_service import add_mount_grant
 
     manager = _SessionManager()
     workspace = tmp_path / "workspace"
@@ -834,7 +834,7 @@ async def test_credential_named_mount_is_allowed_by_permission_model(tmp_path):
 
 @pytest.mark.asyncio
 async def test_remove_mount_grant_normalizes_caller_path(tmp_path):
-    from opensquilla.sandbox.run_context_service import (
+    from openstarry_code.sandbox.run_context_service import (
         add_mount_grant,
         remove_mount_grant,
     )
@@ -872,7 +872,7 @@ async def test_remove_absent_root_or_credential_mount_is_a_noop(
     tmp_path,
     path_kind,
 ):
-    from opensquilla.sandbox.run_context_service import (
+    from openstarry_code.sandbox.run_context_service import (
         add_mount_grant,
         remove_mount_grant,
     )
@@ -912,7 +912,7 @@ async def test_remove_absent_root_or_credential_mount_is_a_noop(
 
 @pytest.mark.asyncio
 async def test_absent_removals_do_not_create_saved_context(tmp_path):
-    from opensquilla.sandbox.run_context_service import (
+    from openstarry_code.sandbox.run_context_service import (
         disable_bundle_grant,
         remove_domain_grant,
         remove_mount_grant,
@@ -962,7 +962,7 @@ async def test_absent_removals_do_not_create_saved_context(tmp_path):
 
 @pytest.mark.asyncio
 async def test_absent_removals_preserve_saved_origin(tmp_path):
-    from opensquilla.sandbox.run_context_service import (
+    from openstarry_code.sandbox.run_context_service import (
         disable_bundle_grant,
         remove_domain_grant,
         remove_mount_grant,
@@ -1046,7 +1046,7 @@ async def test_absent_removals_preserve_saved_origin(tmp_path):
 
 @pytest.mark.asyncio
 async def test_duplicate_mount_grant_replaces_existing_entry(tmp_path):
-    from opensquilla.sandbox.run_context_service import add_mount_grant
+    from openstarry_code.sandbox.run_context_service import add_mount_grant
 
     manager = _SessionManager()
     workspace = tmp_path / "workspace"
@@ -1079,7 +1079,7 @@ async def test_duplicate_mount_grant_replaces_existing_entry(tmp_path):
 
 @pytest.mark.asyncio
 async def test_duplicate_same_mount_grant_is_noop(tmp_path):
-    from opensquilla.sandbox.run_context_service import add_mount_grant
+    from openstarry_code.sandbox.run_context_service import add_mount_grant
 
     manager = _SessionManager()
     workspace = tmp_path / "workspace"
@@ -1115,7 +1115,7 @@ async def test_duplicate_same_mount_grant_is_noop(tmp_path):
 async def test_duplicate_same_mount_grant_ignores_stale_workspace_origin_grants(
     tmp_path,
 ):
-    from opensquilla.sandbox.run_context_service import add_mount_grant
+    from openstarry_code.sandbox.run_context_service import add_mount_grant
 
     workspace = tmp_path / "workspace"
     workspace.mkdir()
@@ -1159,7 +1159,7 @@ async def test_duplicate_same_mount_grant_ignores_stale_workspace_origin_grants(
 
 @pytest.mark.asyncio
 async def test_duplicate_domain_grant_replaces_existing_entry(tmp_path):
-    from opensquilla.sandbox.run_context_service import add_domain_grant
+    from openstarry_code.sandbox.run_context_service import add_domain_grant
 
     manager = _SessionManager()
 
@@ -1185,7 +1185,7 @@ async def test_duplicate_domain_grant_replaces_existing_entry(tmp_path):
 
 @pytest.mark.asyncio
 async def test_duplicate_same_domain_grant_is_noop(tmp_path):
-    from opensquilla.sandbox.run_context_service import add_domain_grant
+    from openstarry_code.sandbox.run_context_service import add_domain_grant
 
     manager = _SessionManager()
 
@@ -1215,7 +1215,7 @@ async def test_duplicate_same_domain_grant_is_noop(tmp_path):
 async def test_duplicate_same_domain_grant_ignores_stale_workspace_origin_grants(
     tmp_path,
 ):
-    from opensquilla.sandbox.run_context_service import add_domain_grant
+    from openstarry_code.sandbox.run_context_service import add_domain_grant
 
     domain_payload = [
         {"domain": "files.pythonhosted.org", "scope": "chat", "source": "manual"},
@@ -1254,7 +1254,7 @@ async def test_duplicate_same_domain_grant_ignores_stale_workspace_origin_grants
 
 @pytest.mark.asyncio
 async def test_duplicate_bundle_grant_replaces_existing_entry(tmp_path):
-    from opensquilla.sandbox.run_context_service import enable_bundle_grant
+    from openstarry_code.sandbox.run_context_service import enable_bundle_grant
 
     manager = _SessionManager()
 
@@ -1280,7 +1280,7 @@ async def test_duplicate_bundle_grant_replaces_existing_entry(tmp_path):
 
 @pytest.mark.asyncio
 async def test_duplicate_same_bundle_grant_is_noop(tmp_path):
-    from opensquilla.sandbox.run_context_service import enable_bundle_grant
+    from openstarry_code.sandbox.run_context_service import enable_bundle_grant
 
     manager = _SessionManager()
 
@@ -1310,7 +1310,7 @@ async def test_duplicate_same_bundle_grant_is_noop(tmp_path):
 async def test_duplicate_same_bundle_grant_ignores_stale_workspace_origin_grants(
     tmp_path,
 ):
-    from opensquilla.sandbox.run_context_service import enable_bundle_grant
+    from openstarry_code.sandbox.run_context_service import enable_bundle_grant
 
     bundle_payload = [
         {
@@ -1363,8 +1363,8 @@ async def test_duplicate_same_bundle_grant_ignores_stale_workspace_origin_grants
 
 @pytest.mark.asyncio
 async def test_disable_bundle_grant_persists_disabled_default_override(tmp_path):
-    from opensquilla.sandbox.run_context import PackageBundleGrant
-    from opensquilla.sandbox.run_context_service import (
+    from openstarry_code.sandbox.run_context import PackageBundleGrant
+    from openstarry_code.sandbox.run_context_service import (
         disable_bundle_grant,
         enable_bundle_grant,
     )
@@ -1405,9 +1405,9 @@ async def test_disable_bundle_grant_persists_disabled_default_override(tmp_path)
 
 @pytest.mark.asyncio
 async def test_enable_bundle_grant_clears_disabled_default_override(tmp_path):
-    from opensquilla.sandbox.network_guard import decide_network_access
-    from opensquilla.sandbox.run_context import PackageBundleGrant
-    from opensquilla.sandbox.run_context_service import (
+    from openstarry_code.sandbox.network_guard import decide_network_access
+    from openstarry_code.sandbox.run_context import PackageBundleGrant
+    from openstarry_code.sandbox.run_context_service import (
         disable_bundle_grant,
         enable_bundle_grant,
     )
@@ -1445,7 +1445,7 @@ async def test_enable_bundle_grant_clears_disabled_default_override(tmp_path):
 
 @pytest.mark.asyncio
 async def test_disable_bundle_grant_rejects_unknown_without_mutation(tmp_path):
-    from opensquilla.sandbox.run_context_service import (
+    from openstarry_code.sandbox.run_context_service import (
         disable_bundle_grant,
         enable_bundle_grant,
     )
@@ -1476,7 +1476,7 @@ async def test_disable_bundle_grant_rejects_unknown_without_mutation(tmp_path):
 
 @pytest.mark.asyncio
 async def test_set_workspace_normalizes_before_persisting(tmp_path):
-    from opensquilla.sandbox.run_context_service import set_workspace
+    from openstarry_code.sandbox.run_context_service import set_workspace
 
     manager = _SessionManager()
     workspace = tmp_path / "workspace"
@@ -1498,7 +1498,7 @@ async def test_set_workspace_normalizes_before_persisting(tmp_path):
 
 @pytest.mark.asyncio
 async def test_set_workspace_same_normalized_path_is_noop(tmp_path):
-    from opensquilla.sandbox.run_context_service import set_workspace
+    from openstarry_code.sandbox.run_context_service import set_workspace
 
     manager = _SessionManager()
     workspace = tmp_path / "workspace"
@@ -1525,7 +1525,7 @@ async def test_set_workspace_same_normalized_path_is_noop(tmp_path):
         "/run/docker.sock",
         "/var/run/docker.sock",
         "/private/var/run/docker.sock",
-        "/root/.opensquilla/workspace/.env.local",
+        "/root/.openstarry-code/workspace/.env.local",
         None,
     ],
 )
@@ -1533,8 +1533,8 @@ async def test_set_run_mode_preserves_name_agnostic_fallback_workspace(
     tmp_path,
     workspace_path,
 ):
-    from opensquilla.sandbox.run_context import normalize_workspace_path, set_run_mode
-    from opensquilla.sandbox.run_mode import RunMode
+    from openstarry_code.sandbox.run_context import normalize_workspace_path, set_run_mode
+    from openstarry_code.sandbox.run_mode import RunMode
 
     manager = _SessionManager()
     fallback_workspace = (
@@ -1556,7 +1556,7 @@ async def test_set_run_mode_preserves_name_agnostic_fallback_workspace(
 
 @pytest.mark.asyncio
 async def test_set_workspace_rejects_empty_path(tmp_path):
-    from opensquilla.sandbox.run_context_service import set_workspace
+    from openstarry_code.sandbox.run_context_service import set_workspace
 
     manager = _SessionManager()
 
@@ -1573,11 +1573,11 @@ async def test_set_workspace_rejects_empty_path(tmp_path):
 
 @pytest.mark.asyncio
 async def test_set_workspace_allows_root_nested_deployment_workspace():
-    from opensquilla.sandbox.run_context_service import set_workspace
+    from openstarry_code.sandbox.run_context_service import set_workspace
 
     for workspace_path in (
-        "/root/.opensquilla/workspace",
-        "/root/.opensquilla/workspace/project/src",
+        "/root/.openstarry-code/workspace",
+        "/root/.openstarry-code/workspace/project/src",
     ):
         manager = _SessionManager()
 
@@ -1595,8 +1595,8 @@ async def test_set_workspace_allows_root_nested_deployment_workspace():
 
 @pytest.mark.asyncio
 async def test_set_workspace_allows_paths_without_sensitive_name_rules():
-    from opensquilla.sandbox.run_context import normalize_workspace_path
-    from opensquilla.sandbox.run_context_service import set_workspace
+    from openstarry_code.sandbox.run_context import normalize_workspace_path
+    from openstarry_code.sandbox.run_context_service import set_workspace
 
     for workspace_path in (
         "/run/docker.sock",
@@ -1609,21 +1609,21 @@ async def test_set_workspace_allows_paths_without_sensitive_name_rules():
         "/root/.docker/config",
         "/root/.gnupg",
         "/root/.ssh",
-        "/root/.opensquilla/workspace/.aws/credentials",
-        "/root/.opensquilla/workspace/.kube/config",
-        "/root/.opensquilla/workspace/.docker/config",
-        "/root/.opensquilla/workspace/.docker/config.json",
-        "/root/.opensquilla/workspace/.gnupg/private-keys-v1.d/key",
-        "/root/.opensquilla/workspace/id_rsa",
-        "/root/.opensquilla/workspace/.ssh/id_rsa",
-        "/root/.opensquilla/workspace/.env",
-        "/root/.opensquilla/workspace/.env.local",
-        "/root/.opensquilla/workspace/.envrc",
-        "/root/.opensquilla/workspace/project/.aws/credentials",
-        "/root/.opensquilla/workspace/project/.kube/config",
-        "/root/.opensquilla/workspace/project/.docker/config.json",
-        "/root/.opensquilla/workspace/project/.gnupg/private-keys-v1.d/key",
-        "/root/.opensquilla/workspace/project/.env_secret",
+        "/root/.openstarry-code/workspace/.aws/credentials",
+        "/root/.openstarry-code/workspace/.kube/config",
+        "/root/.openstarry-code/workspace/.docker/config",
+        "/root/.openstarry-code/workspace/.docker/config.json",
+        "/root/.openstarry-code/workspace/.gnupg/private-keys-v1.d/key",
+        "/root/.openstarry-code/workspace/id_rsa",
+        "/root/.openstarry-code/workspace/.ssh/id_rsa",
+        "/root/.openstarry-code/workspace/.env",
+        "/root/.openstarry-code/workspace/.env.local",
+        "/root/.openstarry-code/workspace/.envrc",
+        "/root/.openstarry-code/workspace/project/.aws/credentials",
+        "/root/.openstarry-code/workspace/project/.kube/config",
+        "/root/.openstarry-code/workspace/project/.docker/config.json",
+        "/root/.openstarry-code/workspace/project/.gnupg/private-keys-v1.d/key",
+        "/root/.openstarry-code/workspace/project/.env_secret",
     ):
         manager = _SessionManager()
         updated = await set_workspace(
@@ -1638,7 +1638,7 @@ async def test_set_workspace_allows_paths_without_sensitive_name_rules():
 
 @pytest.mark.asyncio
 async def test_set_workspace_allows_credential_named_path(tmp_path):
-    from opensquilla.sandbox.run_context_service import set_workspace
+    from openstarry_code.sandbox.run_context_service import set_workspace
 
     manager = _SessionManager()
 
@@ -1670,7 +1670,7 @@ async def test_set_workspace_allows_non_root_credential_named_targets(
     tmp_path,
     workspace_parts,
 ):
-    from opensquilla.sandbox.run_context_service import set_workspace
+    from openstarry_code.sandbox.run_context_service import set_workspace
 
     manager = _SessionManager()
 
@@ -1690,9 +1690,9 @@ async def test_set_workspace_allows_non_root_credential_named_targets(
 async def test_non_root_nested_workspace_is_allowed_for_set_saved_and_fallback(
     tmp_path,
 ):
-    from opensquilla.sandbox.run_context import get_run_context, set_run_mode
-    from opensquilla.sandbox.run_context_service import set_workspace
-    from opensquilla.sandbox.run_mode import RunMode
+    from openstarry_code.sandbox.run_context import get_run_context, set_run_mode
+    from openstarry_code.sandbox.run_context_service import set_workspace
+    from openstarry_code.sandbox.run_mode import RunMode
 
     workspace_path = tmp_path / "ws" / "project" / "src"
     normalized = str(workspace_path.resolve(strict=False))
@@ -1738,7 +1738,7 @@ async def test_non_root_nested_workspace_is_allowed_for_set_saved_and_fallback(
 async def test_saved_bundle_id_payload_without_scope_is_ignored_as_user_grant_copy(
     tmp_path,
 ):
-    from opensquilla.sandbox.run_context import get_run_context
+    from openstarry_code.sandbox.run_context import get_run_context
 
     manager = _SessionManager()
     manager.node.origin = {
@@ -1761,7 +1761,7 @@ async def test_saved_bundle_id_payload_without_scope_is_ignored_as_user_grant_co
 
 @pytest.mark.asyncio
 async def test_saved_workspace_bundle_payloads_are_ignored_from_origin(tmp_path):
-    from opensquilla.sandbox.run_context import get_run_context
+    from openstarry_code.sandbox.run_context import get_run_context
 
     manager = _SessionManager()
     manager.node.origin = {
@@ -1787,7 +1787,7 @@ async def test_saved_workspace_bundle_payloads_are_ignored_from_origin(tmp_path)
 
 @pytest.mark.asyncio
 async def test_saved_invalid_scopes_default_safely(tmp_path):
-    from opensquilla.sandbox.run_context import get_run_context
+    from openstarry_code.sandbox.run_context import get_run_context
 
     outside = tmp_path / "outside"
     outside.mkdir()
@@ -1823,7 +1823,7 @@ async def test_saved_invalid_scopes_default_safely(tmp_path):
 async def test_saved_duplicate_bundle_payload_keeps_chat_when_workspace_copy_ignored(
     tmp_path,
 ):
-    from opensquilla.sandbox.run_context import get_run_context
+    from openstarry_code.sandbox.run_context import get_run_context
 
     manager = _SessionManager()
     manager.node.origin = {
@@ -1859,7 +1859,7 @@ async def test_saved_duplicate_bundle_payload_keeps_chat_when_workspace_copy_ign
 
 @pytest.mark.asyncio
 async def test_saved_root_workspace_is_preserved(tmp_path):
-    from opensquilla.sandbox.run_context import get_run_context
+    from openstarry_code.sandbox.run_context import get_run_context
 
     manager = _SessionManager()
     manager.node.origin = {
@@ -1881,11 +1881,11 @@ async def test_saved_root_workspace_is_preserved(tmp_path):
 
 @pytest.mark.asyncio
 async def test_saved_root_nested_workspace_is_allowed():
-    from opensquilla.sandbox.run_context import get_run_context
+    from openstarry_code.sandbox.run_context import get_run_context
 
     for workspace_path in (
-        "/root/.opensquilla/workspace",
-        "/root/.opensquilla/workspace/project/src",
+        "/root/.openstarry-code/workspace",
+        "/root/.openstarry-code/workspace/project/src",
     ):
         manager = _SessionManager()
         manager.node.origin = {
@@ -1919,25 +1919,25 @@ async def test_saved_root_nested_workspace_is_allowed():
         "/root/.docker/config",
         "/root/.gnupg",
         "/root/.ssh",
-        "/root/.opensquilla/workspace/.aws/credentials",
-        "/root/.opensquilla/workspace/.kube/config",
-        "/root/.opensquilla/workspace/.docker/config",
-        "/root/.opensquilla/workspace/.docker/config.json",
-        "/root/.opensquilla/workspace/.gnupg/private-keys-v1.d/key",
-        "/root/.opensquilla/workspace/id_rsa",
-        "/root/.opensquilla/workspace/.ssh/id_rsa",
-        "/root/.opensquilla/workspace/.env",
-        "/root/.opensquilla/workspace/.env.local",
-        "/root/.opensquilla/workspace/.envrc",
-        "/root/.opensquilla/workspace/project/.aws/credentials",
-        "/root/.opensquilla/workspace/project/.kube/config",
-        "/root/.opensquilla/workspace/project/.docker/config.json",
-        "/root/.opensquilla/workspace/project/.gnupg/private-keys-v1.d/key",
-        "/root/.opensquilla/workspace/project/.env_secret",
+        "/root/.openstarry-code/workspace/.aws/credentials",
+        "/root/.openstarry-code/workspace/.kube/config",
+        "/root/.openstarry-code/workspace/.docker/config",
+        "/root/.openstarry-code/workspace/.docker/config.json",
+        "/root/.openstarry-code/workspace/.gnupg/private-keys-v1.d/key",
+        "/root/.openstarry-code/workspace/id_rsa",
+        "/root/.openstarry-code/workspace/.ssh/id_rsa",
+        "/root/.openstarry-code/workspace/.env",
+        "/root/.openstarry-code/workspace/.env.local",
+        "/root/.openstarry-code/workspace/.envrc",
+        "/root/.openstarry-code/workspace/project/.aws/credentials",
+        "/root/.openstarry-code/workspace/project/.kube/config",
+        "/root/.openstarry-code/workspace/project/.docker/config.json",
+        "/root/.openstarry-code/workspace/project/.gnupg/private-keys-v1.d/key",
+        "/root/.openstarry-code/workspace/project/.env_secret",
     ],
 )
 async def test_saved_workspace_is_name_agnostic(workspace_path):
-    from opensquilla.sandbox.run_context import get_run_context, normalize_workspace_path
+    from openstarry_code.sandbox.run_context import get_run_context, normalize_workspace_path
 
     manager = _SessionManager()
     manager.node.origin = {
@@ -1959,7 +1959,7 @@ async def test_saved_workspace_is_name_agnostic(workspace_path):
 
 @pytest.mark.asyncio
 async def test_saved_credential_named_workspace_is_preserved(tmp_path):
-    from opensquilla.sandbox.run_context import get_run_context
+    from openstarry_code.sandbox.run_context import get_run_context
 
     manager = _SessionManager()
     manager.node.origin = {
@@ -1996,7 +1996,7 @@ async def test_saved_non_root_credential_named_workspace_is_preserved(
     tmp_path,
     workspace_parts,
 ):
-    from opensquilla.sandbox.run_context import get_run_context
+    from openstarry_code.sandbox.run_context import get_run_context
 
     manager = _SessionManager()
     manager.node.origin = {
@@ -2030,8 +2030,8 @@ async def test_set_run_mode_preserves_non_root_credential_named_fallback_workspa
     tmp_path,
     workspace_parts,
 ):
-    from opensquilla.sandbox.run_context import set_run_mode
-    from opensquilla.sandbox.run_mode import RunMode
+    from openstarry_code.sandbox.run_context import set_run_mode
+    from openstarry_code.sandbox.run_mode import RunMode
 
     manager = _SessionManager()
 
@@ -2050,7 +2050,7 @@ async def test_set_run_mode_preserves_non_root_credential_named_fallback_workspa
 
 @pytest.mark.asyncio
 async def test_saved_workspace_mount_ignores_durable_copy_but_keeps_chat_copy(tmp_path):
-    from opensquilla.sandbox.run_context import get_run_context
+    from openstarry_code.sandbox.run_context import get_run_context
 
     valid = tmp_path / "outside"
     valid.mkdir()
@@ -2079,7 +2079,7 @@ async def test_saved_workspace_mount_ignores_durable_copy_but_keeps_chat_copy(tm
 
 @pytest.mark.asyncio
 async def test_saved_workspace_domain_origin_grant_is_ignored(tmp_path):
-    from opensquilla.sandbox.run_context import get_run_context
+    from openstarry_code.sandbox.run_context import get_run_context
 
     manager = _SessionManager()
     manager.node.origin = {
@@ -2106,7 +2106,7 @@ async def test_saved_workspace_domain_origin_grant_is_ignored(tmp_path):
 async def test_saved_duplicate_mounts_and_domains_keep_chat_when_workspace_copy_ignored(
     tmp_path,
 ):
-    from opensquilla.sandbox.run_context import get_run_context
+    from openstarry_code.sandbox.run_context import get_run_context
 
     outside = tmp_path / "outside"
     outside.mkdir()
@@ -2146,8 +2146,8 @@ async def test_saved_duplicate_mounts_and_domains_keep_chat_when_workspace_copy_
 
 @pytest.mark.asyncio
 async def test_unrelated_mutation_preserves_permission_valid_saved_entries(tmp_path):
-    from opensquilla.sandbox.run_context import get_run_context
-    from opensquilla.sandbox.run_context_service import enable_bundle_grant
+    from openstarry_code.sandbox.run_context import get_run_context
+    from openstarry_code.sandbox.run_context_service import enable_bundle_grant
 
     valid_mount = tmp_path / "outside"
     valid_mount.mkdir()
@@ -2201,14 +2201,14 @@ async def test_unrelated_mutation_preserves_permission_valid_saved_entries(tmp_p
 
 @pytest.mark.asyncio
 async def test_temporary_grants_round_trip(tmp_path):
-    from opensquilla.sandbox.run_context import (
+    from openstarry_code.sandbox.run_context import (
         PublicNetworkGrant,
         RunContext,
         TemporaryGrant,
         get_run_context,
         persist_run_context,
     )
-    from opensquilla.sandbox.run_mode import RunMode
+    from openstarry_code.sandbox.run_mode import RunMode
 
     manager = _SessionManager()
     grant = TemporaryGrant(
@@ -2252,7 +2252,7 @@ async def test_temporary_grants_round_trip(tmp_path):
 
 @pytest.mark.asyncio
 async def test_set_run_mode_preserves_bundle_and_temporary_grants(tmp_path):
-    from opensquilla.sandbox.run_context import (
+    from openstarry_code.sandbox.run_context import (
         PackageBundleGrant,
         PublicNetworkGrant,
         RunContext,
@@ -2260,8 +2260,8 @@ async def test_set_run_mode_preserves_bundle_and_temporary_grants(tmp_path):
         persist_run_context,
         set_run_mode,
     )
-    from opensquilla.sandbox.run_mode import RunMode
-    from opensquilla.sandbox.user_grants import upsert_bundle_grant
+    from openstarry_code.sandbox.run_mode import RunMode
+    from openstarry_code.sandbox.user_grants import upsert_bundle_grant
 
     manager = _SessionManager()
     bundle = PackageBundleGrant(bundle_id="python-package-install")
@@ -2307,15 +2307,15 @@ async def test_set_run_mode_preserves_bundle_and_temporary_grants(tmp_path):
 async def test_user_full_provenance_survives_grants_rehydration_and_overlay(
     tmp_path: Path,
 ) -> None:
-    from opensquilla.sandbox.config import SandboxSettings
-    from opensquilla.sandbox.escalation import merge_run_context_overlay
-    from opensquilla.sandbox.run_context import get_run_context, set_run_mode
-    from opensquilla.sandbox.run_context_service import (
+    from openstarry_code.sandbox.config import SandboxSettings
+    from openstarry_code.sandbox.escalation import merge_run_context_overlay
+    from openstarry_code.sandbox.run_context import get_run_context, set_run_mode
+    from openstarry_code.sandbox.run_context_service import (
         add_domain_grant,
         add_mount_grant,
         enable_bundle_grant,
     )
-    from opensquilla.sandbox.run_mode import RunMode
+    from openstarry_code.sandbox.run_mode import RunMode
 
     manager = _SessionManager()
     config = SimpleNamespace(
@@ -2379,12 +2379,12 @@ async def test_user_full_provenance_survives_grants_rehydration_and_overlay(
 
 @pytest.mark.asyncio
 async def test_apply_network_choice_persists_chat_domain_grant(tmp_path):
-    from opensquilla.sandbox.escalation import (
+    from openstarry_code.sandbox.escalation import (
         apply_sandbox_approval_choice,
         build_network_approval_params,
     )
-    from opensquilla.sandbox.network_guard import NetworkDecision
-    from opensquilla.sandbox.run_context import get_run_context
+    from openstarry_code.sandbox.network_guard import NetworkDecision
+    from openstarry_code.sandbox.run_context import get_run_context
 
     manager = _SessionManager()
     workspace = tmp_path / "workspace"
@@ -2420,11 +2420,11 @@ async def test_apply_network_choice_persists_chat_domain_grant(tmp_path):
 
 @pytest.mark.asyncio
 async def test_apply_network_choice_persists_chat_package_bundle_grant(tmp_path):
-    from opensquilla.sandbox.escalation import (
+    from openstarry_code.sandbox.escalation import (
         apply_sandbox_approval_choice,
         build_package_bundle_approval_params,
     )
-    from opensquilla.sandbox.run_context import get_run_context
+    from openstarry_code.sandbox.run_context import get_run_context
 
     manager = _SessionManager()
     workspace = tmp_path / "workspace"
@@ -2456,12 +2456,12 @@ async def test_apply_network_choice_persists_chat_package_bundle_grant(tmp_path)
 
 
 def test_request_sandbox_approval_reissues_matching_approved_approval() -> None:
-    from opensquilla.gateway.approval_queue import get_approval_queue, reset_approval_queue
-    from opensquilla.sandbox.escalation import (
+    from openstarry_code.gateway.approval_queue import get_approval_queue, reset_approval_queue
+    from openstarry_code.sandbox.escalation import (
         build_network_approval_params,
         request_sandbox_approval,
     )
-    from opensquilla.sandbox.network_guard import NetworkDecision
+    from openstarry_code.sandbox.network_guard import NetworkDecision
 
     reset_approval_queue()
     params = build_network_approval_params(
@@ -2499,13 +2499,13 @@ def test_request_sandbox_approval_reissues_matching_approved_approval() -> None:
 
 
 def test_channel_sandbox_approval_request_denies_without_queue() -> None:
-    from opensquilla.gateway.approval_queue import get_approval_queue, reset_approval_queue
-    from opensquilla.sandbox.escalation import (
+    from openstarry_code.gateway.approval_queue import get_approval_queue, reset_approval_queue
+    from openstarry_code.sandbox.escalation import (
         build_path_approval_params,
         request_sandbox_approval,
     )
-    from opensquilla.sandbox.path_validation import MountDecision
-    from opensquilla.tools.types import CallerKind, ToolContext, current_tool_context
+    from openstarry_code.sandbox.path_validation import MountDecision
+    from openstarry_code.tools.types import CallerKind, ToolContext, current_tool_context
 
     reset_approval_queue()
     params = build_path_approval_params(
@@ -2545,12 +2545,12 @@ def test_channel_sandbox_approval_request_denies_without_queue() -> None:
 
 
 def test_request_sandbox_approval_separates_pending_network_targets() -> None:
-    from opensquilla.gateway.approval_queue import get_approval_queue, reset_approval_queue
-    from opensquilla.sandbox.escalation import (
+    from openstarry_code.gateway.approval_queue import get_approval_queue, reset_approval_queue
+    from openstarry_code.sandbox.escalation import (
         build_network_approval_params,
         request_sandbox_approval,
     )
-    from opensquilla.sandbox.network_guard import NetworkDecision
+    from openstarry_code.sandbox.network_guard import NetworkDecision
 
     reset_approval_queue()
     first_params = build_network_approval_params(
@@ -2591,12 +2591,12 @@ def test_request_sandbox_approval_separates_pending_network_targets() -> None:
 
 
 def test_reused_network_approval_reissues_after_narrow_approval_mismatch() -> None:
-    from opensquilla.gateway.approval_queue import get_approval_queue, reset_approval_queue
-    from opensquilla.sandbox.escalation import (
+    from openstarry_code.gateway.approval_queue import get_approval_queue, reset_approval_queue
+    from openstarry_code.sandbox.escalation import (
         build_network_approval_params,
         request_sandbox_approval,
     )
-    from opensquilla.sandbox.network_guard import NetworkDecision
+    from openstarry_code.sandbox.network_guard import NetworkDecision
 
     reset_approval_queue()
     first_params = build_network_approval_params(
@@ -2644,11 +2644,11 @@ def test_reused_network_approval_reissues_after_narrow_approval_mismatch() -> No
 
 @pytest.mark.asyncio
 async def test_apply_network_choice_rejects_removed_public_choice(tmp_path):
-    from opensquilla.sandbox.escalation import (
+    from openstarry_code.sandbox.escalation import (
         apply_sandbox_approval_choice,
         build_network_approval_params,
     )
-    from opensquilla.sandbox.network_guard import NetworkDecision
+    from openstarry_code.sandbox.network_guard import NetworkDecision
 
     manager = _SessionManager()
     workspace = tmp_path / "workspace"
@@ -2677,16 +2677,16 @@ async def test_apply_network_choice_rejects_removed_public_choice(tmp_path):
 
 @pytest.mark.asyncio
 async def test_apply_network_once_choice_stays_transient_and_updates_overlay(tmp_path):
-    from opensquilla.sandbox.escalation import (
+    from openstarry_code.sandbox.escalation import (
         apply_sandbox_approval_choice,
         build_network_approval_params,
         current_tool_run_context,
         request_sandbox_approval,
     )
-    from opensquilla.sandbox.network_guard import NetworkDecision
-    from opensquilla.sandbox.run_context import RunContext, get_run_context
-    from opensquilla.sandbox.run_mode import RunMode
-    from opensquilla.tools.types import current_tool_context
+    from openstarry_code.sandbox.network_guard import NetworkDecision
+    from openstarry_code.sandbox.run_context import RunContext, get_run_context
+    from openstarry_code.sandbox.run_mode import RunMode
+    from openstarry_code.tools.types import current_tool_context
 
     manager = _SessionManager()
     workspace = tmp_path / "workspace"
@@ -2746,9 +2746,9 @@ async def test_apply_network_once_choice_stays_transient_and_updates_overlay(tmp
 
 @pytest.mark.asyncio
 async def test_project_network_once_preserves_authoritative_tool_context(tmp_path):
-    from opensquilla.gateway.approval_queue import reset_approval_queue
-    from opensquilla.sandbox import escalation as escalation_state
-    from opensquilla.sandbox.escalation import (
+    from openstarry_code.gateway.approval_queue import reset_approval_queue
+    from openstarry_code.sandbox import escalation as escalation_state
+    from openstarry_code.sandbox.escalation import (
         apply_sandbox_approval_choice,
         build_network_approval_params,
         remember_resolved_run_context,
@@ -2756,8 +2756,8 @@ async def test_project_network_once_preserves_authoritative_tool_context(tmp_pat
         reset_resolved_run_context_overlays,
         resolved_run_context_overlay,
     )
-    from opensquilla.sandbox.network_guard import NetworkDecision
-    from opensquilla.sandbox.run_context import (
+    from openstarry_code.sandbox.network_guard import NetworkDecision
+    from openstarry_code.sandbox.run_context import (
         RUN_CONTEXT_ORIGIN_KEY,
         DomainGrant,
         MountGrant,
@@ -2765,8 +2765,8 @@ async def test_project_network_once_preserves_authoritative_tool_context(tmp_pat
         RunContext,
         TemporaryGrant,
     )
-    from opensquilla.sandbox.run_mode import RunMode
-    from opensquilla.tools.types import current_tool_context
+    from openstarry_code.sandbox.run_mode import RunMode
+    from openstarry_code.tools.types import current_tool_context
 
     reset_approval_queue()
     reset_resolved_run_context_overlays()
@@ -2929,24 +2929,24 @@ async def _assert_project_approval_retarget_fails_closed(
     *,
     junction: bool,
 ) -> None:
-    from opensquilla.gateway.approval_queue import reset_approval_queue
-    from opensquilla.project_workspaces import ProjectWorkspaceStateError
-    from opensquilla.sandbox.escalation import (
+    from openstarry_code.gateway.approval_queue import reset_approval_queue
+    from openstarry_code.project_workspaces import ProjectWorkspaceStateError
+    from openstarry_code.sandbox.escalation import (
         apply_sandbox_approval_choice,
         build_network_approval_params,
         request_sandbox_approval,
         reset_resolved_run_context_overlays,
         resolved_run_context_overlay,
     )
-    from opensquilla.sandbox.network_guard import NetworkDecision
-    from opensquilla.sandbox.run_context import (
+    from openstarry_code.sandbox.network_guard import NetworkDecision
+    from openstarry_code.sandbox.run_context import (
         RUN_CONTEXT_ORIGIN_KEY,
         DomainGrant,
         MountGrant,
         RunContext,
     )
-    from opensquilla.sandbox.run_mode import RunMode
-    from opensquilla.tools.types import current_tool_context
+    from openstarry_code.sandbox.run_mode import RunMode
+    from openstarry_code.tools.types import current_tool_context
 
     reset_approval_queue()
     reset_resolved_run_context_overlays()
@@ -3076,23 +3076,23 @@ async def test_project_approval_generation_does_not_cross_directory_replacement(
     tmp_path: Path,
     approval_kind: str,
 ) -> None:
-    from opensquilla.gateway.approval_queue import (
+    from openstarry_code.gateway.approval_queue import (
         get_approval_queue,
         reset_approval_queue,
     )
-    from opensquilla.project_workspaces import ProjectWorkspaceStateError
-    from opensquilla.sandbox.escalation import (
+    from openstarry_code.project_workspaces import ProjectWorkspaceStateError
+    from openstarry_code.sandbox.escalation import (
         apply_sandbox_approval_choice,
         build_network_approval_params,
         build_path_approval_params,
         request_sandbox_approval,
         reset_resolved_run_context_overlays,
     )
-    from opensquilla.sandbox.network_guard import NetworkDecision
-    from opensquilla.sandbox.path_validation import MountDecision
-    from opensquilla.sandbox.run_context import DomainGrant, RunContext
-    from opensquilla.sandbox.run_mode import RunMode
-    from opensquilla.tools.types import current_tool_context
+    from openstarry_code.sandbox.network_guard import NetworkDecision
+    from openstarry_code.sandbox.path_validation import MountDecision
+    from openstarry_code.sandbox.run_context import DomainGrant, RunContext
+    from openstarry_code.sandbox.run_mode import RunMode
+    from openstarry_code.tools.types import current_tool_context
 
     reset_approval_queue()
     reset_resolved_run_context_overlays()
@@ -3228,15 +3228,15 @@ def test_project_approval_generation_is_cleaned_when_queue_stops_waiting(
 ) -> None:
     import time
 
-    from opensquilla.gateway.approval_queue import (
+    from openstarry_code.gateway.approval_queue import (
         get_approval_queue,
         reset_approval_queue,
     )
-    from opensquilla.sandbox import escalation
-    from opensquilla.sandbox.network_guard import NetworkDecision
-    from opensquilla.sandbox.run_context import RunContext
-    from opensquilla.sandbox.run_mode import RunMode
-    from opensquilla.tools.types import current_tool_context
+    from openstarry_code.sandbox import escalation
+    from openstarry_code.sandbox.network_guard import NetworkDecision
+    from openstarry_code.sandbox.run_context import RunContext
+    from openstarry_code.sandbox.run_mode import RunMode
+    from openstarry_code.tools.types import current_tool_context
 
     reset_approval_queue()
     escalation.reset_resolved_run_context_overlays()
@@ -3292,19 +3292,19 @@ def test_project_approval_generation_is_cleaned_when_queue_stops_waiting(
 
 @pytest.mark.asyncio
 async def test_project_network_once_consumption_preserves_authoritative_overlay(tmp_path):
-    from opensquilla.sandbox.escalation import (
+    from openstarry_code.sandbox.escalation import (
         consume_persisted_temporary_network_grant,
         remember_resolved_run_context,
         reset_resolved_run_context_overlays,
         resolved_run_context_overlay,
     )
-    from opensquilla.sandbox.run_context import (
+    from openstarry_code.sandbox.run_context import (
         RUN_CONTEXT_ORIGIN_KEY,
         DomainGrant,
         RunContext,
         TemporaryGrant,
     )
-    from opensquilla.sandbox.run_mode import RunMode
+    from openstarry_code.sandbox.run_mode import RunMode
 
     reset_resolved_run_context_overlays()
     manager = _SessionManager()
@@ -3381,22 +3381,22 @@ async def test_same_root_once_rw_overlay_writes_then_expiry_restores_base_ro(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    from opensquilla.sandbox.escalation import (
+    from openstarry_code.sandbox.escalation import (
         current_tool_run_context,
         prune_once_mount_grants,
         remember_resolved_run_context,
         reset_resolved_run_context_overlays,
     )
-    from opensquilla.sandbox.operation_runtime import SandboxOperationResult
-    from opensquilla.sandbox.run_context import (
+    from openstarry_code.sandbox.operation_runtime import SandboxOperationResult
+    from openstarry_code.sandbox.run_context import (
         DomainGrant,
         MountGrant,
         PackageBundleGrant,
         RunContext,
     )
-    from opensquilla.sandbox.run_mode import RunMode
-    from opensquilla.tools.builtin import filesystem
-    from opensquilla.tools.types import ToolContext, current_tool_context
+    from openstarry_code.sandbox.run_mode import RunMode
+    from openstarry_code.tools.builtin import filesystem
+    from openstarry_code.tools.types import ToolContext, current_tool_context
 
     reset_resolved_run_context_overlays()
     workspace = tmp_path / "workspace"
@@ -3533,9 +3533,9 @@ async def test_path_allow_once_rw_preserves_durable_same_root_ro_after_expiry(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    from opensquilla.gateway.approval_queue import reset_approval_queue
-    from opensquilla.sandbox import escalation as escalation_state
-    from opensquilla.sandbox.escalation import (
+    from openstarry_code.gateway.approval_queue import reset_approval_queue
+    from openstarry_code.sandbox import escalation as escalation_state
+    from openstarry_code.sandbox.escalation import (
         apply_sandbox_approval_choice,
         build_path_approval_params,
         current_tool_run_context,
@@ -3543,17 +3543,17 @@ async def test_path_allow_once_rw_preserves_durable_same_root_ro_after_expiry(
         request_sandbox_approval,
         reset_resolved_run_context_overlays,
     )
-    from opensquilla.sandbox.operation_runtime import SandboxOperationResult
-    from opensquilla.sandbox.path_validation import MountDecision
-    from opensquilla.sandbox.run_context import (
+    from openstarry_code.sandbox.operation_runtime import SandboxOperationResult
+    from openstarry_code.sandbox.path_validation import MountDecision
+    from openstarry_code.sandbox.run_context import (
         RUN_CONTEXT_ORIGIN_KEY,
         MountGrant,
         RunContext,
         get_run_context,
     )
-    from opensquilla.sandbox.run_mode import RunMode
-    from opensquilla.tools.builtin import filesystem
-    from opensquilla.tools.types import current_tool_context
+    from openstarry_code.sandbox.run_mode import RunMode
+    from openstarry_code.tools.builtin import filesystem
+    from openstarry_code.tools.types import current_tool_context
 
     reset_approval_queue()
     reset_resolved_run_context_overlays()
@@ -3711,8 +3711,8 @@ async def test_path_allow_once_rw_preserves_durable_same_root_ro_after_expiry(
 
 @pytest.mark.asyncio
 async def test_project_path_once_preserves_authoritative_tool_context(tmp_path):
-    from opensquilla.gateway.approval_queue import reset_approval_queue
-    from opensquilla.sandbox.escalation import (
+    from openstarry_code.gateway.approval_queue import reset_approval_queue
+    from openstarry_code.sandbox.escalation import (
         apply_sandbox_approval_choice,
         build_path_approval_params,
         current_tool_run_context,
@@ -3720,14 +3720,14 @@ async def test_project_path_once_preserves_authoritative_tool_context(tmp_path):
         reset_resolved_run_context_overlays,
         resolved_run_context_overlay,
     )
-    from opensquilla.sandbox.path_validation import MountDecision
-    from opensquilla.sandbox.run_context import (
+    from openstarry_code.sandbox.path_validation import MountDecision
+    from openstarry_code.sandbox.run_context import (
         RUN_CONTEXT_ORIGIN_KEY,
         DomainGrant,
         RunContext,
     )
-    from opensquilla.sandbox.run_mode import RunMode
-    from opensquilla.tools.types import current_tool_context
+    from openstarry_code.sandbox.run_mode import RunMode
+    from openstarry_code.tools.types import current_tool_context
 
     reset_approval_queue()
     reset_resolved_run_context_overlays()
@@ -3838,12 +3838,12 @@ async def test_project_path_once_preserves_authoritative_tool_context(tmp_path):
 
 @pytest.mark.asyncio
 async def test_apply_path_choice_persists_requested_mount(tmp_path):
-    from opensquilla.sandbox.escalation import (
+    from openstarry_code.sandbox.escalation import (
         apply_sandbox_approval_choice,
         build_path_approval_params,
     )
-    from opensquilla.sandbox.path_validation import MountDecision
-    from opensquilla.sandbox.run_context import get_run_context
+    from openstarry_code.sandbox.path_validation import MountDecision
+    from openstarry_code.sandbox.run_context import get_run_context
 
     manager = _SessionManager()
     workspace = tmp_path / "workspace"
@@ -3881,7 +3881,7 @@ async def test_apply_path_choice_persists_requested_mount(tmp_path):
 
 
 def test_host_once_is_not_a_sandbox_approval_kind():
-    import opensquilla.sandbox.escalation as escalation
+    import openstarry_code.sandbox.escalation as escalation
 
     assert escalation.is_sandbox_approval_kind("host_once") is False
     assert not hasattr(escalation, "build_backend_failure_approval_params")
@@ -3889,7 +3889,7 @@ def test_host_once_is_not_a_sandbox_approval_kind():
 
 @pytest.mark.asyncio
 async def test_remove_domain_grant_rejects_invalid_domain(tmp_path):
-    from opensquilla.sandbox.run_context_service import remove_domain_grant
+    from openstarry_code.sandbox.run_context_service import remove_domain_grant
 
     manager = _SessionManager()
     manager.node.origin = {
@@ -3919,8 +3919,8 @@ async def test_remove_domain_grant_rejects_invalid_domain(tmp_path):
 async def test_once_mount_grant_is_not_persisted_to_session_origin(tmp_path):
     # "Allow once" must not survive into the durable session origin — otherwise a
     # gateway restart would silently re-grant it (issue #418).
-    from opensquilla.sandbox.run_context import RUN_CONTEXT_ORIGIN_KEY
-    from opensquilla.sandbox.run_context_service import add_mount_grant
+    from openstarry_code.sandbox.run_context import RUN_CONTEXT_ORIGIN_KEY
+    from openstarry_code.sandbox.run_context_service import add_mount_grant
 
     manager = _SessionManager()
     workspace = tmp_path / "workspace"
@@ -3947,14 +3947,14 @@ async def test_once_mount_grant_is_not_persisted_to_session_origin(tmp_path):
 def test_prune_once_mount_grants_expires_only_once_scoped_overlay_mounts():
     # A "once" grant lives in the resolved overlay for the granting turn; pruning
     # at the next turn start must drop it while leaving session-scoped grants.
-    from opensquilla.sandbox.escalation import (
+    from openstarry_code.sandbox.escalation import (
         prune_once_mount_grants,
         remember_resolved_run_context,
         reset_resolved_run_context_overlays,
         resolved_run_context_overlay,
     )
-    from opensquilla.sandbox.run_context import MountGrant, RunContext
-    from opensquilla.sandbox.run_mode import RunMode
+    from openstarry_code.sandbox.run_context import MountGrant, RunContext
+    from openstarry_code.sandbox.run_mode import RunMode
 
     reset_resolved_run_context_overlays()
     try:

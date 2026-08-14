@@ -21,9 +21,9 @@ import structlog.testing
 from syrupy.assertion import SnapshotAssertion
 from test_tools.dispatch_corpus import ALL_CASES, CorpusCase
 
-from opensquilla.tool_boundary import ToolResult
-from opensquilla.tools.dispatch import build_tool_handler
-from opensquilla.tools.types import current_tool_context
+from openstarry_code.tool_boundary import ToolResult
+from openstarry_code.tools.dispatch import build_tool_handler
+from openstarry_code.tools.types import current_tool_context
 
 # ---------------------------------------------------------------------------
 # Snapshot serialisation helpers

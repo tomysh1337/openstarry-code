@@ -1,14 +1,14 @@
 from __future__ import annotations
 
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.tools.types import CallerKind, ToolContext
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.tools.types import CallerKind, ToolContext
 
 
 def test_full_host_access_tool_context_is_visible_to_model_prompt() -> None:
     ctx = ToolContext(
         caller_kind=CallerKind.WEB,
         run_mode="full",
-        workspace_dir="/workspace/.opensquilla/workspace",
+        workspace_dir="/workspace/.openstarry-code/workspace",
     )
 
     extra = TurnRunner._extra_context_for_tool_context(ctx)
@@ -18,7 +18,7 @@ def test_full_host_access_tool_context_is_visible_to_model_prompt() -> None:
     assert "Execution target: host" in execution_context
     assert "Sandbox: disabled for tool execution" in execution_context
     assert (
-        "Writes outside the workspace do not require OpenSquilla sandbox approval"
+        "Writes outside the workspace do not require OpenStarry Code sandbox approval"
         in execution_context
     )
     assert (
@@ -31,7 +31,7 @@ def test_legacy_trusted_prompt_uses_safe_mode_guidance() -> None:
     ctx = ToolContext(
         caller_kind=CallerKind.WEB,
         run_mode="trusted",
-        workspace_dir="/workspace/.opensquilla/workspace",
+        workspace_dir="/workspace/.openstarry-code/workspace",
     )
 
     extra = TurnRunner._extra_context_for_tool_context(ctx)

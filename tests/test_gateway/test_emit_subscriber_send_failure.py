@@ -13,8 +13,8 @@ import types
 
 import pytest
 
-from opensquilla.gateway import rpc_sessions
-from opensquilla.gateway import websocket as websocket_mod
+from openstarry_code.gateway import rpc_sessions
+from openstarry_code.gateway import websocket as websocket_mod
 
 
 class _FailingConn:

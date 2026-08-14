@@ -12,9 +12,9 @@ from __future__ import annotations
 
 from dataclasses import asdict
 
-from opensquilla.engine.types import ErrorEvent
-from opensquilla.gateway.rpc_sessions import _normalize_terminal_event_payload
-from opensquilla.session.terminal_reply import append_error_ref
+from openstarry_code.engine.types import ErrorEvent
+from openstarry_code.gateway.rpc_sessions import _normalize_terminal_event_payload
+from openstarry_code.session.terminal_reply import append_error_ref
 
 NORMALIZED_ERROR_KEYS = frozenset(
     {
@@ -76,8 +76,8 @@ def test_error_payload_without_ref_is_unchanged() -> None:
 def test_channel_reply_carries_ref() -> None:
     # Pins the exact composition both channel_dispatch ErrorEvent sites use —
     # if a refactor stops threading the ref into channel replies, this fails.
-    from opensquilla.gateway.channel_dispatch import _terminal_payload_from_error_event
-    from opensquilla.session.terminal_reply import build_terminal_reply
+    from openstarry_code.gateway.channel_dispatch import _terminal_payload_from_error_event
+    from openstarry_code.session.terminal_reply import build_terminal_reply
 
     event = ErrorEvent(message="Agent error", code="agent_error", error_id="abcd1234")
     reply = append_error_ref(
@@ -88,8 +88,8 @@ def test_channel_reply_carries_ref() -> None:
 
 
 def test_channel_reply_surfaces_actionable_ensemble_image_rejection() -> None:
-    from opensquilla.gateway.channel_dispatch import _terminal_payload_from_error_event
-    from opensquilla.session.terminal_reply import build_terminal_reply
+    from openstarry_code.gateway.channel_dispatch import _terminal_payload_from_error_event
+    from openstarry_code.session.terminal_reply import build_terminal_reply
 
     event = ErrorEvent(
         message=(

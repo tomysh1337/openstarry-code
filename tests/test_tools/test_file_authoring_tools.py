@@ -9,15 +9,15 @@ from openpyxl import load_workbook
 from pptx import Presentation
 from pypdf import PdfReader
 
-from opensquilla.artifacts import ArtifactStore
-from opensquilla.tools.builtin import file_authoring
-from opensquilla.tools.builtin.file_authoring import (
+from openstarry_code.artifacts import ArtifactStore
+from openstarry_code.tools.builtin import file_authoring
+from openstarry_code.tools.builtin.file_authoring import (
     create_csv,
     create_pdf_report,
     create_pptx,
     create_xlsx,
 )
-from opensquilla.tools.types import (
+from openstarry_code.tools.types import (
     CallerKind,
     RetryableToolInputError,
     ToolContext,

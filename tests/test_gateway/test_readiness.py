@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from starlette.testclient import TestClient
 
-from opensquilla.gateway.app import create_gateway_app
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.diagnostics import DiagnosticsState
+from openstarry_code.gateway.app import create_gateway_app
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.diagnostics import DiagnosticsState
 
 
 def test_ready_endpoint_reports_starting_until_gateway_marks_ready() -> None:

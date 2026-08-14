@@ -18,16 +18,16 @@ from urllib.request import Request
 import pytest
 import yaml
 
-from opensquilla.skills.bundled import _provider_http as provider_http
-from opensquilla.skills.eligibility import EligibilityContext, check_eligibility
-from opensquilla.skills.loader import SkillLoader
-from opensquilla.skills.meta.parser import parse_meta_plan
-from opensquilla.skills.meta.templating import evaluate_when, render_with_args
+from openstarry_code.skills.bundled import _provider_http as provider_http
+from openstarry_code.skills.eligibility import EligibilityContext, check_eligibility
+from openstarry_code.skills.loader import SkillLoader
+from openstarry_code.skills.meta.parser import parse_meta_plan
+from openstarry_code.skills.meta.templating import evaluate_when, render_with_args
 
 REPO = Path(__file__).resolve().parents[2]
-BUNDLED = REPO / "src" / "opensquilla" / "skills" / "bundled"
+BUNDLED = REPO / "src" / "openstarry_code" / "skills" / "bundled"
 SKILL_MD = BUNDLED / "AwesomeWebpageMetaSkill" / "SKILL.md"
-AWESOME_MODULE = "opensquilla.skills.bundled.AwesomeWebpageMetaSkill.scripts"
+AWESOME_MODULE = "openstarry_code.skills.bundled.AwesomeWebpageMetaSkill.scripts"
 
 
 def _probable_mp4_bytes() -> bytes:
@@ -174,7 +174,7 @@ def test_webpage_skills_publish_only_the_dedicated_project_bundle() -> None:
     assert "do not invent or print an artifact URL" in delivery_task
 
     html_coder = (BUNDLED / "html-coder" / "SKILL.md").read_text(encoding="utf-8")
-    assert "## OpenSquilla Webpage Delivery" in html_coder
+    assert "## OpenStarry Code Webpage Delivery" in html_coder
     assert "never place a generated site directly in the\n   workspace root" in html_coder
     assert '"path": "webpage-<topic-slug>/index.html"' in html_coder
     assert '"bundle": "directory"' in html_coder
@@ -618,7 +618,7 @@ def test_awesome_webpage_media_entrypoints_are_code_backed(tmp_path: Path) -> No
     assert "--api-key-env" not in image.entrypoint["args"]
     assert "--base-url" not in image.entrypoint["args"]
     assert image.entrypoint["env"] == {
-        "OPENSQUILLA_META_CAPABILITY_LEASE_REQUIRED": "1"
+        "OPENSTARRY_CODE_META_CAPABILITY_LEASE_REQUIRED": "1"
     }
 
     assert audio is not None
@@ -628,7 +628,7 @@ def test_awesome_webpage_media_entrypoints_are_code_backed(tmp_path: Path) -> No
     assert "--api-key-env" not in audio.entrypoint["args"]
     assert "--base-url" not in audio.entrypoint["args"]
     assert audio.entrypoint["env"] == {
-        "OPENSQUILLA_META_CAPABILITY_LEASE_REQUIRED": "1"
+        "OPENSTARRY_CODE_META_CAPABILITY_LEASE_REQUIRED": "1"
     }
     assert audio.entrypoint["parse"] == "text"
 
@@ -641,7 +641,7 @@ def test_awesome_webpage_media_entrypoints_are_code_backed(tmp_path: Path) -> No
     assert "--api-key-env" not in video.entrypoint["args"]
     assert "--base-url" not in video.entrypoint["args"]
     assert video.entrypoint["env"] == {
-        "OPENSQUILLA_META_CAPABILITY_LEASE_REQUIRED": "1"
+        "OPENSTARRY_CODE_META_CAPABILITY_LEASE_REQUIRED": "1"
     }
     assert video.entrypoint["parse"] == "text"
 
@@ -1743,14 +1743,14 @@ def test_openrouter_media_entrypoints_fail_safe_before_submit_without_meta_lease
 ) -> None:
     for name in (
         "OPENROUTER_API_KEY",
-        "OPENSQUILLA_META_CAPABILITY_PROVIDER",
-        "OPENSQUILLA_META_CAPABILITY_API_KEY",
-        "OPENSQUILLA_META_CAPABILITY_BASE_URL",
+        "OPENSTARRY_CODE_META_CAPABILITY_PROVIDER",
+        "OPENSTARRY_CODE_META_CAPABILITY_API_KEY",
+        "OPENSTARRY_CODE_META_CAPABILITY_BASE_URL",
     ):
         monkeypatch.delenv(name, raising=False)
     env = {
         **os.environ,
-        "OPENSQUILLA_META_CAPABILITY_LEASE_REQUIRED": "1",
+        "OPENSTARRY_CODE_META_CAPABILITY_LEASE_REQUIRED": "1",
     }
     cases = (
         (
@@ -1803,11 +1803,11 @@ def test_openrouter_media_adapters_prefer_parent_lease_over_direct_cli_inputs(
     lease_key = "synthetic-parent-lease-key"
     lease_base = "https://leased-openrouter.example.test/v1"
     lease_proxy = "http://leased-proxy.example.test:8080"
-    monkeypatch.setenv("OPENSQUILLA_META_CAPABILITY_LEASE_REQUIRED", "1")
-    monkeypatch.setenv("OPENSQUILLA_META_CAPABILITY_PROVIDER", "openrouter")
-    monkeypatch.setenv("OPENSQUILLA_META_CAPABILITY_API_KEY", lease_key)
-    monkeypatch.setenv("OPENSQUILLA_META_CAPABILITY_BASE_URL", lease_base)
-    monkeypatch.setenv("OPENSQUILLA_META_CAPABILITY_PROXY", lease_proxy)
+    monkeypatch.setenv("OPENSTARRY_CODE_META_CAPABILITY_LEASE_REQUIRED", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_META_CAPABILITY_PROVIDER", "openrouter")
+    monkeypatch.setenv("OPENSTARRY_CODE_META_CAPABILITY_API_KEY", lease_key)
+    monkeypatch.setenv("OPENSTARRY_CODE_META_CAPABILITY_BASE_URL", lease_base)
+    monkeypatch.setenv("OPENSTARRY_CODE_META_CAPABILITY_PROXY", lease_proxy)
     monkeypatch.setenv("OPENROUTER_API_KEY", "ambient-key-must-not-win")
     args = Namespace(
         api_key="cli-key-must-not-win",

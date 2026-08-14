@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from opensquilla.router_runtime_diagnostics import (
+from openstarry_code.router_runtime_diagnostics import (
     MACOS_LIBOMP_MISSING,
     ROUTER_ASSETS_MISSING,
     ROUTER_NATIVE_DEPENDENCY_MISSING,

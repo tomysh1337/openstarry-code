@@ -14,16 +14,16 @@ import inspect
 
 import pytest
 
-from opensquilla.channels.contract import ChannelLengthUnit, channel_capability_profile
-from opensquilla.channels.dingtalk import DingTalkChannel, DingTalkChannelConfig
-from opensquilla.channels.discord import DiscordChannel, DiscordChannelConfig
-from opensquilla.channels.feishu import FeishuChannel, FeishuChannelConfig
-from opensquilla.channels.matrix import MatrixChannel, MatrixChannelConfig
-from opensquilla.channels.msteams import MSTeamsChannel, MSTeamsChannelConfig
-from opensquilla.channels.qq import QQChannel, QQChannelConfig
-from opensquilla.channels.slack import SlackChannel
-from opensquilla.channels.telegram import TelegramChannel, TelegramChannelConfig
-from opensquilla.channels.wecom import WeComChannel, WeComChannelConfig
+from openstarry_code.channels.contract import ChannelLengthUnit, channel_capability_profile
+from openstarry_code.channels.dingtalk import DingTalkChannel, DingTalkChannelConfig
+from openstarry_code.channels.discord import DiscordChannel, DiscordChannelConfig
+from openstarry_code.channels.feishu import FeishuChannel, FeishuChannelConfig
+from openstarry_code.channels.matrix import MatrixChannel, MatrixChannelConfig
+from openstarry_code.channels.msteams import MSTeamsChannel, MSTeamsChannelConfig
+from openstarry_code.channels.qq import QQChannel, QQChannelConfig
+from openstarry_code.channels.slack import SlackChannel
+from openstarry_code.channels.telegram import TelegramChannel, TelegramChannelConfig
+from openstarry_code.channels.wecom import WeComChannel, WeComChannelConfig
 
 _ADAPTERS = [
     ("slack", lambda: SlackChannel(token="xoxb-token", slack_channel_id="C-default")),
@@ -64,7 +64,7 @@ def test_native_splitter_declarations_are_backed_by_a_split_call(adapter_name: s
     assert profile is not None
     if not profile.splits_natively:
         return
-    module = importlib.import_module(f"opensquilla.channels.{adapter_name}")
+    module = importlib.import_module(f"openstarry_code.channels.{adapter_name}")
     assert "split_text_for_channel" in inspect.getsource(module), (
         f"{adapter_name} declares splits_natively=True but never calls the "
         "shared splitter; either split in send() or drop the declaration so "
@@ -86,7 +86,7 @@ def test_native_splitter_cap_matches_the_declared_profile_cap(
     # The cap lives twice for native splitters: the module constant the
     # adapter splits with, and the profile declaration everything else reads.
     # If they drift, the contract advertises a limit the adapter won't honor.
-    module = importlib.import_module(f"opensquilla.channels.{adapter_name}")
+    module = importlib.import_module(f"openstarry_code.channels.{adapter_name}")
     profile = channel_capability_profile(make())
     assert profile is not None
     assert profile.max_message_len == getattr(module, constant_name)

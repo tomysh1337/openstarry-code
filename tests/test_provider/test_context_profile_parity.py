@@ -13,14 +13,14 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.provider.context_capabilities import (
+from openstarry_code.provider.context_capabilities import (
     NativeCompactionSupport,
     PromptCacheSupport,
     ProviderContextCapabilities,
     provider_context_capabilities,
     supports_openrouter_explicit_prompt_cache,
 )
-from opensquilla.provider.registry import get_provider_spec, list_provider_names
+from openstarry_code.provider.registry import get_provider_spec, list_provider_names
 
 # Neutral model id: matches no OpenRouter prefix and no gemini flash/pro
 # marker, so it exercises each branch's fallback shape.

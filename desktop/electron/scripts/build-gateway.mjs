@@ -15,9 +15,9 @@ const runtimeGatewayDir = join(packageRoot, 'runtime', 'gateway')
 const pyinstallerWorkDir = join(packageRoot, '.pyinstaller')
 const entryPath = join(scriptDir, 'gateway-entry.py')
 const caRuntimeHookPath = join(scriptDir, 'pyinstaller_runtime_hooks', 'ensure_ca_trust.py')
-const controlUiDistDir = join(repoRoot, 'src', 'opensquilla', 'gateway', 'static', 'dist')
-const controlUiVerifier = join(repoRoot, 'opensquilla-webui', 'scripts', 'verify-dist.mjs')
-const routerBundleDir = join(repoRoot, 'src', 'opensquilla', 'squilla_router', 'models', 'v4.2_phase3_inference')
+const controlUiDistDir = join(repoRoot, 'src', 'openstarry_code', 'gateway', 'static', 'dist')
+const controlUiVerifier = join(repoRoot, 'openstarry-code-webui', 'scripts', 'verify-dist.mjs')
+const routerBundleDir = join(repoRoot, 'src', 'openstarry_code', 'squilla_router', 'models', 'v4.2_phase3_inference')
 const addDataSeparator = process.platform === 'win32' ? ';' : ':'
 const gitLfsPointerHeader = 'version https://git-lfs.github.com/spec/v1'
 
@@ -171,7 +171,7 @@ function assertRouterAssetsReady() {
     throw new Error(
       [
         'Router V4 Phase 3 assets are incomplete; refusing to build a desktop gateway that degrades routing.',
-        'Run `git lfs pull --include="src/opensquilla/squilla_router/models/v4.2_phase3_inference/**"` and rebuild.',
+        'Run `git lfs pull --include="src/openstarry_code/squilla_router/models/v4.2_phase3_inference/**"` and rebuild.',
         ...problems.map((problem) => `- ${problem}`),
       ].join('\n'),
     )
@@ -270,7 +270,7 @@ const args = [
   '--clean',
   '--onedir',
   '--name',
-  'opensquilla-gateway',
+  'openstarry-code-gateway',
   '--distpath',
   runtimeGatewayDir,
   '--workpath',
@@ -278,7 +278,7 @@ const args = [
   '--specpath',
   pyinstallerWorkDir,
   '--collect-all',
-  'opensquilla',
+  'openstarry_code',
   '--collect-all',
   'sqlite_vec',
   '--collect-data',
@@ -288,7 +288,7 @@ const args = [
   '--collect-binaries',
   'sklearn',
   '--copy-metadata',
-  'opensquilla',
+  'openstarry-code',
   '--copy-metadata',
   'scikit-learn',
   '--copy-metadata',
@@ -322,9 +322,9 @@ const args = [
   '--runtime-hook',
   caRuntimeHookPath,
   '--add-data',
-  `${join(repoRoot, 'migrations')}${addDataSeparator}opensquilla/_migrations`,
+  `${join(repoRoot, 'migrations')}${addDataSeparator}openstarry_code/_migrations`,
   '--add-data',
-  `${controlUiDistDir}${addDataSeparator}opensquilla/gateway/static/dist`,
+  `${controlUiDistDir}${addDataSeparator}openstarry_code/gateway/static/dist`,
   ...lightgbmBinaryArgs,
   ...macOpenMpBinaryArgs,
   entryPath,

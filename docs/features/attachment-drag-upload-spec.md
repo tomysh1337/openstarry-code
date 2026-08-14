@@ -12,16 +12,16 @@ ingestion path rather than adding a parallel desktop-only file pipeline.
 
 The current code already contains most of the upload path:
 
-- `opensquilla-webui/src/views/ChatView.vue` listens for drag/drop on the chat
+- `openstarry-code-webui/src/views/ChatView.vue` listens for drag/drop on the chat
   thread and passes dropped files to `addAttachment`.
-- `opensquilla-webui/src/composables/chat/useChatAttachments.ts` validates file
+- `openstarry-code-webui/src/composables/chat/useChatAttachments.ts` validates file
   type and size, inlines small files, and stages large files through
   `/api/v1/files/upload`.
-- `opensquilla-webui/src/composables/chat/useChatSend.ts` sends staged files as
+- `openstarry-code-webui/src/composables/chat/useChatSend.ts` sends staged files as
   `{ type, file_uuid, mime, name }`.
-- `src/opensquilla/gateway/uploads.py` exposes the multipart upload route and
+- `src/openstarry_code/gateway/uploads.py` exposes the multipart upload route and
   stores staged bytes behind an opaque `file_uuid`.
-- `src/opensquilla/gateway/attachment_ingest.py` resolves `file_uuid` entries
+- `src/openstarry_code/gateway/attachment_ingest.py` resolves `file_uuid` entries
   into transcript material references before a turn runs.
 - `desktop/electron/src/main.ts` creates a sandboxed, context-isolated browser
   window; `desktop/electron/src/preload.cts` exposes only explicit desktop APIs.

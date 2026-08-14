@@ -2,7 +2,7 @@
 
 The sessions/transcript schema has two sources of truth: SessionStorage's
 ``CREATE TABLE IF NOT EXISTS`` DDL (fresh databases,
-``src/opensquilla/session/storage.py``) and the yoyo ALTER-based migrations
+``src/openstarry_code/session/storage.py``) and the yoyo ALTER-based migrations
 under ``migrations/`` (upgraded databases). Nothing else pins that the two
 paths converge, which is exactly how upgrade-only breakage ships: a column
 added to the fresh DDL but not to a migration (or a connect-time shim)
@@ -16,8 +16,8 @@ from __future__ import annotations
 import sqlite3
 from pathlib import Path
 
-from opensquilla.persistence.migrator import apply_pending
-from opensquilla.session.storage import SessionStorage
+from openstarry_code.persistence.migrator import apply_pending
+from openstarry_code.session.storage import SessionStorage
 
 MIGRATIONS_DIR = Path(__file__).resolve().parents[2] / "migrations"
 

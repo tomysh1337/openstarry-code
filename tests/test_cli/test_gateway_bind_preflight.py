@@ -12,7 +12,7 @@ import socket
 
 import pytest
 
-from opensquilla.cli.gateway_cmd import _gateway_bind_available
+from openstarry_code.cli.gateway_cmd import _gateway_bind_available
 
 
 def test_bind_available_false_for_live_listener() -> None:

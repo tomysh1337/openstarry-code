@@ -37,8 +37,8 @@ function pathIsFileSync(path) {
 }
 
 function gatewayBinary(root, platform) {
-  const binaryName = platform === 'win32' ? 'opensquilla-gateway.exe' : 'opensquilla-gateway'
-  const candidates = [join(root, 'opensquilla-gateway', binaryName), join(root, binaryName)]
+  const binaryName = platform === 'win32' ? 'openstarry-code-gateway.exe' : 'openstarry-code-gateway'
+  const candidates = [join(root, 'openstarry-code-gateway', binaryName), join(root, binaryName)]
   const binary = candidates.find(pathIsFileSync)
   return { binary, candidates }
 }
@@ -187,9 +187,9 @@ async function verifyRuntime(root, label, { platform, executeCommands }) {
     return
   }
 
-  const compatFile = files.find((path) => path.endsWith(join('opensquilla', 'compat', 'aiosqlite.py')))
+  const compatFile = files.find((path) => path.endsWith(join('openstarry_code', 'compat', 'aiosqlite.py')))
   if (!compatFile) {
-    fail(`${label} runtime is missing opensquilla/compat/aiosqlite.py`)
+    fail(`${label} runtime is missing openstarry_code/compat/aiosqlite.py`)
   } else {
     const source = await readFile(compatFile, 'utf8')
     if (!source.includes('async def create_function(') || !source.includes('self._conn.create_function')) {
@@ -315,12 +315,12 @@ async function verifyInstallerDataPolicy() {
   if (
     !Array.isArray(protocols)
     || protocols.length !== 1
-    || protocols[0]?.name !== 'OpenSquilla'
+    || protocols[0]?.name !== 'OpenStarry Code'
     || !Array.isArray(protocols[0]?.schemes)
     || protocols[0].schemes.length !== 1
-    || protocols[0].schemes[0] !== 'opensquilla'
+    || protocols[0].schemes[0] !== 'openstarry-code'
   ) {
-    fail('electron-builder must register only the opensquilla URL protocol')
+    fail('electron-builder must register only the openstarry-code URL protocol')
   }
 }
 
@@ -455,9 +455,9 @@ for (const bundle of generatedBundles) {
 }
 
 if (failures.length > 0) {
-  console.error('OpenSquilla desktop package verification failed:')
+  console.error('OpenStarry Code desktop package verification failed:')
   for (const failure of failures) console.error(`- ${failure}`)
   process.exit(1)
 }
 
-console.log('OpenSquilla desktop package verification passed.')
+console.log('OpenStarry Code desktop package verification passed.')

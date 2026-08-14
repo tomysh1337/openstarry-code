@@ -19,8 +19,8 @@ def test_source_install_scripts_force_refresh_local_uv_tool_package() -> None:
     ps1 = SOURCE_PS1.read_text(encoding="utf-8")
     sh = SOURCE_SH.read_text(encoding="utf-8")
 
-    assert "'--force', '--reinstall-package', 'opensquilla'" in ps1
-    assert "--force --reinstall-package opensquilla" in sh
+    assert "'--force', '--reinstall-package', 'openstarry-code'" in ps1
+    assert "--force --reinstall-package openstarry-code" in sh
 
 
 def test_install_scripts_do_not_run_onboarding_or_gateway() -> None:
@@ -33,10 +33,10 @@ def test_install_scripts_do_not_run_onboarding_or_gateway() -> None:
 
     for script in scripts:
         assert "onboard --if-needed" not in script
-        assert "& opensquilla onboard" not in script
-        assert "& opensquilla gateway run" not in script
-        assert '"opensquilla onboard"' not in script
-        assert '"opensquilla gateway run"' not in script
+        assert "& openstarry-code onboard" not in script
+        assert "& openstarry-code gateway run" not in script
+        assert '"openstarry-code onboard"' not in script
+        assert '"openstarry-code gateway run"' not in script
 
 
 def test_release_installers_install_version_pinned_wheel_with_uv() -> None:
@@ -45,10 +45,10 @@ def test_release_installers_install_version_pinned_wheel_with_uv() -> None:
 
     for script in (ps1, sh):
         assert CURRENT_RELEASE_TAG in script
-        assert "opensquilla-$releaseVersion-py3-none-any.whl" in script or (
-            "opensquilla-${release_version}-py3-none-any.whl" in script
+        assert "openstarry_code-$releaseVersion-py3-none-any.whl" in script or (
+            "openstarry_code-${release_version}-py3-none-any.whl" in script
         )
-        assert "opensquilla-latest-py3-none-any.whl" not in script
+        assert "openstarry_code-latest-py3-none-any.whl" not in script
         assert "releases/latest/download" not in script
         assert "--python" in script
         assert "--force" in script
@@ -82,7 +82,7 @@ def test_windows_installer_stops_when_native_install_command_fails() -> None:
     assert 'if ($installExitCode -ne 0) {' in ps1
     assert "install_source.ps1: install command failed with exit code $installExitCode." in ps1
     assert (
-        "Close any running OpenSquilla gateway or shell using the existing "
+        "Close any running OpenStarry Code gateway or shell using the existing "
         "tool environment, then retry."
         in ps1
     )
@@ -98,7 +98,7 @@ def test_install_script_banners_are_ascii_for_windows_terminals() -> None:
     ]
 
     for script in scripts:
-        assert "OpenSquilla installed" in script
+        assert "OpenStarry Code installed" in script
         assert "----" in script
         assert "→" not in script
         assert "─" not in script
@@ -114,7 +114,7 @@ def test_install_scripts_support_optional_extras() -> None:
     ]
 
     for script in scripts:
-        assert "OPENSQUILLA_INSTALL_EXTRAS" in script
+        assert "OPENSTARRY_CODE_INSTALL_EXTRAS" in script
         for legacy_extra in ("feishu", "telegram", "dingtalk", "wecom", "qq"):
             assert legacy_extra not in script
         assert "matrix" in script
@@ -131,12 +131,12 @@ def test_windows_installer_bootstraps_vc_redist_for_router_runtime() -> None:
 
     for ps1 in scripts:
         assert "Install-WindowsVCRedistIfNeeded" in ps1
-        assert "OPENSQUILLA_SKIP_VC_REDIST" in ps1
+        assert "OPENSTARRY_CODE_SKIP_VC_REDIST" in ps1
         assert "Microsoft.VCRedist.2015+.x64" in ps1
         assert "https://aka.ms/vs/17/release/vc_redist.x64.exe" in ps1
         assert "safe router fallback" in ps1
         assert "If automatic installation fails, install it manually" in ps1
-        assert "After installing, reopen PowerShell and restart OpenSquilla" in ps1
+        assert "After installing, reopen PowerShell and restart OpenStarry Code" in ps1
 
 
 def test_source_install_pins_python_312_and_refuses_below() -> None:
@@ -156,11 +156,11 @@ def test_source_install_pins_python_312_and_refuses_below() -> None:
 def test_source_installers_build_webui_and_keep_dry_run_non_mutating() -> None:
     sh = SOURCE_SH.read_text(encoding="utf-8")
     ps1 = SOURCE_PS1.read_text(encoding="utf-8")
-    required_node = (ROOT / "opensquilla-webui" / ".node-version").read_text(
+    required_node = (ROOT / "openstarry-code-webui" / ".node-version").read_text(
         encoding="utf-8"
     ).strip()
     package = json.loads(
-        (ROOT / "opensquilla-webui" / "package.json").read_text(encoding="utf-8")
+        (ROOT / "openstarry-code-webui" / "package.json").read_text(encoding="utf-8")
     )
     assert package["engines"]["node"] == f">={required_node}"
 
@@ -218,8 +218,8 @@ def test_source_shell_dry_run_does_not_execute_node_npm_or_installer(
     env.update(
         {
             "FAKE_MARKER_DIR": str(markers),
-            "OPENSQUILLA_INSTALL_DRY_RUN": "1",
-            "OPENSQUILLA_INSTALL_PROFILE": "core",
+            "OPENSTARRY_CODE_INSTALL_DRY_RUN": "1",
+            "OPENSTARRY_CODE_INSTALL_PROFILE": "core",
             "PATH": f"{fake_bin}{os.pathsep}{env['PATH']}",
         }
     )
@@ -268,7 +268,7 @@ def test_source_shell_npm_failure_prevents_python_install(tmp_path: Path) -> Non
     env.update(
         {
             "FAKE_MARKER_DIR": str(markers),
-            "OPENSQUILLA_INSTALL_PROFILE": "core",
+            "OPENSTARRY_CODE_INSTALL_PROFILE": "core",
             "PATH": f"{fake_bin}{os.pathsep}{env['PATH']}",
         }
     )
@@ -336,8 +336,8 @@ def test_source_powershell_preserves_native_failure_exit_codes(
             "FAKE_MARKER_DIR": str(markers),
             "FAKE_NPM_EXIT": str(npm_exit),
             "FAKE_UV_EXIT": str(uv_exit),
-            "OPENSQUILLA_INSTALL_PROFILE": "core",
-            "OPENSQUILLA_PREFIX": str(tmp_path / "prefix"),
+            "OPENSTARRY_CODE_INSTALL_PROFILE": "core",
+            "OPENSTARRY_CODE_PREFIX": str(tmp_path / "prefix"),
             "PATH": f"{fake_bin}{os.pathsep}{env['PATH']}",
         }
     )
@@ -400,7 +400,7 @@ def test_source_shell_node_version_comparator_covers_stable_boundaries() -> None
 
 def test_windows_installer_verifies_entry_point_is_on_path() -> None:
     # Regression for #500: install_source.ps1 used to succeed silently and
-    # leave `opensquilla` unresolvable on a fresh Windows host, because uv
+    # leave `openstarry-code` unresolvable on a fresh Windows host, because uv
     # drops entry points in ~/.local/bin (not on PATH by default). The POSIX
     # installer already smoke-checks this; the PowerShell installer must
     # reach parity by locating the entry point and warning when its dir is

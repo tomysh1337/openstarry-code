@@ -1,0 +1,1 @@
+"""OpenStarry Code CLI package."""

@@ -6,11 +6,11 @@ from typing import Any
 import pytest
 import structlog.testing
 
-from opensquilla.skills.hub.archive import DEFAULT_ARCHIVE_LIMITS
-from opensquilla.skills.hub.github import GitHubSource
-from opensquilla.skills.hub.management import SkillManagementService
-from opensquilla.skills.hub.router import SourceRouter
-from opensquilla.skills.hub.source import SkillSourceFetchError
+from openstarry_code.skills.hub.archive import DEFAULT_ARCHIVE_LIMITS
+from openstarry_code.skills.hub.github import GitHubSource
+from openstarry_code.skills.hub.management import SkillManagementService
+from openstarry_code.skills.hub.router import SourceRouter
+from openstarry_code.skills.hub.source import SkillSourceFetchError
 
 _COMMIT = "a" * 40
 
@@ -652,8 +652,8 @@ async def test_explicit_github_subpath_rejects_legacy_manifest_name(monkeypatch)
 
 
 def test_default_gateway_router_exposes_github_without_token(monkeypatch) -> None:
-    import opensquilla.gateway.rpc_skills as rpc_skills
-    from opensquilla.skills.hub import defaults
+    import openstarry_code.gateway.rpc_skills as rpc_skills
+    from openstarry_code.skills.hub import defaults
 
     monkeypatch.delenv("GITHUB_TOKEN", raising=False)
     defaults._default_router = None

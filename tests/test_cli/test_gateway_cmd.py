@@ -15,10 +15,10 @@ from urllib.error import URLError
 import pytest
 from typer.testing import CliRunner
 
-from opensquilla.cli import gateway_cmd, gateway_lifecycle
-from opensquilla.cli.gateway_cmd import gateway_startup_guidance
-from opensquilla.cli.main import app
-from opensquilla.paths import default_opensquilla_home
+from openstarry_code.cli import gateway_cmd, gateway_lifecycle
+from openstarry_code.cli.gateway_cmd import gateway_startup_guidance
+from openstarry_code.cli.main import app
+from openstarry_code.paths import default_opensquilla_home
 
 runner = CliRunner()
 Manager = gateway_lifecycle.GatewayLifecycleManager
@@ -54,7 +54,7 @@ def _record(pid: int = 1234, *, port: int = 18791) -> dict:
         "argv": [
             sys.executable,
             "-m",
-            "opensquilla.cli.main",
+            "openstarry_code.cli.main",
             "gateway",
             "run",
             "--listen",
@@ -158,7 +158,7 @@ def test_gateway_run_turns_missing_onboarding_env_into_recovery_hint(
         'api_key_env = "OPENAI_EMBEDDINGS_API_KEY"\n',
         encoding="utf-8",
     )
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "home"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "home"))
     monkeypatch.delenv("OPENAI_EMBEDDINGS_API_KEY", raising=False)
 
     async def fail_start_gateway_server(**_kwargs):
@@ -196,7 +196,7 @@ def test_gateway_run_reports_invalid_config_without_traceback(
 ) -> None:
     target = tmp_path / "custom.toml"
     target.write_text("workspace_dir = [\n", encoding="utf-8")
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "home"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "home"))
 
     result = runner.invoke(app, ["gateway", "run", "--config", str(target)])
 
@@ -216,7 +216,7 @@ def test_gateway_run_memory_recovery_command_is_bare_on_windows(
     """The recovery ``command`` field is machine-shaped on every surface: the
     gateway-run fallback entry must carry the bare set-env command on Windows
     (no "PowerShell:" label), matching env_recovery_commands."""
-    from opensquilla.onboarding import next_steps
+    from openstarry_code.onboarding import next_steps
 
     target = tmp_path / "custom.toml"
     target.write_text(
@@ -229,7 +229,7 @@ def test_gateway_run_memory_recovery_command_is_bare_on_windows(
         'api_key_env = "DUMMY_UNSET_EMBED_KEY"\n',
         encoding="utf-8",
     )
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "home"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "home"))
     monkeypatch.delenv("DUMMY_UNSET_EMBED_KEY", raising=False)
     monkeypatch.setattr(next_steps, "_is_windows", lambda: True)
 
@@ -253,7 +253,7 @@ def test_gateway_run_memory_recovery_command_is_bare_on_windows(
 
 
 def test_gateway_lifecycle_paths_use_state_root(tmp_path, monkeypatch) -> None:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "home"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "home"))
 
     assert gateway_lifecycle.gateway_pidfile_path() == (
         tmp_path / "home" / "state" / "gateway" / "gateway.json"
@@ -268,10 +268,10 @@ def test_safe_desktop_gateway_start_uses_external_lifecycle_state(
     home = tmp_path / "opensquilla"
     user_state = tmp_path / "user-state"
     _safe_desktop_profile(home)
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
-    monkeypatch.setenv("OPENSQUILLA_PROFILE_KIND", "desktop-primary")
-    monkeypatch.setenv("OPENSQUILLA_TEST", "1")
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(user_state))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_PROFILE_KIND", "desktop-primary")
+    monkeypatch.setenv("OPENSTARRY_CODE_TEST", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(user_state))
     calls = []
 
     def fake_popen(argv, **kwargs):
@@ -306,10 +306,10 @@ def test_unsafe_desktop_gateway_lifecycle_blocks_before_spawn_or_write(
     user_state = tmp_path / "user-state"
     _unsafe_desktop_profile(home)
     before = _profile_tree_snapshot(home)
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
-    monkeypatch.setenv("OPENSQUILLA_PROFILE_KIND", "desktop-primary")
-    monkeypatch.setenv("OPENSQUILLA_TEST", "1")
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(user_state))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_PROFILE_KIND", "desktop-primary")
+    monkeypatch.setenv("OPENSTARRY_CODE_TEST", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(user_state))
 
     def fail_spawn(self, argv):
         raise AssertionError("unsafe Desktop profile must not spawn a gateway")
@@ -338,10 +338,10 @@ def test_desktop_lifecycle_rejects_config_outside_profile_before_write(
     outside = tmp_path / "outside.toml"
     outside.write_text("synthetic = true\n", encoding="utf-8")
     before = _profile_tree_snapshot(home)
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
-    monkeypatch.setenv("OPENSQUILLA_PROFILE_KIND", "desktop-primary")
-    monkeypatch.setenv("OPENSQUILLA_TEST", "1")
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(user_state))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_PROFILE_KIND", "desktop-primary")
+    monkeypatch.setenv("OPENSTARRY_CODE_TEST", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(user_state))
 
     result = getattr(
         Manager(config_path=str(outside), port=0, health_timeout=0),
@@ -366,8 +366,8 @@ def test_desktop_gateway_run_rejects_config_outside_profile_before_loading_it(
     _safe_desktop_profile(home)
     outside = tmp_path / "outside.toml"
     outside.write_text("synthetic = true\n", encoding="utf-8")
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
-    monkeypatch.setenv("OPENSQUILLA_PROFILE_KIND", "desktop-primary")
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_PROFILE_KIND", "desktop-primary")
 
     def fail_load(*_args, **_kwargs):
         raise AssertionError("out-of-profile config must be rejected before load")
@@ -389,7 +389,7 @@ def test_gateway_run_emits_stable_profile_in_use_error_without_sensitive_path(
     monkeypatch,
     lock_error_name: str,
 ) -> None:
-    from opensquilla import recovery
+    from openstarry_code import recovery
 
     sensitive_profile = tmp_path / "customer-private-profile"
     lock_error = getattr(recovery, lock_error_name)
@@ -411,8 +411,8 @@ def test_gateway_run_emits_stable_profile_in_use_error_without_sensitive_path(
 
     assert result.exit_code == 1
     output = result.stdout + (result.stderr or "")
-    assert output.count("OPENSQUILLA_PROFILE_IN_USE") == 1
-    assert "Another OpenSquilla process is still using this profile" in output
+    assert output.count("OPENSTARRY_CODE_PROFILE_IN_USE") == 1
+    assert "Another OpenStarry Code process is still using this profile" in output
     assert "restart the computer" in output
     assert "Do not delete profile lock files" in output
     assert str(sensitive_profile) not in output
@@ -432,7 +432,7 @@ def test_gateway_help_lists_lifecycle_commands() -> None:
 
 
 def test_gateway_subapp_disables_pretty_exceptions() -> None:
-    from opensquilla.cli.main import gateway_app
+    from openstarry_code.cli.main import gateway_app
 
     assert gateway_app.pretty_exceptions_enable is False
 
@@ -446,7 +446,7 @@ def test_gateway_start_help_explains_config_backed_target_defaults() -> None:
 
 
 def test_gateway_status_json_reports_not_started(tmp_path, monkeypatch) -> None:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "home"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "home"))
     _patch_health(monkeypatch, False)
 
     result = runner.invoke(app, ["gateway", "status", "--json"])
@@ -521,7 +521,7 @@ def test_gateway_status_gateway_url_reports_remote_unavailable(monkeypatch) -> N
 
 
 def test_gateway_status_reports_stale_without_mutating_pidfile(tmp_path, monkeypatch) -> None:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "home"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "home"))
     _write_pidfile(_record(pid=9999))
     before = gateway_lifecycle.gateway_pidfile_path().read_text(encoding="utf-8")
     _patch_pid_running(monkeypatch, False)
@@ -535,7 +535,7 @@ def test_gateway_status_reports_stale_without_mutating_pidfile(tmp_path, monkeyp
 
 
 def test_gateway_start_refuses_unmanaged_healthy_gateway(tmp_path, monkeypatch) -> None:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "home"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "home"))
     _patch_health(monkeypatch, True)
 
     result = runner.invoke(app, ["gateway", "start", "--json"])
@@ -552,7 +552,7 @@ def test_gateway_start_refuses_unmanaged_healthy_gateway(tmp_path, monkeypatch) 
 
 
 def test_gateway_start_uses_same_interpreter_cli_boundary(tmp_path, monkeypatch) -> None:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "home"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "home"))
     calls = []
 
     def fake_popen(argv, **kwargs):
@@ -573,7 +573,7 @@ def test_gateway_start_uses_same_interpreter_cli_boundary(tmp_path, monkeypatch)
     assert payload["state"] == "running"
     assert payload["pid"] == 4242
     argv, kwargs = calls[0]
-    assert argv[:5] == [sys.executable, "-m", "opensquilla.cli.main", "gateway", "run"]
+    assert argv[:5] == [sys.executable, "-m", "openstarry_code.cli.main", "gateway", "run"]
     assert "--listen" in argv
     assert argv[argv.index("--listen") + 1] == "127.0.0.2"
     assert kwargs["shell"] is False
@@ -581,9 +581,9 @@ def test_gateway_start_uses_same_interpreter_cli_boundary(tmp_path, monkeypatch)
 
 def test_gateway_start_frozen_binary_invokes_subcommand_directly(tmp_path, monkeypatch) -> None:
     # In a PyInstaller-frozen desktop bundle sys.executable already is the CLI
-    # entrypoint, so "-m opensquilla.cli.main" would be handed to Typer as
+    # entrypoint, so "-m openstarry_code.cli.main" would be handed to Typer as
     # arguments and the child would exit on a usage error.
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "home"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "home"))
     monkeypatch.setattr(sys, "frozen", True, raising=False)
     calls = []
 
@@ -604,15 +604,15 @@ def test_gateway_start_frozen_binary_invokes_subcommand_directly(tmp_path, monke
     argv, _ = calls[0]
     assert argv[:3] == [sys.executable, "gateway", "run"]
     assert "-m" not in argv
-    assert "opensquilla.cli.main" not in argv
+    assert "openstarry_code.cli.main" not in argv
     assert argv[argv.index("--listen") + 1] == "127.0.0.2"
 
 
 def test_gateway_start_uses_explicit_config_path(tmp_path, monkeypatch) -> None:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "home"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "home"))
     default_config = tmp_path / "default.toml"
     custom_config = tmp_path / "custom.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(default_config))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(default_config))
     calls = []
 
     def fake_popen(argv, **kwargs):
@@ -631,7 +631,7 @@ def test_gateway_start_uses_explicit_config_path(tmp_path, monkeypatch) -> None:
     assert result.exit_code == 0, result.stdout
     argv, kwargs = calls[0]
     assert argv[argv.index("--config") + 1] == str(custom_config)
-    assert kwargs["env"]["OPENSQUILLA_GATEWAY_CONFIG_PATH"] == str(custom_config)
+    assert kwargs["env"]["OPENSTARRY_CODE_GATEWAY_CONFIG_PATH"] == str(custom_config)
     record = json.loads(gateway_lifecycle.gateway_pidfile_path().read_text(encoding="utf-8"))
     assert record["configPath"] == str(custom_config)
 
@@ -639,7 +639,7 @@ def test_gateway_start_uses_explicit_config_path(tmp_path, monkeypatch) -> None:
 def test_gateway_start_uses_config_host_port_when_flags_are_omitted(
     tmp_path, monkeypatch
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "home"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "home"))
     custom_config = tmp_path / "custom.toml"
     custom_config.write_text('host = "127.0.0.2"\nport = 19999\n', encoding="utf-8")
     calls = []
@@ -668,7 +668,7 @@ def test_gateway_start_uses_config_host_port_when_flags_are_omitted(
 def test_gateway_status_uses_config_host_port_when_flags_are_omitted(
     tmp_path, monkeypatch
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "home"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "home"))
     custom_config = tmp_path / "custom.toml"
     custom_config.write_text('host = "127.0.0.2"\nport = 19999\n', encoding="utf-8")
     probes = []
@@ -783,8 +783,8 @@ def test_gateway_run_flags_do_not_leak_into_config_via_unrelated_persist(
     """F4 regression: `gateway run --listen 0.0.0.0 --debug` for a one-off
     session followed by an onboarding-surface save of an unrelated section
     must not bake host/debug into config.toml permanently."""
-    from opensquilla.onboarding.config_store import load_config, persist_config
-    from opensquilla.onboarding.mutations import upsert_search_provider
+    from openstarry_code.onboarding.config_store import load_config, persist_config
+    from openstarry_code.onboarding.mutations import upsert_search_provider
 
     custom_config = tmp_path / "custom.toml"
     custom_config.write_text('host = "127.0.0.1"\nport = 18791\n', encoding="utf-8")
@@ -907,7 +907,7 @@ def test_gateway_run_preflights_occupied_port_before_building_services(
 
 
 def test_gateway_start_waits_for_readiness_after_liveness(tmp_path, monkeypatch) -> None:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "home"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "home"))
     calls = []
     health_checks = 0
     ready_checks = []
@@ -958,7 +958,7 @@ def test_gateway_start_with_wildcard_listen_keeps_bind_and_reports_probe_host(
     tmp_path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "home"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "home"))
     calls = []
 
     def fake_popen(argv, **kwargs):
@@ -993,7 +993,7 @@ def test_gateway_start_with_wildcard_listen_keeps_bind_and_reports_probe_host(
 
 
 def test_gateway_start_does_not_spawn_duplicate_recorded_gateway(tmp_path, monkeypatch) -> None:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "home"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "home"))
     _write_pidfile(_record(pid=321))
     _patch_pid_running(monkeypatch, True)
     _patch_health(monkeypatch, True)
@@ -1012,7 +1012,7 @@ def test_gateway_start_does_not_spawn_duplicate_recorded_gateway(tmp_path, monke
 
 
 def test_gateway_start_refuses_live_pidfile_for_different_target(tmp_path, monkeypatch) -> None:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "home"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "home"))
     _write_pidfile(_record(pid=321, port=18791))
     _patch_pid_running(monkeypatch, True)
     _patch_health(monkeypatch, False)
@@ -1034,7 +1034,7 @@ def test_gateway_start_refuses_live_pidfile_for_different_target(tmp_path, monke
 
 
 def test_gateway_status_reports_recorded_config_mismatch(tmp_path, monkeypatch) -> None:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "home"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "home"))
     record = _record(pid=321, port=18791)
     record["configPath"] = str(tmp_path / "first.toml")
     _write_pidfile(record)
@@ -1060,7 +1060,7 @@ def test_gateway_status_reports_recorded_config_mismatch(tmp_path, monkeypatch) 
 
 
 def test_gateway_stop_clears_stale_pidfile(tmp_path, monkeypatch) -> None:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "home"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "home"))
     _write_pidfile(_record(pid=9999))
     _patch_pid_running(monkeypatch, False)
     _patch_health(monkeypatch, False)
@@ -1073,7 +1073,7 @@ def test_gateway_stop_clears_stale_pidfile(tmp_path, monkeypatch) -> None:
 
 
 def test_gateway_stop_refuses_unmanaged_healthy_gateway(tmp_path, monkeypatch) -> None:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "home"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "home"))
     _patch_health(monkeypatch, True)
 
     result = runner.invoke(app, ["gateway", "stop", "--json"])
@@ -1085,7 +1085,7 @@ def test_gateway_stop_refuses_unmanaged_healthy_gateway(tmp_path, monkeypatch) -
 
 
 def test_gateway_stop_refuses_live_pidfile_for_different_target(tmp_path, monkeypatch) -> None:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "home"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "home"))
     _write_pidfile(_record(pid=321, port=18791))
     _patch_pid_running(monkeypatch, True)
     _patch_health(monkeypatch, False)
@@ -1105,7 +1105,7 @@ def test_gateway_stop_refuses_live_pidfile_for_different_target(tmp_path, monkey
 
 
 def test_gateway_restart_refuses_live_pidfile_for_different_target(tmp_path, monkeypatch) -> None:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "home"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "home"))
     _write_pidfile(_record(pid=321, port=18791))
     _patch_pid_running(monkeypatch, True)
     _patch_health(monkeypatch, False)
@@ -1125,7 +1125,7 @@ def test_gateway_restart_refuses_live_pidfile_for_different_target(tmp_path, mon
 
 
 def test_gateway_restart_stops_before_starting(tmp_path, monkeypatch) -> None:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "home"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "home"))
     _write_pidfile(_record(pid=777))
     events = []
 
@@ -1295,7 +1295,7 @@ def test_install_shutdown_handlers_traps_real_sigterm() -> None:
 
 def test_gateway_shutdown_deadline_exceeds_graceful_budget(monkeypatch) -> None:
     """The kill deadline must always exceed the (two-phase) graceful drain."""
-    from opensquilla.gateway import boot
+    from openstarry_code.gateway import boot
 
     monkeypatch.delenv(boot.GATEWAY_GRACEFUL_TIMEOUT_ENV, raising=False)
     assert boot.gateway_shutdown_deadline() > boot.gateway_graceful_timeout() * 2
@@ -1347,7 +1347,7 @@ class _FakeShutdownResponse:
 
 
 def test_request_graceful_shutdown_posts_with_token(monkeypatch) -> None:
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_TOKEN", "secret-tok")
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_TOKEN", "secret-tok")
     captured: dict = {}
 
     def fake_urlopen(request, timeout):
@@ -1371,7 +1371,7 @@ def test_request_graceful_shutdown_returns_false_when_unreachable(monkeypatch) -
         raise URLError("connection refused")
 
     monkeypatch.setattr(gateway_lifecycle, "urlopen", fake_urlopen)
-    monkeypatch.delenv("OPENSQUILLA_GATEWAY_TOKEN", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_GATEWAY_TOKEN", raising=False)
     mgr = Manager(host="127.0.0.1", port=18791, config_path=None)
 
     assert mgr._request_graceful_shutdown() is False

@@ -1,4 +1,4 @@
-"""Shape freeze for ``opensquilla onboard status --json``.
+"""Shape freeze for ``openstarry-code onboard status --json``.
 
 The CLI JSON payload must stay a strict superset of the RPC
 ``onboarding.status`` payload (contract-frozen in
@@ -15,7 +15,7 @@ import json as _json
 
 from typer.testing import CliRunner
 
-from opensquilla.cli.main import app
+from openstarry_code.cli.main import app
 
 runner = CliRunner()
 
@@ -97,9 +97,9 @@ def test_status_json_key_set_is_frozen(tmp_path, monkeypatch):
 
 def test_status_json_is_a_superset_of_the_rpc_payload(tmp_path, monkeypatch):
     """Anti-drift: compare against the live RPC payload, not a copied list."""
-    from opensquilla.gateway.rpc import RpcContext
-    from opensquilla.gateway.rpc_onboarding import _status_payload as rpc_status_payload
-    from opensquilla.onboarding.config_store import load_config
+    from openstarry_code.gateway.rpc import RpcContext
+    from openstarry_code.gateway.rpc_onboarding import _status_payload as rpc_status_payload
+    from openstarry_code.onboarding.config_store import load_config
 
     target = _write_config(tmp_path, monkeypatch)
     cli_payload = _status_json(target)
@@ -145,7 +145,7 @@ def test_status_json_new_keys_carry_the_expected_values(tmp_path, monkeypatch):
 
 
 def test_status_json_command_field_is_bare_on_posix(tmp_path, monkeypatch):
-    from opensquilla.onboarding import next_steps
+    from openstarry_code.onboarding import next_steps
 
     monkeypatch.setattr(next_steps.platform, "system", lambda: "Linux")
     payload = _status_json(_write_config(tmp_path, monkeypatch))
@@ -157,7 +157,7 @@ def test_status_json_command_field_is_bare_on_posix(tmp_path, monkeypatch):
 
 def test_status_json_command_field_has_no_shell_label_on_windows(tmp_path, monkeypatch):
     """Machine-readable command fields must contain only the command."""
-    from opensquilla.onboarding import next_steps
+    from openstarry_code.onboarding import next_steps
 
     monkeypatch.setattr(next_steps.platform, "system", lambda: "Windows")
     payload = _status_json(_write_config(tmp_path, monkeypatch))

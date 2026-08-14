@@ -8,7 +8,7 @@ from typing import Any
 
 import pytest
 
-from opensquilla.mcp_server.bridge import OpenSquillaMCPBridge
+from openstarry_code.mcp_server.bridge import OpenSquillaMCPBridge
 
 
 class FakeGatewayClient:
@@ -210,7 +210,7 @@ async def test_transcript_jsonl_exports_standard_tool_evidence() -> None:
 
 
 def test_mcp_server_package_does_not_import_cli_layer() -> None:
-    package_root = Path("src/opensquilla/mcp_server")
+    package_root = Path("src/openstarry_code/mcp_server")
     imported_modules: set[str] = set()
     for path in package_root.rglob("*.py"):
         tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
@@ -220,9 +220,9 @@ def test_mcp_server_package_does_not_import_cli_layer() -> None:
             elif isinstance(node, ast.ImportFrom) and node.module:
                 imported_modules.add(node.module)
 
-    assert not any(module.startswith("opensquilla.cli") for module in imported_modules)
+    assert not any(module.startswith("openstarry_code.cli") for module in imported_modules)
     assert not any(
-        module == "opensquilla.gateway" or module.startswith("opensquilla.gateway.")
+        module == "openstarry_code.gateway" or module.startswith("openstarry_code.gateway.")
         for module in imported_modules
     )
 

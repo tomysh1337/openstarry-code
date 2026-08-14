@@ -23,19 +23,19 @@ from typing import Any
 
 import pytest
 
-from opensquilla.cli import chat_cmd
-from opensquilla.cli.attachments import (
+from openstarry_code.cli import chat_cmd
+from openstarry_code.cli.attachments import (
     CLI_IMAGE_ATTACHMENT_BYTES,
     CLI_INLINE_THRESHOLD_BYTES,
     CLI_STAGED_PDF_BYTES,
     CLI_TEXT_ATTACHMENT_BYTES,
 )
-from opensquilla.cli.chat_cmd import (
+from openstarry_code.cli.chat_cmd import (
     _file_prompt_and_attachments,
     _image_prompt_and_attachments,
     _image_prompt_from_command,
 )
-from opensquilla.cli.repl import input_bridge
+from openstarry_code.cli.repl import input_bridge
 
 
 def _write(tmp_path: Path, name: str, payload: bytes) -> Path:

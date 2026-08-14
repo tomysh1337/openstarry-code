@@ -13,7 +13,7 @@ import tomllib
 
 import pytest
 
-from opensquilla.lossless_toml import LosslessTomlPatchError, patch_import_config
+from openstarry_code.lossless_toml import LosslessTomlPatchError, patch_import_config
 
 
 def _patched(raw: bytes, transform) -> str:
@@ -99,7 +99,7 @@ def test_untouched_array_of_inline_tables_does_not_block_the_patch() -> None:
 
 
 def test_boot_migration_stamps_run_mode_next_to_an_agents_array() -> None:
-    from opensquilla.sandbox.upgrade_migration import lossless_patch_sandbox_fields
+    from openstarry_code.sandbox.upgrade_migration import lossless_patch_sandbox_fields
 
     patched, mode = lossless_patch_sandbox_fields(AGENTS_CONFIG)
     payload = tomllib.loads(patched.decode("utf-8"))
@@ -157,7 +157,7 @@ def test_terminal_quote_runs_inside_an_array_do_not_hide_the_next_table(
         "sandbox = true\n"
     ).encode()
 
-    from opensquilla.sandbox.upgrade_migration import lossless_patch_sandbox_fields
+    from openstarry_code.sandbox.upgrade_migration import lossless_patch_sandbox_fields
 
     patched, mode = lossless_patch_sandbox_fields(raw)
     payload = tomllib.loads(patched.decode("utf-8"))
@@ -183,7 +183,7 @@ def test_opening_quote_runs_inside_an_array_keep_the_collection_close_visible(
         "sandbox = true\n"
     ).encode()
 
-    from opensquilla.sandbox.upgrade_migration import lossless_patch_sandbox_fields
+    from openstarry_code.sandbox.upgrade_migration import lossless_patch_sandbox_fields
 
     patched, mode = lossless_patch_sandbox_fields(raw)
     payload = tomllib.loads(patched.decode("utf-8"))
@@ -215,7 +215,7 @@ def test_insertion_after_an_eof_assignment_adds_a_physical_newline() -> None:
 
 
 def test_boot_stamp_after_an_eof_table_assignment_adds_a_physical_newline() -> None:
-    from opensquilla.sandbox.upgrade_migration import lossless_patch_sandbox_fields
+    from openstarry_code.sandbox.upgrade_migration import lossless_patch_sandbox_fields
 
     raw = b"[sandbox]\nsandbox = true"
     patched, mode = lossless_patch_sandbox_fields(raw)
@@ -230,7 +230,7 @@ def test_multiple_eof_insertions_have_separators_without_adding_a_final_newline(
 
 
 def test_crlf_eof_insertion_uses_crlf_without_adding_a_final_newline() -> None:
-    from opensquilla.sandbox.upgrade_migration import lossless_patch_sandbox_fields
+    from openstarry_code.sandbox.upgrade_migration import lossless_patch_sandbox_fields
 
     raw = b"port = 1\r\n[sandbox]\r\nsandbox = true"
     patched, mode = lossless_patch_sandbox_fields(raw)

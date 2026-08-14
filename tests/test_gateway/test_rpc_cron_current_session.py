@@ -3,10 +3,10 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.rpc import RpcContext
-from opensquilla.gateway.rpc_cron import (
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.rpc import RpcContext
+from openstarry_code.gateway.rpc_cron import (
     _build_payload,
     _handle_cron_add,
     _handle_cron_update,
@@ -14,22 +14,22 @@ from opensquilla.gateway.rpc_cron import (
     _resolve_session_target,
     _resolve_target_session_key,
 )
-from opensquilla.scheduler.delivery import DeliveryChain
-from opensquilla.scheduler.handlers import (
+from openstarry_code.scheduler.delivery import DeliveryChain
+from openstarry_code.scheduler.handlers import (
     _resolve_session_key,
     make_agent_run_handler,
     make_static_message_handler,
 )
-from opensquilla.scheduler.payloads import AGENT_TURN_KIND, REMINDER_KIND, SYSTEM_EVENT_KIND
-from opensquilla.scheduler.types import (
+from openstarry_code.scheduler.payloads import AGENT_TURN_KIND, REMINDER_KIND, SYSTEM_EVENT_KIND
+from openstarry_code.scheduler.types import (
     CronJob,
     DeliveryConfig,
     DeliveryMode,
     ReplyTargetSnapshot,
     SessionTarget,
 )
-from opensquilla.session.manager import SessionManager
-from opensquilla.session.storage import SessionStorage
+from openstarry_code.session.manager import SessionManager
+from openstarry_code.session.storage import SessionStorage
 
 SESSION_KEY = "agent:main:webchat:abc123"
 CRON_SESSION_KEY = "cron:drink:run:def456"

@@ -1,4 +1,4 @@
-"""``opensquilla gateway reload`` CLI — calls the admin ``config.reload`` RPC.
+"""``openstarry-code gateway reload`` CLI — calls the admin ``config.reload`` RPC.
 
 Offline: the gateway client is replaced by a fake, no network, no credentials.
 """
@@ -10,7 +10,7 @@ from typing import Any
 
 from typer.testing import CliRunner
 
-from opensquilla.cli.main import app
+from openstarry_code.cli.main import app
 
 runner = CliRunner()
 
@@ -33,7 +33,7 @@ class FakeGatewayClient:
 def _install(monkeypatch, payload: dict[str, Any]) -> type[FakeGatewayClient]:
     FakeGatewayClient.calls = []
     FakeGatewayClient.payload = payload
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", FakeGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", FakeGatewayClient)
     return FakeGatewayClient
 
 

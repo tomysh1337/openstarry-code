@@ -6,11 +6,11 @@ from typing import Any
 
 import pytest
 
-from opensquilla.sandbox.config import SandboxSettings
-from opensquilla.sandbox.integration import configure_runtime, reset_runtime
-from opensquilla.tools.builtin import patch as patch_tool
-from opensquilla.tools.mutation_receipts import fingerprint_file
-from opensquilla.tools.types import ToolContext, current_tool_context
+from openstarry_code.sandbox.config import SandboxSettings
+from openstarry_code.sandbox.integration import configure_runtime, reset_runtime
+from openstarry_code.tools.builtin import patch as patch_tool
+from openstarry_code.tools.mutation_receipts import fingerprint_file
+from openstarry_code.tools.types import ToolContext, current_tool_context
 
 
 def _original_async(fn: Callable[..., Awaitable[str]]) -> Callable[..., Awaitable[str]]:
@@ -311,7 +311,7 @@ async def test_apply_patch_managed_mount_reaches_worker_thread(
         return None
 
     monkeypatch.setattr(
-        "opensquilla.tools.builtin.filesystem._run_sandbox_operation_if_required",
+        "openstarry_code.tools.builtin.filesystem._run_sandbox_operation_if_required",
         run_direct,
     )
     token = current_tool_context.set(

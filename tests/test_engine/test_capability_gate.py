@@ -19,8 +19,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.engine.pipeline import TurnContext
-from opensquilla.engine.routing import (
+from openstarry_code.engine.pipeline import TurnContext
+from openstarry_code.engine.routing import (
     CapabilityGateAction,
     PolicyInputs,
     RoutingDecision,
@@ -29,10 +29,10 @@ from opensquilla.engine.routing import (
     capability_gate,
     record_capability_gate_trail,
 )
-from opensquilla.engine.steps import squilla_router as squilla_router_step
-from opensquilla.engine.steps.squilla_router import _tier_capability_facts
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.provider.model_catalog import ModelCatalog, set_shared_catalog
+from openstarry_code.engine.steps import squilla_router as squilla_router_step
+from openstarry_code.engine.steps.squilla_router import _tier_capability_facts
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.provider.model_catalog import ModelCatalog, set_shared_catalog
 
 VALID_TIERS = ["c0", "c1", "c2", "c3"]
 

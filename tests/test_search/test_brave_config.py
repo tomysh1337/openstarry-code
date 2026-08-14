@@ -3,12 +3,12 @@ from __future__ import annotations
 import httpx
 import pytest
 
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.search.providers.brave import BraveSearchProvider
-from opensquilla.search.providers.duckduckgo import DuckDuckGoProvider
-from opensquilla.search.providers.exa import ExaSearchProvider
-from opensquilla.search.types import SearchProviderError, SearchResult
-from opensquilla.tools.builtin import web
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.search.providers.brave import BraveSearchProvider
+from openstarry_code.search.providers.duckduckgo import DuckDuckGoProvider
+from openstarry_code.search.providers.exa import ExaSearchProvider
+from openstarry_code.search.types import SearchProviderError, SearchResult
+from openstarry_code.tools.builtin import web
 
 
 def test_gateway_config_accepts_search_api_key() -> None:

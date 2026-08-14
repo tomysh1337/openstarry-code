@@ -1,7 +1,7 @@
 """Opt-in levers: placeholder-offense escalation + pre-deadline wrap-up.
 
-Covers OPENSQUILLA_PLACEHOLDER_ESCALATION_THRESHOLD and
-OPENSQUILLA_DEADLINE_WRAPUP_MARGIN_SECONDS (both off by default). Motivation:
+Covers OPENSTARRY_CODE_PLACEHOLDER_ESCALATION_THRESHOLD and
+OPENSTARRY_CODE_DEADLINE_WRAPUP_MARGIN_SECONDS (both off by default). Motivation:
 in long unattended runs, models can keep re-issuing tool calls that reference
 compacted placeholders despite delivered per-call feedback, and deadline-capped
 runs can be cut off mid-exploration with no wrap-up attempt.
@@ -16,24 +16,24 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine import Agent, AgentConfig, ThinkingLevel, ToolResult
-from opensquilla.engine.agent import (
+from openstarry_code.engine import Agent, AgentConfig, ThinkingLevel, ToolResult
+from openstarry_code.engine.agent import (
     _DEADLINE_WRAPUP_DIRECTIVE_TEMPLATE,
     _INVALID_PROVIDER_CONTEXT_ARGUMENTS_KEY,
     _PLACEHOLDER_ESCALATION_DIRECTIVE,
 )
-from opensquilla.provider import (
+from openstarry_code.provider import (
     ChatConfig,
     Message,
     ModelCapabilities,
     ToolDefinition,
     ToolInputSchema,
 )
-from opensquilla.provider import DoneEvent as ProviderDone
-from opensquilla.provider import ReasoningDeltaEvent as ProviderReasoning
-from opensquilla.provider import TextDeltaEvent as ProviderText
-from opensquilla.provider import ToolUseEndEvent as ProviderToolUseEnd
-from opensquilla.provider import ToolUseStartEvent as ProviderToolUseStart
+from openstarry_code.provider import DoneEvent as ProviderDone
+from openstarry_code.provider import ReasoningDeltaEvent as ProviderReasoning
+from openstarry_code.provider import TextDeltaEvent as ProviderText
+from openstarry_code.provider import ToolUseEndEvent as ProviderToolUseEnd
+from openstarry_code.provider import ToolUseStartEvent as ProviderToolUseStart
 
 _WRAPUP_PREFIX = _DEADLINE_WRAPUP_DIRECTIVE_TEMPLATE.split("{minutes}", maxsplit=1)[0]
 
@@ -761,18 +761,18 @@ async def test_deadline_wrapup_preempt_records_no_tool_loop_event(tmp_path) -> N
 def test_env_plumbing_for_both_levers(monkeypatch: pytest.MonkeyPatch) -> None:
     # Helper-level check only; the full env -> bootstrap-stage -> AgentConfig
     # threading is covered in turn_runner/test_agent_bootstrap_stage_unit.py.
-    from opensquilla.engine.turn_runner.agent_bootstrap_stage import (
+    from openstarry_code.engine.turn_runner.agent_bootstrap_stage import (
         _nonnegative_int_from_env,
     )
 
-    monkeypatch.delenv("OPENSQUILLA_PLACEHOLDER_ESCALATION_THRESHOLD", raising=False)
-    monkeypatch.delenv("OPENSQUILLA_DEADLINE_WRAPUP_MARGIN_SECONDS", raising=False)
-    assert _nonnegative_int_from_env("OPENSQUILLA_PLACEHOLDER_ESCALATION_THRESHOLD", 0) == 0
-    assert _nonnegative_int_from_env("OPENSQUILLA_DEADLINE_WRAPUP_MARGIN_SECONDS", 0) == 0
-    monkeypatch.setenv("OPENSQUILLA_PLACEHOLDER_ESCALATION_THRESHOLD", "3")
-    monkeypatch.setenv("OPENSQUILLA_DEADLINE_WRAPUP_MARGIN_SECONDS", "360")
-    assert _nonnegative_int_from_env("OPENSQUILLA_PLACEHOLDER_ESCALATION_THRESHOLD", 0) == 3
-    assert _nonnegative_int_from_env("OPENSQUILLA_DEADLINE_WRAPUP_MARGIN_SECONDS", 0) == 360
+    monkeypatch.delenv("OPENSTARRY_CODE_PLACEHOLDER_ESCALATION_THRESHOLD", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_DEADLINE_WRAPUP_MARGIN_SECONDS", raising=False)
+    assert _nonnegative_int_from_env("OPENSTARRY_CODE_PLACEHOLDER_ESCALATION_THRESHOLD", 0) == 0
+    assert _nonnegative_int_from_env("OPENSTARRY_CODE_DEADLINE_WRAPUP_MARGIN_SECONDS", 0) == 0
+    monkeypatch.setenv("OPENSTARRY_CODE_PLACEHOLDER_ESCALATION_THRESHOLD", "3")
+    monkeypatch.setenv("OPENSTARRY_CODE_DEADLINE_WRAPUP_MARGIN_SECONDS", "360")
+    assert _nonnegative_int_from_env("OPENSTARRY_CODE_PLACEHOLDER_ESCALATION_THRESHOLD", 0) == 3
+    assert _nonnegative_int_from_env("OPENSTARRY_CODE_DEADLINE_WRAPUP_MARGIN_SECONDS", 0) == 360
 
 
 def test_agent_config_defaults_keep_both_levers_off() -> None:

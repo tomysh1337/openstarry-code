@@ -7,7 +7,7 @@ from typing import Any
 import httpx
 import pytest
 
-from opensquilla.provider import (
+from openstarry_code.provider import (
     ChatConfig,
     DoneEvent,
     ErrorEvent,
@@ -19,9 +19,9 @@ from opensquilla.provider import (
     ToolUseEndEvent,
     ToolUseStartEvent,
 )
-from opensquilla.provider.ollama import OllamaProvider
-from opensquilla.provider.openai_responses import OpenAIResponsesProvider
-from opensquilla.provider.stream_assembly import (
+from openstarry_code.provider.ollama import OllamaProvider
+from openstarry_code.provider.openai_responses import OpenAIResponsesProvider
+from openstarry_code.provider.stream_assembly import (
     DEFAULT_MAX_TOOL_CALLS,
     DEFAULT_MAX_TOTAL_TOOL_ARGUMENT_CHARS,
 )
@@ -96,7 +96,7 @@ def test_ollama_eof_without_done_preserves_text_but_never_commits_tool(
     )
     _patch_http_response(
         monkeypatch,
-        "opensquilla.provider.ollama",
+        "openstarry_code.provider.ollama",
         body,
         content_type="application/x-ndjson",
     )
@@ -142,7 +142,7 @@ def test_ollama_malformed_frame_cannot_be_laundered_by_later_done(
     )
     _patch_http_response(
         monkeypatch,
-        "opensquilla.provider.ollama",
+        "openstarry_code.provider.ollama",
         body,
         content_type="application/x-ndjson",
     )
@@ -184,7 +184,7 @@ def test_ollama_done_true_commits_buffered_tool_and_done(
     )
     _patch_http_response(
         monkeypatch,
-        "opensquilla.provider.ollama",
+        "openstarry_code.provider.ollama",
         body,
         content_type="application/x-ndjson",
     )
@@ -234,7 +234,7 @@ def test_ollama_done_true_rejects_invalid_native_tool_call_atomically(
     )
     _patch_http_response(
         monkeypatch,
-        "opensquilla.provider.ollama",
+        "openstarry_code.provider.ollama",
         body,
         content_type="application/x-ndjson",
     )
@@ -274,7 +274,7 @@ def test_ollama_duplicate_tool_ids_fail_before_any_tool_lifecycle_is_released(
     )
     _patch_http_response(
         monkeypatch,
-        "opensquilla.provider.ollama",
+        "openstarry_code.provider.ollama",
         body,
         content_type="application/x-ndjson",
     )
@@ -313,7 +313,7 @@ def test_ollama_applies_tool_call_limit_before_terminal_evidence(
     )
     _patch_http_response(
         monkeypatch,
-        "opensquilla.provider.ollama",
+        "openstarry_code.provider.ollama",
         body,
         content_type="application/x-ndjson",
     )
@@ -354,7 +354,7 @@ def test_ollama_applies_aggregate_argument_limit_while_ingesting_chunks(
     )
     _patch_http_response(
         monkeypatch,
-        "opensquilla.provider.ollama",
+        "openstarry_code.provider.ollama",
         body,
         content_type="application/x-ndjson",
     )
@@ -397,7 +397,7 @@ def test_ollama_error_frame_poison_wins_over_done_and_buffered_tools(
     )
     _patch_http_response(
         monkeypatch,
-        "opensquilla.provider.ollama",
+        "openstarry_code.provider.ollama",
         body,
         content_type="application/x-ndjson",
     )
@@ -423,7 +423,7 @@ def test_ollama_null_error_field_does_not_poison_done(
     )
     _patch_http_response(
         monkeypatch,
-        "opensquilla.provider.ollama",
+        "openstarry_code.provider.ollama",
         body,
         content_type="application/x-ndjson",
     )
@@ -474,7 +474,7 @@ def test_responses_max_output_tokens_keeps_length_continuation_but_drops_partial
     )
     _patch_http_response(
         monkeypatch,
-        "opensquilla.provider.openai_responses",
+        "openstarry_code.provider.openai_responses",
         body,
         content_type="application/json",
     )
@@ -520,7 +520,7 @@ def test_responses_completed_rejects_invalid_native_tool_call_atomically(
     )
     _patch_http_response(
         monkeypatch,
-        "opensquilla.provider.openai_responses",
+        "openstarry_code.provider.openai_responses",
         json.dumps(payload).encode(),
         content_type="application/json",
     )
@@ -565,7 +565,7 @@ def test_responses_completed_rejects_invalid_tool_identity_atomically(
     payload["output"][-1][field] = value
     _patch_http_response(
         monkeypatch,
-        "opensquilla.provider.openai_responses",
+        "openstarry_code.provider.openai_responses",
         json.dumps(payload).encode(),
         content_type="application/json",
     )
@@ -589,7 +589,7 @@ def test_responses_completed_rejects_non_array_output(
     payload["output"] = {"type": "message"}
     _patch_http_response(
         monkeypatch,
-        "opensquilla.provider.openai_responses",
+        "openstarry_code.provider.openai_responses",
         json.dumps(payload).encode(),
         content_type="application/json",
     )
@@ -618,7 +618,7 @@ def test_responses_duplicate_public_tool_id_is_rejected_before_first_end(
     )
     _patch_http_response(
         monkeypatch,
-        "opensquilla.provider.openai_responses",
+        "openstarry_code.provider.openai_responses",
         json.dumps(payload).encode(),
         content_type="application/json",
     )
@@ -658,7 +658,7 @@ def test_responses_malformed_message_batch_cannot_be_silently_dropped(
         }
     _patch_http_response(
         monkeypatch,
-        "opensquilla.provider.openai_responses",
+        "openstarry_code.provider.openai_responses",
         json.dumps(payload).encode(),
         content_type="application/json",
     )
@@ -690,7 +690,7 @@ def test_responses_completed_explicit_empty_error_field_is_terminal(
     payload["error"] = error_payload
     _patch_http_response(
         monkeypatch,
-        "opensquilla.provider.openai_responses",
+        "openstarry_code.provider.openai_responses",
         json.dumps(payload).encode(),
         content_type="application/json",
     )
@@ -712,7 +712,7 @@ def test_responses_completed_null_error_field_does_not_poison_success(
     payload["output"] = payload["output"][:1]
     _patch_http_response(
         monkeypatch,
-        "opensquilla.provider.openai_responses",
+        "openstarry_code.provider.openai_responses",
         json.dumps(payload).encode(),
         content_type="application/json",
     )
@@ -736,7 +736,7 @@ def test_responses_refusal_is_visible_terminal_text_not_a_tool(
     ]
     _patch_http_response(
         monkeypatch,
-        "opensquilla.provider.openai_responses",
+        "openstarry_code.provider.openai_responses",
         json.dumps(payload).encode(),
         content_type="application/json",
     )
@@ -776,7 +776,7 @@ def test_responses_non_success_status_never_commits_tool_or_done(
 ) -> None:
     _patch_http_response(
         monkeypatch,
-        "opensquilla.provider.openai_responses",
+        "openstarry_code.provider.openai_responses",
         _responses_body(status=status, extra=extra),
         content_type="application/json",
     )
@@ -797,7 +797,7 @@ def test_responses_completed_status_commits_tool_and_done(
 ) -> None:
     _patch_http_response(
         monkeypatch,
-        "opensquilla.provider.openai_responses",
+        "openstarry_code.provider.openai_responses",
         _responses_body(status="completed"),
         content_type="application/json",
     )

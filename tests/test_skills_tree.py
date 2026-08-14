@@ -13,13 +13,13 @@ from typing import cast
 
 import pytest
 
-from opensquilla.skills import file_hash
-from opensquilla.skills.file_hash import (
+from openstarry_code.skills import file_hash
+from openstarry_code.skills.file_hash import (
     _HASH_CHUNK_SIZE,
     _TreeChangedDuringHashError,
 )
-from opensquilla.skills.hub.lockfile import compute_sha256
-from opensquilla.skills.tree import compute_tree_sha256
+from openstarry_code.skills.hub.lockfile import compute_sha256
+from openstarry_code.skills.tree import compute_tree_sha256
 
 DigestFunction = Callable[[Path], str]
 

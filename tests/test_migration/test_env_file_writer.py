@@ -17,7 +17,7 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.migration.env_file import write_secret_env_file
+from openstarry_code.migration.env_file import write_secret_env_file
 
 
 def test_write_secret_env_file_writes_through_symlink(tmp_path: Path) -> None:
@@ -82,9 +82,9 @@ def test_write_secret_env_file_unwritable_dir_without_file_still_raises(
 def test_openclaw_migration_preserves_symlinked_env(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """End-to-end: a dotfiles-managed ~/.opensquilla/.env symlink survives a
+    """End-to-end: a dotfiles-managed ~/.openstarry_code/.env symlink survives a
     secrets migration, with the merged content written through the link."""
-    from opensquilla.migration.openclaw import MigrationOptions, OpenClawMigrator
+    from openstarry_code.migration.openclaw import MigrationOptions, OpenClawMigrator
 
     source = tmp_path / ".openclaw"
     source.mkdir()
@@ -95,8 +95,8 @@ def test_openclaw_migration_preserves_symlinked_env(
 
     home = tmp_path / "opensquilla-home"
     home.mkdir()
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
-    monkeypatch.delenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", raising=False)
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
+    monkeypatch.delenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", raising=False)
 
     real = tmp_path / "dotfiles-env"
     real.write_text("EXISTING_KEY=keep-me\n", encoding="utf-8")

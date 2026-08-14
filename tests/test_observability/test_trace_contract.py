@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.observability.trace import (
+from openstarry_code.observability.trace import (
     JsonlTraceSink,
     MemoryTraceSink,
     PrivacyGuardSink,

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from opensquilla.cli.tui.backend.transcript import (
+from openstarry_code.cli.tui.backend.transcript import (
     MessageItem,
     RouterDecisionItem,
     StatusItem,

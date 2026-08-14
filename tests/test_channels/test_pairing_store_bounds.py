@@ -12,7 +12,7 @@ import sqlite3
 import time
 from pathlib import Path
 
-from opensquilla.channels.delivery_store import (
+from openstarry_code.channels.delivery_store import (
     ChannelDeliveryStore,
 )
 

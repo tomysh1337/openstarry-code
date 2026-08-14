@@ -7,11 +7,11 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.skills.eligibility import EligibilityContext, check_eligibility
-from opensquilla.skills.loader import SkillLoader
+from openstarry_code.skills.eligibility import EligibilityContext, check_eligibility
+from openstarry_code.skills.loader import SkillLoader
 
 ROOT = Path(__file__).resolve().parents[1]
-BUNDLED = ROOT / "src" / "opensquilla" / "skills" / "bundled"
+BUNDLED = ROOT / "src" / "openstarry_code" / "skills" / "bundled"
 SCRIPTS = BUNDLED / "html-to-pdf" / "scripts"
 
 
@@ -38,7 +38,7 @@ def test_skill_instructs_artifact_delivery() -> None:
 
 def test_eligibility_with_python(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(
-        "opensquilla.skills.eligibility.shutil.which",
+        "openstarry_code.skills.eligibility.shutil.which",
         lambda name: "/usr/bin/python3" if name in {"python", "python3"} else None,
     )
     spec = _spec()
@@ -49,7 +49,7 @@ def test_eligibility_with_python(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_render_html_to_pdf(tmp_path: Path) -> None:
     pytest.importorskip(
         "weasyprint",
-        reason="weasyprint is opt-in via opensquilla[document-extras]; skip when absent",
+        reason="weasyprint is opt-in via openstarry-code[document-extras]; skip when absent",
     )
     sys.path.insert(0, str(SCRIPTS))
     try:

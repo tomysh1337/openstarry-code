@@ -9,14 +9,14 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.gateway.usage_backfill import (
+from openstarry_code.gateway.usage_backfill import (
     UsageBackfillAnomalyError,
     normalize_usage_backfill_entry,
     run_usage_backfill,
 )
-from opensquilla.session.models import SessionNode, TranscriptEntry
-from opensquilla.session.storage import SessionStorage
-from opensquilla.session.usage_ledger import (
+from openstarry_code.session.models import SessionNode, TranscriptEntry
+from openstarry_code.session.storage import SessionStorage
+from openstarry_code.session.usage_ledger import (
     UsageBackfillBatch,
     UsageBackfillCursor,
     UsageBackfillEntry,
@@ -178,7 +178,7 @@ async def test_usage_backfill_failure_keeps_last_committed_cursor(
             raise RuntimeError("repro backfill batch failure")
 
     monkeypatch.setattr(
-        "opensquilla.gateway.usage_backfill.normalize_usage_backfill_entry",
+        "openstarry_code.gateway.usage_backfill.normalize_usage_backfill_entry",
         lambda _entry: _write("event-1", "execution-1"),
     )
     storage = FailingStorage()

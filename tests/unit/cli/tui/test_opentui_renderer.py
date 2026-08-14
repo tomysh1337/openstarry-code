@@ -4,26 +4,26 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.cli.chat.turn import UsageSummary
-from opensquilla.cli.tui.backend.render_summary import (
+from openstarry_code.cli.chat.turn import UsageSummary
+from openstarry_code.cli.tui.backend.render_summary import (
     summarize_args,
     summarize_result,
     tool_args_detail,
     tool_result_detail,
 )
-from opensquilla.cli.tui.opentui.renderer import (
+from openstarry_code.cli.tui.opentui.renderer import (
     OpenTuiStreamRenderer,
     _format_tokens,
 )
-from opensquilla.engine.usage import SessionTotalsSnapshot
+from openstarry_code.engine.usage import SessionTotalsSnapshot
 
 
 def test_web_search_args_render_query_summary() -> None:
-    assert summarize_args("web_search", {"query": "OpenSquilla canonical search"}) == (
-        "OpenSquilla canonical search"
+    assert summarize_args("web_search", {"query": "OpenStarry Code canonical search"}) == (
+        "OpenStarry Code canonical search"
     )
-    assert summarize_args("web_discover", {"query": "OpenSquilla discover links"}) == (
-        "OpenSquilla discover links"
+    assert summarize_args("web_discover", {"query": "OpenStarry Code discover links"}) == (
+        "OpenStarry Code discover links"
     )
 
 
@@ -911,10 +911,10 @@ def test_tool_result_summary_keeps_meaningful_lines_without_banners() -> None:
         "────────\n"
         "exit_code=1\n"
         "================\n"
-        "src/opensquilla/main.py\n"
+        "src/openstarry_code/main.py\n"
     )
 
-    assert summary == "agents\nexit_code=1\nsrc/opensquilla/main.py"
+    assert summary == "agents\nexit_code=1\nsrc/openstarry_code/main.py"
     assert "exit_code=0" not in summary
     assert " / " not in summary
     assert "═══" not in summary
@@ -984,13 +984,13 @@ async def test_answer_stream_strips_routing_directive_tags() -> None:
     # Tag split across deltas, then the real answer.
     await renderer.aappend_text("[[reply_to", presentation="answer")
     await renderer.aappend_text("_current]]\n", presentation="answer")
-    await renderer.aappend_text("My name is OpenSquilla.", presentation="answer")
+    await renderer.aappend_text("My name is OpenStarry Code.", presentation="answer")
     await renderer.afinalize()
 
     appends = [p["delta"] for t, p in handle.sent if t == "block.append"]
     joined = "".join(appends)
     assert "reply_to_current" not in joined
-    assert joined == "My name is OpenSquilla."
+    assert joined == "My name is OpenStarry Code."
     # The raw logical buffer (TurnResult text) keeps the model's exact output.
     assert "[[reply_to_current]]" in renderer.buffer
 

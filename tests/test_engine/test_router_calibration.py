@@ -15,11 +15,11 @@ from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
 
-from opensquilla.engine.routing import (
+from openstarry_code.engine.routing import (
     ConfidenceGateResult,
     confidence_gate,
 )
-from opensquilla.engine.routing.calibration import (
+from openstarry_code.engine.routing.calibration import (
     BIAS_CLAMP,
     THRESHOLD_ADJUST_CLAMP,
     THRESHOLD_CEIL,
@@ -255,7 +255,7 @@ def test_save_is_atomic_and_leaves_no_temp_files(tmp_path: Path) -> None:
 
 
 def test_calibration_path_honors_state_dir(tmp_path: Path, monkeypatch: Any) -> None:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path))
     path = calibration_path()
     assert path == tmp_path / "state" / "router_calibration.json"
 

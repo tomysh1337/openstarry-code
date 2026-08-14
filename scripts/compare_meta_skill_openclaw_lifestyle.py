@@ -40,22 +40,22 @@ from scripts.compare_meta_skill_openclaw import (
 )
 
 REPORT_DIR = Path(
-    os.environ.get("OPENSQUILLA_LIFESTYLE_COMPARE_REPORT_DIR", ".reports/meta-skill-comparison")
+    os.environ.get("OPENSTARRY_CODE_LIFESTYLE_COMPARE_REPORT_DIR", ".reports/meta-skill-comparison")
 )
 OPENCLAW_T3_MODEL = os.environ.get("OPENCLAW_T3_MODEL", "t3-opus-4.7")
 OPENCLAW_BASELINE_LABEL = "OpenClaw + t3 + capability-equivalent normal skills baseline"
 MATCHED_OPENCLAW_NORMAL_SKILLS = (
-    "OpenSquilla multi-search-engine -> OpenClaw multi-search-engine",
-    "OpenSquilla docx -> OpenClaw word-docx",
-    "OpenSquilla xlsx -> OpenClaw excel-xlsx",
-    "OpenSquilla pdf-toolkit -> OpenClaw pdf-toolkit",
-    "OpenSquilla deep-research -> OpenClaw deep-research-pro",
-    "OpenSquilla weather -> OpenClaw weather",
-    "OpenSquilla summarize -> OpenClaw summarize",
-    "OpenSquilla memory -> OpenClaw longterm-memory/notes if installed",
-    "OpenSquilla pptx -> OpenClaw pptx/presentation skill if installed",
+    "OpenStarry Code multi-search-engine -> OpenClaw multi-search-engine",
+    "OpenStarry Code docx -> OpenClaw word-docx",
+    "OpenStarry Code xlsx -> OpenClaw excel-xlsx",
+    "OpenStarry Code pdf-toolkit -> OpenClaw pdf-toolkit",
+    "OpenStarry Code deep-research -> OpenClaw deep-research-pro",
+    "OpenStarry Code weather -> OpenClaw weather",
+    "OpenStarry Code summarize -> OpenClaw summarize",
+    "OpenStarry Code memory -> OpenClaw longterm-memory/notes if installed",
+    "OpenStarry Code pptx -> OpenClaw pptx/presentation skill if installed",
 )
-BENCHMARK_LABEL = f"OpenSquilla + Squilla Router vs {OPENCLAW_BASELINE_LABEL}"
+BENCHMARK_LABEL = f"OpenStarry Code + Squilla Router vs {OPENCLAW_BASELINE_LABEL}"
 LIFESTYLE_JUDGE_SUBSCORE_RANGES: dict[str, tuple[int, int]] = {
     "final_artifact_quality": (0, 40),
     "task_completion": (0, 20),
@@ -141,13 +141,13 @@ LIFESTYLE_COMPARISON_CASES: list[ComparisonCase] = [
             "如果天气或光照不稳定要怎么调整，哪些地方你只能先假设。"
         ),
         expected_advantage=(
-            "OpenSquilla + Squilla Router should activate kid-project-planner, combine "
+            "OpenStarry Code + Squilla Router should activate kid-project-planner, combine "
             "age fit, materials, weather-aware constraints, safety review, and parent "
             "learning objectives, then beat OpenClaw + t3 Opus 4.8 on an executable "
             "child-and-guardian project plan."
         ),
         optimization_if_not_better=(
-            "If OpenSquilla does not beat OpenClaw, strengthen kid-project-planner to "
+            "If OpenStarry Code does not beat OpenClaw, strengthen kid-project-planner to "
             "always produce kid-facing steps, guardian notes, material substitutes, "
             "safety checks, data-recording templates, and assumption labels."
         ),
@@ -219,7 +219,7 @@ def render_lifestyle_markdown(rows: list[dict[str, Any]]) -> str:
     claw_wins = sum(1 for row in rows if row["winner"] == "openclaw")
     ties = sum(1 for row in rows if row["winner"] == "tie")
     lines = [
-        "# OpenSquilla Meta-Skills vs OpenClaw t3 Matched-Skills Lifestyle Benchmark",
+        "# OpenStarry Code Meta-Skills vs OpenClaw t3 Matched-Skills Lifestyle Benchmark",
         "",
         f"Benchmark: {BENCHMARK_LABEL}",
         f"{OPENCLAW_BASELINE_LABEL} model: `{OPENCLAW_T3_MODEL}`",
@@ -229,13 +229,13 @@ def render_lifestyle_markdown(rows: list[dict[str, Any]]) -> str:
         "## Summary",
         "",
         (
-            f"OpenSquilla + Squilla Router wins: {sq_wins}/{total}; "
+            f"OpenStarry Code + Squilla Router wins: {sq_wins}/{total}; "
             f"{OPENCLAW_BASELINE_LABEL} wins: {claw_wins}/{total}; "
             f"ties/not-run: {ties}."
         ),
         "",
         (
-            "| Case | Meta-skill | OpenSquilla model | OpenClaw model | Deterministic "
+            "| Case | Meta-skill | OpenStarry Code model | OpenClaw model | Deterministic "
             "| Judge 0-100 | Final artifact | Basis | Winner | Issue |"
         ),
         "| --- | --- | --- | --- | ---: | ---: | ---: | --- | --- | --- |",
@@ -394,7 +394,7 @@ async def run_live(args: argparse.Namespace) -> list[dict[str, Any]]:
     judge = None
     if args.judge_llm:
         if not args.judge_model:
-            raise SystemExit("Pass --judge-model or set OPENSQUILLA_JUDGE_MODEL.")
+            raise SystemExit("Pass --judge-model or set OPENSTARRY_CODE_JUDGE_MODEL.")
         judge = LLMJudge(
             model=args.judge_model,
             api_key=args.judge_api_key,
@@ -455,7 +455,7 @@ async def judge_existing(args: argparse.Namespace) -> list[dict[str, Any]]:
     if not args.judge_jsonl:
         raise SystemExit("Pass --judge-jsonl.")
     if not args.judge_model:
-        raise SystemExit("Pass --judge-model or set OPENSQUILLA_JUDGE_MODEL.")
+        raise SystemExit("Pass --judge-model or set OPENSTARRY_CODE_JUDGE_MODEL.")
     judge = LLMJudge(
         model=args.judge_model,
         api_key=args.judge_api_key,
@@ -832,39 +832,39 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--opensquilla-agent-id",
         default="main",
-        help="Base OpenSquilla agent id for live runs.",
+        help="Base OpenStarry Code agent id for live runs.",
     )
     parser.add_argument(
         "--opensquilla-isolated-agents",
         action="store_true",
         help=(
-            "Create a distinct OpenSquilla agent id per case to avoid "
+            "Create a distinct OpenStarry Code agent id per case to avoid "
             "agent-level context pollution."
         ),
     )
     parser.add_argument(
         "--opensquilla-run-id",
-        help="Stable run id used in isolated OpenSquilla agent ids.",
+        help="Stable run id used in isolated OpenStarry Code agent ids.",
     )
     parser.add_argument(
         "--opensquilla-elevated",
         default="bypass",
         choices=["off", "on", "bypass", "full"],
-        help="Gateway elevated mode for OpenSquilla tool calls.",
+        help="Gateway elevated mode for OpenStarry Code tool calls.",
     )
     parser.add_argument("--openclaw-url", default="ws://127.0.0.1:18789/ws")
     parser.add_argument("--openclaw-config", default=os.environ.get("OPENCLAW_CONFIG"))
     parser.add_argument(
         "--openclaw-baseline-jsonl",
-        help="Reuse OpenClaw results from an existing report; live run only calls OpenSquilla.",
+        help="Reuse OpenClaw results from an existing report; live run only calls OpenStarry Code.",
     )
     parser.add_argument("--openclaw-idle-timeout", type=float, default=90.0)
     parser.add_argument("--judge-llm", action="store_true")
-    parser.add_argument("--judge-model", default=os.environ.get("OPENSQUILLA_JUDGE_MODEL"))
+    parser.add_argument("--judge-model", default=os.environ.get("OPENSTARRY_CODE_JUDGE_MODEL"))
     parser.add_argument("--judge-api-key", default=read_judge_api_key())
     parser.add_argument(
         "--judge-base-url",
-        default=os.environ.get("OPENSQUILLA_JUDGE_BASE_URL", "https://openrouter.ai/api/v1"),
+        default=os.environ.get("OPENSTARRY_CODE_JUDGE_BASE_URL", "https://openrouter.ai/api/v1"),
     )
     parser.add_argument("--judge-timeout", type=float, default=120.0)
     return parser.parse_args()

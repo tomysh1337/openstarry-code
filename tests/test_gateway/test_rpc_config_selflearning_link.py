@@ -10,11 +10,11 @@ from __future__ import annotations
 
 import pytest
 
-import opensquilla.gateway.rpc_config  # noqa: F401  ensures registration
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.rpc import RpcContext
-from opensquilla.gateway.rpc_config import _handle_config_patch, _handle_config_set
+import openstarry_code.gateway.rpc_config  # noqa: F401  ensures registration
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.rpc import RpcContext
+from openstarry_code.gateway.rpc_config import _handle_config_patch, _handle_config_set
 
 
 def _ctx(tmp_path, **config_kw) -> RpcContext:
@@ -169,7 +169,7 @@ async def test_merge_patch_triggers_linkage(tmp_path) -> None:
 
 async def test_linkage_reports_live_reconcile_state(tmp_path) -> None:
     """Without a registered reconciler the response must flag the restart."""
-    from opensquilla.gateway.dream_bridge import (
+    from openstarry_code.gateway.dream_bridge import (
         register_dream_reconciler,
         reset_dream_reconciler,
     )
@@ -206,7 +206,7 @@ async def test_patch_safe_allows_memory_learning_toggles(tmp_path) -> None:
     safe path must still run the dream linkage (it delegates to the full
     patch handler)."""
 
-    from opensquilla.gateway.rpc_config import (
+    from openstarry_code.gateway.rpc_config import (
         _SAFE_WRITE_PATCH_PATHS,
         _handle_config_patch_safe,
     )

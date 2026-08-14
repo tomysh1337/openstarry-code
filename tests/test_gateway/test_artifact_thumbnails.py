@@ -7,7 +7,7 @@ from types import SimpleNamespace
 import pytest
 from PIL import Image
 
-from opensquilla.artifacts import (
+from openstarry_code.artifacts import (
     ARTIFACT_THUMBNAIL_NAME,
     ArtifactStore,
     artifact_payload,
@@ -28,9 +28,9 @@ def _app(tmp_path: Path):
     pytest.importorskip("starlette.testclient")
     from starlette.applications import Starlette
 
-    from opensquilla.gateway.artifacts import register_artifact_routes
-    from opensquilla.gateway.config import AttachmentsConfig, AuthConfig, GatewayConfig
-    from opensquilla.gateway.middleware import AuthMiddleware
+    from openstarry_code.gateway.artifacts import register_artifact_routes
+    from openstarry_code.gateway.config import AttachmentsConfig, AuthConfig, GatewayConfig
+    from openstarry_code.gateway.middleware import AuthMiddleware
 
     config = GatewayConfig(
         auth=AuthConfig(mode="token", token="secret"),
@@ -196,7 +196,7 @@ def test_corrupt_image_still_publishes_without_thumbnail(tmp_path: Path) -> None
 
 def test_old_artifact_without_thumbnail_field_round_trips(tmp_path: Path) -> None:
     # Simulate a meta.json written before the thumbnail feature existed.
-    from opensquilla.artifacts import ArtifactRef
+    from openstarry_code.artifacts import ArtifactRef
 
     legacy_meta = {
         "id": "art-legacyxxxxxxxxxxxxxxxxxxx",

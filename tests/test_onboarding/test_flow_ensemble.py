@@ -36,10 +36,10 @@ class _BaseQuestionary(types.SimpleNamespace):
 
 
 def test_interactive_ensemble_configure_persists(tmp_path, monkeypatch):
-    from opensquilla.onboarding import flow
+    from openstarry_code.onboarding import flow
 
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     monkeypatch.setattr(flow, "_is_tty", lambda: True)
 
     calls: list[str] = []
@@ -99,7 +99,7 @@ def test_interactive_ensemble_configure_persists(tmp_path, monkeypatch):
 def test_interactive_ensemble_blank_model_options_keep_current(
     tmp_path, monkeypatch
 ):
-    from opensquilla.onboarding import flow
+    from openstarry_code.onboarding import flow
 
     target = tmp_path / "c.toml"
     target.write_text(
@@ -110,7 +110,7 @@ def test_interactive_ensemble_blank_model_options_keep_current(
         "min_successful_proposers = 3\n",
         encoding="utf-8",
     )
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     monkeypatch.setattr(flow, "_is_tty", lambda: True)
 
     class _Questionary(_BaseQuestionary):
@@ -146,7 +146,7 @@ def test_interactive_ensemble_blank_model_options_keep_current(
 
 
 def test_interactive_ensemble_disable_is_a_single_answer(tmp_path, monkeypatch):
-    from opensquilla.onboarding import flow
+    from openstarry_code.onboarding import flow
 
     target = tmp_path / "c.toml"
     target.write_text(
@@ -154,7 +154,7 @@ def test_interactive_ensemble_disable_is_a_single_answer(tmp_path, monkeypatch):
         'model_options = ["stored/model-a"]\n',
         encoding="utf-8",
     )
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     monkeypatch.setattr(flow, "_is_tty", lambda: True)
 
     class _Questionary(_BaseQuestionary):
@@ -175,7 +175,7 @@ def test_interactive_ensemble_disable_is_a_single_answer(tmp_path, monkeypatch):
 
     # Sparse persistence may omit default-equal keys (the ensemble ships
     # disabled), so pin the reloaded semantic state instead of raw TOML.
-    from opensquilla.onboarding.config_store import load_config
+    from openstarry_code.onboarding.config_store import load_config
 
     saved = load_config(target)
     assert saved.llm_ensemble.enabled is False
@@ -186,7 +186,7 @@ def test_interactive_ensemble_disable_is_a_single_answer(tmp_path, monkeypatch):
 def test_interactive_ensemble_configure_without_tty_prints_hint(
     tmp_path, monkeypatch, capsys
 ):
-    from opensquilla.onboarding import flow
+    from openstarry_code.onboarding import flow
 
     target = tmp_path / "c.toml"
     monkeypatch.setattr(flow, "_is_tty", lambda: False)
@@ -197,7 +197,7 @@ def test_interactive_ensemble_configure_without_tty_prints_hint(
     assert not target.exists()
     out = capsys.readouterr().out
     assert "Headless ensemble:" in out
-    assert "opensquilla onboard configure ensemble --enabled" in out
+    assert "openstarry-code onboard configure ensemble --enabled" in out
 
 
 def test_ensemble_saved_message_directs_to_gateway_reload(tmp_path, monkeypatch):
@@ -206,10 +206,10 @@ def test_ensemble_saved_message_directs_to_gateway_reload(tmp_path, monkeypatch)
     reload/restart instead of claiming the change applies to the next turn
     (that is only true for the RPC hot-apply path)."""
 
-    from opensquilla.onboarding import flow
+    from openstarry_code.onboarding import flow
 
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     monkeypatch.setattr(flow, "_is_tty", lambda: True)
 
     messages: list[str] = []
@@ -233,14 +233,14 @@ def test_ensemble_saved_message_directs_to_gateway_reload(tmp_path, monkeypatch)
     joined = "\n".join(messages)
     assert "no restart needed" not in joined
     assert "applies to the next turn" not in joined
-    assert "opensquilla gateway reload" in joined
+    assert "openstarry-code gateway reload" in joined
 
 
 def test_interactive_configure_offers_and_dispatches_ensemble(
     tmp_path, monkeypatch
 ):
-    from opensquilla.onboarding import flow
-    from opensquilla.onboarding.config_store import PersistResult
+    from openstarry_code.onboarding import flow
+    from openstarry_code.onboarding.config_store import PersistResult
 
     target = tmp_path / "custom.toml"
     seen: dict[str, Any] = {}
@@ -297,10 +297,10 @@ def test_interactive_ensemble_min_proposers_garbage_reprompts(tmp_path, monkeypa
     """Typing a non-number used to blow up in the mutation layer with a raw
     ``ValueError`` after every other answer had already been given."""
 
-    from opensquilla.onboarding import flow
+    from openstarry_code.onboarding import flow
 
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     monkeypatch.setattr(flow, "_is_tty", lambda: True)
 
     class _Questionary(_BaseQuestionary):

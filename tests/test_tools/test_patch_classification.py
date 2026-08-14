@@ -1,8 +1,8 @@
 """Unified-diff instrumentation classification.
 
 Covers the classifier behind the endgame instrumentation policies: the git
-freeze exemption (OPENSQUILLA_ENDGAME_GIT_FREEZE_INSTRUMENTATION_EXEMPT) and
-the final-diff salvage veto (OPENSQUILLA_FINAL_DIFF_SALVAGE_VETO) both need to
+freeze exemption (OPENSTARRY_CODE_ENDGAME_GIT_FREEZE_INSTRUMENTATION_EXEMPT) and
+the final-diff salvage veto (OPENSTARRY_CODE_FINAL_DIFF_SALVAGE_VETO) both need to
 tell diagnostic print/log additions apart from substantive changes.
 Classification is conservative: anything not positively identified as
 instrumentation counts as substantive.
@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.tools.patch_classification import (
+from openstarry_code.tools.patch_classification import (
     is_instrumentation_only_patch,
     iter_patch_line_changes,
 )

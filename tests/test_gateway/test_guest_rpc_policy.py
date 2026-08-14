@@ -4,18 +4,18 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.config import AuthConfig, GatewayConfig
-from opensquilla.gateway.guest_rpc_policy import (
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.config import AuthConfig, GatewayConfig
+from openstarry_code.gateway.guest_rpc_policy import (
     GuestRpcPolicy,
     GuestRpcPolicyError,
     guest_owned_session_key,
 )
-from opensquilla.gateway.rpc import RpcContext, RpcRegistry, get_dispatcher
-from opensquilla.gateway.rpc_sessions import _handle_sessions_list
-from opensquilla.session.manager import SessionManager
-from opensquilla.session.models import SessionNode, SessionStatus
-from opensquilla.session.storage import SessionStorage
+from openstarry_code.gateway.rpc import RpcContext, RpcRegistry, get_dispatcher
+from openstarry_code.gateway.rpc_sessions import _handle_sessions_list
+from openstarry_code.session.manager import SessionManager
+from openstarry_code.session.models import SessionNode, SessionStatus
+from openstarry_code.session.storage import SessionStorage
 
 GUEST_KEY = "osqg_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
 
@@ -78,7 +78,7 @@ def test_policy_does_not_reclassify_legacy_context_without_guest_markers() -> No
 
 @pytest.mark.asyncio
 async def test_anonymous_node_role_cannot_bypass_guest_allowlist() -> None:
-    from opensquilla.gateway.auth import resolve_auth
+    from openstarry_code.gateway.auth import resolve_auth
 
     principal = resolve_auth(
         GatewayConfig(host="0.0.0.0", auth=AuthConfig(mode="none")),
@@ -256,7 +256,7 @@ def test_guest_session_mutations_reject_unowned_keys(method: str) -> None:
 
 @pytest.mark.asyncio
 async def test_default_docker_guest_can_rename_and_delete_owned_sessions(tmp_path) -> None:
-    from opensquilla.gateway.auth import resolve_auth
+    from openstarry_code.gateway.auth import resolve_auth
 
     config = GatewayConfig(host="0.0.0.0", auth=AuthConfig(mode="none"))
     principal = resolve_auth(

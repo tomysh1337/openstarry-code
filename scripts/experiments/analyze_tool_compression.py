@@ -12,7 +12,7 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
-from opensquilla.result_budget import exec_command_invokes_source_context_read
+from openstarry_code.result_budget import exec_command_invokes_source_context_read
 
 HUGE_OUTPUT_CHARS = 1_000_000
 SCRATCH_PATCH_NAMES = {
@@ -1024,7 +1024,7 @@ def _parse_max_categories(values: list[str]) -> dict[str, int]:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Analyze OpenSquilla tool-result compression artifacts."
+        description="Analyze OpenStarry Code tool-result compression artifacts."
     )
     parser.add_argument("paths", nargs="+", type=Path, help="Run or instance artifact dirs.")
     parser.add_argument(

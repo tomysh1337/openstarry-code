@@ -33,9 +33,9 @@ import tomllib
 
 import pytest
 
-import opensquilla.gateway.rpc_onboarding  # noqa: F401  ensures registration
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.rpc import RpcContext, get_dispatcher
+import openstarry_code.gateway.rpc_onboarding  # noqa: F401  ensures registration
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.rpc import RpcContext, get_dispatcher
 
 
 def _admin_ctx() -> RpcContext:
@@ -57,7 +57,7 @@ async def _dispatch(method: str, params: dict):
 @pytest.fixture()
 def config_file(tmp_path, monkeypatch):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     return target
 
 
@@ -372,7 +372,7 @@ async def test_provider_configure_null_model_resets_to_derived_default(config_fi
 
 
 async def test_search_configure_null_params_reset_to_legacy_defaults(config_file):
-    from opensquilla.search.types import DEFAULT_SEARCH_MAX_RESULTS
+    from openstarry_code.search.types import DEFAULT_SEARCH_MAX_RESULTS
 
     config_file.write_text(
         'search_provider = "duckduckgo"\n'
@@ -409,7 +409,7 @@ async def test_search_configure_absent_params_also_reset_to_legacy_defaults(
     """Over RPC, ABSENT optional search params keep the legacy reset
     semantics (the keep-current widening is CLI-only); pinned so the two
     surfaces cannot drift apart silently."""
-    from opensquilla.search.types import DEFAULT_SEARCH_MAX_RESULTS
+    from openstarry_code.search.types import DEFAULT_SEARCH_MAX_RESULTS
 
     config_file.write_text(
         'search_provider = "duckduckgo"\nsearch_max_results = 9\n', encoding="utf-8"
@@ -565,7 +565,7 @@ async def test_llm_profile_upsert_round_tripped_mask_keeps_stored_key(config_fil
 async def test_llm_profile_draft_resolves_stored_key_for_masked_payload(config_file):
     """The draft-probe path builds its config here: a masked apiKey must
     resolve to the stored credential, not a literal '***' bearer token."""
-    from opensquilla.gateway.rpc_onboarding import _draft_llm_profile_config
+    from openstarry_code.gateway.rpc_onboarding import _draft_llm_profile_config
 
     config_file.write_text(
         "[llm]\n"
@@ -591,7 +591,7 @@ async def test_provider_probe_mask_is_not_sent_as_bearer_credential(
 ):
     """A masked probe without a stored key degrades to the typed missing-key
     result without ever building a provider client."""
-    import opensquilla.onboarding.probe as probe_mod
+    import openstarry_code.onboarding.probe as probe_mod
 
     def _fail_build(*args, **kwargs):
         raise AssertionError("probe must not reach the network with a masked key")

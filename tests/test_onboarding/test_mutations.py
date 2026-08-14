@@ -4,9 +4,9 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.llm_runtime import resolve_llm_runtime_config
-from opensquilla.onboarding.mutations import (
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.llm_runtime import resolve_llm_runtime_config
+from openstarry_code.onboarding.mutations import (
     LlmProfileActivationError,
     MutationResult,
     list_channel_entries,
@@ -22,7 +22,7 @@ from opensquilla.onboarding.mutations import (
     upsert_search_provider,
     validate_channel_entry,
 )
-from opensquilla.onboarding.redaction import REDACTED_PLACEHOLDER
+from openstarry_code.onboarding.redaction import REDACTED_PLACEHOLDER
 
 
 def test_upsert_provider_persists_fields():
@@ -1056,17 +1056,17 @@ def test_upsert_llm_provider_changed_origin_does_not_recover_ambient_key(
     monkeypatch.delenv("CUSTOM_LLM_API_KEY", raising=False)
     monkeypatch.delenv("CUSTOM_ORIGIN_A_KEY", raising=False)
     monkeypatch.delenv("CUSTOM_SETTINGS_KEY", raising=False)
-    monkeypatch.delenv("OPENSQUILLA_LLM_API_KEY", raising=False)
-    monkeypatch.delenv("OPENSQUILLA_LLM_API_KEY_ENV", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_LLM_API_KEY", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_LLM_API_KEY_ENV", raising=False)
     if ambient_source == "stored":
         monkeypatch.setenv("CUSTOM_ORIGIN_A_KEY", "sk-ambient-origin-a")
     elif ambient_source == "registry":
         monkeypatch.setenv("CUSTOM_LLM_API_KEY", "sk-ambient-origin-a")
     elif ambient_source == "settings_reference":
-        monkeypatch.setenv("OPENSQUILLA_LLM_API_KEY_ENV", "CUSTOM_SETTINGS_KEY")
+        monkeypatch.setenv("OPENSTARRY_CODE_LLM_API_KEY_ENV", "CUSTOM_SETTINGS_KEY")
         monkeypatch.setenv("CUSTOM_SETTINGS_KEY", "sk-ambient-origin-a")
     else:
-        monkeypatch.setenv("OPENSQUILLA_LLM_API_KEY", "sk-ambient-origin-a")
+        monkeypatch.setenv("OPENSTARRY_CODE_LLM_API_KEY", "sk-ambient-origin-a")
     cfg = GatewayConfig(
         llm={
             "provider": "custom",
@@ -1115,7 +1115,7 @@ def test_upsert_llm_provider_changed_origin_unset_new_env_blocks_generic_fallbac
     monkeypatch,
 ):
     monkeypatch.delenv("CUSTOM_ORIGIN_B_KEY", raising=False)
-    monkeypatch.setenv("OPENSQUILLA_LLM_API_KEY", "sk-generic-origin-a")
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_API_KEY", "sk-generic-origin-a")
     cfg = GatewayConfig(
         llm={
             "provider": "custom",
@@ -2659,7 +2659,7 @@ def test_upsert_image_generation_explicit_empty_fallbacks_clear_current():
 def test_upsert_image_generation_allows_authenticated_fallback_on_primary_metadata_save(
     monkeypatch,
 ):
-    from opensquilla.onboarding.section_status import (
+    from openstarry_code.onboarding.section_status import (
         SectionStatus,
         image_generation_section_status,
     )
@@ -2699,13 +2699,13 @@ def test_upsert_image_generation_env_reference_replaces_stored_direct_key():
         first.config,
         provider_id="openrouter",
         primary=_IMG_PRIMARY,
-        api_key_env="OPENSQUILLA_TEST_IMAGE_KEY",
+        api_key_env="OPENSTARRY_CODE_TEST_IMAGE_KEY",
         credential_mode="env",
     )
 
     provider = replaced.config.image_generation.providers.openrouter
     assert provider.api_key == ""
-    assert provider.api_key_env == "OPENSQUILLA_TEST_IMAGE_KEY"
+    assert provider.api_key_env == "OPENSTARRY_CODE_TEST_IMAGE_KEY"
 
 
 @pytest.mark.parametrize(
@@ -2939,7 +2939,7 @@ def test_router_reconcile_still_preserves_hand_authored_ladder():
     router_payload["preset_binding"] = "custom"
     router_payload["tiers"]["c0"]["model"] = "model-cheap"
     router_payload["tiers"]["c3"]["model"] = "model-big"
-    from opensquilla.gateway.config import SquillaRouterConfig
+    from openstarry_code.gateway.config import SquillaRouterConfig
 
     seeded.squilla_router = SquillaRouterConfig(**router_payload)
 
@@ -2966,7 +2966,7 @@ def test_upsert_router_non_registry_provider_gets_actionable_error():
 
     message = str(exc_info.value)
     assert "acme-llm" in message
-    assert "opensquilla onboard configure provider --provider" in message
+    assert "openstarry-code onboard configure provider --provider" in message
     assert "--router disabled" in message
     assert "must be an object" not in message
 
@@ -2986,7 +2986,7 @@ def test_image_generation_explicit_enabled_decision_is_force_persisted(tmp_path)
     The mutation must force the decision into the file."""
     import tomllib as _tomllib
 
-    from opensquilla.onboarding.config_store import load_config, persist_config
+    from openstarry_code.onboarding.config_store import load_config, persist_config
 
     target = tmp_path / "config.toml"
     cfg = load_config(target)
@@ -3007,7 +3007,7 @@ def test_audio_explicit_enabled_decision_is_force_persisted(tmp_path):
     """An old client may still explicitly disable audio while saving a key."""
     import tomllib as _tomllib
 
-    from opensquilla.onboarding.config_store import load_config, persist_config
+    from openstarry_code.onboarding.config_store import load_config, persist_config
 
     target = tmp_path / "config.toml"
     cfg = load_config(target)
@@ -3096,7 +3096,7 @@ def test_upsert_channel_same_name_different_type_replaces_without_secret_merge()
 
 
 def test_validate_channel_entry_raises_structured_field_errors():
-    from opensquilla.onboarding.mutations import ChannelValidationError, validate_channel_entry
+    from openstarry_code.onboarding.mutations import ChannelValidationError, validate_channel_entry
 
     with pytest.raises(ChannelValidationError) as ei:
         validate_channel_entry({"type": "slack"})  # missing required name/token

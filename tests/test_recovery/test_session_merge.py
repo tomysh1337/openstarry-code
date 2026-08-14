@@ -6,15 +6,15 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.cli.session_schema import prepare_session_schema
-from opensquilla.recovery.session_merge import (
+from openstarry_code.cli.session_schema import prepare_session_schema
+from openstarry_code.recovery.session_merge import (
     SessionMergeResult,
     snapshot_session_database,
 )
-from opensquilla.recovery.session_merge import (
+from openstarry_code.recovery.session_merge import (
     merge_session_database as _merge_session_database,
 )
-from opensquilla.session.storage import SessionStorage
+from openstarry_code.session.storage import SessionStorage
 
 
 def merge_session_database(

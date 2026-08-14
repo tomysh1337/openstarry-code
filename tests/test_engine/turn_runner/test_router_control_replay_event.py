@@ -8,26 +8,26 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.engine.steps import squilla_router as squilla_router_step
-from opensquilla.engine.types import DoneEvent, ErrorEvent, RouterControlReplayEvent
-from opensquilla.gateway.config import (
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.engine.steps import squilla_router as squilla_router_step
+from openstarry_code.engine.types import DoneEvent, ErrorEvent, RouterControlReplayEvent
+from openstarry_code.gateway.config import (
     GatewayConfig,
     SquillaRouterConfig,
     _router_tier_profile_defaults,
 )
-from opensquilla.gateway.usage_ledger_runtime import SessionUsageEventSink
-from opensquilla.provider import (
+from openstarry_code.gateway.usage_ledger_runtime import SessionUsageEventSink
+from openstarry_code.provider import (
     DoneEvent as ProviderDone,
 )
-from opensquilla.provider import (
+from openstarry_code.provider import (
     TextDeltaEvent as ProviderText,
 )
-from opensquilla.provider import ToolUseEndEvent as ProviderToolEnd
-from opensquilla.provider import ToolUseStartEvent as ProviderToolStart
-from opensquilla.session.storage import SessionStorage
-from opensquilla.tools import get_default_registry
-from opensquilla.tools.types import CallerKind, ToolContext
+from openstarry_code.provider import ToolUseEndEvent as ProviderToolEnd
+from openstarry_code.provider import ToolUseStartEvent as ProviderToolStart
+from openstarry_code.session.storage import SessionStorage
+from openstarry_code.tools import get_default_registry
+from openstarry_code.tools.types import CallerKind, ToolContext
 
 
 class _Strategy:

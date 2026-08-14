@@ -8,12 +8,12 @@ import httpx
 import pytest
 from starlette.requests import Request
 
-from opensquilla.channels.telegram import (
+from openstarry_code.channels.telegram import (
     TelegramApiError,
     TelegramChannel,
     TelegramChannelConfig,
 )
-from opensquilla.channels.types import IngressVerification
+from openstarry_code.channels.types import IngressVerification
 
 
 @pytest.fixture

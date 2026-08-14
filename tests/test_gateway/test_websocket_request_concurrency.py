@@ -11,9 +11,9 @@ from typing import Any
 import pytest
 from starlette.websockets import WebSocketDisconnect, WebSocketState
 
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.protocol import make_ok_res
-from opensquilla.gateway.websocket import handle_ws_connection
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.protocol import make_ok_res
+from openstarry_code.gateway.websocket import handle_ws_connection
 
 _CONNECT_FRAME = json.dumps(
     {

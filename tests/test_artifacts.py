@@ -12,7 +12,7 @@ from types import SimpleNamespace
 import pytest
 from pptx import Presentation
 
-from opensquilla.artifacts import (
+from openstarry_code.artifacts import (
     DEFAULT_ARTIFACT_DISK_BUDGET_BYTES,
     DEFAULT_ARTIFACT_MAX_BYTES,
     INSTALLER_ARTIFACT_MAX_BYTES,
@@ -25,12 +25,12 @@ from opensquilla.artifacts import (
     artifact_payload,
     strip_artifact_markers_from_text,
 )
-from opensquilla.engine.types import ToolCall
-from opensquilla.session.plans import PlanRunConflictError
-from opensquilla.tools.builtin.artifacts import publish_artifact
-from opensquilla.tools.dispatch import build_tool_handler
-from opensquilla.tools.registry import ToolRegistry
-from opensquilla.tools.types import (
+from openstarry_code.engine.types import ToolCall
+from openstarry_code.session.plans import PlanRunConflictError
+from openstarry_code.tools.builtin.artifacts import publish_artifact
+from openstarry_code.tools.dispatch import build_tool_handler
+from openstarry_code.tools.registry import ToolRegistry
+from openstarry_code.tools.types import (
     CallerKind,
     RetryableToolInputError,
     ToolContext,
@@ -299,7 +299,7 @@ def test_artifact_store_list_reads_every_supported_layout(
         target_dir.parent.mkdir(parents=True)
         current_dir.rename(target_dir)
     elif layout == "legacy-plain":
-        from opensquilla.artifacts import _safe_token
+        from openstarry_code.artifacts import _safe_token
 
         target_dir = tmp_path / "artifacts" / _safe_token(session_id) / ref.id
         target_dir.mkdir(parents=True)
@@ -1290,7 +1290,7 @@ async def test_publish_artifact_rejects_paused_plan_run_without_retry(
 async def test_publish_artifact_tool_allows_large_installer_artifact(tmp_path: Path) -> None:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    output = workspace / "OpenSquilla-0.4.0-arm64.dmg"
+    output = workspace / "OpenStarry Code-0.4.0-arm64.dmg"
     with output.open("wb") as handle:
         handle.seek(DEFAULT_ARTIFACT_MAX_BYTES + 1)
         handle.write(b"x")
@@ -1489,7 +1489,7 @@ async def test_publish_artifact_preflights_pptx_budget_before_read_or_validation
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.tools.builtin.artifacts as artifacts_module
+    import openstarry_code.tools.builtin.artifacts as artifacts_module
 
     workspace = tmp_path / "workspace"
     workspace.mkdir()
@@ -1682,7 +1682,7 @@ async def test_publish_artifact_stores_the_exact_pptx_bytes_that_were_validated(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.tools.builtin.artifacts as artifacts_module
+    import openstarry_code.tools.builtin.artifacts as artifacts_module
 
     workspace = tmp_path / "workspace"
     workspace.mkdir()
@@ -1813,7 +1813,7 @@ async def test_publish_artifact_tool_is_idempotent_for_existing_turn_artifact(
         second = json.loads(
             await publish_artifact(
                 path="generated-image.png",
-                name="OpenSquilla-Mascot.png",
+                name="OpenStarry Code-Mascot.png",
                 mime="image/png",
             )
         )
@@ -1889,7 +1889,7 @@ async def test_publish_artifact_runs_pptx_read_and_validation_off_the_event_loop
 ) -> None:
     import threading
 
-    import opensquilla.tools.builtin.artifacts as artifacts_module
+    import openstarry_code.tools.builtin.artifacts as artifacts_module
 
     workspace = tmp_path / "workspace"
     workspace.mkdir()
@@ -2018,7 +2018,7 @@ async def test_publish_artifact_rejects_foreign_posix_target_with_workspace_hint
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.tools.builtin.artifacts as artifacts_module
+    import openstarry_code.tools.builtin.artifacts as artifacts_module
 
     monkeypatch.setattr(artifacts_module, "os", SimpleNamespace(name="nt"), raising=False)
     workspace = tmp_path / "workspace"
@@ -2191,7 +2191,7 @@ def test_copy_session_artifacts_reads_legacy_short_layout(tmp_path: Path) -> Non
 
 
 def test_copy_session_artifacts_reads_legacy_plain_layout(tmp_path: Path) -> None:
-    from opensquilla.artifacts import _safe_token
+    from openstarry_code.artifacts import _safe_token
 
     store = ArtifactStore(tmp_path)
     session_id = "plain-session"

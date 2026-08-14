@@ -6,7 +6,7 @@ from typing import Any
 
 import pytest
 
-from opensquilla.asyncio_utils import create_background_task
+from openstarry_code.asyncio_utils import create_background_task
 
 
 async def _return_value(value: str) -> str:

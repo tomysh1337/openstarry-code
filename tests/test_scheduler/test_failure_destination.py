@@ -17,20 +17,20 @@ from typing import Any
 
 import pytest
 
-from opensquilla.gateway.rpc import RpcContext
-from opensquilla.gateway.rpc_cron import _handle_cron_add, _job_to_wire
-from opensquilla.scheduler.delivery import DeliveryChain
-from opensquilla.scheduler.jobs import (
+from openstarry_code.gateway.rpc import RpcContext
+from openstarry_code.gateway.rpc_cron import _handle_cron_add, _job_to_wire
+from openstarry_code.scheduler.delivery import DeliveryChain
+from openstarry_code.scheduler.jobs import (
     execute_with_timeout,
     set_failure_dispatcher,
 )
-from opensquilla.scheduler.ops import SchedulerOps
-from opensquilla.scheduler.payloads import (
+from openstarry_code.scheduler.ops import SchedulerOps
+from openstarry_code.scheduler.payloads import (
     AGENT_TURN_KIND,
     make_agent_turn_payload,
 )
-from opensquilla.scheduler.persistence import JobStore
-from opensquilla.scheduler.types import (
+from openstarry_code.scheduler.persistence import JobStore
+from openstarry_code.scheduler.types import (
     CronJob,
     DeliveryConfig,
     DeliveryMode,

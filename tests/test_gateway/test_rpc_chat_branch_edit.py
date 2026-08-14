@@ -8,13 +8,13 @@ from typing import Any
 import pytest
 import pytest_asyncio
 
-from opensquilla.engine.types import DoneEvent
-from opensquilla.gateway.agent_tasks import get_agent_task_registry
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.rpc import RpcContext, get_dispatcher
-from opensquilla.session.manager import SessionManager
-from opensquilla.session.storage import SessionStorage
+from openstarry_code.engine.types import DoneEvent
+from openstarry_code.gateway.agent_tasks import get_agent_task_registry
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.rpc import RpcContext, get_dispatcher
+from openstarry_code.session.manager import SessionManager
+from openstarry_code.session.storage import SessionStorage
 
 _PRINCIPAL = Principal(
     role="operator", scopes=frozenset(["operator.admin"]), is_owner=True, authenticated=True

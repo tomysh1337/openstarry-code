@@ -5,13 +5,13 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.context_budget import ContextBudgetDecision
-from opensquilla.provider.anthropic import AnthropicProvider
-from opensquilla.provider.ollama import OllamaProvider
-from opensquilla.provider.openai import OpenAIProvider
-from opensquilla.provider.openai_codex import OpenAICodexProvider
-from opensquilla.provider.openai_responses import OpenAIResponsesProvider
-from opensquilla.provider.types import (
+from openstarry_code.engine.context_budget import ContextBudgetDecision
+from openstarry_code.provider.anthropic import AnthropicProvider
+from openstarry_code.provider.ollama import OllamaProvider
+from openstarry_code.provider.openai import OpenAIProvider
+from openstarry_code.provider.openai_codex import OpenAICodexProvider
+from openstarry_code.provider.openai_responses import OpenAIResponsesProvider
+from openstarry_code.provider.types import (
     ChatConfig,
     ContentBlockText,
     ContentBlockToolUse,
@@ -37,7 +37,7 @@ def _capture_final_proof(
         )
 
     monkeypatch.setattr(
-        "opensquilla.engine.context_budget.coordinate_provider_context_budget",
+        "openstarry_code.engine.context_budget.coordinate_provider_context_budget",
         coordinate,
     )
     return captured
@@ -137,7 +137,7 @@ def test_codex_final_proof_uses_expanded_wire_item_index(
 ) -> None:
     captured = _capture_final_proof(monkeypatch)
     monkeypatch.setattr(
-        "opensquilla.provider.openai_codex.load_codex_credentials",
+        "openstarry_code.provider.openai_codex.load_codex_credentials",
         lambda _path: object(),
     )
     provider = OpenAICodexProvider(model="gpt-test")

@@ -18,7 +18,7 @@ from starlette.responses import PlainTextResponse
 from starlette.routing import Route
 from starlette.testclient import TestClient
 
-from opensquilla.gateway.middleware import SecurityHeadersMiddleware
+from openstarry_code.gateway.middleware import SecurityHeadersMiddleware
 
 
 def _client(path_prefix: str = "/control") -> TestClient:

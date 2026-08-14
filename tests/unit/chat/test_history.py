@@ -4,7 +4,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.chat.history import transcript_entries_to_chat_messages
+from openstarry_code.chat.history import transcript_entries_to_chat_messages
 
 
 def test_transcript_entries_to_chat_messages_preserves_usage_and_artifacts() -> None:

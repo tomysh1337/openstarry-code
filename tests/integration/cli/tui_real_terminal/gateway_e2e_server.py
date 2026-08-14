@@ -1,7 +1,7 @@
 """Deterministic Gateway process used by the packaged-host TUI release gate.
 
 This file is launched with the gate virtualenv's Python executable.  It must
-therefore use only the installed OpenSquilla wheel and stdlib dependencies;
+therefore use only the installed OpenStarry Code wheel and stdlib dependencies;
 the release workflow deliberately removes the checkout's ``PYTHONPATH``.
 """
 
@@ -14,10 +14,10 @@ from collections.abc import AsyncIterator
 from pathlib import Path
 from typing import Any
 
-from opensquilla.gateway.boot import start_gateway_server
-from opensquilla.gateway.config import AuthConfig, GatewayConfig
-from opensquilla.gateway.websocket import SubscriptionManager
-from opensquilla.provider import ChatConfig, DoneEvent, Message, ModelInfo, TextDeltaEvent
+from openstarry_code.gateway.boot import start_gateway_server
+from openstarry_code.gateway.config import AuthConfig, GatewayConfig
+from openstarry_code.gateway.websocket import SubscriptionManager
+from openstarry_code.provider import ChatConfig, DoneEvent, Message, ModelInfo, TextDeltaEvent
 
 _MODEL = "e2e/deterministic"
 
@@ -121,9 +121,9 @@ class DeterministicSelector:
 
 
 async def main() -> None:
-    port = int(os.environ["OPENSQUILLA_TUI_GATEWAY_E2E_PORT"])
-    state_dir = Path(os.environ["OPENSQUILLA_TUI_GATEWAY_E2E_STATE"])
-    event_log = Path(os.environ["OPENSQUILLA_TUI_GATEWAY_E2E_EVENT_LOG"])
+    port = int(os.environ["OPENSTARRY_CODE_TUI_GATEWAY_E2E_PORT"])
+    state_dir = Path(os.environ["OPENSTARRY_CODE_TUI_GATEWAY_E2E_STATE"])
+    event_log = Path(os.environ["OPENSTARRY_CODE_TUI_GATEWAY_E2E_EVENT_LOG"])
     state_dir.mkdir(parents=True, exist_ok=True)
     workspace_dir = state_dir / "workspace"
     workspace_dir.mkdir(parents=True, exist_ok=True)

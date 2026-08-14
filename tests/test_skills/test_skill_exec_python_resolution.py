@@ -15,8 +15,8 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.skills.capability_runtime import (
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.skills.capability_runtime import (
     META_CAPABILITY_API_KEY_ENV,
     META_CAPABILITY_INTERNAL_CREDENTIAL_LEASE_TOKEN,
     META_CAPABILITY_INTERNAL_CREDENTIAL_SOURCE,
@@ -24,23 +24,23 @@ from opensquilla.skills.capability_runtime import (
     META_CAPABILITY_INTERNAL_SESSION_KEY,
     capability_runtime_env_for_consumers,
 )
-from opensquilla.skills.loader import SkillLoader
-from opensquilla.skills.meta.executors.skill_exec import run_skill_exec_step
-from opensquilla.skills.meta.parser import parse_meta_plan
-from opensquilla.skills.meta.replay_safety import (
+from openstarry_code.skills.loader import SkillLoader
+from openstarry_code.skills.meta.executors.skill_exec import run_skill_exec_step
+from openstarry_code.skills.meta.parser import parse_meta_plan
+from openstarry_code.skills.meta.replay_safety import (
     paid_receipt_proof,
     paid_replay_is_safe,
     paid_replay_may_duplicate,
 )
-from opensquilla.skills.meta.types import MetaStep
-from opensquilla.skills.types import (
+from openstarry_code.skills.meta.types import MetaStep
+from openstarry_code.skills.types import (
     SkillLayer,
     SkillPlatformMeta,
     SkillRequires,
     SkillSpec,
 )
 
-_BUNDLED = Path(__file__).resolve().parents[2] / "src" / "opensquilla" / "skills" / "bundled"
+_BUNDLED = Path(__file__).resolve().parents[2] / "src" / "openstarry_code" / "skills" / "bundled"
 
 
 def _spec(
@@ -72,7 +72,7 @@ class _Loader:
 
 @pytest.fixture
 def isolated_profile_pool():
-    from opensquilla.gateway.llm_runtime import reset_profile_credential_pools
+    from openstarry_code.gateway.llm_runtime import reset_profile_credential_pools
 
     reset_profile_credential_pools()
     yield
@@ -187,12 +187,12 @@ async def test_trusted_media_key_reaches_only_bundled_skill(
     monkeypatch: pytest.MonkeyPatch,
     skill_name: str,
 ) -> None:
-    env_name = "OPENSQUILLA_META_OPENROUTER_API_KEY"
+    env_name = "OPENSTARRY_CODE_META_OPENROUTER_API_KEY"
     monkeypatch.delenv(env_name, raising=False)
     script = tmp_path / "read_media_key.py"
     script.write_text(
         "import os\n"
-        "print(os.environ.get('OPENSQUILLA_META_OPENROUTER_API_KEY', 'missing'))\n"
+        "print(os.environ.get('OPENSTARRY_CODE_META_OPENROUTER_API_KEY', 'missing'))\n"
         "print(os.environ.get('__opensquilla_meta_credential_lease_token', 'missing'))\n",
         encoding="utf-8",
     )
@@ -231,11 +231,11 @@ async def test_workspace_same_name_override_never_receives_trusted_media_key(
     monkeypatch: pytest.MonkeyPatch,
     skill_name: str,
 ) -> None:
-    env_name = "OPENSQUILLA_META_OPENROUTER_API_KEY"
+    env_name = "OPENSTARRY_CODE_META_OPENROUTER_API_KEY"
     monkeypatch.delenv(env_name, raising=False)
     script = tmp_path / "capture_media_key.py"
     script.write_text(
-        "import os\nprint(os.environ.get('OPENSQUILLA_META_OPENROUTER_API_KEY', 'missing'))\n",
+        "import os\nprint(os.environ.get('OPENSTARRY_CODE_META_OPENROUTER_API_KEY', 'missing'))\n",
         encoding="utf-8",
     )
     override = _spec(
@@ -464,14 +464,14 @@ async def test_trusted_media_key_replaces_all_ambient_secrets(
     monkeypatch: pytest.MonkeyPatch,
     skill_name: str,
 ) -> None:
-    env_name = "OPENSQUILLA_META_OPENROUTER_API_KEY"
+    env_name = "OPENSTARRY_CODE_META_OPENROUTER_API_KEY"
     monkeypatch.setenv("OPENROUTER_API_KEY", "ambient-openrouter")
     monkeypatch.setenv("ARK_API_KEY", "ambient-ark")
     monkeypatch.setenv("CUSTOM_META_SECRET", "ambient-custom")
     script = tmp_path / "read_media_environment.py"
     script.write_text(
         "import os\n"
-        "print(os.environ.get('OPENSQUILLA_META_OPENROUTER_API_KEY', 'missing'))\n"
+        "print(os.environ.get('OPENSTARRY_CODE_META_OPENROUTER_API_KEY', 'missing'))\n"
         "print(os.environ.get('OPENROUTER_API_KEY', 'missing'))\n"
         "print(os.environ.get('ARK_API_KEY', 'missing'))\n"
         "print(os.environ.get('CUSTOM_META_SECRET', 'missing'))\n",
@@ -705,7 +705,7 @@ async def test_reserved_provider_failure_exit_reports_profile_pool_once(
         return True
 
     monkeypatch.setattr(
-        "opensquilla.engine.selector_override.report_profile_credential_lease_failure",
+        "openstarry_code.engine.selector_override.report_profile_credential_lease_failure",
         record,
     )
 
@@ -741,7 +741,7 @@ async def test_reserved_provider_failure_exit_ignores_non_pool_or_untrusted_sour
     script.write_text("raise SystemExit(79)\n", encoding="utf-8")
     reports: list[object] = []
     monkeypatch.setattr(
-        "opensquilla.engine.selector_override.report_profile_credential_lease_failure",
+        "openstarry_code.engine.selector_override.report_profile_credential_lease_failure",
         lambda *args: reports.append(args),
     )
     step = MetaStep(

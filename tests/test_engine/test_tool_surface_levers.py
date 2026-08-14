@@ -1,10 +1,10 @@
 """Tool-surface levers: escalation runtime event + projection signal hints.
 
 Covers the placeholder-escalation runtime-event mirror emitted for
-OPENSQUILLA_PLACEHOLDER_ESCALATION_THRESHOLD, subagent propagation of the
+OPENSTARRY_CODE_PLACEHOLDER_ESCALATION_THRESHOLD, subagent propagation of the
 projection_signal_hints config field, and the projection signal-scan notice
-lines gated by OPENSQUILLA_PROJECTION_SIGNAL_HINTS with the pattern override
-OPENSQUILLA_PROJECTION_SIGNAL_PATTERNS (all off by default). Motivation: run
+lines gated by OPENSTARRY_CODE_PROJECTION_SIGNAL_HINTS with the pattern override
+OPENSTARRY_CODE_PROJECTION_SIGNAL_PATTERNS (all off by default). Motivation: run
 harnesses only collect runtime events, so a lever that acts silently is
 indistinguishable from a delivery failure; and projected tool results can
 omit the very failure lines the next step depends on, so the notice should
@@ -21,14 +21,14 @@ from typing import Any
 
 import pytest
 
-import opensquilla.engine.agent as agent_mod
-from opensquilla.engine import Agent, AgentConfig, SubagentSpec, ToolResult
-from opensquilla.engine.agent import (
+import openstarry_code.engine.agent as agent_mod
+from openstarry_code.engine import Agent, AgentConfig, SubagentSpec, ToolResult
+from openstarry_code.engine.agent import (
     _INVALID_PROVIDER_CONTEXT_ARGUMENTS_KEY,
     _projection_signal_hints_enabled,
     _tool_result_signal_scan,
 )
-from opensquilla.provider import (
+from openstarry_code.provider import (
     ChatConfig,
     ContentBlockToolResult,
     ContentBlockToolUse,
@@ -37,12 +37,12 @@ from opensquilla.provider import (
     ToolDefinition,
     ToolInputSchema,
 )
-from opensquilla.provider import DoneEvent as ProviderDone
-from opensquilla.provider import TextDeltaEvent as ProviderText
-from opensquilla.provider import ToolUseEndEvent as ProviderToolUseEnd
-from opensquilla.provider import ToolUseStartEvent as ProviderToolUseStart
-from opensquilla.tools import ToolRegistry, tool
-from opensquilla.tools.dispatch import build_tool_handler
+from openstarry_code.provider import DoneEvent as ProviderDone
+from openstarry_code.provider import TextDeltaEvent as ProviderText
+from openstarry_code.provider import ToolUseEndEvent as ProviderToolUseEnd
+from openstarry_code.provider import ToolUseStartEvent as ProviderToolUseStart
+from openstarry_code.tools import ToolRegistry, tool
+from openstarry_code.tools.dispatch import build_tool_handler
 
 
 class _SequenceProvider:
@@ -276,14 +276,14 @@ _FAILURE_CONTENT = (
 
 
 def test_projection_signal_hints_env_gate(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("OPENSQUILLA_PROJECTION_SIGNAL_HINTS", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_PROJECTION_SIGNAL_HINTS", raising=False)
     assert _projection_signal_hints_enabled() is False
     assert _projection_signal_hints_enabled(True) is True
-    monkeypatch.setenv("OPENSQUILLA_PROJECTION_SIGNAL_HINTS", "on")
+    monkeypatch.setenv("OPENSTARRY_CODE_PROJECTION_SIGNAL_HINTS", "on")
     assert _projection_signal_hints_enabled() is True
-    monkeypatch.setenv("OPENSQUILLA_PROJECTION_SIGNAL_HINTS", "off")
+    monkeypatch.setenv("OPENSTARRY_CODE_PROJECTION_SIGNAL_HINTS", "off")
     assert _projection_signal_hints_enabled(True) is False
-    monkeypatch.setenv("OPENSQUILLA_PROJECTION_SIGNAL_HINTS", "bogus")
+    monkeypatch.setenv("OPENSTARRY_CODE_PROJECTION_SIGNAL_HINTS", "bogus")
     with pytest.raises(ValueError):
         _projection_signal_hints_enabled()
 
@@ -328,7 +328,7 @@ async def test_fresh_projection_appends_signal_scan_when_enabled(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_PROJECTION_SIGNAL_HINTS", "on")
+    monkeypatch.setenv("OPENSTARRY_CODE_PROJECTION_SIGNAL_HINTS", "on")
     monkeypatch.setattr(
         agent_mod, "reduce_tool_result_with_tokenjuice", _fake_reduce, raising=False
     )
@@ -376,8 +376,8 @@ async def test_fresh_projection_unchanged_when_env_unset(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path,
 ) -> None:
-    monkeypatch.delenv("OPENSQUILLA_PROJECTION_SIGNAL_HINTS", raising=False)
-    monkeypatch.delenv("OPENSQUILLA_PROJECTION_SIGNAL_PATTERNS", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_PROJECTION_SIGNAL_HINTS", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_PROJECTION_SIGNAL_PATTERNS", raising=False)
     monkeypatch.setattr(
         agent_mod, "reduce_tool_result_with_tokenjuice", _fake_reduce, raising=False
     )
@@ -423,9 +423,9 @@ async def test_projection_signal_patterns_env_overrides_default(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_PROJECTION_SIGNAL_HINTS", "on")
+    monkeypatch.setenv("OPENSTARRY_CODE_PROJECTION_SIGNAL_HINTS", "on")
     monkeypatch.setenv(
-        "OPENSQUILLA_PROJECTION_SIGNAL_PATTERNS", r"\bDIAG_MARKER\b"
+        "OPENSTARRY_CODE_PROJECTION_SIGNAL_PATTERNS", r"\bDIAG_MARKER\b"
     )
     monkeypatch.setattr(
         agent_mod, "reduce_tool_result_with_tokenjuice", _fake_reduce, raising=False
@@ -455,7 +455,7 @@ async def test_projection_signal_patterns_env_overrides_default(
 def test_projection_signal_patterns_invalid_regex_raises(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_PROJECTION_SIGNAL_PATTERNS", "(unclosed")
+    monkeypatch.setenv("OPENSTARRY_CODE_PROJECTION_SIGNAL_PATTERNS", "(unclosed")
     with pytest.raises(ValueError):
         agent_mod._projection_signal_pattern()
 
@@ -464,7 +464,7 @@ def test_provider_projection_appends_signal_scan_when_enabled(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_PROJECTION_SIGNAL_HINTS", "on")
+    monkeypatch.setenv("OPENSTARRY_CODE_PROJECTION_SIGNAL_HINTS", "on")
     runtime_events_path = tmp_path / "runtime_events.jsonl"
     agent = _projection_agent(
         tmp_path, runtime_events_path=str(runtime_events_path)
@@ -493,8 +493,8 @@ def test_provider_projection_unchanged_when_env_unset(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path,
 ) -> None:
-    monkeypatch.delenv("OPENSQUILLA_PROJECTION_SIGNAL_HINTS", raising=False)
-    monkeypatch.delenv("OPENSQUILLA_PROJECTION_SIGNAL_PATTERNS", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_PROJECTION_SIGNAL_HINTS", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_PROJECTION_SIGNAL_PATTERNS", raising=False)
     agent = _projection_agent(tmp_path)
 
     projection = agent._tool_result_projection_for_provider(
@@ -555,7 +555,7 @@ def test_aggregate_compaction_appends_signal_scan_when_enabled(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_PROJECTION_SIGNAL_HINTS", "on")
+    monkeypatch.setenv("OPENSTARRY_CODE_PROJECTION_SIGNAL_HINTS", "on")
     runtime_events_path = tmp_path / "runtime_events.jsonl"
     agent = _projection_agent(
         tmp_path,
@@ -591,8 +591,8 @@ def test_aggregate_compaction_unchanged_when_env_unset(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path,
 ) -> None:
-    monkeypatch.delenv("OPENSQUILLA_PROJECTION_SIGNAL_HINTS", raising=False)
-    monkeypatch.delenv("OPENSQUILLA_PROJECTION_SIGNAL_PATTERNS", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_PROJECTION_SIGNAL_HINTS", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_PROJECTION_SIGNAL_PATTERNS", raising=False)
     agent = _projection_agent(tmp_path, context_window_tokens=200)
     old_content = (
         "old bulky output\n"

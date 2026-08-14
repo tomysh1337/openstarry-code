@@ -12,10 +12,10 @@ import asyncio
 from collections.abc import AsyncIterator
 from typing import Any
 
-from opensquilla.engine import Agent, AgentConfig
-from opensquilla.provider import ChatConfig, Message
-from opensquilla.provider import DoneEvent as ProviderDoneEvent
-from opensquilla.provider import TextDeltaEvent as ProviderTextDeltaEvent
+from openstarry_code.engine import Agent, AgentConfig
+from openstarry_code.provider import ChatConfig, Message
+from openstarry_code.provider import DoneEvent as ProviderDoneEvent
+from openstarry_code.provider import TextDeltaEvent as ProviderTextDeltaEvent
 
 
 class _ScriptedProvider:

@@ -8,8 +8,8 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.agents.registry import AgentRegistry
-from opensquilla.gateway.config import GatewayConfig
+from openstarry_code.agents.registry import AgentRegistry
+from openstarry_code.gateway.config import GatewayConfig
 
 
 @pytest.mark.skipif(sys.platform == "win32", reason="symlinks require admin on Windows")

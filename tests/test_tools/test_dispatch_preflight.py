@@ -19,10 +19,10 @@ import json
 
 import pytest
 
-from opensquilla.engine.types import ToolCall
-from opensquilla.tools.dispatch import build_tool_handler, preflight_tool_call
-from opensquilla.tools.registry import ToolRegistry
-from opensquilla.tools.types import (
+from openstarry_code.engine.types import ToolCall
+from openstarry_code.tools.dispatch import build_tool_handler, preflight_tool_call
+from openstarry_code.tools.registry import ToolRegistry
+from openstarry_code.tools.types import (
     CallerKind,
     ToolContext,
     ToolSpec,

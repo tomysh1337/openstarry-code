@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.sandbox.policy_models import SandboxPolicy
-from opensquilla.sandbox.policy_store import (
+from openstarry_code.sandbox.policy_models import SandboxPolicy
+from openstarry_code.sandbox.policy_store import (
     PolicyVersionConflict,
     SandboxPolicyStore,
 )

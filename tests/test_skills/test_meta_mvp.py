@@ -9,19 +9,19 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.steps.meta_resolution import _build_hint, meta_resolution
-from opensquilla.engine.types import (
+from openstarry_code.engine.steps.meta_resolution import _build_hint, meta_resolution
+from openstarry_code.engine.types import (
     AgentConfig,
     AgentEvent,
     ArtifactEvent,
     DoneEvent,
     TextDeltaEvent,
 )
-from opensquilla.persistence.meta_run_writer import open_meta_run_writer
-from opensquilla.persistence.migrator import apply_pending
-from opensquilla.skills.loader import SkillLoader
-from opensquilla.skills.meta.inputs import make_meta_inputs
-from opensquilla.skills.meta.orchestrator import (
+from openstarry_code.persistence.meta_run_writer import open_meta_run_writer
+from openstarry_code.persistence.migrator import apply_pending
+from openstarry_code.skills.loader import SkillLoader
+from openstarry_code.skills.meta.inputs import make_meta_inputs
+from openstarry_code.skills.meta.orchestrator import (
     MetaOrchestrator,
     _append_output_contract_block,
     _audit_output_contract,
@@ -32,11 +32,11 @@ from opensquilla.skills.meta.orchestrator import (
     render_with_args,
     resolve_route,
 )
-from opensquilla.skills.meta.parser import MetaPlanError, parse_meta_plan
-from opensquilla.skills.meta.scheduler import _localized_request_template, _localized_step_label
-from opensquilla.skills.meta.types import MetaMatch, MetaPlan, MetaResult, MetaStep, RouteCase
-from opensquilla.skills.types import SkillLayer, SkillPlatformMeta, SkillRequires, SkillSpec
-from opensquilla.tool_boundary import ToolResult
+from openstarry_code.skills.meta.parser import MetaPlanError, parse_meta_plan
+from openstarry_code.skills.meta.scheduler import _localized_request_template, _localized_step_label
+from openstarry_code.skills.meta.types import MetaMatch, MetaPlan, MetaResult, MetaStep, RouteCase
+from openstarry_code.skills.types import SkillLayer, SkillPlatformMeta, SkillRequires, SkillSpec
+from openstarry_code.tool_boundary import ToolResult
 
 # ---------------------------------------------------------------------------
 # Parser tests
@@ -434,7 +434,7 @@ async def test_failed_replay_materializes_seed_outputs_for_the_next_retry(
 
 @pytest.mark.asyncio
 async def test_chained_replay_preserves_durable_failover_pair(tmp_path: Path) -> None:
-    from opensquilla.engine.agent import _trusted_meta_replay_seed_outputs
+    from openstarry_code.engine.agent import _trusted_meta_replay_seed_outputs
 
     async def unused_runner(_prompt: str, _config: AgentConfig) -> str:
         raise AssertionError("seed persistence must not dispatch an agent")
@@ -706,8 +706,8 @@ def test_resolve_route_blocks_class_introspection_escape() -> None:
     the same sandboxed env; introspection escapes must surface as
     ValueError so the orchestrator treats them as a step failure rather
     than a silent allow."""
-    from opensquilla.skills.meta.templating import resolve_route
-    from opensquilla.skills.meta.types import RouteCase
+    from openstarry_code.skills.meta.templating import resolve_route
+    from openstarry_code.skills.meta.types import RouteCase
 
     with pytest.raises(ValueError, match="security violation"):
         resolve_route(
@@ -720,7 +720,7 @@ def test_resolve_route_blocks_class_introspection_escape() -> None:
 def test_evaluate_when_blocks_class_introspection_escape() -> None:
     """A1: step-level ``when`` expressions follow the same contract as
     ``route.when`` — sandbox violations must raise ValueError."""
-    from opensquilla.skills.meta.templating import evaluate_when
+    from openstarry_code.skills.meta.templating import evaluate_when
 
     with pytest.raises(ValueError, match="security violation"):
         evaluate_when(
@@ -731,7 +731,7 @@ def test_evaluate_when_blocks_class_introspection_escape() -> None:
 
 
 def test_when_expression_supports_lower_filter() -> None:
-    from opensquilla.skills.meta.templating import evaluate_when
+    from openstarry_code.skills.meta.templating import evaluate_when
 
     assert evaluate_when(
         "'current repo' in (inputs.user_message | lower)",
@@ -876,7 +876,7 @@ def test_all_bundled_meta_skills_have_language_safe_user_visible_copy(
             return " ".join(str(item) for item in value)
         return str(value)
 
-    bundled = Path("src/opensquilla/skills/bundled").resolve()
+    bundled = Path("src/openstarry_code/skills/bundled").resolve()
     loader = SkillLoader(
         bundled_dir=bundled,
         snapshot_path=tmp_path / "skills-snapshot.json",
@@ -946,7 +946,7 @@ def test_all_bundled_meta_skills_have_language_safe_user_visible_copy(
 def test_all_bundled_meta_skills_keep_output_contract_audits_internal(
     tmp_path: Path,
 ) -> None:
-    bundled = Path("src/opensquilla/skills/bundled").resolve()
+    bundled = Path("src/openstarry_code/skills/bundled").resolve()
     loader = SkillLoader(
         bundled_dir=bundled,
         snapshot_path=tmp_path / "skills-snapshot.json",
@@ -1066,7 +1066,7 @@ async def test_meta_resolution_semantic_fallback_matches_without_trigger(
 ) -> None:
     import importlib
     meta_resolution_module = importlib.import_module(
-        "opensquilla.engine.steps.meta_resolution",
+        "openstarry_code.engine.steps.meta_resolution",
     )
 
     spec = _make_meta_spec(
@@ -1456,7 +1456,7 @@ async def test_orchestrator_runs_steps_in_topological_order() -> None:
 
 @pytest.mark.asyncio
 async def test_orchestrator_skips_step_when_condition_is_false() -> None:
-    from opensquilla.engine.types import ToolResultEvent
+    from openstarry_code.engine.types import ToolResultEvent
 
     spec = _make_meta_spec(
         composition={
@@ -1568,7 +1568,7 @@ async def test_orchestrator_refuses_meta_inside_meta() -> None:
 
 
 def test_bundled_sample_loads(tmp_path: Path) -> None:
-    bundled = Path(__file__).resolve().parents[2] / "src" / "opensquilla" / "skills" / "bundled"
+    bundled = Path(__file__).resolve().parents[2] / "src" / "openstarry_code" / "skills" / "bundled"
     snapshot = tmp_path / "snap.json"
     loader = SkillLoader(bundled_dir=bundled, snapshot_path=snapshot)
     loader.invalidate_cache()
@@ -2687,10 +2687,10 @@ async def test_meta_orchestrator_repairs_chinese_leakage_in_english_final_text()
 
 @pytest.mark.asyncio
 async def test_make_llm_chat_from_provider_uses_deliverable_sized_token_budget() -> None:
-    from opensquilla.provider.types import (
+    from openstarry_code.provider.types import (
         ProviderRequestCorrelation,
     )
-    from opensquilla.provider.types import (
+    from openstarry_code.provider.types import (
         TextDeltaEvent as ProviderTextDelta,
     )
 
@@ -2722,11 +2722,11 @@ async def test_make_llm_chat_from_provider_uses_deliverable_sized_token_budget()
 
 @pytest.mark.asyncio
 async def test_make_llm_chat_from_provider_derives_context_correlation() -> None:
-    from opensquilla.provider.correlation_context import bind_provider_request_correlation
-    from opensquilla.provider.types import (
+    from openstarry_code.provider.correlation_context import bind_provider_request_correlation
+    from openstarry_code.provider.types import (
         ProviderRequestCorrelation,
     )
-    from opensquilla.provider.types import (
+    from openstarry_code.provider.types import (
         TextDeltaEvent as ProviderTextDelta,
     )
 
@@ -2760,9 +2760,9 @@ async def test_make_llm_chat_from_provider_derives_context_correlation() -> None
 
 @pytest.mark.asyncio
 async def test_make_llm_chat_from_provider_forwards_billed_cost_to_usage_tracker() -> None:
-    from opensquilla.engine.usage import UsageTracker, usage_scope
-    from opensquilla.provider.types import DoneEvent as ProviderDoneEvent
-    from opensquilla.provider.types import TextDeltaEvent as ProviderTextDelta
+    from openstarry_code.engine.usage import UsageTracker, usage_scope
+    from openstarry_code.provider.types import DoneEvent as ProviderDoneEvent
+    from openstarry_code.provider.types import TextDeltaEvent as ProviderTextDelta
 
     class FakeProvider:
         async def chat(self, _messages, *, tools, config):
@@ -2800,9 +2800,9 @@ async def test_make_llm_chat_from_provider_forwards_billed_cost_to_usage_tracker
 
 @pytest.mark.asyncio
 async def test_make_llm_chat_from_provider_stamps_provider_for_pricing() -> None:
-    from opensquilla.engine.usage import UsageTracker
-    from opensquilla.provider.types import DoneEvent as ProviderDoneEvent
-    from opensquilla.provider.types import TextDeltaEvent as ProviderTextDelta
+    from openstarry_code.engine.usage import UsageTracker
+    from openstarry_code.provider.types import DoneEvent as ProviderDoneEvent
+    from openstarry_code.provider.types import TextDeltaEvent as ProviderTextDelta
 
     class FakeProvider:
         async def chat(self, _messages, *, tools, config):
@@ -3767,7 +3767,7 @@ async def test_orchestrator_mixed_kinds_pipeline() -> None:
 
 
 def test_coerce_to_choice_helper() -> None:
-    from opensquilla.skills.meta.orchestrator import _coerce_to_choice
+    from openstarry_code.skills.meta.orchestrator import _coerce_to_choice
 
     choices = ["URL", "PDF", "GIT", "TEXT"]
     assert _coerce_to_choice("URL", choices) == "URL"
@@ -3796,8 +3796,8 @@ async def test_iter_events_invokes_real_skill_view_for_skill_steps(
     trigger skill_view.
     """
 
-    from opensquilla.engine.types import ToolResultEvent, ToolUseStartEvent
-    from opensquilla.skills.meta.types import MetaResult
+    from openstarry_code.engine.types import ToolResultEvent, ToolUseStartEvent
+    from openstarry_code.skills.meta.types import MetaResult
 
     script = tmp_path / "echo.py"
     script.write_text(
@@ -3893,8 +3893,8 @@ async def test_iter_events_skill_view_skipped_when_tool_invoker_absent() -> None
     """Without a tool_invoker, the orchestrator skips the preface entirely
     rather than fabricating an event. Step execution still proceeds."""
 
-    from opensquilla.engine.types import ToolResultEvent, ToolUseStartEvent
-    from opensquilla.skills.meta.types import MetaResult
+    from openstarry_code.engine.types import ToolResultEvent, ToolUseStartEvent
+    from openstarry_code.skills.meta.types import MetaResult
 
     spec = _make_meta_spec(
         composition={
@@ -3934,8 +3934,8 @@ async def test_iter_events_skill_view_surfaces_tool_invoker_errors() -> None:
     """If skill_view raises, the orchestrator emits an error card and continues
     to the real step executor (which then surfaces its own canonical error)."""
 
-    from opensquilla.engine.types import ToolResultEvent
-    from opensquilla.skills.meta.types import MetaResult
+    from openstarry_code.engine.types import ToolResultEvent
+    from openstarry_code.skills.meta.types import MetaResult
 
     spec = _make_meta_spec(
         composition={
@@ -3980,8 +3980,8 @@ async def test_iter_events_skill_view_surfaces_tool_invoker_errors() -> None:
 async def test_iter_events_emits_step_boundaries() -> None:
     """Each step appears as a ToolUseStart + ToolResult pair so the UI can render it."""
 
-    from opensquilla.engine.types import ToolResultEvent, ToolUseStartEvent
-    from opensquilla.skills.meta.types import MetaResult
+    from openstarry_code.engine.types import ToolResultEvent, ToolUseStartEvent
+    from openstarry_code.skills.meta.types import MetaResult
 
     spec = _make_meta_spec(
         composition={
@@ -4059,8 +4059,8 @@ async def test_iter_events_forwards_subagent_tool_events_but_folds_text() -> Non
     skills (paper-section-author etc.). Design: docs/proposals/meta-skills/
     MECHANISM.md §17 single user-visible channel."""
 
-    from opensquilla.engine.types import ToolResultEvent, ToolUseStartEvent
-    from opensquilla.skills.meta.types import MetaResult
+    from openstarry_code.engine.types import ToolResultEvent, ToolUseStartEvent
+    from openstarry_code.skills.meta.types import MetaResult
 
     spec = _make_meta_spec(
         composition={
@@ -4171,8 +4171,8 @@ async def test_paper_section_author_uses_llm_chat_without_subagent_tools() -> No
 
 @pytest.mark.asyncio
 async def test_iter_events_emits_error_result_on_step_failure() -> None:
-    from opensquilla.engine.types import ToolResultEvent
-    from opensquilla.skills.meta.types import MetaResult
+    from openstarry_code.engine.types import ToolResultEvent
+    from openstarry_code.skills.meta.types import MetaResult
 
     spec = _make_meta_spec(
         composition={
@@ -4208,7 +4208,7 @@ async def test_iter_events_emits_error_result_on_step_failure() -> None:
 
 
 def test_expand_skill_placeholders_substitutes_basedir() -> None:
-    from opensquilla.skills.meta.orchestrator import _expand_skill_placeholders
+    from openstarry_code.skills.meta.orchestrator import _expand_skill_placeholders
 
     spec = SkillSpec(
         name="multi-search-engine",
@@ -4226,7 +4226,7 @@ def test_expand_skill_placeholders_substitutes_basedir() -> None:
 
 
 def test_expand_skill_placeholders_no_base_dir_passes_through() -> None:
-    from opensquilla.skills.meta.orchestrator import _expand_skill_placeholders
+    from openstarry_code.skills.meta.orchestrator import _expand_skill_placeholders
 
     spec = SkillSpec(
         name="bare",
@@ -4246,7 +4246,7 @@ def test_expand_skill_placeholders_no_base_dir_passes_through() -> None:
 async def test_drain_agent_runner_does_not_swallow_tool_errors() -> None:
     """A trailing error-result must surface as RuntimeError, not poison downstream steps."""
 
-    from opensquilla.engine.types import ToolResultEvent
+    from openstarry_code.engine.types import ToolResultEvent
 
     spec = _make_meta_spec(
         composition={
@@ -4289,7 +4289,7 @@ async def test_drain_agent_runner_fails_when_sub_agent_produces_no_text() -> Non
     summary and the printed bytes are unrelated noise.
     """
 
-    from opensquilla.engine.types import ToolResultEvent
+    from openstarry_code.engine.types import ToolResultEvent
 
     spec = _make_meta_spec(
         composition={

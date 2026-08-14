@@ -8,8 +8,8 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.skills.hub.lockfile import LockEntry, Lockfile, compute_tree_sha256
-from opensquilla.skills.hub.transaction import (
+from openstarry_code.skills.hub.lockfile import LockEntry, Lockfile, compute_tree_sha256
+from openstarry_code.skills.hub.transaction import (
     SkillTransactionJournal,
     recover_pending_skill_transaction,
     rollback_root,
@@ -146,8 +146,8 @@ def test_real_process_crash_before_journal_sweeps_orphan_reservation(
 
     assert crashed.returncode == _CRASH_EXIT_CODE
     assert not journal_path.exists()
-    assert len(list((managed / ".opensquilla-staging").iterdir())) == 1
-    assert len(list((managed / ".opensquilla-rollback").iterdir())) == 1
+    assert len(list((managed / ".openstarry-code-staging").iterdir())) == 1
+    assert len(list((managed / ".openstarry-code-rollback").iterdir())) == 1
 
     diagnostics = recover_pending_skill_transaction(
         managed_dir=managed,
@@ -159,14 +159,14 @@ def test_real_process_crash_before_journal_sweeps_orphan_reservation(
     assert [item.code for item in diagnostics] == ["ORPHAN_STAGING_RECOVERED"]
     assert compute_tree_sha256(target) == old_tree_digest
     assert lockfile_path.read_bytes() == old_lock_bytes
-    assert list((managed / ".opensquilla-staging").iterdir()) == []
-    assert list((managed / ".opensquilla-rollback").iterdir()) == []
+    assert list((managed / ".openstarry-code-staging").iterdir()) == []
+    assert list((managed / ".openstarry-code-rollback").iterdir()) == []
 
 
 def _worker_environment(state_root: Path) -> dict[str, str]:
     environment = os.environ.copy()
-    environment["OPENSQUILLA_USER_STATE_DIR"] = str(state_root)
-    environment["OPENSQUILLA_TEST_PROFILE_LOCK_ROOT"] = "1"
+    environment["OPENSTARRY_CODE_USER_STATE_DIR"] = str(state_root)
+    environment["OPENSTARRY_CODE_TEST_PROFILE_LOCK_ROOT"] = "1"
     return environment
 
 

@@ -4,13 +4,13 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.memory.retrieval import MemoryRetriever
-from opensquilla.memory.types import MemorySearchResult, MemorySource, SearchIntent
-from opensquilla.tools.builtin import memory_tools
-from opensquilla.tools.builtin.memory_tools import create_memory_tools
-from opensquilla.tools.builtin.session_search import create_session_search_tool
-from opensquilla.tools.registry import ToolRegistry
-from opensquilla.tools.types import ToolError
+from openstarry_code.memory.retrieval import MemoryRetriever
+from openstarry_code.memory.types import MemorySearchResult, MemorySource, SearchIntent
+from openstarry_code.tools.builtin import memory_tools
+from openstarry_code.tools.builtin.memory_tools import create_memory_tools
+from openstarry_code.tools.builtin.session_search import create_session_search_tool
+from openstarry_code.tools.registry import ToolRegistry
+from openstarry_code.tools.types import ToolError
 
 
 class _FakeRetriever:

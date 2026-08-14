@@ -7,12 +7,12 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.turn_runner.harness import (
+from openstarry_code.engine.turn_runner.harness import (
     _coerce_flush_triggers,
     _TurnRunnerAgentFactoryAdapter,
 )
-from opensquilla.provider import ProviderConfig, ProviderRequestCorrelation
-from opensquilla.provider.tokenrhythm_catalog import (
+from openstarry_code.provider import ProviderConfig, ProviderRequestCorrelation
+from openstarry_code.provider.tokenrhythm_catalog import (
     parse_tokenrhythm_declared,
     parse_tokenrhythm_published,
     tokenrhythm_authority_identity,
@@ -40,7 +40,7 @@ def test_agent_factory_adapter_passes_runner_tool_registry(monkeypatch) -> None:
         def __init__(self, **kwargs: Any) -> None:
             captured.update(kwargs)
 
-    import opensquilla.engine.agent as agent_module
+    import openstarry_code.engine.agent as agent_module
 
     monkeypatch.setattr(agent_module, "Agent", RecordingAgent)
 
@@ -86,7 +86,7 @@ def _catalog_runner(
 
 
 def test_model_catalog_adapter_defaults_to_200k_without_override() -> None:
-    from opensquilla.engine.turn_runner.harness import _TurnRunnerModelCatalogAdapter
+    from openstarry_code.engine.turn_runner.harness import _TurnRunnerModelCatalogAdapter
 
     llm = SimpleNamespace(max_tokens=32768, temperature=None, top_p=None)
     adapter = _TurnRunnerModelCatalogAdapter(_catalog_runner(llm=llm))
@@ -99,7 +99,7 @@ def test_model_catalog_adapter_defaults_to_200k_without_override() -> None:
 
 
 def test_model_catalog_adapter_honors_context_window_tokens_override() -> None:
-    from opensquilla.engine.turn_runner.harness import _TurnRunnerModelCatalogAdapter
+    from openstarry_code.engine.turn_runner.harness import _TurnRunnerModelCatalogAdapter
 
     llm = SimpleNamespace(
         max_tokens=32768,
@@ -117,8 +117,8 @@ def test_model_catalog_adapter_honors_context_window_tokens_override() -> None:
 
 
 def test_model_catalog_adapter_override_beats_catalog_resolution() -> None:
-    from opensquilla.engine.turn_runner.harness import _TurnRunnerModelCatalogAdapter
-    from opensquilla.provider.model_catalog import ModelCatalog
+    from openstarry_code.engine.turn_runner.harness import _TurnRunnerModelCatalogAdapter
+    from openstarry_code.provider.model_catalog import ModelCatalog
 
     llm = SimpleNamespace(
         provider="openrouter",
@@ -140,8 +140,8 @@ def test_model_catalog_adapter_override_beats_catalog_resolution() -> None:
 
 
 def test_model_catalog_adapter_per_model_override_beats_global_config() -> None:
-    from opensquilla.engine.turn_runner.harness import _TurnRunnerModelCatalogAdapter
-    from opensquilla.provider.model_catalog import ModelCatalog
+    from openstarry_code.engine.turn_runner.harness import _TurnRunnerModelCatalogAdapter
+    from openstarry_code.provider.model_catalog import ModelCatalog
 
     catalog = ModelCatalog()
     catalog.set_user_overrides({"openrouter/glm-5.1": {"context_window": 131_072}})
@@ -167,8 +167,8 @@ def test_model_catalog_adapter_per_model_override_beats_global_config() -> None:
 
 
 def test_model_catalog_adapter_keeps_fallback_auto_limit_separate() -> None:
-    from opensquilla.engine.turn_runner.harness import _TurnRunnerModelCatalogAdapter
-    from opensquilla.provider.model_catalog import ModelCatalog
+    from openstarry_code.engine.turn_runner.harness import _TurnRunnerModelCatalogAdapter
+    from openstarry_code.provider.model_catalog import ModelCatalog
 
     llm = SimpleNamespace(
         provider="tokenrhythm",
@@ -190,8 +190,8 @@ def test_model_catalog_adapter_keeps_fallback_auto_limit_separate() -> None:
 
 
 def test_model_catalog_adapter_resolves_exact_tokenrhythm_deployment() -> None:
-    from opensquilla.engine.turn_runner.harness import _TurnRunnerModelCatalogAdapter
-    from opensquilla.provider.model_catalog import ModelCatalog
+    from openstarry_code.engine.turn_runner.harness import _TurnRunnerModelCatalogAdapter
+    from openstarry_code.provider.model_catalog import ModelCatalog
 
     key = "synthetic-routed-tokenrhythm-key"
     authority = tokenrhythm_authority_identity(
@@ -269,8 +269,8 @@ def test_model_catalog_adapter_resolves_exact_tokenrhythm_deployment() -> None:
 
 
 def test_model_catalog_adapter_does_not_hard_cap_unknown_fallback() -> None:
-    from opensquilla.engine.turn_runner.harness import _TurnRunnerModelCatalogAdapter
-    from opensquilla.provider.model_catalog import ModelCatalog
+    from openstarry_code.engine.turn_runner.harness import _TurnRunnerModelCatalogAdapter
+    from openstarry_code.provider.model_catalog import ModelCatalog
 
     llm = SimpleNamespace(
         provider="custom-openai",
@@ -292,7 +292,7 @@ def test_model_catalog_adapter_does_not_hard_cap_unknown_fallback() -> None:
 
 
 def test_model_catalog_adapter_ignores_junk_context_window_values() -> None:
-    from opensquilla.engine.turn_runner.harness import _TurnRunnerModelCatalogAdapter
+    from openstarry_code.engine.turn_runner.harness import _TurnRunnerModelCatalogAdapter
 
     for junk in ("not-a-number", -5, 0, None):
         llm = SimpleNamespace(

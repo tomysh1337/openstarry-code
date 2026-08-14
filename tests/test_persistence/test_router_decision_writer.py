@@ -10,8 +10,8 @@ import json
 import sqlite3
 from pathlib import Path
 
-from opensquilla.persistence.migrator import apply_pending
-from opensquilla.persistence.router_decision_writer import (
+from openstarry_code.persistence.migrator import apply_pending
+from openstarry_code.persistence.router_decision_writer import (
     RouterDecisionWriter,
     open_router_decision_writer,
     sanitize_flags,

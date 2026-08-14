@@ -12,8 +12,8 @@ import asyncio
 import httpx
 import pytest
 
-from opensquilla.channels._util import MAX_RETRY_AFTER_S, retry_request
-from opensquilla.channels.contract import (
+from openstarry_code.channels._util import MAX_RETRY_AFTER_S, retry_request
+from openstarry_code.channels.contract import (
     ALL_ERROR_CLASSES,
     REQUIRED_FATAL_ERROR_CLASSES,
     REQUIRED_RETRYABLE_ERROR_CLASSES,

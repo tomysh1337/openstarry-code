@@ -14,12 +14,12 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.provider.model_catalog import (
+from openstarry_code.provider.model_catalog import (
     ModelCatalog,
     set_shared_catalog,
     shared_catalog,
 )
-from opensquilla.provider.types import ModelCapabilities
+from openstarry_code.provider.types import ModelCapabilities
 
 
 class _SentinelCatalog(ModelCatalog):
@@ -101,8 +101,8 @@ def test_setting_none_restores_the_cold_fallback() -> None:
 
 
 def test_router_decision_event_uses_injected_catalog() -> None:
-    from opensquilla.engine.pipeline import TurnContext
-    from opensquilla.engine.router_decision import build_router_decision_event
+    from openstarry_code.engine.pipeline import TurnContext
+    from openstarry_code.engine.router_decision import build_router_decision_event
 
     sentinel = _SentinelCatalog()
     set_shared_catalog(sentinel)
@@ -128,8 +128,8 @@ def test_rpc_usage_context_window_uses_injected_catalog() -> None:
     # Driven via the module-level resolver directly: the full usage.status
     # handler needs a session manager + persisted rows just to reach this
     # line, while every catalog decision lives in _resolve_context_window.
-    from opensquilla.gateway.rpc.registry import RpcContext
-    from opensquilla.gateway.rpc_usage import _resolve_context_window
+    from openstarry_code.gateway.rpc.registry import RpcContext
+    from openstarry_code.gateway.rpc_usage import _resolve_context_window
 
     sentinel = _SentinelCatalog()
     set_shared_catalog(sentinel)
@@ -148,8 +148,8 @@ def test_rpc_usage_context_window_uses_injected_catalog() -> None:
 def test_rpc_usage_context_window_model_override_beats_config() -> None:
     # A [models.*] per-model override on the injected catalog outranks the
     # global config window and reports the additive "model_override" label.
-    from opensquilla.gateway.rpc.registry import RpcContext
-    from opensquilla.gateway.rpc_usage import _resolve_context_window
+    from openstarry_code.gateway.rpc.registry import RpcContext
+    from openstarry_code.gateway.rpc_usage import _resolve_context_window
 
     catalog = ModelCatalog()
     catalog.set_user_overrides({"openrouter/model-under-test": {"context_window": 131_072}})
@@ -171,8 +171,8 @@ def test_rpc_usage_context_window_model_override_beats_config() -> None:
 
 
 def test_ensemble_member_max_tokens_uses_injected_catalog() -> None:
-    from opensquilla.provider.ensemble import EnsembleMemberConfig, _member_max_tokens
-    from opensquilla.provider.selector import ProviderConfig
+    from openstarry_code.provider.ensemble import EnsembleMemberConfig, _member_max_tokens
+    from openstarry_code.provider.selector import ProviderConfig
 
     sentinel = _SentinelCatalog()
     set_shared_catalog(sentinel)
@@ -185,11 +185,11 @@ def test_ensemble_member_max_tokens_uses_injected_catalog() -> None:
 
 
 def test_ensemble_member_capabilities_use_injected_catalog() -> None:
-    from opensquilla.provider.ensemble import (
+    from openstarry_code.provider.ensemble import (
         EnsembleMemberConfig,
         _member_model_capabilities,
     )
-    from opensquilla.provider.selector import ProviderConfig
+    from openstarry_code.provider.selector import ProviderConfig
 
     sentinel = _SentinelCatalog()
     set_shared_catalog(sentinel)

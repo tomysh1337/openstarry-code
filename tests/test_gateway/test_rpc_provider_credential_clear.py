@@ -6,18 +6,18 @@ import tomllib
 
 import pytest
 
-import opensquilla.gateway.rpc_onboarding  # noqa: F401 - register handlers
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.llm_runtime import resolve_llm_runtime_config
-from opensquilla.gateway.rpc import RpcContext, get_dispatcher
-from opensquilla.gateway.scopes import ADMIN_SCOPE, METHOD_SCOPES
-from opensquilla.onboarding.config_store import load_config, persist_config
-from opensquilla.onboarding.mutations import (
+import openstarry_code.gateway.rpc_onboarding  # noqa: F401 - register handlers
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.llm_runtime import resolve_llm_runtime_config
+from openstarry_code.gateway.rpc import RpcContext, get_dispatcher
+from openstarry_code.gateway.scopes import ADMIN_SCOPE, METHOD_SCOPES
+from openstarry_code.onboarding.config_store import load_config, persist_config
+from openstarry_code.onboarding.mutations import (
     clear_llm_profile_credentials,
     clear_llm_provider_credentials,
 )
-from opensquilla.onboarding.status import get_onboarding_status
+from openstarry_code.onboarding.status import get_onboarding_status
 
 
 def _admin_ctx(config: GatewayConfig) -> RpcContext:
@@ -39,12 +39,12 @@ def _isolate_runtime_syncs(monkeypatch):
         "API_KEY",
         "API_KEY_ENV",
         "API_KEY_ENV_POOL",
-        "OPENSQUILLA_LLM_API_KEY",
-        "OPENSQUILLA_LLM_API_KEY_ENV",
+        "OPENSTARRY_CODE_LLM_API_KEY",
+        "OPENSTARRY_CODE_LLM_API_KEY_ENV",
     ):
         monkeypatch.delenv(name, raising=False)
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_onboarding._sync_image_generation",
+        "openstarry_code.gateway.rpc_onboarding._sync_image_generation",
         lambda config: None,
     )
 
@@ -52,7 +52,7 @@ def _isolate_runtime_syncs(monkeypatch):
         return None
 
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.refresh_live_model_catalog",
+        "openstarry_code.gateway.model_catalog_refresh.refresh_live_model_catalog",
         no_catalog_refresh,
     )
 
@@ -450,7 +450,7 @@ api_key = "synthetic-historical-profile-secret"
     ensemble_before = cfg.llm_ensemble.model_dump(mode="python")
     discarded: list[str] = []
     monkeypatch.setattr(
-        "opensquilla.gateway.llm_runtime.discard_profile_credential_pool",
+        "openstarry_code.gateway.llm_runtime.discard_profile_credential_pool",
         lambda provider: discarded.append(provider),
     )
 
@@ -594,8 +594,8 @@ async def test_active_clear_keeps_generic_settings_key_effective_and_reported(
 ) -> None:
     external_secret = "synthetic-settings-primary-secret"
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
-    monkeypatch.delenv("OPENSQUILLA_LLM_API_KEY_ENV", raising=False)
-    monkeypatch.setenv("OPENSQUILLA_LLM_API_KEY", external_secret)
+    monkeypatch.delenv("OPENSTARRY_CODE_LLM_API_KEY_ENV", raising=False)
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_API_KEY", external_secret)
     config_path = tmp_path / "config.toml"
     cfg = GatewayConfig(
         config_path=str(config_path),
@@ -627,19 +627,19 @@ async def test_active_clear_keeps_generic_settings_key_effective_and_reported(
     assert response.error is None, response.error
     assert response.payload["entry"]["externalCredentialActive"] is True
     assert response.payload["entry"]["credentialSource"] == "env"
-    assert response.payload["entry"]["credentialEnv"] == "OPENSQUILLA_LLM_API_KEY"
+    assert response.payload["entry"]["credentialEnv"] == "OPENSTARRY_CODE_LLM_API_KEY"
     assert external_secret not in repr(response.payload)
     assert selector.synced[-1].api_key == external_secret
     assert cfg.llm.api_key == ""
     status = get_onboarding_status(cfg)
     assert status.llm_credential_status["source"] == "env"
-    assert status.llm_credential_status["envKey"] == "OPENSQUILLA_LLM_API_KEY"
+    assert status.llm_credential_status["envKey"] == "OPENSTARRY_CODE_LLM_API_KEY"
 
     reloaded = load_config(config_path)
     runtime = resolve_llm_runtime_config(reloaded)
     assert runtime.api_key == external_secret
     assert runtime.api_key_from_env is True
-    assert runtime.api_key_env_name == "OPENSQUILLA_LLM_API_KEY"
+    assert runtime.api_key_env_name == "OPENSTARRY_CODE_LLM_API_KEY"
 
 
 @pytest.mark.asyncio
@@ -649,8 +649,8 @@ async def test_active_clear_keeps_settings_env_reference_effective_and_reported(
 ) -> None:
     external_secret = "synthetic-settings-env-reference-secret"
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
-    monkeypatch.delenv("OPENSQUILLA_LLM_API_KEY", raising=False)
-    monkeypatch.setenv("OPENSQUILLA_LLM_API_KEY_ENV", "CUSTOM_PRIMARY_KEY")
+    monkeypatch.delenv("OPENSTARRY_CODE_LLM_API_KEY", raising=False)
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_API_KEY_ENV", "CUSTOM_PRIMARY_KEY")
     monkeypatch.setenv("CUSTOM_PRIMARY_KEY", external_secret)
     config_path = tmp_path / "config.toml"
     cfg = GatewayConfig(
@@ -716,11 +716,11 @@ async def test_active_credential_clear_persist_failure_leaves_runtime_untouched(
     ctx = _admin_ctx(cfg)
     sync_attempts: list[str] = []
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_onboarding._persist",
+        "openstarry_code.gateway.rpc_onboarding._persist",
         lambda *args, **kwargs: (_ for _ in ()).throw(OSError("synthetic write failure")),
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_onboarding._sync_provider_selector",
+        "openstarry_code.gateway.rpc_onboarding._sync_provider_selector",
         lambda *args: sync_attempts.append("selector"),
     )
 
@@ -741,7 +741,7 @@ async def test_profile_credential_clear_persist_failure_keeps_config_and_pool(
     tmp_path,
     monkeypatch,
 ) -> None:
-    from opensquilla.gateway.llm_runtime import reset_profile_credential_pools
+    from openstarry_code.gateway.llm_runtime import reset_profile_credential_pools
 
     pool_secret = "synthetic-pooled-secret"
     monkeypatch.setenv("DEEPSEEK_POOL_A", pool_secret)
@@ -762,7 +762,7 @@ async def test_profile_credential_clear_persist_failure_keeps_config_and_pool(
     )
     ctx = _admin_ctx(cfg)
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_onboarding._persist",
+        "openstarry_code.gateway.rpc_onboarding._persist",
         lambda *args, **kwargs: (_ for _ in ()).throw(OSError("synthetic write failure")),
     )
     try:

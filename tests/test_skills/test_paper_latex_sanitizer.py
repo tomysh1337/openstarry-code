@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.subprocess_encoding import apply_utf8_child_env
+from openstarry_code.subprocess_encoding import apply_utf8_child_env
 
 ROOT = Path(__file__).resolve().parents[2]
 SANITIZER = (

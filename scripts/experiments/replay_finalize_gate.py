@@ -2,7 +2,7 @@
 """Offline transcript replay for the finalize-time red-evidence gate.
 
 Feeds recorded run transcripts through the exact same pure tracker the
-live agent loop uses (``opensquilla.engine.finalize_evidence_gate``) and
+live agent loop uses (``openstarry_code.engine.finalize_evidence_gate``) and
 reports whether the gate would have challenged the run's final state. This
 lets the gate be validated offline: it should fire on runs whose transcripts
 show red self-evidence at finalization while staying quiet on runs that
@@ -49,7 +49,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from opensquilla.engine.finalize_evidence_gate import (
+from openstarry_code.engine.finalize_evidence_gate import (
     EXECUTION_TOOL_NAMES,
     WRITE_TOOL_NAMES,
     FinalizeEvidenceTracker,

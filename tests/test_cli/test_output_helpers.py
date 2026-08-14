@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 
-from opensquilla.cli.output import emit_error, print_json
+from openstarry_code.cli.output import emit_error, print_json
 
 
 def test_print_json_uses_stdout(capsys):

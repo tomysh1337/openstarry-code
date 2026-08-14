@@ -11,15 +11,15 @@ from typing import Any
 
 import pytest
 
-import opensquilla.engine.agent as agent_mod
-from opensquilla.engine import Agent, AgentConfig, ToolResult
-from opensquilla.engine.tool_result_store import (
+import openstarry_code.engine.agent as agent_mod
+from openstarry_code.engine import Agent, AgentConfig, ToolResult
+from openstarry_code.engine.tool_result_store import (
     ToolResultStore,
     ToolResultStoreBudgetError,
 )
-from opensquilla.provider import ContentBlockToolResult, Message
-from opensquilla.tools import ToolRegistry, tool
-from opensquilla.tools.dispatch import build_tool_handler
+from openstarry_code.provider import ContentBlockToolResult, Message
+from openstarry_code.tools import ToolRegistry, tool
+from openstarry_code.tools.dispatch import build_tool_handler
 
 _SESSION_ID = "session-1"
 _SESSION_KEY = "agent:main:webchat:session-1"

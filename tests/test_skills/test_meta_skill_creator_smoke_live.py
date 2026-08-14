@@ -18,6 +18,6 @@ def test_smoke_live_scaffold_deterministic_path() -> None:
     Real cross-vendor LLM wiring lands in a follow-on iteration; this
     test currently exercises the deterministic fallback only.
     """
-    from opensquilla.skills.creator.proposer import _deterministic_fixture
+    from openstarry_code.skills.creator.proposer import _deterministic_fixture
     pos = _deterministic_fixture("...stub skill...", "positive")
     assert isinstance(pos, str) and len(pos) > 5

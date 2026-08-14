@@ -19,32 +19,32 @@ from typing import Any
 
 import pytest
 
-from opensquilla.channels.contract import (
+from openstarry_code.channels.contract import (
     ChannelCapabilities,
     ChannelSendResult,
     channel_capability_evidence,
 )
-from opensquilla.channels.delivery_store import (
+from openstarry_code.channels.delivery_store import (
     ChannelDeliveryStore,
     deliver_with_outbox,
     durable_enqueue,
     install_outbox,
 )
-from opensquilla.channels.dingtalk import DingTalkChannel, DingTalkChannelConfig
-from opensquilla.channels.discord import DiscordChannel, DiscordChannelConfig
-from opensquilla.channels.feishu import FeishuChannel, FeishuChannelConfig
-from opensquilla.channels.matrix import MatrixChannel, MatrixChannelConfig
-from opensquilla.channels.qq import QQChannel, QQChannelConfig
-from opensquilla.channels.slack import SlackChannel
-from opensquilla.channels.telegram import TelegramChannel, TelegramChannelConfig
-from opensquilla.channels.types import (
+from openstarry_code.channels.dingtalk import DingTalkChannel, DingTalkChannelConfig
+from openstarry_code.channels.discord import DiscordChannel, DiscordChannelConfig
+from openstarry_code.channels.feishu import FeishuChannel, FeishuChannelConfig
+from openstarry_code.channels.matrix import MatrixChannel, MatrixChannelConfig
+from openstarry_code.channels.qq import QQChannel, QQChannelConfig
+from openstarry_code.channels.slack import SlackChannel
+from openstarry_code.channels.telegram import TelegramChannel, TelegramChannelConfig
+from openstarry_code.channels.types import (
     AuthenticatedPrincipal,
     IncomingMessage,
     IngressProvenance,
     IngressVerification,
     OutgoingMessage,
 )
-from opensquilla.channels.wecom import WeComChannel, WeComChannelConfig
+from openstarry_code.channels.wecom import WeComChannel, WeComChannelConfig
 
 
 def _inbound(provider: str, event_id: str = "event-1") -> IncomingMessage:

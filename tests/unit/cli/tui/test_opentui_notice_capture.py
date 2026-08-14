@@ -10,13 +10,13 @@ from typing import Any
 
 import pytest
 
-from opensquilla.cli.tui.backend.output_binding import TuiOutputBinding
-from opensquilla.cli.tui.opentui.notice_capture import (
+from openstarry_code.cli.tui.backend.output_binding import TuiOutputBinding
+from openstarry_code.cli.tui.opentui.notice_capture import (
     NoticeForwardingStream,
     capture_stdout_as_notices,
     real_stderr,
 )
-from opensquilla.cli.tui.opentui.runtime import forward_console_notice
+from openstarry_code.cli.tui.opentui.runtime import forward_console_notice
 
 
 def test_stream_forwards_only_complete_lines() -> None:
@@ -110,7 +110,7 @@ def test_capture_restores_stdout_and_forwards_console_output() -> None:
     original_stderr = sys.stderr
     lines: list[str] = []
 
-    from opensquilla.cli.ui import console
+    from openstarry_code.cli.ui import console
 
     with capture_stdout_as_notices(lines.append):
         assert sys.stdout is not original_stdout
@@ -145,7 +145,7 @@ class _SendRecordingOutput:
     """Minimal handle satisfying the runtime-checkable TuiOutputHandle protocol."""
 
     def __init__(self) -> None:
-        from opensquilla.engine.commands import Surface
+        from openstarry_code.engine.commands import Surface
 
         self.approval_surface = Surface.CLI_GATEWAY
         self.sent: list[tuple[str, dict[str, Any]]] = []

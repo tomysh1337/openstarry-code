@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from opensquilla.observability.decision_log import (
+from openstarry_code.observability.decision_log import (
     SCHEMA_VERSION,
     DecisionEntry,
     load_entries,
@@ -68,7 +68,7 @@ def test_old_schema_v9_row_reads_with_empty_skills_invoked(tmp_path: Path) -> No
 
 def test_collect_invoked_skills_filters_non_skill_view() -> None:
     """collect_invoked_skills returns only skill_view-resolved names, in order."""
-    from opensquilla.engine.runtime import collect_invoked_skills
+    from openstarry_code.engine.runtime import collect_invoked_skills
     invoked = collect_invoked_skills([
         {"name": "skill_view", "input": {"name": "pdf-toolkit"}},
         {"name": "skill_view", "input": {"name": "summarize"}},
@@ -79,7 +79,7 @@ def test_collect_invoked_skills_filters_non_skill_view() -> None:
 
 def test_collect_invoked_skills_dedups_repeated_calls() -> None:
     """A skill invoked multiple times in one turn appears once, at first position."""
-    from opensquilla.engine.runtime import collect_invoked_skills
+    from openstarry_code.engine.runtime import collect_invoked_skills
     invoked = collect_invoked_skills([
         {"name": "skill_view", "input": {"name": "pdf-toolkit"}},
         {"name": "skill_view", "input": {"name": "summarize"}},
@@ -92,7 +92,7 @@ def test_collect_invoked_skills_dedups_repeated_calls() -> None:
 def test_collect_invoked_skills_captures_meta_invoke() -> None:
     """N7: meta_invoke tool calls record the meta-skill name in skills_invoked
     so aggregate_meta_usage can count them."""
-    from opensquilla.engine.runtime import collect_invoked_skills
+    from openstarry_code.engine.runtime import collect_invoked_skills
     invoked = collect_invoked_skills([
         {"name": "skill_view", "input": {"name": "pdf-toolkit"}},
         {"name": "meta_invoke", "input": {"name": "meta-pdf-intelligence"}},
@@ -104,7 +104,7 @@ def test_collect_invoked_skills_captures_meta_invoke() -> None:
 
 def test_collect_invoked_skills_deduplicates_meta_invoke() -> None:
     """N7: a meta-skill invoked multiple times in one turn appears once."""
-    from opensquilla.engine.runtime import collect_invoked_skills
+    from openstarry_code.engine.runtime import collect_invoked_skills
     invoked = collect_invoked_skills([
         {"name": "meta_invoke", "input": {"name": "meta-pdf-intelligence"}},
         {"name": "skill_view", "input": {"name": "pdf-toolkit"}},
@@ -116,7 +116,7 @@ def test_collect_invoked_skills_deduplicates_meta_invoke() -> None:
 def test_collect_invoked_skills_extra_first_prepended_and_deduped() -> None:
     """N16: extra_first list prepends meta-skill name from hard-takeover
     branch, deduped against any subsequent skill_view/meta_invoke segments."""
-    from opensquilla.engine.runtime import collect_invoked_skills
+    from openstarry_code.engine.runtime import collect_invoked_skills
     invoked = collect_invoked_skills(
         [
             {"name": "skill_view", "input": {"name": "pdf-toolkit"}},
@@ -132,7 +132,7 @@ def test_collect_invoked_skills_extra_first_prepended_and_deduped() -> None:
 
 def test_collect_invoked_skills_extra_first_none_is_noop() -> None:
     """N16: extra_first=None preserves original behaviour."""
-    from opensquilla.engine.runtime import collect_invoked_skills
+    from openstarry_code.engine.runtime import collect_invoked_skills
     invoked = collect_invoked_skills(
         [{"name": "skill_view", "input": {"name": "pdf-toolkit"}}],
         extra_first=None,

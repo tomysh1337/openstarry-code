@@ -11,7 +11,7 @@ import pytest
 import yaml
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-SCRIPT = REPO_ROOT / "src/opensquilla/skills/bundled/title-card-image/scripts/render.py"
+SCRIPT = REPO_ROOT / "src/openstarry_code/skills/bundled/title-card-image/scripts/render.py"
 SKILL = SCRIPT.parents[1] / "SKILL.md"
 
 
@@ -74,7 +74,7 @@ def test_managed_cjk_font_directory_is_preferred(
 
     import PIL.ImageFont
 
-    monkeypatch.setenv("OPENSQUILLA_MEDIA_FONTS_DIR", str(fonts))
+    monkeypatch.setenv("OPENSTARRY_CODE_MEDIA_FONTS_DIR", str(fonts))
     monkeypatch.setattr(PIL.ImageFont, "truetype", fake_truetype)
 
     source = module._resolve_font_source("深夜图书馆", None)
@@ -101,7 +101,7 @@ def test_explicit_tofu_font_falls_back_to_covered_managed_font(
 
     import PIL.ImageFont
 
-    monkeypatch.setenv("OPENSQUILLA_MEDIA_FONTS_DIR", str(fonts))
+    monkeypatch.setenv("OPENSTARRY_CODE_MEDIA_FONTS_DIR", str(fonts))
     monkeypatch.setattr(PIL.ImageFont, "truetype", fake_truetype)
 
     assert Path(module._resolve_font_source("完", str(explicit))) == managed
@@ -130,7 +130,7 @@ def test_missing_cjk_font_fails_with_actionable_setup_message(
 
     message = str(caught.value)
     assert "CJK-capable font" in message
-    assert "OPENSQUILLA_MEDIA_FONTS_DIR" in message
+    assert "OPENSTARRY_CODE_MEDIA_FONTS_DIR" in message
     assert "--font" in message
 
 

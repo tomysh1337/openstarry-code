@@ -5,13 +5,13 @@ import json
 from dataclasses import replace
 from typing import Any
 
-from opensquilla.engine import Agent, AgentConfig
-from opensquilla.sandbox.config import SandboxSettings
-from opensquilla.sandbox.integration import configure_runtime, reset_runtime
-from opensquilla.tool_boundary import ToolCall
-from opensquilla.tools.dispatch import build_tool_handler
-from opensquilla.tools.registry import ToolRegistry, get_default_registry
-from opensquilla.tools.types import (
+from openstarry_code.engine import Agent, AgentConfig
+from openstarry_code.sandbox.config import SandboxSettings
+from openstarry_code.sandbox.integration import configure_runtime, reset_runtime
+from openstarry_code.tool_boundary import ToolCall
+from openstarry_code.tools.dispatch import build_tool_handler
+from openstarry_code.tools.registry import ToolRegistry, get_default_registry
+from openstarry_code.tools.types import (
     InteractionMode,
     ToolContext,
     ToolSpec,

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from opensquilla.sandbox.managed_proxy_env import (
+from openstarry_code.sandbox.managed_proxy_env import (
     ALLOW_LOCAL_BINDING_ENV_KEY,
     DEFAULT_NO_PROXY_VALUE,
     NO_PROXY_ENV_KEYS,
@@ -26,7 +26,7 @@ def test_managed_proxy_env_matches_codex_proxy_controls_without_windows_git() ->
     assert env[ALLOW_LOCAL_BINDING_ENV_KEY] == "0"
     assert env["NODE_USE_ENV_PROXY"] == "1"
     assert env["ELECTRON_GET_USE_PROXY"] == "true"
-    assert env["OPENSQUILLA_SANDBOX_NETWORK"] == "proxy_allowlist"
+    assert env["OPENSTARRY_CODE_SANDBOX_NETWORK"] == "proxy_allowlist"
     assert "GIT_CONFIG_COUNT" not in env
     assert "GIT_CONFIG_KEY_0" not in env
     assert "GIT_CONFIG_VALUE_0" not in env
@@ -50,7 +50,7 @@ def test_managed_proxy_env_allowlist_contains_all_generated_keys() -> None:
 
 
 def test_linux_proxy_modules_stay_aligned_with_common_proxy_env() -> None:
-    from opensquilla.sandbox.backend import linux_proxy_bridge, linux_proxy_routing
+    from openstarry_code.sandbox.backend import linux_proxy_bridge, linux_proxy_routing
 
     assert linux_proxy_routing.PROXY_ENV_KEYS == PROXY_ENV_KEYS
     assert linux_proxy_routing.NO_PROXY_ENV_KEYS == NO_PROXY_ENV_KEYS

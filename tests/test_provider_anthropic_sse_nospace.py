@@ -15,9 +15,9 @@ from __future__ import annotations
 import asyncio
 from typing import Any
 
-from opensquilla.provider import anthropic as anthropic_mod
-from opensquilla.provider.anthropic import AnthropicProvider
-from opensquilla.provider.types import (
+from openstarry_code.provider import anthropic as anthropic_mod
+from openstarry_code.provider.anthropic import AnthropicProvider
+from openstarry_code.provider.types import (
     ChatConfig,
     DoneEvent,
     Message,

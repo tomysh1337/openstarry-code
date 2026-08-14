@@ -16,11 +16,11 @@ from __future__ import annotations
 import pytest
 from pydantic import ValidationError
 
-import opensquilla.search.registry as registry_module
-import opensquilla.tools.builtin.web as web_module
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.result_budget import ToolRunBudgetPolicy, clamp_tool_arguments
-from opensquilla.search.types import DEFAULT_SEARCH_MAX_RESULTS, MAX_SEARCH_RESULTS
+import openstarry_code.search.registry as registry_module
+import openstarry_code.tools.builtin.web as web_module
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.result_budget import ToolRunBudgetPolicy, clamp_tool_arguments
+from openstarry_code.search.types import DEFAULT_SEARCH_MAX_RESULTS, MAX_SEARCH_RESULTS
 
 
 @pytest.mark.parametrize("tool", ["web_search", "web_discover"])
@@ -124,7 +124,7 @@ def test_migration_coerces_legacy_out_of_range() -> None:
     # A pre-bound config could persist values outside [1, MAX_SEARCH_RESULTS];
     # migration must coerce them so strict GatewayConfig validation does not crash
     # the load.
-    from opensquilla.gateway.config_migration import migrate_config_payload
+    from openstarry_code.gateway.config_migration import migrate_config_payload
 
     assert (
         migrate_config_payload({"search_max_results": 50}).payload["search_max_results"]

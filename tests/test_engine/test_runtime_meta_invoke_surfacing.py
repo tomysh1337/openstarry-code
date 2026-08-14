@@ -15,23 +15,23 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.engine.pipeline import TurnContext
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.provider import ToolDefinition, ToolInputSchema
-from opensquilla.skills.capability_runtime import (
+from openstarry_code.engine.pipeline import TurnContext
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.provider import ToolDefinition, ToolInputSchema
+from openstarry_code.skills.capability_runtime import (
     META_CAPABILITY_API_KEY_ENV,
     META_CAPABILITY_BASE_URL_ENV,
     META_CAPABILITY_PROVIDER_ENV,
 )
-from opensquilla.skills.loader import SkillLoader
-from opensquilla.skills.meta.parser import parse_meta_plan
-from opensquilla.skills.meta.readiness import (
+from openstarry_code.skills.loader import SkillLoader
+from openstarry_code.skills.meta.parser import parse_meta_plan
+from openstarry_code.skills.meta.readiness import (
     META_OPENROUTER_API_KEY_ENV,
     META_READINESS_ENV_ALIASES_METADATA_KEY,
     META_SKILL_RUNTIME_ENV_PROVIDER_METADATA_KEY,
 )
-from opensquilla.tools.registry import get_default_registry
-from opensquilla.tools.types import ToolContext
+from openstarry_code.tools.registry import get_default_registry
+from openstarry_code.tools.types import ToolContext
 
 
 def _make_loader_with_meta(
@@ -204,7 +204,7 @@ async def test_runtime_pipeline_runs_meta_resolution_before_skill_filter(
         return ctx
 
     noop_router.__name__ = "apply_squilla_router"
-    monkeypatch.setattr("opensquilla.engine.steps.apply_squilla_router", noop_router)
+    monkeypatch.setattr("openstarry_code.engine.steps.apply_squilla_router", noop_router)
 
     loader = _make_loader_with_meta(tmp_path)
     runner = TurnRunner(provider_selector=None, config=_meta_cfg(auto_trigger=True))
@@ -256,7 +256,7 @@ async def test_runtime_pipeline_restores_mainline_meta_and_coding_order(
         return ctx
 
     noop_router.__name__ = "apply_squilla_router"
-    monkeypatch.setattr("opensquilla.engine.steps.apply_squilla_router", noop_router)
+    monkeypatch.setattr("openstarry_code.engine.steps.apply_squilla_router", noop_router)
 
     runner = TurnRunner(provider_selector=None, config=_meta_cfg(auto_trigger=False))
     runner._skill_loader = _make_loader_without_meta(tmp_path)
@@ -306,7 +306,7 @@ async def test_runtime_pipeline_pins_meta_skill_when_skill_filter_enabled(
         return ctx
 
     noop_router.__name__ = "apply_squilla_router"
-    monkeypatch.setattr("opensquilla.engine.steps.apply_squilla_router", noop_router)
+    monkeypatch.setattr("openstarry_code.engine.steps.apply_squilla_router", noop_router)
 
     loader = _make_loader_with_meta(tmp_path)
     skills_cfg = SimpleNamespace(
@@ -368,7 +368,7 @@ async def test_pipeline_projects_configured_openrouter_key_as_name_only_metadata
         return ctx
 
     noop_router.__name__ = "apply_squilla_router"
-    monkeypatch.setattr("opensquilla.engine.steps.apply_squilla_router", noop_router)
+    monkeypatch.setattr("openstarry_code.engine.steps.apply_squilla_router", noop_router)
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     secret = "synthetic-openrouter-runtime-key"
     config = SimpleNamespace(
@@ -438,7 +438,7 @@ async def test_pipeline_hides_meta_skill_from_prompt_when_auto_trigger_off(
         return ctx
 
     noop_router.__name__ = "apply_squilla_router"
-    monkeypatch.setattr("opensquilla.engine.steps.apply_squilla_router", noop_router)
+    monkeypatch.setattr("openstarry_code.engine.steps.apply_squilla_router", noop_router)
 
     loader = _make_loader_with_meta(tmp_path)
     runner = TurnRunner(provider_selector=None, config=_meta_cfg(auto_trigger=False))
@@ -469,7 +469,7 @@ async def test_pipeline_shows_meta_skill_when_auto_trigger_on(
         return ctx
 
     noop_router.__name__ = "apply_squilla_router"
-    monkeypatch.setattr("opensquilla.engine.steps.apply_squilla_router", noop_router)
+    monkeypatch.setattr("openstarry_code.engine.steps.apply_squilla_router", noop_router)
 
     loader = _make_loader_with_meta(tmp_path)
     runner = TurnRunner(provider_selector=None, config=_meta_cfg(auto_trigger=True))

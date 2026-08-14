@@ -3,11 +3,11 @@ from __future__ import annotations
 import subprocess
 import sys
 
-import opensquilla.tool_boundary as tool_boundary
-from opensquilla.engine.types import ToolCall
-from opensquilla.tools.dispatch import build_tool_handler
-from opensquilla.tools.registry import get_default_registry
-from opensquilla.tools.types import CallerKind, ToolContext
+import openstarry_code.tool_boundary as tool_boundary
+from openstarry_code.engine.types import ToolCall
+from openstarry_code.tools.dispatch import build_tool_handler
+from openstarry_code.tools.registry import get_default_registry
+from openstarry_code.tools.types import CallerKind, ToolContext
 
 REMOVED_TOOL_NAMES = {"generate_image", "spawn_subagent", "send_message"}
 CANONICAL_TOOL_NAMES = {
@@ -21,9 +21,9 @@ OWNER_ONLY_TOOL_NAMES = {"http_request", "git_commit"}
 
 
 def test_tool_call_boundary_has_canonical_and_stable_exports() -> None:
-    from opensquilla.engine import ToolHandler as EngineToolHandler
-    from opensquilla.engine.types import ToolResult as EngineToolResult
-    from opensquilla.tools.boundary import ToolCall as ToolsToolCall
+    from openstarry_code.engine import ToolHandler as EngineToolHandler
+    from openstarry_code.engine.types import ToolResult as EngineToolResult
+    from openstarry_code.tools.boundary import ToolCall as ToolsToolCall
 
     assert tool_boundary.ToolCall is ToolCall
     assert tool_boundary.ToolResult is EngineToolResult
@@ -34,9 +34,9 @@ def test_tool_call_boundary_has_canonical_and_stable_exports() -> None:
 def test_engine_types_import_does_not_register_builtin_tools() -> None:
     script = (
         "import sys; "
-        "import opensquilla.engine.types; "
-        "assert 'opensquilla.tools.builtin' not in sys.modules, "
-        "sorted(k for k in sys.modules if k.startswith('opensquilla.tools'))"
+        "import openstarry_code.engine.types; "
+        "assert 'openstarry_code.tools.builtin' not in sys.modules, "
+        "sorted(k for k in sys.modules if k.startswith('openstarry_code.tools'))"
     )
 
     result = subprocess.run(
@@ -51,7 +51,7 @@ def test_engine_types_import_does_not_register_builtin_tools() -> None:
 
 
 def test_default_registry_public_surface_uses_canonical_tool_names() -> None:
-    import opensquilla.tools.builtin  # noqa: F401
+    import openstarry_code.tools.builtin  # noqa: F401
 
     registry = get_default_registry()
     owner_names = {
@@ -79,7 +79,7 @@ def test_default_registry_public_surface_uses_canonical_tool_names() -> None:
 
 
 async def test_removed_tools_are_not_dispatchable_by_name() -> None:
-    import opensquilla.tools.builtin  # noqa: F401
+    import openstarry_code.tools.builtin  # noqa: F401
 
     handler = build_tool_handler(
         get_default_registry(),

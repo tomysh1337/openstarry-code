@@ -2,8 +2,8 @@
 
 import pytest
 
-from opensquilla.contrib.codetask import preflight as _preflight
-from opensquilla.onboarding.probe import ProviderProbeResult
+from openstarry_code.contrib.codetask import preflight as _preflight
+from openstarry_code.onboarding.probe import ProviderProbeResult
 
 
 @pytest.fixture(autouse=True)
@@ -28,8 +28,8 @@ def _isolate_agent_config_discovery(monkeypatch, tmp_path_factory):
 
     ``runner.solve`` and ``LocalAdapter.run`` now assemble the per-run
     subagent config from the operator's effective config. The repo root is a
-    documented config location (``./opensquilla.toml``) and the global
-    conftest strips provider keys but not ``OPENSQUILLA_GATEWAY_CONFIG_PATH``,
+    documented config location (``./openstarry-code.toml``) and the global
+    conftest strips provider keys but not ``OPENSTARRY_CODE_GATEWAY_CONFIG_PATH``,
     so without this guard a developer's real config/env would leak into the
     merged payload (and their credentials into per-run artifacts). Point
     discovery at a missing explicit path — the sole candidate, so neither the
@@ -37,6 +37,6 @@ def _isolate_agent_config_discovery(monkeypatch, tmp_path_factory):
     override this with their own ``monkeypatch.setenv``.
     """
     missing = tmp_path_factory.mktemp("no-operator-config") / "config.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(missing))
-    monkeypatch.delenv("OPENSQUILLA_CODETASK_AGENT_CONFIG", raising=False)
-    monkeypatch.delenv("OPENSQUILLA_LLM_API_KEY", raising=False)
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(missing))
+    monkeypatch.delenv("OPENSTARRY_CODE_CODETASK_AGENT_CONFIG", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_LLM_API_KEY", raising=False)

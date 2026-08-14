@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 
-from opensquilla.gateway import boot, rpc_onboarding
+from openstarry_code.gateway import boot, rpc_onboarding
 
 
 def test_rpc_onboarding_sync_search_provider_passes_api_key_env(monkeypatch) -> None:
@@ -11,7 +11,7 @@ def test_rpc_onboarding_sync_search_provider_passes_api_key_env(monkeypatch) -> 
     def fake_configure_search(**kwargs) -> None:
         calls.append(kwargs)
 
-    monkeypatch.setattr("opensquilla.tools.builtin.web.configure_search", fake_configure_search)
+    monkeypatch.setattr("openstarry_code.tools.builtin.web.configure_search", fake_configure_search)
 
     rpc_onboarding._sync_search_provider(
         SimpleNamespace(

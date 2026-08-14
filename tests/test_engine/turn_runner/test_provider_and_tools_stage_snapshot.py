@@ -19,9 +19,9 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.engine.types import ErrorEvent
-from opensquilla.tools.types import CallerKind, ToolContext
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.engine.types import ErrorEvent
+from openstarry_code.tools.types import CallerKind, ToolContext
 
 
 @dataclass

@@ -4,11 +4,11 @@ from __future__ import annotations
 
 import json
 
-from opensquilla.skills.meta.clarify_schema import (
+from openstarry_code.skills.meta.clarify_schema import (
     field_to_protocol,
     schema_to_protocol,
 )
-from opensquilla.skills.meta.types import ClarifyField, ClarifyStepConfig
+from openstarry_code.skills.meta.types import ClarifyField, ClarifyStepConfig
 
 
 def test_field_to_protocol_minimal():

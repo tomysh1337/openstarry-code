@@ -18,7 +18,7 @@ from typing import Any
 import pytest
 from rich.console import Console
 
-from opensquilla.onboarding import flow
+from openstarry_code.onboarding import flow
 
 pytestmark = pytest.mark.skipif(
     os.name == "nt" or (hasattr(os, "geteuid") and os.geteuid() == 0),
@@ -62,7 +62,7 @@ def test_onboard_unwritable_config_dir_exits_2_before_any_prompt(tmp_path, monke
     state_dir = tmp_path / "state"
     state_dir.mkdir()
     target = state_dir / "config.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     monkeypatch.setattr(flow, "_is_tty", lambda: True)
     output = _capture_console(monkeypatch)
     gate_fired: list[str] = []

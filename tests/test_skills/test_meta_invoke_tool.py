@@ -15,8 +15,8 @@ def test_meta_invoke_registered_in_default_registry() -> None:
     """meta_invoke appears in the registry after importing the builtin
     module."""
     # Importing the builtin package triggers all registrations.
-    from opensquilla.tools.builtin import meta_tools  # noqa: F401 — import side-effect
-    from opensquilla.tools.registry import get_default_registry
+    from openstarry_code.tools.builtin import meta_tools  # noqa: F401 — import side-effect
+    from openstarry_code.tools.registry import get_default_registry
 
     assert get_default_registry().get("meta_invoke") is not None
 
@@ -24,8 +24,8 @@ def test_meta_invoke_registered_in_default_registry() -> None:
 def test_meta_invoke_spec_shape() -> None:
     """meta_invoke advertises a single required string parameter 'name',
     and the description mentions meta-skill semantics."""
-    from opensquilla.tools.builtin import meta_tools  # noqa: F401
-    from opensquilla.tools.registry import get_default_registry
+    from openstarry_code.tools.builtin import meta_tools  # noqa: F401
+    from openstarry_code.tools.registry import get_default_registry
 
     registered = get_default_registry().get("meta_invoke")
     assert registered is not None
@@ -42,8 +42,8 @@ def test_meta_invoke_spec_shape() -> None:
 def test_meta_invoke_not_exposed_by_default() -> None:
     """meta_invoke must not appear in default tool catalogues. It is
     conditionally surfaced by SkillInjector when meta-skills are present."""
-    from opensquilla.tools.builtin import meta_tools  # noqa: F401
-    from opensquilla.tools.registry import get_default_registry
+    from openstarry_code.tools.builtin import meta_tools  # noqa: F401
+    from openstarry_code.tools.registry import get_default_registry
 
     registered = get_default_registry().get("meta_invoke")
     assert registered is not None  # exists in registry
@@ -58,7 +58,7 @@ async def test_meta_invoke_handler_raises_routing_error() -> None:
     that's a configuration bug — the Agent's dispatch loop should have
     intercepted it. Raise a clear RuntimeError naming the expected
     interception point."""
-    from opensquilla.tools.builtin.meta_tools import meta_invoke
+    from openstarry_code.tools.builtin.meta_tools import meta_invoke
 
     with pytest.raises(RuntimeError) as exc_info:
         await meta_invoke(name="any")
@@ -74,7 +74,7 @@ async def test_meta_invoke_handler_raises_routing_error() -> None:
 
 def test_tool_result_has_terminates_turn_field() -> None:
     """ToolResult.terminates_turn defaults to False; can be set True."""
-    from opensquilla.tool_boundary import ToolResult
+    from openstarry_code.tool_boundary import ToolResult
 
     r = ToolResult(tool_use_id="u1", tool_name="t", content="ok")
     assert r.terminates_turn is False
@@ -101,8 +101,8 @@ class _NullProvider:
 async def test_compress_tool_result_preserves_terminates_turn_when_short() -> None:
     """When content is short enough to not need compression, the rebuild
     must still carry terminates_turn through."""
-    from opensquilla.engine import Agent, AgentConfig
-    from opensquilla.tool_boundary import ToolResult
+    from openstarry_code.engine import Agent, AgentConfig
+    from openstarry_code.tool_boundary import ToolResult
 
     agent = Agent(provider=_NullProvider(), config=AgentConfig())
 
@@ -121,8 +121,8 @@ async def test_compress_tool_result_preserves_terminates_turn_when_short() -> No
 async def test_compress_tool_result_preserves_terminates_turn_when_compressed() -> None:
     """When content IS large enough to trigger compression, the rebuild
     must STILL carry terminates_turn through (the other code path)."""
-    from opensquilla.engine import Agent, AgentConfig
-    from opensquilla.tool_boundary import ToolResult
+    from openstarry_code.engine import Agent, AgentConfig
+    from openstarry_code.tool_boundary import ToolResult
 
     # Shrink context_window_tokens so 50_000 chars (~12500 tokens) exceeds
     # the compression budget (context_window_tokens * max_share = 1000 * 0.25
@@ -166,13 +166,13 @@ async def test_run_one_streaming_success_yields_events_then_terminating_result(
 ) -> None:
     """Agent._run_one_streaming for a successful meta-skill yields nested
     events then a ToolResult with terminates_turn=True and is_error=False."""
-    from opensquilla.engine.agent import Agent
-    from opensquilla.engine.types import AgentConfig
-    from opensquilla.skills.loader import SkillLoader
-    from opensquilla.tool_boundary import ToolCall, ToolResult
-    from opensquilla.tools.builtin import meta_tools  # noqa: F401 — registers meta_invoke
-    from opensquilla.tools.registry import get_default_registry
-    from opensquilla.tools.types import ToolContext
+    from openstarry_code.engine.agent import Agent
+    from openstarry_code.engine.types import AgentConfig
+    from openstarry_code.skills.loader import SkillLoader
+    from openstarry_code.tool_boundary import ToolCall, ToolResult
+    from openstarry_code.tools.builtin import meta_tools  # noqa: F401 — registers meta_invoke
+    from openstarry_code.tools.registry import get_default_registry
+    from openstarry_code.tools.types import ToolContext
 
     # Synthesize a tiny meta-skill using kind: meta directly (bypassing
     # the SOP markdown compiler so llm_classify is supported).
@@ -265,13 +265,13 @@ async def test_meta_invoke_rejects_global_provider_alias_for_untrusted_parent(
     monkeypatch,
 ) -> None:
     """A non-authorized parent cannot turn a global alias into child auth."""
-    from opensquilla.engine.agent import Agent
-    from opensquilla.engine.types import AgentConfig
-    from opensquilla.skills.types import SkillPlatformMeta, SkillRequires
-    from opensquilla.tool_boundary import ToolCall, ToolResult
-    from opensquilla.tools.builtin import meta_tools  # noqa: F401
-    from opensquilla.tools.registry import get_default_registry
-    from opensquilla.tools.types import ToolContext
+    from openstarry_code.engine.agent import Agent
+    from openstarry_code.engine.types import AgentConfig
+    from openstarry_code.skills.types import SkillPlatformMeta, SkillRequires
+    from openstarry_code.tool_boundary import ToolCall, ToolResult
+    from openstarry_code.tools.builtin import meta_tools  # noqa: F401
+    from openstarry_code.tools.registry import get_default_registry
+    from openstarry_code.tools.types import ToolContext
     from tests.test_engine.test_runtime_meta_invoke_surfacing import (
         _make_loader_with_meta,
     )
@@ -358,16 +358,16 @@ async def test_meta_invoke_rejects_global_provider_alias_for_untrusted_parent(
 async def test_meta_invoke_llm_chat_step_records_usage(tmp_path) -> None:
     """Meta-skill llm_chat steps call the provider outside the normal Agent
     loop, but their tokens still belong to the parent session usage."""
-    from opensquilla.engine.agent import Agent
-    from opensquilla.engine.types import AgentConfig
-    from opensquilla.engine.usage import UsageTracker
-    from opensquilla.provider.types import DoneEvent as ProviderDoneEvent
-    from opensquilla.provider.types import TextDeltaEvent as ProviderTextDeltaEvent
-    from opensquilla.skills.loader import SkillLoader
-    from opensquilla.tool_boundary import ToolCall, ToolResult
-    from opensquilla.tools.builtin import meta_tools  # noqa: F401
-    from opensquilla.tools.registry import get_default_registry
-    from opensquilla.tools.types import ToolContext
+    from openstarry_code.engine.agent import Agent
+    from openstarry_code.engine.types import AgentConfig
+    from openstarry_code.engine.usage import UsageTracker
+    from openstarry_code.provider.types import DoneEvent as ProviderDoneEvent
+    from openstarry_code.provider.types import TextDeltaEvent as ProviderTextDeltaEvent
+    from openstarry_code.skills.loader import SkillLoader
+    from openstarry_code.tool_boundary import ToolCall, ToolResult
+    from openstarry_code.tools.builtin import meta_tools  # noqa: F401
+    from openstarry_code.tools.registry import get_default_registry
+    from openstarry_code.tools.types import ToolContext
 
     bundled = tmp_path / "skills" / "bundled"
     skill_dir = bundled / "meta-usage"
@@ -453,13 +453,13 @@ async def test_run_one_streaming_unknown_meta_skill_returns_error_result(
 ) -> None:
     """meta_invoke with an unknown name yields ToolResult(is_error=True,
     terminates_turn=False)."""
-    from opensquilla.engine.agent import Agent
-    from opensquilla.engine.types import AgentConfig
-    from opensquilla.skills.loader import SkillLoader
-    from opensquilla.tool_boundary import ToolCall, ToolResult
-    from opensquilla.tools.builtin import meta_tools  # noqa: F401 — registers meta_invoke
-    from opensquilla.tools.registry import get_default_registry
-    from opensquilla.tools.types import ToolContext
+    from openstarry_code.engine.agent import Agent
+    from openstarry_code.engine.types import AgentConfig
+    from openstarry_code.skills.loader import SkillLoader
+    from openstarry_code.tool_boundary import ToolCall, ToolResult
+    from openstarry_code.tools.builtin import meta_tools  # noqa: F401 — registers meta_invoke
+    from openstarry_code.tools.registry import get_default_registry
+    from openstarry_code.tools.types import ToolContext
 
     bundled = tmp_path / "skills" / "bundled"
     bundled.mkdir(parents=True)
@@ -514,13 +514,13 @@ async def test_run_one_streaming_unknown_meta_skill_returns_error_result(
 @pytest.mark.asyncio
 async def test_run_one_streaming_rejects_disabled_meta_skill(tmp_path) -> None:
     """meta_invoke must not bypass disable-model-invocation."""
-    from opensquilla.engine.agent import Agent
-    from opensquilla.engine.types import AgentConfig
-    from opensquilla.skills.loader import SkillLoader
-    from opensquilla.tool_boundary import ToolCall, ToolResult
-    from opensquilla.tools.builtin import meta_tools  # noqa: F401
-    from opensquilla.tools.registry import get_default_registry
-    from opensquilla.tools.types import ToolContext
+    from openstarry_code.engine.agent import Agent
+    from openstarry_code.engine.types import AgentConfig
+    from openstarry_code.skills.loader import SkillLoader
+    from openstarry_code.tool_boundary import ToolCall, ToolResult
+    from openstarry_code.tools.builtin import meta_tools  # noqa: F401
+    from openstarry_code.tools.registry import get_default_registry
+    from openstarry_code.tools.types import ToolContext
 
     bundled = tmp_path / "skills" / "bundled"
     skill_dir = bundled / "meta-hidden"
@@ -593,13 +593,13 @@ async def test_run_one_streaming_rejects_meta_invoke_when_meta_skill_config_disa
     tmp_path,
 ) -> None:
     """meta_invoke must not bypass the global meta-skill switch."""
-    from opensquilla.engine.agent import Agent
-    from opensquilla.engine.types import AgentConfig
-    from opensquilla.skills.loader import SkillLoader
-    from opensquilla.tool_boundary import ToolCall, ToolResult
-    from opensquilla.tools.builtin import meta_tools  # noqa: F401
-    from opensquilla.tools.registry import get_default_registry
-    from opensquilla.tools.types import ToolContext
+    from openstarry_code.engine.agent import Agent
+    from openstarry_code.engine.types import AgentConfig
+    from openstarry_code.skills.loader import SkillLoader
+    from openstarry_code.tool_boundary import ToolCall, ToolResult
+    from openstarry_code.tools.builtin import meta_tools  # noqa: F401
+    from openstarry_code.tools.registry import get_default_registry
+    from openstarry_code.tools.types import ToolContext
 
     bundled = tmp_path / "skills" / "bundled"
     skill_dir = bundled / "meta-visible"
@@ -685,13 +685,13 @@ async def test_run_one_streaming_propagates_current_turn_message_to_inputs(
     verifies the value reaches MetaOrchestrator via a captured iter_events
     spy.
     """
-    from opensquilla.engine.agent import Agent
-    from opensquilla.engine.types import AgentConfig
-    from opensquilla.skills.loader import SkillLoader
-    from opensquilla.tool_boundary import ToolCall, ToolResult
-    from opensquilla.tools.builtin import meta_tools  # noqa: F401
-    from opensquilla.tools.registry import get_default_registry
-    from opensquilla.tools.types import ToolContext
+    from openstarry_code.engine.agent import Agent
+    from openstarry_code.engine.types import AgentConfig
+    from openstarry_code.skills.loader import SkillLoader
+    from openstarry_code.tool_boundary import ToolCall, ToolResult
+    from openstarry_code.tools.builtin import meta_tools  # noqa: F401
+    from openstarry_code.tools.registry import get_default_registry
+    from openstarry_code.tools.types import ToolContext
 
     bundled = tmp_path / "skills" / "bundled"
     bundled.mkdir(parents=True)
@@ -744,8 +744,8 @@ async def test_run_one_streaming_propagates_current_turn_message_to_inputs(
 
     # Patch MetaOrchestrator.iter_events to capture the MetaMatch then
     # yield a successful MetaResult sentinel without running real steps.
-    import opensquilla.skills.meta.orchestrator as orch_mod
-    from opensquilla.skills.meta.types import MetaResult
+    import openstarry_code.skills.meta.orchestrator as orch_mod
+    from openstarry_code.skills.meta.types import MetaResult
 
     original_iter_events = orch_mod.MetaOrchestrator.iter_events
 
@@ -783,14 +783,14 @@ async def test_run_one_streaming_propagates_current_turn_message_to_inputs(
 async def test_run_one_streaming_reuses_resolved_meta_match_control_inputs(
     tmp_path,
 ) -> None:
-    from opensquilla.engine.agent import Agent
-    from opensquilla.engine.types import AgentConfig
-    from opensquilla.skills.loader import SkillLoader
-    from opensquilla.skills.meta.parser import parse_meta_plan
-    from opensquilla.skills.meta.types import MetaMatch, MetaResult
-    from opensquilla.tool_boundary import ToolCall, ToolResult
-    from opensquilla.tools.registry import get_default_registry
-    from opensquilla.tools.types import ToolContext
+    from openstarry_code.engine.agent import Agent
+    from openstarry_code.engine.types import AgentConfig
+    from openstarry_code.skills.loader import SkillLoader
+    from openstarry_code.skills.meta.parser import parse_meta_plan
+    from openstarry_code.skills.meta.types import MetaMatch, MetaResult
+    from openstarry_code.tool_boundary import ToolCall, ToolResult
+    from openstarry_code.tools.registry import get_default_registry
+    from openstarry_code.tools.types import ToolContext
 
     bundled = tmp_path / "skills" / "bundled"
     bundled.mkdir(parents=True)
@@ -860,7 +860,7 @@ async def test_run_one_streaming_reuses_resolved_meta_match_control_inputs(
     agent._current_turn_message = "Visible request only"  # type: ignore[attr-defined]
 
     captured: dict[str, object] = {}
-    import opensquilla.skills.meta.orchestrator as orch_mod
+    import openstarry_code.skills.meta.orchestrator as orch_mod
 
     original_iter_events = orch_mod.MetaOrchestrator.iter_events
 
@@ -913,30 +913,30 @@ async def test_dispatch_intercepts_meta_invoke_and_terminates_turn(
     Agent's turn_yielded flag so the outer loop exits."""
     from collections.abc import AsyncIterator
 
-    from opensquilla.engine.agent import Agent
-    from opensquilla.engine.types import (
+    from openstarry_code.engine.agent import Agent
+    from openstarry_code.engine.types import (
         AgentConfig,
         DoneEvent,
         ErrorEvent,
         TextDeltaEvent,
         ToolResultEvent,
     )
-    from opensquilla.provider.types import (
+    from openstarry_code.provider.types import (
         DoneEvent as ProviderDoneEvent,
     )
-    from opensquilla.provider.types import (
+    from openstarry_code.provider.types import (
         ToolUseDeltaEvent as ProviderToolUseDelta,
     )
-    from opensquilla.provider.types import (
+    from openstarry_code.provider.types import (
         ToolUseEndEvent as ProviderToolUseEnd,
     )
-    from opensquilla.provider.types import (
+    from openstarry_code.provider.types import (
         ToolUseStartEvent as ProviderToolUseStart,
     )
-    from opensquilla.skills.loader import SkillLoader
-    from opensquilla.tools.builtin import meta_tools  # noqa: F401 — registers meta_invoke
-    from opensquilla.tools.registry import get_default_registry
-    from opensquilla.tools.types import ToolContext
+    from openstarry_code.skills.loader import SkillLoader
+    from openstarry_code.tools.builtin import meta_tools  # noqa: F401 — registers meta_invoke
+    from openstarry_code.tools.registry import get_default_registry
+    from openstarry_code.tools.types import ToolContext
 
     # Synthesize a tiny meta-skill (same trick as Task 5 happy path).
     bundled = tmp_path / "skills" / "bundled"
@@ -1077,7 +1077,7 @@ async def test_dispatch_intercepts_meta_invoke_and_terminates_turn(
     # hard-takeover path. If these don't appear, soft-path turns look
     # like a single opaque "meta_invoke" tool call to the UI, even though
     # internally a multi-step DAG ran.
-    from opensquilla.engine.types import ToolUseStartEvent
+    from openstarry_code.engine.types import ToolUseStartEvent
     step_starts = [
         e for e in events
         if isinstance(e, ToolUseStartEvent) and e.tool_name.startswith("meta-step:")
@@ -1106,16 +1106,16 @@ async def test_dispatch_coerces_meta_skill_view_to_meta_invoke(
     orchestrator."""
     from collections.abc import AsyncIterator
 
-    from opensquilla.engine.agent import Agent
-    from opensquilla.engine.types import AgentConfig, DoneEvent, TextDeltaEvent, ToolResultEvent
-    from opensquilla.provider.types import DoneEvent as ProviderDoneEvent
-    from opensquilla.provider.types import ToolUseDeltaEvent as ProviderToolUseDelta
-    from opensquilla.provider.types import ToolUseEndEvent as ProviderToolUseEnd
-    from opensquilla.provider.types import ToolUseStartEvent as ProviderToolUseStart
-    from opensquilla.skills.loader import SkillLoader
-    from opensquilla.tools.builtin import meta_tools  # noqa: F401
-    from opensquilla.tools.registry import get_default_registry
-    from opensquilla.tools.types import ToolContext
+    from openstarry_code.engine.agent import Agent
+    from openstarry_code.engine.types import AgentConfig, DoneEvent, TextDeltaEvent, ToolResultEvent
+    from openstarry_code.provider.types import DoneEvent as ProviderDoneEvent
+    from openstarry_code.provider.types import ToolUseDeltaEvent as ProviderToolUseDelta
+    from openstarry_code.provider.types import ToolUseEndEvent as ProviderToolUseEnd
+    from openstarry_code.provider.types import ToolUseStartEvent as ProviderToolUseStart
+    from openstarry_code.skills.loader import SkillLoader
+    from openstarry_code.tools.builtin import meta_tools  # noqa: F401
+    from openstarry_code.tools.registry import get_default_registry
+    from openstarry_code.tools.types import ToolContext
 
     bundled = tmp_path / "skills" / "bundled"
     skill_dir = bundled / "meta-tiny"
@@ -1213,15 +1213,15 @@ async def test_dispatch_repairs_malformed_meta_invoke_from_matched_meta_skill(
     from collections.abc import AsyncIterator
     from types import SimpleNamespace
 
-    from opensquilla.engine.agent import Agent
-    from opensquilla.engine.types import AgentConfig, DoneEvent, TextDeltaEvent, ToolResultEvent
-    from opensquilla.provider.types import DoneEvent as ProviderDoneEvent
-    from opensquilla.provider.types import ToolUseEndEvent as ProviderToolUseEnd
-    from opensquilla.provider.types import ToolUseStartEvent as ProviderToolUseStart
-    from opensquilla.skills.loader import SkillLoader
-    from opensquilla.tools.builtin import meta_tools  # noqa: F401
-    from opensquilla.tools.registry import get_default_registry
-    from opensquilla.tools.types import ToolContext
+    from openstarry_code.engine.agent import Agent
+    from openstarry_code.engine.types import AgentConfig, DoneEvent, TextDeltaEvent, ToolResultEvent
+    from openstarry_code.provider.types import DoneEvent as ProviderDoneEvent
+    from openstarry_code.provider.types import ToolUseEndEvent as ProviderToolUseEnd
+    from openstarry_code.provider.types import ToolUseStartEvent as ProviderToolUseStart
+    from openstarry_code.skills.loader import SkillLoader
+    from openstarry_code.tools.builtin import meta_tools  # noqa: F401
+    from openstarry_code.tools.registry import get_default_registry
+    from openstarry_code.tools.types import ToolContext
 
     bundled = tmp_path / "skills" / "bundled"
     skill_dir = bundled / "meta-tiny"
@@ -1310,15 +1310,15 @@ async def test_dispatch_rewrites_other_tool_after_forced_meta_match(
     from collections.abc import AsyncIterator
     from types import SimpleNamespace
 
-    from opensquilla.engine.agent import Agent
-    from opensquilla.engine.types import AgentConfig, ToolResultEvent
-    from opensquilla.provider.types import DoneEvent as ProviderDoneEvent
-    from opensquilla.provider.types import ToolUseEndEvent as ProviderToolUseEnd
-    from opensquilla.provider.types import ToolUseStartEvent as ProviderToolUseStart
-    from opensquilla.skills.loader import SkillLoader
-    from opensquilla.tools.builtin import meta_tools  # noqa: F401
-    from opensquilla.tools.registry import get_default_registry
-    from opensquilla.tools.types import ToolContext
+    from openstarry_code.engine.agent import Agent
+    from openstarry_code.engine.types import AgentConfig, ToolResultEvent
+    from openstarry_code.provider.types import DoneEvent as ProviderDoneEvent
+    from openstarry_code.provider.types import ToolUseEndEvent as ProviderToolUseEnd
+    from openstarry_code.provider.types import ToolUseStartEvent as ProviderToolUseStart
+    from openstarry_code.skills.loader import SkillLoader
+    from openstarry_code.tools.builtin import meta_tools  # noqa: F401
+    from openstarry_code.tools.registry import get_default_registry
+    from openstarry_code.tools.types import ToolContext
 
     bundled = tmp_path / "skills" / "bundled"
     skill_dir = bundled / "meta-tiny"
@@ -1412,16 +1412,16 @@ async def test_meta_invoke_passes_writer_with_soft_trigger(
 ) -> None:
     """Soft path constructs MetaOrchestrator with triggered_by='soft_meta_invoke'
     and forwards the writer from AgentConfig.metadata['meta_run_writer']."""
-    from opensquilla.engine.agent import Agent
-    from opensquilla.engine.types import AgentConfig
-    from opensquilla.persistence.meta_run_writer import open_meta_run_writer
-    from opensquilla.persistence.migrator import apply_pending
-    from opensquilla.skills.loader import SkillLoader
-    from opensquilla.skills.meta.types import MetaResult
-    from opensquilla.tool_boundary import ToolCall, ToolResult
-    from opensquilla.tools.builtin import meta_tools  # noqa: F401 — registers meta_invoke
-    from opensquilla.tools.registry import get_default_registry
-    from opensquilla.tools.types import ToolContext
+    from openstarry_code.engine.agent import Agent
+    from openstarry_code.engine.types import AgentConfig
+    from openstarry_code.persistence.meta_run_writer import open_meta_run_writer
+    from openstarry_code.persistence.migrator import apply_pending
+    from openstarry_code.skills.loader import SkillLoader
+    from openstarry_code.skills.meta.types import MetaResult
+    from openstarry_code.tool_boundary import ToolCall, ToolResult
+    from openstarry_code.tools.builtin import meta_tools  # noqa: F401 — registers meta_invoke
+    from openstarry_code.tools.registry import get_default_registry
+    from openstarry_code.tools.types import ToolContext
 
     # Apply migrations + open writer against tmp_path DB.
     db = str(tmp_path / "t.db")
@@ -1493,7 +1493,7 @@ async def test_meta_invoke_passes_writer_with_soft_trigger(
             yield MetaResult(ok=True, final_text="captured")
 
     monkeypatch.setattr(
-        "opensquilla.skills.meta.orchestrator.MetaOrchestrator",
+        "openstarry_code.skills.meta.orchestrator.MetaOrchestrator",
         _StubOrch,
     )
 

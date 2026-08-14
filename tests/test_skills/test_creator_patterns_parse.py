@@ -7,16 +7,16 @@ from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader
 
-from opensquilla.skills.creator.patterns.schemas import (
+from openstarry_code.skills.creator.patterns.schemas import (
     FanOutMergeSlots,
     SequentialSlots,
 )
-from opensquilla.skills.loader import SkillLoader
-from opensquilla.skills.meta.parser import parse_meta_plan
+from openstarry_code.skills.loader import SkillLoader
+from openstarry_code.skills.meta.parser import parse_meta_plan
 
 TEMPLATES = (
     Path(__file__).resolve().parents[2]
-    / "src" / "opensquilla" / "skills" / "creator" / "patterns"
+    / "src" / "openstarry_code" / "skills" / "creator" / "patterns"
 )
 
 

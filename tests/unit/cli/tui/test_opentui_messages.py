@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.cli.tui.opentui.messages import (
+from openstarry_code.cli.tui.opentui.messages import (
     HOST_TO_PYTHON_TYPES,
     PYTHON_TO_HOST_TYPES,
     ApprovalDismiss,
@@ -32,7 +32,7 @@ from opensquilla.cli.tui.opentui.messages import (
     python_message_to_json,
 )
 
-_PACKAGE_SRC = Path(__file__).resolve().parents[4] / "src/opensquilla/cli/tui/opentui/package/src"
+_PACKAGE_SRC = Path(__file__).resolve().parents[4] / "src/openstarry_code/cli/tui/opentui/package/src"
 
 
 def _production_host_sources() -> list[Path]:
@@ -282,7 +282,7 @@ def test_python_message_to_json_serializes_approval_dismiss() -> None:
 
 
 def test_python_message_to_json_serializes_structured_blocks() -> None:
-    from opensquilla.cli.tui.opentui.messages import (
+    from openstarry_code.cli.tui.opentui.messages import (
         ModelText,
         PromptEcho,
         TurnBegin,
@@ -304,7 +304,7 @@ def test_python_message_to_json_serializes_structured_blocks() -> None:
 
 
 def test_block_messages_serialize_with_kind_and_fields() -> None:
-    from opensquilla.cli.tui.opentui.messages import (
+    from openstarry_code.cli.tui.opentui.messages import (
         BlockAppend,
         BlockBegin,
         BlockEnd,

@@ -15,8 +15,8 @@ from typing import Any
 
 import httpx
 
-from opensquilla.provider.openai import OpenAIProvider
-from opensquilla.provider.types import (
+from openstarry_code.provider.openai import OpenAIProvider
+from openstarry_code.provider.types import (
     ChatConfig,
     ContentBlockThinking,
     ContentBlockToolResult,
@@ -48,7 +48,7 @@ def _patch_transport_body(monkeypatch: Any, captured: dict[str, Any], body: byte
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client)
 
 
 def _sse(chunks: list[dict[str, Any]]) -> bytes:

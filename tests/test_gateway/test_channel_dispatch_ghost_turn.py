@@ -18,7 +18,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from opensquilla.gateway.task_runtime import TaskQueueFullError
+from openstarry_code.gateway.task_runtime import TaskQueueFullError
 
 # ── Minimal fakes ────────────────────────────────────────────────────────────
 
@@ -88,8 +88,8 @@ async def _dispatch_one(
     Implements the fixed enqueue-then-append pattern from channel_dispatch.py.
     Returns True on successful dispatch, False on TaskQueueFullError.
     """
-    from opensquilla.engine.start_turn import start_turn_via_runtime
-    from opensquilla.gateway.channel_dispatch import (
+    from openstarry_code.engine.start_turn import start_turn_via_runtime
+    from openstarry_code.gateway.channel_dispatch import (
         _append_channel_user_message,
         _maybe_lock,
     )
@@ -220,8 +220,8 @@ async def test_ac1_4_old_order_creates_ghost_turn() -> None:
     """Simulate the prior order (append-then-enqueue) to show it creates
     ghost turns; then verify the current order (enqueue-then-append) does not.
     """
-    from opensquilla.engine.start_turn import start_turn_via_runtime
-    from opensquilla.gateway.channel_dispatch import (
+    from openstarry_code.engine.start_turn import start_turn_via_runtime
+    from openstarry_code.gateway.channel_dispatch import (
         _append_channel_user_message,
         _maybe_lock,
     )

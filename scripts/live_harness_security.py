@@ -20,7 +20,7 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlsplit
 
-from opensquilla.provider.registry import get_provider_spec, list_provider_specs
+from openstarry_code.provider.registry import get_provider_spec, list_provider_specs
 
 _ASSIGNMENT_RE = re.compile(r"^(?P<name>[A-Za-z_][A-Za-z0-9_]*)\s*=(?P<value>.*)$")
 _SENSITIVE_FIELD_RE = re.compile(
@@ -71,7 +71,7 @@ _MODEL_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/+-]{0,199}$")
 
 # A subprocess gets only process-launch essentials.  In particular, proxy
 # variables, HOME, arbitrary tokens, Python injection variables, and ambient
-# OPENSQUILLA_* overrides are not inherited.  Harness-owned overrides are
+# OPENSTARRY_CODE_* overrides are not inherited.  Harness-owned overrides are
 # added explicitly by the caller after this boundary.
 _CHILD_ENV_ALLOWLIST = frozenset(
     {
@@ -703,7 +703,7 @@ def child_environment(
     spec = get_provider_spec(provider)
     registry_endpoint(provider)
     env = minimal_child_environment(base_environment)
-    env["OPENSQUILLA_LIVE_DISABLE_DOTENV"] = "1"
+    env["OPENSTARRY_CODE_LIVE_DISABLE_DOTENV"] = "1"
     secret = secrets.get(spec.env_key, "")
     if spec.env_key and secret:
         env[spec.env_key] = secret

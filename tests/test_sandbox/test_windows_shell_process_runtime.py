@@ -9,7 +9,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.tools.types import CallerKind, ToolContext, current_tool_context
+from openstarry_code.tools.types import CallerKind, ToolContext, current_tool_context
 
 
 def _windows_runtime() -> SimpleNamespace:
@@ -27,8 +27,8 @@ def _configure_approval_queue(
     allow_patterns: list[str] | None = None,
     deny_patterns: list[str] | None = None,
 ) -> None:
-    from opensquilla.application import approval_queue as approval_queue_mod
-    from opensquilla.gateway.approval_queue import get_approval_queue, reset_approval_queue
+    from openstarry_code.application import approval_queue as approval_queue_mod
+    from openstarry_code.gateway.approval_queue import get_approval_queue, reset_approval_queue
 
     monkeypatch.setattr(
         approval_queue_mod,
@@ -55,7 +55,7 @@ def _allow_exact_elevation(monkeypatch, shell) -> list[object]:
 
 
 def test_windows_exec_command_uses_shell_host_wrapper(monkeypatch, tmp_path) -> None:
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     runtime = _windows_runtime()
 
@@ -75,7 +75,7 @@ def test_windows_exec_command_uses_shell_host_wrapper(monkeypatch, tmp_path) -> 
     assert argv[3] == r"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe"
     assert argv[4] == "Write-Output ok"
     assert argv[5] == str(tmp_path)
-    assert argv[6] == str(tmp_path / ".opensquilla-cache" / "shell-host")
+    assert argv[6] == str(tmp_path / ".openstarry-code-cache" / "shell-host")
 
 
 @pytest.mark.asyncio
@@ -83,7 +83,7 @@ async def test_windows_host_shell_runs_powershell_syntax_directly(monkeypatch) -
     if os.name != "nt":
         pytest.skip("Windows host shell selection is Windows-only")
 
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     calls: list[tuple[str, ...]] = []
 
@@ -110,7 +110,7 @@ async def test_windows_host_shell_runs_powershell_syntax_directly(monkeypatch) -
 
 
 def test_windows_exec_command_unwraps_nested_powershell_command(monkeypatch, tmp_path) -> None:
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     runtime = _windows_runtime()
 
@@ -150,7 +150,7 @@ def test_windows_exec_command_prefers_cmd_package_manager_shims(
     monkeypatch,
     tmp_path,
 ) -> None:
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     runtime = _windows_runtime()
 
@@ -172,7 +172,7 @@ def test_windows_shell_host_skips_windowsapps_git_alias(
     if os.name != "nt":
         pytest.skip("Windows command shims are Windows-only")
 
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     alias_dir = tmp_path / "Microsoft" / "WindowsApps"
     real_dir = tmp_path / "Git" / "cmd"
@@ -190,7 +190,7 @@ def test_windows_shell_host_skips_windowsapps_git_alias(
             "powershell.exe",
             "git --version",
             str(tmp_path),
-            str(tmp_path / ".opensquilla-cache" / "shell-host"),
+            str(tmp_path / ".openstarry-code-cache" / "shell-host"),
         ],
         capture_output=True,
         text=True,
@@ -207,8 +207,8 @@ async def test_auto_approve_mode_does_not_bypass_explicit_elevation(
     monkeypatch,
     tmp_path,
 ) -> None:
-    from opensquilla.gateway.approval_queue import reset_approval_queue
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.gateway.approval_queue import reset_approval_queue
+    from openstarry_code.tools.builtin import shell
 
     _configure_approval_queue(monkeypatch, tmp_path, "auto-approve")
     runtime = _windows_runtime()
@@ -256,8 +256,8 @@ async def test_trusted_mode_does_not_bypass_explicit_elevation(
     monkeypatch,
     tmp_path,
 ) -> None:
-    from opensquilla.gateway.approval_queue import reset_approval_queue
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.gateway.approval_queue import reset_approval_queue
+    from openstarry_code.tools.builtin import shell
 
     _configure_approval_queue(monkeypatch, tmp_path, "prompt")
     runtime = _windows_runtime()
@@ -305,8 +305,8 @@ async def test_powershell_file_installer_requires_and_uses_exact_elevation(
     monkeypatch,
     tmp_path,
 ) -> None:
-    from opensquilla.gateway.approval_queue import reset_approval_queue
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.gateway.approval_queue import reset_approval_queue
+    from openstarry_code.tools.builtin import shell
 
     script_path = tmp_path / "install_dingtalk.ps1"
     script_path.write_text(
@@ -404,8 +404,8 @@ async def test_windows_uninstall_flow_commands_require_exact_elevation(
     tmp_path,
     command,
 ) -> None:
-    from opensquilla.gateway.approval_queue import reset_approval_queue
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.gateway.approval_queue import reset_approval_queue
+    from openstarry_code.tools.builtin import shell
 
     _configure_approval_queue(monkeypatch, tmp_path, "prompt")
     runtime = _windows_runtime()
@@ -463,8 +463,8 @@ async def test_trusted_host_shell_folds_windows_env_key_duplicates(
     if os.name != "nt":
         pytest.skip("Windows environment variables are case-insensitive")
 
-    from opensquilla.gateway.approval_queue import reset_approval_queue
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.gateway.approval_queue import reset_approval_queue
+    from openstarry_code.tools.builtin import shell
 
     _configure_approval_queue(monkeypatch, tmp_path, "prompt")
     runtime = _windows_runtime()
@@ -516,8 +516,8 @@ async def test_exact_elevation_adds_user_windowsapps_to_host_path(
     monkeypatch,
     tmp_path,
 ) -> None:
-    from opensquilla.gateway.approval_queue import reset_approval_queue
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.gateway.approval_queue import reset_approval_queue
+    from openstarry_code.tools.builtin import shell
 
     _configure_approval_queue(monkeypatch, tmp_path, "auto-approve")
     runtime = _windows_runtime()
@@ -587,8 +587,8 @@ async def test_auto_host_escalation_honors_deny_patterns(
     tmp_path,
     command,
 ) -> None:
-    from opensquilla.gateway.approval_queue import reset_approval_queue
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.gateway.approval_queue import reset_approval_queue
+    from openstarry_code.tools.builtin import shell
 
     _configure_approval_queue(
         monkeypatch,
@@ -637,8 +637,8 @@ async def test_exact_elevation_background_process_runs_on_host_once(
     monkeypatch,
     tmp_path,
 ) -> None:
-    from opensquilla.gateway.approval_queue import reset_approval_queue
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.gateway.approval_queue import reset_approval_queue
+    from openstarry_code.tools.builtin import shell
 
     class FakeStdout:
         async def read(self, _size):
@@ -713,8 +713,8 @@ async def test_background_host_effect_batch_requires_one_exact_elevation(
     monkeypatch,
     tmp_path,
 ) -> None:
-    from opensquilla.gateway.approval_queue import reset_approval_queue
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.gateway.approval_queue import reset_approval_queue
+    from openstarry_code.tools.builtin import shell
 
     workspace = tmp_path / "workspace"
     workspace.mkdir()
@@ -802,11 +802,11 @@ async def test_host_effect_command_requires_explicit_elevation_without_owner(
     mode,
     is_owner,
 ) -> None:
-    from opensquilla.gateway.approval_queue import reset_approval_queue
-    from opensquilla.sandbox.config import SandboxSettings
-    from opensquilla.sandbox.policy import build_policy
-    from opensquilla.sandbox.types import SecurityLevel
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.gateway.approval_queue import reset_approval_queue
+    from openstarry_code.sandbox.config import SandboxSettings
+    from openstarry_code.sandbox.policy import build_policy
+    from openstarry_code.sandbox.types import SecurityLevel
+    from openstarry_code.tools.builtin import shell
 
     _configure_approval_queue(monkeypatch, tmp_path, mode)
     runtime = _windows_runtime()
@@ -884,11 +884,11 @@ async def test_standard_auto_approve_host_effect_requires_explicit_elevation(
     monkeypatch,
     tmp_path,
 ) -> None:
-    from opensquilla.gateway.approval_queue import reset_approval_queue
-    from opensquilla.sandbox.config import SandboxSettings
-    from opensquilla.sandbox.policy import build_policy
-    from opensquilla.sandbox.types import SecurityLevel
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.gateway.approval_queue import reset_approval_queue
+    from openstarry_code.sandbox.config import SandboxSettings
+    from openstarry_code.sandbox.policy import build_policy
+    from openstarry_code.sandbox.types import SecurityLevel
+    from openstarry_code.tools.builtin import shell
 
     _configure_approval_queue(monkeypatch, tmp_path, "auto-approve")
     runtime = _windows_runtime()
@@ -966,8 +966,8 @@ async def test_exact_windows_host_probe_adds_user_windowsapps_to_host_env(
     monkeypatch,
     tmp_path,
 ) -> None:
-    from opensquilla.gateway.approval_queue import reset_approval_queue
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.gateway.approval_queue import reset_approval_queue
+    from openstarry_code.tools.builtin import shell
 
     _configure_approval_queue(monkeypatch, tmp_path, "prompt")
     runtime = _windows_runtime()
@@ -1030,10 +1030,10 @@ def test_windows_shell_host_blocks_icmp_diagnostics_when_proxy_allowlist(
     if os.name != "nt":
         pytest.skip("Windows command shims are Windows-only")
 
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     env = os.environ.copy()
-    env["OPENSQUILLA_SANDBOX_NETWORK"] = "proxy_allowlist"
+    env["OPENSTARRY_CODE_SANDBOX_NETWORK"] = "proxy_allowlist"
     completed = subprocess.run(
         [
             sys.executable,
@@ -1042,7 +1042,7 @@ def test_windows_shell_host_blocks_icmp_diagnostics_when_proxy_allowlist(
             "powershell.exe",
             "ping",
             str(tmp_path),
-            str(tmp_path / ".opensquilla-cache" / "shell-host"),
+            str(tmp_path / ".openstarry-code-cache" / "shell-host"),
         ],
         capture_output=True,
         text=True,
@@ -1060,7 +1060,7 @@ def test_windows_shell_host_fallback_sets_powershell_proxy_defaults(
     if os.name != "nt":
         pytest.skip("PowerShell proxy defaults are Windows-only")
 
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     proxy_url = "http://127.0.0.1:48123"
     env = os.environ.copy()
@@ -1082,7 +1082,7 @@ def test_windows_shell_host_fallback_sets_powershell_proxy_defaults(
             "powershell.exe",
             command,
             str(tmp_path),
-            str(tmp_path / ".opensquilla-cache" / "shell-host"),
+            str(tmp_path / ".openstarry-code-cache" / "shell-host"),
         ],
         capture_output=True,
         text=True,
@@ -1099,10 +1099,10 @@ async def test_windows_exec_command_does_not_mount_program_files_tools_per_comma
     monkeypatch,
     tmp_path,
 ) -> None:
-    from opensquilla.sandbox.config import SandboxSettings
-    from opensquilla.sandbox.policy import build_policy
-    from opensquilla.sandbox.types import SecurityLevel
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.sandbox.config import SandboxSettings
+    from openstarry_code.sandbox.policy import build_policy
+    from openstarry_code.sandbox.types import SecurityLevel
+    from openstarry_code.tools.builtin import shell
 
     runtime = _windows_runtime()
     policy = build_policy(
@@ -1189,10 +1189,10 @@ async def test_windows_exec_command_preserves_terminal_backend_failure(
     monkeypatch,
     tmp_path,
 ) -> None:
-    from opensquilla.sandbox.config import SandboxSettings
-    from opensquilla.sandbox.policy import build_policy
-    from opensquilla.sandbox.types import SandboxBackendError, SecurityLevel
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.sandbox.config import SandboxSettings
+    from openstarry_code.sandbox.policy import build_policy
+    from openstarry_code.sandbox.types import SandboxBackendError, SecurityLevel
+    from openstarry_code.tools.builtin import shell
 
     runtime = _windows_runtime()
     policy = build_policy(
@@ -1261,10 +1261,10 @@ async def test_windows_exec_command_preserves_terminal_backend_failure(
 
 @pytest.mark.asyncio
 async def test_windows_exec_command_uses_shared_path_envelopes(monkeypatch, tmp_path) -> None:
-    from opensquilla.sandbox.config import SandboxSettings
-    from opensquilla.sandbox.policy import build_policy
-    from opensquilla.sandbox.types import SecurityLevel
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.sandbox.config import SandboxSettings
+    from openstarry_code.sandbox.policy import build_policy
+    from openstarry_code.sandbox.types import SecurityLevel
+    from openstarry_code.tools.builtin import shell
 
     runtime = _windows_runtime()
     policy = build_policy(
@@ -1329,7 +1329,7 @@ async def test_windows_exec_command_uses_shared_path_envelopes(monkeypatch, tmp_
         )
     )
     try:
-        result = await shell.exec_command('where opensquilla 2>nul || echo "missing"')
+        result = await shell.exec_command('where openstarry-code 2>nul || echo "missing"')
     finally:
         current_tool_context.reset(token)
 
@@ -1342,8 +1342,8 @@ async def test_host_effect_exec_batch_requires_one_exact_elevation(
     monkeypatch,
     tmp_path,
 ) -> None:
-    from opensquilla.gateway.approval_queue import reset_approval_queue
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.gateway.approval_queue import reset_approval_queue
+    from openstarry_code.tools.builtin import shell
 
     workspace = tmp_path / "workspace"
     workspace.mkdir()
@@ -1401,8 +1401,8 @@ async def test_auto_host_exec_batch_routes_protected_metadata_write_to_approval(
     monkeypatch,
     tmp_path,
 ) -> None:
-    from opensquilla.gateway.approval_queue import reset_approval_queue
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.gateway.approval_queue import reset_approval_queue
+    from openstarry_code.tools.builtin import shell
 
     workspace = tmp_path / "workspace"
     protected = workspace / ".git"
@@ -1461,10 +1461,10 @@ async def test_windows_exec_command_merges_shell_active_mounts(
     monkeypatch,
     tmp_path,
 ) -> None:
-    from opensquilla.sandbox.config import SandboxSettings
-    from opensquilla.sandbox.policy import build_policy
-    from opensquilla.sandbox.types import SecurityLevel
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.sandbox.config import SandboxSettings
+    from openstarry_code.sandbox.policy import build_policy
+    from openstarry_code.sandbox.types import SecurityLevel
+    from openstarry_code.tools.builtin import shell
 
     runtime = _windows_runtime()
     policy = build_policy(
@@ -1542,10 +1542,10 @@ async def test_windows_exec_command_blocks_runtime_readonly_write_target(
     monkeypatch,
     tmp_path,
 ) -> None:
-    from opensquilla.sandbox.config import SandboxSettings
-    from opensquilla.sandbox.policy import build_policy
-    from opensquilla.sandbox.types import SecurityLevel
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.sandbox.config import SandboxSettings
+    from openstarry_code.sandbox.policy import build_policy
+    from openstarry_code.sandbox.types import SecurityLevel
+    from openstarry_code.tools.builtin import shell
 
     runtime = _windows_runtime()
     policy = build_policy(
@@ -1612,7 +1612,7 @@ async def test_windows_exec_command_blocks_runtime_readonly_write_target(
 
 
 def test_shell_blocks_runtime_python_environment_bootstrap(monkeypatch, tmp_path) -> None:
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     runtime_root = tmp_path / "runtime-venv"
     runtime_root.mkdir()
@@ -1634,7 +1634,7 @@ def test_shell_blocks_runtime_python_environment_bootstrap(monkeypatch, tmp_path
 
 
 def test_shell_blocks_runtime_python_package_install(monkeypatch, tmp_path) -> None:
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     runtime_root = tmp_path / "runtime-venv"
     runtime_python = runtime_root / "bin" / "python"
@@ -1657,7 +1657,7 @@ def test_shell_blocks_runtime_python_package_install(monkeypatch, tmp_path) -> N
 
 
 def test_shell_allows_explicit_project_venv_package_install(monkeypatch, tmp_path) -> None:
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     runtime_root = tmp_path / "runtime-venv"
     project_python = tmp_path / "project" / ".venv" / "bin" / "python"
@@ -1678,7 +1678,7 @@ def test_shell_allows_explicit_project_venv_package_install(monkeypatch, tmp_pat
 
 
 def test_shell_allows_explicit_project_venv_ensurepip(monkeypatch, tmp_path) -> None:
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     runtime_root = tmp_path / "runtime-venv"
     project_python = tmp_path / "project" / ".venv" / "bin" / "python"
@@ -1699,7 +1699,7 @@ def test_shell_allows_explicit_project_venv_ensurepip(monkeypatch, tmp_path) -> 
 
 
 def test_shell_blocks_windows_runtime_python_environment_bootstrap(monkeypatch) -> None:
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     runtime_root = Path(r"X:\workspace\.venv")
 
@@ -1720,7 +1720,7 @@ def test_shell_blocks_windows_runtime_python_environment_bootstrap(monkeypatch) 
 
 
 def test_shell_allows_windows_project_venv_ensurepip(monkeypatch) -> None:
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     runtime_root = Path(r"X:\workspace\.venv")
 
@@ -1742,7 +1742,7 @@ async def test_windows_exec_command_full_host_access_skips_runtime_readonly_bloc
     monkeypatch,
     tmp_path,
 ) -> None:
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     runtime = _windows_runtime()
     runtime_root = tmp_path / "runtime-src"

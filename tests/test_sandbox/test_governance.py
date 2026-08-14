@@ -4,13 +4,13 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.sandbox.governance import (
+from openstarry_code.sandbox.governance import (
     ApprovalGate,
     DenialLedger,
     action_fingerprint,
     gate_execution,
 )
-from opensquilla.sandbox.types import (
+from openstarry_code.sandbox.types import (
     ALLOW,
     DenialReason,
     DenialResult,

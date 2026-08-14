@@ -14,19 +14,19 @@ This guide is the product and usage entry point. The existing
 1. Install OpenStarry Code's compatibility runtime:
 
    ```sh
-   uv tool install --python 3.12 "opensquilla[recommended] @ https://github.com/opensquilla/opensquilla/releases/download/v0.5.3/opensquilla-0.5.3-py3-none-any.whl"
+   uv tool install --python 3.12 "openstarry-code[recommended] @ https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.3/openstarry_code-0.5.3-py3-none-any.whl"
    ```
 
 2. Configure your provider:
 
    ```sh
-   opensquilla onboard
+   openstarry-code onboard
    ```
 
 3. Start the gateway:
 
    ```sh
-   opensquilla gateway run
+   openstarry-code gateway run
    ```
 
 4. Open the control UI:
@@ -92,27 +92,27 @@ single-turn chat alone.
 After the gateway is running, use the surface that fits the job:
 
 ```sh
-opensquilla chat
+openstarry-code chat
 ```
 
 Use this for interactive terminal work.
 
 ```sh
-opensquilla agent -m "Summarize this repo and tell me what to test"
+openstarry-code agent -m "Summarize this repo and tell me what to test"
 ```
 
 Use this for one-shot automation.
 
 ```sh
-opensquilla gateway start --json
+openstarry-code gateway start --json
 ```
 
 Use this for background Web UI, channels, and RPC clients.
 
 ```sh
-opensquilla sessions list
-opensquilla cost
-opensquilla doctor
+openstarry-code sessions list
+openstarry-code cost
+openstarry-code doctor
 ```
 
 Use these to inspect history, cost, and readiness.
@@ -121,22 +121,22 @@ Use these to inspect history, cost, and readiness.
 
 OpenStarry Code loads configuration in this order:
 
-1. `OPENSQUILLA_GATEWAY_CONFIG_PATH`
-2. `./opensquilla.toml`
-3. `~/.opensquilla/config.toml`
+1. `OPENSTARRY_CODE_GATEWAY_CONFIG_PATH`
+2. `./openstarry-code.toml`
+3. `~/.openstarry-code/config.toml`
 4. built-in defaults
 
 Use the CLI for routine changes:
 
 ```sh
-opensquilla onboard --if-needed
-opensquilla configure provider --provider openrouter --api-key-env OPENROUTER_API_KEY
-opensquilla configure router --router recommended
-opensquilla configure search --search-provider duckduckgo
-opensquilla configure search --search-provider tavily --api-key-env TAVILY_API_KEY
-opensquilla configure channels
-opensquilla config get llm.provider
-opensquilla config set gateway.port 18791
+openstarry-code onboard --if-needed
+openstarry-code configure provider --provider openrouter --api-key-env OPENROUTER_API_KEY
+openstarry-code configure router --router recommended
+openstarry-code configure search --search-provider duckduckgo
+openstarry-code configure search --search-provider tavily --api-key-env TAVILY_API_KEY
+openstarry-code configure channels
+openstarry-code config get llm.provider
+openstarry-code config set gateway.port 18791
 ```
 
 See [`docs/configuration.md`](docs/configuration.md) for details.
@@ -182,14 +182,14 @@ and [`docs/authoring/meta-skills.md`](docs/authoring/meta-skills.md)
 - Use tools for files, shell commands, code execution, git, web search/fetch,
   memory, sessions, artifacts, media, Feishu, scheduled jobs, and subagents.
 - Install, inspect, publish, and compose skills.
-- Schedule recurring runs with `opensquilla cron`.
+- Schedule recurring runs with `openstarry-code cron`.
 - Save durable memory and search previous sessions.
-- Track usage and estimated cost with `opensquilla cost`.
-- Diagnose readiness with `opensquilla doctor` and `/control/` health views.
-- Export reproducible install state with `opensquilla dist`.
-- Remove OpenStarry Code cleanly with `opensquilla uninstall` — keeps your data
+- Track usage and estimated cost with `openstarry-code cost`.
+- Diagnose readiness with `openstarry-code doctor` and `/control/` health views.
+- Export reproducible install state with `openstarry-code dist`.
+- Remove OpenStarry Code cleanly with `openstarry-code uninstall` — keeps your data
   unless you pass `--purge-state` / `--purge-config` / `--purge-all`.
-- Bridge OpenStarry Code into MCP-capable clients with `opensquilla mcp-server run`
+- Bridge OpenStarry Code into MCP-capable clients with `openstarry-code mcp-server run`
   when the `mcp` extra is installed.
 - Create and deliver artifacts such as HTML files, PDF reports, slides,
   spreadsheets, generated images, and channel-delivered files.
@@ -200,7 +200,7 @@ The gateway binds to `127.0.0.1` by default. Binding to public interfaces is
 opt-in:
 
 ```sh
-opensquilla gateway run --listen 0.0.0.0 --port 18791
+openstarry-code gateway run --listen 0.0.0.0 --port 18791
 ```
 
 Do not expose a public gateway without token auth and a network boundary you

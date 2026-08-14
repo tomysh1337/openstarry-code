@@ -20,7 +20,7 @@ from pathlib import Path
 import httpx
 import pytest
 
-from opensquilla.cli.gateway_client import GatewayClient
+from openstarry_code.cli.gateway_client import GatewayClient
 
 pytestmark = [pytest.mark.llm, pytest.mark.llm_smoke, pytest.mark.llm_gateway]
 
@@ -97,11 +97,11 @@ def _write_gateway_server_script(path: Path) -> None:
             import asyncio
             import os
 
-            from opensquilla.gateway.boot import start_gateway_server
-            from opensquilla.gateway.config import GatewayConfig, LlmProviderConfig
-            from opensquilla.gateway.websocket import SubscriptionManager
+            from openstarry_code.gateway.boot import start_gateway_server
+            from openstarry_code.gateway.config import GatewayConfig, LlmProviderConfig
+            from openstarry_code.gateway.websocket import SubscriptionManager
 
-            config = GatewayConfig.load(os.environ["OPENSQUILLA_GATEWAY_CONFIG_PATH"])
+            config = GatewayConfig.load(os.environ["OPENSTARRY_CODE_GATEWAY_CONFIG_PATH"])
             config.llm = LlmProviderConfig(
                 provider="openrouter",
                 model=os.environ.get("LLM_TEST_MODEL", "deepseek/deepseek-v4-flash"),
@@ -173,13 +173,13 @@ def test_gateway_llm_e2e_uses_explicit_temp_gateway_config(tmp_path: Path) -> No
 
     assert f"state_dir = {_toml_string(state_dir)}" in config_source
     assert f"workspace_dir = {_toml_string(workspace_dir)}" in config_source
-    assert 'GatewayConfig.load(os.environ["OPENSQUILLA_GATEWAY_CONFIG_PATH"])' in script_source
+    assert 'GatewayConfig.load(os.environ["OPENSTARRY_CODE_GATEWAY_CONFIG_PATH"])' in script_source
 
 
 @pytest.mark.asyncio
 async def test_gateway_session_send_reaches_live_llm(tmp_path: Path) -> None:
-    if os.environ.get("OPENSQUILLA_GATEWAY_LLM_E2E") != "1":
-        pytest.skip("set OPENSQUILLA_GATEWAY_LLM_E2E=1 to run gateway LLM e2e")
+    if os.environ.get("OPENSTARRY_CODE_GATEWAY_LLM_E2E") != "1":
+        pytest.skip("set OPENSTARRY_CODE_GATEWAY_LLM_E2E=1 to run gateway LLM e2e")
     if not os.environ.get("OPENROUTER_API_KEY"):
         pytest.skip("OPENROUTER_API_KEY not set")
 
@@ -196,10 +196,10 @@ async def test_gateway_session_send_reaches_live_llm(tmp_path: Path) -> None:
     )
     _write_gateway_server_script(server_script)
     env = os.environ.copy()
-    env["OPENSQUILLA_GATEWAY_CONFIG_PATH"] = str(config_path)
-    env["OPENSQUILLA_STATE_DIR"] = str(state_dir)
-    env["OPENSQUILLA_LOG_DIR"] = str(tmp_path / "logs")
-    env["OPENSQUILLA_TURN_CALL_LOG"] = "0"
+    env["OPENSTARRY_CODE_GATEWAY_CONFIG_PATH"] = str(config_path)
+    env["OPENSTARRY_CODE_STATE_DIR"] = str(state_dir)
+    env["OPENSTARRY_CODE_LOG_DIR"] = str(tmp_path / "logs")
+    env["OPENSTARRY_CODE_TURN_CALL_LOG"] = "0"
     server = subprocess.Popen(
         [sys.executable, str(server_script)],
         cwd=Path.cwd(),

@@ -8,8 +8,8 @@ from typing import Any
 import pytest
 from rich.console import Console
 
-from opensquilla.cli.repl.session_state import ChatSessionState
-from opensquilla.cli.repl.stream import TurnResult
+from openstarry_code.cli.repl.session_state import ChatSessionState
+from openstarry_code.cli.repl.stream import TurnResult
 
 
 class _FakeGatewayClient:
@@ -32,8 +32,8 @@ def _make_console() -> tuple[Console, io.StringIO]:
 
 @pytest.mark.asyncio
 async def test_meta_no_arg_lists_skills(monkeypatch: pytest.MonkeyPatch) -> None:
-    from opensquilla.cli.repl import slash_adapter
-    from opensquilla.cli.repl.slash_adapter import (
+    from openstarry_code.cli.repl import slash_adapter
+    from openstarry_code.cli.repl.slash_adapter import (
         GatewaySlashContext,
         handle_gateway_slash_command,
     )
@@ -67,8 +67,8 @@ async def test_meta_no_arg_lists_skills(monkeypatch: pytest.MonkeyPatch) -> None
 
 @pytest.mark.asyncio
 async def test_meta_no_arg_disabled_prints_notice(monkeypatch: pytest.MonkeyPatch) -> None:
-    from opensquilla.cli.repl import slash_adapter
-    from opensquilla.cli.repl.slash_adapter import (
+    from openstarry_code.cli.repl import slash_adapter
+    from openstarry_code.cli.repl.slash_adapter import (
         GatewaySlashContext,
         handle_gateway_slash_command,
     )
@@ -91,8 +91,8 @@ async def test_meta_no_arg_disabled_prints_notice(monkeypatch: pytest.MonkeyPatc
 
 @pytest.mark.asyncio
 async def test_meta_run_ok_triggers_turn(monkeypatch: pytest.MonkeyPatch) -> None:
-    from opensquilla.cli.repl import slash_adapter
-    from opensquilla.cli.repl.slash_adapter import (
+    from openstarry_code.cli.repl import slash_adapter
+    from openstarry_code.cli.repl.slash_adapter import (
         GatewaySlashContext,
         handle_gateway_slash_command,
     )
@@ -146,8 +146,8 @@ async def test_meta_run_ok_triggers_turn(monkeypatch: pytest.MonkeyPatch) -> Non
 async def test_meta_run_keeps_inline_request_out_of_skill_name(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.repl import slash_adapter
-    from opensquilla.cli.repl.slash_adapter import (
+    from openstarry_code.cli.repl import slash_adapter
+    from openstarry_code.cli.repl.slash_adapter import (
         GatewaySlashContext,
         handle_gateway_slash_command,
     )
@@ -192,8 +192,8 @@ async def test_meta_run_keeps_inline_request_out_of_skill_name(
 async def test_meta_run_not_ok_prints_error_and_skips_turn(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.repl import slash_adapter
-    from opensquilla.cli.repl.slash_adapter import (
+    from openstarry_code.cli.repl import slash_adapter
+    from openstarry_code.cli.repl.slash_adapter import (
         GatewaySlashContext,
         handle_gateway_slash_command,
     )

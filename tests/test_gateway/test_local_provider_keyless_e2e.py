@@ -16,18 +16,18 @@ One regression net for all three so the local path can't silently rot again.
 
 from __future__ import annotations
 
-from opensquilla.engine.pricing import lookup_price
-from opensquilla.engine.usage import SessionUsage
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.llm_runtime import resolve_llm_runtime_config
-from opensquilla.gateway.rpc_config import _sync_provider_selector
-from opensquilla.provider.model_catalog import (
+from openstarry_code.engine.pricing import lookup_price
+from openstarry_code.engine.usage import SessionUsage
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.llm_runtime import resolve_llm_runtime_config
+from openstarry_code.gateway.rpc_config import _sync_provider_selector
+from openstarry_code.provider.model_catalog import (
     DEFAULT_CONTEXT_WINDOW,
     ModelCatalog,
 )
-from opensquilla.provider.ollama import _OLLAMA_DEFAULT_NUM_CTX, OllamaProvider
-from opensquilla.provider.registry import get_provider_spec
-from opensquilla.provider.selector import ProviderConfig, _build_provider
+from openstarry_code.provider.ollama import _OLLAMA_DEFAULT_NUM_CTX, OllamaProvider
+from openstarry_code.provider.registry import get_provider_spec
+from openstarry_code.provider.selector import ProviderConfig, _build_provider
 
 
 def _keyless_ollama_cfg() -> GatewayConfig:

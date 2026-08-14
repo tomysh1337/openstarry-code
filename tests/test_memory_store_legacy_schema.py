@@ -13,8 +13,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from opensquilla.compat import aiosqlite
-from opensquilla.memory.store import SCHEMA_VERSION, LongTermMemoryStore
+from openstarry_code.compat import aiosqlite
+from openstarry_code.memory.store import SCHEMA_VERSION, LongTermMemoryStore
 
 # Pre-schema_version shape of the four memory tables: the current store DDL
 # minus the schema_version column (the shape V004 was written to back-fill).

@@ -1,6 +1,6 @@
 """Tests for session cost source rollup helpers."""
 
-from opensquilla.session.cost_rollup import (
+from openstarry_code.session.cost_rollup import (
     normalize_event_cost_source,
     rollup_cost_source,
 )

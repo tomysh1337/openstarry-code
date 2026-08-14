@@ -18,25 +18,25 @@ import httpx
 import pytest
 from structlog.testing import capture_logs
 
-from opensquilla.env import trust_env
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.model_catalog_refresh import (
+from openstarry_code.env import trust_env
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.model_catalog_refresh import (
     TokenRhythmCatalogCoordinator,
     discover_tokenrhythm_models,
     install_tokenrhythm_catalog_coordinator,
 )
-from opensquilla.provider.app_attribution import provider_app_headers
-from opensquilla.provider.model_catalog import ModelCatalog
-from opensquilla.provider.openai import OpenAIProvider
-from opensquilla.provider.tokenrhythm_catalog import (
+from openstarry_code.provider.app_attribution import provider_app_headers
+from openstarry_code.provider.model_catalog import ModelCatalog
+from openstarry_code.provider.openai import OpenAIProvider
+from openstarry_code.provider.tokenrhythm_catalog import (
     TOKENRHYTHM_API_BASE_URL,
     TOKENRHYTHM_PUBLIC_CATALOG_URL,
     merge_tokenrhythm_catalog,
     parse_tokenrhythm_declared,
     parse_tokenrhythm_published,
 )
-from opensquilla.provider.types import ChatConfig, DoneEvent, ErrorEvent, Message
-from opensquilla.secrets import clean_header_secret
+from openstarry_code.provider.types import ChatConfig, DoneEvent, ErrorEvent, Message
+from openstarry_code.secrets import clean_header_secret
 from scripts.live_harness_security import report_contains_secret
 
 pytestmark = [pytest.mark.llm, pytest.mark.llm_costly, pytest.mark.llm_gateway]
@@ -444,8 +444,8 @@ def _raw_model_rows(
 
 
 def _rotated_live_key() -> str:
-    if os.environ.get("OPENSQUILLA_LIVE_TOKENRHYTHM") != "1":
-        pytest.skip("set OPENSQUILLA_LIVE_TOKENRHYTHM=1 for TokenRhythm live checks")
+    if os.environ.get("OPENSTARRY_CODE_LIVE_TOKENRHYTHM") != "1":
+        pytest.skip("set OPENSTARRY_CODE_LIVE_TOKENRHYTHM=1 for TokenRhythm live checks")
     key = os.environ.get("TOKENRHYTHM_API_KEY", "").strip()
     if not key:
         pytest.skip("set TOKENRHYTHM_API_KEY to a freshly rotated key")
@@ -542,7 +542,7 @@ async def test_live_catalog_sources_align_for_qwen_max(
     # Re-publish the live normalized documents through the real coordinator so
     # state/RPC/log artifacts can be scanned without making a second request or
     # sending the credential through a synthetic proxy.
-    import opensquilla.gateway.model_catalog_refresh as refresh_module
+    import openstarry_code.gateway.model_catalog_refresh as refresh_module
 
     async def use_live_published(**_kwargs):
         return published

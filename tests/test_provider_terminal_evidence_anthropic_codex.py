@@ -17,9 +17,9 @@ from typing import Any
 import httpx
 import pytest
 
-from opensquilla.provider.anthropic import AnthropicProvider
-from opensquilla.provider.openai_codex import OpenAICodexProvider
-from opensquilla.provider.types import (
+from openstarry_code.provider.anthropic import AnthropicProvider
+from openstarry_code.provider.openai_codex import OpenAICodexProvider
+from openstarry_code.provider.types import (
     ChatConfig,
     DoneEvent,
     ErrorEvent,
@@ -67,7 +67,7 @@ def _patch_stream(monkeypatch: Any, module: str, body: bytes) -> None:
         return real_async_client(*args, **kwargs)
 
     monkeypatch.setattr(
-        f"opensquilla.provider.{module}.httpx.AsyncClient",
+        f"openstarry_code.provider.{module}.httpx.AsyncClient",
         patched_async_client,
     )
 

@@ -5,11 +5,11 @@ from typing import Any
 
 import pytest
 
-from opensquilla.cli.tui.opentui.context import (
+from openstarry_code.cli.tui.opentui.context import (
     context_update_from_bootstrap,
     send_context_patch,
 )
-from opensquilla.engine.commands import Surface
+from openstarry_code.engine.commands import Surface
 
 
 def test_context_update_uses_canonical_identity_and_hides_opaque_paths() -> None:

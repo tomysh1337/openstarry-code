@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.cli.gateway_client import GatewayClient
+from openstarry_code.cli.gateway_client import GatewayClient
 from tui_real_terminal.driver import (
     TerminalSize,
     TmuxTerminalSession,
@@ -37,7 +37,7 @@ async def test_source_tui_real_gateway_empty_bootstrap_first_screen(
     artifact_root: Path,
     pytestconfig: pytest.Config,
 ) -> None:
-    """Exercise the exact public startup path behind ``opensquilla chat``.
+    """Exercise the exact public startup path behind ``openstarry-code chat``.
 
     Unlike the ordinary renderer fixture, this launches the deterministic real
     Gateway and lets ``run_gateway_chat`` create and normalize the empty
@@ -65,13 +65,13 @@ async def test_source_tui_real_gateway_empty_bootstrap_first_screen(
     gateway_env.update(
         {
             "PYTHONPATH": source_path,
-            "OPENSQUILLA_TUI_GATEWAY_E2E_PORT": str(port),
-            "OPENSQUILLA_TUI_GATEWAY_E2E_STATE": str(run_dir / "gateway-state"),
-            "OPENSQUILLA_TUI_GATEWAY_E2E_EVENT_LOG": str(run_dir / "provider.jsonl"),
-            "OPENSQUILLA_STATE_DIR": str(run_dir / "gateway-state"),
-            "OPENSQUILLA_OPENROUTER_LIVE_PRICING": "0",
-            "OPENSQUILLA_MEMORY_DREAM_DISABLED": "1",
-            "OPENSQUILLA_PRIVACY_DISABLE_NETWORK_OBSERVABILITY": "true",
+            "OPENSTARRY_CODE_TUI_GATEWAY_E2E_PORT": str(port),
+            "OPENSTARRY_CODE_TUI_GATEWAY_E2E_STATE": str(run_dir / "gateway-state"),
+            "OPENSTARRY_CODE_TUI_GATEWAY_E2E_EVENT_LOG": str(run_dir / "provider.jsonl"),
+            "OPENSTARRY_CODE_STATE_DIR": str(run_dir / "gateway-state"),
+            "OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING": "0",
+            "OPENSTARRY_CODE_MEMORY_DREAM_DISABLED": "1",
+            "OPENSTARRY_CODE_PRIVACY_DISABLE_NETWORK_OBSERVABILITY": "true",
             "HOME": str(run_dir / "gateway-home"),
         }
     )
@@ -103,19 +103,19 @@ async def test_source_tui_real_gateway_empty_bootstrap_first_screen(
             {
                 "PYTHONPATH": source_path,
                 "HOME": str(run_dir / "tui-home"),
-                "OPENSQUILLA_GATEWAY_URL": gateway_url,
-                "OPENSQUILLA_STATE_DIR": str(run_dir / "tui-state"),
-                "OPENSQUILLA_LOG_DIR": str(run_dir / "tui-logs"),
-                "OPENSQUILLA_TUI_DEV_SOURCE_HOST": "1",
-                "OPENSQUILLA_TUI_READY_MARKER": "OPEN_SQUILLA_TUI_READY",
-                "OPENSQUILLA_TUI_THEME": "opensquilla-dark",
-                "OPENSQUILLA_TUI_COLOR": "truecolor",
+                "OPENSTARRY_CODE_GATEWAY_URL": gateway_url,
+                "OPENSTARRY_CODE_STATE_DIR": str(run_dir / "tui-state"),
+                "OPENSTARRY_CODE_LOG_DIR": str(run_dir / "tui-logs"),
+                "OPENSTARRY_CODE_TUI_DEV_SOURCE_HOST": "1",
+                "OPENSTARRY_CODE_TUI_READY_MARKER": "OPEN_SQUILLA_TUI_READY",
+                "OPENSTARRY_CODE_TUI_THEME": "opensquilla-dark",
+                "OPENSTARRY_CODE_TUI_COLOR": "truecolor",
                 # Exercise the event-independent recovery seam through the
                 # public CLI -> Python bridge -> source Host environment.
-                "OPENSQUILLA_TUI_REPAINT_WATCHDOG_MS": "400",
-                "OPENSQUILLA_OPENROUTER_LIVE_PRICING": "0",
-                "OPENSQUILLA_MEMORY_DREAM_DISABLED": "1",
-                "OPENSQUILLA_PRIVACY_DISABLE_NETWORK_OBSERVABILITY": "true",
+                "OPENSTARRY_CODE_TUI_REPAINT_WATCHDOG_MS": "400",
+                "OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING": "0",
+                "OPENSTARRY_CODE_MEMORY_DREAM_DISABLED": "1",
+                "OPENSTARRY_CODE_PRIVACY_DISABLE_NETWORK_OBSERVABILITY": "true",
                 "TERM": "xterm-256color",
                 "COLORTERM": "truecolor",
             }
@@ -131,7 +131,7 @@ async def test_source_tui_real_gateway_empty_bootstrap_first_screen(
                 sys.executable,
                 "-u",
                 "-m",
-                "opensquilla.cli.main",
+                "openstarry_code.cli.main",
                 "chat",
                 "--ui",
                 "tui",
@@ -163,7 +163,7 @@ async def test_source_tui_real_gateway_empty_bootstrap_first_screen(
         )
         evidence.record_framebuffer(framebuffer)
 
-        assert "OpenSquilla" in settled.text
+        assert "OpenStarry Code" in settled.text
         assert "Build with your agent. Stay in the flow." in settled.text
         assert "Source Gateway startup" in settled.text
         assert settled.text.count("send a message") == 1

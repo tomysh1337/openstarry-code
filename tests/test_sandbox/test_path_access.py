@@ -11,28 +11,28 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.gateway.approval_queue import get_approval_queue, reset_approval_queue
-from opensquilla.sandbox import filesystem_worker
-from opensquilla.sandbox.backend.unavailable import UnavailableBackend
-from opensquilla.sandbox.config import SandboxSettings
-from opensquilla.sandbox.integration import configure_runtime, get_runtime, reset_runtime
-from opensquilla.sandbox.operation_runtime import SandboxOperation, SandboxOperationResult
-from opensquilla.sandbox.path_aliases import resolve_workspace_alias
-from opensquilla.sandbox.path_validation import decide_path_access, logical_tool_path
-from opensquilla.sandbox.permissions import (
+from openstarry_code.gateway.approval_queue import get_approval_queue, reset_approval_queue
+from openstarry_code.sandbox import filesystem_worker
+from openstarry_code.sandbox.backend.unavailable import UnavailableBackend
+from openstarry_code.sandbox.config import SandboxSettings
+from openstarry_code.sandbox.integration import configure_runtime, get_runtime, reset_runtime
+from openstarry_code.sandbox.operation_runtime import SandboxOperation, SandboxOperationResult
+from openstarry_code.sandbox.path_aliases import resolve_workspace_alias
+from openstarry_code.sandbox.path_validation import decide_path_access, logical_tool_path
+from openstarry_code.sandbox.permissions import (
     FileSystemAccess,
     FileSystemPermissionEntry,
     FileSystemPermissionProfile,
 )
-from opensquilla.sandbox.platform_permissions import FileSystemPlatformContext
-from opensquilla.sandbox.policy_models import FilePolicySettings, SandboxPolicy
-from opensquilla.sandbox.run_context import MountGrant, RunContext
-from opensquilla.sandbox.run_mode import RunMode, normalize_run_mode
-from opensquilla.sandbox.types import SandboxBackendError, SandboxRequest
-from opensquilla.tools.builtin import filesystem as fs
-from opensquilla.tools.builtin import patch as patch_tool
-from opensquilla.tools.builtin import shell
-from opensquilla.tools.types import CallerKind, ToolContext, current_tool_context
+from openstarry_code.sandbox.platform_permissions import FileSystemPlatformContext
+from openstarry_code.sandbox.policy_models import FilePolicySettings, SandboxPolicy
+from openstarry_code.sandbox.run_context import MountGrant, RunContext
+from openstarry_code.sandbox.run_mode import RunMode, normalize_run_mode
+from openstarry_code.sandbox.types import SandboxBackendError, SandboxRequest
+from openstarry_code.tools.builtin import filesystem as fs
+from openstarry_code.tools.builtin import patch as patch_tool
+from openstarry_code.tools.builtin import shell
+from openstarry_code.tools.types import CallerKind, ToolContext, current_tool_context
 
 
 class _InlineExecutorLoop:
@@ -199,7 +199,7 @@ def tool_context(
 
 @pytest.fixture(autouse=True)
 def sandbox_runtime(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
-    from opensquilla.application import approval_queue as approval_queue_mod
+    from openstarry_code.application import approval_queue as approval_queue_mod
 
     monkeypatch.setattr(
         approval_queue_mod,
@@ -352,7 +352,7 @@ def test_path_decision_maps_generalized_workspace_alias_to_host_workspace(
         tmp_writable=False,
         tmpdir_env_writable=False,
     )
-    raw_logical_path = str(tmp_path / "model-home" / ".opensquilla" / "workspace" / "ordinary.py")
+    raw_logical_path = str(tmp_path / "model-home" / ".openstarry-code" / "workspace" / "ordinary.py")
 
     decision = decide_path_access(
         workspace / "ordinary.py",
@@ -513,7 +513,7 @@ def test_generalized_workspace_alias_keeps_protected_metadata_read_only(
         workspace=workspace,
         write=True,
         profile=profile,
-        logical_path="/model/home/.opensquilla/workspace/.git/config",
+        logical_path="/model/home/.openstarry-code/workspace/.git/config",
     )
 
     assert decision.status == "request"
@@ -569,18 +569,18 @@ def test_generalized_workspace_alias_keeps_readonly_carveout(
         entries=(
             FileSystemPermissionEntry(workspace, FileSystemAccess.WRITE),
             FileSystemPermissionEntry(
-                workspace / ".opensquilla",
+                workspace / ".openstarry-code",
                 FileSystemAccess.READ,
             ),
         )
     )
 
     decision = decide_path_access(
-        workspace / ".opensquilla" / "state.json",
+        workspace / ".openstarry-code" / "state.json",
         workspace=workspace,
         write=True,
         profile=profile,
-        logical_path="/model/home/.opensquilla/workspace/.opensquilla/state.json",
+        logical_path="/model/home/.openstarry-code/workspace/.openstarry-code/state.json",
     )
 
     assert decision.status == "request"
@@ -647,7 +647,7 @@ def test_generalized_workspace_alias_does_not_expand_retargeted_workspace(
         tmp_writable=False,
         tmpdir_env_writable=False,
     )
-    raw_logical_path = "/model/home/.opensquilla/workspace/ordinary.py"
+    raw_logical_path = "/model/home/.openstarry-code/workspace/ordinary.py"
 
     stable = decide_path_access(
         frozen_workspace / "ordinary.py",
@@ -768,8 +768,8 @@ def test_workspace_child_is_allowed(tmp_path: Path) -> None:
 
 
 def test_default_container_workspace_child_is_allowed_before_root_block() -> None:
-    workspace = "/root/.opensquilla/workspace"
-    target = "/root/.opensquilla/workspace/project/src/app.py"
+    workspace = "/root/.openstarry-code/workspace"
+    target = "/root/.openstarry-code/workspace/project/src/app.py"
 
     decision = decide_path_access(target, workspace=workspace)
 
@@ -778,8 +778,8 @@ def test_default_container_workspace_child_is_allowed_before_root_block() -> Non
 
 
 def test_dotenv_inside_default_container_workspace_is_profile_readable() -> None:
-    workspace = "/root/.opensquilla/workspace"
-    target = "/root/.opensquilla/workspace/project/.env.local"
+    workspace = "/root/.openstarry-code/workspace"
+    target = "/root/.openstarry-code/workspace/project/.env.local"
 
     decision = decide_path_access(target, workspace=workspace)
 
@@ -815,7 +815,7 @@ def test_write_request_asks_for_rw_mount(tmp_path: Path) -> None:
 
 
 def test_request_path_builds_structured_mount_escalation_choices(tmp_path: Path) -> None:
-    from opensquilla.sandbox.escalation import build_path_approval_params
+    from openstarry_code.sandbox.escalation import build_path_approval_params
 
     workspace = tmp_path / "workspace"
     sibling = tmp_path / "sibling" / "notes.txt"
@@ -845,7 +845,7 @@ def test_request_path_builds_structured_mount_escalation_choices(tmp_path: Path)
 
 
 def test_unmounted_root_read_can_request_a_mount_grant(tmp_path: Path) -> None:
-    from opensquilla.sandbox.escalation import build_path_approval_params
+    from openstarry_code.sandbox.escalation import build_path_approval_params
 
     workspace = tmp_path / "workspace"
     decision = decide_path_access(Path(tmp_path.anchor), workspace=workspace, write=False)
@@ -1381,7 +1381,7 @@ async def test_generalized_workspace_alias_allows_ordinary_filesystem_write(
 ) -> None:
     workspace = tmp_path / "real-workspace"
     workspace.mkdir()
-    raw_path = str(tmp_path / "model-home" / ".opensquilla" / "workspace" / "ordinary.py")
+    raw_path = str(tmp_path / "model-home" / ".openstarry-code" / "workspace" / "ordinary.py")
     target = workspace / "ordinary.py"
 
     with tool_context(workspace):
@@ -1426,7 +1426,7 @@ async def test_create_source_blocks_workspace_alias_to_readonly_carveout(
 ) -> None:
     workspace = tmp_path / "real-workspace"
     alias_root = tmp_path / "model-alias" / "workspace"
-    readonly = workspace / ".opensquilla"
+    readonly = workspace / ".openstarry-code"
     workspace.mkdir()
     alias_root.mkdir(parents=True)
     readonly.mkdir()
@@ -1437,7 +1437,7 @@ async def test_create_source_blocks_workspace_alias_to_readonly_carveout(
             FileSystemPermissionEntry(readonly, FileSystemAccess.READ),
         )
     )
-    raw_path = str(alias_root / ".opensquilla" / "created.py")
+    raw_path = str(alias_root / ".openstarry-code" / "created.py")
     target = readonly / "created.py"
 
     with tool_context(workspace) as ctx:
@@ -2137,7 +2137,7 @@ async def test_trusted_sandbox_write_outside_workspace_does_not_auto_grant_mount
 
 
 def test_filesystem_mutation_tools_publish_structured_elevation_fields() -> None:
-    from opensquilla.tools.registry import get_default_registry
+    from openstarry_code.tools.registry import get_default_registry
 
     for tool_name in ("write_file", "edit_file", "edit_source"):
         registered = get_default_registry().get(tool_name)
@@ -2537,7 +2537,7 @@ async def test_grep_search_does_not_follow_workspace_symlink_to_unmounted_path(
 def test_shell_windows_null_redirection_does_not_request_write_access(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.operation_profile import OperationProfile
+    from openstarry_code.sandbox.operation_profile import OperationProfile
 
     monkeypatch.setattr(shell, "_windows_sandbox_backend_active", lambda: True)
     profile = OperationProfile("unknown_shell")
@@ -3024,7 +3024,7 @@ def test_windows_shell_policy_ignores_deleted_active_file_mount(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.types import (
+    from openstarry_code.sandbox.types import (
         MountSpec,
         NetworkMode,
         ResourceLimits,
@@ -3067,7 +3067,7 @@ def test_shell_policy_preserves_workspace_rw_absolute_alias(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.types import (
+    from openstarry_code.sandbox.types import (
         SANDBOX_WORKSPACE_PATH,
         MountSpec,
         NetworkMode,

@@ -4,7 +4,7 @@
 # OpenSquilla — Agente de IA eficiente en tokens
 
 <p align="center">
-  <img src="assets/opensquilla-long-logo.png" alt="OpenSquilla logo" width="500">
+  <img src="assets/openstarry-code-long-logo.png" alt="OpenStarry Code logo" width="500">
 </p>
 
 <p align="center">
@@ -98,7 +98,7 @@ Para descargas más rápidas desde China continental, usa los alias de descarga 
 
 Estos enlaces fijos solo avanzan cuando una release elegible más reciente supera la verificación de la réplica. Usa los enlaces versionados de GitHub Release indicados arriba si necesitas una versión concreta.
 
-Cierra cualquier aplicación de escritorio de OpenSquilla en ejecución antes de actualizar. Se reutiliza el perfil Desktop existente en el directorio de datos de aplicaciones de la plataforma. El `~/.opensquilla` de la instalación de terminal es un perfil distinto; transfiérelo explícitamente desde Ajustes si es necesario.
+Cierra cualquier aplicación de escritorio de OpenStarry Code en ejecución antes de actualizar. Se reutiliza el perfil Desktop existente en el directorio de datos de aplicaciones de la plataforma. El `~/.openstarry-code` de la instalación de terminal es un perfil distinto; transfiérelo explícitamente desde Ajustes si es necesario.
 
 Al actualizar la aplicación de escritorio de Windows de RC3 a RC4 o una versión
 posterior, ejecuta el instalador nuevo directamente sobre la instalación existente.
@@ -140,12 +140,12 @@ Esto instala el wheel de OpenSquilla desde la URL de la release y luego deja que
 **3. Configura y ejecuta.**
 
 ```sh
-opensquilla onboard
-opensquilla gateway run
+openstarry-code onboard
+openstarry-code gateway run
 ```
 
 > [!NOTE]
-> Si no se encuentra `opensquilla` justo después de una instalación nueva con `uv`, abre una terminal nueva o vuelve a ejecutar la línea de PATH del paso 1.
+> Si no se encuentra `openstarry-code` justo después de una instalación nueva con `uv`, abre una terminal nueva o vuelve a ejecutar la línea de PATH del paso 1.
 
 Para una instalación totalmente fijada, usa la URL del wheel con versión:
 `https://github.com/opensquilla/opensquilla/releases/download/v0.5.3/opensquilla-0.5.3-py3-none-any.whl`.
@@ -154,15 +154,15 @@ Para una instalación totalmente fijada, usa la URL del wheel con versión:
 
 ### Instalar desde el código fuente
 
-Usa esta ruta para ejecutar OpenSquilla desde un checkout sin editarlo. El clon es solo el código fuente del paquete para el instalador; tras instalar, usa el comando `opensquilla`, no ejecutes `uv run`. Elige en su lugar [Desarrollar desde el código fuente](#develop-from-source) si tu intención es modificar el código.
+Usa esta ruta para ejecutar OpenSquilla desde un checkout sin editarlo. El clon es solo el código fuente del paquete para el instalador; tras instalar, usa el comando `openstarry-code`, no ejecutes `uv run`. Elige en su lugar [Desarrollar desde el código fuente](#develop-from-source) si tu intención es modificar el código.
 
 1. **Clona con los recursos LFS**
 
    ```sh
    git lfs install
    git clone https://github.com/opensquilla/opensquilla.git
-   cd opensquilla
-   git lfs pull --include="src/opensquilla/squilla_router/models/**"
+   cd openstarry-code
+   git lfs pull --include="src/openstarry_code/squilla_router/models/**"
    ```
 
 2. **Ejecuta el instalador**
@@ -179,7 +179,7 @@ Usa esta ruta para ejecutar OpenSquilla desde un checkout sin editarlo. El clon 
    powershell -ExecutionPolicy Bypass -File ./scripts/install_source.ps1
    ```
 
-   El script ejecuta primero `npm ci` y `npm run build` en `opensquilla-webui`, y después instala `.[recommended]` (SquillaRouter + memoria + modelos locales) en un entorno de usuario dedicado mediante `uv tool install`, recurriendo a `python -m pip install --user` cuando `uv` no está disponible. Cada reinstalación desde el código fuente recrea `node_modules` y recompila la consola. La primera ejecución suele descargar más; la caché de npm reduce después el tráfico de red, pero no elimina todo el tiempo de compilación ni las escrituras de disco. Abre una terminal nueva si `opensquilla` no está en el `PATH` tras la instalación.
+   El script ejecuta primero `npm ci` y `npm run build` en `openstarry-code-webui`, y después instala `.[recommended]` (SquillaRouter + memoria + modelos locales) en un entorno de usuario dedicado mediante `uv tool install`, recurriendo a `python -m pip install --user` cuando `uv` no está disponible. Cada reinstalación desde el código fuente recrea `node_modules` y recompila la consola. La primera ejecución suele descargar más; la caché de npm reduce después el tráfico de red, pero no elimina todo el tiempo de compilación ni las escrituras de disco. Abre una terminal nueva si `openstarry-code` no está en el `PATH` tras la instalación.
 
    `pip install .`, `uv tool install .` y las instalaciones mediante una URL VCS
    son rutas de compilación de bajo nivel, no sustitutos de este script. Un
@@ -244,7 +244,7 @@ OPENSQUILLA_INSTALL_PROFILE=core   bash scripts/install_source.sh   # runtime m�
 OPENSQUILLA_INSTALL_DRY_RUN=1      bash scripts/install_source.sh   # solo imprime el plan
 ```
 
-Verifica qué `opensquilla` ejecuta tu shell con `command -v opensquilla` (macOS/Linux) o `where.exe opensquilla` (Windows). Si no está en el `PATH`, ejecuta `uv tool update-shell`. Tras reinstalar desde un checkout local, reinicia el gateway para que cargue el paquete actualizado.
+Verifica qué `openstarry-code` ejecuta tu shell con `command -v openstarry-code` (macOS/Linux) o `where.exe openstarry-code` (Windows). Si no está en el `PATH`, ejecuta `uv tool update-shell`. Tras reinstalar desde un checkout local, reinicia el gateway para que cargue el paquete actualizado.
 
 </details>
 
@@ -255,12 +255,12 @@ Verifica qué `opensquilla` ejecuta tu shell con `command -v opensquilla` (macOS
 Usa esta ruta cuando estés trabajando en el código fuente de OpenSquilla: haciendo cambios, ejecutando pruebas o depurando el comportamiento contra este checkout. No es la ruta de instalación habitual. A diferencia de [Instalar desde el código fuente](#install-from-source), esta ruta requiere `uv`: `uv sync` crea un `.venv` local del repositorio y `uv run` ejecuta los comandos contra los archivos de este checkout.
 
 ```sh
-cd opensquilla-webui
+cd openstarry-code-webui
 npm ci
 npm run build
 cd ..
 uv sync --extra recommended --extra dev
-uv run opensquilla --help
+uv run openstarry-code --help
 ```
 
 Vuelve a ejecutar `npm run build` después de cambiar la Web UI. Una compilación
@@ -271,26 +271,26 @@ El extra `recommended` también incluye SquillaRouter para el desarrollo; el ext
 
 ```sh
 uv sync --extra recommended --extra dev --extra matrix
-uv run opensquilla channels status matrix --json
+uv run openstarry-code channels status matrix --json
 ```
 
-En este modo, antepón `uv run` a cada comando `opensquilla` de [Configuración](#configuration). No depures un checkout de desarrollo a través de un comando `opensquilla` local del usuario: ese comando se ejecuta en un entorno de Python distinto.
+En este modo, antepón `uv run` a cada comando `openstarry-code` de [Configuración](#configuration). No depures un checkout de desarrollo a través de un comando `openstarry-code` local del usuario: ese comando se ejecuta en un entorno de Python distinto.
 
 ### Desinstalación
 
-Elimina OpenSquilla con `opensquilla uninstall`. Conserva tus datos de forma predeterminada y elimina solo el programa:
+Elimina OpenSquilla con `openstarry-code uninstall`. Conserva tus datos de forma predeterminada y elimina solo el programa:
 
 ```sh
-opensquilla uninstall --dry-run   # previsualiza qué se eliminaría y qué se conservaría
-opensquilla uninstall             # elimina el programa, conserva tus datos
+openstarry-code uninstall --dry-run   # previsualiza qué se eliminaría y qué se conservaría
+openstarry-code uninstall             # elimina el programa, conserva tus datos
 ```
 
 Para eliminar también los datos, opta explícitamente por ello:
 
 ```sh
-opensquilla uninstall --purge-state    # sesiones, registros, caché, programador, memoria
-opensquilla uninstall --purge-config   # config.toml y secretos (.env)
-opensquilla uninstall --purge-all      # todo (te pide que escribas una confirmación)
+openstarry-code uninstall --purge-state    # sesiones, registros, caché, programador, memoria
+openstarry-code uninstall --purge-config   # config.toml y secretos (.env)
+openstarry-code uninstall --purge-all      # todo (te pide que escribas una confirmación)
 ```
 
 Primero se vacía y detiene el gateway en ejecución, la eliminación se mantiene dentro del directorio raíz de OpenSquilla, y las instalaciones de Docker o de escritorio obtienen pasos de eliminación guiados en su lugar. Consulta [`docs/cli.md`](docs/cli.md#uninstall) para la referencia completa.
@@ -373,13 +373,13 @@ OPENSQUILLA_TELEMETRY_ENDPOINT=https://example.com/v1/install
 
 ### Configuración inicial
 
-`opensquilla onboard` es el asistente interactivo de configuración inicial. Escribe el archivo de configuración activo y mantiene los secretos del proveedor en variables de entorno cuando pasas `--api-key-env`. El enrutador usa `recommended` de forma predeterminada (SquillaRouter en proveedores compatibles); pasa `--router disabled` para enrutamiento directo a un único modelo.
+`openstarry-code onboard` es el asistente interactivo de configuración inicial. Escribe el archivo de configuración activo y mantiene los secretos del proveedor en variables de entorno cuando pasas `--api-key-env`. El enrutador usa `recommended` de forma predeterminada (SquillaRouter en proveedores compatibles); pasa `--router disabled` para enrutamiento directo a un único modelo.
 
 ```sh
-opensquilla onboard                # asistente interactivo completo
-opensquilla onboard --if-needed    # idempotente: seguro para scripts y reinstalaciones
-opensquilla onboard --minimal      # solo el proveedor; omite canales y búsqueda
-opensquilla onboard status         # inspecciona cada sección de configuración sin escribir
+openstarry-code onboard                # asistente interactivo completo
+openstarry-code onboard --if-needed    # idempotente: seguro para scripts y reinstalaciones
+openstarry-code onboard --minimal      # solo el proveedor; omite canales y búsqueda
+openstarry-code onboard status         # inspecciona cada sección de configuración sin escribir
 ```
 
 En SSH, CI o cualquier entorno sin TTY, usa la forma no interactiva: mantén el secreto en el entorno y pasa su **nombre**, no su valor:
@@ -388,14 +388,14 @@ En SSH, CI o cualquier entorno sin TTY, usa la forma no interactiva: mantén el 
 
 ```sh
 export OPENROUTER_API_KEY="sk-..."
-opensquilla onboard --provider openrouter --api-key-env OPENROUTER_API_KEY
+openstarry-code onboard --provider openrouter --api-key-env OPENROUTER_API_KEY
 ```
 
 **Windows PowerShell**
 
 ```powershell
 $env:OPENROUTER_API_KEY="sk-..."
-opensquilla onboard --provider openrouter --api-key-env OPENROUTER_API_KEY
+openstarry-code onboard --provider openrouter --api-key-env OPENROUTER_API_KEY
 ```
 
 OpenRouter es solo un ejemplo: sustitúyelo por cualquier proveedor compatible y su variable de clave de API.
@@ -403,52 +403,52 @@ OpenRouter es solo un ejemplo: sustitúyelo por cualquier proveedor compatible y
 Vuelve a configurar una sección más tarde sin rehacer todo el asistente (estos ejemplos asumen que la clave de API correspondiente ya está en el entorno):
 
 ```sh
-opensquilla configure provider --provider openai --model gpt-4o --api-key-env OPENAI_API_KEY
-opensquilla configure router --router recommended
-opensquilla configure search   --search-provider duckduckgo
-opensquilla configure search   --search-provider exa --api-key-env EXA_API_KEY
-opensquilla configure channels
+openstarry-code configure provider --provider openai --model gpt-4o --api-key-env OPENAI_API_KEY
+openstarry-code configure router --router recommended
+openstarry-code configure search   --search-provider duckduckgo
+openstarry-code configure search   --search-provider exa --api-key-env EXA_API_KEY
+openstarry-code configure channels
 ```
 
 Secciones: `provider`, `router`, `channels`, `search`, `image-generation`, `memory-embedding`. La Web UI expone el mismo catálogo y modelo de estado en `/control/setup`: Provider y Router son la ruta rápida, mientras que Channels, Search, Image generation y Memory embedding se encuentran en el Centro de capacidades (Capability Center) y pueden configurarse más tarde. Dejar los canales vacíos se trata como una exclusión voluntaria, no como una configuración fallida.
 
 **Orden de carga de la configuración:** `OPENSQUILLA_GATEWAY_CONFIG_PATH` →
-`./opensquilla.toml` → `~/.opensquilla/config.toml` → valores predeterminados integrados. Para los secretos individuales, los valores del entorno siempre prevalecen sobre los del archivo.
+`./openstarry-code.toml` → `~/.openstarry-code/config.toml` → valores predeterminados integrados. Para los secretos individuales, los valores del entorno siempre prevalecen sobre los del archivo.
 
 ### Migrar desde OpenClaw o Hermes Agent
 
 Si ya tienes estado en `~/.openclaw` o `~/.hermes`, ejecuta primero un dry run para revisar el informe de migración y luego aplícalo explícitamente:
 
 ```sh
-opensquilla migrate openclaw --json
-opensquilla migrate openclaw --apply
+openstarry-code migrate openclaw --json
+openstarry-code migrate openclaw --apply
 
-opensquilla migrate hermes --json
-opensquilla migrate hermes --apply
+openstarry-code migrate hermes --json
+openstarry-code migrate hermes --apply
 ```
 
-Usa `opensquilla migrate --source openclaw,hermes --apply` para importar ambos directorios raíz predeterminados. Añade `--migrate-secrets` solo después de revisar el informe del dry run. Consulta [`MIGRATION.md`](MIGRATION.md) para rutas personalizadas y la gestión de conflictos.
+Usa `openstarry-code migrate --source openclaw,hermes --apply` para importar ambos directorios raíz predeterminados. Añade `--migrate-secrets` solo después de revisar el informe del dry run. Consulta [`MIGRATION.md`](MIGRATION.md) para rutas personalizadas y la gestión de conflictos.
 
 ### Ejecución
 
 ```sh
-opensquilla gateway run                # en primer plano, 127.0.0.1:18791
-opensquilla gateway start --json       # en segundo plano + espera de comprobación de salud
-opensquilla chat                       # REPL interactivo
-opensquilla agent -m "tu prompt"       # una sola vez, apto para automatización
+openstarry-code gateway run                # en primer plano, 127.0.0.1:18791
+openstarry-code gateway start --json       # en segundo plano + espera de comprobación de salud
+openstarry-code chat                       # REPL interactivo
+openstarry-code agent -m "tu prompt"       # una sola vez, apto para automatización
 ```
 
 Abre la Web UI en <http://127.0.0.1:18791/control/>. La vista **Health (Salud)** muestra si OpenSquilla está listo, qué no está listo y los siguientes pasos de recuperación. Desde la CLI, ejecuta:
 
 ```sh
-opensquilla doctor
-opensquilla doctor --json
-opensquilla doctor --config ./opensquilla.toml --json
+openstarry-code doctor
+openstarry-code doctor --json
+openstarry-code doctor --config ./openstarry-code.toml --json
 ```
 
-`/health` y `/healthz` son endpoints de liveness ligeros para las comprobaciones de proceso. `opensquilla doctor` y la vista Health de la Web UI son las superficies de comprobación de disponibilidad para la configuración del proveedor, la memoria, los registros, la búsqueda, los canales, la postura del sandbox, el enrutador, la generación de imágenes y la orientación de recuperación. Pulsa `Ctrl+C` para detener un gateway en primer plano.
+`/health` y `/healthz` son endpoints de liveness ligeros para las comprobaciones de proceso. `openstarry-code doctor` y la vista Health de la Web UI son las superficies de comprobación de disponibilidad para la configuración del proveedor, la memoria, los registros, la búsqueda, los canales, la postura del sandbox, el enrutador, la generación de imágenes y la orientación de recuperación. Pulsa `Ctrl+C` para detener un gateway en primer plano.
 
-Otros grupos de comandos incluyen `sessions`, `skills`, `memory`, `migrate`, `cron`, `channels`, `providers`, `models` y `cost`. Ejecuta `opensquilla --help` o `opensquilla <grupo> --help` para más detalles.
+Otros grupos de comandos incluyen `sessions`, `skills`, `memory`, `migrate`, `cron`, `channels`, `providers`, `models` y `cost`. Ejecuta `openstarry-code --help` o `openstarry-code <grupo> --help` para más detalles.
 
 <details>
 <summary>Configuración avanzada: verificar un canal, vinculación a la red pública, Docker</summary>
@@ -458,8 +458,8 @@ Otros grupos de comandos incluyen `sessions`, `skills`, `memory`, `migrate`, `cr
 Guardar un canal es un cambio de configuración, no una prueba de conectividad en tiempo de ejecución. Reinicia el gateway tras editar canales y luego verifica el canal en vivo:
 
 ```sh
-opensquilla gateway restart
-opensquilla channels status <name> --json
+openstarry-code gateway restart
+openstarry-code channels status <name> --json
 ```
 
 Considera un canal como conectado solo cuando la carga útil de estado informa `enabled=true`, `configured=true` y `connected=true`. Feishu usa el modo websocket de forma predeterminada, Telegram usa polling y Slack puede usar Socket Mode: ninguno de esos modos necesita una URL pública. El modo webhook de Feishu, el modo webhook de Telegram, el modo webhook de Slack y WeCom requieren una URL pública y accesible por el proveedor.
@@ -469,7 +469,7 @@ Considera un canal como conectado solo cuando la carga útil de estado informa `
 Para llegar a la Web UI desde otra máquina, vincula el gateway a todas las interfaces y usa la IP pública del host:
 
 ```sh
-opensquilla gateway run --listen 0.0.0.0 --port 18791
+openstarry-code gateway run --listen 0.0.0.0 --port 18791
 ```
 
 El acceso público también requiere que el firewall del host o el grupo de seguridad de la nube permita el TCP entrante en ese puerto. No expongas el gateway con `[auth] mode = "none"`: configura la autenticación por token antes de vincularlo a `0.0.0.0`.
@@ -482,17 +482,17 @@ Se publican imágenes multiarquitectura preconstruidas (`amd64`/`arm64`) en `ghc
 OPENSQUILLA_GATEWAY_IMAGE=ghcr.io/opensquilla/opensquilla:latest docker compose up -d
 ```
 
-Sin `OPENSQUILLA_GATEWAY_IMAGE`, la ruta de compose ejecuta una imagen `opensquilla:local` que construyes tú mismo. Constrúyela a partir de un checkout del código fuente con los recursos del enrutador de Git LFS descargados (consulta [Instalar desde el código fuente](#install-from-source) para el clon y `git lfs pull`):
+Sin `OPENSQUILLA_GATEWAY_IMAGE`, la ruta de compose ejecuta una imagen `openstarry-code:local` que construyes tú mismo. Constrúyela a partir de un checkout del código fuente con los recursos del enrutador de Git LFS descargados (consulta [Instalar desde el código fuente](#install-from-source) para el clon y `git lfs pull`):
 
 ```sh
-docker build -t opensquilla:local .
+docker build -t openstarry-code:local .
 ```
 
 Luego, `./start.sh` (o `start.ps1` en Windows) ejecuta `docker compose up -d` y sigue los registros del gateway. Docker evita una cadena de herramientas de Python en el host, no la construcción de la imagen local.
 
 </details>
 
-Los niveles de proveedor, el ajuste del sandbox, la generación de imágenes y los ajustes de concurrencia están en `opensquilla.toml.example`.
+Los niveles de proveedor, el ajuste del sandbox, la generación de imágenes y los ajustes de concurrencia están en `openstarry-code.toml.example`.
 
 ---
 
@@ -525,8 +525,8 @@ Notas completas: [`CHANGELOG.md`](CHANGELOG.md) ·
 
 Esta versión amplía OpenSquilla en migración, chat por CLI, canales, programación y trabajo de herramientas de larga duración:
 
-- **Ruta de migración desde directorios raíz de agente existentes**: `opensquilla migrate` previsualiza y aplica importaciones desde directorios raíz existentes de OpenClaw/Hermes, incluyendo memoria, archivos de persona, skills, configuración de MCP/canales, gestión de conflictos e informes de migración.
-- **CLI de chat utilizable**: `opensquilla chat` tiene una interfaz de terminal estable, salida en streaming, entrada en cola, descubrimiento del modo slash, barras de herramientas/estado y un comportamiento de prompt en vivo más determinista.
+- **Ruta de migración desde directorios raíz de agente existentes**: `openstarry-code migrate` previsualiza y aplica importaciones desde directorios raíz existentes de OpenClaw/Hermes, incluyendo memoria, archivos de persona, skills, configuración de MCP/canales, gestión de conflictos e informes de migración.
+- **CLI de chat utilizable**: `openstarry-code chat` tiene una interfaz de terminal estable, salida en streaming, entrada en cola, descubrimiento del modo slash, barras de herramientas/estado y un comportamiento de prompt en vivo más determinista.
 - **Automatización de cron entre superficies**: los trabajos cron ahora cubren programaciones estructuradas, ejecuciones exactas/periódicas/cron con reconocimiento de zona horaria, entrega por canal o webhook, destinos de fallo, ejecuciones manuales y paridad entre WebUI/CLI/RPC.
 - **Mejores canales de Feishu y Discord**: los adaptadores de canal exponen metadatos de capacidad más claros, una gestión más segura de DM/grupos, rutas nativas de archivos y artefactos, y un comportamiento mejorado de adjuntos/hilos, mientras que las acciones privilegiadas mantienen un alcance acotado.
 - **Turnos de larga duración más robustos**: los turnos fallidos se mantienen fuera de la repetición del proveedor, las llamadas de herramienta mal formadas se gestionan de forma más segura y los reintentos sujetos a aprobación esperan las decisiones del operador.
@@ -545,13 +545,13 @@ Notas completas: [`CHANGELOG.md`](CHANGELOG.md) ·
 | **Enrutamiento eficiente en tokens** | `SquillaRouter` —un clasificador local de LightGBM + ONNX incluido en el extra `recommended`— puntúa cada turno según su longitud, idioma, código, palabras clave y embeddings semánticos, y luego lo enruta a través de cuatro niveles (C0–C3; los antiguos nombres T0–T3 son alias) hacia el modelo capaz más económico. La clasificación se ejecuta en el dispositivo; tu prompt nunca sale de la máquina para tomar esa decisión. |
 | **Razonamiento y prompts adaptativos** | OpenSquilla solicita razonamiento extendido únicamente para los turnos que el enrutador puntúa como complejos, y el prompt del sistema se ajusta a la complejidad de la tarea: ligero para los turnos triviales, con instrucciones completas para los complejos. |
 | **Más de 20 proveedores de LLM** | El registro de proveedores apunta a más de 20 backends de LLM —TokenRhythm, OpenRouter, OpenAI, Anthropic, Ollama, DeepSeek, Gemini, DashScope/Qwen, Moonshot, Mistral, Groq, Zhipu, SiliconFlow, vLLM, LM Studio y más— con selección de proveedor principal más reserva; el onboarding de la primera ejecución expone el subconjunto verificado. |
-| **Skills bajo demanda y MCP** | 15 skills incluidas (coding, GitHub, cron, pptx/docx/xlsx/pdf, resumen, tmux, clima y más) se cargan solo cuando la tarea lo necesita. OpenSquilla es un cliente MCP y también puede ejecutarse como servidor MCP: `opensquilla mcp-server run` necesita el extra `mcp` (instala `opensquilla[recommended,mcp]`). Las skills se pueden crear, instalar y publicar desde la CLI. |
+| **Skills bajo demanda y MCP** | 15 skills incluidas (coding, GitHub, cron, pptx/docx/xlsx/pdf, resumen, tmux, clima y más) se cargan solo cuando la tarea lo necesita. OpenSquilla es un cliente MCP y también puede ejecutarse como servidor MCP: `openstarry-code mcp-server run` necesita el extra `mcp` (instala `openstarry-code[recommended,mcp]`). Las skills se pueden crear, instalar y publicar desde la CLI. |
 | **Memoria local persistente** | Un `MEMORY.md` curado más notas Markdown fechadas, consultadas con búsqueda de palabras clave de texto completo de SQLite y recuerdo semántico con `sqlite-vec`. Los embeddings se ejecutan en el dispositivo mediante el ONNX incluido, o puedes cambiar a OpenAI/Ollama. Están disponibles un decaimiento exponencial opcional y una consolidación «dream» opcional. |
 | **Sandbox de seguridad por capas** | Tres niveles de política (Standard / Strict / Locked) sobre una matriz de permisos. Bubblewrap aísla la ejecución de código en Linux; el backend Seatbelt de macOS actualmente solo renderiza perfiles (la ejecución está pendiente), y todavía no hay backend de sandbox en Windows. Un registro de denegaciones (denial ledger) pausa automáticamente las ejecuciones autónomas tras denegaciones repetidas, las salidas rechazadas se purgan, y los metadatos de las skills y los resultados de las herramientas se escapan en XML como protección contra la inyección de prompts. |
 | **Herramientas integradas** | Lectura/escritura/edición de archivos, shell y procesos en segundo plano, git, búsqueda web (DuckDuckGo, Bocha, Brave, Tavily o Exa) y fetch tras una protección SSRF, creación de hojas de cálculo/PPTX/PDF, generación de imágenes y conversión de texto a voz. |
 | **Gateway unificado** | Un servidor ASGI de Starlette en `127.0.0.1:18791` con RPC por WebSocket y una consola de control integrada (`/control/`). La Web UI, la CLI y los canales de Terminal, WebSocket, Slack, Telegram, Discord, Feishu, DingTalk, WeCom, Matrix y QQ comparten todos un mismo `TurnRunner`. |
-| **Sesiones duraderas, subagentes y programación** | Almacenamiento de sesiones, transcripciones y repetición respaldado por SQLite, con espacios de trabajo por agente. Los agentes generan subagentes con profundidad acotada, y un `SchedulerEngine` con un parser de cron incorporado ejecuta trabajos recurrentes mediante `opensquilla cron`. |
-| **Controles del operador** | Las aprobaciones con humano en el bucle (human-in-the-loop) pueden pausar llamadas de herramienta sensibles a la espera de una decisión; los resúmenes de tokens y coste por turno y por sesión (`opensquilla cost`) y los diagnósticos están disponibles desde la CLI y la Web UI. |
+| **Sesiones duraderas, subagentes y programación** | Almacenamiento de sesiones, transcripciones y repetición respaldado por SQLite, con espacios de trabajo por agente. Los agentes generan subagentes con profundidad acotada, y un `SchedulerEngine` con un parser de cron incorporado ejecuta trabajos recurrentes mediante `openstarry-code cron`. |
+| **Controles del operador** | Las aprobaciones con humano en el bucle (human-in-the-loop) pueden pausar llamadas de herramienta sensibles a la espera de una decisión; los resúmenes de tokens y coste por turno y por sesión (`openstarry-code cost`) y los diagnósticos están disponibles desde la CLI y la Web UI. |
 
 Documentación de MetaSkill: [`docs/features/meta-skills.md`](docs/features/meta-skills.md),
 [`docs/features/meta-skill-user-guide.md`](docs/features/meta-skill-user-guide.md)
@@ -585,7 +585,7 @@ La aplicación de escritorio incluye el runtime nativo que necesita. Si usaste l
 
 ```sh
 brew install libomp
-opensquilla gateway restart
+openstarry-code gateway restart
 ```
 
 </details>
@@ -598,8 +598,8 @@ Si el arranque registra `DLL load failed while importing onnxruntime_pybind11_st
 El instalador de PowerShell desde el código fuente intenta instalar el redistributable mediante `winget`. Si usaste la instalación rápida desde terminal, o `winget` no está disponible, instálalo manualmente y reinicia PowerShell: <https://aka.ms/vs/17/release/vc_redist.x64.exe>. Luego restaura el enrutador recomendado:
 
 ```powershell
-opensquilla onboard --provider openrouter --api-key-env OPENROUTER_API_KEY --router recommended
-opensquilla gateway restart
+openstarry-code onboard --provider openrouter --api-key-env OPENROUTER_API_KEY --router recommended
+openstarry-code gateway restart
 ```
 
 </details>

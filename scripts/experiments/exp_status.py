@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Print the current OpenSquilla experiment ledger status."""
+"""Print the current OpenStarry Code experiment ledger status."""
 
 from __future__ import annotations
 

@@ -15,15 +15,15 @@ import pytest
 from pydantic import ValidationError
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from opensquilla.engine.runtime import _report_credential_pool_failure
-from opensquilla.engine.selector_override import resolve_tier_provider_config
-from opensquilla.gateway.config import (
+from openstarry_code.engine.runtime import _report_credential_pool_failure
+from openstarry_code.engine.selector_override import resolve_tier_provider_config
+from openstarry_code.gateway.config import (
     GatewayConfig,
     LlmProviderConfig,
     LlmProviderProfile,
     is_sensitive_config_key,
 )
-from opensquilla.gateway.llm_runtime import (
+from openstarry_code.gateway.llm_runtime import (
     INSUFFICIENT_CREDITS_COOLDOWN_SECONDS,
     RATE_LIMITED_COOLDOWN_SECONDS,
     ProfileCredentialPools,
@@ -31,15 +31,15 @@ from opensquilla.gateway.llm_runtime import (
     profile_credential_pools,
     reset_profile_credential_pools,
 )
-from opensquilla.provider.credentials import Credential, NoCredentialsAvailable
-from opensquilla.provider.failures import ProviderFailureKind
-from opensquilla.provider.types import ErrorEvent
+from openstarry_code.provider.credentials import Credential, NoCredentialsAvailable
+from openstarry_code.provider.failures import ProviderFailureKind
+from openstarry_code.provider.types import ErrorEvent
 
 _SECRET_A = "sk-test-000-aaaaaaaaaaaaaaaa"
 _SECRET_B = "sk-test-000-bbbbbbbbbbbbbbbb"
-_ENV_A = "OPENSQUILLA_TEST_POOL_KEY_A"
-_ENV_B = "OPENSQUILLA_TEST_POOL_KEY_B"
-_ENV_UNSET = "OPENSQUILLA_TEST_POOL_KEY_UNSET"
+_ENV_A = "OPENSTARRY_CODE_TEST_POOL_KEY_A"
+_ENV_B = "OPENSTARRY_CODE_TEST_POOL_KEY_B"
+_ENV_UNSET = "OPENSTARRY_CODE_TEST_POOL_KEY_UNSET"
 
 
 @pytest.fixture(autouse=True)
@@ -109,8 +109,8 @@ class _LogRecorder:
 @pytest.fixture()
 def log_recorder(monkeypatch):
     recorder = _LogRecorder()
-    monkeypatch.setattr("opensquilla.gateway.llm_runtime.log", recorder)
-    monkeypatch.setattr("opensquilla.engine.selector_override.log", recorder)
+    monkeypatch.setattr("openstarry_code.gateway.llm_runtime.log", recorder)
+    monkeypatch.setattr("openstarry_code.engine.selector_override.log", recorder)
     return recorder
 
 
@@ -151,7 +151,7 @@ def test_empty_pool_matches_single_key_resolution(monkeypatch) -> None:
         raise AssertionError("pool manager must not be consulted without a pool")
 
     monkeypatch.setattr(
-        "opensquilla.gateway.llm_runtime.profile_credential_pools",
+        "openstarry_code.gateway.llm_runtime.profile_credential_pools",
         _explode,
     )
     cfg = _config(LlmProviderProfile(api_key_env=_ENV_A))

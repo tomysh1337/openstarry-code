@@ -3,7 +3,7 @@ from __future__ import annotations
 import subprocess
 from pathlib import Path
 
-from opensquilla.sandbox.backend import linux_readiness as mod
+from openstarry_code.sandbox.backend import linux_readiness as mod
 
 
 def test_detects_wsl1_from_proc_version() -> None:

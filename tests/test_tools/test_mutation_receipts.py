@@ -3,11 +3,11 @@ from __future__ import annotations
 import subprocess
 from pathlib import Path
 
-from opensquilla.tools.mutation_receipts import (
+from openstarry_code.tools.mutation_receipts import (
     fingerprint_file,
     record_semantic_mutation_receipt,
 )
-from opensquilla.tools.types import ToolContext, current_tool_context
+from openstarry_code.tools.types import ToolContext, current_tool_context
 
 
 def _run_git(workspace: Path, *args: str) -> None:

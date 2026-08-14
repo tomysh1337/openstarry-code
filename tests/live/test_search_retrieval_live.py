@@ -11,15 +11,15 @@ from typing import Any, cast
 
 import pytest
 
-from opensquilla.search.canonical import run_canonical_web_search
-from opensquilla.search.types import SearchOptions
+from openstarry_code.search.canonical import run_canonical_web_search
+from openstarry_code.search.types import SearchOptions
 
 pytestmark = pytest.mark.live_search
 
 
 def _require_live_search() -> None:
-    if os.environ.get("OPENSQUILLA_LIVE_SEARCH") != "1":
-        pytest.skip("set OPENSQUILLA_LIVE_SEARCH=1 to run live search tests")
+    if os.environ.get("OPENSTARRY_CODE_LIVE_SEARCH") != "1":
+        pytest.skip("set OPENSTARRY_CODE_LIVE_SEARCH=1 to run live search tests")
 
 
 @pytest.mark.asyncio

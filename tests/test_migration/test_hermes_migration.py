@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.migration.hermes import HermesMigrationOptions, HermesMigrator
+from openstarry_code.migration.hermes import HermesMigrationOptions, HermesMigrator
 
 
 def _make_hermes_home(root: Path) -> Path:
@@ -68,7 +68,7 @@ def test_dry_run_plans_user_data_without_writes(
         encoding="utf-8",
     )
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     report = HermesMigrator(HermesMigrationOptions(source=source, apply=False)).migrate()
 
@@ -96,7 +96,7 @@ def test_apply_migrates_user_data_and_skills(
         "---\nname: demo\ndescription: Demo\n---\nBody\n", encoding="utf-8"
     )
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     report = HermesMigrator(HermesMigrationOptions(source=source, apply=True)).migrate()
 
@@ -156,7 +156,7 @@ slack:
     )
     home = tmp_path / "opensquilla-home"
     config_path = tmp_path / "opensquilla.toml"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     report = HermesMigrator(
         HermesMigrationOptions(
@@ -206,7 +206,7 @@ model:
     )
     home = tmp_path / "opensquilla-home"
     config_path = tmp_path / "opensquilla.toml"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     HermesMigrator(
         HermesMigrationOptions(source=source, config_path=config_path, apply=True)
@@ -230,7 +230,7 @@ def test_archive_unsupported_runtime_artifacts(
     (source / "logs").mkdir()
     (source / "logs" / "run.log").write_text("log line\n", encoding="utf-8")
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     report = HermesMigrator(HermesMigrationOptions(source=source, apply=True)).migrate()
 

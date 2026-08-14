@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 
-from opensquilla.skills.creator import proposer
+from openstarry_code.skills.creator import proposer
 
 
 class _RecordingChat:

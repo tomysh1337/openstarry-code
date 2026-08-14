@@ -7,18 +7,18 @@ from types import SimpleNamespace
 import httpx
 import pytest
 
-import opensquilla.gateway.rpc_channels  # noqa: F401  ensures registration
-from opensquilla.channels.contract import (
+import openstarry_code.gateway.rpc_channels  # noqa: F401  ensures registration
+from openstarry_code.channels.contract import (
     ChannelCapabilities,
     ChannelCapabilityProfile,
     ChannelPlatformCapabilityStatus,
     ChannelPlatformCategories,
 )
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.rpc import RpcContext, get_dispatcher
-from opensquilla.gateway.rpc_channels import _status_for
-from opensquilla.onboarding.mutations import upsert_channel
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.rpc import RpcContext, get_dispatcher
+from openstarry_code.gateway.rpc_channels import _status_for
+from openstarry_code.onboarding.mutations import upsert_channel
 
 
 def _read_ctx() -> RpcContext:
@@ -230,7 +230,7 @@ async def test_channels_status_reports_adapter_capabilities_without_network_prob
 
 @pytest.mark.asyncio
 async def test_channels_status_explains_admission_policy_and_denials():
-    from opensquilla.channels._util import ChannelAccessPolicy, ChannelDmAccess
+    from openstarry_code.channels._util import ChannelAccessPolicy, ChannelDmAccess
 
     class FakeHealth:
         connected = True
@@ -296,8 +296,8 @@ def test_admit_reason_set_tracks_the_admission_vocabulary():
     # reported as the channel's most recent denial.
     from typing import get_args
 
-    from opensquilla.channels.admission import AdmissionReason
-    from opensquilla.gateway.rpc_channels import _ADMISSION_ADMIT_REASONS
+    from openstarry_code.channels.admission import AdmissionReason
+    from openstarry_code.gateway.rpc_channels import _ADMISSION_ADMIT_REASONS
 
     vocabulary = set(get_args(AdmissionReason))
     assert _ADMISSION_ADMIT_REASONS <= vocabulary
@@ -418,7 +418,7 @@ async def test_channels_get_redacts_configured_secrets() -> None:
 async def test_channels_probe_merges_secrets_and_runs_real_slack_probe(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.channels import registry as channel_registry
+    from openstarry_code.channels import registry as channel_registry
 
     token = "xoxb-stored-probe-secret"
     signing_secret = "stored-signing-secret"
@@ -495,7 +495,7 @@ async def test_channels_probe_merges_secrets_and_runs_real_slack_probe(
 async def test_channels_probe_reports_unsupported_and_stops_adapter(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.channels import registry as channel_registry
+    from openstarry_code.channels import registry as channel_registry
 
     class UnsupportedAdapter:
         def __init__(self) -> None:
@@ -541,7 +541,7 @@ async def test_channels_probe_reports_unsupported_and_stops_adapter(
 async def test_channels_probe_redacts_provider_error_and_result_credentials(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.channels import registry as channel_registry
+    from openstarry_code.channels import registry as channel_registry
 
     token = "123:short-secret"
 
@@ -1083,7 +1083,7 @@ async def test_pairing_approve_as_admin_survives_a_failed_grant_and_still_notifi
     ctx = _notice_ctx(adapter, _NoticeStore())
     ctx.config.config_path = str(tmp_path / "config.toml")
 
-    from opensquilla.gateway import rpc_config
+    from openstarry_code.gateway import rpc_config
 
     def _boom(_config):
         raise OSError("read-only config")

@@ -8,12 +8,12 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from opensquilla.skills.meta.executors.user_input import (
+from openstarry_code.skills.meta.executors.user_input import (
     _deterministic_upstream_prefill,
     _render_clarify_config,
     run_user_input_step,
 )
-from opensquilla.skills.meta.types import (
+from openstarry_code.skills.meta.types import (
     ClarifyField,
     ClarifyStepConfig,
     MetaPaused,

@@ -16,17 +16,17 @@ from typing import Any
 
 import pytest
 
-from opensquilla.gateway import boot
-from opensquilla.gateway.boot import build_services
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.protocol import PROTOCOL_VERSION
-from opensquilla.gateway.rpc import get_dispatcher
-from opensquilla.gateway.usage_backfill import run_usage_backfill
-from opensquilla.gateway.websocket import _build_features
-from opensquilla.persistence.migrator import apply_pending
-from opensquilla.session.storage import _CREATE_SESSIONS, SessionStorage
-from opensquilla.tools.registry import ToolRegistry
-from opensquilla.usage_reasons import normalize_usage_unknown_reason
+from openstarry_code.gateway import boot
+from openstarry_code.gateway.boot import build_services
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.protocol import PROTOCOL_VERSION
+from openstarry_code.gateway.rpc import get_dispatcher
+from openstarry_code.gateway.usage_backfill import run_usage_backfill
+from openstarry_code.gateway.websocket import _build_features
+from openstarry_code.persistence.migrator import apply_pending
+from openstarry_code.session.storage import _CREATE_SESSIONS, SessionStorage
+from openstarry_code.tools.registry import ToolRegistry
+from openstarry_code.usage_reasons import normalize_usage_unknown_reason
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 MIGRATIONS_DIR = REPO_ROOT / "migrations"
@@ -211,11 +211,11 @@ async def test_v020_database_reaches_service_ready_with_live_sink(
         return {}
 
     monkeypatch.setattr(
-        "opensquilla.memory.manager.build_memory_managers",
+        "openstarry_code.memory.manager.build_memory_managers",
         build_no_memory_managers,
     )
-    monkeypatch.setenv("OPENSQUILLA_DESKTOP_FAST_START", "1")
-    monkeypatch.setenv("OPENSQUILLA_SCHEDULER_DB", str(tmp_path / "scheduler.db"))
+    monkeypatch.setenv("OPENSTARRY_CODE_DESKTOP_FAST_START", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_SCHEDULER_DB", str(tmp_path / "scheduler.db"))
     config = GatewayConfig(
         state_dir=str(tmp_path / "state"),
         workspace_dir=str(tmp_path / "workspace"),
@@ -249,8 +249,8 @@ async def test_v020_database_reaches_service_ready_with_live_sink(
         # the same process short-circuit to full-host ALLOW) and binds the
         # approval-queue singleton. Drop both so later tests in this process
         # rebuild them instead of inheriting boot state.
-        from opensquilla.gateway.approval_queue import reset_approval_queue
-        from opensquilla.sandbox.integration import reset_runtime
+        from openstarry_code.gateway.approval_queue import reset_approval_queue
+        from openstarry_code.sandbox.integration import reset_runtime
 
         reset_runtime()
         reset_approval_queue()

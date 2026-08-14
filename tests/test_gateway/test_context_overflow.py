@@ -10,21 +10,21 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from opensquilla.gateway import context_overflow
-from opensquilla.gateway.config import ContextOverflowPolicy, GatewayConfig
-from opensquilla.gateway.context_overflow import (
+from openstarry_code.gateway import context_overflow
+from openstarry_code.gateway.config import ContextOverflowPolicy, GatewayConfig
+from openstarry_code.gateway.context_overflow import (
     OverflowOutcome,
     apply_context_overflow_policy,
 )
-from opensquilla.gateway.rpc_chat import _enforce_context_overflow, _handle_chat_send
-from opensquilla.provider.types import ProviderRequestCorrelation
-from opensquilla.session.compaction import CompactionConfig
-from opensquilla.session.compaction_state import (
+from openstarry_code.gateway.rpc_chat import _enforce_context_overflow, _handle_chat_send
+from openstarry_code.provider.types import ProviderRequestCorrelation
+from openstarry_code.session.compaction import CompactionConfig
+from openstarry_code.session.compaction_state import (
     StructuredCompactionSummary,
     render_structured_summary,
 )
-from opensquilla.session.models import SessionContextState, SessionSummary
-from opensquilla.session.tokenizer import estimate_tokens
+from openstarry_code.session.models import SessionContextState, SessionSummary
+from openstarry_code.session.tokenizer import estimate_tokens
 
 
 @dataclass
@@ -805,7 +805,7 @@ async def test_session_payload_estimate_counts_rendered_structured_context_state
         next_action="Run focused regression tests",
         files_and_artifacts=[
             {
-                "path": "src/opensquilla/session/context_view.py",
+                "path": "src/openstarry_code/session/context_view.py",
                 "status": "changed",
                 "why": "provider-visible compaction context is rendered here",
             }
@@ -1350,11 +1350,11 @@ async def test_chat_send_accepts_turn_without_synchronous_context_overflow_gate(
         return {"status": "accepted", "key": params["key"], "task_id": "task-long-context"}
 
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_chat._enforce_context_overflow",
+        "openstarry_code.gateway.rpc_chat._enforce_context_overflow",
         _unexpected_gate,
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_sessions._handle_sessions_send",
+        "openstarry_code.gateway.rpc_sessions._handle_sessions_send",
         _fake_sessions_send,
     )
 
@@ -1397,7 +1397,7 @@ def test_chat_send_creates_webchat_session_with_agent_from_key(
         return {"status": "accepted", "key": params["key"], "task_id": "task-1"}
 
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_sessions._handle_sessions_send",
+        "openstarry_code.gateway.rpc_sessions._handle_sessions_send",
         _fake_sessions_send,
     )
 

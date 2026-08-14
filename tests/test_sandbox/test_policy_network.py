@@ -5,9 +5,9 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.sandbox.config import SandboxSettings
-from opensquilla.sandbox.policy import LevelHints, build_policy
-from opensquilla.sandbox.types import MountSpec, NetworkMode, SecurityLevel
+from openstarry_code.sandbox.config import SandboxSettings
+from openstarry_code.sandbox.policy import LevelHints, build_policy
+from openstarry_code.sandbox.types import MountSpec, NetworkMode, SecurityLevel
 
 
 @pytest.mark.skipif(

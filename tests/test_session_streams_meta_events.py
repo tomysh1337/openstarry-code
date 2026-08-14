@@ -1,6 +1,6 @@
 """新增 meta 事件被 replay buffer 完整保留，断线重连可补齐。"""
 
-from opensquilla.gateway.session_streams import SessionStreamRegistry
+from openstarry_code.gateway.session_streams import SessionStreamRegistry
 
 
 def _record_and_replay(events_to_record, since=0):

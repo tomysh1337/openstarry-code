@@ -61,10 +61,10 @@ def test_parse_linked_issues_splits_closing_and_reference_keywords() -> None:
         "\n".join(
             [
                 "Fixes #100",
-                "Closes: opensquilla/opensquilla#101",
+                "Closes: openstarry_code/opensquilla#101",
                 "resolves https://github.com/opensquilla/opensquilla/issues/102",
                 "Refs #200",
-                "References opensquilla/opensquilla#201",
+                "References openstarry_code/opensquilla#201",
                 "Fixes other/project#999",
             ]
         ),
@@ -112,7 +112,7 @@ def test_plan_merged_dev_pr_updates_only_closing_issues() -> None:
                 "html_url": DUMMY_MERGED_DEV_PR_URL,
             },
             "repository": {
-                "full_name": "opensquilla/opensquilla",
+                "full_name": "openstarry_code/opensquilla",
             },
         }
     )
@@ -148,7 +148,7 @@ def test_plan_open_or_updated_pr_adds_linked_pr_label_to_all_linked_issues() -> 
                     "html_url": DUMMY_OPEN_PR_URL,
                 },
                 "repository": {
-                    "full_name": "opensquilla/opensquilla",
+                    "full_name": "openstarry_code/opensquilla",
                 },
             }
         )
@@ -183,7 +183,7 @@ def test_plan_merged_main_pr_removes_linked_pr_label_without_dev_status() -> Non
                 "html_url": DUMMY_MERGED_MAIN_PR_URL,
             },
             "repository": {
-                "full_name": "opensquilla/opensquilla",
+                "full_name": "openstarry_code/opensquilla",
             },
         }
     )
@@ -218,7 +218,7 @@ def test_plan_closed_unmerged_pr_removes_linked_pr_label_from_all_linked_issues(
                 "html_url": DUMMY_CLOSED_PR_URL,
             },
             "repository": {
-                "full_name": "opensquilla/opensquilla",
+                "full_name": "openstarry_code/opensquilla",
             },
         }
     )

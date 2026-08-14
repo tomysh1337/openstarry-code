@@ -6,11 +6,11 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.application.approval_queue import ApprovalQueue
-from opensquilla.gateway import rpc_approvals
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.rpc import RpcContext, get_dispatcher
-from opensquilla.gateway.scopes import APPROVALS_SCOPE, METHOD_SCOPES
+from openstarry_code.application.approval_queue import ApprovalQueue
+from openstarry_code.gateway import rpc_approvals
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.rpc import RpcContext, get_dispatcher
+from openstarry_code.gateway.scopes import APPROVALS_SCOPE, METHOD_SCOPES
 
 
 @pytest.mark.asyncio
@@ -331,7 +331,7 @@ def test_gateway_rpc_approvals_keeps_payload_logic_out_of_gateway_boundary() -> 
     imported_helpers = {
         alias.name
         for node in imports
-        if node.module == "opensquilla.application.approval_rpc"
+        if node.module == "openstarry_code.application.approval_rpc"
         for alias in node.names
     }
     handlers = {

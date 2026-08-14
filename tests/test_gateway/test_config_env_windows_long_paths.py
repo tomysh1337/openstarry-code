@@ -6,9 +6,9 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.env import load_env
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.paths import native_io_path
+from openstarry_code.env import load_env
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.paths import native_io_path
 
 pytestmark = pytest.mark.skipif(os.name != "nt", reason="Windows long-path regression")
 
@@ -23,9 +23,9 @@ def _long_home(tmp_path: Path) -> Path:
 
 def _clear_path_overrides(monkeypatch: pytest.MonkeyPatch) -> None:
     for name in (
-        "OPENSQUILLA_GATEWAY_STATE_DIR",
-        "OPENSQUILLA_GATEWAY_WORKSPACE_DIR",
-        "OPENSQUILLA_WORKSPACE_DIR",
+        "OPENSTARRY_CODE_GATEWAY_STATE_DIR",
+        "OPENSTARRY_CODE_GATEWAY_WORKSPACE_DIR",
+        "OPENSTARRY_CODE_WORKSPACE_DIR",
     ):
         monkeypatch.delenv(name, raising=False)
 
@@ -36,7 +36,7 @@ def test_long_home_loads_config_and_injects_env(
 ) -> None:
     home = _long_home(tmp_path)
     config_path = home / "config.toml"
-    probe_name = "OPENSQUILLA_LONG_HOME_ENV_PROBE"
+    probe_name = "OPENSTARRY_CODE_LONG_HOME_ENV_PROBE"
     _clear_path_overrides(monkeypatch)
     monkeypatch.delenv(probe_name, raising=False)
     native_io_path(config_path).write_text(

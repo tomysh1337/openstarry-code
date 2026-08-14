@@ -22,7 +22,7 @@ The TUI contracts are renderer-independent and built around two separate planes:
 The core wheel remains platform-neutral, and current releases do not publish a
 TUI companion. Source checkouts run the host through the explicit development
 override below. The repository also contains a builder that can produce a
-self-contained `opensquilla-tui-host` artifact for validation, but the formal release workflow
+self-contained `openstarry-code-tui-host` artifact for validation, but the formal release workflow
 and installer do not publish or install it. Release installs therefore use the
 `plain` fallback.
 
@@ -169,7 +169,7 @@ a stale profile or workspace dotenv cannot disable the plain rescue path. New
 user and source-development instructions must use `--ui`.
 
 ```sh
-bun install --frozen-lockfile --cwd=src/opensquilla/cli/tui/opentui/package
+bun install --frozen-lockfile --cwd=src/openstarry_code/cli/tui/opentui/package
 OPENSQUILLA_TUI_DEV_SOURCE_HOST=1 uv run opensquilla chat --ui tui
 ```
 

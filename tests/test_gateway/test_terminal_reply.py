@@ -5,8 +5,8 @@ from typing import Any
 
 import pytest
 
-from opensquilla.session.models import AgentTaskStatus
-from opensquilla.session.terminal_reply import (
+from openstarry_code.session.models import AgentTaskStatus
+from openstarry_code.session.terminal_reply import (
     build_terminal_reply,
     safe_provider_failure_code,
     safe_provider_failure_message,

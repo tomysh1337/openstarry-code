@@ -5,7 +5,7 @@ import json
 
 import pytest
 
-from opensquilla.cli.tui.opentui.transport import (
+from openstarry_code.cli.tui.opentui.transport import (
     HOST_PROTOCOL_VERSION,
     HostConnection,
 )
@@ -18,8 +18,8 @@ async def _connect_and_auth(
 ) -> tuple[asyncio.StreamReader, asyncio.StreamWriter]:
     env = connection.environment
     reader, writer = await asyncio.open_connection(
-        env["OPENSQUILLA_OPENTUI_IPC_HOST"],
-        int(env["OPENSQUILLA_OPENTUI_IPC_PORT"]),
+        env["OPENSTARRY_CODE_OPENTUI_IPC_HOST"],
+        int(env["OPENSTARRY_CODE_OPENTUI_IPC_PORT"]),
     )
     writer.write(
         (
@@ -34,7 +34,7 @@ async def _connect_and_auth(
 async def test_loopback_transport_rejects_bad_token_then_accepts_one_client() -> None:
     connection = HostConnection()
     await connection.listen()
-    token = connection.environment["OPENSQUILLA_OPENTUI_IPC_TOKEN"]
+    token = connection.environment["OPENSTARRY_CODE_OPENTUI_IPC_TOKEN"]
 
     bad_reader, bad_writer = await _connect_and_auth(connection, token="wrong")
     bad_response = json.loads(await bad_reader.readline())
@@ -61,8 +61,8 @@ async def test_loopback_transport_rejects_non_object_auth_json() -> None:
     await connection.listen()
     env = connection.environment
     reader, writer = await asyncio.open_connection(
-        env["OPENSQUILLA_OPENTUI_IPC_HOST"],
-        int(env["OPENSQUILLA_OPENTUI_IPC_PORT"]),
+        env["OPENSTARRY_CODE_OPENTUI_IPC_HOST"],
+        int(env["OPENSTARRY_CODE_OPENTUI_IPC_PORT"]),
     )
 
     try:
@@ -84,15 +84,15 @@ async def test_loopback_listener_is_closed_after_authenticated_client() -> None:
     env = dict(connection.environment)
     reader, writer = await _connect_and_auth(
         connection,
-        token=env["OPENSQUILLA_OPENTUI_IPC_TOKEN"],
+        token=env["OPENSTARRY_CODE_OPENTUI_IPC_TOKEN"],
     )
     assert json.loads(await reader.readline())["type"] == "auth.ok"
     await connection.wait_for_client(timeout=1.0)
 
     with pytest.raises(OSError):
         await asyncio.open_connection(
-            env["OPENSQUILLA_OPENTUI_IPC_HOST"],
-            int(env["OPENSQUILLA_OPENTUI_IPC_PORT"]),
+            env["OPENSTARRY_CODE_OPENTUI_IPC_HOST"],
+            int(env["OPENSTARRY_CODE_OPENTUI_IPC_PORT"]),
         )
 
     writer.close()

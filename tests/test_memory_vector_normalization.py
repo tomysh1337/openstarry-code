@@ -7,12 +7,12 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.memory.store import (
+from openstarry_code.memory.store import (
     VECTOR_NORMALIZATION_META_KEY,
     VECTOR_NORMALIZATION_META_VALUE,
     LongTermMemoryStore,
 )
-from opensquilla.memory.types import MemorySource
+from openstarry_code.memory.types import MemorySource
 
 
 class _RawMagnitudeEmbeddingProvider:

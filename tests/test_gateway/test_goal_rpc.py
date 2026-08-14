@@ -15,22 +15,22 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.engine.start_turn import reserve_turn_via_runtime
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.boot import dispatch_task_runtime_turn
-from opensquilla.gateway.config import (
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.engine.start_turn import reserve_turn_via_runtime
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.boot import dispatch_task_runtime_turn
+from openstarry_code.gateway.config import (
     AttachmentsConfig,
     GatewayConfig,
     GoalConfig,
     SquillaRouterConfig,
 )
-from opensquilla.gateway.goal_service import GoalService
-from opensquilla.gateway.project_workspace_runtime import AcceptedRunModeOverride
-from opensquilla.gateway.routing import build_web_route_envelope
-from opensquilla.gateway.rpc import RpcContext, RpcHandlerError
-from opensquilla.gateway.rpc_config import _notify_goal_config_changed
-from opensquilla.gateway.rpc_goals import (
+from openstarry_code.gateway.goal_service import GoalService
+from openstarry_code.gateway.project_workspace_runtime import AcceptedRunModeOverride
+from openstarry_code.gateway.routing import build_web_route_envelope
+from openstarry_code.gateway.rpc import RpcContext, RpcHandlerError
+from openstarry_code.gateway.rpc_config import _notify_goal_config_changed
+from openstarry_code.gateway.rpc_goals import (
     _handle_goals_capabilities,
     _handle_goals_clear,
     _handle_goals_edit,
@@ -40,7 +40,7 @@ from opensquilla.gateway.rpc_goals import (
     _handle_goals_set,
     _handle_goals_status,
 )
-from opensquilla.gateway.rpc_sessions import (
+from openstarry_code.gateway.rpc_sessions import (
     _handle_plans_implement,
     _handle_plans_revise,
     _handle_plans_set_mode,
@@ -48,27 +48,27 @@ from opensquilla.gateway.rpc_sessions import (
     _handle_sessions_reset,
     _handle_sessions_send,
 )
-from opensquilla.gateway.session_streams import SessionStreamRegistry
-from opensquilla.gateway.task_runtime import (
+from openstarry_code.gateway.session_streams import SessionStreamRegistry
+from openstarry_code.gateway.task_runtime import (
     PendingOverflowPolicy,
     TaskRun,
     TaskRuntime,
 )
-from opensquilla.gateway.websocket import SubscriptionManager, get_registry
-from opensquilla.project_workspaces import (
+from openstarry_code.gateway.websocket import SubscriptionManager, get_registry
+from openstarry_code.project_workspaces import (
     ProjectWorkspaceGuard,
     resolve_project_path,
 )
-from opensquilla.provider import DoneEvent as ProviderDone
-from opensquilla.provider import ErrorEvent as ProviderError
-from opensquilla.provider import Message, ModelInfo
-from opensquilla.provider import TextDeltaEvent as ProviderText
-from opensquilla.provider import ToolUseEndEvent as ProviderToolUseEnd
-from opensquilla.provider import ToolUseStartEvent as ProviderToolUseStart
-from opensquilla.provider.failures import ProviderFailureKind
-from opensquilla.run_mode import RunMode
-from opensquilla.sandbox.capability_service import CapabilityReport
-from opensquilla.session.goals import (
+from openstarry_code.provider import DoneEvent as ProviderDone
+from openstarry_code.provider import ErrorEvent as ProviderError
+from openstarry_code.provider import Message, ModelInfo
+from openstarry_code.provider import TextDeltaEvent as ProviderText
+from openstarry_code.provider import ToolUseEndEvent as ProviderToolUseEnd
+from openstarry_code.provider import ToolUseStartEvent as ProviderToolUseStart
+from openstarry_code.provider.failures import ProviderFailureKind
+from openstarry_code.run_mode import RunMode
+from openstarry_code.sandbox.capability_service import CapabilityReport
+from openstarry_code.session.goals import (
     GOAL_EFFECTIVE_CONTEXT_DETAIL_KEY,
     GOAL_OBJECTIVE_UPDATE_DETAIL_KEY,
     ClaimGoalMutation,
@@ -78,12 +78,12 @@ from opensquilla.session.goals import (
     GoalTurnContext,
     automatic_goal_task_id,
 )
-from opensquilla.session.manager import SessionManager
-from opensquilla.session.models import AgentTaskStatus
-from opensquilla.session.plans import new_plan_revision
-from opensquilla.session.storage import SessionStorage
-from opensquilla.tools.registry import ToolRegistry, ToolSpec, get_default_registry
-from opensquilla.tools.types import current_tool_context
+from openstarry_code.session.manager import SessionManager
+from openstarry_code.session.models import AgentTaskStatus
+from openstarry_code.session.plans import new_plan_revision
+from openstarry_code.session.storage import SessionStorage
+from openstarry_code.tools.registry import ToolRegistry, ToolSpec, get_default_registry
+from openstarry_code.tools.types import current_tool_context
 
 SOURCE_KEY = "agent:main:webchat:goal-rpc-source"
 
@@ -731,7 +731,7 @@ async def test_project_bound_goal_set_uses_authoritative_workspace_guard(
         return _available_sandbox_report()
 
     monkeypatch.setattr(
-        "opensquilla.sandbox.setup_runtime.current_sandbox_capability_report",
+        "openstarry_code.sandbox.setup_runtime.current_sandbox_capability_report",
         available_report,
     )
     async with _open_goal_rpc_stack(
@@ -792,7 +792,7 @@ async def test_project_workspace_race_rejects_goal_set_without_partial_state(
         return _available_sandbox_report()
 
     monkeypatch.setattr(
-        "opensquilla.sandbox.setup_runtime.current_sandbox_capability_report",
+        "openstarry_code.sandbox.setup_runtime.current_sandbox_capability_report",
         available_report,
     )
     async with _open_goal_rpc_stack(
@@ -867,7 +867,7 @@ async def test_unavailable_safe_backend_rejects_non_host_goal_before_acceptance(
         return _unavailable_sandbox_report()
 
     monkeypatch.setattr(
-        "opensquilla.sandbox.setup_runtime.current_sandbox_capability_report",
+        "openstarry_code.sandbox.setup_runtime.current_sandbox_capability_report",
         unavailable_report,
     )
     async with _open_goal_rpc_stack(
@@ -913,7 +913,7 @@ async def test_owner_safe_fallback_is_frozen_for_set_and_automatic_continuation(
         return _unavailable_sandbox_report()
 
     monkeypatch.setattr(
-        "opensquilla.sandbox.setup_runtime.current_sandbox_capability_report",
+        "openstarry_code.sandbox.setup_runtime.current_sandbox_capability_report",
         unavailable_report,
     )
     async with _open_goal_rpc_stack(
@@ -1582,7 +1582,7 @@ async def test_plan_set_mode_intent_wins_before_session_read_and_defers_goal(
         )
         monkeypatch.setattr(stack.storage, "get_session", blocked_get_session)
         monkeypatch.setattr(
-            "opensquilla.gateway.rpc_sessions._emit_to_subscribers",
+            "openstarry_code.gateway.rpc_sessions._emit_to_subscribers",
             observe_event,
         )
         stack.runtime.set_idle_listener(observe_idle)
@@ -1639,7 +1639,7 @@ async def test_plan_implement_intent_wins_while_idle_goal_is_kicked(
         return None
 
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_sessions._emit_to_subscribers",
+        "openstarry_code.gateway.rpc_sessions._emit_to_subscribers",
         ignore_subscriber_event,
     )
     async with _open_goal_rpc_stack(
@@ -1726,7 +1726,7 @@ async def test_plan_revise_intent_wins_while_idle_goal_is_kicked(
         return None
 
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_sessions._emit_to_subscribers",
+        "openstarry_code.gateway.rpc_sessions._emit_to_subscribers",
         ignore_subscriber_event,
     )
     async with _open_goal_rpc_stack(
@@ -3126,7 +3126,7 @@ async def test_prepare_shutdown_fences_set_waiting_after_runtime_reservation(
         return reservation
 
     monkeypatch.setattr(
-        "opensquilla.gateway.goal_service.reserve_turn_via_runtime",
+        "openstarry_code.gateway.goal_service.reserve_turn_via_runtime",
         reserve_then_wait,
     )
     async with _open_goal_rpc_stack(
@@ -4136,7 +4136,7 @@ async def test_goal_artifact_loop_commits_and_settles_durable_terminal_state(
 ) -> None:
     """Cross the real Goal, TaskRuntime, dispatch, and TurnRunner boundaries."""
 
-    monkeypatch.setenv("OPENSQUILLA_OPENROUTER_LIVE_PRICING", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING", "0")
 
     state: dict[str, Any] = {}
     turn_events: list[tuple[str, str, dict[str, Any]]] = []
@@ -4375,7 +4375,7 @@ async def test_real_turn_runner_continuation_reuses_durable_goal_context_and_com
 ) -> None:
     """A successful non-terminal Task must continue through the full real stack."""
 
-    monkeypatch.setenv("OPENSQUILLA_OPENROUTER_LIVE_PRICING", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING", "0")
 
     state: dict[str, Any] = {}
     runs: list[TaskRun] = []
@@ -4711,8 +4711,8 @@ async def test_running_goal_edit_adopts_revision_in_same_task_without_transcript
 ) -> None:
     """A running Goal edit is internal control for the next real model call."""
 
-    monkeypatch.setenv("OPENSQUILLA_OPENROUTER_LIVE_PRICING", "0")
-    monkeypatch.setenv("OPENSQUILLA_TURN_OBJECTIVE_REMINDER", "on")
+    monkeypatch.setenv("OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_TURN_OBJECTIVE_REMINDER", "on")
     state: dict[str, Any] = {}
     runs: list[TaskRun] = []
 

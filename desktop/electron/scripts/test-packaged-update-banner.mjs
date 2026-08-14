@@ -60,15 +60,15 @@ async function launchCandidate(
     executablePath,
     userDataDir,
     disableNetworkObservability: privacyDisabled,
-    model: 'opensquilla-release-update-smoke',
+    model: 'openstarry-code-release-update-smoke',
     env: {
-      OPENSQUILLA_UPDATE_CHECK_ENDPOINT: endpoint,
-      OPENSQUILLA_PRIVACY_DISABLE_NETWORK_OBSERVABILITY: privacyDisabled ? '1' : '0',
+      OPENSTARRY_CODE_UPDATE_CHECK_ENDPOINT: endpoint,
+      OPENSTARRY_CODE_PRIVACY_DISABLE_NETWORK_OBSERVABILITY: privacyDisabled ? '1' : '0',
       // Release jobs run under GitHub Actions, while the product intentionally
       // suppresses passive checks in CI. This isolated smoke supplies a local
       // endpoint and must exercise the packaged runtime's real check path.
       GITHUB_ACTIONS: '0',
-      OPENSQUILLA_TESTING: '0',
+      OPENSTARRY_CODE_TESTING: '0',
     },
   })
 }
@@ -90,7 +90,7 @@ const currentTag = `v${baseVersion}rc${currentRc}`
 const nextTag = `v${baseVersion}rc${nextRc}`
 const currentVersion = `${baseVersion}-rc${currentRc}`
 const nextVersion = `${baseVersion}-rc${nextRc}`
-const releaseUrl = `https://github.com/opensquilla/opensquilla/releases/tag/${nextTag}`
+const releaseUrl = `https://github.com/tomysh1337/openstarry-code/releases/tag/${nextTag}`
 
 let requestCount = 0
 let releasePublished = false
@@ -101,17 +101,17 @@ const channelManifest = (tag, version) => ({
   baseVersion,
   prerelease: true,
   publishedAt: '2026-07-15T00:00:00Z',
-  releaseUrl: `https://github.com/opensquilla/opensquilla/releases/tag/${tag}`,
+  releaseUrl: `https://github.com/tomysh1337/openstarry-code/releases/tag/${tag}`,
   sha256sums: 'SHA256SUMS',
   platforms: {
     'darwin-arm64': {
       feed: 'latest-mac.yml',
-      archive: `OpenSquilla-${version}-mac-arm64.zip`,
-      installer: `OpenSquilla-${version}-mac-arm64.dmg`,
+      archive: `OpenStarry-Code-${version}-mac-arm64.zip`,
+      installer: `OpenStarry-Code-${version}-mac-arm64.dmg`,
     },
     'win32-x64': {
       feed: 'latest.yml',
-      installer: `OpenSquilla-${version}-win-x64.exe`,
+      installer: `OpenStarry-Code-${version}-win-x64.exe`,
     },
   },
 })

@@ -6,16 +6,16 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.types import DoneEvent, TextDeltaEvent
-from opensquilla.gateway.background_completion import (
+from openstarry_code.engine.types import DoneEvent, TextDeltaEvent
+from openstarry_code.gateway.background_completion import (
     BackgroundCompletionManager,
     _SynthesisStreamCollector,
 )
-from opensquilla.gateway.boot import GatewayServer
-from opensquilla.gateway.project_workspace_runtime import AcceptedRunModeOverride
-from opensquilla.gateway.routing import ReplyTarget, RouteEnvelope, SourceKind
-from opensquilla.sandbox.run_mode import RunMode
-from opensquilla.session.models import AgentTaskStatus
+from openstarry_code.gateway.boot import GatewayServer
+from openstarry_code.gateway.project_workspace_runtime import AcceptedRunModeOverride
+from openstarry_code.gateway.routing import ReplyTarget, RouteEnvelope, SourceKind
+from openstarry_code.sandbox.run_mode import RunMode
+from openstarry_code.session.models import AgentTaskStatus
 
 PARENT = "agent:main:channel:parent"
 PARENT_TASK = "task-parent"

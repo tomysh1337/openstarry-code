@@ -15,7 +15,7 @@ from typing import Any
 
 import pytest
 
-from opensquilla.gateway.rpc_sessions import (
+from openstarry_code.gateway.rpc_sessions import (
     _ALLOWED_MEDIA_TYPES,
     _MAX_ATTACHMENT_BYTES,
     _MAX_ATTACHMENTS,
@@ -119,7 +119,7 @@ def test_unknown_binary_mime_accepted_as_opaque() -> None:
 def test_unknown_binary_mime_rejected_when_opaque_admission_disabled() -> None:
     # attachments.accept_opaque=false restores the legacy fail-closed gate,
     # including the error copy third-party clients may match on.
-    from opensquilla.gateway.attachment_ingest import validate_attachments
+    from openstarry_code.gateway.attachment_ingest import validate_attachments
 
     with pytest.raises(ValueError, match="not allowed"):
         validate_attachments(
@@ -180,7 +180,7 @@ def test_mime_sniff_logs_warning_on_mismatch(monkeypatch: pytest.MonkeyPatch) ->
     monkeypatch on the module-level logger rather than caplog — testing
     the contract, not the framework plumbing.
     """
-    from opensquilla.gateway import rpc_sessions
+    from openstarry_code.gateway import rpc_sessions
 
     captured: list[tuple[str, dict[str, Any]]] = []
 
@@ -241,12 +241,12 @@ async def test_resolve_attachments_expired_uuid_raises_typed_error(tmp_path) -> 
     """An expired staged uuid must raise a typed, recoverable error carrying the
     attachment index + uuid — not a bare ValueError that collapses to a generic,
     non-retryable INVALID_REQUEST (issue #468)."""
-    from opensquilla.gateway.attachment_ingest import (
+    from openstarry_code.gateway.attachment_ingest import (
         ATTACHMENT_EXPIRED_CODE,
         AttachmentResolutionError,
         resolve_attachments,
     )
-    from opensquilla.gateway.uploads import AttachmentNotFoundError
+    from openstarry_code.gateway.uploads import AttachmentNotFoundError
 
     class _ExpiredStore:
         async def get(self, ref: str):  # noqa: ANN202
@@ -268,12 +268,12 @@ async def test_resolve_attachments_expired_uuid_raises_typed_error(tmp_path) -> 
 
 
 async def test_resolve_attachments_restart_loss_raises_typed_error(tmp_path) -> None:
-    from opensquilla.gateway.attachment_ingest import (
+    from openstarry_code.gateway.attachment_ingest import (
         ATTACHMENT_LOST_IN_RESTART_CODE,
         AttachmentResolutionError,
         resolve_attachments,
     )
-    from opensquilla.gateway.uploads import AttachmentLostInRestartError
+    from openstarry_code.gateway.uploads import AttachmentLostInRestartError
 
     class _LostStore:
         async def get(self, ref: str):  # noqa: ANN202

@@ -21,17 +21,17 @@ def _hold_runtime_writer(
 ) -> None:
     """Hold the same universal writer lease used by gateway/agent runtimes."""
 
-    os.environ["OPENSQUILLA_STATE_DIR"] = home
-    os.environ["OPENSQUILLA_USER_STATE_DIR"] = user_state
-    os.environ["OPENSQUILLA_TEST_PROFILE_LOCK_ROOT"] = "1"
+    os.environ["OPENSTARRY_CODE_STATE_DIR"] = home
+    os.environ["OPENSTARRY_CODE_USER_STATE_DIR"] = user_state
+    os.environ["OPENSTARRY_CODE_TEST_PROFILE_LOCK_ROOT"] = "1"
     if profile_kind:
-        os.environ["OPENSQUILLA_PROFILE_KIND"] = profile_kind
-        os.environ["OPENSQUILLA_DESKTOP"] = "1"
+        os.environ["OPENSTARRY_CODE_PROFILE_KIND"] = profile_kind
+        os.environ["OPENSTARRY_CODE_DESKTOP"] = "1"
     else:
-        os.environ.pop("OPENSQUILLA_PROFILE_KIND", None)
-        os.environ.pop("OPENSQUILLA_DESKTOP", None)
+        os.environ.pop("OPENSTARRY_CODE_PROFILE_KIND", None)
+        os.environ.pop("OPENSTARRY_CODE_DESKTOP", None)
 
-    from opensquilla.recovery import guarded_desktop_profile
+    from openstarry_code.recovery import guarded_desktop_profile
 
     try:
         with guarded_desktop_profile(Path(home)):
@@ -54,17 +54,17 @@ def _hold_isolated_runtime_writer(
 ) -> None:
     """Resolve child-local state and hold its universal writer lease."""
 
-    os.environ["OPENSQUILLA_STATE_DIR"] = home
-    os.environ["OPENSQUILLA_GATEWAY_STATE_DIR"] = gateway_state
-    os.environ["OPENSQUILLA_USER_STATE_DIR"] = user_state
-    os.environ["OPENSQUILLA_TEST_PROFILE_LOCK_ROOT"] = "1"
-    os.environ.pop("OPENSQUILLA_GATEWAY_CONFIG_PATH", None)
-    os.environ.pop("OPENSQUILLA_PROFILE_KIND", None)
-    os.environ.pop("OPENSQUILLA_DESKTOP", None)
+    os.environ["OPENSTARRY_CODE_STATE_DIR"] = home
+    os.environ["OPENSTARRY_CODE_GATEWAY_STATE_DIR"] = gateway_state
+    os.environ["OPENSTARRY_CODE_USER_STATE_DIR"] = user_state
+    os.environ["OPENSTARRY_CODE_TEST_PROFILE_LOCK_ROOT"] = "1"
+    os.environ.pop("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", None)
+    os.environ.pop("OPENSTARRY_CODE_PROFILE_KIND", None)
+    os.environ.pop("OPENSTARRY_CODE_DESKTOP", None)
     os.chdir(cwd)
 
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.recovery import guarded_desktop_profile
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.recovery import guarded_desktop_profile
 
     try:
         config = GatewayConfig.load()
@@ -101,14 +101,14 @@ def test_future_desktop_config_blocks_agent_before_profile_seed(
     home = tmp_path / "profile"
     home.mkdir(parents=True)
     (home / "config.toml").write_text("config_version = 999\n", encoding="utf-8")
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "user-state"))
-    monkeypatch.setenv("OPENSQUILLA_TEST_PROFILE_LOCK_ROOT", "1")
-    monkeypatch.setenv("OPENSQUILLA_PROFILE_KIND", "desktop-primary")
-    monkeypatch.setenv("OPENSQUILLA_DESKTOP", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "user-state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_TEST_PROFILE_LOCK_ROOT", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_PROFILE_KIND", "desktop-primary")
+    monkeypatch.setenv("OPENSTARRY_CODE_DESKTOP", "1")
 
-    from opensquilla.cli import main as cli_main
-    from opensquilla.recovery import RecoveryRequiredError
+    from openstarry_code.cli import main as cli_main
+    from openstarry_code.recovery import RecoveryRequiredError
 
     agent_calls: list[dict[str, object]] = []
     monkeypatch.setattr(
@@ -141,13 +141,13 @@ def test_unknown_desktop_layout_warns_without_seeding_or_blocking(
     unknown.mkdir(parents=True)
     identity = unknown / "USER.md"
     identity.write_text("synthetic preserved identity\n", encoding="utf-8")
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "user-state"))
-    monkeypatch.setenv("OPENSQUILLA_TEST_PROFILE_LOCK_ROOT", "1")
-    monkeypatch.setenv("OPENSQUILLA_PROFILE_KIND", "desktop-primary")
-    monkeypatch.setenv("OPENSQUILLA_DESKTOP", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "user-state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_TEST_PROFILE_LOCK_ROOT", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_PROFILE_KIND", "desktop-primary")
+    monkeypatch.setenv("OPENSTARRY_CODE_DESKTOP", "1")
 
-    from opensquilla.cli import main as cli_main
+    from openstarry_code.cli import main as cli_main
 
     agent_calls: list[dict[str, object]] = []
     monkeypatch.setattr(
@@ -182,15 +182,15 @@ def test_runtime_writer_lock_keeps_read_only_cli_available_and_rejects_agent(
     home = tmp_path / "profile"
     user_state = tmp_path / "user-state"
     _profile(home)
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(user_state))
-    monkeypatch.setenv("OPENSQUILLA_TEST_PROFILE_LOCK_ROOT", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(user_state))
+    monkeypatch.setenv("OPENSTARRY_CODE_TEST_PROFILE_LOCK_ROOT", "1")
     if profile_kind:
-        monkeypatch.setenv("OPENSQUILLA_PROFILE_KIND", profile_kind)
-        monkeypatch.setenv("OPENSQUILLA_DESKTOP", "1")
+        monkeypatch.setenv("OPENSTARRY_CODE_PROFILE_KIND", profile_kind)
+        monkeypatch.setenv("OPENSTARRY_CODE_DESKTOP", "1")
     else:
-        monkeypatch.delenv("OPENSQUILLA_PROFILE_KIND", raising=False)
-        monkeypatch.delenv("OPENSQUILLA_DESKTOP", raising=False)
+        monkeypatch.delenv("OPENSTARRY_CODE_PROFILE_KIND", raising=False)
+        monkeypatch.delenv("OPENSTARRY_CODE_DESKTOP", raising=False)
 
     context = multiprocessing.get_context("spawn" if sys.platform == "win32" else "fork")
     ready = context.Queue()
@@ -203,8 +203,8 @@ def test_runtime_writer_lock_keeps_read_only_cli_available_and_rejects_agent(
     assert ready.get(timeout=10) == "locked"
 
     try:
-        from opensquilla.cli import gateway_cmd, models_cmd
-        from opensquilla.cli import main as cli_main
+        from openstarry_code.cli import gateway_cmd, models_cmd
+        from openstarry_code.cli import main as cli_main
 
         status_calls: list[dict[str, object]] = []
 
@@ -262,8 +262,8 @@ def test_runtime_writer_lock_keeps_read_only_cli_available_and_rejects_agent(
         assert competing_agent.stdout == ""
         error = json.loads(competing_agent.stderr)
         assert error["error"]["code"] == "profile_lock_busy"
-        assert "opensquilla chat" in error["error"]["message"]
-        assert "OPENSQUILLA_STATE_DIR" in error["error"]["message"]
+        assert "openstarry-code chat" in error["error"]["message"]
+        assert "OPENSTARRY_CODE_STATE_DIR" in error["error"]["message"]
         assert str(home) not in competing_agent.stderr
         assert "Traceback" not in competing_agent.stderr
 
@@ -274,8 +274,8 @@ def test_runtime_writer_lock_keeps_read_only_cli_available_and_rejects_agent(
         assert competing_agent_human.exit_code == 1
         assert isinstance(competing_agent_human.exception, SystemExit)
         assert "Error:" in competing_agent_human.stderr
-        assert "opensquilla chat" in competing_agent_human.stderr
-        assert "OPENSQUILLA_GATEWAY_STATE_DIR" in competing_agent_human.stderr
+        assert "openstarry-code chat" in competing_agent_human.stderr
+        assert "OPENSTARRY_CODE_GATEWAY_STATE_DIR" in competing_agent_human.stderr
         assert str(home) not in competing_agent_human.stderr
         assert "Traceback" not in competing_agent_human.stderr
         assert agent_calls == []
@@ -296,7 +296,7 @@ def test_distinct_profile_and_gateway_state_dirs_run_concurrently_across_process
 
     project = tmp_path / "project"
     project.mkdir()
-    (project / "opensquilla.toml").write_text(
+    (project / "openstarry-code.toml").write_text(
         'state_dir = "shared-state"\n',
         encoding="utf-8",
     )

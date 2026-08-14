@@ -5,8 +5,8 @@ from __future__ import annotations
 import inspect
 from pathlib import Path
 
-from opensquilla.contrib.codetask import config, runner
-from opensquilla.contrib.codetask.types import TaskResult
+from openstarry_code.contrib.codetask import config, runner
+from openstarry_code.contrib.codetask.types import TaskResult
 
 
 def test_template_selection():
@@ -18,7 +18,7 @@ def test_template_selection():
 def test_env_override_wins_in_both_modes(monkeypatch, tmp_path):
     custom = tmp_path / "custom.txt"
     custom.write_text("x")
-    monkeypatch.setenv("OPENSQUILLA_CODETASK_PROMPT_TEMPLATE", str(custom))
+    monkeypatch.setenv("OPENSTARRY_CODE_CODETASK_PROMPT_TEMPLATE", str(custom))
     assert config.prompt_template_path("build") == custom
     assert config.prompt_template_path("red-green") == custom
 

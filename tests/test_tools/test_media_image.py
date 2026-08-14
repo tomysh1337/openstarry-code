@@ -10,9 +10,9 @@ from pathlib import Path
 import pytest
 from reportlab.pdfgen import canvas
 
-from opensquilla.tools.builtin import media
-from opensquilla.tools.ssrf import environment_proxy_url
-from opensquilla.tools.types import SafeToolError, ToolContext, ToolError, current_tool_context
+from openstarry_code.tools.builtin import media
+from openstarry_code.tools.ssrf import environment_proxy_url
+from openstarry_code.tools.types import SafeToolError, ToolContext, ToolError, current_tool_context
 
 
 def _write_pdf(path: Path) -> None:
@@ -192,7 +192,7 @@ async def test_fetch_image_url_resolves_relative_redirect_against_logical_url(
     monkeypatch.setattr(media, "validate_http_url_for_fetch", lambda url: ["93.184.216.34"])
     monkeypatch.setattr(httpx, "AsyncClient", RedirectingClient)
     monkeypatch.setattr(
-        "opensquilla.tools.ssrf.pinned_transport", lambda *args, **kwargs: object()
+        "openstarry_code.tools.ssrf.pinned_transport", lambda *args, **kwargs: object()
     )
 
     image_bytes, media_type = await media._fetch_image_url(
@@ -248,7 +248,7 @@ async def test_fetch_image_url_uses_opted_in_environment_proxy_with_pinning(
         ):
             monkeypatch.delenv(name, raising=False)
         monkeypatch.delenv("REQUEST_METHOD", raising=False)
-        monkeypatch.setenv("OPENSQUILLA_TRUST_ENV", "1")
+        monkeypatch.setenv("OPENSTARRY_CODE_TRUST_ENV", "1")
         proxy_url = f"http://127.0.0.1:{port}"
         target_url = f"http://proxy-target.test:{port}/image.png"
         monkeypatch.setenv("HTTP_PROXY", proxy_url)

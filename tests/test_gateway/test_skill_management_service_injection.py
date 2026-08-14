@@ -7,13 +7,13 @@ from typing import Any
 import pytest
 from starlette.testclient import TestClient
 
-import opensquilla.gateway.app as gateway_app
-from opensquilla.gateway.boot import build_services
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.protocol import make_ok_res
-from opensquilla.skills.hub.transaction import journal_path_for_state
-from opensquilla.skills.paths import SkillLayerDirs
-from opensquilla.tools.registry import get_default_registry
+import openstarry_code.gateway.app as gateway_app
+from openstarry_code.gateway.boot import build_services
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.protocol import make_ok_res
+from openstarry_code.skills.hub.transaction import journal_path_for_state
+from openstarry_code.skills.paths import SkillLayerDirs
+from openstarry_code.tools.registry import get_default_registry
 
 
 class _CapturingDispatcher:
@@ -102,10 +102,10 @@ async def test_gateway_boot_quarantines_only_managed_skills_when_recovery_blocks
     monkeypatch: pytest.MonkeyPatch,
     management_builder_fails: bool,
 ) -> None:
-    from opensquilla.gateway import rpc_skills
-    from opensquilla.gateway.rpc import RpcContext
-    from opensquilla.profile_operation_lock import ProfileOperationLock
-    from opensquilla.skills import paths as skill_paths
+    from openstarry_code.gateway import rpc_skills
+    from openstarry_code.gateway.rpc import RpcContext
+    from openstarry_code.profile_operation_lock import ProfileOperationLock
+    from openstarry_code.skills import paths as skill_paths
 
     state_root = tmp_path / "state"
     bundled = tmp_path / "bundled"
@@ -126,7 +126,7 @@ async def test_gateway_boot_quarantines_only_managed_skills_when_recovery_blocks
     journal.parent.mkdir(parents=True)
     journal.write_text("{truncated", encoding="utf-8")
 
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(state_root))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(state_root))
     monkeypatch.setattr(
         skill_paths,
         "resolve_skill_layer_dirs",
@@ -139,7 +139,7 @@ async def test_gateway_boot_quarantines_only_managed_skills_when_recovery_blocks
         ),
     )
     monkeypatch.setattr(
-        "opensquilla.sandbox.integration.configure_runtime",
+        "openstarry_code.sandbox.integration.configure_runtime",
         lambda *args, **kwargs: SimpleNamespace(
             effective=SimpleNamespace(as_dict=lambda: {})
         ),
@@ -149,7 +149,7 @@ async def test_gateway_boot_quarantines_only_managed_skills_when_recovery_blocks
             raise RuntimeError("synthetic management-service construction failure")
 
         monkeypatch.setattr(
-            "opensquilla.skills.hub.defaults.build_default_skill_management_service",
+            "openstarry_code.skills.hub.defaults.build_default_skill_management_service",
             fail_management_service,
         )
 

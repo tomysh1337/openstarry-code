@@ -9,7 +9,7 @@ constructor wiring matches production.
 
 Golden files live under ``requests/<backend>/<kind-or-provider>__<case>.json``
 and store method, url, a redacted auth-style marker, content type, and the
-parsed JSON body. Regenerate with ``OPENSQUILLA_REGEN_GOLDENS=1``.
+parsed JSON body. Regenerate with ``OPENSTARRY_CODE_REGEN_GOLDENS=1``.
 """
 
 from __future__ import annotations
@@ -23,13 +23,13 @@ from typing import Any
 import httpx
 import pytest
 
-from opensquilla.engine.types import ThinkingLevel
-from opensquilla.provider.compat_policy import known_policy_kinds
-from opensquilla.provider.model_catalog import ModelCatalog
-from opensquilla.provider.protocol import project_provider_final_request
-from opensquilla.provider.registry import get_provider_spec, list_provider_specs
-from opensquilla.provider.selector import ProviderConfig, _build_provider
-from opensquilla.provider.types import (
+from openstarry_code.engine.types import ThinkingLevel
+from openstarry_code.provider.compat_policy import known_policy_kinds
+from openstarry_code.provider.model_catalog import ModelCatalog
+from openstarry_code.provider.protocol import project_provider_final_request
+from openstarry_code.provider.registry import get_provider_spec, list_provider_specs
+from openstarry_code.provider.selector import ProviderConfig, _build_provider
+from openstarry_code.provider.types import (
     ChatConfig,
     ContentBlockText,
     ContentBlockToolResult,
@@ -44,7 +44,7 @@ from opensquilla.provider.types import (
 )
 
 GOLDEN_ROOT = Path(__file__).resolve().parent / "requests"
-REGEN_ENV = "OPENSQUILLA_REGEN_GOLDENS"
+REGEN_ENV = "OPENSTARRY_CODE_REGEN_GOLDENS"
 
 # Fake credential only — must never appear in a golden file.
 FAKE_API_KEY = "sk-test-000"
@@ -128,11 +128,11 @@ _OPENROUTER_SEED_MODEL: dict[str, Any] = {
 }
 
 _SCRUBBED_ENV_KEYS = (
-    "OPENSQUILLA_PROVIDER_REQUEST_PROOF_MAX_CHARS",
-    "OPENSQUILLA_LLM_PROXY",
-    "OPENSQUILLA_TRACE_ROUTING",
-    "OPENSQUILLA_LLM_STREAM_CONNECT_TIMEOUT_SECONDS",
-    "OPENSQUILLA_LLM_STREAM_WRITE_TIMEOUT_SECONDS",
+    "OPENSTARRY_CODE_PROVIDER_REQUEST_PROOF_MAX_CHARS",
+    "OPENSTARRY_CODE_LLM_PROXY",
+    "OPENSTARRY_CODE_TRACE_ROUTING",
+    "OPENSTARRY_CODE_LLM_STREAM_CONNECT_TIMEOUT_SECONDS",
+    "OPENSTARRY_CODE_LLM_STREAM_WRITE_TIMEOUT_SECONDS",
 )
 
 

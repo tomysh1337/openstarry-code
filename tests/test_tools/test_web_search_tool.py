@@ -6,8 +6,8 @@ import json
 import httpx
 import pytest
 
-import opensquilla.tools.builtin.web as web_module
-from opensquilla.search.types import (
+import openstarry_code.tools.builtin.web as web_module
+from openstarry_code.search.types import (
     DEFAULT_SEARCH_MAX_RESULTS,
     SearchOptions,
     SearchProviderError,
@@ -234,7 +234,7 @@ async def test_web_search_benchmark_blocklist_blocks_query_without_calling_core(
     ) -> dict[str, object]:
         raise AssertionError("run_canonical_web_search should not be called")
 
-    monkeypatch.setenv("OPENSQUILLA_SEARCH_BENCHMARK_BLOCKLIST", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_SEARCH_BENCHMARK_BLOCKLIST", "1")
     monkeypatch.setattr(
         web_module,
         "run_canonical_web_search",
@@ -394,7 +394,7 @@ async def test_web_discover_keeps_explicit_failure_marker_for_dispatch(
 async def test_web_discover_uses_ranked_runtime_provider(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.search.registry as registry
+    import openstarry_code.search.registry as registry
 
     calls: list[tuple[str, dict[str, object]]] = []
 
@@ -441,7 +441,7 @@ async def test_web_discover_uses_ranked_runtime_provider(
 async def test_web_discover_benchmark_blocklist_filters_results(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.search.registry as registry
+    import openstarry_code.search.registry as registry
 
     class FakeProvider:
         async def search(self, query: str, max_results: int = 5) -> list[SearchResult]:
@@ -461,7 +461,7 @@ async def test_web_discover_benchmark_blocklist_filters_results(
     def fake_get_provider(name: str, **kwargs: object) -> FakeProvider:
         return FakeProvider()
 
-    monkeypatch.setenv("OPENSQUILLA_SEARCH_BENCHMARK_BLOCKLIST", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_SEARCH_BENCHMARK_BLOCKLIST", "1")
     monkeypatch.setattr(registry, "get_provider", fake_get_provider)
 
     try:
@@ -480,8 +480,8 @@ async def test_web_discover_benchmark_blocklist_filters_results(
 async def test_web_discover_preserves_network_fallback_for_custom_active_provider(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.search.registry as registry
-    from opensquilla.search.registry import register_provider
+    import openstarry_code.search.registry as registry
+    from openstarry_code.search.registry import register_provider
 
     custom_provider = "test_custom_discover_fail"
     calls: list[str] = []
@@ -545,8 +545,8 @@ async def test_web_discover_preserves_network_fallback_for_custom_active_provide
 async def test_web_discover_preserves_raw_custom_network_fallback(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.search.registry as registry
-    from opensquilla.search.registry import register_provider
+    import openstarry_code.search.registry as registry
+    from openstarry_code.search.registry import register_provider
 
     custom_provider = "test_custom_discover_raw_network"
     calls: list[str] = []

@@ -8,8 +8,8 @@ import json
 import sys
 from pathlib import Path
 
-from opensquilla.skills.loader import SkillLoader
-from opensquilla.skills.meta.trigger_accuracy import TriggerCase, evaluate_trigger_cases
+from openstarry_code.skills.loader import SkillLoader
+from openstarry_code.skills.meta.trigger_accuracy import TriggerCase, evaluate_trigger_cases
 
 
 def load_cases(path: Path) -> list[TriggerCase]:
@@ -40,7 +40,7 @@ def load_cases(path: Path) -> list[TriggerCase]:
 
 
 def _default_bundled_dir() -> Path:
-    return Path(__file__).resolve().parents[1] / "src" / "opensquilla" / "skills" / "bundled"
+    return Path(__file__).resolve().parents[1] / "src" / "openstarry_code" / "skills" / "bundled"
 
 
 def _parser() -> argparse.ArgumentParser:

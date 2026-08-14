@@ -6,19 +6,19 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.application.approval_queue import ApprovalQueue
-from opensquilla.sandbox.config import SandboxSettings
-from opensquilla.sandbox.integration import (
+from openstarry_code.application.approval_queue import ApprovalQueue
+from openstarry_code.sandbox.config import SandboxSettings
+from openstarry_code.sandbox.integration import (
     configure_runtime,
     escalate_unavailable_backend_in_managed_mode,
     gate_action,
     refresh_runtime_backend_after_setup,
     reset_runtime,
 )
-from opensquilla.sandbox.policy import LevelHints
-from opensquilla.sandbox.run_context import RunContext
-from opensquilla.sandbox.run_mode import RunMode
-from opensquilla.sandbox.types import (
+from openstarry_code.sandbox.policy import LevelHints
+from openstarry_code.sandbox.run_context import RunContext
+from openstarry_code.sandbox.run_mode import RunMode
+from openstarry_code.sandbox.types import (
     MountSpec,
     NetworkMode,
     ResourceLimits,
@@ -27,7 +27,7 @@ from opensquilla.sandbox.types import (
     SandboxRequest,
     SecurityLevel,
 )
-from opensquilla.tools.types import ToolContext, current_tool_context
+from openstarry_code.tools.types import ToolContext, current_tool_context
 
 
 def _request(tmp_path: Path) -> SandboxRequest:
@@ -59,7 +59,7 @@ def _request(tmp_path: Path) -> SandboxRequest:
 async def test_unavailable_backend_fails_closed_without_running_command(
     tmp_path: Path,
 ) -> None:
-    from opensquilla.sandbox.backend.unavailable import UnavailableBackend
+    from openstarry_code.sandbox.backend.unavailable import UnavailableBackend
 
     backend = UnavailableBackend("no real sandbox backend is available")
 
@@ -71,8 +71,8 @@ async def test_unavailable_backend_fails_closed_without_running_command(
 async def test_unavailable_backend_background_failure_remains_escalatable(
     tmp_path: Path,
 ) -> None:
-    from opensquilla.sandbox.backend.unavailable import UnavailableBackend
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.sandbox.backend.unavailable import UnavailableBackend
+    from openstarry_code.tools.builtin import shell
 
     backend = UnavailableBackend("native background sandbox is not installed")
     runtime = SimpleNamespace(backend=backend)
@@ -88,7 +88,7 @@ async def test_unavailable_backend_background_failure_remains_escalatable(
 async def test_legacy_trusted_unavailable_backend_does_not_replay_on_host(
     tmp_path: Path,
 ) -> None:
-    from opensquilla.sandbox.backend.unavailable import UnavailableBackend
+    from openstarry_code.sandbox.backend.unavailable import UnavailableBackend
 
     queue = ApprovalQueue(db_path=str(tmp_path / "approvals.sqlite"))
     backend = UnavailableBackend("native sandbox is not installed")
@@ -125,7 +125,7 @@ async def test_legacy_trusted_unavailable_backend_does_not_replay_on_host(
 async def test_standard_mode_unavailable_backend_does_not_request_host_retry(
     tmp_path: Path,
 ) -> None:
-    from opensquilla.sandbox.backend.unavailable import UnavailableBackend
+    from openstarry_code.sandbox.backend.unavailable import UnavailableBackend
 
     queue = ApprovalQueue(db_path=str(tmp_path / "approvals.sqlite"))
     runtime = SimpleNamespace(
@@ -152,7 +152,7 @@ def test_setup_refresh_promotes_only_backend_and_preserves_runtime_services(
     monkeypatch,
     tmp_path: Path,
 ) -> None:
-    from opensquilla.sandbox import integration
+    from openstarry_code.sandbox import integration
 
     queue = ApprovalQueue(db_path=str(tmp_path / "approvals.sqlite"))
     settings = SandboxSettings(sandbox=True, backend="auto", run_mode="standard")
@@ -195,7 +195,7 @@ def test_setup_refresh_does_not_replace_an_already_available_backend(
     monkeypatch,
     tmp_path: Path,
 ) -> None:
-    from opensquilla.sandbox import integration
+    from openstarry_code.sandbox import integration
 
     queue = ApprovalQueue(db_path=str(tmp_path / "approvals.sqlite"))
     original = SimpleNamespace(name="windows_default")
@@ -259,12 +259,12 @@ async def test_managed_high_impact_gate_does_not_wait_for_legacy_human_approval(
 
 
 def test_auto_backend_failure_includes_windows_setup_diagnostics(monkeypatch) -> None:
-    from opensquilla.sandbox import backend as backend_mod
-    from opensquilla.sandbox.backend import windows_default_support
-    from opensquilla.sandbox.backend.windows_default import (
+    from openstarry_code.sandbox import backend as backend_mod
+    from openstarry_code.sandbox.backend import windows_default_support
+    from openstarry_code.sandbox.backend.windows_default import (
         WindowsDefaultBackend,
     )
-    from opensquilla.sandbox.config import SandboxSettings
+    from openstarry_code.sandbox.config import SandboxSettings
 
     monkeypatch.setattr(backend_mod.sys, "platform", "win32")
     monkeypatch.setattr(WindowsDefaultBackend, "available", lambda self: False)
@@ -283,10 +283,10 @@ def test_auto_backend_failure_includes_windows_setup_diagnostics(monkeypatch) ->
 
 
 def test_auto_backend_failure_includes_macos_seatbelt_diagnostics(monkeypatch) -> None:
-    from opensquilla.sandbox import backend as backend_mod
-    from opensquilla.sandbox.backend import seatbelt as seatbelt_mod
-    from opensquilla.sandbox.backend.seatbelt import SeatbeltBackend
-    from opensquilla.sandbox.config import SandboxSettings
+    from openstarry_code.sandbox import backend as backend_mod
+    from openstarry_code.sandbox.backend import seatbelt as seatbelt_mod
+    from openstarry_code.sandbox.backend.seatbelt import SeatbeltBackend
+    from openstarry_code.sandbox.config import SandboxSettings
 
     monkeypatch.setattr(backend_mod.sys, "platform", "darwin")
     monkeypatch.setattr(SeatbeltBackend, "available", lambda self: False)

@@ -6,14 +6,14 @@ from typing import Any, cast
 
 import pytest
 
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.engine.turn_runner.harness import _TurnRunnerPipelineExecutionAdapter
-from opensquilla.engine.turn_runner.input_stage import (
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.engine.turn_runner.harness import _TurnRunnerPipelineExecutionAdapter
+from openstarry_code.engine.turn_runner.input_stage import (
     ExtraContextResolver,
     InputStage,
     InputStageInput,
 )
-from opensquilla.engine.turn_runner.prompt_assembler_stage import (
+from openstarry_code.engine.turn_runner.prompt_assembler_stage import (
     MemoryFingerprintPort,
     PipelineExecutionPort,
     PromptAssemblerPort,
@@ -25,7 +25,7 @@ from opensquilla.engine.turn_runner.prompt_assembler_stage import (
     RunPipelineRequest,
     SessionIdResolverPort,
 )
-from opensquilla.observability.prompt_report import PromptReport
+from openstarry_code.observability.prompt_report import PromptReport
 
 
 class _NoExtraContext(ExtraContextResolver):
@@ -146,7 +146,7 @@ async def test_run_pipeline_seeds_turn_context_with_normalization_metadata(
         captured["metadata"] = ctx.metadata
         return ctx
 
-    monkeypatch.setattr("opensquilla.engine.pipeline.run_pipeline", fake_run_pipeline)
+    monkeypatch.setattr("openstarry_code.engine.pipeline.run_pipeline", fake_run_pipeline)
     runner = TurnRunner(
         provider_selector=None,
         config=SimpleNamespace(
@@ -184,7 +184,7 @@ async def test_run_pipeline_ignores_non_positive_material_token_metadata(
         captured["metadata"] = ctx.metadata
         return ctx
 
-    monkeypatch.setattr("opensquilla.engine.pipeline.run_pipeline", fake_run_pipeline)
+    monkeypatch.setattr("openstarry_code.engine.pipeline.run_pipeline", fake_run_pipeline)
     runner = TurnRunner(
         provider_selector=None,
         config=SimpleNamespace(

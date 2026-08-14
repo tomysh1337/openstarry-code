@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from opensquilla.sandbox.config import SandboxSettings
-from opensquilla.sandbox.integration import configure_runtime, get_runtime, reset_runtime
+from openstarry_code.sandbox.config import SandboxSettings
+from openstarry_code.sandbox.integration import configure_runtime, get_runtime, reset_runtime
 
 
 class FakeApprovalQueue:

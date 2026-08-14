@@ -1,8 +1,8 @@
-"""``opensquilla router calibrate`` CLI.
+"""``openstarry-code router calibrate`` CLI.
 
 Seeds a synthetic ``router_decisions`` table (hand-created — never real state)
 and drives the command through Typer's ``CliRunner``. The output file always
-lands under a monkeypatched ``OPENSQUILLA_STATE_DIR`` temp dir, never the real
+lands under a monkeypatched ``OPENSTARRY_CODE_STATE_DIR`` temp dir, never the real
 home.
 """
 
@@ -15,8 +15,8 @@ from typing import Any
 
 from typer.testing import CliRunner
 
-from opensquilla.cli.main import app
-from opensquilla.persistence.router_decision_writer import RouterDecisionWriter
+from openstarry_code.cli.main import app
+from openstarry_code.persistence.router_decision_writer import RouterDecisionWriter
 
 runner = CliRunner()
 
@@ -53,11 +53,11 @@ def _seed_db(path: Path, *, count: int = 40) -> None:
 
 
 def _env(monkeypatch: Any, tmp_path: Path, db: Path | None) -> None:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "home"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "home"))
     if db is not None:
-        monkeypatch.setenv("OPENSQUILLA_ROUTER_DECISIONS_DB", str(db))
+        monkeypatch.setenv("OPENSTARRY_CODE_ROUTER_DECISIONS_DB", str(db))
     else:
-        monkeypatch.delenv("OPENSQUILLA_ROUTER_DECISIONS_DB", raising=False)
+        monkeypatch.delenv("OPENSTARRY_CODE_ROUTER_DECISIONS_DB", raising=False)
 
 
 def _output_file(tmp_path: Path) -> Path:

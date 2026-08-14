@@ -3,7 +3,7 @@
 Verifies:
 * The pure helper ``_clarify_fields_to_text`` serializes the form dict
   into the deterministic ``key: value\\n`` form that
-  ``opensquilla.skills.meta.clarify_text.parse_clarify_reply`` accepts.
+  ``openstarry_code.skills.meta.clarify_text.parse_clarify_reply`` accepts.
 * The RPC handler rejects malformed params with a clear error.
 * The RPC handler forwards a normal ``chat.send`` call when given a
   valid submission (handler internals are unit-tested elsewhere).
@@ -15,13 +15,13 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.gateway.rpc import RpcContext
-from opensquilla.gateway.rpc_chat import (
+from openstarry_code.gateway.rpc import RpcContext
+from openstarry_code.gateway.rpc_chat import (
     _clarify_fields_to_text,
     _handle_chat_clarify_submit,
 )
-from opensquilla.skills.meta.clarify_text import parse_clarify_reply
-from opensquilla.skills.meta.types import ClarifyField, ClarifyStepConfig
+from openstarry_code.skills.meta.clarify_text import parse_clarify_reply
+from openstarry_code.skills.meta.types import ClarifyField, ClarifyStepConfig
 
 # ── pure helper ──
 
@@ -124,7 +124,7 @@ async def test_clarify_submit_allows_all_empty_values_for_server_autofill(monkey
         return {"ok": True, "sessionKey": send_params["sessionKey"]}
 
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_chat._handle_chat_send",
+        "openstarry_code.gateway.rpc_chat._handle_chat_send",
         _fake_send,
     )
 
@@ -154,7 +154,7 @@ async def test_clarify_submit_forwards_to_chat_send(monkeypatch):
         return {"ok": True, "sessionKey": send_params["sessionKey"]}
 
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_chat._handle_chat_send",
+        "openstarry_code.gateway.rpc_chat._handle_chat_send",
         _fake_send,
     )
 
@@ -199,7 +199,7 @@ async def test_clarify_submit_with_request_id_resolves_same_turn(monkeypatch):
         raise AssertionError("deferred input must not create a new chat turn")
 
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_chat._handle_chat_send",
+        "openstarry_code.gateway.rpc_chat._handle_chat_send",
         _unexpected_send,
     )
     ctx = RpcContext(
@@ -245,10 +245,10 @@ async def test_clarify_submit_logs_safe_entry_metadata(monkeypatch):
         captured["kwargs"] = kwargs
 
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_chat._handle_chat_send",
+        "openstarry_code.gateway.rpc_chat._handle_chat_send",
         _fake_send,
     )
-    monkeypatch.setattr("opensquilla.gateway.rpc_chat.log.info", _fake_info)
+    monkeypatch.setattr("openstarry_code.gateway.rpc_chat.log.info", _fake_info)
 
     ctx = RpcContext(conn_id="c", principal=SimpleNamespace(role="operator"))
     await _handle_chat_clarify_submit(
@@ -279,7 +279,7 @@ async def test_clarify_submit_works_without_run_id(monkeypatch):
         return {"ok": True, "sessionKey": send_params["sessionKey"]}
 
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_chat._handle_chat_send",
+        "openstarry_code.gateway.rpc_chat._handle_chat_send",
         _fake_send,
     )
 

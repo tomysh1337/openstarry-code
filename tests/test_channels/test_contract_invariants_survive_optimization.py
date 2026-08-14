@@ -19,8 +19,8 @@ from types import ModuleType
 
 import pytest
 
-from opensquilla.channels import contract
-from opensquilla.channels.contract import (
+from openstarry_code.channels import contract
+from openstarry_code.channels.contract import (
     assert_capability_tier,
     assert_dm_safety_tiers,
     assert_error_class_taxonomy,
@@ -142,7 +142,7 @@ def test_run_channel_contract_isolated_under_optimization() -> None:
 import sys
 from types import ModuleType
 
-from opensquilla.channels.contract import assert_capability_tier
+from openstarry_code.channels.contract import assert_capability_tier
 
 m = ModuleType('bad')
 m.CAPABILITY_TIER = 'PURPLE-experimental'

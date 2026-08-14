@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from opensquilla.context_budget import (
+from openstarry_code.context_budget import (
     ContextBudgetClass,
     ContextBudgetGovernor,
 )
-from opensquilla.engine import AgentConfig, ThinkingLevel
+from openstarry_code.engine import AgentConfig, ThinkingLevel
 
 
 def test_context_budget_governor_derives_large_window_caps() -> None:

@@ -7,18 +7,18 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.turn_runner.stream_consumer_stage import (
+from openstarry_code.engine.turn_runner.stream_consumer_stage import (
     StreamConsumerStageInput,
     _DoneHandler,
     _StreamState,
     _TextDeltaHandler,
     _ToolUseStartHandler,
 )
-from opensquilla.engine.turn_runner.turn_finalizer_stage import (
+from openstarry_code.engine.turn_runner.turn_finalizer_stage import (
     TurnFinalizerStage,
     TurnFinalizerStageInput,
 )
-from opensquilla.engine.types import (
+from openstarry_code.engine.types import (
     DoneEvent,
     TextDeltaEvent,
     ToolUseStartEvent,

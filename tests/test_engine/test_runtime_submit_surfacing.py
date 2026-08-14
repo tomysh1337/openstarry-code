@@ -20,10 +20,10 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.tools.registry import get_default_registry
-from opensquilla.tools.types import ToolContext
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.tools.registry import get_default_registry
+from openstarry_code.tools.types import ToolContext
 
 # The active SWE profile: exactly these ten tools, no ``submit``.
 _SCAFFOLD_TOOLS = frozenset(
@@ -53,7 +53,7 @@ def test_build_tools_exposes_submit_under_scaffold_profile_when_enabled(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_SUBMIT_REVIEW", "on")
+    monkeypatch.setenv("OPENSTARRY_CODE_SUBMIT_REVIEW", "on")
     runner = _runner_with_scaffold_profile()
 
     ctx = ToolContext(is_owner=True, workspace_dir=str(tmp_path))
@@ -77,7 +77,7 @@ def test_build_tools_omits_submit_under_scaffold_profile_when_disabled(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.delenv("OPENSQUILLA_SUBMIT_REVIEW", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_SUBMIT_REVIEW", raising=False)
     runner = _runner_with_scaffold_profile()
 
     ctx = ToolContext(is_owner=True, workspace_dir=str(tmp_path))
@@ -96,7 +96,7 @@ def test_build_tools_env_off_overrides_config_on_under_scaffold_profile(
 ) -> None:
     # Env off wins even if a config field would enable it (mirrors the
     # finalize-gate lever precedence).
-    monkeypatch.setenv("OPENSQUILLA_SUBMIT_REVIEW", "off")
+    monkeypatch.setenv("OPENSTARRY_CODE_SUBMIT_REVIEW", "off")
     runner = _runner_with_scaffold_profile()
 
     ctx = ToolContext(is_owner=True, workspace_dir=str(tmp_path))
@@ -110,7 +110,7 @@ def test_build_tools_exposes_plan_run_delivery_controls_under_scaffold_profile(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.delenv("OPENSQUILLA_SUBMIT_REVIEW", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_SUBMIT_REVIEW", raising=False)
     runner = _runner_with_scaffold_profile()
 
     ctx = ToolContext(
@@ -134,7 +134,7 @@ def test_build_tools_plan_run_hides_submit_when_review_enabled(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_SUBMIT_REVIEW", "on")
+    monkeypatch.setenv("OPENSTARRY_CODE_SUBMIT_REVIEW", "on")
     runner = _runner_with_scaffold_profile()
 
     ctx = ToolContext(
@@ -154,7 +154,7 @@ def test_build_tools_exposes_goal_controls_under_scaffold_profile(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.delenv("OPENSQUILLA_SUBMIT_REVIEW", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_SUBMIT_REVIEW", raising=False)
     runner = _runner_with_scaffold_profile()
     ctx = ToolContext(
         is_owner=True,
@@ -177,7 +177,7 @@ def test_build_tools_goal_control_explicit_deny_remains_authoritative(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.delenv("OPENSQUILLA_SUBMIT_REVIEW", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_SUBMIT_REVIEW", raising=False)
     runner = _runner_with_scaffold_profile()
     ctx = ToolContext(
         is_owner=True,

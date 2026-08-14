@@ -7,8 +7,8 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.contrib.codetask import build_verify
-from opensquilla.contrib.codetask.types import TaskState
+from openstarry_code.contrib.codetask import build_verify
+from openstarry_code.contrib.codetask.types import TaskState
 
 
 def _make_repo(tmp_path: Path, *, pkg: bool = True, lock: bool = True) -> Path:
@@ -150,7 +150,7 @@ def test_resolve_cli_uses_desktop_node_bin_env(tmp_path, monkeypatch):
     npm = node_bin / ("npm.cmd" if sys.platform == "win32" else "npm")
     npm.write_text("", encoding="utf-8")
     npm.chmod(0o755)
-    monkeypatch.setenv("OPENSQUILLA_NODE_BIN_DIR", str(node_bin))
+    monkeypatch.setenv("OPENSTARRY_CODE_NODE_BIN_DIR", str(node_bin))
     monkeypatch.setattr(build_verify.shutil, "which", lambda *a, **k: None)
 
     assert build_verify._resolve_cli("npm") == str(npm)
@@ -160,7 +160,7 @@ def test_verify_build_prepends_desktop_node_bin_to_child_path(tmp_path, monkeypa
     repo = _make_repo(tmp_path / "repo")
     node_bin = tmp_path / "node-bin"
     node_bin.mkdir()
-    monkeypatch.setenv("OPENSQUILLA_NODE_BIN_DIR", str(node_bin))
+    monkeypatch.setenv("OPENSTARRY_CODE_NODE_BIN_DIR", str(node_bin))
     monkeypatch.setattr(build_verify, "_resolve_cli", lambda name: name)
 
     seen_paths: list[str] = []

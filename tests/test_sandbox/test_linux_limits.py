@@ -5,7 +5,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.sandbox.backend.linux_limits import resource_preexec_from_policy
+from openstarry_code.sandbox.backend.linux_limits import resource_preexec_from_policy
 
 pytestmark = pytest.mark.skipif(
     not sys.platform.startswith("linux"),
@@ -26,7 +26,7 @@ def test_resource_preexec_from_policy_sets_cpu_and_pid_limits_without_address_sp
         setrlimit=lambda resource_id, limits: calls.append((resource_id, limits)),
     )
     monkeypatch.setattr(
-        "opensquilla.sandbox.backend.linux_limits.resource",
+        "openstarry_code.sandbox.backend.linux_limits.resource",
         fake_resource,
     )
 

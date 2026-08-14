@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.gateway.config import (
+from openstarry_code.gateway.config import (
     DingTalkChannelEntry,
     DiscordChannelEntry,
     FeishuChannelEntry,
@@ -14,7 +14,7 @@ from opensquilla.gateway.config import (
     TelegramChannelEntry,
     WeComChannelEntry,
 )
-from opensquilla.onboarding.channel_specs import (
+from openstarry_code.onboarding.channel_specs import (
     ChannelSetupSpec,
     channel_catalog_payload,
     get_channel_setup_spec,

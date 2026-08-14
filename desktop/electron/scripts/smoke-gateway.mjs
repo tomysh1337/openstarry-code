@@ -12,8 +12,8 @@ const packageRoot = resolve(scriptDir, '..')
 const repoRoot = resolve(packageRoot, '..', '..')
 const desktopOutputDir = join(repoRoot, 'dist', 'desktop-electron')
 const sourceRuntimeGatewayDir = join(packageRoot, 'runtime', 'gateway')
-const binaryName = process.platform === 'win32' ? 'opensquilla-gateway.exe' : 'opensquilla-gateway'
-const deadlineMs = Number.parseInt(process.env.OPENSQUILLA_GATEWAY_SMOKE_TIMEOUT_MS || '90000', 10)
+const binaryName = process.platform === 'win32' ? 'openstarry-code-gateway.exe' : 'openstarry-code-gateway'
+const deadlineMs = Number.parseInt(process.env.OPENSTARRY_CODE_GATEWAY_SMOKE_TIMEOUT_MS || '90000', 10)
 const pollIntervalMs = 250
 const killGraceMs = 3_000
 const maxTailLines = 80
@@ -64,7 +64,7 @@ function pathIsDirectory(path) {
 }
 
 function gatewayBinaryCandidates(runtimeGatewayDir) {
-  return [join(runtimeGatewayDir, 'opensquilla-gateway', binaryName), join(runtimeGatewayDir, binaryName)]
+  return [join(runtimeGatewayDir, 'openstarry-code-gateway', binaryName), join(runtimeGatewayDir, binaryName)]
 }
 
 function findGatewayBinary(runtimeGatewayDir) {
@@ -117,7 +117,7 @@ async function selectRuntimeGateway() {
     return selected.runtimeGatewayDir
   }
 
-  if (process.env.OPENSQUILLA_REQUIRE_PACKAGED_GATEWAY_SMOKE === '1') {
+  if (process.env.OPENSTARRY_CODE_REQUIRE_PACKAGED_GATEWAY_SMOKE === '1') {
     throw new Error(`No current-platform generated Electron bundle runtime found under ${desktopOutputDir}.`)
   }
 
@@ -128,7 +128,7 @@ async function selectRuntimeGateway() {
 function smokeEnv(tempHome, config) {
   const env = {}
   for (const [key, value] of Object.entries(process.env)) {
-    if (key.startsWith('OPENSQUILLA_')) continue
+    if (key.startsWith('OPENSTARRY_CODE_') || key.startsWith('OPENSQUILLA_')) continue
     if (strippedTlsEnvironmentKeys.has(key.toUpperCase())) continue
     env[key] = value
   }
@@ -137,12 +137,12 @@ function smokeEnv(tempHome, config) {
     ...env,
     HOME: tempHome,
     USERPROFILE: tempHome,
-    OPENSQUILLA_DESKTOP: '1',
-    OPENSQUILLA_INSTALL_METHOD: 'desktop',
-    // The Desktop contract treats OPENSQUILLA_STATE_DIR as the profile root H.
+    OPENSTARRY_CODE_DESKTOP: '1',
+    OPENSTARRY_CODE_INSTALL_METHOD: 'desktop',
+    // The Desktop contract treats OPENSTARRY_CODE_STATE_DIR as the profile root H.
     // Runtime databases still live below H/state; config must remain at H/config.toml.
-    OPENSQUILLA_STATE_DIR: tempHome,
-    OPENSQUILLA_GATEWAY_CONFIG_PATH: config,
+    OPENSTARRY_CODE_STATE_DIR: tempHome,
+    OPENSTARRY_CODE_GATEWAY_CONFIG_PATH: config,
     PYTHONUNBUFFERED: '1',
     PYTHONUTF8: '1',
     PYTHONIOENCODING: 'utf-8:replace',
@@ -406,7 +406,7 @@ async function main() {
     )
   }
 
-  const tempHome = await mkdtemp(join(tmpdir(), 'opensquilla-gateway-smoke-'))
+  const tempHome = await mkdtemp(join(tmpdir(), 'openstarry-code-gateway-smoke-'))
   const config = join(tempHome, 'config.toml')
   const stateDir = join(tempHome, 'state')
   const workspaceDir = join(tempHome, 'workspace')
@@ -457,7 +457,7 @@ async function main() {
 
     await waitForGateway(port, childExit, stdoutTail, stderrTail)
     await verifyControlUi(port, stdoutTail, stderrTail)
-    console.log('OpenSquilla packaged gateway smoke passed.')
+    console.log('OpenStarry Code packaged gateway smoke passed.')
   } finally {
     if (child) await terminateChild(child, childClosed)
     await rm(tempHome, { recursive: true, force: true })

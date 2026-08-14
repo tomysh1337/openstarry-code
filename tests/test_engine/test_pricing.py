@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from opensquilla.engine.pricing import (
+from openstarry_code.engine.pricing import (
     PriceEntry,
     PricingCache,
     lookup_price,
@@ -23,7 +23,7 @@ def test_deepseek_v4_pro_static_price_matches_current_official(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Official price since 2026-05-31: $0.435/M in (miss), $0.87/M out, $0.003625/M cache hit."""
-    monkeypatch.setenv("OPENSQUILLA_OPENROUTER_LIVE_PRICING", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING", "0")
 
     price = lookup_price("deepseek/deepseek-v4-pro")
 
@@ -51,7 +51,7 @@ async def test_pricing_cache_refresh_adds_openrouter_app_attribution() -> None:
         request=_httpx.Request("GET", "https://openrouter.ai/api/v1/models"),
     )
 
-    with patch("opensquilla.engine.pricing.httpx.AsyncClient") as mock_client:
+    with patch("openstarry_code.engine.pricing.httpx.AsyncClient") as mock_client:
         mock_instance = AsyncMock()
 
         async def capture_get(url, *, headers):
@@ -70,7 +70,7 @@ async def test_pricing_cache_refresh_adds_openrouter_app_attribution() -> None:
         "Authorization": "Bearer test-key",
         "Content-Type": "application/json",
         "HTTP-Referer": "https://opensquilla.ai",
-        "X-Title": "OpenSquilla",
+        "X-Title": "OpenStarry Code",
     }
     price = cache.get_price_sync("openai/gpt-4o")
     assert price is not None
@@ -82,7 +82,7 @@ def test_deepseek_v4_pro_live_price_wins_over_static(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """The hardcoded pin must no longer block live-price self-correction."""
-    monkeypatch.setenv("OPENSQUILLA_OPENROUTER_LIVE_PRICING", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING", "1")
     reset_live_price_cache_for_tests()
     seed_live_price_cache_for_tests("deepseek/deepseek-v4-pro", PriceEntry(0.5, 1.0))
 
@@ -95,7 +95,7 @@ def test_deepseek_v4_pro_live_price_wins_over_static(
 def test_versioned_deepseek_id_prefix_matches_static_entry(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_OPENROUTER_LIVE_PRICING", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING", "0")
 
     price = lookup_price("deepseek/deepseek-v4-pro-20260423")
 
@@ -127,7 +127,7 @@ def test_previously_missing_ids_now_have_static_entries(
     input_per_m: float,
     output_per_m: float,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_OPENROUTER_LIVE_PRICING", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING", "0")
 
     price = lookup_price(model)
 
@@ -140,7 +140,7 @@ def test_glm_5_static_price_matches_openrouter_native_provider(
     monkeypatch: pytest.MonkeyPatch,
     model: str,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_OPENROUTER_LIVE_PRICING", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING", "0")
 
     price = lookup_price(model)
 
@@ -164,7 +164,7 @@ def test_g8_ensemble_static_fallback_prices_do_not_use_generic_default(
     input_per_m: float,
     output_per_m: float,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_OPENROUTER_LIVE_PRICING", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING", "0")
 
     price = lookup_price(model)
 
@@ -175,7 +175,7 @@ def test_g8_ensemble_static_fallback_prices_do_not_use_generic_default(
 def test_claude_opus_4_8_static_price_matches_openrouter_model_catalog(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_OPENROUTER_LIVE_PRICING", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING", "0")
 
     price = lookup_price("anthropic/claude-opus-4.8")
 
@@ -198,7 +198,7 @@ def test_dashscope_beijing_qwen_static_prices_match_official_model_studio_pricin
     input_per_m: float,
     output_per_m: float,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_OPENROUTER_LIVE_PRICING", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING", "0")
 
     price = lookup_price(model)
 
@@ -209,7 +209,7 @@ def test_dashscope_beijing_qwen_static_prices_match_official_model_studio_pricin
 def test_dashscope_beijing_qwen_plus_smoke_usage_estimates_cost_from_tokens(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_OPENROUTER_LIVE_PRICING", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING", "0")
     price = lookup_price("qwen-plus")
 
     estimated_cost = (31 * price.input_per_m + 6 * price.output_per_m) / 1_000_000
@@ -220,7 +220,7 @@ def test_dashscope_beijing_qwen_plus_smoke_usage_estimates_cost_from_tokens(
 def test_provider_profile_models_do_not_use_default_pricing(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_OPENROUTER_LIVE_PRICING", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING", "0")
     default = PriceEntry(3.0, 15.0)
     models = [
         "qwen3.6-flash",
@@ -254,12 +254,12 @@ def test_provider_profile_models_do_not_use_default_pricing(
 def test_local_embedding_model_does_not_fetch_openrouter_pricing(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_OPENROUTER_LIVE_PRICING", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING", "1")
 
     def fail_fetch(*_args, **_kwargs):
         raise AssertionError("local embedding models should not hit OpenRouter pricing")
 
-    monkeypatch.setattr("opensquilla.engine.pricing._fetch_openrouter_json_sync", fail_fetch)
+    monkeypatch.setattr("openstarry_code.engine.pricing._fetch_openrouter_json_sync", fail_fetch)
 
     price = lookup_price("BAAI/bge-small-zh-v1.5")
 
@@ -292,7 +292,7 @@ def test_direct_provider_profile_estimate_prices_match_approved_static_entries(
     input_per_m: float,
     output_per_m: float,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_OPENROUTER_LIVE_PRICING", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING", "0")
 
     price = lookup_price(model)
 
@@ -315,7 +315,7 @@ def test_volcengine_seed_2_static_prices_match_under_32k_online_inference_pricin
     input_per_m: float,
     output_per_m: float,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_OPENROUTER_LIVE_PRICING", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING", "0")
 
     price = lookup_price(model)
 
@@ -338,7 +338,7 @@ def test_direct_openai_zhipu_kimi_and_minimax_prices_do_not_fall_back_to_default
     input_per_m: float,
     output_per_m: float,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_OPENROUTER_LIVE_PRICING", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING", "0")
 
     price = lookup_price(model)
 
@@ -349,7 +349,7 @@ def test_direct_openai_zhipu_kimi_and_minimax_prices_do_not_fall_back_to_default
 def test_local_provider_is_free_even_for_unqualified_model(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_OPENROUTER_LIVE_PRICING", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING", "0")
     # Bare ollama model id misses the "ollama/" table entry -> cloud default.
     assert lookup_price("qwen3:4b").input_per_m == pytest.approx(3.0)
     # Passing the local provider makes it free regardless of the model id.
@@ -367,6 +367,6 @@ def test_local_provider_case_insensitive_and_covers_local_runtimes() -> None:
 def test_cloud_provider_arg_does_not_zero_priced_model(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_OPENROUTER_LIVE_PRICING", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING", "0")
     price = lookup_price("claude-sonnet-4", provider="anthropic")
     assert price.input_per_m == pytest.approx(3.0)

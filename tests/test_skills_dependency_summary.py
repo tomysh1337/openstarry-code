@@ -4,10 +4,10 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.skills import dependency_summary
-from opensquilla.skills.dependency_summary import build_dependency_summary
-from opensquilla.skills.eligibility import EligibilityContext, EligibilityReport
-from opensquilla.skills.loader import SkillLoader
+from openstarry_code.skills import dependency_summary
+from openstarry_code.skills.dependency_summary import build_dependency_summary
+from openstarry_code.skills.eligibility import EligibilityContext, EligibilityReport
+from openstarry_code.skills.loader import SkillLoader
 
 
 def _write_skill(

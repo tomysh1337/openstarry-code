@@ -18,8 +18,8 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.identity.bootstrap import ensure_agent_workspace
-from opensquilla.migration.openclaw import MigrationOptions, OpenClawMigrator
+from openstarry_code.identity.bootstrap import ensure_agent_workspace
+from openstarry_code.migration.openclaw import MigrationOptions, OpenClawMigrator
 
 
 def _make_openclaw_source(root: Path) -> Path:
@@ -44,7 +44,7 @@ def test_pristine_bootstrap_templates_do_not_block_migration(
 ) -> None:
     source = _make_openclaw_source(tmp_path)
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
     ensure_agent_workspace(home / "workspace")
     # Confirm the templates were seeded (precondition for the bug).
     for filename in ("SOUL.md", "USER.md", "AGENTS.md", "MEMORY.md"):
@@ -93,7 +93,7 @@ def test_user_edited_memory_is_preserved_and_openclaw_appended(
     # at the top, openclaw blocks that aren't already there are appended.
     source = _make_openclaw_source(tmp_path)
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
     ensure_agent_workspace(home / "workspace")
     (home / "workspace" / "MEMORY.md").write_text(
         "# My real, edited memory\n\nThis is not the template.\n",
@@ -131,7 +131,7 @@ def test_re_migration_against_existing_destination_dedupes_to_skip(
     # and leave the file untouched. No duplicate growth, no conflict.
     source = _make_openclaw_source(tmp_path)
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
     ensure_agent_workspace(home / "workspace")
 
     OpenClawMigrator(
@@ -165,7 +165,7 @@ def test_partial_overlap_appends_only_new_blocks(
     (source / "openclaw.json").write_text("{}", encoding="utf-8")
 
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
     (home / "workspace").mkdir(parents=True)
     # Pre-existing destination already has the day-one block.
     (home / "workspace" / "MEMORY.md").write_text(
@@ -199,7 +199,7 @@ def test_persona_conflict_default_in_non_tty_keeps_opensquilla_and_archives(
     # under archive/files/openclaw-orphaned/ so nothing is silently lost.
     source = _make_openclaw_source(tmp_path)
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
     (home / "workspace").mkdir(parents=True)
     (home / "workspace" / "SOUL.md").write_text(
         "# My real opensquilla persona\nI am precise and terse.\n",
@@ -230,7 +230,7 @@ def test_persona_conflict_use_openclaw_replaces_with_backup(
 ) -> None:
     source = _make_openclaw_source(tmp_path)
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
     (home / "workspace").mkdir(parents=True)
     (home / "workspace" / "SOUL.md").write_text(
         "OPENSQUILLA ORIGINAL\n", encoding="utf-8"
@@ -259,7 +259,7 @@ def test_persona_conflict_merge_appends_with_separator(
 ) -> None:
     source = _make_openclaw_source(tmp_path)
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
     (home / "workspace").mkdir(parents=True)
     (home / "workspace" / "USER.md").write_text(
         "I am Alice, working on RPC layer.\n", encoding="utf-8"
@@ -293,7 +293,7 @@ def test_persona_conflict_skip_drops_both_with_explicit_record(
 ) -> None:
     source = _make_openclaw_source(tmp_path)
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
     (home / "workspace").mkdir(parents=True)
     (home / "workspace" / "AGENTS.md").write_text(
         "WORKSPACE OPERATING RULES\n", encoding="utf-8"
@@ -330,7 +330,7 @@ def test_persona_conflict_use_opensquilla_keeps_dest_and_archives_openclaw(
     # default but reached via an explicit CLI flag instead of fallback.
     source = _make_openclaw_source(tmp_path)
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
     (home / "workspace").mkdir(parents=True)
     (home / "workspace" / "SOUL.md").write_text(
         "EXISTING CONTENT TO PRESERVE\n", encoding="utf-8"
@@ -363,7 +363,7 @@ def test_overwrite_flag_still_replaces_everything(
     # Confirm its semantics are unchanged by the new merge-by-default flow.
     source = _make_openclaw_source(tmp_path)
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
     (home / "workspace").mkdir(parents=True)
     (home / "workspace" / "MEMORY.md").write_text(
         "REAL USER MEMORY THAT GETS REPLACED\n", encoding="utf-8"
@@ -391,7 +391,7 @@ def test_template_detection_is_robust_to_trailing_whitespace(
     # the destination from being treated as the pristine template.
     source = _make_openclaw_source(tmp_path)
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
     ensure_agent_workspace(home / "workspace")
     memory_path = home / "workspace" / "MEMORY.md"
     original = memory_path.read_text(encoding="utf-8")
@@ -422,7 +422,7 @@ def test_openclaw_workspace_with_opensquilla_mention_is_kept_verbatim(
         encoding="utf-8",
     )
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     report = OpenClawMigrator(
         MigrationOptions(source=source, config_path=tmp_path / "cfg.toml", apply=True)
@@ -444,14 +444,14 @@ def test_openclaw_rebrand_does_not_mangle_path_substrings() -> None:
     # ``openclaw_pid`` into ``opensquilla_pid``. None of these were
     # intentional rebrands. Word-boundary aware regex replacement
     # leaves prefix-substring tokens alone.
-    from opensquilla.migration.openclaw import _rebrand_text
+    from openstarry_code.migration.openclaw import _rebrand_text
 
     cases = [
         ("Config ~/.openclawrc keeps working", "Config ~/.openclawrc keeps working"),
         ("var openclaw_pid", "var openclaw_pid"),
         ("Has OpenClawFlavored name", "Has OpenClawFlavored name"),
         # Legitimate rebrands:
-        ("Use ~/.openclaw home", "Use ~/.opensquilla home"),
+        ("Use ~/.openclaw home", "Use ~/.openstarry-code home"),
         ("I am OpenClaw", "I am OpenSquilla"),
         ("Run: openclaw migrate", "Run: opensquilla migrate"),
     ]
@@ -474,7 +474,7 @@ def test_openclaw_mcp_enabled_false_is_preserved(
         encoding="utf-8",
     )
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
     home.mkdir(parents=True, exist_ok=True)
     config_path = tmp_path / "cfg.toml"
     config_path.write_text(
@@ -520,7 +520,7 @@ def test_openclaw_memory_blocks_track_skipped_count(
     )
     (source / "openclaw.json").write_text("{}", encoding="utf-8")
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     report = OpenClawMigrator(
         MigrationOptions(source=source, config_path=tmp_path / "cfg.toml", apply=True)

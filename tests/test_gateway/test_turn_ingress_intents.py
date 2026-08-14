@@ -13,15 +13,15 @@ from typing import Any
 
 import pytest
 
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.routing import RouteEnvelope, SourceKind
-from opensquilla.gateway.rpc import RpcContext, get_dispatcher
-from opensquilla.gateway.task_runtime import TaskRuntime
-from opensquilla.session.manager import SessionManager
-from opensquilla.session.models import PlanRunRecord, SessionContextState, SessionSummary
-from opensquilla.session.plans import new_plan_revision
-from opensquilla.session.storage import SessionStorage
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.routing import RouteEnvelope, SourceKind
+from openstarry_code.gateway.rpc import RpcContext, get_dispatcher
+from openstarry_code.gateway.task_runtime import TaskRuntime
+from openstarry_code.session.manager import SessionManager
+from openstarry_code.session.models import PlanRunRecord, SessionContextState, SessionSummary
+from openstarry_code.session.plans import new_plan_revision
+from openstarry_code.session.storage import SessionStorage
 
 SESSION_KEY = "agent:main:webchat:atomic-intents"
 
@@ -614,7 +614,7 @@ async def test_reset_same_key_atomically_rotates_and_accepts_new_turn(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_SESSION_ARCHIVE_DIR", str(tmp_path / "archives"))
+    monkeypatch.setenv("OPENSTARRY_CODE_SESSION_ARCHIVE_DIR", str(tmp_path / "archives"))
     async with _open_intent_stack(tmp_path / "sessions.db") as stack:
         old_session_id, old_epoch, _old_message_id = await _seed_reset_state(stack)
         revision = await stack.storage.create_plan_revision(
@@ -713,7 +713,7 @@ async def test_reset_archive_failure_rolls_back_atomic_acceptance(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_SESSION_ARCHIVE_DIR", str(tmp_path / "archives"))
+    monkeypatch.setenv("OPENSTARRY_CODE_SESSION_ARCHIVE_DIR", str(tmp_path / "archives"))
     async with _open_intent_stack(tmp_path / "sessions.db") as stack:
         old_session_id, old_epoch, _old_message_id = await _seed_reset_state(stack)
 
@@ -761,7 +761,7 @@ async def test_reset_archive_snapshot_includes_append_committed_before_acceptanc
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     archive_dir = tmp_path / "archives"
-    monkeypatch.setenv("OPENSQUILLA_SESSION_ARCHIVE_DIR", str(archive_dir))
+    monkeypatch.setenv("OPENSTARRY_CODE_SESSION_ARCHIVE_DIR", str(archive_dir))
     async with _open_intent_stack(tmp_path / "sessions.db") as stack:
         old_session_id, _old_epoch, _old_message_id = await _seed_reset_state(stack)
         acceptance_entered = asyncio.Event()
@@ -824,7 +824,7 @@ async def test_reset_forces_interrupt_even_when_request_asks_for_followup(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_SESSION_ARCHIVE_DIR", str(tmp_path / "archives"))
+    monkeypatch.setenv("OPENSTARRY_CODE_SESSION_ARCHIVE_DIR", str(tmp_path / "archives"))
     async with _open_intent_stack(tmp_path / "sessions.db") as stack:
         old_session_id, _old_epoch, _old_message_id = await _seed_reset_state(stack)
         old_handle = await stack.runtime.enqueue(
@@ -874,7 +874,7 @@ async def test_reset_cannot_overtake_a_committed_continue_before_activation(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_SESSION_ARCHIVE_DIR", str(tmp_path / "archives"))
+    monkeypatch.setenv("OPENSTARRY_CODE_SESSION_ARCHIVE_DIR", str(tmp_path / "archives"))
     async with _open_intent_stack(tmp_path / "sessions.db") as stack:
         old_session_id, _old_epoch, _old_message_id = await _seed_reset_state(stack)
         continue_activation_entered = asyncio.Event()
@@ -977,7 +977,7 @@ async def test_reset_storage_busy_preserves_old_state_and_running_task(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_SESSION_ARCHIVE_DIR", str(tmp_path / "archives"))
+    monkeypatch.setenv("OPENSTARRY_CODE_SESSION_ARCHIVE_DIR", str(tmp_path / "archives"))
     async with _open_intent_stack(tmp_path / "sessions.db") as stack:
         old_session_id, old_epoch, old_message_id = await _seed_reset_state(stack)
         old_handle = await stack.runtime.enqueue(

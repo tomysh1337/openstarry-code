@@ -6,15 +6,15 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.tools.builtin.shell import exec_command
-from opensquilla.tools.mutation_receipts import (
+from openstarry_code.tools.builtin.shell import exec_command
+from openstarry_code.tools.mutation_receipts import (
     fingerprint_file,
     record_semantic_mutation_receipt,
 )
-from opensquilla.tools.source_diff_preservation import (
+from openstarry_code.tools.source_diff_preservation import (
     source_diff_preservation_decision,
 )
-from opensquilla.tools.types import ToolContext, current_tool_context
+from openstarry_code.tools.types import ToolContext, current_tool_context
 
 
 def _init_git_workspace(path: Path) -> None:

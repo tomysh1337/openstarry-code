@@ -14,10 +14,10 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.engine.turn_runner.harness import _TurnRunnerModelCatalogAdapter
-from opensquilla.gateway.config import GatewayConfig
+from openstarry_code.engine.turn_runner.harness import _TurnRunnerModelCatalogAdapter
+from openstarry_code.gateway.config import GatewayConfig
 
-_ENV_NAME = "OPENSQUILLA_LLM_PROVIDER_REQUEST_PROOF_MAX_CHARS"
+_ENV_NAME = "OPENSTARRY_CODE_LLM_PROVIDER_REQUEST_PROOF_MAX_CHARS"
 
 
 def _adapter_for(llm_cfg: object) -> _TurnRunnerModelCatalogAdapter:
@@ -80,7 +80,7 @@ def test_gateway_config_toml_delivers_proof_budget(
 def test_gateway_config_toml_beats_env_for_proof_budget(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Init/TOML values outrank OPENSQUILLA_LLM_* env in pydantic-settings.
+    """Init/TOML values outrank OPENSTARRY_CODE_LLM_* env in pydantic-settings.
 
     Delivery consequence: the env var is only a fallback; when config.toml
     carries the key, the TOML value is what the run actually applies.

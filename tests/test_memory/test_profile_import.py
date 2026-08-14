@@ -11,10 +11,10 @@ from pathlib import Path
 
 import pytest
 
-import opensquilla.memory.profile_import.files as profile_import_files
-import opensquilla.memory.profile_import.transaction as profile_import_transaction
-import opensquilla.profile_import_io as profile_import_io
-from opensquilla.memory.profile_import import (
+import openstarry_code.memory.profile_import.files as profile_import_files
+import openstarry_code.memory.profile_import.transaction as profile_import_transaction
+import openstarry_code.profile_import_io as profile_import_io
+from openstarry_code.memory.profile_import import (
     ModelIdentity,
     ProfileImportInputTooLargeError,
     ProfileImportInvalidOutputError,
@@ -29,9 +29,9 @@ from opensquilla.memory.profile_import import (
     lookup_preview_agent,
     lookup_receipt_agent,
 )
-from opensquilla.memory.profile_import.jobs import ProfileImportJobRunner
-from opensquilla.memory.profile_import.models import DecisionTarget, FusionModelRequest
-from opensquilla.memory.profile_import.prompts import (
+from openstarry_code.memory.profile_import.jobs import ProfileImportJobRunner
+from openstarry_code.memory.profile_import.models import DecisionTarget, FusionModelRequest
+from openstarry_code.memory.profile_import.prompts import (
     FUSION_SYSTEM_PROMPT,
     UNDO_SYSTEM_PROMPT,
 )

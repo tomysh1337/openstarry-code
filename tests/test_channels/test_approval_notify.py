@@ -6,10 +6,10 @@ import asyncio
 
 import pytest
 
-from opensquilla.channels.approval_prompt import reset_short_codes, resolve_short_code
-from opensquilla.channels.contract import ChannelCapabilityProfile
-from opensquilla.gateway.approval_notify import register_approval_channel_notifier
-from opensquilla.gateway.approval_queue import get_approval_queue, reset_approval_queue
+from openstarry_code.channels.approval_prompt import reset_short_codes, resolve_short_code
+from openstarry_code.channels.contract import ChannelCapabilityProfile
+from openstarry_code.gateway.approval_notify import register_approval_channel_notifier
+from openstarry_code.gateway.approval_queue import get_approval_queue, reset_approval_queue
 
 
 class _FakeNode:

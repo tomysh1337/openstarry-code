@@ -1,4 +1,4 @@
-export const DESKTOP_DEEP_LINK_SCHEME = 'opensquilla'
+export const DESKTOP_DEEP_LINK_SCHEME = 'openstarry-code'
 
 export type DesktopDeepLinkAction = 'open'
 

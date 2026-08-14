@@ -5,26 +5,26 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine import Agent, AgentConfig, ToolResult
-from opensquilla.engine.types import EnsembleProgressEvent as EngineEnsembleProgressEvent
-from opensquilla.engine.types import RunHeartbeatEvent, ToolCall
-from opensquilla.provider import (
+from openstarry_code.engine import Agent, AgentConfig, ToolResult
+from openstarry_code.engine.types import EnsembleProgressEvent as EngineEnsembleProgressEvent
+from openstarry_code.engine.types import RunHeartbeatEvent, ToolCall
+from openstarry_code.provider import (
     ChatConfig,
     Message,
     ProviderHeartbeatEvent,
     ToolDefinition,
     ToolInputSchema,
 )
-from opensquilla.provider import (
+from openstarry_code.provider import (
     DoneEvent as ProviderDone,
 )
-from opensquilla.provider import (
+from openstarry_code.provider import (
     ErrorEvent as ProviderErrorEvent,
 )
-from opensquilla.provider import (
+from openstarry_code.provider import (
     TextDeltaEvent as ProviderText,
 )
-from opensquilla.provider.types import (
+from openstarry_code.provider.types import (
     EnsembleProgressEvent as ProviderEnsembleProgressEvent,
 )
 
@@ -109,7 +109,7 @@ async def test_agent_forwards_provider_ensemble_progress_as_engine_event() -> No
 
 @pytest.mark.asyncio
 async def test_selector_wrapper_and_agent_preserve_live_control_event_order() -> None:
-    from opensquilla.engine.runtime import _SelectorFallbackProvider
+    from openstarry_code.engine.runtime import _SelectorFallbackProvider
 
     class _Selector:
         pass
@@ -143,7 +143,7 @@ async def test_selector_wrapper_and_agent_preserve_live_control_event_order() ->
 
 @pytest.mark.asyncio
 async def test_selector_fallback_control_events_remain_live_and_do_not_block_fallback() -> None:
-    from opensquilla.engine.runtime import _SelectorFallbackProvider
+    from openstarry_code.engine.runtime import _SelectorFallbackProvider
 
     class _Primary:
         provider_name = "openrouter"
@@ -189,7 +189,7 @@ async def test_selector_fallback_control_events_remain_live_and_do_not_block_fal
 
 @pytest.mark.asyncio
 async def test_selector_fallback_restores_single_provider_retry_safety() -> None:
-    from opensquilla.engine.runtime import _SelectorFallbackProvider
+    from openstarry_code.engine.runtime import _SelectorFallbackProvider
 
     class _Composite:
         provider_name = "ensemble"

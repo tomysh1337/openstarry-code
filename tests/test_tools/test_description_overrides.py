@@ -1,6 +1,6 @@
 """Env-gated tool-description overrides (off by default).
 
-Covers OPENSQUILLA_TOOL_DESCRIPTION_OVERRIDES: unset/off keeps every
+Covers OPENSTARRY_CODE_TOOL_DESCRIPTION_OVERRIDES: unset/off keeps every
 model-facing description byte-identical even when the config table is
 populated, "config" reads [tools.description_overrides] from gateway config,
 and a .toml/.json path loads the table from that file. Motivation: tool and
@@ -17,16 +17,16 @@ from dataclasses import replace
 
 import pytest
 
-from opensquilla.gateway.config import GatewayConfig, ToolsConfig
-from opensquilla.tools import registry as registry_module
-from opensquilla.tools.description_overrides import (
+from openstarry_code.gateway.config import GatewayConfig, ToolsConfig
+from openstarry_code.tools import registry as registry_module
+from openstarry_code.tools.description_overrides import (
     resolve_tool_description_overrides,
 )
-from opensquilla.tools.registry import ToolRegistry
-from opensquilla.tools.types import ToolContext, ToolSpec
+from openstarry_code.tools.registry import ToolRegistry
+from openstarry_code.tools.types import ToolContext, ToolSpec
 
-_ENV = "OPENSQUILLA_TOOL_DESCRIPTION_OVERRIDES"
-_EVENTS_PATH_ENV = "OPENSQUILLA_RUNTIME_EVENTS_PATH"
+_ENV = "OPENSTARRY_CODE_TOOL_DESCRIPTION_OVERRIDES"
+_EVENTS_PATH_ENV = "OPENSTARRY_CODE_RUNTIME_EVENTS_PATH"
 
 
 @pytest.fixture(autouse=True)

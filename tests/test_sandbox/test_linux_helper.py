@@ -6,17 +6,17 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.sandbox.backend import linux_helper
-from opensquilla.sandbox.backend.linux_filesystem import run_filesystem_payload
-from opensquilla.sandbox.backend.linux_helper import build_outer_bwrap_command
-from opensquilla.sandbox.backend.linux_payload import (
+from openstarry_code.sandbox.backend import linux_helper
+from openstarry_code.sandbox.backend.linux_filesystem import run_filesystem_payload
+from openstarry_code.sandbox.backend.linux_helper import build_outer_bwrap_command
+from openstarry_code.sandbox.backend.linux_payload import (
     FilesystemHelperPayload,
     HelperPayload,
     ProcessHelperPayload,
     encode_payload,
 )
-from opensquilla.sandbox.backend.linux_process import run_process_payload
-from opensquilla.sandbox.backend.linux_protected_create import (
+from openstarry_code.sandbox.backend.linux_process import run_process_payload
+from openstarry_code.sandbox.backend.linux_protected_create import (
     SyntheticMountCleanupTarget,
     cleanup_protected_create_registrations,
     cleanup_synthetic_mount_registrations,
@@ -24,7 +24,7 @@ from opensquilla.sandbox.backend.linux_protected_create import (
     register_protected_create_targets,
     register_synthetic_mount_targets,
 )
-from opensquilla.sandbox.permissions import FileSystemAccess
+from openstarry_code.sandbox.permissions import FileSystemAccess
 
 pytestmark = pytest.mark.skipif(
     not sys.platform.startswith("linux"),
@@ -94,7 +94,7 @@ async def test_run_process_payload_passes_resource_preexec_to_child(
         return _Proc()
 
     monkeypatch.setattr(
-        "opensquilla.sandbox.backend.linux_process.asyncio.create_subprocess_exec",
+        "openstarry_code.sandbox.backend.linux_process.asyncio.create_subprocess_exec",
         fake_create_subprocess_exec,
     )
     payload = HelperPayload(
@@ -143,11 +143,11 @@ async def test_run_process_payload_passes_network_seccomp_to_child(
         return lambda: None
 
     monkeypatch.setattr(
-        "opensquilla.sandbox.backend.linux_process.asyncio.create_subprocess_exec",
+        "openstarry_code.sandbox.backend.linux_process.asyncio.create_subprocess_exec",
         fake_create_subprocess_exec,
     )
     monkeypatch.setattr(
-        "opensquilla.sandbox.backend.linux_process.process_preexec_from_policy",
+        "openstarry_code.sandbox.backend.linux_process.process_preexec_from_policy",
         fake_process_preexec_from_policy,
         raising=False,
     )
@@ -362,7 +362,7 @@ def test_build_outer_bwrap_command_reenters_helper_inner_mode(tmp_path) -> None:
     assert "--unshare-net" in argv
     separator = argv.index("--")
     inner = argv[separator + 1 :]
-    assert inner[:3] == [sys.executable, "-m", "opensquilla.sandbox.backend.linux_helper"]
+    assert inner[:3] == [sys.executable, "-m", "openstarry_code.sandbox.backend.linux_helper"]
     assert "--inner" in inner
     assert str(payload_path) in inner
 
@@ -407,14 +407,14 @@ def test_build_outer_bwrap_command_wraps_proxy_allowlist_with_bridge(tmp_path) -
     inner = argv[separator + 1 :]
     assert "--unshare-net" in argv
     assert str(bridge_dir) in argv
-    assert "OPENSQUILLA_SANDBOX_PROXY_UDS" in argv
+    assert "OPENSTARRY_CODE_SANDBOX_PROXY_UDS" in argv
     assert str(bridge_dir / "proxy.sock") in argv
-    assert "OPENSQUILLA_SANDBOX_PROXY_PORT" in argv
+    assert "OPENSTARRY_CODE_SANDBOX_PROXY_PORT" in argv
     assert "18080" in argv
-    assert "OPENSQUILLA_SANDBOX_EXEC_WRAPPER" not in argv
-    assert "OPENSQUILLA_SANDBOX_POLICY_B64" not in argv
+    assert "OPENSTARRY_CODE_SANDBOX_EXEC_WRAPPER" not in argv
+    assert "OPENSTARRY_CODE_SANDBOX_POLICY_B64" not in argv
     assert inner[:3] == [sys.executable, str(bridge_dir / "inner_bridge.py"), "--"]
-    assert inner[3:6] == [sys.executable, "-m", "opensquilla.sandbox.backend.linux_helper"]
+    assert inner[3:6] == [sys.executable, "-m", "openstarry_code.sandbox.backend.linux_helper"]
     assert "--inner" in inner
 
 

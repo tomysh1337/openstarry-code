@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 
-from opensquilla.gateway.boot import build_cron_result_payload
+from openstarry_code.gateway.boot import build_cron_result_payload
 
 
 def test_cron_result_payload_carries_persisted_message_id_and_provenance() -> None:

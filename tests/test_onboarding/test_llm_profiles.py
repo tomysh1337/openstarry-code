@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.onboarding.mutations import (
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.onboarding.mutations import (
     LlmProfileActivationError,
     LlmProfileRemovalError,
     activate_llm_profile,
@@ -13,8 +13,8 @@ from opensquilla.onboarding.mutations import (
     remove_llm_profile,
     upsert_llm_profile,
 )
-from opensquilla.onboarding.status import get_onboarding_status
-from opensquilla.provider.deployment import resolve_provider_deployment
+from openstarry_code.onboarding.status import get_onboarding_status
+from openstarry_code.provider.deployment import resolve_provider_deployment
 
 
 def test_profile_upsert_redacts_secret_and_keeps_credential_sources() -> None:
@@ -771,8 +771,8 @@ def test_profile_activation_resolves_custom_router_conflict_explicitly(
     ("profile", "environment", "provider", "model"),
     [
         (
-            {"api_key_env": "OPENSQUILLA_ACTIVATE_PROFILE_KEY"},
-            {"OPENSQUILLA_ACTIVATE_PROFILE_KEY": "synthetic-env-secret"},
+            {"api_key_env": "OPENSTARRY_CODE_ACTIVATE_PROFILE_KEY"},
+            {"OPENSTARRY_CODE_ACTIVATE_PROFILE_KEY": "synthetic-env-secret"},
             "deepseek",
             "deepseek-chat",
         ),

@@ -14,8 +14,8 @@ from typing import Any
 
 import pytest
 
-from opensquilla.skills.meta.orchestrator import MetaOrchestrator, _to_thread
-from opensquilla.skills.meta.types import MetaPlan, MetaStep
+from openstarry_code.skills.meta.orchestrator import MetaOrchestrator, _to_thread
+from openstarry_code.skills.meta.types import MetaPlan, MetaStep
 
 
 async def test_to_thread_runs_fn_off_the_event_loop_thread() -> None:

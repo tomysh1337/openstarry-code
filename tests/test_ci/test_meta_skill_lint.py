@@ -1,7 +1,7 @@
 """Lint gate for bundled meta-skill SKILL.md files (Step C).
 
 Mechanical checks corresponding to pptx slide 5's "写法要点" (writing
-requirements) for meta-skills, plus a few OpenSquilla-specific gates:
+requirements) for meta-skills, plus a few OpenStarry Code-specific gates:
 
 * **L1**: ``description`` is non-empty and at least 30 chars (so it
   conveys *when* to use the skill, not just *what* it does).
@@ -15,7 +15,7 @@ requirements) for meta-skills, plus a few OpenSquilla-specific gates:
 * **L4**: the parsed plan has at least one step.
 
 These checks run against every ``kind: meta`` and ``kind: meta_sop``
-bundle under ``src/opensquilla/skills/bundled/``. SKILL.md files
+bundle under ``src/openstarry_code/skills/bundled/``. SKILL.md files
 that are not meta-skills (kind: skill, or no kind field) are skipped.
 
 The intent is a *floor*, not a ceiling — passing this lint does not
@@ -32,10 +32,10 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.skills.loader import SkillLoader
-from opensquilla.skills.meta.parser import parse_meta_plan
+from openstarry_code.skills.loader import SkillLoader
+from openstarry_code.skills.meta.parser import parse_meta_plan
 
-_BUNDLED_DIR = Path(__file__).resolve().parents[2] / "src" / "opensquilla" / "skills" / "bundled"
+_BUNDLED_DIR = Path(__file__).resolve().parents[2] / "src" / "openstarry_code" / "skills" / "bundled"
 
 _MIN_DESCRIPTION_CHARS = 30
 
@@ -204,7 +204,7 @@ def test_baseline_lint_findings_are_within_budget(_all_meta_specs: list[object])
 # `| xml_escape` (or another approved sanitiser).
 # ---------------------------------------------------------------------------
 
-_G1_BUNDLED = Path(__file__).resolve().parents[2] / "src" / "opensquilla" / "skills" / "bundled"
+_G1_BUNDLED = Path(__file__).resolve().parents[2] / "src" / "openstarry_code" / "skills" / "bundled"
 
 _G1_META_BUNDLES = sorted(
     [p.parent.name for p in _G1_BUNDLED.glob("meta-*/SKILL.md")]

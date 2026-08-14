@@ -6,16 +6,16 @@ import pytest
 from rich.console import Console
 from rich.panel import Panel
 
-from opensquilla.cli.repl.session_state import ChatSessionState
-from opensquilla.cli.repl.stream import TurnResult
+from openstarry_code.cli.repl.session_state import ChatSessionState
+from openstarry_code.cli.repl.stream import TurnResult
 
 
 @pytest.mark.asyncio
 async def test_gateway_slash_bridge_syncs_io_and_builds_context(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.repl import slash_adapter, slash_bridge
-    from opensquilla.cli.repl.slash_adapter import GatewaySlashContext
+    from openstarry_code.cli.repl import slash_adapter, slash_bridge
+    from openstarry_code.cli.repl.slash_adapter import GatewaySlashContext
 
     output_console = Console(file=None, force_terminal=False)
     observed: dict[str, Any] = {}

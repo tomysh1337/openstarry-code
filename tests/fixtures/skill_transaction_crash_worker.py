@@ -7,15 +7,15 @@ import os
 import sys
 from pathlib import Path
 
-from opensquilla.skills.hub.management import SkillManagementService
-from opensquilla.skills.hub.router import SourceRouter
-from opensquilla.skills.hub.source import (
+from openstarry_code.skills.hub.management import SkillManagementService
+from openstarry_code.skills.hub.router import SourceRouter
+from openstarry_code.skills.hub.source import (
     SkillBundle,
     SkillMeta,
     SkillSource,
     SourceResolution,
 )
-from opensquilla.skills.hub.transaction import SkillTransactionJournal
+from openstarry_code.skills.hub.transaction import SkillTransactionJournal
 
 _CRASH_EXIT_CODE = 73
 

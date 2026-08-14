@@ -8,12 +8,12 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.sandbox.config import SandboxSettings
-from opensquilla.sandbox.file_policy import compile_web_guest_file_profile
-from opensquilla.sandbox.policy import build_policy
-from opensquilla.sandbox.policy_models import SandboxPolicy as StoredSandboxPolicy
-from opensquilla.sandbox.run_mode import RunMode
-from opensquilla.sandbox.types import (
+from openstarry_code.sandbox.config import SandboxSettings
+from openstarry_code.sandbox.file_policy import compile_web_guest_file_profile
+from openstarry_code.sandbox.policy import build_policy
+from openstarry_code.sandbox.policy_models import SandboxPolicy as StoredSandboxPolicy
+from openstarry_code.sandbox.run_mode import RunMode
+from openstarry_code.sandbox.types import (
     NetworkMode,
     ResourceLimits,
     SandboxBackendError,
@@ -21,11 +21,11 @@ from opensquilla.sandbox.types import (
     SandboxRequest,
     SecurityLevel,
 )
-from opensquilla.tools.types import ToolContext, current_tool_context
+from openstarry_code.tools.types import ToolContext, current_tool_context
 
 pytestmark = pytest.mark.skipif(
     sys.platform != "win32"
-    or os.environ.get("OPENSQUILLA_RUN_WINDOWS_SANDBOX_SMOKE") != "1",
+    or os.environ.get("OPENSTARRY_CODE_RUN_WINDOWS_SANDBOX_SMOKE") != "1",
     reason="Windows sandbox native smoke tests require explicit opt-in",
 )
 
@@ -85,14 +85,14 @@ def _use_installed_windows_sandbox(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     del _isolate_opensquilla_state
-    monkeypatch.delenv("OPENSQUILLA_STATE_DIR", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_STATE_DIR", raising=False)
 
 
 @pytest.mark.asyncio
 async def test_windows_default_runs_powershell_write_output(
     tmp_path: Path,
 ) -> None:
-    from opensquilla.sandbox.backend.windows_default import WindowsDefaultBackend
+    from openstarry_code.sandbox.backend.windows_default import WindowsDefaultBackend
 
     powershell = (
         Path(os.environ["SystemRoot"])
@@ -123,7 +123,7 @@ async def test_windows_default_runs_powershell_write_output(
 
 @pytest.mark.asyncio
 async def test_windows_default_runs_cmd_echo(tmp_path: Path) -> None:
-    from opensquilla.sandbox.backend.windows_default import WindowsDefaultBackend
+    from openstarry_code.sandbox.backend.windows_default import WindowsDefaultBackend
 
     cmd = Path(os.environ["SystemRoot"]) / "System32" / "cmd.exe"
     result = await WindowsDefaultBackend().run(
@@ -136,7 +136,7 @@ async def test_windows_default_runs_cmd_echo(tmp_path: Path) -> None:
 
 @pytest.mark.asyncio
 async def test_windows_default_passes_stdin(tmp_path: Path) -> None:
-    from opensquilla.sandbox.backend.windows_default import WindowsDefaultBackend
+    from openstarry_code.sandbox.backend.windows_default import WindowsDefaultBackend
 
     powershell = (
         Path(os.environ["SystemRoot"])
@@ -170,8 +170,8 @@ async def test_windows_default_passes_stdin(tmp_path: Path) -> None:
 async def test_windows_guest_process_is_rejected_without_launch(
     tmp_path: Path,
 ) -> None:
-    from opensquilla.sandbox.backend.windows_default import WindowsDefaultBackend
-    from opensquilla.sandbox.integration import run_under_backend
+    from openstarry_code.sandbox.backend.windows_default import WindowsDefaultBackend
+    from openstarry_code.sandbox.integration import run_under_backend
 
     marker = tmp_path / "must-not-launch.txt"
     powershell = (
@@ -192,7 +192,7 @@ async def test_windows_guest_process_is_rejected_without_launch(
     )
     request = replace(
         request,
-        env={**request.env, "OPENSQUILLA_GUEST_SAFE": "0"},
+        env={**request.env, "OPENSTARRY_CODE_GUEST_SAFE": "0"},
     )
 
     token = current_tool_context.set(ToolContext(guest_safe=True))
@@ -215,8 +215,8 @@ async def test_windows_guest_process_is_rejected_without_launch(
 async def test_windows_guest_filesystem_worker_is_confined_to_managed_workspace(
     tmp_path: Path,
 ) -> None:
-    from opensquilla.sandbox.backend.windows_default import WindowsDefaultBackend
-    from opensquilla.sandbox.operation_runtime import SandboxOperation
+    from openstarry_code.sandbox.backend.windows_default import WindowsDefaultBackend
+    from openstarry_code.sandbox.operation_runtime import SandboxOperation
 
     workspace = tmp_path / "managed-workspace"
     workspace.mkdir()
@@ -260,10 +260,10 @@ async def test_windows_guest_filesystem_worker_is_confined_to_managed_workspace(
 @pytest.mark.asyncio
 async def test_windows_default_runs_shell_host_nested_powershell_env_probe(
 ) -> None:
-    from opensquilla.sandbox.backend.windows_default import WindowsDefaultBackend
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.sandbox.backend.windows_default import WindowsDefaultBackend
+    from openstarry_code.tools.builtin import shell
 
-    workspace = Path.home() / ".opensquilla" / "workspace"
+    workspace = Path.home() / ".openstarry-code" / "workspace"
     workspace.mkdir(parents=True, exist_ok=True)
     runtime = SimpleNamespace(backend=SimpleNamespace(name="windows_default"))
     command = (
@@ -271,8 +271,8 @@ async def test_windows_default_runs_shell_host_nested_powershell_env_probe(
         "\"Write-Output ('HTTP_PROXY=' + $env:HTTP_PROXY); "
         "Write-Output ('HTTPS_PROXY=' + $env:HTTPS_PROXY); "
         "Write-Output ('NO_PROXY=' + $env:NO_PROXY); "
-        "Write-Output ('OPENSQUILLA_SANDBOX_NETWORK=' + "
-        "$env:OPENSQUILLA_SANDBOX_NETWORK); "
+        "Write-Output ('OPENSTARRY_CODE_SANDBOX_NETWORK=' + "
+        "$env:OPENSTARRY_CODE_SANDBOX_NETWORK); "
         "Write-Output ('PWD=' + (Get-Location).Path)\""
     )
     policy = SandboxPolicy(
@@ -287,7 +287,7 @@ async def test_windows_default_runs_shell_host_nested_powershell_env_probe(
             "HTTP_PROXY",
             "HTTPS_PROXY",
             "NO_PROXY",
-            "OPENSQUILLA_SANDBOX_NETWORK",
+            "OPENSTARRY_CODE_SANDBOX_NETWORK",
         ),
         require_approval=False,
     )
@@ -312,7 +312,7 @@ async def test_windows_default_runs_shell_host_nested_powershell_env_probe(
                 "HTTP_PROXY": "http://127.0.0.1:48123",
                 "HTTPS_PROXY": "http://127.0.0.1:48123",
                 "NO_PROXY": "localhost,127.0.0.1",
-                "OPENSQUILLA_SANDBOX_NETWORK": "proxy_allowlist",
+                "OPENSTARRY_CODE_SANDBOX_NETWORK": "proxy_allowlist",
             },
             run_mode=RunMode.SAFE.value,
         )
@@ -321,6 +321,6 @@ async def test_windows_default_runs_shell_host_nested_powershell_env_probe(
     assert result.returncode == 0
     assert "HTTP_PROXY=http://127.0.0.1:48123" in result.stdout
     assert "HTTPS_PROXY=http://127.0.0.1:48123" in result.stdout
-    assert "OPENSQUILLA_SANDBOX_NETWORK=proxy_allowlist" in result.stdout
+    assert "OPENSTARRY_CODE_SANDBOX_NETWORK=proxy_allowlist" in result.stdout
     assert f"PWD={workspace}" in result.stdout
     assert result.stderr == ""

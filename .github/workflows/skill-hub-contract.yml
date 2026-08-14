@@ -43,8 +43,8 @@ jobs:
       - name: Run offline Community Skill contracts
         shell: bash
         env:
-          OPENSQUILLA_STATE_DIR: ${{ runner.temp }}/opensquilla-skill-hub-state
-          OPENSQUILLA_LOG_DIR: ${{ runner.temp }}/opensquilla-skill-hub-logs
+          OPENSTARRY_CODE_STATE_DIR: ${{ runner.temp }}/opensquilla-skill-hub-state
+          OPENSTARRY_CODE_LOG_DIR: ${{ runner.temp }}/opensquilla-skill-hub-logs
           PYTHONUTF8: "1"
         run: |
           set -euo pipefail

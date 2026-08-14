@@ -10,12 +10,12 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from opensquilla.engine import runtime as runtime_module
-from opensquilla.engine.pipeline import TurnContext
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.session import compaction as compaction_module
-from opensquilla.session.compaction import CompactionConfig
-from opensquilla.session.models import TranscriptEntry
+from openstarry_code.engine import runtime as runtime_module
+from openstarry_code.engine.pipeline import TurnContext
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.session import compaction as compaction_module
+from openstarry_code.session.compaction import CompactionConfig
+from openstarry_code.session.models import TranscriptEntry
 
 # ---------------------------------------------------------------------------
 # Fakes
@@ -427,7 +427,7 @@ async def test_t3_within_budget_skips_flush_and_compact() -> None:
 async def test_t3_budget_check_counts_full_tool_call_replay(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.session.compaction as compaction_module
+    import openstarry_code.session.compaction as compaction_module
 
     monkeypatch.setattr(
         compaction_module,
@@ -780,7 +780,7 @@ async def test_env_flush_disabled_compacts_without_flush_service(
     monkeypatch: pytest.MonkeyPatch,
     value: str,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_SESSION_FLUSH", value)
+    monkeypatch.setenv("OPENSTARRY_CODE_SESSION_FLUSH", value)
     sm = _FakeSessionManager(_sample_transcript())
     runner = _make_runner(session_manager=sm, flush_service=None)
 

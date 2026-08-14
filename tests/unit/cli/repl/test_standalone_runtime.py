@@ -8,17 +8,17 @@ from typing import Any, cast
 
 import pytest
 
-from opensquilla.cli.repl import standalone_slash_adapter
-from opensquilla.cli.repl.session_state import ChatSessionState
-from opensquilla.cli.repl.stream import TurnResult, UsageSummary
-from opensquilla.cli.tui.contracts import TuiOutputHandle
-from opensquilla.engine.commands import Surface
+from openstarry_code.cli.repl import standalone_slash_adapter
+from openstarry_code.cli.repl.session_state import ChatSessionState
+from openstarry_code.cli.repl.stream import TurnResult, UsageSummary
+from openstarry_code.cli.tui.contracts import TuiOutputHandle
+from openstarry_code.engine.commands import Surface
 
 
 def test_standalone_runtime_has_no_raw_prompt_application_dependency(monkeypatch) -> None:
     monkeypatch.delitem(
         sys.modules,
-        "opensquilla.cli.repl.standalone_runtime",
+        "openstarry_code.cli.repl.standalone_runtime",
         raising=False,
     )
 
@@ -32,14 +32,14 @@ def test_standalone_runtime_has_no_raw_prompt_application_dependency(monkeypatch
 
     monkeypatch.setattr("builtins.__import__", _guarded_import)
 
-    module = importlib.import_module("opensquilla.cli.repl.standalone_runtime")
+    module = importlib.import_module("openstarry_code.cli.repl.standalone_runtime")
     source = inspect.getsource(module)
 
     assert "ChatApplication" not in source
 
 
 def test_standalone_session_context_mirrors_state_to_legacy_scope() -> None:
-    from opensquilla.cli.repl.standalone_runtime import StandaloneSessionContext
+    from openstarry_code.cli.repl.standalone_runtime import StandaloneSessionContext
 
     original_tool_ctx = object()
     replacement_tool_ctx = object()
@@ -79,7 +79,7 @@ def test_standalone_session_context_mirrors_state_to_legacy_scope() -> None:
 async def test_standalone_runtime_mirrors_turn_model_update_to_legacy_scope(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.repl import standalone_runtime
+    from openstarry_code.cli.repl import standalone_runtime
 
     class _FakeSessionManager:
         async def get_or_create(self, session_key: str, agent_id: str = "main") -> object:
@@ -149,9 +149,9 @@ async def test_standalone_runtime_mirrors_turn_model_update_to_legacy_scope(
         captured["scope_after_message"] = dict(scope)
         captured["state_after_message"] = scope["state"]
 
-    monkeypatch.setattr("opensquilla.gateway.build_services", fake_build_services)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", fake_build_services)
     monkeypatch.setattr(
-        "opensquilla.gateway.build_turn_runner_from_services",
+        "openstarry_code.gateway.build_turn_runner_from_services",
         fake_build_turn_runner_from_services,
     )
 
@@ -192,7 +192,7 @@ async def test_standalone_runtime_mirrors_turn_model_update_to_legacy_scope(
 async def test_standalone_runtime_matches_exit_with_standalone_surface(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.repl import standalone_runtime
+    from openstarry_code.cli.repl import standalone_runtime
 
     class _FakeSessionManager:
         async def get_or_create(self, session_key: str, agent_id: str = "main") -> object:
@@ -224,9 +224,9 @@ async def test_standalone_runtime_matches_exit_with_standalone_surface(
         assert surface is Surface.CLI_STANDALONE
         assert await dispatch("/exit") is False
 
-    monkeypatch.setattr("opensquilla.gateway.build_services", fake_build_services)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", fake_build_services)
     monkeypatch.setattr(
-        "opensquilla.gateway.build_turn_runner_from_services",
+        "openstarry_code.gateway.build_turn_runner_from_services",
         lambda _services: object(),
     )
     monkeypatch.setattr(standalone_runtime, "is_exit_command", fake_is_exit_command)

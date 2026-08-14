@@ -1,5 +1,5 @@
-"""Tests for OPENSQUILLA_WS_WRITER_QUEUE_ENABLED and
-OPENSQUILLA_WS_WRITER_QUEUE_MAXSIZE env overrides.
+"""Tests for OPENSTARRY_CODE_WS_WRITER_QUEUE_ENABLED and
+OPENSTARRY_CODE_WS_WRITER_QUEUE_MAXSIZE env overrides.
 
 Mirrors the pattern in test_config_concurrency.py.
 """
@@ -9,7 +9,7 @@ import logging
 
 import pytest
 
-from opensquilla.gateway.config import GatewayConfig
+from openstarry_code.gateway.config import GatewayConfig
 
 # ---------------------------------------------------------------------------
 # Defaults
@@ -23,8 +23,8 @@ def test_defaults(monkeypatch: pytest.MonkeyPatch) -> None:
     kill switch flipped, e.g. for the parity sweep — that is not the
     default-state test).
     """
-    monkeypatch.delenv("OPENSQUILLA_WS_WRITER_QUEUE_ENABLED", raising=False)
-    monkeypatch.delenv("OPENSQUILLA_WS_WRITER_QUEUE_MAXSIZE", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_WS_WRITER_QUEUE_ENABLED", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_WS_WRITER_QUEUE_MAXSIZE", raising=False)
     config = GatewayConfig()
     assert config.ws_writer_queue_enabled is True
     assert config.ws_writer_queue_maxsize == 512
@@ -37,14 +37,14 @@ def test_defaults(monkeypatch: pytest.MonkeyPatch) -> None:
 
 @pytest.mark.parametrize("value", ["true", "1", "yes", "TRUE", "Yes", "YES"])
 def test_enabled_env_truthy(monkeypatch: pytest.MonkeyPatch, value: str) -> None:
-    monkeypatch.setenv("OPENSQUILLA_WS_WRITER_QUEUE_ENABLED", value)
+    monkeypatch.setenv("OPENSTARRY_CODE_WS_WRITER_QUEUE_ENABLED", value)
     config = GatewayConfig()
     assert config.ws_writer_queue_enabled is True
 
 
 @pytest.mark.parametrize("value", ["false", "0", "no", "FALSE", "No", "NO"])
 def test_enabled_env_falsy(monkeypatch: pytest.MonkeyPatch, value: str) -> None:
-    monkeypatch.setenv("OPENSQUILLA_WS_WRITER_QUEUE_ENABLED", value)
+    monkeypatch.setenv("OPENSTARRY_CODE_WS_WRITER_QUEUE_ENABLED", value)
     config = GatewayConfig()
     assert config.ws_writer_queue_enabled is False
 
@@ -53,13 +53,13 @@ def test_enabled_env_invalid_falls_back(
     monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
 ) -> None:
     """Invalid bool string keeps default (True) and emits warning."""
-    monkeypatch.setenv("OPENSQUILLA_WS_WRITER_QUEUE_ENABLED", "maybe")
+    monkeypatch.setenv("OPENSTARRY_CODE_WS_WRITER_QUEUE_ENABLED", "maybe")
     with caplog.at_level(logging.WARNING):
         config = GatewayConfig()
 
     assert config.ws_writer_queue_enabled is True  # default preserved
     assert any(
-        "OPENSQUILLA_WS_WRITER_QUEUE_ENABLED" in record.message
+        "OPENSTARRY_CODE_WS_WRITER_QUEUE_ENABLED" in record.message
         for record in caplog.records
         if record.levelno >= logging.WARNING
     )
@@ -71,7 +71,7 @@ def test_enabled_env_invalid_falls_back(
 
 
 def test_maxsize_env_override(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("OPENSQUILLA_WS_WRITER_QUEUE_MAXSIZE", "1024")
+    monkeypatch.setenv("OPENSTARRY_CODE_WS_WRITER_QUEUE_MAXSIZE", "1024")
     config = GatewayConfig()
     assert config.ws_writer_queue_maxsize == 1024
 
@@ -80,13 +80,13 @@ def test_maxsize_env_invalid_int_falls_back(
     monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
 ) -> None:
     """Non-integer maxsize keeps default 512 with warning."""
-    monkeypatch.setenv("OPENSQUILLA_WS_WRITER_QUEUE_MAXSIZE", "abc")
+    monkeypatch.setenv("OPENSTARRY_CODE_WS_WRITER_QUEUE_MAXSIZE", "abc")
     with caplog.at_level(logging.WARNING):
         config = GatewayConfig()
 
     assert config.ws_writer_queue_maxsize == 512
     assert any(
-        "OPENSQUILLA_WS_WRITER_QUEUE_MAXSIZE" in record.message
+        "OPENSTARRY_CODE_WS_WRITER_QUEUE_MAXSIZE" in record.message
         for record in caplog.records
         if record.levelno >= logging.WARNING
     )
@@ -96,13 +96,13 @@ def test_maxsize_env_below_minimum_falls_back(
     monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
 ) -> None:
     """maxsize below 16 falls back to default 512 with warning."""
-    monkeypatch.setenv("OPENSQUILLA_WS_WRITER_QUEUE_MAXSIZE", "8")
+    monkeypatch.setenv("OPENSTARRY_CODE_WS_WRITER_QUEUE_MAXSIZE", "8")
     with caplog.at_level(logging.WARNING):
         config = GatewayConfig()
 
     assert config.ws_writer_queue_maxsize == 512
     assert any(
-        "OPENSQUILLA_WS_WRITER_QUEUE_MAXSIZE" in record.message
+        "OPENSTARRY_CODE_WS_WRITER_QUEUE_MAXSIZE" in record.message
         for record in caplog.records
         if record.levelno >= logging.WARNING
     )
@@ -111,7 +111,7 @@ def test_maxsize_env_below_minimum_falls_back(
 def test_maxsize_env_zero_falls_back(
     monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_WS_WRITER_QUEUE_MAXSIZE", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_WS_WRITER_QUEUE_MAXSIZE", "0")
     with caplog.at_level(logging.WARNING):
         config = GatewayConfig()
 
@@ -121,7 +121,7 @@ def test_maxsize_env_zero_falls_back(
 def test_maxsize_env_negative_falls_back(
     monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_WS_WRITER_QUEUE_MAXSIZE", "-5")
+    monkeypatch.setenv("OPENSTARRY_CODE_WS_WRITER_QUEUE_MAXSIZE", "-5")
     with caplog.at_level(logging.WARNING):
         config = GatewayConfig()
 
@@ -130,6 +130,6 @@ def test_maxsize_env_negative_falls_back(
 
 def test_maxsize_env_at_minimum_accepted(monkeypatch: pytest.MonkeyPatch) -> None:
     """maxsize=16 is exactly the minimum and must be accepted."""
-    monkeypatch.setenv("OPENSQUILLA_WS_WRITER_QUEUE_MAXSIZE", "16")
+    monkeypatch.setenv("OPENSTARRY_CODE_WS_WRITER_QUEUE_MAXSIZE", "16")
     config = GatewayConfig()
     assert config.ws_writer_queue_maxsize == 16

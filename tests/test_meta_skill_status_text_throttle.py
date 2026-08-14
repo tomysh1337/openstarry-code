@@ -1,6 +1,6 @@
 """500ms per-step status_text 节流 + (run, step, state) 去重。"""
 
-from opensquilla.skills.meta.progress_throttle import ProgressThrottle
+from openstarry_code.skills.meta.progress_throttle import ProgressThrottle
 
 
 def test_throttle_allows_first_status_text():

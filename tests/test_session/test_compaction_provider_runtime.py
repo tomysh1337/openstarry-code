@@ -6,15 +6,15 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.usage_accounting import (
+from openstarry_code.engine.usage_accounting import (
     UsageAccountingScope,
     UsageExecutionContext,
     bind_usage_accounting_scope,
 )
-from opensquilla.provider.failures import ProviderFailureKind
-from opensquilla.provider.protocol import ProviderConnectionConfig, ProviderMetadata
-from opensquilla.provider.selector import ProviderConfig, build_provider_from_config
-from opensquilla.provider.types import (
+from openstarry_code.provider.failures import ProviderFailureKind
+from openstarry_code.provider.protocol import ProviderConnectionConfig, ProviderMetadata
+from openstarry_code.provider.selector import ProviderConfig, build_provider_from_config
+from openstarry_code.provider.types import (
     ChatConfig,
     DoneEvent,
     ErrorEvent,
@@ -22,14 +22,14 @@ from opensquilla.provider.types import (
     ReasoningDeltaEvent,
     TextDeltaEvent,
 )
-from opensquilla.session.compaction import (
+from openstarry_code.session.compaction import (
     CompactionRequest,
     arm_compaction_deadline,
     build_compaction_config_from_provider,
     call_compaction_provider,
     compact_context,
 )
-from opensquilla.session.compaction_deployment import (
+from openstarry_code.session.compaction_deployment import (
     CompactionExecutionPlan,
     CompactionExecutionTarget,
     build_compaction_llm_plan_from_provider_config,
@@ -198,7 +198,7 @@ def test_build_provider_from_config_preserves_every_field_and_isolates_routing(
         captured.append(config)
         return sentinel
 
-    monkeypatch.setattr("opensquilla.provider.selector._build_provider", fake_build)
+    monkeypatch.setattr("openstarry_code.provider.selector._build_provider", fake_build)
     source = ProviderConfig(
         provider="openrouter",
         model="provider/model",
@@ -232,7 +232,7 @@ def test_full_config_plan_has_candidate_shape_and_no_secret_repr(
         return provider
 
     monkeypatch.setattr(
-        "opensquilla.session.compaction_deployment.build_provider_from_config",
+        "openstarry_code.session.compaction_deployment.build_provider_from_config",
         fake_factory,
     )
     plan = build_compaction_llm_plan_from_provider_config(
@@ -663,7 +663,7 @@ async def test_compaction_uses_provider_protocol_and_caps_physical_calls(
         raise AssertionError("production compaction must not use raw HTTP")
 
     monkeypatch.setattr(
-        "opensquilla.session.compaction.call_compaction_llm",
+        "openstarry_code.session.compaction.call_compaction_llm",
         raw_call_forbidden,
     )
     result = await compact_context(

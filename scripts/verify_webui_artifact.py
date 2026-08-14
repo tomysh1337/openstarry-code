@@ -13,10 +13,10 @@ import zipfile
 from pathlib import Path, PurePosixPath
 
 MANIFEST_NAME = "webui-artifact-manifest.json"
-WHEEL_PREFIX = "opensquilla/gateway/static/dist/"
+WHEEL_PREFIX = "openstarry_code/gateway/static/dist/"
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_WEBUI_ROOT = REPOSITORY_ROOT / "opensquilla-webui"
-DEFAULT_DIST_DIR = REPOSITORY_ROOT / "src/opensquilla/gateway/static/dist"
+DEFAULT_WEBUI_ROOT = REPOSITORY_ROOT / "openstarry-code-webui"
+DEFAULT_DIST_DIR = REPOSITORY_ROOT / "src/openstarry_code/gateway/static/dist"
 SOURCE_INPUT_ROOTS = (
     ".node-version",
     ".env",
@@ -263,7 +263,7 @@ def verify_dist(
     if manifest["sourceFingerprint"] != current_fingerprint:
         raise ArtifactError(
             "WebUI artifact is stale for the current frontend source; "
-            "run `cd opensquilla-webui && npm run build`"
+            "run `cd openstarry-code-webui && npm run build`"
         )
 
     expected_records = [

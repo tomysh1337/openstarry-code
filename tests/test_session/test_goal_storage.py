@@ -13,7 +13,7 @@ from pathlib import Path
 import pytest
 import pytest_asyncio
 
-from opensquilla.session.goals import (
+from openstarry_code.session.goals import (
     GOAL_EFFECTIVE_CONTEXT_DETAIL_KEY,
     GOAL_OBJECTIVE_UPDATE_DETAIL_KEY,
     ClaimCurrentGoalMutation,
@@ -30,15 +30,15 @@ from opensquilla.session.goals import (
     goal_snapshot,
     new_goal,
 )
-from opensquilla.session.manager import SessionManager
-from opensquilla.session.models import (
+from openstarry_code.session.manager import SessionManager
+from openstarry_code.session.models import (
     AgentTaskRecord,
     AgentTaskStatus,
     SessionIntent,
     SessionNode,
     TranscriptEntry,
 )
-from opensquilla.session.storage import SessionStorage
+from openstarry_code.session.storage import SessionStorage
 
 SESSION_KEY = "agent:main:webchat:goals"
 SESSION_ID = "session-goals"

@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.session.models import AgentTaskRecord, AgentTaskStatus, SessionNode, SessionStatus
-from opensquilla.session.storage import SessionStorage
+from openstarry_code.session.models import AgentTaskRecord, AgentTaskStatus, SessionNode, SessionStatus
+from openstarry_code.session.storage import SessionStorage
 
 
 @pytest.mark.asyncio

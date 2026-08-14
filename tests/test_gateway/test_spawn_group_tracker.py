@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from opensquilla.gateway.subagent_announce import SpawnGroupTracker
+from openstarry_code.gateway.subagent_announce import SpawnGroupTracker
 
 
 def test_mark_and_query_closed() -> None:

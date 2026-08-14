@@ -6,8 +6,8 @@ from pathlib import Path
 
 from typer.testing import CliRunner
 
-from opensquilla.cli.main import app
-from opensquilla.onboarding.config_store import load_config
+from openstarry_code.cli.main import app
+from openstarry_code.onboarding.config_store import load_config
 
 runner = CliRunner()
 

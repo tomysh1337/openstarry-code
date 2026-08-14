@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run an OpenSquilla experiment from an existing ledger manifest."""
+"""Run an OpenStarry Code experiment from an existing ledger manifest."""
 
 from __future__ import annotations
 

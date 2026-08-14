@@ -18,17 +18,17 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.types import (
+from openstarry_code.engine.types import (
     AgentEvent,
     DoneEvent,
     TextDeltaEvent,
     ToolResultEvent,
     ToolUseStartEvent,
 )
-from opensquilla.skills.meta.orchestrator import MetaOrchestrator
-from opensquilla.skills.meta.parser import parse_meta_plan
-from opensquilla.skills.meta.types import MetaMatch, MetaResult
-from opensquilla.skills.types import SkillLayer, SkillSpec
+from openstarry_code.skills.meta.orchestrator import MetaOrchestrator
+from openstarry_code.skills.meta.parser import parse_meta_plan
+from openstarry_code.skills.meta.types import MetaMatch, MetaResult
+from openstarry_code.skills.types import SkillLayer, SkillSpec
 
 
 def _meta_spec(steps: list[dict[str, Any]]) -> SkillSpec:
@@ -421,8 +421,8 @@ async def test_orchestrator_default_parallelism_caps_at_four() -> None:
 @pytest.mark.asyncio
 async def test_run_dag_emits_three_callback_types() -> None:
     """C3: scheduler must externalise step begin / done / failover events."""
-    from opensquilla.skills.meta.scheduler import run_dag
-    from opensquilla.skills.meta.types import MetaMatch, MetaPlan, MetaStep
+    from openstarry_code.skills.meta.scheduler import run_dag
+    from openstarry_code.skills.meta.types import MetaMatch, MetaPlan, MetaStep
 
     plan = MetaPlan(
         name="cb-test",
@@ -455,7 +455,7 @@ async def test_run_dag_emits_three_callback_types() -> None:
     async def dispatch_stub(step, effective_skill, inputs, outputs):
         if step.id == "a":
             raise RuntimeError("alpha exploded")
-        from opensquilla.skills.meta.events import _StepDone
+        from openstarry_code.skills.meta.events import _StepDone
         yield _StepDone(text="beta-output")
 
     async def preface_stub(step_id: str, effective_skill: str):
@@ -485,11 +485,11 @@ async def test_run_dag_emits_three_callback_types() -> None:
 async def test_failed_fallback_replay_skips_paid_primary_and_runs_only_fallback() -> None:
     from types import SimpleNamespace
 
-    from opensquilla.engine.agent import _trusted_meta_replay_seed_outputs
-    from opensquilla.skills.meta.events import _StepDone
-    from opensquilla.skills.meta.replay_safety import encode_paid_replay_safety
-    from opensquilla.skills.meta.scheduler import run_dag
-    from opensquilla.skills.meta.types import MetaMatch, MetaPlan, MetaResult, MetaStep
+    from openstarry_code.engine.agent import _trusted_meta_replay_seed_outputs
+    from openstarry_code.skills.meta.events import _StepDone
+    from openstarry_code.skills.meta.replay_safety import encode_paid_replay_safety
+    from openstarry_code.skills.meta.scheduler import run_dag
+    from openstarry_code.skills.meta.types import MetaMatch, MetaPlan, MetaResult, MetaStep
 
     plan = MetaPlan(
         name="paid-fallback-replay",
@@ -591,13 +591,13 @@ async def test_scheduler_exposes_only_parent_owned_paid_disposition_to_audit(
     safe_no_submit: bool,
     expected_disposition: str,
 ) -> None:
-    from opensquilla.skills.meta.events import _StepDone
-    from opensquilla.skills.meta.replay_safety import (
+    from openstarry_code.skills.meta.events import _StepDone
+    from openstarry_code.skills.meta.replay_safety import (
         PAID_SUBMISSION_DISPOSITIONS_OUTPUT_KEY,
         encode_paid_replay_safety,
     )
-    from opensquilla.skills.meta.scheduler import run_dag
-    from opensquilla.skills.meta.types import MetaMatch, MetaPlan, MetaResult, MetaStep
+    from openstarry_code.skills.meta.scheduler import run_dag
+    from openstarry_code.skills.meta.types import MetaMatch, MetaPlan, MetaResult, MetaStep
 
     plan = MetaPlan(
         name="paid-disposition-channel",
@@ -665,14 +665,14 @@ async def test_scheduler_exposes_only_parent_owned_paid_disposition_to_audit(
 
 @pytest.mark.asyncio
 async def test_scheduler_exposes_current_run_receipt_proof_only_to_runtime() -> None:
-    from opensquilla.skills.meta.events import _StepDone
-    from opensquilla.skills.meta.replay_safety import (
+    from openstarry_code.skills.meta.events import _StepDone
+    from openstarry_code.skills.meta.replay_safety import (
         PAID_SUBMISSION_DISPOSITIONS_OUTPUT_KEY,
         PAID_SUBMISSION_RECEIPT_PROOFS_OUTPUT_KEY,
         PaidReceiptProofText,
     )
-    from opensquilla.skills.meta.scheduler import run_dag
-    from opensquilla.skills.meta.types import MetaMatch, MetaPlan, MetaResult, MetaStep
+    from openstarry_code.skills.meta.scheduler import run_dag
+    from openstarry_code.skills.meta.types import MetaMatch, MetaPlan, MetaResult, MetaStep
 
     proof = "sha256:" + "a" * 64
     plan = MetaPlan(
@@ -755,15 +755,15 @@ async def test_scheduler_exposes_current_run_receipt_proof_only_to_runtime() -> 
 
 @pytest.mark.asyncio
 async def test_scheduler_preserves_current_receipt_proof_across_paid_failover() -> None:
-    from opensquilla.skills.meta.events import _StepDone
-    from opensquilla.skills.meta.replay_safety import (
+    from openstarry_code.skills.meta.events import _StepDone
+    from openstarry_code.skills.meta.replay_safety import (
         PAID_SUBMISSION_DISPOSITIONS_OUTPUT_KEY,
         PAID_SUBMISSION_RECEIPT_PROOFS_OUTPUT_KEY,
         PaidReceiptProofError,
         encode_paid_replay_safety,
     )
-    from opensquilla.skills.meta.scheduler import run_dag
-    from opensquilla.skills.meta.types import MetaMatch, MetaPlan, MetaStep
+    from openstarry_code.skills.meta.scheduler import run_dag
+    from openstarry_code.skills.meta.types import MetaMatch, MetaPlan, MetaStep
 
     proof = "sha256:" + "b" * 64
     plan = MetaPlan(
@@ -841,12 +841,12 @@ async def test_scheduler_preserves_current_receipt_proof_across_paid_failover() 
 async def test_paid_runtime_key_cannot_be_claimed_as_a_plan_step(
     reserved_key: str,
 ) -> None:
-    from opensquilla.skills.meta.replay_safety import (
+    from openstarry_code.skills.meta.replay_safety import (
         PAID_SUBMISSION_DISPOSITIONS_OUTPUT_KEY,
         PAID_SUBMISSION_RECEIPT_PROOFS_OUTPUT_KEY,
     )
-    from opensquilla.skills.meta.scheduler import run_dag
-    from opensquilla.skills.meta.types import MetaMatch, MetaPlan, MetaResult, MetaStep
+    from openstarry_code.skills.meta.scheduler import run_dag
+    from openstarry_code.skills.meta.types import MetaMatch, MetaPlan, MetaResult, MetaStep
 
     plan = MetaPlan(
         name="reserved-runtime-step",
@@ -893,7 +893,7 @@ async def test_paid_runtime_key_cannot_be_claimed_as_a_plan_step(
 
 
 def test_paid_disposition_encoder_is_bounded_and_rejects_free_form_values() -> None:
-    from opensquilla.skills.meta.replay_safety import (
+    from openstarry_code.skills.meta.replay_safety import (
         encode_paid_submission_dispositions,
     )
 
@@ -914,7 +914,7 @@ def test_paid_disposition_encoder_is_bounded_and_rejects_free_form_values() -> N
 
 
 def test_paid_receipt_proof_encoder_accepts_only_canonical_digests() -> None:
-    from opensquilla.skills.meta.replay_safety import (
+    from openstarry_code.skills.meta.replay_safety import (
         encode_paid_submission_receipt_proofs,
     )
 
@@ -931,9 +931,9 @@ def test_paid_receipt_proof_encoder_accepts_only_canonical_digests() -> None:
 
 
 def test_paid_failure_rescue_requires_review_unless_pre_submit_is_proven() -> None:
-    from opensquilla.skills.meta.replay_safety import encode_paid_replay_safety
-    from opensquilla.skills.meta.scheduler import _failure_rescue_payload
-    from opensquilla.skills.meta.types import MetaStep
+    from openstarry_code.skills.meta.replay_safety import encode_paid_replay_safety
+    from openstarry_code.skills.meta.scheduler import _failure_rescue_payload
+    from openstarry_code.skills.meta.types import MetaStep
 
     step = MetaStep(
         id="paid",
@@ -973,8 +973,8 @@ def test_paid_fallback_replay_blocks_without_exact_substituted_primary(
 ) -> None:
     from types import SimpleNamespace
 
-    from opensquilla.skills.meta.replay_safety import paid_live_replay_block_reason
-    from opensquilla.skills.meta.types import MetaPlan, MetaStep
+    from openstarry_code.skills.meta.replay_safety import paid_live_replay_block_reason
+    from openstarry_code.skills.meta.types import MetaPlan, MetaStep
 
     plan = MetaPlan(
         name="paid-fallback",
@@ -1020,8 +1020,8 @@ def test_paid_fallback_replay_blocks_without_exact_substituted_primary(
 def test_live_replay_blocks_unseedable_successful_paid_sibling(evidence: str) -> None:
     from types import SimpleNamespace
 
-    from opensquilla.skills.meta.replay_safety import paid_live_replay_block_reason
-    from opensquilla.skills.meta.types import MetaPlan, MetaStep
+    from openstarry_code.skills.meta.replay_safety import paid_live_replay_block_reason
+    from openstarry_code.skills.meta.types import MetaPlan, MetaStep
 
     plan = MetaPlan(
         name="paid-sibling",
@@ -1058,8 +1058,8 @@ def test_live_replay_blocks_unseedable_successful_paid_sibling(evidence: str) ->
 
 
 def test_paid_plan_failed_fallback_recovery_omits_fresh_run_retry() -> None:
-    from opensquilla.skills.meta.run_reports import _recovery_actions
-    from opensquilla.skills.meta.types import MetaStep
+    from openstarry_code.skills.meta.run_reports import _recovery_actions
+    from openstarry_code.skills.meta.types import MetaStep
 
     actions = _recovery_actions(
         MetaStep(id="local_fallback", skill="local-renderer", kind="skill_exec"),
@@ -1074,8 +1074,8 @@ def test_paid_plan_failed_fallback_recovery_omits_fresh_run_retry() -> None:
 
 @pytest.mark.asyncio
 async def test_run_dag_on_step_begin_gets_rendered_inputs() -> None:
-    from opensquilla.skills.meta.scheduler import run_dag
-    from opensquilla.skills.meta.types import MetaMatch, MetaPlan, MetaStep
+    from openstarry_code.skills.meta.scheduler import run_dag
+    from openstarry_code.skills.meta.types import MetaMatch, MetaPlan, MetaStep
 
     plan = MetaPlan(
         name="rendered-inputs-test",
@@ -1101,7 +1101,7 @@ async def test_run_dag_on_step_begin_gets_rendered_inputs() -> None:
         begin_inputs.append(rendered_inputs)
 
     async def dispatch_stub(step, effective_skill, inputs, outputs):
-        from opensquilla.skills.meta.events import _StepDone
+        from openstarry_code.skills.meta.events import _StepDone
         yield _StepDone(text="ok")
 
     async def preface_stub(step_id: str, effective_skill: str):
@@ -1122,11 +1122,11 @@ async def test_run_dag_on_step_begin_gets_rendered_inputs() -> None:
 
 @pytest.mark.asyncio
 async def test_run_dag_tool_result_includes_scoped_step_usage() -> None:
-    from opensquilla.engine.types import ToolResultEvent
-    from opensquilla.engine.usage import UsageTracker
-    from opensquilla.skills.meta.events import _StepDone
-    from opensquilla.skills.meta.scheduler import run_dag
-    from opensquilla.skills.meta.types import MetaMatch, MetaPlan, MetaStep
+    from openstarry_code.engine.types import ToolResultEvent
+    from openstarry_code.engine.usage import UsageTracker
+    from openstarry_code.skills.meta.events import _StepDone
+    from openstarry_code.skills.meta.scheduler import run_dag
+    from openstarry_code.skills.meta.types import MetaMatch, MetaPlan, MetaStep
 
     plan = MetaPlan(
         name="step-usage-test",

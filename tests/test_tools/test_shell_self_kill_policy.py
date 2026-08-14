@@ -13,7 +13,7 @@ import os
 
 import pytest
 
-from opensquilla.tools.builtin.shell_policy import (
+from openstarry_code.tools.builtin.shell_policy import (
     SafeBinPolicy,
     check_gateway_self_kill,
     check_safe_bin,
@@ -52,7 +52,7 @@ def test_pid_directed_kills_of_the_gateway_are_refused(command: str) -> None:
     "command",
     [
         "Stop-Process -Name opensquilla-gateway",
-        "Stop-Process -ProcessName OpenSquilla-Gateway -Force",
+        "Stop-Process -ProcessName OpenStarry Code-Gateway -Force",
         "taskkill /IM opensquilla-gateway.exe /F",
         "pkill -f opensquilla-gateway",
         "pkill -f opensquilla",

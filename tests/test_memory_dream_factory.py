@@ -5,8 +5,8 @@ import inspect
 import pytest
 from pydantic import ValidationError
 
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.memory.dream_factory import build_dream_factory, build_dream_provider_selector
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.memory.dream_factory import build_dream_factory, build_dream_provider_selector
 
 
 def test_dream_factory_does_not_accept_shared_turn_provider_or_tools() -> None:

@@ -20,12 +20,12 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.steps.meta_command import (
+from openstarry_code.engine.steps.meta_command import (
     pending_meta_launch_peek,
     pending_meta_launch_pop,
 )
-from opensquilla.gateway.rpc import RpcContext, RpcHandlerError
-from opensquilla.gateway.rpc_meta_runs import (
+from openstarry_code.gateway.rpc import RpcContext, RpcHandlerError
+from openstarry_code.gateway.rpc_meta_runs import (
     _META_SETUP_JOBS,
     _META_SETUP_LATEST,
     _META_SETUP_TASKS,
@@ -33,13 +33,13 @@ from opensquilla.gateway.rpc_meta_runs import (
     _handle_meta_setup_install,
     _handle_meta_setup_status,
 )
-from opensquilla.skills.loader import SkillLoader
-from opensquilla.skills.paths import default_bundled_skills_dir
-from opensquilla.skills.toolchains import invalidate_probe_cache, probe_component
-from opensquilla.skills.toolchains import manager as toolchain_manager
-from opensquilla.skills.toolchains import registry as toolchain_registry
-from opensquilla.skills.toolchains import runtime as toolchain_runtime
-from opensquilla.skills.toolchains.registry import ToolchainDescriptor
+from openstarry_code.skills.loader import SkillLoader
+from openstarry_code.skills.paths import default_bundled_skills_dir
+from openstarry_code.skills.toolchains import invalidate_probe_cache, probe_component
+from openstarry_code.skills.toolchains import manager as toolchain_manager
+from openstarry_code.skills.toolchains import registry as toolchain_registry
+from openstarry_code.skills.toolchains import runtime as toolchain_runtime
+from openstarry_code.skills.toolchains.registry import ToolchainDescriptor
 
 _META_NAME = "meta-paper-write"
 _SESSION_KEY = "agent:test:meta-setup-e2e"
@@ -186,7 +186,7 @@ async def test_meta_paper_setup_gates_launch_until_confirmed_offline_install_com
     stable_shutil = _StableShutil(toolchain_manager.shutil)
 
     monkeypatch.setattr(toolchain_registry, "describe_component", describe)
-    monkeypatch.setattr("opensquilla.skills.toolchains.describe_component", describe)
+    monkeypatch.setattr("openstarry_code.skills.toolchains.describe_component", describe)
     monkeypatch.setattr(toolchain_manager, "toolchains_root", use_test_root)
     monkeypatch.setattr(toolchain_runtime, "toolchains_root", use_test_root)
     monkeypatch.setattr(toolchain_manager.urllib.request, "urlopen", urlopen)
@@ -236,7 +236,7 @@ async def test_meta_paper_setup_gates_launch_until_confirmed_offline_install_com
 
         assert _META_SETUP_JOBS == {}
         assert _META_SETUP_LATEST == {}
-        assert not list(toolchain_root.rglob(".opensquilla-toolchain.json"))
+        assert not list(toolchain_root.rglob(".openstarry-code-toolchain.json"))
         assert pending_meta_launch_peek(_SESSION_KEY) is None
 
         started = await _handle_meta_setup_install(
@@ -276,7 +276,7 @@ async def test_meta_paper_setup_gates_launch_until_confirmed_offline_install_com
         assert set(capability_after.binaries) == {"bibtex", "xelatex"}
         assert downloads == [descriptor.url]
         assert (toolchain_root / "active" / "paper-tex.json").is_file()
-        assert len(list(toolchain_root.rglob(".opensquilla-toolchain.json"))) == 1
+        assert len(list(toolchain_root.rglob(".openstarry-code-toolchain.json"))) == 1
 
         launched = await _handle_meta_run(
             {"name": _META_NAME, "sessionKey": _SESSION_KEY},

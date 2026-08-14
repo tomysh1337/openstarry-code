@@ -9,16 +9,16 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.attachment_refs import write_transcript_material
-from opensquilla.engine.types import ToolCall
-from opensquilla.sandbox import filesystem_worker, sensitive_paths
-from opensquilla.sandbox.config import SandboxSettings
-from opensquilla.sandbox.integration import configure_runtime, reset_runtime
-from opensquilla.sandbox.permissions import FileSystemAccess, FileSystemPermissionProfile
-from opensquilla.tools.builtin import filesystem as fs
-from opensquilla.tools.dispatch import build_tool_handler
-from opensquilla.tools.registry import get_default_registry
-from opensquilla.tools.types import CallerKind, ToolContext, ToolError, current_tool_context
+from openstarry_code.attachment_refs import write_transcript_material
+from openstarry_code.engine.types import ToolCall
+from openstarry_code.sandbox import filesystem_worker, sensitive_paths
+from openstarry_code.sandbox.config import SandboxSettings
+from openstarry_code.sandbox.integration import configure_runtime, reset_runtime
+from openstarry_code.sandbox.permissions import FileSystemAccess, FileSystemPermissionProfile
+from openstarry_code.tools.builtin import filesystem as fs
+from openstarry_code.tools.dispatch import build_tool_handler
+from openstarry_code.tools.registry import get_default_registry
+from openstarry_code.tools.types import CallerKind, ToolContext, ToolError, current_tool_context
 
 
 @contextmanager
@@ -223,7 +223,7 @@ async def test_filesystem_sandbox_boundary_carries_session_read_boundaries(
     filesystem_permissions = seen_operations[0].permissions.filesystem
     assert filesystem_permissions["workspaceStrict"] is True
     assert filesystem_permissions["attachmentBase"] == str(
-        tmp_path / ".opensquilla" / "attachments"
+        tmp_path / ".openstarry-code" / "attachments"
     )
     assert filesystem_permissions["transcriptBase"] == str(
         media_root / "transcripts"
@@ -652,7 +652,7 @@ async def test_workspace_write_deny_block_is_actionable_in_tool_failure_envelope
     # legacy noop runtime is Full Host Access by contract, so pin the policy
     # helper to managed-mode semantics instead of reviving stale sandbox state.
     monkeypatch.setattr(
-        "opensquilla.tools.run_mode.full_host_access_active",
+        "openstarry_code.tools.run_mode.full_host_access_active",
         lambda: False,
     )
     monkeypatch.setattr(fs, "full_host_access_active", lambda: False)
@@ -1008,7 +1008,7 @@ async def test_sensitive_path_priority_over_workspace_strict(
     outside_file.write_text("secret\n", encoding="utf-8")
 
     monkeypatch.setattr(
-        "opensquilla.sandbox.sensitive_paths.is_sensitive_path",
+        "openstarry_code.sandbox.sensitive_paths.is_sensitive_path",
         lambda path: "/secret" if "secret" in path else None,
     )
 

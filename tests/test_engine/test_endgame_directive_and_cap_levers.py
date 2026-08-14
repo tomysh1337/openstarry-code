@@ -1,9 +1,9 @@
 """Opt-in endgame levers: cap extension, act-now directives, sticky thinking-off.
 
-Covers OPENSQUILLA_MAX_ITERATIONS_DEADLINE_EXTEND_SECONDS,
-OPENSQUILLA_REASONING_ONLY_ACT_NOW,
-OPENSQUILLA_ENDGAME_FIX_DIRECTIVE_MARGIN_SECONDS, and
-OPENSQUILLA_DEADLINE_WRAPUP_STICKY_THINKING_OFF (all off by default).
+Covers OPENSTARRY_CODE_MAX_ITERATIONS_DEADLINE_EXTEND_SECONDS,
+OPENSTARRY_CODE_REASONING_ONLY_ACT_NOW,
+OPENSTARRY_CODE_ENDGAME_FIX_DIRECTIVE_MARGIN_SECONDS, and
+OPENSTARRY_CODE_DEADLINE_WRAPUP_STICKY_THINKING_OFF (all off by default).
 Motivation: runs that hit the iteration cap with wall clock to spare finalize
 early for no reason; reasoning-only responses retried verbatim usually repeat;
 a deadline crossed with only diagnostic instrumentation in the workspace needs
@@ -22,23 +22,23 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine import Agent, AgentConfig, ThinkingLevel, ToolResult
-from opensquilla.engine.agent import (
+from openstarry_code.engine import Agent, AgentConfig, ThinkingLevel, ToolResult
+from openstarry_code.engine.agent import (
     _ENDGAME_FIX_DIRECTIVE_PREFIX,
     _REASONING_ONLY_ACT_NOW_DIRECTIVE,
 )
-from opensquilla.provider import (
+from openstarry_code.provider import (
     ChatConfig,
     Message,
     ToolDefinition,
     ToolInputSchema,
 )
-from opensquilla.provider import DoneEvent as ProviderDone
-from opensquilla.provider import ReasoningDeltaEvent as ProviderReasoning
-from opensquilla.provider import TextDeltaEvent as ProviderText
-from opensquilla.provider import ToolUseEndEvent as ProviderToolUseEnd
-from opensquilla.provider import ToolUseStartEvent as ProviderToolUseStart
-from opensquilla.tools.types import CallerKind, ToolContext
+from openstarry_code.provider import DoneEvent as ProviderDone
+from openstarry_code.provider import ReasoningDeltaEvent as ProviderReasoning
+from openstarry_code.provider import TextDeltaEvent as ProviderText
+from openstarry_code.provider import ToolUseEndEvent as ProviderToolUseEnd
+from openstarry_code.provider import ToolUseStartEvent as ProviderToolUseStart
+from openstarry_code.tools.types import CallerKind, ToolContext
 
 
 class _SequenceProvider:
@@ -690,20 +690,20 @@ def test_env_plumbing_for_endgame_package_levers(
 ) -> None:
     # Helper-level check only; the full env -> bootstrap-stage -> AgentConfig
     # threading is covered in turn_runner/test_agent_bootstrap_stage_unit.py.
-    from opensquilla.engine.turn_runner.agent_bootstrap_stage import (
+    from openstarry_code.engine.turn_runner.agent_bootstrap_stage import (
         _bool_from_env,
         _nonnegative_int_from_env,
     )
 
     int_envs = [
-        "OPENSQUILLA_MAX_ITERATIONS_DEADLINE_EXTEND_SECONDS",
-        "OPENSQUILLA_ENDGAME_FIX_DIRECTIVE_MARGIN_SECONDS",
+        "OPENSTARRY_CODE_MAX_ITERATIONS_DEADLINE_EXTEND_SECONDS",
+        "OPENSTARRY_CODE_ENDGAME_FIX_DIRECTIVE_MARGIN_SECONDS",
     ]
     bool_envs = [
-        "OPENSQUILLA_FINAL_DIFF_SALVAGE_VETO",
-        "OPENSQUILLA_ENDGAME_GIT_FREEZE_INSTRUMENTATION_EXEMPT",
-        "OPENSQUILLA_DEADLINE_WRAPUP_STICKY_THINKING_OFF",
-        "OPENSQUILLA_REASONING_ONLY_ACT_NOW",
+        "OPENSTARRY_CODE_FINAL_DIFF_SALVAGE_VETO",
+        "OPENSTARRY_CODE_ENDGAME_GIT_FREEZE_INSTRUMENTATION_EXEMPT",
+        "OPENSTARRY_CODE_DEADLINE_WRAPUP_STICKY_THINKING_OFF",
+        "OPENSTARRY_CODE_REASONING_ONLY_ACT_NOW",
     ]
     for name in [*int_envs, *bool_envs]:
         monkeypatch.delenv(name, raising=False)

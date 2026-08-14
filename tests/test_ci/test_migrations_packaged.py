@@ -29,44 +29,44 @@ def test_wheel_contains_migrations_and_webui_artifact(
 
     with zipfile.ZipFile(isolated_core_wheel) as wheel:
         names = wheel.namelist()
-        packaged_probe = wheel.read("opensquilla/gateway/static/dist/assets/packaging-probe.js")
+        packaged_probe = wheel.read("openstarry_code/gateway/static/dist/assets/packaging-probe.js")
 
-    assert any(n.endswith("opensquilla/_migrations/V010__meta_skill_runs.py") for n in names), (
+    assert any(n.endswith("openstarry_code/_migrations/V010__meta_skill_runs.py") for n in names), (
         f"V010 missing from wheel; found: {[n for n in names if '_migrations' in n]}"
     )
-    assert any(n.endswith("opensquilla/_migrations/V021__usage_ledger.py") for n in names), (
+    assert any(n.endswith("openstarry_code/_migrations/V021__usage_ledger.py") for n in names), (
         f"V021 missing from wheel; found: {[n for n in names if '_migrations' in n]}"
     )
     assert any(
-        n.endswith("opensquilla/_migrations/V022__telemetry_daily_usage.py") for n in names
+        n.endswith("openstarry_code/_migrations/V022__telemetry_daily_usage.py") for n in names
     ), f"V022 missing from wheel; found: {[n for n in names if '_migrations' in n]}"
     assert any(
-        n.endswith("opensquilla/_migrations/V023__router_deployment_telemetry.py") for n in names
+        n.endswith("openstarry_code/_migrations/V023__router_deployment_telemetry.py") for n in names
     ), f"V023 missing from wheel; found: {[n for n in names if '_migrations' in n]}"
     assert any(
-        n.endswith("opensquilla/_migrations/V024__usage_native_billing_receipts.py")
+        n.endswith("openstarry_code/_migrations/V024__usage_native_billing_receipts.py")
         for n in names
     ), f"V024 missing from wheel; found: {[n for n in names if '_migrations' in n]}"
     assert any(
-        n.endswith("opensquilla/_migrations/V030__meta_control_intents.py") for n in names
+        n.endswith("openstarry_code/_migrations/V030__meta_control_intents.py") for n in names
     ), f"V030 missing from wheel; found: {[n for n in names if '_migrations' in n]}"
     assert any(
-        n.endswith("opensquilla/_migrations/V031__meta_launch_drafts.py") for n in names
+        n.endswith("openstarry_code/_migrations/V031__meta_launch_drafts.py") for n in names
     ), f"V031 missing from wheel; found: {[n for n in names if '_migrations' in n]}"
     assert any(
-        n.endswith("opensquilla/_migrations/V032__meta_launch_discard_tombstones.py")
+        n.endswith("openstarry_code/_migrations/V032__meta_launch_discard_tombstones.py")
         for n in names
     ), f"V032 missing from wheel; found: {[n for n in names if '_migrations' in n]}"
-    assert "opensquilla/gateway/static/dist/index.html" in names
-    assert f"opensquilla/gateway/static/dist/{MANIFEST_NAME}" in names
+    assert "openstarry_code/gateway/static/dist/index.html" in names
+    assert f"openstarry_code/gateway/static/dist/{MANIFEST_NAME}" in names
     assert packaged_probe == SYNTHETIC_JS
 
-    assert "opensquilla/gateway/templates/legacy_index.html" not in names
+    assert "openstarry_code/gateway/templates/legacy_index.html" not in names
     for removed_prefix in (
-        "opensquilla/gateway/static/js/",
-        "opensquilla/gateway/static/css/",
-        "opensquilla/gateway/static/fonts/",
-        "opensquilla/gateway/static/vendor/",
+        "openstarry_code/gateway/static/js/",
+        "openstarry_code/gateway/static/css/",
+        "openstarry_code/gateway/static/fonts/",
+        "openstarry_code/gateway/static/vendor/",
     ):
         assert not any(name.startswith(removed_prefix) for name in names), (
             f"retired frontend assets leaked into wheel under {removed_prefix}"
@@ -77,11 +77,16 @@ def test_usage_query_client_source_is_part_of_webui_build_inputs() -> None:
     """Protect the Usage client and its post-Vite runtime bundle guard."""
 
     source = (
-        REPO_ROOT / "opensquilla-webui" / "src" / "composables" / "usage" / "useUsageQuery.ts"
+        REPO_ROOT
+        / "openstarry-code-webui"
+        / "src"
+        / "composables"
+        / "usage"
+        / "useUsageQuery.ts"
     ).read_text(encoding="utf-8")
-    package = json.loads((REPO_ROOT / "opensquilla-webui" / "package.json").read_text())
+    package = json.loads((REPO_ROOT / "openstarry-code-webui" / "package.json").read_text())
     bundle_guard = (
-        REPO_ROOT / "opensquilla-webui" / "scripts" / "check-runtime-bundle.mjs"
+        REPO_ROOT / "openstarry-code-webui" / "scripts" / "check-runtime-bundle.mjs"
     ).read_text(encoding="utf-8")
 
     assert "const USAGE_QUERY_METHOD = 'usage.query'" in source
@@ -125,7 +130,7 @@ def test_installed_wheel_resolves_migrations(
             str(py),
             "-c",
             (
-                "from opensquilla.gateway.boot import _resolve_migrations_dir;"
+                "from openstarry_code.gateway.boot import _resolve_migrations_dir;"
                 " d = _resolve_migrations_dir();"
                 " assert (d / 'V010__meta_skill_runs.py').exists(),"
                 "        f'V010 missing in {d}';"
@@ -157,11 +162,11 @@ def test_installed_wheel_resolves_migrations(
 @pytest.mark.skipif(shutil.which("docker") is None, reason="docker not on PATH")
 @pytest.mark.skipif(os.name == "nt", reason="docker smoke uses Linux container images")
 @pytest.mark.skipif(
-    os.environ.get("OPENSQUILLA_SKIP_DOCKER_SMOKE") == "1",
+    os.environ.get("OPENSTARRY_CODE_SKIP_DOCKER_SMOKE") == "1",
     reason="docker smoke disabled via env",
 )
 @pytest.mark.skipif(
-    os.environ.get("OPENSQUILLA_RUN_DOCKER_SMOKE") != "1",
+    os.environ.get("OPENSTARRY_CODE_RUN_DOCKER_SMOKE") != "1",
     reason="docker smoke is opt-in; it pulls external images",
 )
 def test_docker_image_resolves_migrations() -> None:
@@ -189,7 +194,7 @@ def test_docker_image_resolves_migrations() -> None:
             tag,
             "-c",
             (
-                "from opensquilla.gateway.boot import _resolve_migrations_dir;"
+                "from openstarry_code.gateway.boot import _resolve_migrations_dir;"
                 " d = _resolve_migrations_dir();"
                 " assert (d / 'V010__meta_skill_runs.py').exists();"
                 " assert (d / 'V021__usage_ledger.py').exists();"

@@ -7,7 +7,7 @@ from typing import Any
 import httpx
 import pytest
 
-from opensquilla.provider import (
+from openstarry_code.provider import (
     ChatConfig,
     ContentBlockText,
     ContentBlockToolResult,
@@ -16,12 +16,12 @@ from opensquilla.provider import (
     Message,
     TextDeltaEvent,
 )
-from opensquilla.provider.openai import OpenAIProvider
-from opensquilla.provider.openai_responses import OpenAIResponsesProvider
-from opensquilla.provider.registry import get_provider_spec
-from opensquilla.provider.request_proof import ProviderRequestBudgetExceededError
-from opensquilla.provider.selector import build_provider
-from opensquilla.provider.types import (
+from openstarry_code.provider.openai import OpenAIProvider
+from openstarry_code.provider.openai_responses import OpenAIResponsesProvider
+from openstarry_code.provider.registry import get_provider_spec
+from openstarry_code.provider.request_proof import ProviderRequestBudgetExceededError
+from openstarry_code.provider.selector import build_provider
+from openstarry_code.provider.types import (
     ContentBlockImage,
     ErrorEvent,
     ToolUseDeltaEvent,
@@ -51,7 +51,7 @@ def _patch_transport(
         return real_async_client(*args, **kwargs)
 
     monkeypatch.setattr(
-        "opensquilla.provider.openai_responses.httpx.AsyncClient",
+        "openstarry_code.provider.openai_responses.httpx.AsyncClient",
         patched_async_client,
     )
 
@@ -625,8 +625,8 @@ def test_openai_responses_sends_configured_json_output_schema(
 def test_openai_responses_provider_writes_llm_trace(monkeypatch: Any, tmp_path: Any) -> None:
     captured: dict[str, Any] = {}
     trace_path = tmp_path / "responses-llm-calls.jsonl"
-    monkeypatch.setenv("OPENSQUILLA_LLM_TRACE_RECORDER", "full")
-    monkeypatch.setenv("OPENSQUILLA_LLM_TRACE_PATH", str(trace_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_TRACE_RECORDER", "full")
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_TRACE_PATH", str(trace_path))
     _patch_transport(
         monkeypatch,
         captured,

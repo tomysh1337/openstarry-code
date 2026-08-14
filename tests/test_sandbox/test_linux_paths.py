@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from opensquilla.sandbox.backend.linux_paths import canonical_linux_mount
-from opensquilla.sandbox.types import MountSpec
+from openstarry_code.sandbox.backend.linux_paths import canonical_linux_mount
+from openstarry_code.sandbox.types import MountSpec
 
 
 def test_canonical_linux_mount_rewrites_workspace_alias_to_host_path(

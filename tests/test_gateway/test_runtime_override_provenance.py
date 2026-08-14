@@ -26,11 +26,11 @@ import tomllib
 
 import pytest
 
-import opensquilla.gateway.rpc_onboarding  # noqa: F401  ensures registration
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.llm_runtime import resolve_llm_runtime_config
-from opensquilla.gateway.rpc import RpcContext, get_dispatcher
-from opensquilla.onboarding.config_store import load_config
+import openstarry_code.gateway.rpc_onboarding  # noqa: F401  ensures registration
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.llm_runtime import resolve_llm_runtime_config
+from openstarry_code.gateway.rpc import RpcContext, get_dispatcher
+from openstarry_code.onboarding.config_store import load_config
 
 _ENV_URL = "https://corp-proxy.example/v1"
 _USER_URL = "https://user.example/v1"
@@ -63,7 +63,7 @@ def _admin_ctx(config=None, selector=None) -> RpcContext:
 def _boot_config(config_path, monkeypatch, *, body: str = ""):
     """Simulate a gateway boot: write, load, env-resolve the live config."""
     config_path.write_text(body)
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(config_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(config_path))
     cfg = load_config(config_path)
     resolve_llm_runtime_config(cfg)
     return cfg
@@ -152,7 +152,7 @@ async def test_in_place_swap_drops_stale_records_before_later_saves(
 
     # Operator hand-edits the file, then the gateway applies the new state
     # in place (the reload / config.set path).
-    from opensquilla.gateway.rpc_config import _update_config_in_place
+    from openstarry_code.gateway.rpc_config import _update_config_in_place
 
     config_path.write_text(
         f'[llm]\nprovider = "openai"\nbase_url = "{_USER_URL}"\n'
@@ -184,7 +184,7 @@ async def test_legacy_empty_base_url_re_save_does_not_bake_env(tmp_path, monkeyp
     # must be that deterministic default, never the boot-time env URL.
     await _configure_provider(ctx, baseUrl="")
 
-    from opensquilla.onboarding.provider_specs import get_provider_setup_spec
+    from openstarry_code.onboarding.provider_specs import get_provider_setup_spec
 
     assert _disk_base_url(config_path) == get_provider_setup_spec("openai").default_base_url
     assert _ENV_URL not in config_path.read_text()

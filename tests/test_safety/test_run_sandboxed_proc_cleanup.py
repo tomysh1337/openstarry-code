@@ -18,8 +18,8 @@ import subprocess
 
 import pytest
 
-from opensquilla.safety import sandbox as sandbox_mod
-from opensquilla.safety.sandbox import (
+from openstarry_code.safety import sandbox as sandbox_mod
+from openstarry_code.safety.sandbox import (
     REASON_WALL_LIMIT,
     SandboxLimits,
     run_sandboxed,

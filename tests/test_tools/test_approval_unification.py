@@ -6,14 +6,14 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.gateway.approval_queue import get_approval_queue, reset_approval_queue
-from opensquilla.sandbox import destructive_backup
-from opensquilla.sandbox.config import SandboxSettings
-from opensquilla.sandbox.integration import configure_runtime, reset_runtime
-from opensquilla.sandbox.policy_models import FilePolicySettings, SandboxPolicy
-from opensquilla.tools.builtin import code_exec, shell
-from opensquilla.tools.builtin import patch as patch_tool
-from opensquilla.tools.types import CallerKind, ToolContext, current_tool_context
+from openstarry_code.gateway.approval_queue import get_approval_queue, reset_approval_queue
+from openstarry_code.sandbox import destructive_backup
+from openstarry_code.sandbox.config import SandboxSettings
+from openstarry_code.sandbox.integration import configure_runtime, reset_runtime
+from openstarry_code.sandbox.policy_models import FilePolicySettings, SandboxPolicy
+from openstarry_code.tools.builtin import code_exec, shell
+from openstarry_code.tools.builtin import patch as patch_tool
+from openstarry_code.tools.types import CallerKind, ToolContext, current_tool_context
 
 
 def _original_async(fn):

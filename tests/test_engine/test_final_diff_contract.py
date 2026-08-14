@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from opensquilla.engine.final_diff_contract import (
+from openstarry_code.engine.final_diff_contract import (
     build_final_diff_contract_observation,
     classify_final_diff_path,
     final_diff_contract_recovery_message,

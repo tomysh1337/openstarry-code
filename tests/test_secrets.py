@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.secrets import clean_header_secret
+from openstarry_code.secrets import clean_header_secret
 
 
 def test_clean_header_secret_strips_trailing_paste_punctuation() -> None:

@@ -5,12 +5,12 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.recovery import RecoveryError, inspect_profile, recover_config
+from openstarry_code.recovery import RecoveryError, inspect_profile, recover_config
 
 
 @pytest.fixture(autouse=True)
 def _isolated_profile_locks(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "user-state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "user-state"))
 
 
 def _profile(tmp_path: Path) -> Path:

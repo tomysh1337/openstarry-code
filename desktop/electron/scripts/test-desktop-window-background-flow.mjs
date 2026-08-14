@@ -218,7 +218,7 @@ try {
       app.emit(
         'second-instance',
         {},
-        ['OpenSquilla', 'opensquilla://unknown'],
+        ['OpenStarry Code', 'openstarry-code://unknown'],
         process.cwd(),
         {},
       )
@@ -234,7 +234,7 @@ try {
       app.emit(
         'second-instance',
         {},
-        ['OpenSquilla', 'opensquilla://open'],
+        ['OpenStarry Code', 'openstarry-code://open'],
         process.cwd(),
         {},
       )
@@ -262,7 +262,7 @@ try {
         preventDefault() {
           prevented = true
         },
-      }, 'opensquilla://open')
+      }, 'openstarry-code://open')
       return prevented
     })
     assert.equal(openUrlPrevented, true)
@@ -297,7 +297,7 @@ try {
         app.emit(
           'second-instance',
           {},
-          ['OpenSquilla', 'opensquilla://open'],
+          ['OpenStarry Code', 'openstarry-code://open'],
           process.cwd(),
           {},
         )

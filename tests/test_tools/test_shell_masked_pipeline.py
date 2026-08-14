@@ -4,8 +4,8 @@ import os
 
 import pytest
 
-from opensquilla.execution_status import execution_status_for_tool_result
-from opensquilla.tools.builtin import shell
+from openstarry_code.execution_status import execution_status_for_tool_result
+from openstarry_code.tools.builtin import shell
 
 
 @pytest.mark.parametrize(

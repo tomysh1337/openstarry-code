@@ -8,7 +8,7 @@ from typing import Any
 
 import pytest
 
-from opensquilla.recovery import inspect_profile, reconcile_profile
+from openstarry_code.recovery import inspect_profile, reconcile_profile
 
 FIXTURE_ROOT = Path(__file__).with_name("fixtures")
 DESKTOP_MANIFEST = FIXTURE_ROOT / "desktop" / "released-profiles.json"
@@ -100,7 +100,7 @@ def _materialize_snapshot_entry(
 
 
 def _build_desktop_fixture(tmp_path: Path, case: dict[str, Any]) -> Path:
-    home = tmp_path / "ApplicationData" / "OpenSquilla" / "opensquilla"
+    home = tmp_path / "ApplicationData" / "OpenStarry Code" / "openstarry-code"
     snapshot = DESKTOP_SNAPSHOT_CASES[case["id"]]
     assert snapshot["release_tag"] == case["release_tag"]
     seen: set[str] = set()

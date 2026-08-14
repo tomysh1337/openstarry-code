@@ -11,18 +11,18 @@ from typing import Any
 import pytest
 import structlog.testing
 
-from opensquilla.engine import Agent, AgentConfig
-from opensquilla.engine.runtime import (
+from openstarry_code.engine import Agent, AgentConfig
+from openstarry_code.engine.runtime import (
     TurnRunner,
     _SelectorFallbackProvider,
     _SelectorPreTextBuffer,
 )
-from opensquilla.engine.types import DoneEvent as EngineDoneEvent
-from opensquilla.engine.types import ErrorEvent as EngineErrorEvent
-from opensquilla.engine.types import ThinkingEvent as EngineThinkingEvent
-from opensquilla.persistence.migrator import apply_pending
-from opensquilla.persistence.turn_error_writer import open_turn_error_writer
-from opensquilla.provider import (
+from openstarry_code.engine.types import DoneEvent as EngineDoneEvent
+from openstarry_code.engine.types import ErrorEvent as EngineErrorEvent
+from openstarry_code.engine.types import ThinkingEvent as EngineThinkingEvent
+from openstarry_code.persistence.migrator import apply_pending
+from openstarry_code.persistence.turn_error_writer import open_turn_error_writer
+from openstarry_code.provider import (
     ChatConfig,
     DoneEvent,
     ErrorEvent,
@@ -34,10 +34,10 @@ from opensquilla.provider import (
     ToolUseEndEvent,
     ToolUseStartEvent,
 )
-from opensquilla.provider.selector import ProviderConfig
-from opensquilla.session.manager import SessionManager
-from opensquilla.session.storage import SessionStorage
-from opensquilla.tools.types import CallerKind, ToolContext
+from openstarry_code.provider.selector import ProviderConfig
+from openstarry_code.session.manager import SessionManager
+from openstarry_code.session.storage import SessionStorage
+from openstarry_code.tools.types import CallerKind, ToolContext
 
 
 class _SequenceProvider:
@@ -362,7 +362,7 @@ async def test_same_authority_fallback_waits_for_retry_after(
     async def fake_sleep(delay: float) -> None:
         sleeps.append(delay)
 
-    monkeypatch.setattr("opensquilla.engine.runtime.asyncio.sleep", fake_sleep)
+    monkeypatch.setattr("openstarry_code.engine.runtime.asyncio.sleep", fake_sleep)
     primary = _SequenceProvider(
         [ErrorEvent(message="raw rate limit body", code="429", retry_after_s=8.0)]
     )
@@ -409,7 +409,7 @@ async def test_independent_authority_fallback_does_not_wait_for_retry_after(
     async def fake_sleep(delay: float) -> None:
         sleeps.append(delay)
 
-    monkeypatch.setattr("opensquilla.engine.runtime.asyncio.sleep", fake_sleep)
+    monkeypatch.setattr("openstarry_code.engine.runtime.asyncio.sleep", fake_sleep)
     primary = _SequenceProvider(
         [ErrorEvent(message="raw rate limit body", code="429", retry_after_s=8.0)]
     )
@@ -476,7 +476,7 @@ async def test_same_authority_retry_after_over_wait_ceiling_is_typed_terminal(
     async def fake_sleep(delay: float) -> None:
         sleeps.append(delay)
 
-    monkeypatch.setattr("opensquilla.engine.runtime.asyncio.sleep", fake_sleep)
+    monkeypatch.setattr("openstarry_code.engine.runtime.asyncio.sleep", fake_sleep)
     primary = _SequenceProvider(
         [ErrorEvent(message="raw rate limit body", code="429", retry_after_s=901.0)]
     )

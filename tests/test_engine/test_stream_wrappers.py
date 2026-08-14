@@ -4,9 +4,9 @@ from contextvars import ContextVar
 
 import pytest
 
-from opensquilla.engine import stream_wrappers
-from opensquilla.engine.stream_wrappers import heartbeat_stream, idle_timeout_stream
-from opensquilla.engine.types import RunHeartbeatEvent, TextDeltaEvent
+from openstarry_code.engine import stream_wrappers
+from openstarry_code.engine.stream_wrappers import heartbeat_stream, idle_timeout_stream
+from openstarry_code.engine.types import RunHeartbeatEvent, TextDeltaEvent
 
 # A wedged wrapper must fail the assertion, not wedge the test run.
 _HARD_LIMIT = 5.0

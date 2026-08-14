@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from opensquilla.sandbox.sensitive_paths import (
+from openstarry_code.sandbox.sensitive_paths import (
     is_sensitive_path,
     linux_runtime_sensitive_deny_roots,
     sensitive_path_in_text,
@@ -23,7 +23,7 @@ def test_sensitive_path_in_text_matches_native_separator_paths() -> None:
 
 
 def test_active_workspace_under_root_is_not_blocked_by_root_prefix() -> None:
-    workspace = Path("/root/.opensquilla/workspace")
+    workspace = Path("/root/.openstarry-code/workspace")
 
     assert (
         sensitive_path_marker(
@@ -42,7 +42,7 @@ def test_active_workspace_under_root_is_not_blocked_by_root_prefix() -> None:
 
 
 def test_active_workspace_exception_keeps_leaf_secret_blocks() -> None:
-    workspace = Path("/root/.opensquilla/workspace")
+    workspace = Path("/root/.openstarry-code/workspace")
 
     assert sensitive_path_marker(str(workspace / ".env"), workspace=workspace) in {
         "/.env",
@@ -59,7 +59,7 @@ def test_active_workspace_exception_keeps_leaf_secret_blocks() -> None:
 
 
 def test_sensitive_command_targets_honor_active_workspace_exception() -> None:
-    workspace = Path("/root/.opensquilla/workspace")
+    workspace = Path("/root/.openstarry-code/workspace")
 
     assert (
         sensitive_target_in_command(
@@ -78,18 +78,18 @@ def test_sensitive_command_targets_honor_active_workspace_exception() -> None:
 
 
 def test_windows_rooted_workspace_targets_keep_leaf_secret_blocks() -> None:
-    workspace = Path("/root/.opensquilla/workspace")
+    workspace = Path("/root/.openstarry-code/workspace")
 
     assert (
         sensitive_target_in_command(
-            r"rm \root\.opensquilla\workspace\scratch.txt",
+            r"rm \root\.openstarry-code\workspace\scratch.txt",
             workspace=workspace,
         )
         is None
     )
     assert (
         sensitive_target_in_command(
-            r"rm \root\.opensquilla\workspace\.env",
+            r"rm \root\.openstarry-code\workspace\.env",
             workspace=workspace,
         )
         in {"/.env", "/.env*"}
@@ -97,7 +97,7 @@ def test_windows_rooted_workspace_targets_keep_leaf_secret_blocks() -> None:
 
 
 def test_posix_sensitive_paths_stay_blocked_on_windows_runners() -> None:
-    workspace = Path("/root/.opensquilla/workspace")
+    workspace = Path("/root/.openstarry-code/workspace")
 
     assert sensitive_path_in_text("cat /dev/sda 2>/dev/null") == "/dev"
     assert (
@@ -114,7 +114,7 @@ def test_ordinary_etc_files_are_readable_but_sensitive_entries_stay_blocked() ->
 
 
 def test_linux_runtime_sensitive_deny_roots_excludes_workspace_parent() -> None:
-    workspace = Path("/root/.opensquilla/workspace")
+    workspace = Path("/root/.openstarry-code/workspace")
 
     roots = {path.as_posix() for path in linux_runtime_sensitive_deny_roots(workspace=workspace)}
 

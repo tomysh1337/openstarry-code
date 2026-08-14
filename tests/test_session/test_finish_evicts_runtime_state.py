@@ -6,12 +6,12 @@ import importlib
 
 import pytest
 
-from opensquilla.engine import cache_break_monitor
-from opensquilla.engine.steps.squilla_router import _history_store
-from opensquilla.gateway.subagent_announce import _tracker
-from opensquilla.provider import ChatConfig, Message
-from opensquilla.session.manager import SessionManager
-from opensquilla.session.models import SessionStatus
+from openstarry_code.engine import cache_break_monitor
+from openstarry_code.engine.steps.squilla_router import _history_store
+from openstarry_code.gateway.subagent_announce import _tracker
+from openstarry_code.provider import ChatConfig, Message
+from openstarry_code.session.manager import SessionManager
+from openstarry_code.session.models import SessionStatus
 
 
 class _MemoryStorage:
@@ -41,7 +41,7 @@ def _seed_cache_break_state(session_key: str) -> cache_break_monitor.CacheBreakM
 
 @pytest.mark.asyncio
 async def test_finish_evicts_spawn_group_tracker_and_routing_history() -> None:
-    from opensquilla.session.models import SessionNode
+    from openstarry_code.session.models import SessionNode
 
     storage = _MemoryStorage()
     node = SessionNode(
@@ -69,7 +69,7 @@ async def test_finish_evicts_spawn_group_tracker_and_routing_history() -> None:
 
 @pytest.mark.asyncio
 async def test_finish_evicts_cache_break_monitor_state() -> None:
-    from opensquilla.session.models import SessionNode
+    from openstarry_code.session.models import SessionNode
 
     storage = _MemoryStorage()
     session_key = "agent:main:cache-break-finish"
@@ -95,10 +95,10 @@ async def test_finish_evicts_cache_break_monitor_state() -> None:
 
 
 def test_explicit_runtime_eviction_drops_all_session_identity_caches() -> None:
-    from opensquilla.tools.builtin import sessions as sessions_tool
+    from openstarry_code.tools.builtin import sessions as sessions_tool
 
     meta_resolution = importlib.import_module(
-        "opensquilla.engine.steps.meta_resolution"
+        "openstarry_code.engine.steps.meta_resolution"
     )
     session_key = "agent:main:webchat:history-eviction"
     session_id = "history-eviction-generation"

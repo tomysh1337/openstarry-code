@@ -8,8 +8,8 @@ from pathlib import Path
 
 import pytest
 
-import opensquilla.persistence.migrator as migrator
-from opensquilla.persistence.migrator import apply_pending
+import openstarry_code.persistence.migrator as migrator
+from openstarry_code.persistence.migrator import apply_pending
 
 MIGRATIONS_DIR = Path(__file__).resolve().parents[2] / "migrations"
 
@@ -18,7 +18,7 @@ def test_fresh_database_migration_reports_each_blocking_phase(
     tmp_path: Path,
     caplog,
 ) -> None:
-    caplog.set_level(logging.DEBUG, logger="opensquilla.persistence.migrator")
+    caplog.set_level(logging.DEBUG, logger="openstarry_code.persistence.migrator")
 
     applied = apply_pending(str(tmp_path / "sessions.db"), MIGRATIONS_DIR)
 

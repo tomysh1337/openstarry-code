@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.engine.outcome import outcome_from_error
-from opensquilla.engine.turn_control import TurnStateSnapshot, decide_turn_control
+from openstarry_code.engine.outcome import outcome_from_error
+from openstarry_code.engine.turn_control import TurnStateSnapshot, decide_turn_control
 
 STOP_SURFACE_INVENTORY = {
     "max_iterations": {

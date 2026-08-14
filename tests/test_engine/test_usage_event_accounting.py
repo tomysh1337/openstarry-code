@@ -7,13 +7,13 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine import Agent, AgentConfig, SubagentSpec, ToolResult
-from opensquilla.engine.outcome import outcome_from_error
-from opensquilla.engine.pricing import PriceEntry, ResolvedModelPrice
-from opensquilla.engine.runtime import TurnRunner, _SelectorFallbackProvider
-from opensquilla.engine.types import DoneEvent as EngineDoneEvent
-from opensquilla.engine.types import ErrorEvent, ToolCall
-from opensquilla.engine.usage_accounting import (
+from openstarry_code.engine import Agent, AgentConfig, SubagentSpec, ToolResult
+from openstarry_code.engine.outcome import outcome_from_error
+from openstarry_code.engine.pricing import PriceEntry, ResolvedModelPrice
+from openstarry_code.engine.runtime import TurnRunner, _SelectorFallbackProvider
+from openstarry_code.engine.types import DoneEvent as EngineDoneEvent
+from openstarry_code.engine.types import ErrorEvent, ToolCall
+from openstarry_code.engine.usage_accounting import (
     UsageAccountingBusyError,
     UsageAccountingScope,
     UsageAccountingUnavailableError,
@@ -25,7 +25,7 @@ from opensquilla.engine.usage_accounting import (
     normalize_provider_usage,
     usd_to_nanos,
 )
-from opensquilla.provider import (
+from openstarry_code.provider import (
     ChatConfig,
     Message,
     ModelCapabilities,
@@ -35,18 +35,18 @@ from opensquilla.provider import (
     ToolUseEndEvent,
     ToolUseStartEvent,
 )
-from opensquilla.provider import DoneEvent as ProviderDone
-from opensquilla.provider import ErrorEvent as ProviderError
-from opensquilla.provider import TextDeltaEvent as ProviderText
-from opensquilla.provider.ensemble import EnsembleMemberConfig, EnsembleProvider
-from opensquilla.provider.preset_registry import get_preset
-from opensquilla.provider.selector import ProviderConfig
-from opensquilla.provider.types import ContentBlockImage, ProviderBillingReceipt
-from opensquilla.session.manager import SessionManager
-from opensquilla.session.storage import SessionStorage
-from opensquilla.skills.meta.orchestrator import make_llm_chat_from_provider
-from opensquilla.tools.types import CallerKind, ToolContext
-from opensquilla.usage_reasons import (
+from openstarry_code.provider import DoneEvent as ProviderDone
+from openstarry_code.provider import ErrorEvent as ProviderError
+from openstarry_code.provider import TextDeltaEvent as ProviderText
+from openstarry_code.provider.ensemble import EnsembleMemberConfig, EnsembleProvider
+from openstarry_code.provider.preset_registry import get_preset
+from openstarry_code.provider.selector import ProviderConfig
+from openstarry_code.provider.types import ContentBlockImage, ProviderBillingReceipt
+from openstarry_code.session.manager import SessionManager
+from openstarry_code.session.storage import SessionStorage
+from openstarry_code.skills.meta.orchestrator import make_llm_chat_from_provider
+from openstarry_code.tools.types import CallerKind, ToolContext
+from openstarry_code.usage_reasons import (
     normalize_usage_unknown_reason,
     provider_error_usage_reason,
 )
@@ -695,7 +695,7 @@ async def test_retried_done_calls_get_monotonic_distinct_identities() -> None:
 
 def test_ensemble_breakdown_is_one_envelope_with_items(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(
-        "opensquilla.engine.usage_accounting.resolve_model_price",
+        "openstarry_code.engine.usage_accounting.resolve_model_price",
         lambda model, provider: ResolvedModelPrice(
             entry=PriceEntry(input_per_m=1.0, output_per_m=2.0),
             source="test",
@@ -856,7 +856,7 @@ def test_receipt_only_normalization_uses_canonical_billed_semantics_without_pric
         raise AssertionError(f"unexpected price resolution for {provider}/{model}")
 
     monkeypatch.setattr(
-        "opensquilla.engine.usage_accounting.resolve_model_price",
+        "openstarry_code.engine.usage_accounting.resolve_model_price",
         fail_if_pricing_is_resolved,
     )
     row = {

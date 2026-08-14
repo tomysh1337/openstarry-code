@@ -7,16 +7,16 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.diagnostics import DiagnosticsState
-from opensquilla.observability.decision_log import write_decision_entry
-from opensquilla.observability.turn_call_log import (
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.diagnostics import DiagnosticsState
+from openstarry_code.observability.decision_log import write_decision_entry
+from openstarry_code.observability.turn_call_log import (
     TurnCallLogger,
     is_turn_call_log_enabled,
     resolve_turn_call_log_dir_with_source,
 )
-from opensquilla.provider import (
+from openstarry_code.provider import (
     ChatConfig,
     DoneEvent,
     Message,
@@ -24,9 +24,9 @@ from opensquilla.provider import (
     ToolUseEndEvent,
     ToolUseStartEvent,
 )
-from opensquilla.tools import ToolContext
-from opensquilla.tools.registry import ToolRegistry
-from opensquilla.tools.types import CallerKind, ToolSpec
+from openstarry_code.tools import ToolContext
+from openstarry_code.tools.registry import ToolRegistry
+from openstarry_code.tools.types import CallerKind, ToolSpec
 
 
 class _ToolLoopProvider:
@@ -87,19 +87,19 @@ class _NoProviderSelector:
 
 
 def test_turn_call_log_is_disabled_by_default(monkeypatch) -> None:
-    monkeypatch.delenv("OPENSQUILLA_TURN_CALL_LOG", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_TURN_CALL_LOG", raising=False)
 
     assert is_turn_call_log_enabled() is False
 
 
 def test_turn_call_log_enabled_values(monkeypatch) -> None:
     for value in ("1", "true", "yes", "on"):
-        monkeypatch.setenv("OPENSQUILLA_TURN_CALL_LOG", value)
+        monkeypatch.setenv("OPENSTARRY_CODE_TURN_CALL_LOG", value)
         assert is_turn_call_log_enabled() is True
 
 
 def test_turn_call_log_can_be_enabled_by_runtime_diagnostics(monkeypatch) -> None:
-    monkeypatch.delenv("OPENSQUILLA_TURN_CALL_LOG", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_TURN_CALL_LOG", raising=False)
     state = DiagnosticsState.from_config(GatewayConfig())
 
     state.set_runtime(enabled=True, raw=True)
@@ -108,7 +108,7 @@ def test_turn_call_log_can_be_enabled_by_runtime_diagnostics(monkeypatch) -> Non
 
 
 def test_standard_diagnostics_do_not_enable_raw_turn_call_log(monkeypatch) -> None:
-    monkeypatch.delenv("OPENSQUILLA_TURN_CALL_LOG", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_TURN_CALL_LOG", raising=False)
     state = DiagnosticsState.from_config(GatewayConfig(diagnostics_enabled=True))
 
     assert is_turn_call_log_enabled(state) is False
@@ -116,13 +116,13 @@ def test_standard_diagnostics_do_not_enable_raw_turn_call_log(monkeypatch) -> No
 
 def test_turn_call_log_directory_empty_specific_env_falls_back(monkeypatch, tmp_path) -> None:
     shared_log_dir = tmp_path / "logs"
-    monkeypatch.setenv("OPENSQUILLA_TURN_CALL_LOG_DIR", "")
-    monkeypatch.setenv("OPENSQUILLA_LOG_DIR", str(shared_log_dir))
+    monkeypatch.setenv("OPENSTARRY_CODE_TURN_CALL_LOG_DIR", "")
+    monkeypatch.setenv("OPENSTARRY_CODE_LOG_DIR", str(shared_log_dir))
 
     directory, source = resolve_turn_call_log_dir_with_source()
 
     assert directory == shared_log_dir
-    assert source == "OPENSQUILLA_LOG_DIR"
+    assert source == "OPENSTARRY_CODE_LOG_DIR"
     assert not shared_log_dir.exists()
 
 
@@ -164,8 +164,8 @@ def test_turn_call_log_writes_raw_trace_contract(tmp_path) -> None:
 
 @pytest.mark.asyncio
 async def test_runtime_raw_turn_call_log_records_ordered_tool_turn(tmp_path, monkeypatch) -> None:
-    monkeypatch.setenv("OPENSQUILLA_TURN_CALL_LOG", "1")
-    monkeypatch.setenv("OPENSQUILLA_TURN_CALL_LOG_DIR", str(tmp_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_TURN_CALL_LOG", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_TURN_CALL_LOG_DIR", str(tmp_path))
     registry = ToolRegistry()
 
     async def echo(value: str) -> str:
@@ -235,9 +235,9 @@ async def test_runtime_correlates_trace_decision_and_raw_logs(
 ) -> None:
     safe_log_dir = tmp_path / "logs"
     raw_log_dir = tmp_path / "raw"
-    monkeypatch.setenv("OPENSQUILLA_LOG_DIR", str(safe_log_dir))
-    monkeypatch.setenv("OPENSQUILLA_TURN_CALL_LOG", "1")
-    monkeypatch.setenv("OPENSQUILLA_TURN_CALL_LOG_DIR", str(raw_log_dir))
+    monkeypatch.setenv("OPENSTARRY_CODE_LOG_DIR", str(safe_log_dir))
+    monkeypatch.setenv("OPENSTARRY_CODE_TURN_CALL_LOG", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_TURN_CALL_LOG_DIR", str(raw_log_dir))
     captured: dict[str, Any] = {}
 
     def _capture_decision_entry(entry: Any) -> Any:
@@ -245,7 +245,7 @@ async def test_runtime_correlates_trace_decision_and_raw_logs(
         return write_decision_entry(entry, log_dir=safe_log_dir)
 
     monkeypatch.setattr(
-        "opensquilla.engine.runtime.write_decision_entry",
+        "openstarry_code.engine.runtime.write_decision_entry",
         _capture_decision_entry,
     )
     provider = _ToolLoopProvider()
@@ -290,7 +290,7 @@ async def test_runtime_correlates_trace_decision_and_raw_logs(
 
 @pytest.mark.asyncio
 async def test_runtime_writes_trace_when_provider_missing(tmp_path, monkeypatch) -> None:
-    monkeypatch.setenv("OPENSQUILLA_LOG_DIR", str(tmp_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_LOG_DIR", str(tmp_path))
     runner = TurnRunner(provider_selector=_NoProviderSelector())
 
     events = [

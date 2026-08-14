@@ -1,4 +1,4 @@
-"""CLI surface for `opensquilla uninstall` — flags, guards, confirmation."""
+"""CLI surface for `openstarry-code uninstall` — flags, guards, confirmation."""
 
 from __future__ import annotations
 
@@ -11,12 +11,12 @@ from pathlib import Path
 import pytest
 from typer.testing import CliRunner
 
-from opensquilla.cli import codetask_cmd
-from opensquilla.cli.main import app
-from opensquilla.uninstall import actions as actions_module
-from opensquilla.uninstall import inventory as inventory_module
-from opensquilla.uninstall.actions import ActionResult, ExecutionResult
-from opensquilla.uninstall.inventory import DataBucket, Inventory
+from openstarry_code.cli import codetask_cmd
+from openstarry_code.cli.main import app
+from openstarry_code.uninstall import actions as actions_module
+from openstarry_code.uninstall import inventory as inventory_module
+from openstarry_code.uninstall.actions import ActionResult, ExecutionResult
+from openstarry_code.uninstall.inventory import DataBucket, Inventory
 
 runner = CliRunner()
 
@@ -66,9 +66,9 @@ def test_dry_run_json_emits_plan_and_does_nothing(monkeypatch, tmp_path: Path) -
 def test_dry_run_json_subprocess_stdout_stays_machine_readable(tmp_path: Path) -> None:
     """Import-time env loading must not pollute stdout before JSON output."""
     home = tmp_path / "home"
-    env_home = home / ".opensquilla"
+    env_home = home / ".openstarry-code"
     env_home.mkdir(parents=True)
-    (env_home / ".env").write_text("OPENSQUILLA_ENV_JSON_TEST=1\n", encoding="utf-8")
+    (env_home / ".env").write_text("OPENSTARRY_CODE_ENV_JSON_TEST=1\n", encoding="utf-8")
 
     env = os.environ.copy()
     env.update(
@@ -78,10 +78,10 @@ def test_dry_run_json_subprocess_stdout_stays_machine_readable(tmp_path: Path) -
             "HTTP_PROXY": "http://127.0.0.1:9",
         }
     )
-    env.pop("OPENSQUILLA_TRUST_ENV", None)
+    env.pop("OPENSTARRY_CODE_TRUST_ENV", None)
 
     completed = subprocess.run(
-        [sys.executable, "-m", "opensquilla.cli.main", "uninstall", "--dry-run", "--json"],
+        [sys.executable, "-m", "openstarry_code.cli.main", "uninstall", "--dry-run", "--json"],
         cwd=Path(__file__).resolve().parents[2],
         env=env,
         capture_output=True,
@@ -134,7 +134,7 @@ def test_desktop_profile_routes_data_deletion_to_complete_desktop_cleanup(
     tmp_path: Path,
     purge_flag: str,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_PROFILE_KIND", "desktop-primary")
+    monkeypatch.setenv("OPENSTARRY_CODE_PROFILE_KIND", "desktop-primary")
 
     def _boom(*_args, **_kwargs):
         raise AssertionError("generic Desktop purge must not inspect or delete partial data")

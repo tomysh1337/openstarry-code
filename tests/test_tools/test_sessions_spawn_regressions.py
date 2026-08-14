@@ -23,22 +23,22 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.types import DoneEvent
-from opensquilla.gateway.boot import dispatch_task_runtime_turn
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.task_runtime import TaskRun
-from opensquilla.sandbox.run_context import (
+from openstarry_code.engine.types import DoneEvent
+from openstarry_code.gateway.boot import dispatch_task_runtime_turn
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.task_runtime import TaskRun
+from openstarry_code.sandbox.run_context import (
     RUN_CONTEXT_ORIGIN_KEY,
     DomainGrant,
     MountGrant,
     RunContext,
     TemporaryGrant,
 )
-from opensquilla.sandbox.run_mode import RunMode
-from opensquilla.session.manager import SessionManager
-from opensquilla.session.storage import SessionStorage
-from opensquilla.tools.builtin import sessions as sessions_tool
-from opensquilla.tools.types import CallerKind, ToolContext, ToolError, current_tool_context
+from openstarry_code.sandbox.run_mode import RunMode
+from openstarry_code.session.manager import SessionManager
+from openstarry_code.session.storage import SessionStorage
+from openstarry_code.tools.builtin import sessions as sessions_tool
+from openstarry_code.tools.types import CallerKind, ToolContext, ToolError, current_tool_context
 
 
 class _ConfigurableConfig:
@@ -232,7 +232,7 @@ async def test_max_children_uses_spawned_by_filter_not_global_page() -> None:
 
 
 def test_sessions_spawn_exposes_optional_bounded_title_schema() -> None:
-    from opensquilla.tools.registry import get_default_registry
+    from openstarry_code.tools.registry import get_default_registry
 
     registered = get_default_registry().get("sessions_spawn")
 
@@ -516,13 +516,13 @@ async def test_spawned_child_restart_uses_persisted_inherited_authority_at_boot(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    from opensquilla.sandbox.escalation import (
+    from openstarry_code.sandbox.escalation import (
         current_tool_run_context,
         reset_resolved_run_context_overlays,
     )
-    from opensquilla.sandbox.network_guard import decide_network_access
-    from opensquilla.sandbox.operation_runtime import SandboxOperationResult
-    from opensquilla.tools.builtin import filesystem
+    from openstarry_code.sandbox.network_guard import decide_network_access
+    from openstarry_code.sandbox.operation_runtime import SandboxOperationResult
+    from openstarry_code.tools.builtin import filesystem
 
     reset_resolved_run_context_overlays()
     database = tmp_path / "sessions.db"
@@ -753,17 +753,17 @@ async def test_project_spawned_child_persists_binding_and_revalidates_queued_exe
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    from opensquilla.project_workspaces import (
+    from openstarry_code.project_workspaces import (
         ProjectWorkspaceStateError,
         project_path_key,
     )
-    from opensquilla.sandbox.escalation import (
+    from openstarry_code.sandbox.escalation import (
         current_tool_run_context,
         reset_resolved_run_context_overlays,
     )
-    from opensquilla.sandbox.network_guard import decide_network_access
-    from opensquilla.sandbox.operation_runtime import SandboxOperationResult
-    from opensquilla.tools.builtin import filesystem
+    from openstarry_code.sandbox.network_guard import decide_network_access
+    from openstarry_code.sandbox.operation_runtime import SandboxOperationResult
+    from openstarry_code.tools.builtin import filesystem
 
     reset_resolved_run_context_overlays()
     database = tmp_path / "project-sessions.db"

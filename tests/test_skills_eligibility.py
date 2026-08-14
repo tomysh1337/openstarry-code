@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from opensquilla.skills.eligibility import EligibilityContext, diagnose_eligibility
-from opensquilla.skills.types import (
+from openstarry_code.skills.eligibility import EligibilityContext, diagnose_eligibility
+from openstarry_code.skills.types import (
     SkillInstallSpec,
     SkillLayer,
     SkillPlatformMeta,

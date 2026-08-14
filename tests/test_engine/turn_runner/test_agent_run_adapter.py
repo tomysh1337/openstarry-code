@@ -5,9 +5,9 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.agent_injection import ListPendingInputProvider
-from opensquilla.engine.turn_runner.harness import _TurnRunnerAgentRunAdapter
-from opensquilla.engine.types import DoneEvent
+from openstarry_code.engine.agent_injection import ListPendingInputProvider
+from openstarry_code.engine.turn_runner.harness import _TurnRunnerAgentRunAdapter
+from openstarry_code.engine.types import DoneEvent
 
 
 async def _collect(events: AsyncIterator[Any]) -> list[Any]:

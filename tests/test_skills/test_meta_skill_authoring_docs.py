@@ -7,7 +7,7 @@ ROOT_GUIDE = ROOT / "META_SKILL_GUIDE.md"
 USER_GUIDE = ROOT / "docs" / "features" / "meta-skill-user-guide.md"
 FEATURE_GUIDE = ROOT / "docs" / "features" / "meta-skills.md"
 AUTHORING_DOC = ROOT / "docs" / "authoring" / "meta-skills.md"
-PACKAGE_STUB = ROOT / "src" / "opensquilla" / "skills" / "meta" / "META_SKILL_AUTHORING.md"
+PACKAGE_STUB = ROOT / "src" / "openstarry_code" / "skills" / "meta" / "META_SKILL_AUTHORING.md"
 README = ROOT / "README.md"
 
 
@@ -15,7 +15,7 @@ def test_meta_skill_user_guide_contains_user_contract_and_retained_catalog() -> 
     text = USER_GUIDE.read_text(encoding="utf-8")
 
     required_snippets = [
-        "OpenSquilla MetaSkill User Guide",
+        "OpenStarry Code MetaSkill User Guide",
         "Important Notice",
         "User Mental Model",
         "Outcome:",
@@ -38,8 +38,8 @@ def test_meta_skill_authoring_doc_matches_current_runtime_contract() -> None:
     required_snippets = [
         "Meta-Skill Authoring Guide",
         "Where to Put a MetaSkill",
-        "metadata.opensquilla.risk",
-        "metadata.opensquilla.capabilities",
+        "metadata.openstarry-code.risk",
+        "metadata.openstarry-code.capabilities",
         "kind: meta",
         "composition:",
         "agent",

@@ -3,10 +3,10 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from opensquilla.skills.loader import SkillLoader
+from openstarry_code.skills.loader import SkillLoader
 
 ROOT = Path(__file__).resolve().parents[1]
-BUNDLED = ROOT / "src" / "opensquilla" / "skills" / "bundled"
+BUNDLED = ROOT / "src" / "openstarry_code" / "skills" / "bundled"
 NOTICES = ROOT / "THIRD_PARTY_NOTICES.md"
 ORIGINALS = {
     "advanced-dubbing-studio",
@@ -95,7 +95,7 @@ def test_all_bundled_skills_have_complete_provenance(tmp_path: Path) -> None:
             "clawhub-mit",
             "clawhub-mit0",
         }, skill.name
-        assert provenance.maintained_by == "OpenSquilla", skill.name
+        assert provenance.maintained_by == "OpenStarry Code", skill.name
         if provenance.origin == "bundled-derived":
             assert provenance.upstream_url == "https://github.com/bundled/bundled"
             assert provenance.license == "MIT", skill.name
@@ -126,7 +126,7 @@ def test_third_party_notices_match_bundled_provenance(tmp_path: Path) -> None:
     clawhub_derived = sorted(name for name, origin in skills.items() if origin == "clawhub-mit0")
 
     assert "## OpenClaw-derived bundled skill descriptors" in text
-    assert "## OpenSquilla-original bundled skills" in text
+    assert "## OpenStarry Code-original bundled skills" in text
     if clawhub_derived:
         assert "## ClawHub-derived bundled skill descriptors" in text
     if clawhub_mit:
@@ -193,7 +193,7 @@ def test_frontend_static_assets_are_covered_by_third_party_notices() -> None:
         assert expected in text
 
     package = json.loads(
-        (ROOT / "opensquilla-webui" / "package.json").read_text(encoding="utf-8")
+        (ROOT / "openstarry-code-webui" / "package.json").read_text(encoding="utf-8")
     )
     bundled_direct_dependencies = {
         name for name in package["dependencies"] if not name.startswith("@types/")
@@ -203,28 +203,43 @@ def test_frontend_static_assets_are_covered_by_third_party_notices() -> None:
 
     for removed in [
         "PrismJS",
-        "src/opensquilla/gateway/static/vendor/",
-        "src/opensquilla/gateway/static/fonts/",
+        "src/openstarry_code/gateway/static/vendor/",
+        "src/openstarry_code/gateway/static/fonts/",
         "Inter-Variable.woff2",
         "JetBrainsMono-Variable.woff2",
     ]:
         assert removed not in text
 
     for path in [
-        ROOT / "opensquilla-webui" / "package.json",
-        ROOT / "opensquilla-webui" / "package-lock.json",
-        ROOT / "opensquilla-webui" / "src" / "composables" / "chat" / "useChatTextRendering.ts",
-        ROOT / "opensquilla-webui" / "src" / "assets" / "fonts" / "ibm-plex-sans-400.woff2",
-        ROOT / "opensquilla-webui" / "src" / "assets" / "fonts" / "space-grotesk-400.woff2",
+        ROOT / "openstarry-code-webui" / "package.json",
+        ROOT / "openstarry-code-webui" / "package-lock.json",
         ROOT
-        / "opensquilla-webui"
+        / "openstarry-code-webui"
+        / "src"
+        / "composables"
+        / "chat"
+        / "useChatTextRendering.ts",
+        ROOT
+        / "openstarry-code-webui"
+        / "src"
+        / "assets"
+        / "fonts"
+        / "ibm-plex-sans-400.woff2",
+        ROOT
+        / "openstarry-code-webui"
+        / "src"
+        / "assets"
+        / "fonts"
+        / "space-grotesk-400.woff2",
+        ROOT
+        / "openstarry-code-webui"
         / "src"
         / "themes"
         / "out-of-register"
         / "fonts"
         / "fraunces-400.woff2",
         ROOT
-        / "opensquilla-webui"
+        / "openstarry-code-webui"
         / "src"
         / "themes"
         / "out-of-register"
@@ -236,7 +251,7 @@ def test_frontend_static_assets_are_covered_by_third_party_notices() -> None:
 
 def test_tokenjuice_backend_has_third_party_provenance() -> None:
     text = NOTICES.read_text(encoding="utf-8")
-    package_dir = ROOT / "src" / "opensquilla" / "plugins" / "tokenjuice"
+    package_dir = ROOT / "src" / "openstarry_code" / "plugins" / "tokenjuice"
     provenance = package_dir / "PROVENANCE.md"
     license_file = package_dir / "LICENSE.tokenjuice"
 

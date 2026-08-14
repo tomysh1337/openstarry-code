@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from opensquilla.skills.hub.scanner import scan_skill, scan_skill_bundle
+from openstarry_code.skills.hub.scanner import scan_skill, scan_skill_bundle
 
 
 def test_community_manifest_dialect_is_not_a_content_scanner_failure() -> None:

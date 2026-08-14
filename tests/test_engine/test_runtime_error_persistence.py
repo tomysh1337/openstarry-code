@@ -5,8 +5,8 @@ from unittest.mock import patch
 
 import pytest
 
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.engine.types import ErrorEvent
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.engine.types import ErrorEvent
 
 
 class _RecordingSessionManager:
@@ -48,7 +48,7 @@ async def test_provider_request_too_large_error_persistence_does_not_compact_tra
             "agent:main:webchat:test",
             "system",
             "Error: The request is too large for the provider context window after "
-            "automatic context compaction and payload reduction. OpenSquilla "
+            "automatic context compaction and payload reduction. OpenStarry Code "
             "preserved the recoverable state; retry with a narrower request "
             "or a larger-context model.",
         )
@@ -91,7 +91,7 @@ async def test_provider_output_truncation_error_persistence_uses_message_fallbac
         config=SimpleNamespace(context_window_tokens=100_000),
     )
 
-    with patch("opensquilla.engine.runtime.log") as log:
+    with patch("openstarry_code.engine.runtime.log") as log:
         await runner._persist_turn_error(
             "agent:main:webchat:test",
             ErrorEvent(

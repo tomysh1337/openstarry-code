@@ -26,7 +26,7 @@ def _request(
     )
     headers = {"Content-Type": "application/json", "Authorization": "Bearer do-not-retain"}
     if scenario is not None:
-        headers["X-OpenSquilla-Fault-Scenario"] = scenario.value
+        headers["X-OpenStarry Code-Fault-Scenario"] = scenario.value
     connection.request("POST", "/v1/chat/completions", body=body, headers=headers)
     return connection.getresponse(), connection
 

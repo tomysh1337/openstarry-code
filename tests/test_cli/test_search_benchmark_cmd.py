@@ -1,4 +1,4 @@
-"""CLI tests for `opensquilla search benchmark`."""
+"""CLI tests for `openstarry-code search benchmark`."""
 
 from __future__ import annotations
 
@@ -7,9 +7,9 @@ from typing import cast
 
 from typer.testing import CliRunner
 
-import opensquilla.cli.search_cmd as search_cmd  # type: ignore[import-untyped]
-from opensquilla.cli.main import app  # type: ignore[import-untyped]
-from opensquilla.search.types import DEFAULT_SEARCH_MAX_RESULTS
+import openstarry_code.cli.search_cmd as search_cmd  # type: ignore[import-untyped]
+from openstarry_code.cli.main import app  # type: ignore[import-untyped]
+from openstarry_code.search.types import DEFAULT_SEARCH_MAX_RESULTS
 
 runner = CliRunner()
 
@@ -130,7 +130,7 @@ def test_search_benchmark_passes_options_to_helper(monkeypatch):
 
 
 def test_search_benchmark_live_json_rejects_without_env(monkeypatch):
-    monkeypatch.delenv("OPENSQUILLA_LIVE_SEARCH", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_LIVE_SEARCH", raising=False)
 
     result = runner.invoke(
         app,
@@ -145,7 +145,7 @@ def test_search_benchmark_live_json_rejects_without_env(monkeypatch):
 
 
 def test_search_benchmark_live_json_rejects_even_with_env(monkeypatch):
-    monkeypatch.setenv("OPENSQUILLA_LIVE_SEARCH", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_LIVE_SEARCH", "1")
 
     result = runner.invoke(
         app,

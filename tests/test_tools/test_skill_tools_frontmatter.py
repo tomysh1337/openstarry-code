@@ -4,10 +4,10 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.skills.loader import SkillLoader
-from opensquilla.tools.builtin import skill_tools
-from opensquilla.tools.registry import get_default_registry
-from opensquilla.tools.types import ToolContext, ToolError, current_tool_context
+from openstarry_code.skills.loader import SkillLoader
+from openstarry_code.tools.builtin import skill_tools
+from openstarry_code.tools.registry import get_default_registry
+from openstarry_code.tools.types import ToolContext, ToolError, current_tool_context
 
 
 @pytest.fixture()

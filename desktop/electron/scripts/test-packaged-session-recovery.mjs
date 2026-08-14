@@ -40,7 +40,7 @@ try {
       // A release preflight must exercise production deadlines, not the app's
       // ordinary testing shortcuts or mocked timer policy.
       GITHUB_ACTIONS: '0',
-      OPENSQUILLA_TESTING: '0',
+      OPENSTARRY_CODE_TESTING: '0',
     },
   })
   await app.context().routeWebSocket(/\/ws$/, (client) => {

@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import hashlib
 
-from opensquilla.gateway.auth import resolve_auth
-from opensquilla.gateway.config import AuthConfig, GatewayConfig
+from openstarry_code.gateway.auth import resolve_auth
+from openstarry_code.gateway.config import AuthConfig, GatewayConfig
 
 
 def _token_config(tmp_path, *, token: str = "correct") -> GatewayConfig:

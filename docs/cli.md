@@ -73,7 +73,7 @@ OpenTUI host is development-only and is not published as a release asset. It
 can be evaluated from a source checkout with pinned Bun dependencies installed:
 
 ```sh
-bun install --frozen-lockfile --cwd=src/opensquilla/cli/tui/opentui/package
+bun install --frozen-lockfile --cwd=src/openstarry_code/cli/tui/opentui/package
 OPENSQUILLA_TUI_DEV_SOURCE_HOST=1 uv run opensquilla chat --ui tui
 ```
 

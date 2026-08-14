@@ -5,8 +5,8 @@ import json
 
 import pytest
 
-from opensquilla.provider.types import ProviderRequestCorrelation
-from opensquilla.session.compaction import (
+from openstarry_code.provider.types import ProviderRequestCorrelation
+from openstarry_code.session.compaction import (
     CompactionConfig,
     CompactionRequest,
     _api_round_groups,
@@ -20,7 +20,7 @@ from opensquilla.session.compaction import (
     estimate_entry_model_replay_tokens,
     estimate_entry_replay_tokens,
 )
-from opensquilla.session.compaction_lifecycle import (
+from openstarry_code.session.compaction_lifecycle import (
     CompactionTimeoutError,
     compaction_effect_payload,
     compaction_result_payload,
@@ -104,7 +104,7 @@ def test_compaction_deadline_is_armed_only_once(monkeypatch):
             return self.now
 
     clock = Clock()
-    monkeypatch.setattr("opensquilla.session.compaction.time", clock)
+    monkeypatch.setattr("openstarry_code.session.compaction.time", clock)
     config = CompactionConfig(total_timeout_seconds=10.0)
 
     first_deadline = arm_compaction_deadline(config, operation_id="cmp_deadline")
@@ -126,7 +126,7 @@ def test_reused_compaction_config_rearms_for_a_new_operation(monkeypatch):
             return self.now
 
     clock = Clock()
-    monkeypatch.setattr("opensquilla.session.compaction.time", clock)
+    monkeypatch.setattr("openstarry_code.session.compaction.time", clock)
     config = CompactionConfig(total_timeout_seconds=10.0)
 
     first_deadline = arm_compaction_deadline(config, operation_id="cmp_first")
@@ -189,7 +189,7 @@ async def test_message_count_compaction_uses_exact_forced_prefix_within_token_bu
         # is still useful as long as the replacement fits the token window.
         return "count recovery summary " * 40
 
-    monkeypatch.setattr("opensquilla.session.compaction.call_compaction_llm", fake_llm)
+    monkeypatch.setattr("openstarry_code.session.compaction.call_compaction_llm", fake_llm)
     entries = [
         {"role": "user", "content": "old user 0", "token_count": 5},
         {"role": "assistant", "content": "old assistant 1", "token_count": 5},
@@ -241,7 +241,7 @@ async def test_compaction_request_derives_unique_correlation_for_every_physical_
         observed.append(kwargs.get("provider_request_correlation"))
         return "bounded historical summary"
 
-    monkeypatch.setattr("opensquilla.session.compaction.call_compaction_llm", fake_llm)
+    monkeypatch.setattr("openstarry_code.session.compaction.call_compaction_llm", fake_llm)
     correlation = ProviderRequestCorrelation(
         session_id="session-1",
         turn_id="turn-1",
@@ -283,7 +283,7 @@ async def test_message_count_compaction_summarizes_large_prefix_with_one_llm_cal
         calls.append(kwargs["chunk_text"])
         return "one bounded historical summary"
 
-    monkeypatch.setattr("opensquilla.session.compaction.call_compaction_llm", fake_llm)
+    monkeypatch.setattr("openstarry_code.session.compaction.call_compaction_llm", fake_llm)
     entries = _make_entries(104, tokens_each=1)
 
     result = await compact_context(
@@ -319,7 +319,7 @@ async def test_token_trigger_still_rejects_forced_summary_that_does_not_reduce_t
     async def fake_llm(**kwargs):
         return "larger replacement summary " * 40
 
-    monkeypatch.setattr("opensquilla.session.compaction.call_compaction_llm", fake_llm)
+    monkeypatch.setattr("openstarry_code.session.compaction.call_compaction_llm", fake_llm)
     entries = _make_entries(4, tokens_each=5)
 
     result = await compact_context(
@@ -602,7 +602,7 @@ async def test_compaction_source_is_llm_when_all_chunks_use_llm(monkeypatch):
         calls.append(kwargs["chunk_text"])
         return "LLM summary"
 
-    monkeypatch.setattr("opensquilla.session.compaction.call_compaction_llm", fake_llm)
+    monkeypatch.setattr("openstarry_code.session.compaction.call_compaction_llm", fake_llm)
     entries = _make_entries(12, tokens_each=200)
 
     result = await compact_context(
@@ -635,8 +635,8 @@ async def test_multichunk_compaction_reuses_remaining_absolute_budget(monkeypatc
         clock.now += 6.0
         return f"summary {len(request_timeouts)}"
 
-    monkeypatch.setattr("opensquilla.session.compaction.time", clock)
-    monkeypatch.setattr("opensquilla.session.compaction.call_compaction_llm", fake_llm)
+    monkeypatch.setattr("openstarry_code.session.compaction.time", clock)
+    monkeypatch.setattr("openstarry_code.session.compaction.call_compaction_llm", fake_llm)
     config = CompactionConfig(
         model="test/model",
         api_key="test-key",
@@ -668,7 +668,7 @@ async def test_compaction_source_is_mixed_when_llm_partly_falls_back(monkeypatch
     async def fake_llm(**kwargs):
         return responses.pop(0) if responses else "LLM summary"
 
-    monkeypatch.setattr("opensquilla.session.compaction.call_compaction_llm", fake_llm)
+    monkeypatch.setattr("openstarry_code.session.compaction.call_compaction_llm", fake_llm)
     entries = _make_entries(12, tokens_each=200)
 
     result = await compact_context(
@@ -1314,7 +1314,7 @@ async def test_call_compaction_llm_adds_openrouter_app_attribution(monkeypatch) 
             return FakeResponse()
 
     monkeypatch.setattr(
-        "opensquilla.session.compaction.httpx.AsyncClient",
+        "openstarry_code.session.compaction.httpx.AsyncClient",
         lambda **kwargs: FakeClient(),
     )
 
@@ -1333,7 +1333,7 @@ async def test_call_compaction_llm_adds_openrouter_app_attribution(monkeypatch) 
         "Authorization": "Bearer test-key",
         "Content-Type": "application/json",
         "HTTP-Referer": "https://opensquilla.ai",
-        "X-Title": "OpenSquilla",
+        "X-Title": "OpenStarry Code",
     }
 
 
@@ -1367,17 +1367,17 @@ async def test_call_compaction_llm_adds_tokenrhythm_app_attribution(monkeypatch)
             return FakeResponse()
 
     monkeypatch.setattr(
-        "opensquilla.session.compaction.httpx.AsyncClient",
+        "openstarry_code.session.compaction.httpx.AsyncClient",
         lambda **kwargs: FakeClient(),
     )
     monkeypatch.setattr(
-        "opensquilla.session.compaction.tokenrhythm_install_id_headers",
+        "openstarry_code.session.compaction.tokenrhythm_install_id_headers",
         lambda _provider_kind, _base_url: {
-            "X-OpenSquilla-Install-Id": install_id
+            "X-OpenStarry Code-Install-Id": install_id
         },
     )
     monkeypatch.setattr(
-        "opensquilla.session.compaction.redact_tokenrhythm_install_ids",
+        "openstarry_code.session.compaction.redact_tokenrhythm_install_ids",
         lambda text: text.replace(install_id, "***"),
     )
 
@@ -1404,12 +1404,12 @@ async def test_call_compaction_llm_adds_tokenrhythm_app_attribution(monkeypatch)
         "Authorization": "Bearer test-key",
         "Content-Type": "application/json",
         "HTTP-Referer": "https://opensquilla.ai",
-        "X-OpenSquilla-Session-Id": "session-1",
-        "X-OpenSquilla-Turn-Id": "turn-1",
-        "X-OpenSquilla-Execution-Id": "compaction-1",
-        "X-OpenSquilla-Call-Kind": "auxiliary.compaction",
-        "X-OpenSquilla-Install-Id": install_id,
-        "X-Title": "OpenSquilla",
+        "X-OpenStarry Code-Session-Id": "session-1",
+        "X-OpenStarry Code-Turn-Id": "turn-1",
+        "X-OpenStarry Code-Execution-Id": "compaction-1",
+        "X-OpenStarry Code-Call-Kind": "auxiliary.compaction",
+        "X-OpenStarry Code-Install-Id": install_id,
+        "X-Title": "OpenStarry Code",
     }
     payload = captured["json"]
     assert isinstance(payload, dict)
@@ -1470,11 +1470,11 @@ async def test_call_compaction_llm_privacy_switch_removes_correlation_on_wire(
             return FakeResponse()
 
     monkeypatch.setenv(
-        "OPENSQUILLA_PRIVACY_DISABLE_NETWORK_OBSERVABILITY",
+        "OPENSTARRY_CODE_PRIVACY_DISABLE_NETWORK_OBSERVABILITY",
         "true",
     )
     monkeypatch.setattr(
-        "opensquilla.session.compaction.httpx.AsyncClient",
+        "openstarry_code.session.compaction.httpx.AsyncClient",
         lambda **kwargs: FakeClient(),
     )
 
@@ -1494,12 +1494,12 @@ async def test_call_compaction_llm_privacy_switch_removes_correlation_on_wire(
     )
 
     assert result == "summary"
-    assert not any(name.startswith("X-OpenSquilla-") for name in captured_headers)
+    assert not any(name.startswith("X-OpenStarry Code-") for name in captured_headers)
     assert captured_headers == {
         "Authorization": "Bearer test-key",
         "Content-Type": "application/json",
         "HTTP-Referer": "https://opensquilla.ai",
-        "X-Title": "OpenSquilla",
+        "X-Title": "OpenStarry Code",
     }
 
 
@@ -1558,17 +1558,17 @@ async def test_call_compaction_llm_cancellation_does_not_retain_install_id(
         return CancellingUsage()
 
     monkeypatch.setattr(
-        "opensquilla.session.compaction.httpx.AsyncClient",
+        "openstarry_code.session.compaction.httpx.AsyncClient",
         lambda **_kwargs: RetainingClient(),
     )
     monkeypatch.setattr(
-        "opensquilla.session.compaction.tokenrhythm_install_id_headers",
+        "openstarry_code.session.compaction.tokenrhythm_install_id_headers",
         lambda _provider_kind, _base_url: {
-            "X-OpenSquilla-Install-Id": install_id
+            "X-OpenStarry Code-Install-Id": install_id
         },
     )
     monkeypatch.setattr(
-        "opensquilla.engine.usage_http.reserve_direct_usage_call",
+        "openstarry_code.engine.usage_http.reserve_direct_usage_call",
         reserve_direct_usage_call,
     )
 
@@ -1587,7 +1587,7 @@ async def test_call_compaction_llm_cancellation_does_not_retain_install_id(
 
     assert task.cancelled()
     assert usage_reasons == ["cancelled"]
-    assert sent_headers["X-OpenSquilla-Install-Id"] == install_id
+    assert sent_headers["X-OpenStarry Code-Install-Id"] == install_id
     assert caught.value.__cause__ is None
     assert caught.value.__context__ is None
 
@@ -1596,7 +1596,7 @@ async def test_call_compaction_llm_cancellation_does_not_retain_install_id(
     while traceback is not None:
         frame = traceback.tb_frame
         if (
-            frame.f_globals.get("__name__") == "opensquilla.session.compaction"
+            frame.f_globals.get("__name__") == "openstarry_code.session.compaction"
             and frame.f_code.co_name == "call_compaction_llm"
         ):
             production_locals.append(repr(frame.f_locals))
@@ -1628,12 +1628,12 @@ async def test_call_compaction_llm_redacts_install_id_from_failure_log(monkeypat
             warnings.append((event, kwargs))
 
     monkeypatch.setattr(
-        "opensquilla.session.compaction.httpx.AsyncClient",
+        "openstarry_code.session.compaction.httpx.AsyncClient",
         lambda **_kwargs: FailingClient(),
     )
-    monkeypatch.setattr("opensquilla.session.compaction.log", CapturingLog())
+    monkeypatch.setattr("openstarry_code.session.compaction.log", CapturingLog())
     monkeypatch.setattr(
-        "opensquilla.session.compaction.redact_tokenrhythm_install_ids",
+        "openstarry_code.session.compaction.redact_tokenrhythm_install_ids",
         lambda text: text.replace(install_id, "***"),
     )
 
@@ -1673,7 +1673,7 @@ async def test_call_compaction_llm_timeout_returns_none(monkeypatch) -> None:
             raise TimeoutError("summary timed out")
 
     monkeypatch.setattr(
-        "opensquilla.session.compaction.httpx.AsyncClient",
+        "openstarry_code.session.compaction.httpx.AsyncClient",
         lambda **kwargs: FakeClient(),
     )
 
@@ -1713,7 +1713,7 @@ async def test_custom_instructions_are_user_scoped_and_identifier_policy_stays_s
             return FakeResponse()
 
     monkeypatch.setattr(
-        "opensquilla.session.compaction.httpx.AsyncClient",
+        "openstarry_code.session.compaction.httpx.AsyncClient",
         lambda **kwargs: FakeClient(),
     )
 

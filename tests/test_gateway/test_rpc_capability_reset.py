@@ -8,19 +8,19 @@ from pathlib import Path
 
 import pytest
 
-import opensquilla.gateway.rpc_onboarding  # noqa: F401 - register handlers
-import opensquilla.onboarding.config_store as config_store
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.config import (
+import openstarry_code.gateway.rpc_onboarding  # noqa: F401 - register handlers
+import openstarry_code.onboarding.config_store as config_store
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.config import (
     AudioConfig,
     GatewayConfig,
     ImageGenerationConfig,
     MemoryEmbeddingConfig,
 )
-from opensquilla.gateway.rpc import RpcContext, get_dispatcher
-from opensquilla.gateway.scopes import ADMIN_SCOPE, METHOD_SCOPES
-from opensquilla.onboarding.config_store import load_config, persist_config
-from opensquilla.onboarding.mutations import reset_capability
+from openstarry_code.gateway.rpc import RpcContext, get_dispatcher
+from openstarry_code.gateway.scopes import ADMIN_SCOPE, METHOD_SCOPES
+from openstarry_code.onboarding.config_store import load_config, persist_config
+from openstarry_code.onboarding.mutations import reset_capability
 
 
 def _ctx(config: GatewayConfig, *, admin: bool = True) -> RpcContext:
@@ -63,11 +63,11 @@ def _isolate_capability_runtime(monkeypatch: pytest.MonkeyPatch) -> None:
     ):
         monkeypatch.delenv(name, raising=False)
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_onboarding._sync_search_provider",
+        "openstarry_code.gateway.rpc_onboarding._sync_search_provider",
         lambda config: None,
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_onboarding._sync_image_generation",
+        "openstarry_code.gateway.rpc_onboarding._sync_image_generation",
         lambda config: None,
     )
 
@@ -453,22 +453,22 @@ model = "synthetic-embedding-model"
 
 
 def _set_capability_environment(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_SEARCH_PROVIDER", "brave")
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_SEARCH_PROVIDER", "brave")
     monkeypatch.setenv(
-        "OPENSQUILLA_GATEWAY_SEARCH_API_KEY",
+        "OPENSTARRY_CODE_GATEWAY_SEARCH_API_KEY",
         "synthetic-env-search-key",
     )
-    monkeypatch.setenv("OPENSQUILLA_IMAGE_GENERATION_ENABLED", "true")
+    monkeypatch.setenv("OPENSTARRY_CODE_IMAGE_GENERATION_ENABLED", "true")
     monkeypatch.setenv(
-        "OPENSQUILLA_IMAGE_GENERATION_PROVIDERS__QWEN_TOKEN_PLAN__API_KEY",
+        "OPENSTARRY_CODE_IMAGE_GENERATION_PROVIDERS__QWEN_TOKEN_PLAN__API_KEY",
         "synthetic-env-qwen-key",
     )
-    monkeypatch.setenv("OPENSQUILLA_AUDIO_ENABLED", "true")
+    monkeypatch.setenv("OPENSTARRY_CODE_AUDIO_ENABLED", "true")
     monkeypatch.setenv(
-        "OPENSQUILLA_AUDIO_PROVIDERS__ELEVENLABS__API_KEY",
+        "OPENSTARRY_CODE_AUDIO_PROVIDERS__ELEVENLABS__API_KEY",
         "synthetic-env-audio-key",
     )
-    monkeypatch.setenv("OPENSQUILLA_MEMORY_EMBEDDING__PROVIDER", "ollama")
+    monkeypatch.setenv("OPENSTARRY_CODE_MEMORY_EMBEDDING__PROVIDER", "ollama")
 
 
 @pytest.mark.asyncio
@@ -480,7 +480,7 @@ async def test_environment_only_capabilities_are_not_advertised_as_resettable(
     cfg = load_config(tmp_path / "missing.toml")
 
     # Prove the runtime model did absorb external configuration; resettable
-    # must still describe only OpenSquilla-managed TOML.
+    # must still describe only OpenStarry Code-managed TOML.
     assert cfg.search_provider == "brave"
     assert cfg.image_generation.enabled is True
     assert cfg.audio.enabled is True
@@ -536,16 +536,16 @@ async def test_reset_reload_does_not_claim_external_configuration_is_removable(
         assert response.error is None, response.error
 
     reloaded = load_config(config_path)
-    assert os.environ["OPENSQUILLA_GATEWAY_SEARCH_API_KEY"] == (
+    assert os.environ["OPENSTARRY_CODE_GATEWAY_SEARCH_API_KEY"] == (
         "synthetic-env-search-key"
     )
     assert (
         os.environ[
-            "OPENSQUILLA_IMAGE_GENERATION_PROVIDERS__QWEN_TOKEN_PLAN__API_KEY"
+            "OPENSTARRY_CODE_IMAGE_GENERATION_PROVIDERS__QWEN_TOKEN_PLAN__API_KEY"
         ]
         == "synthetic-env-qwen-key"
     )
-    assert os.environ["OPENSQUILLA_AUDIO_PROVIDERS__ELEVENLABS__API_KEY"] == (
+    assert os.environ["OPENSTARRY_CODE_AUDIO_PROVIDERS__ELEVENLABS__API_KEY"] == (
         "synthetic-env-audio-key"
     )
 
@@ -829,7 +829,7 @@ async def test_reset_persistence_failure_keeps_runtime_and_disk_unchanged(
     def fail_persist(*args, **kwargs):
         raise OSError("synthetic capability reset write failure")
 
-    monkeypatch.setattr("opensquilla.gateway.rpc_onboarding._persist", fail_persist)
+    monkeypatch.setattr("openstarry_code.gateway.rpc_onboarding._persist", fail_persist)
 
     response = await _reset(cfg, "search")
 
@@ -857,7 +857,7 @@ async def test_live_sync_failure_reports_restart_without_undoing_saved_reset(
         raise RuntimeError("synthetic live sync failure")
 
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_onboarding._sync_search_provider",
+        "openstarry_code.gateway.rpc_onboarding._sync_search_provider",
         fail_live_sync,
     )
 

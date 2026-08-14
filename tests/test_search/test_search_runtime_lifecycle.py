@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from opensquilla.tools.builtin import web
+from openstarry_code.tools.builtin import web
 
 
 def test_search_runtime_can_reset_global_configuration() -> None:

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from opensquilla.onboarding.image_generation_specs import (
+from openstarry_code.onboarding.image_generation_specs import (
     image_generation_provider_catalog_payload,
 )
 

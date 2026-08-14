@@ -6,10 +6,10 @@ import asyncio
 
 import pytest
 
-from opensquilla.engine.types import MetaRunCompletedEvent, MetaStepStateEvent
-from opensquilla.skills.meta.events import _StepDone
-from opensquilla.skills.meta.scheduler import run_dag
-from opensquilla.skills.meta.types import (
+from openstarry_code.engine.types import MetaRunCompletedEvent, MetaStepStateEvent
+from openstarry_code.skills.meta.events import _StepDone
+from openstarry_code.skills.meta.scheduler import run_dag
+from openstarry_code.skills.meta.types import (
     ClarifyField,
     ClarifyStepConfig,
     MetaMatch,
@@ -141,7 +141,7 @@ async def test_meta_paused_emits_matching_tool_result_event():
     cards stay in-flight. Scheduler MUST emit a synthetic paused
     ToolResultEvent before returning the paused MetaResult."""
 
-    from opensquilla.engine.types import ToolResultEvent, ToolUseStartEvent
+    from openstarry_code.engine.types import ToolResultEvent, ToolUseStartEvent
 
     cfg = ClarifyStepConfig(
         mode="form",
@@ -187,7 +187,7 @@ async def test_meta_paused_tool_result_carries_clarify_schema_protocol():
     """PR5: the synthetic ToolResultEvent must include the surface
     protocol payload so Web/CLI/IM can render a form without parsing
     SkillSpec again."""
-    from opensquilla.engine.types import ToolResultEvent
+    from openstarry_code.engine.types import ToolResultEvent
 
     cfg = ClarifyStepConfig(
         mode="form",

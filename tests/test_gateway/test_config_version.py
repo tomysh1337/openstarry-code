@@ -18,17 +18,17 @@ from typing import Any
 import pytest
 import tomli_w
 
-import opensquilla.gateway.config_migration as migration_module
-import opensquilla.gateway.rpc_config  # noqa: F401  ensures RPC registration
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.config_migration import (
+import openstarry_code.gateway.config_migration as migration_module
+import openstarry_code.gateway.rpc_config  # noqa: F401  ensures RPC registration
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.config_migration import (
     LATEST_CONFIG_VERSION,
     migrate_config_payload,
 )
-from opensquilla.gateway.rpc import RpcContext, get_dispatcher
-from opensquilla.onboarding import config_store
-from opensquilla.search.types import MAX_SEARCH_RESULTS
+from openstarry_code.gateway.rpc import RpcContext, get_dispatcher
+from openstarry_code.onboarding import config_store
+from openstarry_code.search.types import MAX_SEARCH_RESULTS
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -121,7 +121,7 @@ def test_unstamped_current_payload_is_stamped_but_unchanged(tmp_path: Path) -> N
 
 
 def test_config_parse_error_names_the_offending_file(tmp_path: Path) -> None:
-    from opensquilla.gateway.config_migration import ConfigParseError
+    from openstarry_code.gateway.config_migration import ConfigParseError
 
     toml_path = tmp_path / "config.toml"
     toml_path.write_text("workspace_dir = [\n", encoding="utf-8")
@@ -286,7 +286,7 @@ def test_stamped_payload_still_normalizes_capture_mode_and_clamps_search() -> No
 def test_env_config_version_never_overrides_payload_stamp(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_VERSION", "99")
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_VERSION", "99")
     toml_path = _write_toml(tmp_path / "config.toml", {"port": 18791})
 
     assert GatewayConfig.load_from_toml(toml_path).config_version == LATEST_CONFIG_VERSION
@@ -307,10 +307,10 @@ def test_env_config_version_is_excluded_for_bare_construction(
 ) -> None:
     """Bare GatewayConfig() has no payload, so the env var is filtered at the
     settings-source level (see _EnvWithoutConfigVersion in gateway/config.py);
-    without that filter OPENSQUILLA_GATEWAY_CONFIG_VERSION would leak into the
+    without that filter OPENSTARRY_CODE_GATEWAY_CONFIG_VERSION would leak into the
     no-file default branches of GatewayConfig.load and config_store.load_config.
     """
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_VERSION", "99")
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_VERSION", "99")
 
     assert GatewayConfig().config_version == LATEST_CONFIG_VERSION
     assert (

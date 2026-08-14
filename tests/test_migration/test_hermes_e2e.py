@@ -6,8 +6,8 @@ from pathlib import Path
 
 from typer.testing import CliRunner
 
-from opensquilla.cli.main import app
-from opensquilla.onboarding.config_store import load_config
+from openstarry_code.cli.main import app
+from openstarry_code.onboarding.config_store import load_config
 
 runner = CliRunner()
 
@@ -27,7 +27,7 @@ def test_cli_hermes_dry_run_json_does_not_write(tmp_path: Path, monkeypatch) -> 
     source = _write_hermes_home(tmp_path)
     home = tmp_path / "opensquilla-home"
     config_path = tmp_path / "opensquilla.toml"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     result = runner.invoke(
         app,
@@ -62,7 +62,7 @@ telegram:
     home = tmp_path / "opensquilla-home"
     config_path = tmp_path / "opensquilla.toml"
     config_path.write_text('host = "127.0.0.9"\nport = 19999\n', encoding="utf-8")
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     result = runner.invoke(
         app,

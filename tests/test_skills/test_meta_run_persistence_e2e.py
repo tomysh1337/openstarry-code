@@ -8,9 +8,9 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.persistence.meta_run_writer import open_meta_run_writer
-from opensquilla.persistence.migrator import apply_pending
-from opensquilla.skills.meta.types import MetaMatch, MetaPlan, MetaResult, MetaStep
+from openstarry_code.persistence.meta_run_writer import open_meta_run_writer
+from openstarry_code.persistence.migrator import apply_pending
+from openstarry_code.skills.meta.types import MetaMatch, MetaPlan, MetaResult, MetaStep
 
 MIGRATIONS_DIR = Path(__file__).resolve().parents[1].parent / "migrations"
 
@@ -32,14 +32,14 @@ def writer_db(tmp_path: Path, _writer_db_template: Path):
 
 
 def _stub_runner_for(outputs: dict[str, str]):
-    from opensquilla.skills.meta.events import _StepDone
+    from openstarry_code.skills.meta.events import _StepDone
 
     async def _runner(step, effective_skill, inputs, outputs_so_far):
         text = outputs.get(step.id, f"output-of-{step.id}")
         if text == "__FAIL__":
             raise RuntimeError(f"{step.id} exploded")
         if text == "__SAFE_PAID_FAIL__":
-            from opensquilla.skills.meta.replay_safety import encode_paid_replay_safety
+            from openstarry_code.skills.meta.replay_safety import encode_paid_replay_safety
 
             raise RuntimeError(
                 encode_paid_replay_safety("pre-submit validation failed", safe_no_submit=True)
@@ -49,7 +49,7 @@ def _stub_runner_for(outputs: dict[str, str]):
 
 
 async def _drive_orchestrator(writer, plan: MetaPlan, outputs: dict[str, str]) -> MetaResult:
-    from opensquilla.skills.meta.orchestrator import MetaOrchestrator
+    from openstarry_code.skills.meta.orchestrator import MetaOrchestrator
 
     async def stub_skill_loader_dummy():
         return None
@@ -81,9 +81,9 @@ async def _drive_orchestrator(writer, plan: MetaPlan, outputs: dict[str, str]) -
 
 
 async def _drive_orchestrator_with_usage(writer, plan: MetaPlan) -> MetaResult:
-    from opensquilla.engine.usage import UsageTracker
-    from opensquilla.skills.meta.events import _StepDone
-    from opensquilla.skills.meta.orchestrator import MetaOrchestrator
+    from openstarry_code.engine.usage import UsageTracker
+    from openstarry_code.skills.meta.events import _StepDone
+    from openstarry_code.skills.meta.orchestrator import MetaOrchestrator
 
     tracker = UsageTracker()
     orch = MetaOrchestrator(
@@ -147,7 +147,7 @@ async def test_linear_success_writes_run_and_steps(writer_db) -> None:
 
 @pytest.mark.asyncio
 async def test_manual_command_trigger_writes_run(writer_db) -> None:
-    from opensquilla.skills.meta.orchestrator import MetaOrchestrator
+    from openstarry_code.skills.meta.orchestrator import MetaOrchestrator
 
     plan = MetaPlan(
         name="manual-linear",
@@ -199,7 +199,7 @@ async def test_live_run_persists_scoped_step_usage(writer_db) -> None:
     summary = writer_db.hydrate_runs([row])[0]
     assert summary.run_id == run.run_id
 
-    from opensquilla.persistence.meta_run_writer import summarize_run_record
+    from openstarry_code.persistence.meta_run_writer import summarize_run_record
 
     run_summary = summarize_run_record(run)
     assert run_summary["usage"]["available"] is True
@@ -233,9 +233,9 @@ async def test_on_failure_records_substituted(writer_db) -> None:
 
 @pytest.mark.asyncio
 async def test_on_failure_persists_failed_step_usage(writer_db) -> None:
-    from opensquilla.engine.usage import UsageTracker
-    from opensquilla.skills.meta.events import _StepDone
-    from opensquilla.skills.meta.orchestrator import MetaOrchestrator
+    from openstarry_code.engine.usage import UsageTracker
+    from openstarry_code.skills.meta.events import _StepDone
+    from openstarry_code.skills.meta.orchestrator import MetaOrchestrator
 
     plan = MetaPlan(
         name="failover-usage",
@@ -290,7 +290,7 @@ async def test_on_failure_persists_failed_step_usage(writer_db) -> None:
     [row] = writer_db.list_runs(name="failover-usage")
     run = writer_db.get_run(row.run_id)
     assert run is not None
-    from opensquilla.persistence.meta_run_writer import summarize_run_record
+    from openstarry_code.persistence.meta_run_writer import summarize_run_record
 
     run_summary = summarize_run_record(run)
     status_by_step = {step.step_id: step.status for step in run.steps}
@@ -324,8 +324,8 @@ async def test_hard_failure_marks_step_failed(writer_db) -> None:
 
 @pytest.mark.asyncio
 async def test_hard_paid_failure_persists_replay_safety_marker(writer_db) -> None:
-    from opensquilla.skills.meta.replay_safety import paid_replay_is_safe
-    from opensquilla.skills.meta.run_reports import build_recovery_events
+    from openstarry_code.skills.meta.replay_safety import paid_replay_is_safe
+    from openstarry_code.skills.meta.run_reports import build_recovery_events
 
     plan = MetaPlan(
         name="hard-paid-fail",
@@ -370,7 +370,7 @@ async def test_cancellation_marks_cancelled(writer_db) -> None:
         name="slow", triggers=("t",), priority=10,
         steps=(MetaStep(id="s1", skill="alpha", kind="agent"),),
     )
-    from opensquilla.skills.meta.orchestrator import MetaOrchestrator
+    from openstarry_code.skills.meta.orchestrator import MetaOrchestrator
     orch = MetaOrchestrator(
         agent_runner=lambda *a, **kw: None,
         skill_loader=lambda: None,
@@ -416,7 +416,7 @@ async def test_cancellation_marks_cancelled(writer_db) -> None:
 @pytest.mark.asyncio
 async def test_run_writer_none_legacy_path(writer_db) -> None:
     """Regression: run_writer=None means zero rows written."""
-    from opensquilla.skills.meta.orchestrator import MetaOrchestrator
+    from openstarry_code.skills.meta.orchestrator import MetaOrchestrator
     plan = MetaPlan(
         name="legacy", triggers=("t",), priority=10,
         steps=(MetaStep(id="s1", skill="alpha", kind="agent"),),

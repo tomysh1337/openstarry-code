@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from opensquilla.safety.permission_matrix import Principal, is_tool_allowed
-from opensquilla.safety.tool_tiers import HARDCODED_ADMIN_ONLY, RiskTier, get_tier
+from openstarry_code.safety.permission_matrix import Principal, is_tool_allowed
+from openstarry_code.safety.tool_tiers import HARDCODED_ADMIN_ONLY, RiskTier, get_tier
 
 
 def test_execute_code_is_pinned_admin_only() -> None:

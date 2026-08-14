@@ -17,20 +17,20 @@ import importlib
 
 
 def test_feishu_module_importable() -> None:
-    importlib.import_module("opensquilla.channels.feishu")
+    importlib.import_module("openstarry_code.channels.feishu")
 
 
 def test_telegram_module_importable() -> None:
-    importlib.import_module("opensquilla.channels.telegram")
+    importlib.import_module("openstarry_code.channels.telegram")
 
 
 def test_dingtalk_module_importable() -> None:
-    importlib.import_module("opensquilla.channels.dingtalk")
+    importlib.import_module("openstarry_code.channels.dingtalk")
 
 
 def test_qq_module_importable() -> None:
-    importlib.import_module("opensquilla.channels.qq")
+    importlib.import_module("openstarry_code.channels.qq")
 
 
 def test_wecom_module_importable() -> None:
-    importlib.import_module("opensquilla.channels.wecom")
+    importlib.import_module("openstarry_code.channels.wecom")

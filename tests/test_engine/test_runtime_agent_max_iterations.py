@@ -4,9 +4,9 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.engine.types import AgentConfig
-from opensquilla.gateway.config import GatewayConfig
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.engine.types import AgentConfig
+from openstarry_code.gateway.config import GatewayConfig
 
 
 class _SessionConfigManager:
@@ -20,7 +20,7 @@ class _SessionConfigManager:
 def test_resolve_agent_max_iterations_prefers_explicit_value(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_AGENT_MAX_ITERATIONS", "222")
+    monkeypatch.setenv("OPENSTARRY_CODE_AGENT_MAX_ITERATIONS", "222")
     runner = TurnRunner(
         provider_selector=None,
         session_manager=_SessionConfigManager(SimpleNamespace(agent_max_iterations=111)),
@@ -34,7 +34,7 @@ def test_resolve_agent_max_iterations_prefers_explicit_value(
 def test_resolve_agent_max_iterations_accepts_explicit_zero(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_AGENT_MAX_ITERATIONS", "222")
+    monkeypatch.setenv("OPENSTARRY_CODE_AGENT_MAX_ITERATIONS", "222")
     runner = TurnRunner(
         provider_selector=None,
         session_manager=_SessionConfigManager(SimpleNamespace(agent_max_iterations=111)),
@@ -48,7 +48,7 @@ def test_resolve_agent_max_iterations_accepts_explicit_zero(
 def test_resolve_agent_max_iterations_prefers_session_config(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_AGENT_MAX_ITERATIONS", "222")
+    monkeypatch.setenv("OPENSTARRY_CODE_AGENT_MAX_ITERATIONS", "222")
     runner = TurnRunner(
         provider_selector=None,
         session_manager=_SessionConfigManager(SimpleNamespace(agent_max_iterations=111)),
@@ -62,7 +62,7 @@ def test_resolve_agent_max_iterations_prefers_session_config(
 def test_resolve_agent_max_iterations_accepts_session_config_zero(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_AGENT_MAX_ITERATIONS", "222")
+    monkeypatch.setenv("OPENSTARRY_CODE_AGENT_MAX_ITERATIONS", "222")
     runner = TurnRunner(
         provider_selector=None,
         session_manager=_SessionConfigManager(SimpleNamespace(agent_max_iterations=0)),
@@ -76,7 +76,7 @@ def test_resolve_agent_max_iterations_accepts_session_config_zero(
 def test_resolve_agent_max_iterations_prefers_env_over_gateway_config(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_AGENT_MAX_ITERATIONS", "222")
+    monkeypatch.setenv("OPENSTARRY_CODE_AGENT_MAX_ITERATIONS", "222")
     runner = TurnRunner(
         provider_selector=None,
         session_manager=_SessionConfigManager(None),
@@ -84,13 +84,13 @@ def test_resolve_agent_max_iterations_prefers_env_over_gateway_config(
     )
 
     assert runner._resolve_agent_max_iterations("agent:main:test") == 222
-    assert runner._last_agent_max_iterations_source == "env OPENSQUILLA_AGENT_MAX_ITERATIONS"
+    assert runner._last_agent_max_iterations_source == "env OPENSTARRY_CODE_AGENT_MAX_ITERATIONS"
 
 
 def test_resolve_agent_max_iterations_accepts_env_zero(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_AGENT_MAX_ITERATIONS", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_AGENT_MAX_ITERATIONS", "0")
     runner = TurnRunner(
         provider_selector=None,
         session_manager=_SessionConfigManager(None),
@@ -98,13 +98,13 @@ def test_resolve_agent_max_iterations_accepts_env_zero(
     )
 
     assert runner._resolve_agent_max_iterations("agent:main:test") == 0
-    assert runner._last_agent_max_iterations_source == "env OPENSQUILLA_AGENT_MAX_ITERATIONS"
+    assert runner._last_agent_max_iterations_source == "env OPENSTARRY_CODE_AGENT_MAX_ITERATIONS"
 
 
 def test_resolve_agent_max_iterations_uses_gateway_config(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.delenv("OPENSQUILLA_AGENT_MAX_ITERATIONS", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_AGENT_MAX_ITERATIONS", raising=False)
     runner = TurnRunner(provider_selector=None, config=GatewayConfig(agent_max_iterations=333))
 
     assert runner._resolve_agent_max_iterations("agent:main:test") == 333
@@ -114,7 +114,7 @@ def test_resolve_agent_max_iterations_uses_gateway_config(
 def test_resolve_agent_max_iterations_uses_agent_default_without_config(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.delenv("OPENSQUILLA_AGENT_MAX_ITERATIONS", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_AGENT_MAX_ITERATIONS", raising=False)
     runner = TurnRunner(provider_selector=None, config=None)
 
     assert runner._resolve_agent_max_iterations("agent:main:test") == AgentConfig().max_iterations
@@ -124,7 +124,7 @@ def test_resolve_agent_max_iterations_uses_agent_default_without_config(
 def test_resolve_agent_max_iterations_invalid_env_falls_through(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_AGENT_MAX_ITERATIONS", "not-an-int")
+    monkeypatch.setenv("OPENSTARRY_CODE_AGENT_MAX_ITERATIONS", "not-an-int")
     runner = TurnRunner(
         provider_selector=None,
         session_manager=_SessionConfigManager(None),

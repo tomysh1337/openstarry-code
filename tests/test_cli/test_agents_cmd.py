@@ -1,4 +1,4 @@
-"""CLI tests for `opensquilla agents`."""
+"""CLI tests for `openstarry-code agents`."""
 
 from __future__ import annotations
 
@@ -7,15 +7,15 @@ from pathlib import Path
 
 from typer.testing import CliRunner
 
-from opensquilla.cli.main import app
-from opensquilla.onboarding.config_store import load_config
+from openstarry_code.cli.main import app
+from openstarry_code.onboarding.config_store import load_config
 
 runner = CliRunner()
 
 
 def _setenv(monkeypatch, tmp_path: Path) -> Path:
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     return target
 
 

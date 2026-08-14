@@ -22,10 +22,10 @@ from typing import Any
 
 import httpx
 
-from opensquilla.gateway import rpc_onboarding
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.rpc import RpcContext
-from opensquilla.gateway.scopes import ADMIN_SCOPE, METHOD_SCOPES
+from openstarry_code.gateway import rpc_onboarding
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.rpc import RpcContext
+from openstarry_code.gateway.scopes import ADMIN_SCOPE, METHOD_SCOPES
 
 # Top-level envelope. ``source`` distinguishes "the provider listed models"
 # ("live") from "provider lists nothing / does not support listing" ("none",
@@ -74,7 +74,7 @@ def _patch_models_response(monkeypatch: Any, response: httpx.Response) -> None:
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client)
 
 
 def _ok_models_response() -> httpx.Response:
@@ -87,10 +87,10 @@ def _ok_models_response() -> httpx.Response:
 
 def _ctx(tmp_path: Any) -> RpcContext:
     # config_path points at a nonexistent tmp file so the handler never reads
-    # the developer's real ~/.opensquilla config.
+    # the developer's real ~/.openstarry-code config.
     return RpcContext(
         conn_id="contract",
-        config=GatewayConfig(config_path=str(tmp_path / "opensquilla.toml")),
+        config=GatewayConfig(config_path=str(tmp_path / "openstarry-code.toml")),
     )
 
 
@@ -138,7 +138,7 @@ async def test_discover_model_row_keys_are_frozen(tmp_path, monkeypatch: Any) ->
 
 
 def test_discover_tokenrhythm_catalog_health_shape_is_frozen() -> None:
-    from opensquilla.onboarding.probe import ProviderModelsDiscoverResult
+    from openstarry_code.onboarding.probe import ProviderModelsDiscoverResult
 
     payload = ProviderModelsDiscoverResult(
         ok=True,
@@ -155,7 +155,7 @@ async def test_discover_pricing_keys_are_frozen_when_present(tmp_path, monkeypat
     # Install an isolated shared catalog carrying a known per-Mtok price so
     # the pricing-object branch is exercised deterministically offline (the
     # catalog's user-override layer is the highest resolution authority).
-    from opensquilla.provider.model_catalog import ModelCatalog, set_shared_catalog
+    from openstarry_code.provider.model_catalog import ModelCatalog, set_shared_catalog
 
     catalog = ModelCatalog()
     catalog.set_user_overrides(
@@ -187,9 +187,9 @@ async def test_discover_pricing_keys_are_frozen_when_present(tmp_path, monkeypat
 def test_discover_metadata_preserves_explicit_false_capabilities() -> None:
     """Declared/public ``False`` must outrank truthy compatibility fallbacks."""
 
-    from opensquilla.onboarding.probe import _discover_model_row
-    from opensquilla.provider.model_catalog import ModelCatalog, set_shared_catalog
-    from opensquilla.provider.types import ModelInfo
+    from openstarry_code.onboarding.probe import _discover_model_row
+    from openstarry_code.provider.model_catalog import ModelCatalog, set_shared_catalog
+    from openstarry_code.provider.types import ModelInfo
 
     catalog = ModelCatalog()
     catalog.set_user_overrides(
@@ -233,9 +233,9 @@ def test_discover_metadata_preserves_explicit_false_capabilities() -> None:
 def test_discover_metadata_true_does_not_enable_unsupported_transport_capability() -> None:
     """Published declarations cannot enable a capability the runtime cannot execute."""
 
-    from opensquilla.onboarding.probe import _discover_model_row
-    from opensquilla.provider.model_catalog import ModelCatalog, set_shared_catalog
-    from opensquilla.provider.types import ModelInfo
+    from openstarry_code.onboarding.probe import _discover_model_row
+    from openstarry_code.provider.model_catalog import ModelCatalog, set_shared_catalog
+    from openstarry_code.provider.types import ModelInfo
 
     metadata = {
         "schemaVersion": 1,
@@ -315,7 +315,7 @@ async def test_discover_classified_failure_envelope_is_frozen(tmp_path, monkeypa
             raise httpx.HTTPStatusError("401", request=request, response=response)
 
     monkeypatch.setattr(
-        "opensquilla.onboarding.probe.build_provider",
+        "openstarry_code.onboarding.probe.build_provider",
         lambda *args, **kwargs: _RaisingProvider(),
     )
 

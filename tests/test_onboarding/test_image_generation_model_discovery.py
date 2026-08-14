@@ -7,8 +7,8 @@ from typing import Any
 import httpx
 import pytest
 
-from opensquilla.onboarding import image_generation_model_discovery as discovery
-from opensquilla.onboarding.image_generation_specs import (
+from openstarry_code.onboarding import image_generation_model_discovery as discovery
+from openstarry_code.onboarding.image_generation_specs import (
     get_image_generation_provider_setup_spec,
 )
 
@@ -155,7 +155,7 @@ async def test_tokenrhythm_image_catalog_request_adds_install_id_header(monkeypa
         discovery,
         "tokenrhythm_install_id_headers",
         lambda _provider_kind, _base_url: (
-            {"X-OpenSquilla-Install-Id": "synthetic-install-id"}
+            {"X-OpenStarry Code-Install-Id": "synthetic-install-id"}
             if entered
             else pytest.fail("install id resolved before the client entered")
         ),
@@ -165,7 +165,7 @@ async def test_tokenrhythm_image_catalog_request_adds_install_id_header(monkeypa
     assert captured["url"] == "https://tokenrhythm.studio/api/models"
     headers = captured["headers"]
     assert isinstance(headers, dict)
-    assert headers["X-OpenSquilla-Install-Id"] == "synthetic-install-id"
+    assert headers["X-OpenStarry Code-Install-Id"] == "synthetic-install-id"
 
 
 @pytest.mark.asyncio
@@ -194,11 +194,11 @@ async def test_tokenrhythm_image_catalog_http_error_drops_retained_install_id(
         discovery,
         "tokenrhythm_install_id_headers",
         lambda *_args, **_kwargs: {
-            "X-OpenSquilla-Install-Id": install_id
+            "X-OpenStarry Code-Install-Id": install_id
         },
     )
     monkeypatch.setattr(
-        "opensquilla.provider.error_redaction.redact_tokenrhythm_install_ids",
+        "openstarry_code.provider.error_redaction.redact_tokenrhythm_install_ids",
         lambda text: text.replace(install_id, "***"),
     )
 
@@ -206,7 +206,7 @@ async def test_tokenrhythm_image_catalog_http_error_drops_retained_install_id(
         await discovery._fetch_tokenrhythm_image_models()
 
     assert raised.value.__context__ is None
-    assert raised.value.request.headers["X-OpenSquilla-Install-Id"] == "[PRESENT]"
+    assert raised.value.request.headers["X-OpenStarry Code-Install-Id"] == "[PRESENT]"
     retained = " ".join(
         (
             repr(raised.value.request.headers),

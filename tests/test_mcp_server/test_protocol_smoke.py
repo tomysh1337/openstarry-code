@@ -15,7 +15,7 @@ from typing import Any
 import pytest
 from pydantic import AnyUrl
 
-from opensquilla.mcp_server.bridge import OpenSquillaMCPBridge
+from openstarry_code.mcp_server.bridge import OpenSquillaMCPBridge
 
 
 def _src_env(tmp_path: Path) -> dict[str, str]:
@@ -23,9 +23,9 @@ def _src_env(tmp_path: Path) -> dict[str, str]:
     src_path = str(Path.cwd() / "src")
     existing = env.get("PYTHONPATH")
     env["PYTHONPATH"] = src_path if not existing else f"{src_path}{os.pathsep}{existing}"
-    env["OPENSQUILLA_STATE_DIR"] = str(tmp_path / "state")
-    env["OPENSQUILLA_LOG_DIR"] = str(tmp_path / "logs")
-    env["OPENSQUILLA_TURN_CALL_LOG"] = "0"
+    env["OPENSTARRY_CODE_STATE_DIR"] = str(tmp_path / "state")
+    env["OPENSTARRY_CODE_LOG_DIR"] = str(tmp_path / "logs")
+    env["OPENSTARRY_CODE_TURN_CALL_LOG"] = "0"
     return env
 
 
@@ -93,7 +93,7 @@ async def test_stdio_mcp_protocol_lists_calls_tools_and_reads_resources(tmp_path
             """
             import anyio
 
-            from opensquilla.mcp_server.server import create_mcp_server
+            from openstarry_code.mcp_server.server import create_mcp_server
 
 
             class FakeBridge:
@@ -224,10 +224,10 @@ async def test_bridge_runs_against_real_gateway_websocket_session_flow(tmp_path:
 
             import uvicorn
 
-            from opensquilla.engine.types import DoneEvent, TextDeltaEvent
-            from opensquilla.gateway.app import create_gateway_app
-            from opensquilla.gateway.config import AuthConfig, GatewayConfig
-            from opensquilla.gateway.websocket import SubscriptionManager
+            from openstarry_code.engine.types import DoneEvent, TextDeltaEvent
+            from openstarry_code.gateway.app import create_gateway_app
+            from openstarry_code.gateway.config import AuthConfig, GatewayConfig
+            from openstarry_code.gateway.websocket import SubscriptionManager
 
 
             @dataclass

@@ -3,7 +3,7 @@
 The squilla-router step's post-classifier heuristics (confidence gate,
 complaint upgrade, KV-cache anti-downgrade, large-context floor,
 tier-provider mismatch flag, bind) live in
-``opensquilla.engine.routing.policy``. This suite proves the extraction is
+``openstarry_code.engine.routing.policy``. This suite proves the extraction is
 behavior-preserving: every corpus case must produce byte-identical routing
 decisions and routing metadata before and after the extraction.
 
@@ -39,9 +39,9 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.pipeline import TurnContext
-from opensquilla.engine.steps import squilla_router as squilla_router_step
-from opensquilla.gateway.config import GatewayConfig
+from openstarry_code.engine.pipeline import TurnContext
+from openstarry_code.engine.steps import squilla_router as squilla_router_step
+from openstarry_code.gateway.config import GatewayConfig
 
 GOLDEN_PATH = Path(__file__).parent / "goldens" / "routing_policy_parity_golden.json"
 

@@ -8,33 +8,33 @@ from typing import Any
 
 import pytest
 
-from opensquilla.cli.chat.turn_stream import _drain_stalled_planes
-from opensquilla.cli.tui.backend import domain_events, plugins
-from opensquilla.cli.tui.backend import runtime as backend_runtime
-from opensquilla.cli.tui.backend.contracts import (
+from openstarry_code.cli.chat.turn_stream import _drain_stalled_planes
+from openstarry_code.cli.tui.backend import domain_events, plugins
+from openstarry_code.cli.tui.backend import runtime as backend_runtime
+from openstarry_code.cli.tui.backend.contracts import (
     TuiInputKind,
     TuiRuntimeConfig,
     TuiRuntimeHooks,
 )
-from opensquilla.cli.tui.backend.directives import StreamDirectiveFilter
-from opensquilla.cli.tui.backend.domain_events import TuiDomainEvent, now_ms
-from opensquilla.cli.tui.backend.events import (
+from openstarry_code.cli.tui.backend.directives import StreamDirectiveFilter
+from openstarry_code.cli.tui.backend.domain_events import TuiDomainEvent, now_ms
+from openstarry_code.cli.tui.backend.events import (
     TUI_DOMAIN_EVENT_KINDS,
     TuiEvent,
     TuiEventKind,
 )
-from opensquilla.cli.tui.backend.plugins import TuiPluginContext, TuiPluginManager
-from opensquilla.cli.tui.backend.render_summary import (
+from openstarry_code.cli.tui.backend.plugins import TuiPluginContext, TuiPluginManager
+from openstarry_code.cli.tui.backend.render_summary import (
     TOOL_SUMMARY_ARG_KEYS,
     clip_arg,
     sanitize_terminal_text,
     summarize_args,
     summarize_result,
 )
-from opensquilla.cli.tui.backend.runtime import run_tui_runtime
-from opensquilla.cli.tui.backend.state import TuiRuntimeState
-from opensquilla.cli.tui.backend.streaming import StreamingFlushPolicy, StreamingPlane
-from opensquilla.cli.tui.backend.transcript import (
+from openstarry_code.cli.tui.backend.runtime import run_tui_runtime
+from openstarry_code.cli.tui.backend.state import TuiRuntimeState
+from openstarry_code.cli.tui.backend.streaming import StreamingFlushPolicy, StreamingPlane
+from openstarry_code.cli.tui.backend.transcript import (
     ToolItem,
     ToolPreviewPolicy,
     TranscriptStore,
@@ -541,8 +541,8 @@ def test_summarize_args_generic_fallback_flattens_multiline_values() -> None:
 
 
 def test_summarize_args_names_conform_to_builtin_registry() -> None:
-    import opensquilla.tools.builtin  # noqa: F401 - registers the builtin tools
-    from opensquilla.tools.registry import get_default_registry
+    import openstarry_code.tools.builtin  # noqa: F401 - registers the builtin tools
+    from openstarry_code.tools.registry import get_default_registry
 
     registry = get_default_registry()
     samples = {"patch": "*** Begin Patch\n*** Update File: pkg/mod.py\n*** End Patch"}

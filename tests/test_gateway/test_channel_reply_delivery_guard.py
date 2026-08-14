@@ -15,10 +15,10 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import httpx
 import pytest
 
-from opensquilla.channels._util import ChannelAccessPolicy
-from opensquilla.channels.delivery_store import IngressClaim
-from opensquilla.channels.types import IncomingMessage, OutgoingMessage
-from opensquilla.gateway.channel_dispatch import (
+from openstarry_code.channels._util import ChannelAccessPolicy
+from openstarry_code.channels.delivery_store import IngressClaim
+from openstarry_code.channels.types import IncomingMessage, OutgoingMessage
+from openstarry_code.gateway.channel_dispatch import (
     _REPLY_SEND_ATTEMPTS,
     _ChannelInFlightSet,
     _deliver_reply_or_notify,
@@ -56,7 +56,7 @@ def _no_sleep(monkeypatch: pytest.MonkeyPatch) -> None:
     async def _instant(_delay: float) -> None:
         return None
 
-    monkeypatch.setattr("opensquilla.gateway.channel_dispatch.asyncio.sleep", _instant)
+    monkeypatch.setattr("openstarry_code.gateway.channel_dispatch.asyncio.sleep", _instant)
 
 
 async def test_delivered_first_try_returns_none() -> None:
@@ -218,11 +218,11 @@ async def test_command_reply_send_failure_does_not_escape_dispatch_loop() -> Non
 
     with (
         patch(
-            "opensquilla.gateway.channel_dispatch._maybe_resolve_channel_approval",
+            "openstarry_code.gateway.channel_dispatch._maybe_resolve_channel_approval",
             new=AsyncMock(return_value=None),
         ),
         patch(
-            "opensquilla.gateway.channel_dispatch._dispatch_channel_slash_command",
+            "openstarry_code.gateway.channel_dispatch._dispatch_channel_slash_command",
             new=AsyncMock(return_value=command_reply),
         ),
     ):
@@ -255,19 +255,19 @@ async def test_busy_notice_send_failure_does_not_escape_dispatch_loop() -> None:
 
     with (
         patch(
-            "opensquilla.gateway.channel_dispatch._maybe_resolve_channel_approval",
+            "openstarry_code.gateway.channel_dispatch._maybe_resolve_channel_approval",
             new=AsyncMock(return_value=None),
         ),
         patch(
-            "opensquilla.gateway.channel_dispatch._apply_saved_channel_run_context",
+            "openstarry_code.gateway.channel_dispatch._apply_saved_channel_run_context",
             new=AsyncMock(),
         ),
         patch(
-            "opensquilla.gateway.channel_dispatch._ingest_channel_message_attachments",
+            "openstarry_code.gateway.channel_dispatch._ingest_channel_message_attachments",
             new=AsyncMock(),
         ),
         patch(
-            "opensquilla.gateway.channel_dispatch._record_delivery_context",
+            "openstarry_code.gateway.channel_dispatch._record_delivery_context",
             new=AsyncMock(),
         ),
     ):

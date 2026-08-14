@@ -13,7 +13,7 @@ from decimal import Decimal
 
 import pytest
 
-from opensquilla.provider.openai import (
+from openstarry_code.provider.openai import (
     _billing_result,
     _exact_provider_billing_payload,
     _provider_billed_cost,

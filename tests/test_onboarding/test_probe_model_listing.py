@@ -17,14 +17,14 @@ from typing import Any
 import httpx
 import pytest
 
-from opensquilla.provider.ollama import OllamaProvider
-from opensquilla.provider.openai import OpenAIProvider
-from opensquilla.provider.openai_responses import OpenAIResponsesProvider
+from openstarry_code.provider.ollama import OllamaProvider
+from openstarry_code.provider.openai import OpenAIProvider
+from openstarry_code.provider.openai_responses import OpenAIResponsesProvider
 
 _ADAPTER_MODULES = {
-    "openai": "opensquilla.provider.openai",
-    "ollama": "opensquilla.provider.ollama",
-    "openai_responses": "opensquilla.provider.openai_responses",
+    "openai": "openstarry_code.provider.openai",
+    "ollama": "openstarry_code.provider.ollama",
+    "openai_responses": "openstarry_code.provider.openai_responses",
 }
 
 

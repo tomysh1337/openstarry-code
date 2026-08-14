@@ -9,7 +9,7 @@ from pathlib import Path
 import pytest
 import pytest_asyncio
 
-from opensquilla.session.models import (
+from openstarry_code.session.models import (
     AgentTaskRecord,
     AgentTaskStatus,
     CollaborationMode,
@@ -19,13 +19,13 @@ from opensquilla.session.models import (
     SessionNode,
     TranscriptEntry,
 )
-from opensquilla.session.plans import (
+from openstarry_code.session.plans import (
     PlanConflictError,
     PlanRunConflictError,
     plan_revision_snapshot,
     plan_run_snapshot,
 )
-from opensquilla.session.storage import (
+from openstarry_code.session.storage import (
     PlanImplementationSessionBusyError,
     SessionStorage,
 )
@@ -628,7 +628,7 @@ async def test_distinct_plan_runs_have_monotonic_creation_order_within_one_milli
     storage: SessionStorage,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setattr("opensquilla.session.storage._now_ms", lambda: 500)
+    monkeypatch.setattr("openstarry_code.session.storage._now_ms", lambda: 500)
     await storage.create_plan_revision(
         _revision(),
         expected_parent_revision_id=None,

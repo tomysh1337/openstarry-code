@@ -1,7 +1,7 @@
 """Smoke tests for Cache-Control on /control/static/* responses.
 
 The Control UI serves generated Vue assets through a `_CachedStaticFiles` subclass
-(see ``opensquilla.gateway.control_ui``). These tests pin the header semantics
+(see ``openstarry_code.gateway.control_ui``). These tests pin the header semantics
 so a refactor that drops the subclass — or breaks the env-rollback knob —
 shows up immediately.
 """
@@ -17,9 +17,9 @@ from pydantic import ValidationError
 from starlette.applications import Starlette
 from starlette.testclient import TestClient
 
-from opensquilla.gateway import control_ui
-from opensquilla.gateway.config import ControlUiConfig, GatewayConfig
-from opensquilla.gateway.control_ui import create_control_ui_routes
+from openstarry_code.gateway import control_ui
+from openstarry_code.gateway.config import ControlUiConfig, GatewayConfig
+from openstarry_code.gateway.control_ui import create_control_ui_routes
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -40,7 +40,7 @@ def _write_vite_static(static_dir: Path) -> Path:
 
 @pytest.fixture
 def _app(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Starlette:
-    monkeypatch.delenv("OPENSQUILLA_STATIC_NO_CACHE", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_STATIC_NO_CACHE", raising=False)
     static_dir = tmp_path / "static"
     dist_dir = _write_vite_static(static_dir)
     monkeypatch.setattr(control_ui, "_STATIC_DIR", static_dir)
@@ -66,7 +66,7 @@ def test_control_ui_bootstrap_includes_config_path(
 ) -> None:
     monkeypatch.setattr(control_ui, "_DIST_DIR", _write_vite_static(tmp_path / "static"))
     config = GatewayConfig()
-    config.config_path = str(tmp_path / "OpenSquilla Config.toml")
+    config.config_path = str(tmp_path / "OpenStarry Code Config.toml")
     config.control_ui.enabled = True
     app = Starlette(routes=create_control_ui_routes(config))
     client = TestClient(app)
@@ -294,9 +294,9 @@ def test_control_ui_frontend_reads_env_override(
     monkeypatch: pytest.MonkeyPatch,
     caplog: pytest.LogCaptureFixture,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_CONTROL_UI_FRONTEND", "legacy")
+    monkeypatch.setenv("OPENSTARRY_CODE_CONTROL_UI_FRONTEND", "legacy")
 
-    with caplog.at_level(logging.WARNING, logger="opensquilla.gateway.config"):
+    with caplog.at_level(logging.WARNING, logger="openstarry_code.gateway.config"):
         with pytest.warns(DeprecationWarning, match="no longer selects"):
             config = GatewayConfig()
 
@@ -306,7 +306,7 @@ def test_control_ui_frontend_reads_env_override(
 
 
 def test_control_ui_frontend_reads_toml_config(tmp_path) -> None:
-    config_path = tmp_path / "opensquilla.toml"
+    config_path = tmp_path / "openstarry-code.toml"
     config_path.write_text(
         '[control_ui]\nfrontend = "legacy"\n',
         encoding="utf-8",
@@ -374,10 +374,10 @@ def test_env_rollback_disables_cache_control(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    # OPENSQUILLA_STATIC_NO_CACHE=1 must completely skip the Cache-Control
+    # OPENSTARRY_CODE_STATIC_NO_CACHE=1 must completely skip the Cache-Control
     # header so a release with a static-cache problem can be defused without
     # a redeploy.
-    monkeypatch.setenv("OPENSQUILLA_STATIC_NO_CACHE", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_STATIC_NO_CACHE", "1")
     static_dir = tmp_path / "static"
     dist_dir = _write_vite_static(static_dir)
     monkeypatch.setattr(control_ui, "_STATIC_DIR", static_dir)
@@ -403,4 +403,4 @@ def test_nonexistent_path_does_not_add_header(_app: Starlette) -> None:
 
 
 def _cleanup_env() -> None:
-    os.environ.pop("OPENSQUILLA_STATIC_NO_CACHE", None)
+    os.environ.pop("OPENSTARRY_CODE_STATIC_NO_CACHE", None)

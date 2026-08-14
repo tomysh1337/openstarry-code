@@ -5,11 +5,11 @@ import json
 import pytest
 import structlog.testing
 
-from opensquilla.engine.types import ToolCall
-from opensquilla.tools.dispatch import build_tool_handler
-from opensquilla.tools.policy import ToolSurfaceCapabilities
-from opensquilla.tools.registry import ToolRegistry
-from opensquilla.tools.types import CallerKind, InteractionMode, ToolContext, ToolSpec
+from openstarry_code.engine.types import ToolCall
+from openstarry_code.tools.dispatch import build_tool_handler
+from openstarry_code.tools.policy import ToolSurfaceCapabilities
+from openstarry_code.tools.registry import ToolRegistry
+from openstarry_code.tools.types import CallerKind, InteractionMode, ToolContext, ToolSpec
 
 
 async def _handler() -> str:
@@ -70,8 +70,8 @@ def test_allowed_tools_remains_strict_when_tool_is_surfaced() -> None:
 
 
 def test_default_registry_removes_obsolete_wrapper_tools_but_keeps_canonical_tools() -> None:
-    import opensquilla.tools.builtin  # noqa: F401
-    from opensquilla.tools.registry import get_default_registry
+    import openstarry_code.tools.builtin  # noqa: F401
+    from openstarry_code.tools.registry import get_default_registry
 
     registry = get_default_registry()
 
@@ -86,10 +86,10 @@ def test_default_registry_removes_obsolete_wrapper_tools_but_keeps_canonical_too
 
 
 def test_retired_update_plan_selector_is_ignored_for_upgrade_compatibility() -> None:
-    import opensquilla.tools.builtin  # noqa: F401
-    from opensquilla.gateway.config import GatewayConfig, ToolsConfig
-    from opensquilla.tools.policy import apply_tool_policy_from_config
-    from opensquilla.tools.registry import get_default_registry
+    import openstarry_code.tools.builtin  # noqa: F401
+    from openstarry_code.gateway.config import GatewayConfig, ToolsConfig
+    from openstarry_code.tools.policy import apply_tool_policy_from_config
+    from openstarry_code.tools.registry import get_default_registry
 
     registry = get_default_registry()
     ctx = apply_tool_policy_from_config(
@@ -107,8 +107,8 @@ def test_retired_update_plan_selector_is_ignored_for_upgrade_compatibility() -> 
 
 
 def test_owner_schema_keeps_canonical_tools_and_subagents_stays_explicit_only() -> None:
-    import opensquilla.tools.builtin  # noqa: F401
-    from opensquilla.tools.registry import get_default_registry
+    import openstarry_code.tools.builtin  # noqa: F401
+    from openstarry_code.tools.registry import get_default_registry
 
     registry = get_default_registry()
     owner_ctx = ToolContext(is_owner=True, caller_kind=CallerKind.AGENT)
@@ -129,8 +129,8 @@ def test_owner_schema_keeps_canonical_tools_and_subagents_stays_explicit_only() 
 
 
 def test_node_runtime_stubs_stay_hidden_until_explicitly_surfaced() -> None:
-    import opensquilla.tools.builtin  # noqa: F401
-    from opensquilla.tools.registry import get_default_registry
+    import openstarry_code.tools.builtin  # noqa: F401
+    from openstarry_code.tools.registry import get_default_registry
 
     registry = get_default_registry()
     owner_ctx = ToolContext(is_owner=True, caller_kind=CallerKind.AGENT)
@@ -157,8 +157,8 @@ def test_node_runtime_stubs_stay_hidden_until_explicitly_surfaced() -> None:
 
 
 def test_web_owner_schema_hides_basic_pptx_fallback_by_default() -> None:
-    import opensquilla.tools.builtin  # noqa: F401
-    from opensquilla.tools.registry import get_default_registry
+    import openstarry_code.tools.builtin  # noqa: F401
+    from openstarry_code.tools.registry import get_default_registry
 
     registry = get_default_registry()
     web_ctx = ToolContext(is_owner=True, caller_kind=CallerKind.WEB)
@@ -170,8 +170,8 @@ def test_web_owner_schema_hides_basic_pptx_fallback_by_default() -> None:
 
 
 def test_channel_runtime_profile_exposes_publish_artifact() -> None:
-    import opensquilla.tools.builtin  # noqa: F401
-    from opensquilla.tools.registry import filter_by_profile, get_default_registry, resolve_profile
+    import openstarry_code.tools.builtin  # noqa: F401
+    from openstarry_code.tools.registry import filter_by_profile, get_default_registry, resolve_profile
 
     registry = get_default_registry()
     channel_ctx = ToolContext(is_owner=False, caller_kind=CallerKind.CHANNEL)
@@ -188,8 +188,8 @@ def test_channel_runtime_profile_exposes_publish_artifact() -> None:
 
 
 def test_channel_runtime_profile_exposes_safe_structured_file_tools() -> None:
-    import opensquilla.tools.builtin  # noqa: F401
-    from opensquilla.tools.registry import filter_by_profile, get_default_registry, resolve_profile
+    import openstarry_code.tools.builtin  # noqa: F401
+    from openstarry_code.tools.registry import filter_by_profile, get_default_registry, resolve_profile
 
     registry = get_default_registry()
     channel_ctx = ToolContext(is_owner=False, caller_kind=CallerKind.CHANNEL)
@@ -209,8 +209,8 @@ def test_channel_runtime_profile_exposes_safe_structured_file_tools() -> None:
 
 
 def test_verified_channel_admin_profile_exposes_full_runtime_tools() -> None:
-    import opensquilla.tools.builtin  # noqa: F401
-    from opensquilla.tools.registry import filter_by_profile, get_default_registry, resolve_profile
+    import openstarry_code.tools.builtin  # noqa: F401
+    from openstarry_code.tools.registry import filter_by_profile, get_default_registry, resolve_profile
 
     registry = get_default_registry()
     channel_admin_ctx = ToolContext(
@@ -239,9 +239,9 @@ def test_verified_channel_admin_profile_exposes_full_runtime_tools() -> None:
 
 
 def test_verified_channel_admin_matches_web_owner_runtime_tool_visibility() -> None:
-    import opensquilla.tools.builtin  # noqa: F401
-    from opensquilla.tools.policy import resolve_runtime_tool_surface
-    from opensquilla.tools.registry import get_default_registry
+    import openstarry_code.tools.builtin  # noqa: F401
+    from openstarry_code.tools.policy import resolve_runtime_tool_surface
+    from openstarry_code.tools.registry import get_default_registry
 
     capabilities = ToolSurfaceCapabilities(
         session_manager=True,
@@ -281,7 +281,7 @@ def test_verified_channel_admin_matches_web_owner_runtime_tool_visibility() -> N
 
 
 def test_channel_media_policy_surfaces_basic_pptx_fallback_explicitly() -> None:
-    from opensquilla.tools.policy import apply_tool_policy_from_config
+    from openstarry_code.tools.policy import apply_tool_policy_from_config
 
     registry = ToolRegistry()
     registry.register(_spec("session_status"), _handler)
@@ -313,7 +313,7 @@ def test_channel_media_policy_surfaces_basic_pptx_fallback_explicitly() -> None:
 
 
 def test_channel_runtime_profile_exposes_explicit_category_tools_not_host_mutation() -> None:
-    from opensquilla.tools.registry import filter_by_profile, resolve_profile
+    from openstarry_code.tools.registry import filter_by_profile, resolve_profile
 
     ctx = ToolContext(
         is_owner=False,
@@ -336,7 +336,7 @@ def test_channel_runtime_profile_exposes_explicit_category_tools_not_host_mutati
 def test_channel_hidden_tool_visibility_stays_on_channel_profile(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_TOOL_PROFILE", "owner_full")
+    monkeypatch.setenv("OPENSTARRY_CODE_TOOL_PROFILE", "owner_full")
     registry = ToolRegistry()
     registry.register(_spec("create_pptx", exposed_by_default=False), _handler)
     registry.register(_spec("hidden_authoring", exposed_by_default=False), _handler)
@@ -349,8 +349,8 @@ def test_channel_hidden_tool_visibility_stays_on_channel_profile(
 
 
 def test_shared_channel_context_hides_private_memory_read_tools_even_when_allowed() -> None:
-    from opensquilla.tools.policy import resolve_runtime_tool_surface
-    from opensquilla.tools.registry import filter_by_profile, resolve_profile
+    from openstarry_code.tools.policy import resolve_runtime_tool_surface
+    from openstarry_code.tools.registry import filter_by_profile, resolve_profile
 
     registry = ToolRegistry()
     registry.register(_spec("memory_get"), _handler)
@@ -383,8 +383,8 @@ def test_shared_channel_context_hides_private_memory_read_tools_even_when_allowe
 
 
 def test_direct_channel_context_keeps_private_memory_read_tools() -> None:
-    from opensquilla.tools.policy import resolve_runtime_tool_surface
-    from opensquilla.tools.registry import filter_by_profile, resolve_profile
+    from openstarry_code.tools.policy import resolve_runtime_tool_surface
+    from openstarry_code.tools.registry import filter_by_profile, resolve_profile
 
     registry = ToolRegistry()
     registry.register(_spec("memory_get"), _handler)
@@ -471,9 +471,9 @@ async def test_effective_tools_keep_private_memory_reads_for_owner_cron() -> Non
 
 
 def test_subagent_schema_hides_publish_artifact_without_artifact_context() -> None:
-    import opensquilla.tools.builtin  # noqa: F401
-    from opensquilla.tools.registry import get_default_registry
-    from opensquilla.tools.types import SUBAGENT_TOOL_DENY
+    import openstarry_code.tools.builtin  # noqa: F401
+    from openstarry_code.tools.registry import get_default_registry
+    from openstarry_code.tools.types import SUBAGENT_TOOL_DENY
 
     registry = get_default_registry()
     subagent_ctx = ToolContext(
@@ -489,8 +489,8 @@ def test_subagent_schema_hides_publish_artifact_without_artifact_context() -> No
 
 
 def test_owner_only_tools_are_hidden_from_non_owner_schema() -> None:
-    import opensquilla.tools.builtin  # noqa: F401
-    from opensquilla.tools.registry import get_default_registry
+    import openstarry_code.tools.builtin  # noqa: F401
+    from openstarry_code.tools.registry import get_default_registry
 
     registry = get_default_registry()
     owner_ctx = ToolContext(is_owner=True, caller_kind=CallerKind.AGENT)
@@ -505,10 +505,10 @@ def test_owner_only_tools_are_hidden_from_non_owner_schema() -> None:
 
 
 def test_web_group_can_surface_owner_only_http_request_for_owner_only() -> None:
-    import opensquilla.tools.builtin  # noqa: F401
-    from opensquilla.gateway.config import GatewayConfig, ToolsConfig
-    from opensquilla.tools.policy import apply_tool_policy_from_config
-    from opensquilla.tools.registry import get_default_registry
+    import openstarry_code.tools.builtin  # noqa: F401
+    from openstarry_code.gateway.config import GatewayConfig, ToolsConfig
+    from openstarry_code.tools.policy import apply_tool_policy_from_config
+    from openstarry_code.tools.registry import get_default_registry
 
     registry = get_default_registry()
     available = registry.list_names()

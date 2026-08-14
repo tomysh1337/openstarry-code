@@ -4,17 +4,17 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.gateway.compaction_target import (
+from openstarry_code.gateway.compaction_target import (
     GatewayConsumerBudget,
     build_gateway_consumer_admission,
     resolve_gateway_compaction_target,
     resolve_gateway_consumer_budget,
 )
-from opensquilla.gateway.config import GatewayConfig, LlmProviderProfile
-from opensquilla.provider.ollama import OllamaProvider
-from opensquilla.provider.protocol import provider_connection_config
-from opensquilla.provider.selector import ProviderConfig
-from opensquilla.session.compaction import build_compaction_config_from_provider
+from openstarry_code.gateway.config import GatewayConfig, LlmProviderProfile
+from openstarry_code.provider.ollama import OllamaProvider
+from openstarry_code.provider.protocol import provider_connection_config
+from openstarry_code.provider.selector import ProviderConfig
+from openstarry_code.session.compaction import build_compaction_config_from_provider
 
 
 class _ReadOnlySelector:

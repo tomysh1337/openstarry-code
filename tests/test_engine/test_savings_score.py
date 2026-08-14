@@ -1,12 +1,12 @@
 import pytest
 
-from opensquilla.engine.pricing import (
+from openstarry_code.engine.pricing import (
     PriceEntry,
     reset_live_price_cache_for_tests,
     seed_live_price_cache_for_tests,
 )
-from opensquilla.engine.runtime import _compute_comprehensive_turn_savings
-from opensquilla.engine.types import DoneEvent
+from openstarry_code.engine.runtime import _compute_comprehensive_turn_savings
+from openstarry_code.engine.types import DoneEvent
 
 TEXT_TIERS = {
     "c0": {"model": "deepseek/deepseek-v4-flash"},
@@ -18,7 +18,7 @@ TEXT_TIERS = {
 
 @pytest.fixture(autouse=True)
 def no_live_pricing(monkeypatch: pytest.MonkeyPatch):
-    monkeypatch.setenv("OPENSQUILLA_OPENROUTER_LIVE_PRICING", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING", "0")
     reset_live_price_cache_for_tests()
     yield
     reset_live_price_cache_for_tests()
@@ -169,7 +169,7 @@ def test_zero_price_baseline_returns_zero_savings() -> None:
 def test_baseline_uses_one_highest_cost_text_model_for_the_turn_mix(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_OPENROUTER_LIVE_PRICING", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING", "1")
     seed_live_price_cache_for_tests("vendor/high-input", PriceEntry(10.0, 1.0))
     seed_live_price_cache_for_tests("vendor/high-output", PriceEntry(1.0, 20.0))
     seed_live_price_cache_for_tests("vendor/image-only", PriceEntry(100.0, 100.0))

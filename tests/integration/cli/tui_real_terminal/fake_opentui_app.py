@@ -11,22 +11,22 @@ if TYPE_CHECKING:
 else:
     from replay import replay_architecture_prompt
 
-from opensquilla.cli.chat.turn import UsageSummary  # type: ignore[import-untyped]
-from opensquilla.cli.tui.opentui.history import (  # type: ignore[import-untyped]
+from openstarry_code.cli.chat.turn import UsageSummary  # type: ignore[import-untyped]
+from openstarry_code.cli.tui.opentui.history import (  # type: ignore[import-untyped]
     history_replace_from_bootstrap,
 )
-from opensquilla.cli.tui.opentui.renderer import (
+from openstarry_code.cli.tui.opentui.renderer import (
     OpenTuiStreamRenderer,  # type: ignore[import-untyped]
 )
-from opensquilla.cli.tui.opentui.runtime import (  # type: ignore[import-untyped]
+from openstarry_code.cli.tui.opentui.runtime import (  # type: ignore[import-untyped]
     get_tui_output,
     run_opentui_chat_runtime,
 )
-from opensquilla.engine.commands import Surface  # type: ignore[import-untyped]
+from openstarry_code.engine.commands import Surface  # type: ignore[import-untyped]
 
 
 def _app_log_path() -> Path:
-    return Path(os.environ["OPENSQUILLA_TUI_FAKE_APP_LOG"])
+    return Path(os.environ["OPENSTARRY_CODE_TUI_FAKE_APP_LOG"])
 
 
 def _write_log(event: str, payload: dict[str, Any] | None = None) -> None:
@@ -39,7 +39,7 @@ def _write_log(event: str, payload: dict[str, Any] | None = None) -> None:
 async def _wait_phase_ack(phase: str, *, timeout_s: float = 20.0) -> None:
     """Hold a transient visual state until the terminal harness captures it."""
 
-    raw_dir = os.environ.get("OPENSQUILLA_TUI_FAKE_PHASE_ACK_DIR", "").strip()
+    raw_dir = os.environ.get("OPENSTARRY_CODE_TUI_FAKE_PHASE_ACK_DIR", "").strip()
     if not raw_dir:
         await asyncio.sleep(0.25)
         return
@@ -95,7 +95,7 @@ async def _render_response(
             0.001,
             min(
                 0.25,
-                float(os.environ.get("OPENSQUILLA_TUI_FAKE_STREAM_DELAY_S", "0.015")),
+                float(os.environ.get("OPENSTARRY_CODE_TUI_FAKE_STREAM_DELAY_S", "0.015")),
             ),
         )
         for index in range(80):
@@ -111,7 +111,7 @@ async def _render_response(
             0.001,
             min(
                 0.25,
-                float(os.environ.get("OPENSQUILLA_TUI_FAKE_STREAM_DELAY_S", "0.015")),
+                float(os.environ.get("OPENSTARRY_CODE_TUI_FAKE_STREAM_DELAY_S", "0.015")),
             ),
         )
         for index in range(80):
@@ -309,7 +309,7 @@ def _invalidate(output: Any) -> None:
 
 
 async def _run() -> None:
-    scenario_id = os.environ.get("OPENSQUILLA_TUI_FAKE_SCENARIO", "launch_input_loop")
+    scenario_id = os.environ.get("OPENSTARRY_CODE_TUI_FAKE_SCENARIO", "launch_input_loop")
     scope: dict[str, Any] = {
         "model": "fake-terminal",
         "session_key": f"fake:{scenario_id}",

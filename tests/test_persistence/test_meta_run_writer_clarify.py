@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.persistence.meta_run_writer import (
+from openstarry_code.persistence.meta_run_writer import (
     AwaitingPeek,
     MetaRunWriter,
 )

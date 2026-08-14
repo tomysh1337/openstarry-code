@@ -10,7 +10,7 @@ preserving the *relative* share implied by the estimates.
 
 from __future__ import annotations
 
-from opensquilla.gateway.rpc_usage import _reconcile_breakdown_to_row
+from openstarry_code.gateway.rpc_usage import _reconcile_breakdown_to_row
 
 
 def _make_row(*, cost_usd: float, cost_source: str, breakdown: list) -> dict:

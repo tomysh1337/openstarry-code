@@ -4,17 +4,17 @@ from collections.abc import AsyncIterator
 
 import pytest
 
-from opensquilla.engine import Agent, AgentConfig, ToolResult
-from opensquilla.engine.subagent import SubagentManager, SubagentSpec
-from opensquilla.engine.types import DoneEvent, ToolCall
-from opensquilla.engine.usage_accounting import UsageExecutionContext
-from opensquilla.provider.correlation_context import (
+from openstarry_code.engine import Agent, AgentConfig, ToolResult
+from openstarry_code.engine.subagent import SubagentManager, SubagentSpec
+from openstarry_code.engine.types import DoneEvent, ToolCall
+from openstarry_code.engine.usage_accounting import UsageExecutionContext
+from openstarry_code.provider.correlation_context import (
     current_provider_request_correlation,
 )
-from opensquilla.provider.types import DoneEvent as ProviderDoneEvent
-from opensquilla.provider.types import ProviderRequestCorrelation
-from opensquilla.provider.types import TextDeltaEvent as ProviderTextDeltaEvent
-from opensquilla.tools.types import ToolContext, current_tool_context
+from openstarry_code.provider.types import DoneEvent as ProviderDoneEvent
+from openstarry_code.provider.types import ProviderRequestCorrelation
+from openstarry_code.provider.types import TextDeltaEvent as ProviderTextDeltaEvent
+from openstarry_code.tools.types import ToolContext, current_tool_context
 
 
 class _Provider:
@@ -137,15 +137,15 @@ def test_meta_orchestrator_wiring_uses_raw_handler_and_one_explicit_correlation(
         return _invoke
 
     monkeypatch.setattr(
-        "opensquilla.skills.meta.orchestrator.make_agent_runner_from_parent",
+        "openstarry_code.skills.meta.orchestrator.make_agent_runner_from_parent",
         _fake_agent_runner,
     )
     monkeypatch.setattr(
-        "opensquilla.skills.meta.orchestrator.make_llm_chat_from_provider",
+        "openstarry_code.skills.meta.orchestrator.make_llm_chat_from_provider",
         _fake_llm_chat,
     )
     monkeypatch.setattr(
-        "opensquilla.skills.meta.orchestrator.make_tool_invoker_from_handler",
+        "openstarry_code.skills.meta.orchestrator.make_tool_invoker_from_handler",
         _fake_tool_invoker,
     )
 

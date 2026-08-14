@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from opensquilla.cli.tui.opentui.completion import build_completion_context
-from opensquilla.engine.commands import Surface
-from opensquilla.skills.types import SkillLayer, SkillSpec
+from openstarry_code.cli.tui.opentui.completion import build_completion_context
+from openstarry_code.engine.commands import Surface
+from openstarry_code.skills.types import SkillLayer, SkillSpec
 
 
 class _SkillLoader:

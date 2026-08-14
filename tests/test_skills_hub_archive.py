@@ -6,7 +6,7 @@ import zipfile
 
 import pytest
 
-from opensquilla.skills.hub.archive import (
+from openstarry_code.skills.hub.archive import (
     ArchiveLimits,
     ArchiveNormalizationError,
     normalize_skill_archive,
@@ -75,7 +75,7 @@ def test_explicit_subpath_accepts_one_repository_wrapper() -> None:
         {"SKILL.md": b"---\n---\n", "nested/SKILL.md": b"---\n---\n"},
         {"SKILL.md": b"---\n---\n", "nested/skills.md": b"---\n---\n"},
         {"SKILL.md": b"---\n---\n", ".git/config": b"bad"},
-        {"SKILL.md": b"---\n---\n", ".opensquilla-staging/payload": b"bad"},
+        {"SKILL.md": b"---\n---\n", ".openstarry-code-staging/payload": b"bad"},
         {"SKILL.md": b"---\n---\n", "assets/NUL.txt": b"bad"},
     ],
 )

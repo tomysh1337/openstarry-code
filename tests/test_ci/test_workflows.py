@@ -188,9 +188,9 @@ def test_default_ci_blocks_pull_requests_and_main_pushes() -> None:
     assert "branches: [main]" in text
     assert "PYTHONPATH: ${{ github.workspace }}" in text
     assert "Configure runtime directories" in text
-    assert 'OPENSQUILLA_STATE_DIR=%s/opensquilla-state\\n' in text
-    assert 'OPENSQUILLA_LOG_DIR=%s/opensquilla-logs\\n' in text
-    assert "OPENSQUILLA_TURN_CALL_LOG: \"0\"" in text
+    assert 'OPENSTARRY_CODE_STATE_DIR=%s/opensquilla-state\\n' in text
+    assert 'OPENSTARRY_CODE_LOG_DIR=%s/opensquilla-logs\\n' in text
+    assert "OPENSTARRY_CODE_TURN_CALL_LOG: \"0\"" in text
     assert "actionlint@v1.7.12" in text
     assert "Classify changed files" in text
     assert "OpenTUI package tests" in text
@@ -251,7 +251,7 @@ def test_ci_rejects_tracked_frontend_dist_and_builds_a_verified_artifact() -> No
     text = ci_path.read_text(encoding="utf-8")
 
     assert "Verify generated dist is not tracked" in text
-    assert "git ls-files 'src/opensquilla/gateway/static/dist/**'" in text
+    assert "git ls-files 'src/openstarry_code/gateway/static/dist/**'" in text
     assert "generated Web UI dist must not be committed" in text
     assert "Build verified frontend artifact" in text
     assert "> public/.DS_Store" in text
@@ -267,7 +267,7 @@ def test_ci_rejects_tracked_frontend_dist_and_builds_a_verified_artifact() -> No
     assert "--forbid-personal-bgm" in text
     assert '--wheel "${wheels[0]}"' in text
     assert "Upload verified frontend artifact" in text
-    assert "name: opensquilla-webui-dist" in text
+    assert "name: openstarry-code-webui-dist" in text
     assert "overwrite: true" in text
     workflow = _workflow("ci.yml")
     upload = next(
@@ -277,7 +277,7 @@ def test_ci_rejects_tracked_frontend_dist_and_builds_a_verified_artifact() -> No
     )
     assert upload["with"]["retention-days"] >= 31
     assert upload["with"]["overwrite"] is True
-    assert "opensquilla-webui-dist-attempt-${{ github.run_attempt }}" not in text
+    assert "openstarry-code-webui-dist-attempt-${{ github.run_attempt }}" not in text
     wheel = next(
         step
         for step in workflow["jobs"]["frontend-check"]["steps"]
@@ -289,11 +289,11 @@ def test_ci_rejects_tracked_frontend_dist_and_builds_a_verified_artifact() -> No
 
 def test_webui_text_and_docker_context_contracts_are_enforced_in_ci() -> None:
     attributes = Path(".gitattributes").read_text(encoding="utf-8").splitlines()
-    assert "opensquilla-webui/** text=auto eol=lf" in attributes
+    assert "openstarry-code-webui/** text=auto eol=lf" in attributes
 
     workflow = _workflow("ci.yml")
     ubuntu = workflow["jobs"]["ubuntu-quality"]
-    assert ubuntu["env"]["OPENSQUILLA_DOCKERIGNORE_E2E"] == "1"
+    assert ubuntu["env"]["OPENSTARRY_CODE_DOCKERIGNORE_E2E"] == "1"
     docker_step = next(
         step
         for step in ubuntu["steps"]
@@ -316,7 +316,7 @@ def test_readme_contract_check_uses_the_pinned_node_version() -> None:
     )
 
     assert setup_node["with"] == {
-        "node-version-file": "opensquilla-webui/.node-version"
+        "node-version-file": "openstarry-code-webui/.node-version"
     }
     assert check["run"] == "node scripts/check-readme-locales.mjs"
 
@@ -358,9 +358,9 @@ def test_managed_toolchain_artifacts_cover_native_macos_architectures_and_musl()
         },
     }
 
-    assert "OPENSQUILLA_GATEWAY_STATE_DIR" not in validate["env"]
-    assert "OPENSQUILLA_TOOLCHAIN_VALIDATION_ROOT" not in validate["env"]
-    assert validate["env"]["OPENSQUILLA_REQUIRE_MANAGED_TOOLCHAIN_E2E"] == "1"
+    assert "OPENSTARRY_CODE_GATEWAY_STATE_DIR" not in validate["env"]
+    assert "OPENSTARRY_CODE_TOOLCHAIN_VALIDATION_ROOT" not in validate["env"]
+    assert validate["env"]["OPENSTARRY_CODE_REQUIRE_MANAGED_TOOLCHAIN_E2E"] == "1"
 
     configure_state = next(
         step
@@ -369,8 +369,8 @@ def test_managed_toolchain_artifacts_cover_native_macos_architectures_and_musl()
     )
     assert configure_state["shell"] == "bash"
     assert "$RUNNER_TEMP" in configure_state["run"]
-    assert "OPENSQUILLA_GATEWAY_STATE_DIR=" in configure_state["run"]
-    assert "OPENSQUILLA_TOOLCHAIN_VALIDATION_ROOT=" in configure_state["run"]
+    assert "OPENSTARRY_CODE_GATEWAY_STATE_DIR=" in configure_state["run"]
+    assert "OPENSTARRY_CODE_TOOLCHAIN_VALIDATION_ROOT=" in configure_state["run"]
     assert "$GITHUB_ENV" in configure_state["run"]
 
     paper_smoke = next(
@@ -476,7 +476,7 @@ def test_pr_target_validator_allows_main_pull_requests(tmp_path: Path) -> None:
     result = _validate_pr_target(
         tmp_path,
         base="main",
-        changed_files=["src/opensquilla/engine/agent.py"],
+        changed_files=["src/openstarry_code/engine/agent.py"],
     )
 
     assert result.returncode == 0
@@ -525,7 +525,7 @@ def test_pr_target_validator_allows_labeled_main_pull_requests_without_exception
             base="main",
             head="release/0.3.2",
             labels=[label],
-            changed_files=["src/opensquilla/engine/agent.py"],
+            changed_files=["src/openstarry_code/engine/agent.py"],
         )
 
         assert result.returncode == 0
@@ -545,7 +545,7 @@ def test_pr_target_validator_allows_staging_branch_pull_requests(
             tmp_path,
             base=base,
             head="pr/sandbox-run-modes-sandbox-optimization",
-            changed_files=["src/opensquilla/sandbox/backend/windows_appcontainer.py"],
+            changed_files=["src/openstarry_code/sandbox/backend/windows_appcontainer.py"],
         )
 
         assert result.returncode == 0
@@ -562,7 +562,7 @@ def test_pr_target_validator_allows_labeled_staging_pull_requests(
             base="sandbox-review",
             head="feature/shared-sandbox-work",
             labels=[label],
-            changed_files=["src/opensquilla/sandbox/policy.py"],
+            changed_files=["src/openstarry_code/sandbox/policy.py"],
         )
 
         assert result.returncode == 0
@@ -574,7 +574,7 @@ def test_pr_target_validator_blocks_unknown_target_branches(tmp_path: Path) -> N
         tmp_path,
         base="feature/private-target",
         head="feature/example",
-        changed_files=["src/opensquilla/engine/agent.py"],
+        changed_files=["src/openstarry_code/engine/agent.py"],
     )
 
     assert result.returncode == 1
@@ -703,7 +703,7 @@ def test_ci_change_classifier_accepts_crlf_changed_files(tmp_path: Path) -> None
 def test_ci_change_classifier_treats_runtime_markdown_as_runtime(tmp_path: Path) -> None:
     outputs = _classify_changed_files(
         tmp_path,
-        ["src/opensquilla/identity/templates/bootstrap/AGENTS.md"],
+        ["src/openstarry_code/identity/templates/bootstrap/AGENTS.md"],
     )
 
     assert outputs == _expected_classifier_outputs(
@@ -734,7 +734,7 @@ def test_ci_change_classifier_builds_webui_source_into_the_runtime_wheel(
 ) -> None:
     outputs = _classify_changed_files(
         tmp_path,
-        ["opensquilla-webui/src/views/ChatView.vue"],
+        ["openstarry-code-webui/src/views/ChatView.vue"],
     )
 
     assert outputs == _expected_classifier_outputs(
@@ -749,7 +749,7 @@ def test_ci_change_classifier_fails_closed_for_force_added_webui_dist(
 ) -> None:
     outputs = _classify_changed_files(
         tmp_path,
-        ["src/opensquilla/gateway/static/dist/assets/index-example.js"],
+        ["src/openstarry_code/gateway/static/dist/assets/index-example.js"],
     )
 
     assert outputs == _expected_classifier_outputs(
@@ -765,8 +765,8 @@ def test_ci_change_classifier_routes_source_and_forced_dist_to_the_same_guard(
     outputs = _classify_changed_files(
         tmp_path,
         [
-            "opensquilla-webui/src/views/ChatView.vue",
-            "src/opensquilla/gateway/static/dist/assets/index-example.js",
+            "openstarry-code-webui/src/views/ChatView.vue",
+            "src/openstarry_code/gateway/static/dist/assets/index-example.js",
         ],
     )
 
@@ -807,9 +807,9 @@ def test_ci_change_classifier_requires_real_artifacts_for_toolchain_surfaces(
     outputs = _classify_changed_files(
         tmp_path,
         [
-            "src/opensquilla/skills/toolchains/registry.py",
-            "src/opensquilla/skills/toolchains/manager.py",
-            "src/opensquilla/skills/toolchains/runtime.py",
+            "src/openstarry_code/skills/toolchains/registry.py",
+            "src/openstarry_code/skills/toolchains/manager.py",
+            "src/openstarry_code/skills/toolchains/runtime.py",
             "scripts/validate_managed_toolchain_artifacts.py",
             "scripts/validate_managed_toolchain_artifacts_stdlib.py",
         ],
@@ -831,17 +831,17 @@ def test_ci_change_classifier_requires_real_artifacts_for_paper_contracts(
     outputs = _classify_changed_files(
         tmp_path,
         [
-            "src/opensquilla/skills/runtime_env.py",
-            "src/opensquilla/skills/bundled/meta-paper-write/SKILL.md",
-            "src/opensquilla/skills/bundled/paper-artifact-runtime/scripts/run.py",
-            "src/opensquilla/skills/bundled/paper-citation-integrity-gate/scripts/audit.py",
-            "src/opensquilla/skills/bundled/paper-delivery-summary/SKILL.md",
-            "src/opensquilla/skills/bundled/paper-latex-sanitizer/scripts/sanitize.py",
-            "src/opensquilla/skills/bundled/paper-length-gate/scripts/audit.py",
-            "src/opensquilla/skills/bundled/paper-quality-gate/scripts/audit.py",
-            "src/opensquilla/skills/bundled/meta-short-drama/SKILL.md",
-            "src/opensquilla/skills/bundled/subtitle-burner/scripts/burn.py",
-            "src/opensquilla/skills/bundled/video-still-animator/scripts/animate.py",
+            "src/openstarry_code/skills/runtime_env.py",
+            "src/openstarry_code/skills/bundled/meta-paper-write/SKILL.md",
+            "src/openstarry_code/skills/bundled/paper-artifact-runtime/scripts/run.py",
+            "src/openstarry_code/skills/bundled/paper-citation-integrity-gate/scripts/audit.py",
+            "src/openstarry_code/skills/bundled/paper-delivery-summary/SKILL.md",
+            "src/openstarry_code/skills/bundled/paper-latex-sanitizer/scripts/sanitize.py",
+            "src/openstarry_code/skills/bundled/paper-length-gate/scripts/audit.py",
+            "src/openstarry_code/skills/bundled/paper-quality-gate/scripts/audit.py",
+            "src/openstarry_code/skills/bundled/meta-short-drama/SKILL.md",
+            "src/openstarry_code/skills/bundled/subtitle-burner/scripts/burn.py",
+            "src/openstarry_code/skills/bundled/video-still-animator/scripts/animate.py",
             "tests/test_skills/test_meta_paper_skills.py",
             "tests/test_skills/test_managed_toolchains.py",
         ],
@@ -861,23 +861,23 @@ def test_ci_change_classifier_requires_real_artifacts_for_paper_contracts(
 @pytest.mark.parametrize(
     "paper_surface",
     [
-        "src/opensquilla/skills/bundled/meta-paper-write/SKILL.md",
-        "src/opensquilla/skills/bundled/paper-artifact-runtime/SKILL.md",
-        "src/opensquilla/skills/bundled/paper-artifact-runtime/scripts/run.py",
-        "src/opensquilla/skills/bundled/paper-citation-integrity-gate/SKILL.md",
-        "src/opensquilla/skills/bundled/paper-citation-integrity-gate/scripts/audit.py",
-        "src/opensquilla/skills/bundled/paper-delivery-summary/SKILL.md",
-        "src/opensquilla/skills/bundled/paper-delivery-summary/scripts/render.py",
-        "src/opensquilla/skills/bundled/paper-latex-sanitizer/SKILL.md",
-        "src/opensquilla/skills/bundled/paper-latex-sanitizer/scripts/sanitize.py",
-        "src/opensquilla/skills/bundled/paper-length-gate/SKILL.md",
-        "src/opensquilla/skills/bundled/paper-length-gate/scripts/audit.py",
-        "src/opensquilla/skills/bundled/paper-quality-gate/SKILL.md",
-        "src/opensquilla/skills/bundled/paper-quality-gate/scripts/audit.py",
-        "src/opensquilla/skills/bundled/paper-refbib-stub/SKILL.md",
-        "src/opensquilla/skills/bundled/paper-refbib-stub/scripts/json_to_bib.py",
-        "src/opensquilla/skills/bundled/paper-source-readiness-gate/SKILL.md",
-        "src/opensquilla/skills/bundled/paper-source-readiness-gate/scripts/audit.py",
+        "src/openstarry_code/skills/bundled/meta-paper-write/SKILL.md",
+        "src/openstarry_code/skills/bundled/paper-artifact-runtime/SKILL.md",
+        "src/openstarry_code/skills/bundled/paper-artifact-runtime/scripts/run.py",
+        "src/openstarry_code/skills/bundled/paper-citation-integrity-gate/SKILL.md",
+        "src/openstarry_code/skills/bundled/paper-citation-integrity-gate/scripts/audit.py",
+        "src/openstarry_code/skills/bundled/paper-delivery-summary/SKILL.md",
+        "src/openstarry_code/skills/bundled/paper-delivery-summary/scripts/render.py",
+        "src/openstarry_code/skills/bundled/paper-latex-sanitizer/SKILL.md",
+        "src/openstarry_code/skills/bundled/paper-latex-sanitizer/scripts/sanitize.py",
+        "src/openstarry_code/skills/bundled/paper-length-gate/SKILL.md",
+        "src/openstarry_code/skills/bundled/paper-length-gate/scripts/audit.py",
+        "src/openstarry_code/skills/bundled/paper-quality-gate/SKILL.md",
+        "src/openstarry_code/skills/bundled/paper-quality-gate/scripts/audit.py",
+        "src/openstarry_code/skills/bundled/paper-refbib-stub/SKILL.md",
+        "src/openstarry_code/skills/bundled/paper-refbib-stub/scripts/json_to_bib.py",
+        "src/openstarry_code/skills/bundled/paper-source-readiness-gate/SKILL.md",
+        "src/openstarry_code/skills/bundled/paper-source-readiness-gate/scripts/audit.py",
     ],
 )
 def test_each_paper_truthfulness_surface_requires_real_artifacts(
@@ -938,7 +938,7 @@ def test_ci_change_classifier_tracks_release_surface_changes(tmp_path: Path) -> 
 def test_ci_change_classifier_tracks_tui_changes_without_windows_full(tmp_path: Path) -> None:
     outputs = _classify_changed_files(
         tmp_path,
-        ["src/opensquilla/cli/tui/opentui/package/src/composer.mjs"],
+        ["src/openstarry_code/cli/tui/opentui/package/src/composer.mjs"],
     )
 
     assert outputs == _expected_classifier_outputs(
@@ -953,7 +953,7 @@ def test_ci_change_classifier_tracks_development_companion_changes(tmp_path: Pat
     outputs = _classify_changed_files(
         tmp_path,
         [
-            "packages/opensquilla-tui-host/src/opensquilla_tui_host/api.py",
+            "packages/openstarry-code-tui-host/src/openstarry_code_tui_host/api.py",
             "scripts/build_tui_host_companion.py",
         ],
     )
@@ -971,7 +971,7 @@ def test_ci_change_classifier_fails_closed_for_unclassified_runtime_paths(
 ) -> None:
     outputs = _classify_changed_files(
         tmp_path,
-        ["src/opensquilla/future_profile_store/transaction.py"],
+        ["src/openstarry_code/future_profile_store/transaction.py"],
     )
 
     assert outputs == _expected_classifier_outputs(
@@ -1001,10 +1001,10 @@ def test_ci_change_classifier_covers_state_and_installation_boundaries(
     outputs = _classify_changed_files(
         tmp_path,
         [
-            "src/opensquilla/session/manager.py",
-            "src/opensquilla/scheduler/persistence.py",
-            "src/opensquilla/memory/store.py",
-            "src/opensquilla/uninstall/actions.py",
+            "src/openstarry_code/session/manager.py",
+            "src/openstarry_code/scheduler/persistence.py",
+            "src/openstarry_code/memory/store.py",
+            "src/openstarry_code/uninstall/actions.py",
             "tests/test_recovery/test_new_contract.py",
             "tests/test_uninstall/test_actions.py",
         ],
@@ -1055,7 +1055,7 @@ def test_ci_change_classifier_runs_windows_full_for_native_source_snapshot_imple
 ) -> None:
     outputs = _classify_changed_files(
         tmp_path,
-        ["src/opensquilla/migration/source_snapshot_windows.py"],
+        ["src/openstarry_code/migration/source_snapshot_windows.py"],
     )
 
     assert outputs == _expected_classifier_outputs(
@@ -1157,7 +1157,7 @@ def test_ci_change_classifier_runs_windows_full_for_persistence_risk(
     outputs = _classify_changed_files(
         tmp_path,
         [
-            "src/opensquilla/persistence/migrator.py",
+            "src/openstarry_code/persistence/migrator.py",
             "tests/test_persistence/test_migrator.py",
             "migrations/V999__example.py",
         ],
@@ -1179,8 +1179,8 @@ def test_ci_change_classifier_runs_windows_full_for_provider_onboarding_risk(
     outputs = _classify_changed_files(
         tmp_path,
         [
-            "src/opensquilla/provider/registry.py",
-            "src/opensquilla/onboarding/provider_specs.py",
+            "src/openstarry_code/provider/registry.py",
+            "src/openstarry_code/onboarding/provider_specs.py",
             "tests/test_onboarding/test_mutations.py",
             "tests/test_provider/test_spec_substrate.py",
         ],
@@ -1386,13 +1386,13 @@ def test_desktop_recovery_e2e_runs_compiled_flows_on_all_release_platforms() -> 
     assert steps.index(download) < steps.index(setup_node) < steps.index(verify_frontend)
     assert verify_frontend["shell"] == "bash"
     assert verify_frontend["run"] == (
-        "node opensquilla-webui/scripts/verify-dist.mjs "
-        "src/opensquilla/gateway/static/dist"
+        "node openstarry-code-webui/scripts/verify-dist.mjs "
+        "src/openstarry_code/gateway/static/dist"
     )
     assert build["run"] == "npm run build"
-    assert session_recovery["working-directory"] == "opensquilla-webui"
-    assert session_recovery["env"]["OPENSQUILLA_PLAYWRIGHT_MANAGE_WEBUI"] == "gateway"
-    assert session_recovery["env"]["OPENSQUILLA_WEBUI_BASE_URL"].endswith(":18791")
+    assert session_recovery["working-directory"] == "openstarry-code-webui"
+    assert session_recovery["env"]["OPENSTARRY_CODE_PLAYWRIGHT_MANAGE_WEBUI"] == "gateway"
+    assert session_recovery["env"]["OPENSTARRY_CODE_WEBUI_BASE_URL"].endswith(":18791")
     assert "history-hydration.spec.ts" in session_recovery["run"]
     assert '--grep "terminates stalled"' in session_recovery["run"]
     assert "xvfb-run -a node" in run["run"]
@@ -1432,12 +1432,12 @@ def test_webui_chat_recovery_runs_the_verified_dist_through_gateway() -> None:
     )
 
     assert job["needs"] == ["classify-changes", "frontend-check"]
-    assert download["with"]["name"] == "opensquilla-webui-dist"
-    assert download["with"]["path"] == "src/opensquilla/gateway/static/dist/"
+    assert download["with"]["name"] == "openstarry-code-webui-dist"
+    assert download["with"]["path"] == "src/openstarry_code/gateway/static/dist/"
     assert steps.index(download) < steps.index(install_gateway) < steps.index(run)
     assert install_gateway["run"] == "uv sync --frozen"
-    assert job["env"]["OPENSQUILLA_PLAYWRIGHT_MANAGE_WEBUI"] == "gateway"
-    assert job["env"]["OPENSQUILLA_WEBUI_BASE_URL"].endswith(":18791")
+    assert job["env"]["OPENSTARRY_CODE_PLAYWRIGHT_MANAGE_WEBUI"] == "gateway"
+    assert job["env"]["OPENSTARRY_CODE_WEBUI_BASE_URL"].endswith(":18791")
     selected_specs = {
         argument
         for argument in run["run"].split()
@@ -1454,7 +1454,7 @@ def test_webui_chat_recovery_runs_the_verified_dist_through_gateway() -> None:
     }
     assert selected_specs == required_specs
     for spec in required_specs:
-        assert (Path("opensquilla-webui/e2e") / spec).is_file()
+        assert (Path("openstarry-code-webui/e2e") / spec).is_file()
 
 
 def test_windows_smoke_does_not_install_bun_by_default() -> None:
@@ -1505,7 +1505,7 @@ def test_windows_high_risk_job_runs_parallel_reported_shards() -> None:
     bun_step = next(step for step in steps if step.get("name") == "Set up Bun")
     assert bun_step["if"] == "${{ matrix.shard == 'core' }}"
     assert steps[0]["name"] == "Prepare diagnostic report"
-    assert "OPENSQUILLA_STATE_DIR" not in steps[0]["run"]
+    assert "OPENSTARRY_CODE_STATE_DIR" not in steps[0]["run"]
     assert "PATH" not in steps[0]["run"]
     assert "HOME" not in steps[0]["run"]
     assert ".github/scripts/windows_test_shards.py run" in test_step["run"]
@@ -1551,12 +1551,12 @@ def test_recovery_windows_shard_uses_and_always_cleans_distinct_real_volumes() -
     assert "[System.IO.Path]::GetPathRoot($volumeA)" in provision_script
     assert "[System.IO.Path]::GetPathRoot($volumeB)" in provision_script
     assert "throw \"Windows test volume roots must use different drives\"" in provision_script
-    assert "OPENSQUILLA_WINDOWS_TEST_VOLUME_A=$volumeA" in provision_script
-    assert "OPENSQUILLA_WINDOWS_TEST_VOLUME_B=$volumeB" in provision_script
+    assert "OPENSTARRY_CODE_WINDOWS_TEST_VOLUME_A=$volumeA" in provision_script
+    assert "OPENSTARRY_CODE_WINDOWS_TEST_VOLUME_B=$volumeB" in provision_script
     assert cleanup["if"] == "${{ always() && matrix.shard == 'recovery-migration' }}"
     assert cleanup["shell"] == "pwsh"
-    assert "$env:OPENSQUILLA_WINDOWS_TEST_VOLUME_A" in cleanup_script
-    assert "$env:OPENSQUILLA_WINDOWS_TEST_VOLUME_B" in cleanup_script
+    assert "$env:OPENSTARRY_CODE_WINDOWS_TEST_VOLUME_A" in cleanup_script
+    assert "$env:OPENSTARRY_CODE_WINDOWS_TEST_VOLUME_B" in cleanup_script
     assert "Remove-Item -LiteralPath $testRoot -Recurse -Force" in cleanup_script
 
 
@@ -1668,7 +1668,7 @@ def test_webui_browser_workflow_is_manual_and_opt_in() -> None:
     text = (WORKFLOW_DIR / "webui-browser-smoke.yml").read_text(encoding="utf-8")
 
     assert _trigger_keys(data) == {"workflow_dispatch"}
-    assert 'OPENSQUILLA_WEBUI_BROWSER_E2E: "1"' in text
+    assert 'OPENSTARRY_CODE_WEBUI_BROWSER_E2E: "1"' in text
     assert "tests/functional/test_webui_browser_e2e.py" in text
     assert "playwright install chromium" in text
 
@@ -1682,18 +1682,18 @@ def test_manual_browser_workflow_builds_the_verified_webui_from_source() -> None
     )
     build = next(step for step in steps if step.get("name") == "Build and verify Web UI")
 
-    assert setup_node["with"]["node-version-file"] == "opensquilla-webui/.node-version"
+    assert setup_node["with"]["node-version-file"] == "openstarry-code-webui/.node-version"
     assert setup_node["with"]["cache-dependency-path"] == (
-        "opensquilla-webui/package-lock.json"
+        "openstarry-code-webui/package-lock.json"
     )
     assert install == {
         "name": "Install Web UI dependencies",
-        "working-directory": "opensquilla-webui",
+        "working-directory": "openstarry-code-webui",
         "run": "npm ci",
     }
     assert build == {
         "name": "Build and verify Web UI",
-        "working-directory": "opensquilla-webui",
+        "working-directory": "openstarry-code-webui",
         "run": "npm run build",
     }
     test_index = next(
@@ -1723,16 +1723,16 @@ def test_live_release_e2e_workflow_is_manual_and_separates_private_inputs() -> N
     assert "tests/functional/test_gateway_llm_e2e.py" in text
     assert "tests/functional/test_live_channel_telegram_smoke.py" in text
     assert "test_webui_browser_chat_e2e.py" not in text
-    assert "OPENSQUILLA_WEBUI_BROWSER_CHAT_E2E" not in text
+    assert "OPENSTARRY_CODE_WEBUI_BROWSER_CHAT_E2E" not in text
     assert "playwright install chromium" not in text
     assert "OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}" in text
     assert (
-        "OPENSQUILLA_LIVE_TELEGRAM_BOT_TOKEN: "
-        "${{ secrets.OPENSQUILLA_LIVE_TELEGRAM_BOT_TOKEN }}"
+        "OPENSTARRY_CODE_LIVE_TELEGRAM_BOT_TOKEN: "
+        "${{ secrets.OPENSTARRY_CODE_LIVE_TELEGRAM_BOT_TOKEN }}"
     ) in text
     assert (
-        "OPENSQUILLA_LIVE_TELEGRAM_CHAT_ID: "
-        "${{ secrets.OPENSQUILLA_LIVE_TELEGRAM_CHAT_ID }}"
+        "OPENSTARRY_CODE_LIVE_TELEGRAM_CHAT_ID: "
+        "${{ secrets.OPENSTARRY_CODE_LIVE_TELEGRAM_CHAT_ID }}"
     ) in text
     assert "tests/private" not in text
 
@@ -1741,10 +1741,10 @@ def test_default_ci_stays_offline_and_does_not_run_live_gates() -> None:
     text = (WORKFLOW_DIR / "ci.yml").read_text(encoding="utf-8")
 
     assert "OPENROUTER_API_KEY" not in text
-    assert "OPENSQUILLA_LIVE_TELEGRAM" not in text
-    assert "OPENSQUILLA_GATEWAY_LLM_E2E" not in text
-    assert "OPENSQUILLA_WEBUI_BROWSER_E2E" not in text
-    assert "OPENSQUILLA_WEBUI_BROWSER_CHAT_E2E" not in text
+    assert "OPENSTARRY_CODE_LIVE_TELEGRAM" not in text
+    assert "OPENSTARRY_CODE_GATEWAY_LLM_E2E" not in text
+    assert "OPENSTARRY_CODE_WEBUI_BROWSER_E2E" not in text
+    assert "OPENSTARRY_CODE_WEBUI_BROWSER_CHAT_E2E" not in text
     assert "test_gateway_llm_e2e.py" not in text
     assert "test_live_channel_telegram_smoke.py" not in text
 
@@ -1756,8 +1756,8 @@ def test_live_release_e2e_fails_fast_when_required_provider_secret_is_missing() 
     assert 'if [ -z "$OPENROUTER_API_KEY" ]; then' in text
     assert "OPENROUTER_API_KEY GitHub secret is required" in text
     assert "Fail if Telegram secrets are missing when channel smoke is enabled" in text
-    assert 'if [ -z "$OPENSQUILLA_LIVE_TELEGRAM_BOT_TOKEN" ]' in text
-    assert 'if [ -z "$OPENSQUILLA_LIVE_TELEGRAM_CHAT_ID" ]' in text
+    assert 'if [ -z "$OPENSTARRY_CODE_LIVE_TELEGRAM_BOT_TOKEN" ]' in text
+    assert 'if [ -z "$OPENSTARRY_CODE_LIVE_TELEGRAM_CHAT_ID" ]' in text
 
 
 def test_wheelhouse_release_publishes_only_recommended_router_profile() -> None:
@@ -1765,8 +1765,8 @@ def test_wheelhouse_release_publishes_only_recommended_router_profile() -> None:
 
     assert "      profile:\n" not in text
     assert "RELEASE_PROFILE: recommended" in text
-    assert "opensquilla-release-assets-python-${{ env.RELEASE_PROFILE }}" in text
-    assert "opensquilla-release-assets-${{ env.RELEASE_PROFILE }}" in text
+    assert "openstarry-code-release-assets-python-${{ env.RELEASE_PROFILE }}" in text
+    assert "openstarry-code-release-assets-${{ env.RELEASE_PROFILE }}" in text
     assert "--profile \"${RELEASE_PROFILE}\"" not in text
     assert "- core" not in text
 
@@ -1774,7 +1774,7 @@ def test_wheelhouse_release_publishes_only_recommended_router_profile() -> None:
 def test_release_jobs_share_one_rerun_stable_verified_webui_artifact() -> None:
     workflow = _workflow("wheelhouse-release.yml")
     jobs = workflow["jobs"]
-    artifact_name = "opensquilla-release-webui-dist"
+    artifact_name = "openstarry-code-release-webui-dist"
     build_steps = jobs["build-control-ui"]["steps"]
     upload = next(step for step in build_steps if step.get("name") == "Upload Web UI artifact")
     release_build = next(
@@ -1794,7 +1794,7 @@ def test_release_jobs_share_one_rerun_stable_verified_webui_artifact() -> None:
     assert "npm run verify:release-dist" in release_build["run"]
     assert release_build["if"] == "steps.webui-contract.outputs.mode == 'source-built'"
     assert "legacy-committed" in detect["run"]
-    assert "src/opensquilla/gateway/static/dist/index.html" in detect["run"]
+    assert "src/openstarry_code/gateway/static/dist/index.html" in detect["run"]
     assert legacy["if"] == "steps.webui-contract.outputs.mode == 'legacy-committed'"
     assert 'data.get("tracks") == []' in legacy["run"]
     for job_name in (
@@ -1811,7 +1811,7 @@ def test_release_jobs_share_one_rerun_stable_verified_webui_artifact() -> None:
         )
         assert download["with"] == {
             "name": artifact_name,
-            "path": "src/opensquilla/gateway/static/dist/",
+            "path": "src/openstarry_code/gateway/static/dist/",
         }
 
     all_uploads = [
@@ -1853,7 +1853,7 @@ def test_container_release_smoke_serves_control_ui_entry_assets() -> None:
     assert 'path.endswith(".css")' in script
     assert 'docker exec "${container_id}" curl --fail --silent --show-error' in script
     build = next(step for step in steps if step.get("name") == "Build multi-arch image")
-    assert build["with"]["build-args"] == "OPENSQUILLA_FORBID_PERSONAL_BGM=1\n"
+    assert build["with"]["build-args"] == "OPENSTARRY_CODE_FORBID_PERSONAL_BGM=1\n"
 
 
 def test_wheelhouse_release_hydrates_current_router_bundle() -> None:

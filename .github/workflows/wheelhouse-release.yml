@@ -39,11 +39,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [[ -f opensquilla-webui/.node-version \
-             && -f opensquilla-webui/package-lock.json \
-             && -f opensquilla-webui/scripts/verify-dist.mjs ]]; then
+          if [[ -f openstarry-code-webui/.node-version \
+             && -f openstarry-code-webui/package-lock.json \
+             && -f openstarry-code-webui/scripts/verify-dist.mjs ]]; then
             echo "mode=source-built" >> "${GITHUB_OUTPUT}"
-          elif [[ -f src/opensquilla/gateway/static/dist/index.html ]]; then
+          elif [[ -f src/openstarry_code/gateway/static/dist/index.html ]]; then
             # Tags created before generated artifacts were removed from Git
             # remain repairable through the documented existing-tag input.
             echo "mode=legacy-committed" >> "${GITHUB_OUTPUT}"
@@ -56,18 +56,18 @@ jobs:
         if: steps.webui-contract.outputs.mode == 'source-built'
         uses: actions/setup-node@v4
         with:
-          node-version-file: opensquilla-webui/.node-version
+          node-version-file: openstarry-code-webui/.node-version
           cache: npm
-          cache-dependency-path: opensquilla-webui/package-lock.json
+          cache-dependency-path: openstarry-code-webui/package-lock.json
 
       - name: Install Web UI dependencies
         if: steps.webui-contract.outputs.mode == 'source-built'
-        working-directory: opensquilla-webui
+        working-directory: openstarry-code-webui
         run: npm ci
 
       - name: Build and verify Web UI
         if: steps.webui-contract.outputs.mode == 'source-built'
-        working-directory: opensquilla-webui
+        working-directory: openstarry-code-webui
         run: |
           npm run build
           npm run verify:release-dist
@@ -80,7 +80,7 @@ jobs:
           import json
           from pathlib import Path
 
-          root = Path("src/opensquilla/gateway/static/dist")
+          root = Path("src/openstarry_code/gateway/static/dist")
           assert (root / "index.html").is_file(), "legacy Web UI entrypoint is missing"
           allowed_music = {"music/README.md", "music/playlist.json"}
           personal_music = sorted(
@@ -104,8 +104,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           # Keep the name stable when only failed consumer jobs are rerun.
-          name: opensquilla-release-webui-dist
-          path: src/opensquilla/gateway/static/dist/
+          name: openstarry-code-release-webui-dist
+          path: src/openstarry_code/gateway/static/dist/
           if-no-files-found: error
           # Keep this through GitHub's 30-day workflow rerun window.
           retention-days: 31
@@ -135,12 +135,12 @@ jobs:
       - name: Download verified Web UI artifact
         uses: actions/download-artifact@v4
         with:
-          name: opensquilla-release-webui-dist
-          path: src/opensquilla/gateway/static/dist/
+          name: openstarry-code-release-webui-dist
+          path: src/openstarry_code/gateway/static/dist/
 
       - name: Hydrate router assets
         shell: bash
-        run: git lfs pull --include="src/opensquilla/squilla_router/models/**"
+        run: git lfs pull --include="src/openstarry_code/squilla_router/models/**"
 
       - name: Verify router assets are hydrated
         shell: bash
@@ -148,7 +148,7 @@ jobs:
           python - <<'PY'
           from pathlib import Path
 
-          root = Path("src/opensquilla/squilla_router/models/v4.2_phase3_inference")
+          root = Path("src/openstarry_code/squilla_router/models/v4.2_phase3_inference")
           required = [
               root / "PROVENANCE.md",
               root / "artifact_manifest.json",
@@ -206,7 +206,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          wheels=(dist/opensquilla-*.whl)
+          wheels=(dist/openstarry_code-*.whl)
           if [[ "${#wheels[@]}" -ne 1 || ! -f "${wheels[0]}" ]]; then
             echo "Expected exactly one versioned wheel" >&2
             exit 1
@@ -221,8 +221,8 @@ jobs:
           from pathlib import Path
           from zipfile import ZipFile
 
-          root = Path("src/opensquilla/gateway/static/dist")
-          prefix = "opensquilla/gateway/static/dist/"
+          root = Path("src/openstarry_code/gateway/static/dist")
+          prefix = "openstarry_code/gateway/static/dist/"
           expected = {
               path.relative_to(root).as_posix(): path.read_bytes()
               for path in root.rglob("*")
@@ -249,21 +249,21 @@ jobs:
 
           version = tomllib.loads(Path("pyproject.toml").read_text(encoding="utf-8"))["project"]["version"]
           wheels = sorted(
-              path for path in Path("dist").glob("opensquilla-*.whl")
+              path for path in Path("dist").glob("openstarry_code-*.whl")
           )
           assert len(wheels) == 1, f"expected one versioned wheel, got {len(wheels)}"
-          assert wheels[0].name == f"opensquilla-{version}-py3-none-any.whl"
-          assert not list(Path("dist").glob("OpenSquilla-*portable*.zip")), (
+          assert wheels[0].name == f"openstarry_code-{version}-py3-none-any.whl"
+          assert not list(Path("dist").glob("OpenStarry-Code-*portable*.zip")), (
               "0.5+ release assets must not include Windows portable zips"
           )
 
           with ZipFile(wheels[0]) as archive:
               names = set(archive.namelist())
-              assert "opensquilla/gateway/static/dist/index.html" in names, (
+              assert "openstarry_code/gateway/static/dist/index.html" in names, (
                   "release wheel is missing the Web UI entrypoint"
               )
               if Path("scripts/verify_webui_artifact.py").is_file():
-                  assert "opensquilla/gateway/static/dist/webui-artifact-manifest.json" in names, (
+                  assert "openstarry_code/gateway/static/dist/webui-artifact-manifest.json" in names, (
                       "release wheel is missing the verified Web UI manifest"
                   )
               for info in archive.infolist():
@@ -287,10 +287,10 @@ jobs:
           project = tomllib.loads(Path("pyproject.toml").read_text(encoding="utf-8"))
           version = project["project"]["version"]
           wheels = sorted(
-              path for path in dist.glob("opensquilla-*.whl")
+              path for path in dist.glob("openstarry_code-*.whl")
           )
           assert len(wheels) == 1, f"expected one versioned wheel, got {len(wheels)}"
-          assert wheels[0].name == f"opensquilla-{version}-py3-none-any.whl"
+          assert wheels[0].name == f"openstarry_code-{version}-py3-none-any.whl"
           assets = [wheels[0]]
           lines = [
               f"{hashlib.sha256(path.read_bytes()).hexdigest()}  {path.name}"
@@ -302,7 +302,7 @@ jobs:
       - name: Upload workflow artifact
         uses: actions/upload-artifact@v4
         with:
-          name: opensquilla-release-assets-python-${{ env.RELEASE_PROFILE }}
+          name: openstarry-code-release-assets-python-${{ env.RELEASE_PROFILE }}
           path: |
             dist/*.whl
             dist/SHA256SUMS
@@ -324,11 +324,11 @@ jobs:
       - name: Download verified Web UI artifact
         uses: actions/download-artifact@v4
         with:
-          name: opensquilla-release-webui-dist
-          path: src/opensquilla/gateway/static/dist/
+          name: openstarry-code-release-webui-dist
+          path: src/openstarry_code/gateway/static/dist/
 
       - name: Hydrate router assets
-        run: git lfs pull --include="src/opensquilla/squilla_router/models/**"
+        run: git lfs pull --include="src/openstarry_code/squilla_router/models/**"
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -372,8 +372,8 @@ jobs:
       - name: Smoke packaged gateway
         working-directory: desktop/electron
         env:
-          OPENSQUILLA_REQUIRE_PACKAGED_GATEWAY_SMOKE: "1"
-          OPENSQUILLA_GATEWAY_SMOKE_TIMEOUT_MS: "240000"
+          OPENSTARRY_CODE_REQUIRE_PACKAGED_GATEWAY_SMOKE: "1"
+          OPENSTARRY_CODE_GATEWAY_SMOKE_TIMEOUT_MS: "240000"
         run: npm run verify:gateway-smoke
 
       - name: Gate packaged first-send renderer
@@ -382,7 +382,7 @@ jobs:
         run: |
           set -euo pipefail
           shopt -s nullglob
-          candidates=(../../dist/desktop-electron/mac*/OpenSquilla.app/Contents/MacOS/OpenSquilla)
+          candidates=(../../dist/desktop-electron/mac*/OpenStarry\ Code.app/Contents/MacOS/OpenStarry\ Code)
           if [[ "${#candidates[@]}" -ne 1 || ! -x "${candidates[0]}" ]]; then
             printf 'Expected exactly one unpacked macOS candidate, found %d\n' "${#candidates[@]}" >&2
             exit 1
@@ -399,7 +399,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          candidates=(dist/desktop-electron/OpenSquilla-*-mac-arm64.dmg)
+          candidates=(dist/desktop-electron/OpenStarry-Code-*-mac-arm64.dmg)
           if [[ "${#candidates[@]}" -ne 1 || ! -f "${candidates[0]}" ]]; then
             echo "Expected exactly one candidate macOS DMG" >&2
             exit 1
@@ -413,7 +413,7 @@ jobs:
       - name: Upload macOS Electron artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: opensquilla-electron-macos
+          name: openstarry-code-electron-macos
           path: |
             dist/desktop-electron/*.dmg
             dist/desktop-electron/*.zip
@@ -440,12 +440,12 @@ jobs:
       - name: Download verified Web UI artifact
         uses: actions/download-artifact@v4
         with:
-          name: opensquilla-release-webui-dist
-          path: src/opensquilla/gateway/static/dist/
+          name: openstarry-code-release-webui-dist
+          path: src/openstarry_code/gateway/static/dist/
 
       - name: Hydrate router assets
         shell: bash
-        run: git lfs pull --include="src/opensquilla/squilla_router/models/**"
+        run: git lfs pull --include="src/openstarry_code/squilla_router/models/**"
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -487,7 +487,7 @@ jobs:
       - name: Smoke packaged gateway
         working-directory: desktop/electron
         env:
-          OPENSQUILLA_REQUIRE_PACKAGED_GATEWAY_SMOKE: "1"
+          OPENSTARRY_CODE_REQUIRE_PACKAGED_GATEWAY_SMOKE: "1"
         run: npm run verify:gateway-smoke
 
       - name: Gate packaged first-send renderer
@@ -495,7 +495,7 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          $candidate = Resolve-Path '../../dist/desktop-electron/win-unpacked/OpenSquilla.exe'
+          $candidate = Resolve-Path '../../dist/desktop-electron/win-unpacked/OpenStarry Code.exe'
           if (-not (Test-Path $candidate -PathType Leaf)) {
             throw "Unpacked Windows candidate was not found: $candidate"
           }
@@ -514,7 +514,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           $ErrorActionPreference = 'Stop'
-          $candidates = @(Get-ChildItem 'dist/desktop-electron/OpenSquilla-*-win-x64.exe' -File)
+          $candidates = @(Get-ChildItem 'dist/desktop-electron/OpenStarry-Code-*-win-x64.exe' -File)
           if ($candidates.Count -ne 1) {
             throw "Expected exactly one candidate Windows installer; got $($candidates.Count)."
           }
@@ -530,7 +530,7 @@ jobs:
       - name: Upload Windows Electron artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: opensquilla-electron-windows
+          name: openstarry-code-electron-windows
           path: |
             dist/desktop-electron/*.exe
             dist/desktop-electron/*.blockmap
@@ -558,20 +558,20 @@ jobs:
       - name: Download release assets
         uses: actions/download-artifact@v4
         with:
-          pattern: opensquilla-release-assets-python-${{ env.RELEASE_PROFILE }}
+          pattern: openstarry-code-release-assets-python-${{ env.RELEASE_PROFILE }}
           path: dist
           merge-multiple: true
 
       - name: Download macOS Electron assets
         uses: actions/download-artifact@v4
         with:
-          name: opensquilla-electron-macos
+          name: openstarry-code-electron-macos
           path: dist
 
       - name: Download Windows Electron assets
         uses: actions/download-artifact@v4
         with:
-          name: opensquilla-electron-windows
+          name: openstarry-code-electron-windows
           path: dist
 
       - name: Regenerate release checksums
@@ -591,20 +591,20 @@ jobs:
           if tag:
               version = tag.removeprefix("v")
           else:
-              wheels = sorted(dist.glob("opensquilla-*-py3-none-any.whl"))
+              wheels = sorted(dist.glob("openstarry_code-*-py3-none-any.whl"))
               assert len(wheels) == 1, f"expected one wheel when RELEASE_TAG is empty, got {len(wheels)}"
-              version = wheels[0].name.removeprefix("opensquilla-").removesuffix("-py3-none-any.whl")
+              version = wheels[0].name.removeprefix("openstarry_code-").removesuffix("-py3-none-any.whl")
           desktop_version = desktop_asset_version(version)
           asset_names = [
-              f"OpenSquilla-{desktop_version}-mac-arm64.dmg",
-              f"OpenSquilla-{desktop_version}-mac-arm64.zip",
-              f"OpenSquilla-{desktop_version}-mac-arm64.dmg.blockmap",
-              f"OpenSquilla-{desktop_version}-mac-arm64.zip.blockmap",
+              f"OpenStarry-Code-{desktop_version}-mac-arm64.dmg",
+              f"OpenStarry-Code-{desktop_version}-mac-arm64.zip",
+              f"OpenStarry-Code-{desktop_version}-mac-arm64.dmg.blockmap",
+              f"OpenStarry-Code-{desktop_version}-mac-arm64.zip.blockmap",
               "latest-mac.yml",
-              f"OpenSquilla-{desktop_version}-win-x64.exe",
-              f"OpenSquilla-{desktop_version}-win-x64.exe.blockmap",
+              f"OpenStarry-Code-{desktop_version}-win-x64.exe",
+              f"OpenStarry-Code-{desktop_version}-win-x64.exe.blockmap",
               "latest.yml",
-              f"opensquilla-{version}-py3-none-any.whl",
+              f"openstarry_code-{version}-py3-none-any.whl",
           ]
           lines = []
           for name in asset_names:
@@ -631,21 +631,21 @@ jobs:
           if tag:
               version = tag.removeprefix("v")
           else:
-              wheels = sorted(dist.glob("opensquilla-*-py3-none-any.whl"))
+              wheels = sorted(dist.glob("openstarry_code-*-py3-none-any.whl"))
               assert len(wheels) == 1, f"expected one wheel when RELEASE_TAG is empty, got {len(wheels)}"
-              version = wheels[0].name.removeprefix("opensquilla-").removesuffix("-py3-none-any.whl")
+              version = wheels[0].name.removeprefix("openstarry_code-").removesuffix("-py3-none-any.whl")
           desktop_version = desktop_asset_version(version)
           sha256s = dist / "SHA256SUMS"
           asset_names = [
-              f"OpenSquilla-{desktop_version}-mac-arm64.dmg",
-              f"OpenSquilla-{desktop_version}-mac-arm64.zip",
-              f"OpenSquilla-{desktop_version}-mac-arm64.dmg.blockmap",
-              f"OpenSquilla-{desktop_version}-mac-arm64.zip.blockmap",
+              f"OpenStarry-Code-{desktop_version}-mac-arm64.dmg",
+              f"OpenStarry-Code-{desktop_version}-mac-arm64.zip",
+              f"OpenStarry-Code-{desktop_version}-mac-arm64.dmg.blockmap",
+              f"OpenStarry-Code-{desktop_version}-mac-arm64.zip.blockmap",
               "latest-mac.yml",
-              f"OpenSquilla-{desktop_version}-win-x64.exe",
-              f"OpenSquilla-{desktop_version}-win-x64.exe.blockmap",
+              f"OpenStarry-Code-{desktop_version}-win-x64.exe",
+              f"OpenStarry-Code-{desktop_version}-win-x64.exe.blockmap",
               "latest.yml",
-              f"opensquilla-{version}-py3-none-any.whl",
+              f"openstarry_code-{version}-py3-none-any.whl",
           ]
           assets = [dist / name for name in asset_names]
           assert sha256s.is_file(), "missing SHA256SUMS"
@@ -661,7 +661,7 @@ jobs:
       - name: Upload aggregate workflow artifact
         uses: actions/upload-artifact@v4
         with:
-          name: opensquilla-release-assets-${{ env.RELEASE_PROFILE }}
+          name: openstarry-code-release-assets-${{ env.RELEASE_PROFILE }}
           path: dist/*
           overwrite: true
 
@@ -687,7 +687,7 @@ jobs:
           print("true" if preview else "false")
           PY
           )"
-          TITLE="OpenSquilla ${TAG#v}"
+          TITLE="OpenStarry Code ${TAG#v}"
           NOTES_FILE="docs/releases/${TAG#v}.md"
           create_args=("${TAG}" --draft --verify-tag)
           if [[ "${IS_PRERELEASE}" == "true" ]]; then
@@ -698,9 +698,9 @@ jobs:
           version = os.environ["TAG"].removeprefix("v")
           match = re.fullmatch(r"([0-9]+[.][0-9]+[.][0-9]+)(?:a|b|rc)([0-9]+)", version)
           if match:
-              print(f"OpenSquilla {match.group(1)} Preview {match.group(2)}")
+              print(f"OpenStarry Code {match.group(1)} Preview {match.group(2)}")
           else:
-              print(f"OpenSquilla {version} Preview")
+              print(f"OpenStarry Code {version} Preview")
           PY
           )"
             create_args+=(--prerelease)
@@ -755,8 +755,8 @@ jobs:
                   name == "SHA256SUMS"
                   or name == "latest-mac.yml"
                   or name == "latest.yml"
-                  or name.startswith("OpenSquilla-")
-                  or name.startswith("opensquilla-")
+                  or name.startswith("OpenStarry-Code-")
+                  or name.startswith("openstarry_code-")
                   or name.endswith(".sha256")
               )
               if managed:
@@ -791,15 +791,15 @@ jobs:
           version = tag.removeprefix("v")
           desktop_version = desktop_asset_version(version)
           expected = {
-              f"OpenSquilla-{desktop_version}-mac-arm64.dmg",
-              f"OpenSquilla-{desktop_version}-mac-arm64.zip",
-              f"OpenSquilla-{desktop_version}-mac-arm64.dmg.blockmap",
-              f"OpenSquilla-{desktop_version}-mac-arm64.zip.blockmap",
+              f"OpenStarry-Code-{desktop_version}-mac-arm64.dmg",
+              f"OpenStarry-Code-{desktop_version}-mac-arm64.zip",
+              f"OpenStarry-Code-{desktop_version}-mac-arm64.dmg.blockmap",
+              f"OpenStarry-Code-{desktop_version}-mac-arm64.zip.blockmap",
               "latest-mac.yml",
-              f"OpenSquilla-{desktop_version}-win-x64.exe",
-              f"OpenSquilla-{desktop_version}-win-x64.exe.blockmap",
+              f"OpenStarry-Code-{desktop_version}-win-x64.exe",
+              f"OpenStarry-Code-{desktop_version}-win-x64.exe.blockmap",
               "latest.yml",
-              f"opensquilla-{version}-py3-none-any.whl",
+              f"openstarry_code-{version}-py3-none-any.whl",
               "SHA256SUMS",
           }
           raw = subprocess.check_output(
@@ -915,8 +915,8 @@ jobs:
               )
           PY
 
-          dmg_candidates=(OpenSquilla-*-mac-arm64.dmg)
-          zip_candidates=(OpenSquilla-*-mac-arm64.zip)
+          dmg_candidates=(OpenStarry-Code-*-mac-arm64.dmg)
+          zip_candidates=(OpenStarry-Code-*-mac-arm64.zip)
           if [[ "${#dmg_candidates[@]}" -ne 1 || ! -f "${dmg_candidates[0]}" ]]; then
             echo "Expected exactly one downloaded macOS DMG" >&2
             exit 1
@@ -970,7 +970,7 @@ jobs:
 
           extracted="$(mktemp -d)"
           ditto -x -k "${zip_candidates[0]}" "${extracted}"
-          validate_app "${extracted}/OpenSquilla.app"
+          validate_app "${extracted}/OpenStarry Code.app"
 
           mounted="$(mktemp -d)"
           cleanup_mount() {
@@ -978,7 +978,7 @@ jobs:
           }
           trap cleanup_mount EXIT
           hdiutil attach -nobrowse -readonly -mountpoint "${mounted}" "${dmg_candidates[0]}"
-          validate_app "${mounted}/OpenSquilla.app"
+          validate_app "${mounted}/OpenStarry Code.app"
           hdiutil detach "${mounted}" -quiet
 
       - name: Verify downloaded RC3-to-candidate macOS upgrade and uninstall
@@ -987,7 +987,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          candidates=(release-audit/OpenSquilla-*-mac-arm64.dmg)
+          candidates=(release-audit/OpenStarry-Code-*-mac-arm64.dmg)
           if [[ "${#candidates[@]}" -ne 1 || ! -f "${candidates[0]}" ]]; then
             echo "Expected exactly one downloaded candidate macOS DMG" >&2
             exit 1
@@ -1069,7 +1069,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           $ErrorActionPreference = 'Stop'
-          $candidates = @(Get-ChildItem 'release-audit/OpenSquilla-*-win-x64.exe' -File)
+          $candidates = @(Get-ChildItem 'release-audit/OpenStarry-Code-*-win-x64.exe' -File)
           if ($candidates.Count -ne 1) {
             throw "Expected exactly one downloaded Windows installer; got $($candidates.Count)."
           }

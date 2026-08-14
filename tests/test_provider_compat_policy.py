@@ -8,20 +8,20 @@ the policy fields.
 
 from __future__ import annotations
 
-from opensquilla.provider.compat_policy import (
+from openstarry_code.provider.compat_policy import (
     TEXT_TOOL_DIALECT_DEEPSEEK_DSML,
     OpenAICompatPolicy,
     compat_policy_for_kind,
     known_policy_kinds,
 )
-from opensquilla.provider.openai import (
+from openstarry_code.provider.openai import (
     OpenAIProvider,
     _should_replay_reasoning_content,
     _should_send_temperature,
     _uses_max_completion_tokens,
 )
-from opensquilla.provider.registry import list_provider_specs
-from opensquilla.provider.types import ChatConfig, ModelCapabilities
+from openstarry_code.provider.registry import list_provider_specs
+from openstarry_code.provider.types import ChatConfig, ModelCapabilities
 
 
 def test_every_openai_compat_spec_has_explicit_policy() -> None:

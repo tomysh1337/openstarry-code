@@ -16,15 +16,15 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.gateway.boot import (
+from openstarry_code.gateway.boot import (
     apply_model_catalog_overrides,
     build_services,
     model_override_entries,
 )
-from opensquilla.gateway.config import GatewayConfig, ModelOverrideConfig
-from opensquilla.gateway.rpc_config import _sync_model_catalog_overrides
-from opensquilla.provider.model_catalog import ModelCatalog, set_shared_catalog, shared_catalog
-from opensquilla.sandbox.integration import reset_runtime
+from openstarry_code.gateway.config import GatewayConfig, ModelOverrideConfig
+from openstarry_code.gateway.rpc_config import _sync_model_catalog_overrides
+from openstarry_code.provider.model_catalog import ModelCatalog, set_shared_catalog, shared_catalog
+from openstarry_code.sandbox.integration import reset_runtime
 
 
 @pytest.fixture(autouse=True)
@@ -162,7 +162,7 @@ def _drop_sandbox_runtime():
 async def test_build_services_wires_model_overrides_into_shared_catalog(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "state"))
 
     def fail_background_sandbox_setup(coro):
         close = getattr(coro, "close", None)
@@ -171,7 +171,7 @@ async def test_build_services_wires_model_overrides_into_shared_catalog(
         raise AssertionError("unit tests must not schedule real sandbox setup")
 
     monkeypatch.setattr(
-        "opensquilla.gateway.boot.create_background_task",
+        "openstarry_code.gateway.boot.create_background_task",
         fail_background_sandbox_setup,
     )
 

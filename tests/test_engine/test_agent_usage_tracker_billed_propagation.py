@@ -26,20 +26,20 @@ from dataclasses import dataclass
 from typing import Any
 from unittest.mock import MagicMock
 
-from opensquilla.engine import Agent, AgentConfig, ToolResult
-from opensquilla.engine.types import DoneEvent as EngineDoneEvent
-from opensquilla.engine.types import ToolCall
-from opensquilla.engine.usage import UsageTracker
-from opensquilla.provider import ChatConfig, Message, ToolDefinition, ToolInputSchema
-from opensquilla.provider import DoneEvent as ProviderDoneEvent
-from opensquilla.provider import TextDeltaEvent as ProviderTextDeltaEvent
-from opensquilla.provider import ToolUseEndEvent as ProviderToolUseEndEvent
-from opensquilla.provider import ToolUseStartEvent as ProviderToolUseStartEvent
+from openstarry_code.engine import Agent, AgentConfig, ToolResult
+from openstarry_code.engine.types import DoneEvent as EngineDoneEvent
+from openstarry_code.engine.types import ToolCall
+from openstarry_code.engine.usage import UsageTracker
+from openstarry_code.provider import ChatConfig, Message, ToolDefinition, ToolInputSchema
+from openstarry_code.provider import DoneEvent as ProviderDoneEvent
+from openstarry_code.provider import TextDeltaEvent as ProviderTextDeltaEvent
+from openstarry_code.provider import ToolUseEndEvent as ProviderToolUseEndEvent
+from openstarry_code.provider import ToolUseStartEvent as ProviderToolUseStartEvent
 
 
 @dataclass
 class _FakeProviderDoneEvent:
-    """Minimal stand-in for opensquilla.provider.types.DoneEvent.
+    """Minimal stand-in for openstarry_code.provider.types.DoneEvent.
 
     The agent loop reads exactly these attributes on the raw_ev branch
     we exercise; the rest of DoneEvent is irrelevant to billed forwarding.

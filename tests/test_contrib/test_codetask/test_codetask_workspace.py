@@ -1,10 +1,10 @@
-"""Unit tests for opensquilla.contrib.codetask.workspace (real git, local)."""
+"""Unit tests for openstarry_code.contrib.codetask.workspace (real git, local)."""
 
 import subprocess
 
 import pytest
 
-from opensquilla.contrib.codetask import workspace
+from openstarry_code.contrib.codetask import workspace
 
 
 def _git(args, cwd):
@@ -37,7 +37,7 @@ def empty_source_repo(tmp_path):
 
 
 def test_prepare_clones_and_branches(monkeypatch, tmp_path, source_repo):
-    monkeypatch.setenv("OPENSQUILLA_CODETASK_RUNS_DIR", str(tmp_path / "runs"))
+    monkeypatch.setenv("OPENSTARRY_CODE_CODETASK_RUNS_DIR", str(tmp_path / "runs"))
     prepared = workspace.prepare_repo("run1", str(source_repo), slug="fix-it")
     assert prepared.path.is_dir()
     assert prepared.branch == "task/fix-it"
@@ -47,7 +47,7 @@ def test_prepare_clones_and_branches(monkeypatch, tmp_path, source_repo):
 
 
 def test_build_artifacts_excluded_from_change(monkeypatch, tmp_path, source_repo):
-    monkeypatch.setenv("OPENSQUILLA_CODETASK_RUNS_DIR", str(tmp_path / "runs"))
+    monkeypatch.setenv("OPENSTARRY_CODE_CODETASK_RUNS_DIR", str(tmp_path / "runs"))
     prepared = workspace.prepare_repo("run2", str(source_repo), slug="fix-it")
     repo = prepared.path
 
@@ -75,7 +75,7 @@ def test_build_artifacts_excluded_from_change(monkeypatch, tmp_path, source_repo
 
 
 def test_exclude_file_written(monkeypatch, tmp_path, source_repo):
-    monkeypatch.setenv("OPENSQUILLA_CODETASK_RUNS_DIR", str(tmp_path / "runs"))
+    monkeypatch.setenv("OPENSTARRY_CODE_CODETASK_RUNS_DIR", str(tmp_path / "runs"))
     prepared = workspace.prepare_repo("run3", str(source_repo), slug="x")
     exclude = prepared.path / ".git" / "info" / "exclude"
     body = exclude.read_text()
@@ -89,7 +89,7 @@ def test_exclude_file_written(monkeypatch, tmp_path, source_repo):
 
 
 def test_prepare_empty_repo_has_no_base_commit(monkeypatch, tmp_path, empty_source_repo):
-    monkeypatch.setenv("OPENSQUILLA_CODETASK_RUNS_DIR", str(tmp_path / "runs"))
+    monkeypatch.setenv("OPENSTARRY_CODE_CODETASK_RUNS_DIR", str(tmp_path / "runs"))
     prepared = workspace.prepare_repo("e1", str(empty_source_repo), slug="scaffold")
     assert prepared.path.is_dir()
     assert prepared.base_commit == ""  # unborn HEAD -> no base commit
@@ -97,7 +97,7 @@ def test_prepare_empty_repo_has_no_base_commit(monkeypatch, tmp_path, empty_sour
 
 
 def test_collect_change_empty_base_no_commit(monkeypatch, tmp_path, empty_source_repo):
-    monkeypatch.setenv("OPENSQUILLA_CODETASK_RUNS_DIR", str(tmp_path / "runs"))
+    monkeypatch.setenv("OPENSTARRY_CODE_CODETASK_RUNS_DIR", str(tmp_path / "runs"))
     prepared = workspace.prepare_repo("e2", str(empty_source_repo), slug="s")
     repo = prepared.path
     (repo / "package.json").write_text('{"name":"x"}\n')
@@ -114,7 +114,7 @@ def test_collect_change_empty_base_after_agent_commit(
 ):
     """The agent committed its scaffold mid-run; the whole tree is still
     captured. A bare `git diff --cached` (vs the new HEAD) would miss this."""
-    monkeypatch.setenv("OPENSQUILLA_CODETASK_RUNS_DIR", str(tmp_path / "runs"))
+    monkeypatch.setenv("OPENSTARRY_CODE_CODETASK_RUNS_DIR", str(tmp_path / "runs"))
     prepared = workspace.prepare_repo("e3", str(empty_source_repo), slug="s")
     repo = prepared.path
     (repo / "package.json").write_text('{"name":"x"}\n')
@@ -129,7 +129,7 @@ def test_collect_change_empty_base_after_agent_commit(
 
 
 def test_collect_change_invalid_base_raises(monkeypatch, tmp_path, source_repo):
-    monkeypatch.setenv("OPENSQUILLA_CODETASK_RUNS_DIR", str(tmp_path / "runs"))
+    monkeypatch.setenv("OPENSTARRY_CODE_CODETASK_RUNS_DIR", str(tmp_path / "runs"))
     prepared = workspace.prepare_repo("e4", str(source_repo), slug="s")
     repo = prepared.path
     (repo / "mod.py").write_text("def f():\n    return 2\n")
@@ -138,13 +138,13 @@ def test_collect_change_invalid_base_raises(monkeypatch, tmp_path, source_repo):
 
 
 def test_count_commits_empty_base_no_head(monkeypatch, tmp_path, empty_source_repo):
-    monkeypatch.setenv("OPENSQUILLA_CODETASK_RUNS_DIR", str(tmp_path / "runs"))
+    monkeypatch.setenv("OPENSTARRY_CODE_CODETASK_RUNS_DIR", str(tmp_path / "runs"))
     prepared = workspace.prepare_repo("e5", str(empty_source_repo), slug="s")
     assert workspace.count_commits(prepared.path, "") == 0
 
 
 def test_count_commits_empty_base_with_head(monkeypatch, tmp_path, empty_source_repo):
-    monkeypatch.setenv("OPENSQUILLA_CODETASK_RUNS_DIR", str(tmp_path / "runs"))
+    monkeypatch.setenv("OPENSTARRY_CODE_CODETASK_RUNS_DIR", str(tmp_path / "runs"))
     prepared = workspace.prepare_repo("e6", str(empty_source_repo), slug="s")
     repo = prepared.path
     (repo / "f.txt").write_text("x\n")
@@ -154,6 +154,6 @@ def test_count_commits_empty_base_with_head(monkeypatch, tmp_path, empty_source_
 
 
 def test_prepare_empty_repo_with_base_raises(monkeypatch, tmp_path, empty_source_repo):
-    monkeypatch.setenv("OPENSQUILLA_CODETASK_RUNS_DIR", str(tmp_path / "runs"))
+    monkeypatch.setenv("OPENSTARRY_CODE_CODETASK_RUNS_DIR", str(tmp_path / "runs"))
     with pytest.raises(workspace.WorkspaceError):
         workspace.prepare_repo("e7", str(empty_source_repo), base_ref="main", slug="s")

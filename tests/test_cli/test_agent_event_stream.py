@@ -13,13 +13,13 @@ from typing import Any
 
 import pytest
 
-from opensquilla.cli.agent_event_stream import (
+from openstarry_code.cli.agent_event_stream import (
     AGENT_EVENT_STREAM_SCHEMA_VERSION,
     StderrAgentEventSink,
     agent_event_to_jsonl,
     project_agent_event_v1,
 )
-from opensquilla.engine.types import (
+from openstarry_code.engine.types import (
     ArtifactEvent,
     DoneEvent,
     ErrorEvent,
@@ -244,8 +244,8 @@ def test_stderr_event_stream_is_incremental_and_stdout_stays_final_only() -> Non
 import json
 import sys
 
-from opensquilla.cli.agent_event_stream import StderrAgentEventSink
-from opensquilla.engine.types import DoneEvent, RouterDecisionEvent
+from openstarry_code.cli.agent_event_stream import StderrAgentEventSink
+from openstarry_code.engine.types import DoneEvent, RouterDecisionEvent
 
 sink = StderrAgentEventSink()
 sink(RouterDecisionEvent(tier="c1", model="synthetic/model", source="test"))

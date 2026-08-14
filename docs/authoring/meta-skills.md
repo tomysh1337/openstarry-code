@@ -60,7 +60,7 @@ For local managed skills, create:
 For repository-bundled skills, place the skill under the bundled skills tree:
 
 ```text
-src/opensquilla/skills/bundled/<skill-name>/SKILL.md
+src/openstarry_code/skills/bundled/<skill-name>/SKILL.md
 ```
 
 Generated proposals are reviewed before installation. After accepting a

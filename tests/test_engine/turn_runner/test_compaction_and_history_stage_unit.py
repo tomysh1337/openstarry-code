@@ -15,12 +15,12 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.hooks.types import CompactionState
-from opensquilla.engine.turn_runner.compaction_and_history_stage import (
+from openstarry_code.engine.hooks.types import CompactionState
+from openstarry_code.engine.turn_runner.compaction_and_history_stage import (
     CompactionAndHistoryStage,
     CompactionAndHistoryStageInput,
 )
-from opensquilla.engine.turn_runner.outcome import StageOutcome
+from openstarry_code.engine.turn_runner.outcome import StageOutcome
 
 # ---------------------------------------------------------------------------
 # Recording fakes (one per port + one CompactionHook)

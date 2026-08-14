@@ -19,14 +19,14 @@ pytestmark = [pytest.mark.llm, pytest.mark.llm_costly, pytest.mark.llm_gateway]
 
 
 def _require_live_matrix() -> Path:
-    if os.environ.get("OPENSQUILLA_LIVE_PROVIDER_MATRIX") != "1":
-        pytest.skip("set OPENSQUILLA_LIVE_PROVIDER_MATRIX=1 to run the provider matrix")
-    raw_path = os.environ.get("OPENSQUILLA_PROVIDER_KEYS_FILE", "").strip()
+    if os.environ.get("OPENSTARRY_CODE_LIVE_PROVIDER_MATRIX") != "1":
+        pytest.skip("set OPENSTARRY_CODE_LIVE_PROVIDER_MATRIX=1 to run the provider matrix")
+    raw_path = os.environ.get("OPENSTARRY_CODE_PROVIDER_KEYS_FILE", "").strip()
     if not raw_path:
-        pytest.skip("set OPENSQUILLA_PROVIDER_KEYS_FILE to the provider.keys path")
+        pytest.skip("set OPENSTARRY_CODE_PROVIDER_KEYS_FILE to the provider.keys path")
     path = Path(raw_path)
     if not path.is_file():
-        pytest.skip("OPENSQUILLA_PROVIDER_KEYS_FILE is not a readable file")
+        pytest.skip("OPENSTARRY_CODE_PROVIDER_KEYS_FILE is not a readable file")
     return path
 
 

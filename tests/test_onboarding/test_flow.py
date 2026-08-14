@@ -10,7 +10,7 @@ from rich.console import Console
 
 
 def test_wait_for_setup_start_flushes_visible_prompt_before_accepting_enter(monkeypatch):
-    from opensquilla.onboarding import flow
+    from openstarry_code.onboarding import flow
 
     events: list[str] = []
 
@@ -35,7 +35,7 @@ def test_wait_for_setup_start_flushes_visible_prompt_before_accepting_enter(monk
 
 
 def test_flush_stdin_typeahead_uses_msvcrt_on_windows(monkeypatch):
-    from opensquilla.onboarding import flow
+    from openstarry_code.onboarding import flow
 
     drained: list[str] = []
     fake_msvcrt = types.SimpleNamespace(
@@ -52,7 +52,7 @@ def test_flush_stdin_typeahead_uses_msvcrt_on_windows(monkeypatch):
 
 
 def test_flush_stdin_typeahead_uses_termios_on_unix_tty(monkeypatch):
-    from opensquilla.onboarding import flow
+    from openstarry_code.onboarding import flow
 
     calls: list[object] = []
     fake_stdin = types.SimpleNamespace(isatty=lambda: True)
@@ -71,7 +71,7 @@ def test_flush_stdin_typeahead_uses_termios_on_unix_tty(monkeypatch):
 
 
 def test_interactive_provider_choice_offers_all_runtime_supported_providers():
-    from opensquilla.onboarding.flow import OnboardOptions, _ask_provider_choice
+    from openstarry_code.onboarding.flow import OnboardOptions, _ask_provider_choice
 
     captured: dict[str, object] = {}
 
@@ -107,9 +107,9 @@ def test_interactive_provider_choice_offers_all_runtime_supported_providers():
 
 
 def test_interactive_router_supported_provider_does_not_prompt_for_model(monkeypatch):
-    from opensquilla.onboarding import flow
-    from opensquilla.onboarding.flow import OnboardOptions, _ask_provider_fields
-    from opensquilla.onboarding.provider_specs import get_provider_setup_spec
+    from openstarry_code.onboarding import flow
+    from openstarry_code.onboarding.flow import OnboardOptions, _ask_provider_fields
+    from openstarry_code.onboarding.provider_specs import get_provider_setup_spec
 
     # The router-supported pre-save probe is exercised in
     # test_flow_provider_verify.py; here it degrades silently (offline).
@@ -132,9 +132,9 @@ def test_interactive_router_supported_provider_does_not_prompt_for_model(monkeyp
 
 
 def test_interactive_provider_fields_default_to_pasted_api_key(monkeypatch):
-    from opensquilla.onboarding import flow
-    from opensquilla.onboarding.flow import OnboardOptions, _ask_provider_fields
-    from opensquilla.onboarding.provider_specs import get_provider_setup_spec
+    from openstarry_code.onboarding import flow
+    from openstarry_code.onboarding.flow import OnboardOptions, _ask_provider_fields
+    from openstarry_code.onboarding.provider_specs import get_provider_setup_spec
 
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     monkeypatch.setattr(flow, "_run_provider_probe", lambda **_kw: None)
@@ -181,9 +181,9 @@ def test_interactive_provider_fields_default_to_pasted_api_key(monkeypatch):
 
 
 def test_interactive_provider_fields_explains_detected_env_key(monkeypatch):
-    from opensquilla.onboarding import flow
-    from opensquilla.onboarding.flow import OnboardOptions, _ask_provider_fields
-    from opensquilla.onboarding.provider_specs import get_provider_setup_spec
+    from openstarry_code.onboarding import flow
+    from openstarry_code.onboarding.flow import OnboardOptions, _ask_provider_fields
+    from openstarry_code.onboarding.provider_specs import get_provider_setup_spec
 
     monkeypatch.setenv("OPENROUTER_API_KEY", "sk-from-env")
     monkeypatch.setattr(flow, "_run_provider_probe", lambda **_kw: None)
@@ -221,9 +221,9 @@ def test_interactive_provider_fields_explains_detected_env_key(monkeypatch):
 
 
 def test_interactive_provider_fields_requires_pasted_api_key(monkeypatch):
-    from opensquilla.onboarding import flow
-    from opensquilla.onboarding.flow import OnboardOptions, _ask_provider_fields
-    from opensquilla.onboarding.provider_specs import get_provider_setup_spec
+    from openstarry_code.onboarding import flow
+    from openstarry_code.onboarding.flow import OnboardOptions, _ask_provider_fields
+    from openstarry_code.onboarding.provider_specs import get_provider_setup_spec
 
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     monkeypatch.setattr(flow, "_run_provider_probe", lambda **_kw: None)
@@ -260,9 +260,9 @@ def test_interactive_provider_fields_requires_pasted_api_key(monkeypatch):
 
 
 def test_interactive_provider_fields_rejects_terminal_paste_escape(monkeypatch):
-    from opensquilla.onboarding import flow
-    from opensquilla.onboarding.flow import OnboardOptions, _ask_provider_fields
-    from opensquilla.onboarding.provider_specs import get_provider_setup_spec
+    from openstarry_code.onboarding import flow
+    from openstarry_code.onboarding.flow import OnboardOptions, _ask_provider_fields
+    from openstarry_code.onboarding.provider_specs import get_provider_setup_spec
 
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     monkeypatch.setattr(flow, "_run_provider_probe", lambda **_kw: None)
@@ -303,10 +303,10 @@ def test_interactive_onboard_prompts_router_defaults_before_persist(tmp_path, mo
     import sys
     import types
 
-    from opensquilla.onboarding import flow
+    from openstarry_code.onboarding import flow
 
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     monkeypatch.setattr(flow, "_is_tty", lambda: True)
     monkeypatch.setattr(flow, "_wait_for_setup_start", lambda: calls.append("start gate"))
@@ -389,10 +389,10 @@ def test_interactive_onboard_migration_defaults_to_all_sources_and_keeps_importe
     import tomllib
     import types
 
-    from opensquilla.onboarding import flow
+    from openstarry_code.onboarding import flow
 
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     monkeypatch.setenv("OPENROUTER_API_KEY", "sk-imported-env")
     monkeypatch.setattr(flow, "_is_tty", lambda: True)
     monkeypatch.setattr(flow, "_wait_for_setup_start", lambda: calls.append("start gate"))
@@ -540,10 +540,10 @@ def test_interactive_onboard_imported_provider_prefers_inline_key_over_env(
     import tomllib
     import types
 
-    from opensquilla.onboarding import flow
+    from openstarry_code.onboarding import flow
 
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     monkeypatch.setattr(flow, "_is_tty", lambda: True)
     monkeypatch.setattr(flow, "_wait_for_setup_start", lambda: None)
     monkeypatch.setattr(
@@ -639,8 +639,8 @@ def test_interactive_onboard_imported_provider_prefers_inline_key_over_env(
 
 
 def test_imported_openrouter_router_defaults_respect_image_skip():
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.onboarding import flow
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.onboarding import flow
 
     cfg = GatewayConfig(
         llm={
@@ -667,7 +667,7 @@ def test_interactive_onboard_imported_provider_finalize_error_continues_setup(
     import tomllib
     import types
 
-    from opensquilla.onboarding import flow
+    from openstarry_code.onboarding import flow
 
     target = tmp_path / "c.toml"
     console_output = StringIO()
@@ -676,7 +676,7 @@ def test_interactive_onboard_imported_provider_finalize_error_continues_setup(
         "console",
         Console(file=console_output, force_terminal=False, highlight=False),
     )
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     monkeypatch.setenv("OPENROUTER_API_KEY", "sk-env")
     monkeypatch.setattr(flow, "_is_tty", lambda: True)
     monkeypatch.setattr(flow, "_wait_for_setup_start", lambda: None)
@@ -786,7 +786,7 @@ def test_interactive_onboard_imported_provider_finalize_error_continues_setup(
 
 
 def test_onboard_migration_selection_summary_lists_checked_sources(tmp_path, monkeypatch):
-    from opensquilla.onboarding import flow
+    from openstarry_code.onboarding import flow
 
     console_output = StringIO()
     monkeypatch.setattr(
@@ -812,7 +812,7 @@ def test_onboard_migration_selection_summary_lists_checked_sources(tmp_path, mon
 
 
 def test_onboard_migration_source_prompt_uses_clear_continue_language(tmp_path):
-    from opensquilla.onboarding import flow
+    from openstarry_code.onboarding import flow
 
     captured: dict[str, object] = {}
 
@@ -851,7 +851,7 @@ def test_onboard_migration_source_prompt_uses_clear_continue_language(tmp_path):
 
 
 def test_onboard_migration_preview_hides_unwritten_report_path(tmp_path, monkeypatch):
-    from opensquilla.onboarding import flow
+    from openstarry_code.onboarding import flow
 
     console_output = StringIO()
     monkeypatch.setattr(
@@ -887,10 +887,10 @@ def test_interactive_onboard_migration_preview_failure_continues_provider_setup(
     import sys
     import types
 
-    from opensquilla.onboarding import flow
+    from openstarry_code.onboarding import flow
 
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     monkeypatch.setattr(flow, "_is_tty", lambda: True)
     monkeypatch.setattr(flow, "_wait_for_setup_start", lambda: calls.append("start gate"))
@@ -982,10 +982,10 @@ def test_interactive_onboard_migration_prompts_for_missing_imported_provider_key
     import tomllib
     import types
 
-    from opensquilla.onboarding import flow
+    from openstarry_code.onboarding import flow
 
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     monkeypatch.delenv("IMPORTED_OPENROUTER_KEY", raising=False)
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     monkeypatch.setattr(flow, "_is_tty", lambda: True)
@@ -1102,10 +1102,10 @@ def test_interactive_openrouter_onboard_applies_image_default_unless_skipped(
     import tomllib
     import types
 
-    from opensquilla.onboarding import flow
+    from openstarry_code.onboarding import flow
 
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     monkeypatch.setenv("OPENROUTER_API_KEY", "sk-image-env")
     monkeypatch.setattr(flow, "_is_tty", lambda: True)
     monkeypatch.setattr(flow, "_wait_for_setup_start", lambda: None)
@@ -1203,13 +1203,13 @@ def test_onboard_if_needed_core_ready_repairs_memory_embedding_without_provider_
     import tomllib
     import types
 
-    from opensquilla.gateway.config import (
+    from openstarry_code.gateway.config import (
         GatewayConfig,
         LlmProviderConfig,
         MemoryEmbeddingConfig,
     )
-    from opensquilla.onboarding import flow
-    from opensquilla.onboarding.config_store import persist_config
+    from openstarry_code.onboarding import flow
+    from openstarry_code.onboarding.config_store import persist_config
 
     target = tmp_path / "c.toml"
     cfg = GatewayConfig(config_path=str(target))
@@ -1222,7 +1222,7 @@ def test_onboard_if_needed_core_ready_repairs_memory_embedding_without_provider_
     persist_config(cfg, path=target, backup=False)
 
     calls: list[str] = []
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     monkeypatch.setenv("OPENAI_API_KEY", "sk-memory-env")
     monkeypatch.setattr(flow, "_is_tty", lambda: True)
     monkeypatch.setattr(flow, "_wait_for_setup_start", lambda: calls.append("start gate"))
@@ -1282,7 +1282,7 @@ def test_onboard_if_needed_core_ready_repairs_memory_embedding_without_provider_
     )
     assert banner_calls == [
         (
-            "OpenSquilla Onboarding",
+            "OpenStarry Code Onboarding",
             "Migration · Provider · SquillaRouter · Channels · Capabilities",
         )
     ]
@@ -1296,10 +1296,10 @@ def test_interactive_configure_image_generation_persists(tmp_path, monkeypatch):
     import sys
     import types
 
-    from opensquilla.onboarding import flow
+    from openstarry_code.onboarding import flow
 
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     monkeypatch.setenv("OPENAI_API_KEY", "sk-image-env")
     monkeypatch.setattr(flow, "_is_tty", lambda: True)
 
@@ -1363,11 +1363,11 @@ def test_interactive_configure_image_generation_uses_explicit_config_path(
     import sys
     import types
 
-    from opensquilla.onboarding import flow
+    from openstarry_code.onboarding import flow
 
     default_target = tmp_path / "default.toml"
     target = tmp_path / "custom.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(default_target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(default_target))
     monkeypatch.setenv("OPENAI_API_KEY", "sk-image-env")
     monkeypatch.setattr(flow, "_is_tty", lambda: True)
 
@@ -1414,8 +1414,8 @@ def test_interactive_configure_image_generation_uses_explicit_config_path(
 
 
 def test_router_tier_overrides_edit_only_selected_tiers():
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.onboarding.flow import _router_tier_overrides
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.onboarding.flow import _router_tier_overrides
 
     calls: list[str] = []
     selections = iter(["Route c2", "Done"])
@@ -1465,7 +1465,7 @@ def test_interactive_feishu_websocket_prompts_only_core_fields(tmp_path, monkeyp
     import sys
     import types
 
-    from opensquilla.onboarding import flow
+    from openstarry_code.onboarding import flow
 
     target = tmp_path / "c.toml"
     console_output = StringIO()
@@ -1474,7 +1474,7 @@ def test_interactive_feishu_websocket_prompts_only_core_fields(tmp_path, monkeyp
         "console",
         Console(file=console_output, force_terminal=False, highlight=False),
     )
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     monkeypatch.setattr(flow, "_is_tty", lambda: True)
     monkeypatch.setattr(flow.importlib.util, "find_spec", lambda name: None)
 
@@ -1524,7 +1524,7 @@ def test_interactive_feishu_websocket_prompts_only_core_fields(tmp_path, monkeyp
     assert "Feishu websocket mode requires the base lark-oapi dependency" in out
     assert "Portable zip:" in out
     assert "latest recommended portable package" in out
-    assert "OPENSQUILLA_INSTALL_EXTRAS" not in normalized_out
+    assert "OPENSTARRY_CODE_INSTALL_EXTRAS" not in normalized_out
     assert "uv tool install --python 3.12 --force" in normalized_out
     assert "opensquilla[recommended]" in normalized_out
     assert "https://github.com/opensquilla/opensquilla/releases/download/" in out
@@ -1549,11 +1549,11 @@ def test_interactive_channel_add_uses_explicit_config_path(tmp_path, monkeypatch
     import sys
     import types
 
-    from opensquilla.onboarding import flow
+    from openstarry_code.onboarding import flow
 
     default_target = tmp_path / "default.toml"
     target = tmp_path / "custom.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(default_target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(default_target))
     monkeypatch.setattr(flow, "_is_tty", lambda: True)
 
     class _Answer:
@@ -1604,7 +1604,7 @@ def test_interactive_slack_channel_add_can_select_socket_mode(tmp_path, monkeypa
     import sys
     import types
 
-    from opensquilla.onboarding import flow
+    from openstarry_code.onboarding import flow
 
     target = tmp_path / "socket.toml"
     monkeypatch.setattr(flow, "_is_tty", lambda: True)
@@ -1654,7 +1654,7 @@ def test_interactive_slack_channel_add_can_select_socket_mode(tmp_path, monkeypa
 
 
 def test_optional_onboarding_section_receives_explicit_config_path(tmp_path):
-    from opensquilla.onboarding import flow
+    from openstarry_code.onboarding import flow
 
     target = tmp_path / "custom.toml"
     seen = {}
@@ -1673,8 +1673,8 @@ def test_optional_onboarding_section_receives_explicit_config_path(tmp_path):
 
 
 def test_channel_saved_output_separates_configured_from_connected(monkeypatch):
-    from opensquilla.onboarding import flow
-    from opensquilla.onboarding.flow import _print_channel_saved
+    from openstarry_code.onboarding import flow
+    from openstarry_code.onboarding.flow import _print_channel_saved
 
     console_output = StringIO()
     monkeypatch.setattr(
@@ -1688,12 +1688,12 @@ def test_channel_saved_output_separates_configured_from_connected(monkeypatch):
     out = console_output.getvalue()
     assert "configured, not connected yet" in out
     assert "Restart the gateway process" in out
-    assert "opensquilla channels status feishu --json" in out
+    assert "openstarry-code channels status feishu --json" in out
 
 
 def test_search_provider_key_defaults_to_pasted_key_with_brave_hint(monkeypatch):
-    from opensquilla.onboarding.flow import _ask_search_fields
-    from opensquilla.onboarding.search_specs import get_search_provider_setup_spec
+    from openstarry_code.onboarding.flow import _ask_search_fields
+    from openstarry_code.onboarding.search_specs import get_search_provider_setup_spec
 
     monkeypatch.delenv("BRAVE_SEARCH_API_KEY", raising=False)
 
@@ -1744,8 +1744,8 @@ def test_search_provider_key_defaults_to_pasted_key_with_brave_hint(monkeypatch)
 
 
 def test_search_provider_detected_env_prefers_env_but_can_use_manual_key(monkeypatch):
-    from opensquilla.onboarding.flow import _ask_search_fields
-    from opensquilla.onboarding.search_specs import get_search_provider_setup_spec
+    from openstarry_code.onboarding.flow import _ask_search_fields
+    from openstarry_code.onboarding.search_specs import get_search_provider_setup_spec
 
     monkeypatch.setenv("BRAVE_SEARCH_API_KEY", "from-env")
 
@@ -1799,8 +1799,8 @@ def test_search_provider_detected_env_prefers_env_but_can_use_manual_key(monkeyp
 
 
 def test_search_provider_can_use_detected_env_when_requested(monkeypatch):
-    from opensquilla.onboarding.flow import _ask_search_fields
-    from opensquilla.onboarding.search_specs import get_search_provider_setup_spec
+    from openstarry_code.onboarding.flow import _ask_search_fields
+    from openstarry_code.onboarding.search_specs import get_search_provider_setup_spec
 
     monkeypatch.setenv("BRAVE_SEARCH_API_KEY", "from-env")
 
@@ -1850,8 +1850,8 @@ def test_search_provider_can_use_detected_env_when_requested(monkeypatch):
 
 
 def test_search_fallback_choice_names_duckduckgo_and_persists_value(monkeypatch):
-    from opensquilla.onboarding.flow import _ask_search_fields
-    from opensquilla.onboarding.search_specs import get_search_provider_setup_spec
+    from openstarry_code.onboarding.flow import _ask_search_fields
+    from openstarry_code.onboarding.search_specs import get_search_provider_setup_spec
 
     monkeypatch.delenv("BRAVE_SEARCH_API_KEY", raising=False)
 
@@ -1903,8 +1903,8 @@ def test_search_fallback_choice_names_duckduckgo_and_persists_value(monkeypatch)
 
 
 def test_search_provider_can_use_masked_api_key_prompt(monkeypatch):
-    from opensquilla.onboarding.flow import _ask_search_fields
-    from opensquilla.onboarding.search_specs import get_search_provider_setup_spec
+    from openstarry_code.onboarding.flow import _ask_search_fields
+    from openstarry_code.onboarding.search_specs import get_search_provider_setup_spec
 
     monkeypatch.delenv("BRAVE_SEARCH_API_KEY", raising=False)
 
@@ -1956,8 +1956,8 @@ def test_search_provider_can_use_masked_api_key_prompt(monkeypatch):
 
 def test_noninteractive_provider_configure_writes_config(tmp_path, monkeypatch):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
-    from opensquilla.onboarding.flow import run_noninteractive_provider_configure
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
+    from openstarry_code.onboarding.flow import run_noninteractive_provider_configure
 
     result = run_noninteractive_provider_configure(
         "openrouter",
@@ -1972,7 +1972,7 @@ def test_flow_module_exposes_no_engine_bypassing_noninteractive_writers():
     the old module-level helpers persisted config while bypassing the
     engine's restart/warning accumulation and must stay deleted."""
 
-    from opensquilla.onboarding import flow
+    from openstarry_code.onboarding import flow
 
     assert not hasattr(flow, "run_noninteractive_channel_add")
     assert not hasattr(flow, "run_noninteractive_search_configure")
@@ -1983,11 +1983,11 @@ def test_interactive_configure_search_uses_explicit_config_path(tmp_path, monkey
     import tomllib
     import types
 
-    from opensquilla.onboarding import flow
+    from openstarry_code.onboarding import flow
 
     default_target = tmp_path / "default.toml"
     target = tmp_path / "custom.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(default_target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(default_target))
     monkeypatch.setattr(flow, "_is_tty", lambda: True)
 
     class _Answer:
@@ -2044,10 +2044,10 @@ def test_interactive_configure_memory_embedding_is_in_section_menu(
     import tomllib
     import types
 
-    from opensquilla.onboarding import flow
+    from openstarry_code.onboarding import flow
 
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     monkeypatch.setenv("OPENAI_API_KEY", "sk-memory-env")
     monkeypatch.setattr(flow, "_is_tty", lambda: True)
 
@@ -2104,7 +2104,7 @@ def test_interactive_memory_embedding_configure_without_tty_prints_hint(
     monkeypatch,
     capsys,
 ):
-    from opensquilla.onboarding import flow
+    from openstarry_code.onboarding import flow
 
     target = tmp_path / "c.toml"
     monkeypatch.setattr(flow, "_is_tty", lambda: False)
@@ -2115,15 +2115,15 @@ def test_interactive_memory_embedding_configure_without_tty_prints_hint(
     assert not target.exists()
     out = capsys.readouterr().out
     assert "Headless memory embedding:" in out
-    assert "opensquilla onboard configure memory-embedding --config" in out
+    assert "openstarry-code onboard configure memory-embedding --config" in out
 
 
 def test_interactive_configure_provider_accepts_singular_section_alias(
     tmp_path,
     monkeypatch,
 ):
-    from opensquilla.onboarding import flow
-    from opensquilla.onboarding.config_store import PersistResult
+    from openstarry_code.onboarding import flow
+    from openstarry_code.onboarding.config_store import PersistResult
 
     target = tmp_path / "custom.toml"
     seen = {}
@@ -2151,7 +2151,7 @@ def test_interactive_configure_router_persists(tmp_path, monkeypatch):
     import tomllib
     import types
 
-    from opensquilla.onboarding import flow
+    from openstarry_code.onboarding import flow
 
     target = tmp_path / "c.toml"
     target.write_text(
@@ -2197,8 +2197,8 @@ def test_interactive_configure_provider_receives_explicit_config_path(
     tmp_path,
     monkeypatch,
 ):
-    from opensquilla.onboarding import flow
-    from opensquilla.onboarding.config_store import PersistResult
+    from openstarry_code.onboarding import flow
+    from openstarry_code.onboarding.config_store import PersistResult
 
     target = tmp_path / "custom.toml"
     seen = {}
@@ -2225,8 +2225,8 @@ def test_interactive_configure_without_tty_does_not_create_config(
     tmp_path, monkeypatch, capsys
 ):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
-    from opensquilla.onboarding import flow
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
+    from openstarry_code.onboarding import flow
 
     monkeypatch.setattr(flow, "_is_tty", lambda: False)
     result = flow.run_interactive_configure("providers")
@@ -2248,8 +2248,8 @@ def test_interactive_configure_provider_scopes_out_migration_and_optional_sectio
     re-trigger the legacy-migration pre-step or the optional image-generation
     prompt that the full first-run wizard walks through."""
 
-    from opensquilla.onboarding import flow
-    from opensquilla.onboarding.config_store import PersistResult
+    from openstarry_code.onboarding import flow
+    from openstarry_code.onboarding.config_store import PersistResult
 
     target = tmp_path / "custom.toml"
     seen = {}
@@ -2291,7 +2291,7 @@ def test_scoped_section_run_skips_banner_start_gate_and_trailing_prompts(
     import sys
     import types
 
-    from opensquilla.onboarding import flow
+    from openstarry_code.onboarding import flow
 
     target = tmp_path / "c.toml"
     # Memory embedding needs action: on a FULL walk this appends the
@@ -2380,8 +2380,8 @@ def test_full_walk_folds_optional_section_restart_flag_into_result(
     import sys
     import types
 
-    from opensquilla.onboarding import flow
-    from opensquilla.onboarding.config_store import PersistResult
+    from openstarry_code.onboarding import flow
+    from openstarry_code.onboarding.config_store import PersistResult
 
     target = tmp_path / "c.toml"
     # Memory embedding action-required after the provider save (remote
@@ -2472,8 +2472,8 @@ def test_interactive_configure_dispatches_short_image_and_memory_aliases(
     of a hand-copied subset that dropped the short spellings and answered
     "not yet supported"."""
 
-    from opensquilla.onboarding import flow
-    from opensquilla.onboarding.config_store import PersistResult
+    from openstarry_code.onboarding import flow
+    from openstarry_code.onboarding.config_store import PersistResult
 
     target = tmp_path / "custom.toml"
     dispatched: list[str] = []
@@ -2525,9 +2525,9 @@ def test_interactive_configure_unknown_section_names_explicit_config_path(
 ):
     """The unsupported-section notice must name the config file this run
     would actually edit (the explicit ``--config`` path here), not a
-    hardcoded ``~/.opensquilla/config.toml``."""
+    hardcoded ``~/.openstarry-code/config.toml``."""
 
-    from opensquilla.onboarding import flow
+    from openstarry_code.onboarding import flow
 
     target = tmp_path / "custom.toml"
     recorder = _RecordingConsole()
@@ -2541,17 +2541,17 @@ def test_interactive_configure_unknown_section_names_explicit_config_path(
     assert result is None
     joined = recorder.joined()
     assert str(target) in joined
-    assert "~/.opensquilla/config.toml" not in joined
+    assert "~/.openstarry-code/config.toml" not in joined
 
 
 def test_interactive_configure_unknown_section_honours_env_config_path(
     tmp_path,
     monkeypatch,
 ):
-    from opensquilla.onboarding import flow
+    from openstarry_code.onboarding import flow
 
     target = tmp_path / "env-config.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     recorder = _RecordingConsole()
     monkeypatch.setattr(flow, "console", recorder)
     monkeypatch.setattr(flow, "_is_tty", lambda: True)
@@ -2561,7 +2561,7 @@ def test_interactive_configure_unknown_section_honours_env_config_path(
     assert result is None
     joined = recorder.joined()
     assert str(target) in joined
-    assert "~/.opensquilla/config.toml" not in joined
+    assert "~/.openstarry-code/config.toml" not in joined
 
 
 def test_interactive_memory_embedding_configure_reports_mutation_restart_required(
@@ -2575,10 +2575,10 @@ def test_interactive_memory_embedding_configure_reports_mutation_restart_require
     import sys
     import types
 
-    from opensquilla.onboarding import flow
+    from openstarry_code.onboarding import flow
 
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     monkeypatch.setenv("OPENAI_API_KEY", "sk-memory-env")
     monkeypatch.setattr(flow, "_is_tty", lambda: True)
 
@@ -2624,7 +2624,7 @@ def test_flow_config_cli_arg_is_powershell_safe_on_windows(monkeypatch):
     onboard status already print the PowerShell-quoted form of the same
     command in the same session."""
 
-    from opensquilla.onboarding import flow, next_steps
+    from openstarry_code.onboarding import flow, next_steps
 
     monkeypatch.setattr(next_steps.platform, "system", lambda: "Windows")
 
@@ -2665,9 +2665,9 @@ def test_declared_questionary_floor_supports_use_search_filter():
 
 
 def test_installed_reinstall_command_pins_the_running_release_wheel(monkeypatch):
-    from opensquilla.onboarding import flow
+    from openstarry_code.onboarding import flow
 
-    monkeypatch.setattr("opensquilla.__version__", "0.6.0")
+    monkeypatch.setattr("openstarry_code.__version__", "0.6.0")
 
     lines = flow._installed_reinstall_command_lines()
 
@@ -2680,9 +2680,9 @@ def test_installed_reinstall_command_pins_the_running_release_wheel(monkeypatch)
 
 
 def test_installed_reinstall_command_supports_prerelease_versions(monkeypatch):
-    from opensquilla.onboarding import flow
+    from openstarry_code.onboarding import flow
 
-    monkeypatch.setattr("opensquilla.__version__", "1.2.3rc1")
+    monkeypatch.setattr("openstarry_code.__version__", "1.2.3rc1")
 
     lines = flow._installed_reinstall_command_lines()
 
@@ -2690,9 +2690,9 @@ def test_installed_reinstall_command_supports_prerelease_versions(monkeypatch):
 
 
 def test_installed_reinstall_command_never_guesses_a_wheel_for_dev_builds(monkeypatch):
-    from opensquilla.onboarding import flow
+    from openstarry_code.onboarding import flow
 
-    monkeypatch.setattr("opensquilla.__version__", "0.0.0+unknown")
+    monkeypatch.setattr("openstarry_code.__version__", "0.0.0+unknown")
 
     lines = flow._installed_reinstall_command_lines()
 
@@ -2706,7 +2706,7 @@ def test_channel_dependency_warning_has_no_hardcoded_release_tag():
     release ships."""
     import inspect
 
-    from opensquilla.onboarding import flow
+    from openstarry_code.onboarding import flow
 
     source = inspect.getsource(flow._warn_channel_dependency_gaps)
     assert "releases/download" not in source

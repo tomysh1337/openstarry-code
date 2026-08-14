@@ -14,15 +14,15 @@ from types import SimpleNamespace
 import pytest
 import structlog.testing
 
-from opensquilla.sandbox.types import (
+from openstarry_code.sandbox.types import (
     DenialReason,
     DenialResult,
     SandboxResult,
     SecurityLevel,
     SuggestedNextStep,
 )
-from opensquilla.tools.builtin import shell
-from opensquilla.tools.types import CallerKind, ToolContext, ToolError, current_tool_context
+from openstarry_code.tools.builtin import shell
+from openstarry_code.tools.types import CallerKind, ToolContext, ToolError, current_tool_context
 
 
 def _python_shell_command(script: str) -> str:
@@ -608,7 +608,7 @@ def test_process_wait_is_a_valid_action() -> None:
 
 def test_process_tool_declares_wait_timeout_metadata() -> None:
     # Without this metadata the 60s tool watchdog would kill a long wait.
-    from opensquilla.tools.registry import get_default_registry
+    from openstarry_code.tools.registry import get_default_registry
 
     spec = get_default_registry().get("process").spec
     assert (

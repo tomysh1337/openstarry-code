@@ -8,10 +8,10 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla import subprocess_encoding
-from opensquilla.skills.meta.executors import skill_exec
-from opensquilla.skills.meta.types import MetaStep
-from opensquilla.skills.types import SkillLayer, SkillSpec
+from openstarry_code import subprocess_encoding
+from openstarry_code.skills.meta.executors import skill_exec
+from openstarry_code.skills.meta.types import MetaStep
+from openstarry_code.skills.types import SkillLayer, SkillSpec
 
 
 class _Loader:

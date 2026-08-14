@@ -12,17 +12,17 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.session.compaction import CompactionConfig
-from opensquilla.session.manager import SessionManager
-from opensquilla.session.storage import SessionStorage
+from openstarry_code.session.compaction import CompactionConfig
+from openstarry_code.session.manager import SessionManager
+from openstarry_code.session.storage import SessionStorage
 
 pytestmark = [pytest.mark.llm, pytest.mark.llm_smoke, pytest.mark.agent_context_boundary]
 
 
 @pytest.mark.asyncio
 async def test_live_openrouter_session_compaction_succeeds(tmp_path: Path) -> None:
-    if os.environ.get("OPENSQUILLA_LIVE_COMPACTION_E2E") != "1":
-        pytest.skip("set OPENSQUILLA_LIVE_COMPACTION_E2E=1 to run live compaction smoke")
+    if os.environ.get("OPENSTARRY_CODE_LIVE_COMPACTION_E2E") != "1":
+        pytest.skip("set OPENSTARRY_CODE_LIVE_COMPACTION_E2E=1 to run live compaction smoke")
     api_key = os.environ.get("OPENROUTER_API_KEY")
     if not api_key:
         pytest.skip("OPENROUTER_API_KEY not set")
@@ -82,8 +82,8 @@ async def test_live_openrouter_session_compaction_succeeds(tmp_path: Path) -> No
 async def test_live_openrouter_coding_profile_preserves_recent_tail(
     tmp_path: Path,
 ) -> None:
-    if os.environ.get("OPENSQUILLA_LIVE_COMPACTION_E2E") != "1":
-        pytest.skip("set OPENSQUILLA_LIVE_COMPACTION_E2E=1 to run live compaction smoke")
+    if os.environ.get("OPENSTARRY_CODE_LIVE_COMPACTION_E2E") != "1":
+        pytest.skip("set OPENSTARRY_CODE_LIVE_COMPACTION_E2E=1 to run live compaction smoke")
     api_key = os.environ.get("OPENROUTER_API_KEY")
     if not api_key:
         pytest.skip("OPENROUTER_API_KEY not set")

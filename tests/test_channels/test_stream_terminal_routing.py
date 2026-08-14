@@ -9,11 +9,11 @@ from typing import Any
 import httpx
 import pytest
 
-from opensquilla.channels.discord import DiscordChannel, DiscordChannelConfig
-from opensquilla.channels.matrix import MatrixChannel, MatrixChannelConfig
-from opensquilla.channels.msteams import MSTeamsChannel, MSTeamsChannelConfig
-from opensquilla.channels.slack import SLACK_API_BASE, SlackChannel
-from opensquilla.channels.types import IncomingMessage
+from openstarry_code.channels.discord import DiscordChannel, DiscordChannelConfig
+from openstarry_code.channels.matrix import MatrixChannel, MatrixChannelConfig
+from openstarry_code.channels.msteams import MSTeamsChannel, MSTeamsChannelConfig
+from openstarry_code.channels.slack import SLACK_API_BASE, SlackChannel
+from openstarry_code.channels.types import IncomingMessage
 
 
 async def _one_chunk() -> AsyncIterator[str]:

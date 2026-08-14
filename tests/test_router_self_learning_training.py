@@ -7,14 +7,14 @@ from datetime import UTC, datetime, timedelta
 import numpy as np
 import pytest
 
-from opensquilla.gateway.config import RouterSelfLearningConfig, SquillaRouterConfig
-from opensquilla.squilla_router.self_learning import encode_features, write_sample
-from opensquilla.squilla_router.self_learning.dataset import TrainingDataset
-from opensquilla.squilla_router.self_learning.feedback import (
+from openstarry_code.gateway.config import RouterSelfLearningConfig, SquillaRouterConfig
+from openstarry_code.squilla_router.self_learning import encode_features, write_sample
+from openstarry_code.squilla_router.self_learning.dataset import TrainingDataset
+from openstarry_code.squilla_router.self_learning.feedback import (
     load_feedback_map,
     write_feedback,
 )
-from opensquilla.squilla_router.self_learning.gates import (
+from openstarry_code.squilla_router.self_learning.gates import (
     AGENT_ACTIVE,
     COOLDOWN,
     DISABLED,
@@ -24,19 +24,19 @@ from opensquilla.squilla_router.self_learning.gates import (
     READY,
     evaluate_training_gates,
 )
-from opensquilla.squilla_router.self_learning.orchestrator import (
+from openstarry_code.squilla_router.self_learning.orchestrator import (
     in_process_trainer,
     maybe_run_update_router,
 )
-from opensquilla.squilla_router.self_learning.schema import RouterTrainSample
-from opensquilla.squilla_router.self_learning.state import (
+from openstarry_code.squilla_router.self_learning.schema import RouterTrainSample
+from openstarry_code.squilla_router.self_learning.state import (
     EventStoreStats,
     TrainState,
     load_train_state,
     save_train_state,
     scan_event_store,
 )
-from opensquilla.squilla_router.self_learning.store import (
+from openstarry_code.squilla_router.self_learning.store import (
     ENV_DISABLE,
     agent_data_dir,
     prune_expired_samples,
@@ -196,7 +196,7 @@ def test_train_candidate_fresh_builds_loadable_bundle(tmp_path) -> None:
 
     import lightgbm as lgb
 
-    from opensquilla.squilla_router.self_learning.train import build_candidate_bundle
+    from openstarry_code.squilla_router.self_learning.train import build_candidate_bundle
 
     base = tmp_path / "base"
     base.mkdir()
@@ -226,7 +226,7 @@ def test_train_candidate_uses_init_model_when_base_present(tmp_path) -> None:
     pytest.importorskip("lightgbm")
     from types import SimpleNamespace
 
-    from opensquilla.squilla_router.self_learning.train import (
+    from openstarry_code.squilla_router.self_learning.train import (
         build_candidate_bundle,
         train_booster,
     )
@@ -259,7 +259,7 @@ def test_assembled_bundle_manifest_matches_retrained_head(tmp_path) -> None:
     import json
     from types import SimpleNamespace
 
-    from opensquilla.squilla_router.self_learning.train import (
+    from openstarry_code.squilla_router.self_learning.train import (
         build_candidate_bundle,
         train_booster,
     )

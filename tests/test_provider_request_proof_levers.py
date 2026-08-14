@@ -1,7 +1,7 @@
 """Compaction safety levers: tiny guard plus default-on assistant protection.
 
-Covers the OPENSQUILLA_PROVIDER_COMPACTION_TINY_GUARD_CHARS and
-OPENSQUILLA_PROVIDER_COMPACTION_PROTECT_RECENT_ASSISTANT env levers
+Covers the OPENSTARRY_CODE_PROVIDER_COMPACTION_TINY_GUARD_CHARS and
+OPENSTARRY_CODE_PROVIDER_COMPACTION_PROTECT_RECENT_ASSISTANT env levers
 with explicit rollback coverage.
 """
 
@@ -11,7 +11,7 @@ import json
 
 import pytest
 
-from opensquilla.provider.request_proof import (
+from openstarry_code.provider.request_proof import (
     _compact_argument_string,
     _compact_recent_tail_payload_once,
     _emergency_compact_current_turn_payload_once,
@@ -20,9 +20,9 @@ from opensquilla.provider.request_proof import (
     prove_or_compact_provider_payload,
 )
 
-TINY_GUARD_ENV = "OPENSQUILLA_PROVIDER_COMPACTION_TINY_GUARD_CHARS"
-PROTECT_RECENT_ENV = "OPENSQUILLA_PROVIDER_COMPACTION_PROTECT_RECENT_ASSISTANT"
-NEVER_WORSE_ENV = "OPENSQUILLA_PROVIDER_COMPACTION_NEVER_WORSE"
+TINY_GUARD_ENV = "OPENSTARRY_CODE_PROVIDER_COMPACTION_TINY_GUARD_CHARS"
+PROTECT_RECENT_ENV = "OPENSTARRY_CODE_PROVIDER_COMPACTION_PROTECT_RECENT_ASSISTANT"
+NEVER_WORSE_ENV = "OPENSTARRY_CODE_PROVIDER_COMPACTION_NEVER_WORSE"
 
 
 @pytest.fixture(autouse=True)

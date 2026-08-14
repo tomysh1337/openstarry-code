@@ -10,13 +10,13 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.recovery import (
+from openstarry_code.recovery import (
     ProfileOperationLock,
     RecoveryError,
     StaleRecoveryTransactionError,
     inspect_profile,
 )
-from opensquilla.recovery.cleanup import (
+from openstarry_code.recovery.cleanup import (
     _path_identity_payload,
     abandon_cleanup_transaction,
     cleanup_apply,
@@ -34,7 +34,7 @@ def _home(path: Path, value: str) -> Path:
 
 def _recovery_profile(user_data: Path, recovery_id: str, value: str) -> Path:
     root = user_data / "recovery-profiles" / recovery_id
-    _home(root / "opensquilla", value)
+    _home(root / "openstarry-code", value)
     (root / "desktop-credential.json").write_text("{}\n", encoding="utf-8")
     (root / "logs").mkdir()
     (root / "logs" / "desktop.log").write_text("synthetic\n", encoding="utf-8")
@@ -68,7 +68,7 @@ def _backup(user_data: Path, primary: Path) -> Path:
 
 
 def _desktop_primary(user_data: Path) -> Path:
-    primary = _home(user_data / "opensquilla", "primary")
+    primary = _home(user_data / "openstarry-code", "primary")
     (user_data / "desktop-credential.json").write_text("{}\n", encoding="utf-8")
     (user_data / "logs").mkdir()
     (user_data / "logs" / "desktop.log").write_text("synthetic\n", encoding="utf-8")
@@ -80,14 +80,14 @@ def _desktop_primary(user_data: Path) -> Path:
 
 
 def _hold_profile_lock(home: str, state_root: str, ready, release) -> None:
-    os.environ["OPENSQUILLA_USER_STATE_DIR"] = state_root
+    os.environ["OPENSTARRY_CODE_USER_STATE_DIR"] = state_root
     with ProfileOperationLock(home):
         ready.set()
         release.wait(10)
 
 
 def _hold_gateway(home: str, ready, release) -> None:
-    from opensquilla.gateway.pidlock import GatewayPidLock
+    from openstarry_code.gateway.pidlock import GatewayPidLock
 
     state = Path(home) / "state"
     lock = GatewayPidLock(state)
@@ -100,7 +100,7 @@ def _hold_gateway(home: str, ready, release) -> None:
 
 
 def _hold_recreated_legacy_gateway(home: str, ready, release) -> None:
-    from opensquilla.gateway.pidlock import GatewayPidLock
+    from openstarry_code.gateway.pidlock import GatewayPidLock
 
     home_path = Path(home)
     state = home_path / "state"
@@ -123,7 +123,7 @@ def test_delete_current_primary_preserves_recovery_profiles_and_backups(
 ) -> None:
     user_data = tmp_path / "user-data"
     user_data.mkdir()
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "lock-state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "lock-state"))
     primary = _desktop_primary(user_data)
     recovery_id = str(uuid.uuid4())
     recovery = _recovery_profile(user_data, recovery_id, "recovery")
@@ -163,7 +163,7 @@ def test_delete_current_profile_with_state_but_no_legacy_lock_completes(
 ) -> None:
     user_data = tmp_path / "user-data"
     user_data.mkdir()
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "lock-state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "lock-state"))
     primary = _desktop_primary(user_data)
     state = primary / "state"
     state.mkdir()
@@ -192,11 +192,11 @@ def test_cleanup_revision_ignores_directory_metadata_but_not_child_changes(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    import opensquilla.recovery.cleanup as cleanup_module
+    import openstarry_code.recovery.cleanup as cleanup_module
 
     user_data = tmp_path / "user-data"
     user_data.mkdir()
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "lock-state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "lock-state"))
     primary = _desktop_primary(user_data)
     state = primary / "state"
     state.mkdir()
@@ -238,7 +238,7 @@ def test_reset_current_settings_preserves_config_workspace_and_sessions(
 ) -> None:
     user_data = tmp_path / "user-data"
     user_data.mkdir()
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "lock-state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "lock-state"))
     primary = _desktop_primary(user_data)
     config = primary / "config.toml"
     config_before = config.read_bytes()
@@ -287,11 +287,11 @@ def test_reset_recovery_settings_only_clears_selected_recovery_credential(
 ) -> None:
     user_data = tmp_path / "user-data"
     user_data.mkdir()
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "lock-state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "lock-state"))
     primary = _desktop_primary(user_data)
     recovery_id = str(uuid.uuid4())
     recovery_root = _recovery_profile(user_data, recovery_id, "recovery")
-    recovery_home = recovery_root / "opensquilla"
+    recovery_home = recovery_root / "openstarry-code"
     sessions = recovery_home / "state" / "sessions.db"
     sessions.parent.mkdir()
     sessions.write_bytes(b"synthetic recovery sessions")
@@ -329,7 +329,7 @@ def test_delete_current_recovery_preserves_primary_other_recovery_and_backups(
 ) -> None:
     user_data = tmp_path / "user-data"
     user_data.mkdir()
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "lock-state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "lock-state"))
     primary = _desktop_primary(user_data)
     selected_id = str(uuid.uuid4())
     other_id = str(uuid.uuid4())
@@ -368,7 +368,7 @@ def test_delete_all_inventory_and_apply_removes_every_owned_category(
 ) -> None:
     user_data = tmp_path / "user-data"
     user_data.mkdir()
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "lock-state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "lock-state"))
     primary = _desktop_primary(user_data)
     recovery_id = str(uuid.uuid4())
     _recovery_profile(user_data, recovery_id, "recovery")
@@ -425,7 +425,7 @@ def test_delete_all_from_recovery_profile_still_covers_primary_and_every_recover
 ) -> None:
     user_data = tmp_path / "user-data"
     user_data.mkdir()
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "lock-state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "lock-state"))
     primary = _desktop_primary(user_data)
     selected_id = str(uuid.uuid4())
     other_id = str(uuid.uuid4())
@@ -462,7 +462,7 @@ def test_cleanup_apply_requires_exact_user_data_confirmation(
 ) -> None:
     user_data = tmp_path / "user-data"
     user_data.mkdir()
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "lock-state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "lock-state"))
     primary = _desktop_primary(user_data)
     inspected = cleanup_inspect(
         user_data,
@@ -488,10 +488,10 @@ def test_delete_all_retains_overlapping_coordination_locks_without_split_brain(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    # Models macOS: user-state/OpenSquilla is also Electron userData A.
-    user_data = tmp_path / "OpenSquilla"
+    # Models macOS: user-state/OpenStarry Code is also Electron userData A.
+    user_data = tmp_path / "OpenStarry Code"
     user_data.mkdir()
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path))
     _desktop_primary(user_data)
 
     inspected = cleanup_inspect(
@@ -523,7 +523,7 @@ def test_cleanup_apply_blocks_when_profile_lock_is_busy(
     user_data = tmp_path / "user-data"
     user_data.mkdir()
     state_root = tmp_path / "lock-state"
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(state_root))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(state_root))
     primary = _desktop_primary(user_data)
     inspected = cleanup_inspect(
         user_data,
@@ -564,7 +564,7 @@ def test_cleanup_apply_contends_with_replacement_history_authority(
     user_data = tmp_path / "user-data"
     user_data.mkdir()
     state_root = tmp_path / "lock-state"
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(state_root))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(state_root))
     _desktop_primary(user_data)
     inspected = cleanup_inspect(
         user_data,
@@ -595,7 +595,7 @@ def test_cleanup_apply_contends_with_replacement_history_authority(
 
     assert result.outcome == "blocked"
     assert result.stable_code == "profile_lock_busy"
-    assert (user_data / "opensquilla").is_dir()
+    assert (user_data / "openstarry-code").is_dir()
 
 
 def test_cleanup_apply_refuses_running_legacy_gateway(
@@ -604,7 +604,7 @@ def test_cleanup_apply_refuses_running_legacy_gateway(
 ) -> None:
     user_data = tmp_path / "user-data"
     user_data.mkdir()
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "lock-state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "lock-state"))
     primary = _desktop_primary(user_data)
     (primary / "state").mkdir()
     inspected = cleanup_inspect(
@@ -667,7 +667,7 @@ def test_cleanup_apply_rejects_stale_recursive_inventory(
 ) -> None:
     user_data = tmp_path / "user-data"
     user_data.mkdir()
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "lock-state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "lock-state"))
     primary = _desktop_primary(user_data)
     inspected = cleanup_inspect(
         user_data,
@@ -694,11 +694,11 @@ def test_cleanup_never_deletes_canonical_profile_recreated_after_quarantine(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    import opensquilla.recovery.cleanup as cleanup_module
+    import openstarry_code.recovery.cleanup as cleanup_module
 
     user_data = tmp_path / "user-data"
     user_data.mkdir()
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "lock-state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "lock-state"))
     primary = _desktop_primary(user_data)
     inspected = cleanup_inspect(
         user_data,
@@ -753,19 +753,19 @@ def test_cleanup_never_deletes_canonical_profile_recreated_after_quarantine(
     )
     assert (user_data / "desktop-credential.json").is_file()
     assert (user_data / "desktop-profile-context.json").is_file()
-    assert (user_data / ".opensquilla.profile-cleanup.json").is_file()
+    assert (user_data / ".openstarry-code.profile-cleanup.json").is_file()
 
 
 def test_cleanup_releases_legacy_handles_before_deleting_profile_tombstone(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    import opensquilla.recovery.cleanup as cleanup_module
-    import opensquilla.recovery.locking as locking_module
+    import openstarry_code.recovery.cleanup as cleanup_module
+    import openstarry_code.recovery.locking as locking_module
 
     user_data = tmp_path / "user-data"
     user_data.mkdir()
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "lock-state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "lock-state"))
     primary = _desktop_primary(user_data)
     state = primary / "state"
     state.mkdir()
@@ -822,12 +822,12 @@ def test_cleanup_rolls_back_directory_swapped_at_no_replace_boundary(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    import opensquilla.recovery.cleanup as cleanup_module
-    import opensquilla.recovery.locking as locking_module
+    import openstarry_code.recovery.cleanup as cleanup_module
+    import openstarry_code.recovery.locking as locking_module
 
     user_data = tmp_path / "user-data"
     user_data.mkdir()
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "lock-state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "lock-state"))
     primary = _desktop_primary(user_data)
     inspected = cleanup_inspect(
         user_data,
@@ -874,18 +874,18 @@ def test_cleanup_rolls_back_directory_swapped_at_no_replace_boundary(
     assert (displaced / "workspace" / "SOUL.md").read_text(encoding="utf-8") == (
         "primary\n"
     )
-    assert (user_data / ".opensquilla.profile-cleanup.json").is_file()
+    assert (user_data / ".openstarry-code.profile-cleanup.json").is_file()
 
 
 def test_cleanup_backup_delete_failure_preserves_history_and_cleanup_journal(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    import opensquilla.recovery.cleanup as cleanup_module
+    import openstarry_code.recovery.cleanup as cleanup_module
 
     user_data = tmp_path / "user-data"
     user_data.mkdir()
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "lock-state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "lock-state"))
     primary = _desktop_primary(user_data)
     backup = _backup(user_data, primary)
     history = user_data / "profile-replacement-history.json"
@@ -916,22 +916,22 @@ def test_cleanup_backup_delete_failure_preserves_history_and_cleanup_journal(
     assert result.outcome == "partial"
     assert backup.is_dir()
     assert history.read_bytes() == history_before
-    assert (user_data / ".opensquilla.profile-cleanup.json").is_file()
+    assert (user_data / ".openstarry-code.profile-cleanup.json").is_file()
 
 
 def test_recovery_profile_inspection_sees_global_partial_cleanup_journal(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    import opensquilla.recovery.cleanup as cleanup_module
+    import openstarry_code.recovery.cleanup as cleanup_module
 
     user_data = tmp_path / "user-data"
     user_data.mkdir()
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "lock-state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "lock-state"))
     _desktop_primary(user_data)
     recovery_id = str(uuid.uuid4())
     recovery_root = _recovery_profile(user_data, recovery_id, "recovery")
-    recovery_home = recovery_root / "opensquilla"
+    recovery_home = recovery_root / "openstarry-code"
     inspected = cleanup_inspect(
         user_data,
         mode="delete-current-profile",
@@ -968,8 +968,8 @@ def test_recovery_profile_inspection_sees_global_partial_cleanup_journal(
 def test_incomplete_cleanup_journal_blocks_fresh_primary_bootstrap(tmp_path: Path) -> None:
     user_data = tmp_path / "user-data"
     user_data.mkdir()
-    home = user_data / "opensquilla"
-    (user_data / ".opensquilla.profile-cleanup.json").write_text(
+    home = user_data / "openstarry-code"
+    (user_data / ".openstarry-code.profile-cleanup.json").write_text(
         json.dumps(
             {
                 "schema_version": 1,
@@ -999,9 +999,9 @@ def test_primary_cleanup_journal_does_not_block_unaffected_recovery_profile(
     primary = _desktop_primary(user_data)
     recovery_id = str(uuid.uuid4())
     recovery_root = _recovery_profile(user_data, recovery_id, "recovery")
-    recovery_home = recovery_root / "opensquilla"
+    recovery_home = recovery_root / "openstarry-code"
     (recovery_home / "state").mkdir()
-    (user_data / ".opensquilla.profile-cleanup.json").write_text(
+    (user_data / ".openstarry-code.profile-cleanup.json").write_text(
         json.dumps(
             {
                 "schema_version": 1,
@@ -1045,7 +1045,7 @@ def test_cleanup_unlinks_logs_symlink_without_following_external_target(
 ) -> None:
     user_data = tmp_path / "user-data"
     user_data.mkdir()
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "lock-state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "lock-state"))
     _desktop_primary(user_data)
     logs = user_data / "logs"
     for child in logs.iterdir():
@@ -1089,7 +1089,7 @@ def test_cleanup_unlinks_logs_symlink_without_following_external_target(
             "delete-all-user-data",
         ),
         (
-            ".opensquilla.profile-replace.json",
+            ".openstarry-code.profile-replace.json",
             '{"schema_version":1,"phase":"prepared"}\n',
             "cleanup_transaction_incomplete",
             "delete-current-profile",
@@ -1106,7 +1106,7 @@ def test_malformed_history_or_unfinished_journal_blocks_cleanup(
 ) -> None:
     user_data = tmp_path / "user-data"
     user_data.mkdir()
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "lock-state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "lock-state"))
     _desktop_primary(user_data)
     (user_data / filename).write_text(content, encoding="utf-8")
 
@@ -1128,7 +1128,7 @@ def test_delete_current_ignores_unrelated_bad_history_and_non_uuid_recovery(
 ) -> None:
     user_data = tmp_path / "user-data"
     user_data.mkdir()
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "lock-state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "lock-state"))
     _desktop_primary(user_data)
     selected_id = str(uuid.uuid4())
     selected = _recovery_profile(user_data, selected_id, "selected")
@@ -1158,9 +1158,9 @@ def test_delete_current_ignores_unrelated_bad_history_and_non_uuid_recovery(
     assert result.outcome == "complete"
     if selected_kind == "recovery":
         assert not selected.exists()
-        assert (user_data / "opensquilla").exists()
+        assert (user_data / "openstarry-code").exists()
     else:
-        assert not (user_data / "opensquilla").exists()
+        assert not (user_data / "openstarry-code").exists()
         assert selected.exists()
     assert history.read_text(encoding="utf-8") == "malformed and unrelated\n"
     assert (unrelated / "keep.txt").read_text(encoding="utf-8") == "keep\n"
@@ -1186,11 +1186,11 @@ def test_cleanup_delete_failure_returns_partial_and_never_claims_all(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    import opensquilla.recovery.cleanup as cleanup_module
+    import openstarry_code.recovery.cleanup as cleanup_module
 
     user_data = tmp_path / "user-data"
     user_data.mkdir()
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "lock-state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "lock-state"))
     _desktop_primary(user_data)
     inspected = cleanup_inspect(
         user_data,
@@ -1225,11 +1225,11 @@ def test_cleanup_reports_partial_when_missing_known_path_is_recreated_after_appl
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    import opensquilla.recovery.cleanup as cleanup_module
+    import openstarry_code.recovery.cleanup as cleanup_module
 
     user_data = tmp_path / "user-data"
     user_data.mkdir()
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "lock-state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "lock-state"))
     _desktop_primary(user_data)
     credential = user_data / "desktop-credential.json"
     credential.unlink()
@@ -1266,18 +1266,18 @@ def test_cleanup_reports_partial_when_missing_known_path_is_recreated_after_appl
     assert recreated is True
     assert result.outcome == "partial"
     assert credential.is_file()
-    assert (user_data / ".opensquilla.profile-cleanup.json").is_file()
+    assert (user_data / ".openstarry-code.profile-cleanup.json").is_file()
 
 
 def test_delete_all_reports_partial_for_new_unplanned_user_data_entry(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    import opensquilla.recovery.cleanup as cleanup_module
+    import openstarry_code.recovery.cleanup as cleanup_module
 
     user_data = tmp_path / "user-data"
     user_data.mkdir()
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "lock-state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "lock-state"))
     _desktop_primary(user_data)
     inspected = cleanup_inspect(
         user_data,
@@ -1314,18 +1314,18 @@ def test_delete_all_reports_partial_for_new_unplanned_user_data_entry(
     assert recreated is True
     assert result.outcome == "partial"
     assert late_entry.read_bytes() == b"synthetic cache"
-    assert (user_data / ".opensquilla.profile-cleanup.json").is_file()
+    assert (user_data / ".openstarry-code.profile-cleanup.json").is_file()
 
 
 def test_partial_delete_all_can_be_abandoned_then_new_recovery_profile_runs(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    import opensquilla.recovery.cleanup as cleanup_module
+    import openstarry_code.recovery.cleanup as cleanup_module
 
     user_data = tmp_path / "user-data"
     user_data.mkdir()
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "lock-state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "lock-state"))
     _desktop_primary(user_data)
     inspected = cleanup_inspect(
         user_data,
@@ -1353,7 +1353,7 @@ def test_partial_delete_all_can_be_abandoned_then_new_recovery_profile_runs(
 
     recovery_id = str(uuid.uuid4())
     recovery_root = _recovery_profile(user_data, recovery_id, "new recovery")
-    recovery_home = recovery_root / "opensquilla"
+    recovery_home = recovery_root / "openstarry-code"
     (recovery_home / "state").mkdir()
     blocked = inspect_profile(recovery_home, profile_kind="desktop-recovery")
     assert blocked.stable_code == "cleanup_transaction_incomplete"
@@ -1369,7 +1369,7 @@ def test_partial_delete_all_can_be_abandoned_then_new_recovery_profile_runs(
 
     assert preserved.is_file()
     assert ".profile-cleanup.abandoned." in preserved.name
-    assert not (user_data / ".opensquilla.profile-cleanup.json").exists()
+    assert not (user_data / ".openstarry-code.profile-cleanup.json").exists()
     assert credential.is_file()
     usable = inspect_profile(recovery_home, profile_kind="desktop-recovery")
     assert usable.outcome == "recovery_profile"
@@ -1381,12 +1381,12 @@ def test_malformed_cleanup_journal_can_be_quarantined_without_deleting_data(
 ) -> None:
     user_data = tmp_path / "user-data"
     user_data.mkdir()
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "lock-state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "lock-state"))
     recovery_id = str(uuid.uuid4())
     recovery_root = _recovery_profile(user_data, recovery_id, "safe recovery")
-    recovery_home = recovery_root / "opensquilla"
+    recovery_home = recovery_root / "openstarry-code"
     (recovery_home / "state").mkdir()
-    journal = user_data / ".opensquilla.profile-cleanup.json"
+    journal = user_data / ".openstarry-code.profile-cleanup.json"
     journal.write_text("malformed cleanup authority\n", encoding="utf-8")
     before = (recovery_home / "workspace" / "SOUL.md").read_bytes()
     blocked = inspect_profile(recovery_home, profile_kind="desktop-recovery")
@@ -1416,9 +1416,9 @@ def test_abandon_cleanup_rejects_journal_swapped_after_inspection(
 ) -> None:
     user_data = tmp_path / "user-data"
     user_data.mkdir()
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "lock-state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "lock-state"))
     home = _desktop_primary(user_data)
-    journal = user_data / ".opensquilla.profile-cleanup.json"
+    journal = user_data / ".openstarry-code.profile-cleanup.json"
     first = b"malformed cleanup journal alpha\n"
     second = b"malformed cleanup journal bravo\n"
     assert len(first) == len(second)
@@ -1476,20 +1476,20 @@ def test_abandon_cleanup_rejects_journal_swapped_after_inspection(
         )
 
     assert journal.read_bytes() == current
-    assert not tuple(user_data.glob(".opensquilla.profile-cleanup.abandoned.*.json"))
+    assert not tuple(user_data.glob(".openstarry-code.profile-cleanup.abandoned.*.json"))
 
 
 def test_abandon_cleanup_rechecks_captured_journal_after_internal_inspection(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    import opensquilla.recovery.engine as engine_module
+    import openstarry_code.recovery.engine as engine_module
 
     user_data = tmp_path / "user-data"
     user_data.mkdir()
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "lock-state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "lock-state"))
     home = _desktop_primary(user_data)
-    journal = user_data / ".opensquilla.profile-cleanup.json"
+    journal = user_data / ".openstarry-code.profile-cleanup.json"
     original = b"original cleanup authority\n"
     replacement_data = b"replacement cleanup authority\n"
     journal.write_bytes(original)
@@ -1516,20 +1516,20 @@ def test_abandon_cleanup_rechecks_captured_journal_after_internal_inspection(
 
     assert error.value.stable_code == "config_changed"
     assert journal.read_bytes() == replacement_data
-    assert not tuple(user_data.glob(".opensquilla.profile-cleanup.abandoned.*.json"))
+    assert not tuple(user_data.glob(".openstarry-code.profile-cleanup.abandoned.*.json"))
 
 
 def test_abandon_cleanup_rolls_back_journal_swapped_at_move_boundary(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    import opensquilla.recovery.cleanup as cleanup_module
+    import openstarry_code.recovery.cleanup as cleanup_module
 
     user_data = tmp_path / "user-data"
     user_data.mkdir()
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "lock-state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "lock-state"))
     home = _desktop_primary(user_data)
-    journal = user_data / ".opensquilla.profile-cleanup.json"
+    journal = user_data / ".openstarry-code.profile-cleanup.json"
     journal.write_bytes(b"original cleanup authority\n")
     blocked = inspect_profile(home, profile_kind="desktop-primary")
     replacement_data = b"replacement cleanup authority\n"
@@ -1558,20 +1558,20 @@ def test_abandon_cleanup_rolls_back_journal_swapped_at_move_boundary(
 
     assert error.value.stable_code == "config_changed"
     assert journal.read_bytes() == replacement_data
-    assert not tuple(user_data.glob(".opensquilla.profile-cleanup.abandoned.*.json"))
+    assert not tuple(user_data.glob(".openstarry-code.profile-cleanup.abandoned.*.json"))
 
 
 def test_abandon_cleanup_reports_unknown_when_swapped_move_cannot_be_rolled_back(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    import opensquilla.recovery.cleanup as cleanup_module
+    import openstarry_code.recovery.cleanup as cleanup_module
 
     user_data = tmp_path / "user-data"
     user_data.mkdir()
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "lock-state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "lock-state"))
     home = _desktop_primary(user_data)
-    journal = user_data / ".opensquilla.profile-cleanup.json"
+    journal = user_data / ".openstarry-code.profile-cleanup.json"
     journal.write_bytes(b"original cleanup authority\n")
     blocked = inspect_profile(home, profile_kind="desktop-primary")
     replacement_data = b"replacement cleanup authority\n"
@@ -1608,7 +1608,7 @@ def test_abandon_cleanup_reports_unknown_when_swapped_move_cannot_be_rolled_back
 
     assert error.value.stable_code == "atomic_state_unknown"
     assert journal.read_bytes() == recreated_data
-    preserved = tuple(user_data.glob(".opensquilla.profile-cleanup.abandoned.*.json"))
+    preserved = tuple(user_data.glob(".openstarry-code.profile-cleanup.abandoned.*.json"))
     assert len(preserved) == 1
     assert preserved[0].read_bytes() == replacement_data
 
@@ -1623,7 +1623,7 @@ def test_abandon_cleanup_rejects_profile_from_another_user_data_root(
     user_data.mkdir()
     foreign_user_data = tmp_path / "foreign-user-data"
     foreign_user_data.mkdir()
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "lock-state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "lock-state"))
 
     if profile_kind == "desktop-primary":
         foreign_home = _desktop_primary(foreign_user_data)
@@ -1631,11 +1631,11 @@ def test_abandon_cleanup_rejects_profile_from_another_user_data_root(
         recovery_id = str(uuid.uuid4())
         foreign_home = (
             _recovery_profile(foreign_user_data, recovery_id, "foreign recovery")
-            / "opensquilla"
+            / "openstarry-code"
         )
 
-    selected_journal = user_data / ".opensquilla.profile-cleanup.json"
-    foreign_journal = foreign_user_data / ".opensquilla.profile-cleanup.json"
+    selected_journal = user_data / ".openstarry-code.profile-cleanup.json"
+    foreign_journal = foreign_user_data / ".openstarry-code.profile-cleanup.json"
     selected_before = b"selected cleanup authority\n"
     foreign_before = b"foreign cleanup authority\n"
     selected_journal.write_bytes(selected_before)
@@ -1655,5 +1655,5 @@ def test_abandon_cleanup_rejects_profile_from_another_user_data_root(
     assert error.value.stable_code == "cleanup_profile_selector_invalid"
     assert selected_journal.read_bytes() == selected_before
     assert foreign_journal.read_bytes() == foreign_before
-    assert not tuple(user_data.glob(".opensquilla.profile-cleanup.abandoned.*.json"))
-    assert not tuple(foreign_user_data.glob(".opensquilla.profile-cleanup.abandoned.*.json"))
+    assert not tuple(user_data.glob(".openstarry-code.profile-cleanup.abandoned.*.json"))
+    assert not tuple(foreign_user_data.glob(".openstarry-code.profile-cleanup.abandoned.*.json"))

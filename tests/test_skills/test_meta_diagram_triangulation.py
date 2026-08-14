@@ -11,16 +11,16 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.engine.types import AgentEvent, DoneEvent, TextDeltaEvent
-from opensquilla.skills.loader import SkillLoader
-from opensquilla.skills.meta.orchestrator import MetaOrchestrator
-from opensquilla.skills.meta.parser import parse_meta_plan
-from opensquilla.skills.meta.types import MetaMatch
+from openstarry_code.engine.types import AgentEvent, DoneEvent, TextDeltaEvent
+from openstarry_code.skills.loader import SkillLoader
+from openstarry_code.skills.meta.orchestrator import MetaOrchestrator
+from openstarry_code.skills.meta.parser import parse_meta_plan
+from openstarry_code.skills.meta.types import MetaMatch
 
 _BUNDLED = (
-    Path(__file__).resolve().parents[2] / "src" / "opensquilla" / "skills" / "bundled"
+    Path(__file__).resolve().parents[2] / "src" / "openstarry_code" / "skills" / "bundled"
 )
-_EXP = Path(__file__).resolve().parents[2] / "src" / "opensquilla" / "skills" / "exp"
+_EXP = Path(__file__).resolve().parents[2] / "src" / "openstarry_code" / "skills" / "exp"
 
 
 def _bundle_loader(tmp_path: Path) -> SkillLoader:
@@ -103,11 +103,11 @@ async def test_happy_path_runs_all_steps(tmp_path: Path) -> None:
             # Classifier must emit one of the declared choices.
             yield TextDeltaEvent(text="component")
         elif which == "render_plantuml":
-            yield TextDeltaEvent(text="/home/u/.opensquilla/diagrams/arch.puml")
+            yield TextDeltaEvent(text="/home/u/.openstarry-code/diagrams/arch.puml")
         elif which == "render_drawio":
-            yield TextDeltaEvent(text="/home/u/.opensquilla/diagrams/arch.drawio")
+            yield TextDeltaEvent(text="/home/u/.openstarry-code/diagrams/arch.drawio")
         elif which == "compose_doc":
-            yield TextDeltaEvent(text="/home/u/.opensquilla/diagrams/arch.docx")
+            yield TextDeltaEvent(text="/home/u/.openstarry-code/diagrams/arch.docx")
         else:
             yield TextDeltaEvent(text="memory record saved")
         yield DoneEvent(text="")
@@ -116,7 +116,7 @@ async def test_happy_path_runs_all_steps(tmp_path: Path) -> None:
     result = await orch.run(
         MetaMatch(
             plan=plan,
-            inputs={"user_message": "diagram triangulation for src/opensquilla/skills/meta/"},
+            inputs={"user_message": "diagram triangulation for src/openstarry_code/skills/meta/"},
         ),
     )
     assert result.ok, f"plan failed: {result.error}"

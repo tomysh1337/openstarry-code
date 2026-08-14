@@ -6,17 +6,17 @@ from pathlib import Path, PureWindowsPath
 
 import pytest
 
-from opensquilla.sandbox import permissions as permissions_module
-from opensquilla.sandbox.config import SandboxSettings
-from opensquilla.sandbox.permissions import (
+from openstarry_code.sandbox import permissions as permissions_module
+from openstarry_code.sandbox.config import SandboxSettings
+from openstarry_code.sandbox.permissions import (
     PROTECTED_METADATA_NAMES,
     FileSystemAccess,
     FileSystemPermissionEntry,
     FileSystemPermissionProfile,
 )
-from opensquilla.sandbox.platform_permissions import FileSystemPlatformContext
-from opensquilla.sandbox.policy import build_policy
-from opensquilla.sandbox.types import SecurityLevel
+from openstarry_code.sandbox.platform_permissions import FileSystemPlatformContext
+from openstarry_code.sandbox.policy import build_policy
+from openstarry_code.sandbox.types import SecurityLevel
 
 
 def _directory_link(link: Path, target: Path) -> None:

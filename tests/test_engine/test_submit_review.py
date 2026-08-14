@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.engine.submit_review import (
+from openstarry_code.engine.submit_review import (
     SUBMIT_REVIEW_NUDGE_LIMIT,
     SubmitAction,
     SubmitReviewState,

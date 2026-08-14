@@ -9,9 +9,9 @@
 
 from __future__ import annotations
 
-from opensquilla.engine.runtime import _SAFE_TOOL_NAMES
-from opensquilla.tools.builtin import shell
-from opensquilla.tools.types import CRON_AGENT_ALLOW
+from openstarry_code.engine.runtime import _SAFE_TOOL_NAMES
+from openstarry_code.tools.builtin import shell
+from openstarry_code.tools.types import CRON_AGENT_ALLOW
 
 
 def test_web_discover_stays_in_allowlists() -> None:

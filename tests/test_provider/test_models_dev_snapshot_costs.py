@@ -5,7 +5,7 @@ without waiting on a live OpenRouter fetch or a packaged correction row.
 
 from __future__ import annotations
 
-from opensquilla.provider.models_dev import lookup_model
+from openstarry_code.provider.models_dev import lookup_model
 
 
 def test_snapshot_carries_cost_keys_for_major_providers() -> None:

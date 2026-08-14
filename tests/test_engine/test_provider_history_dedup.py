@@ -1,6 +1,6 @@
 """Opt-in provider-view history dedup lever.
 
-Covers OPENSQUILLA_PROVIDER_HISTORY_DEDUP (off by default). Motivation: long
+Covers OPENSTARRY_CODE_PROVIDER_HISTORY_DEDUP (off by default). Motivation: long
 single-turn episodes re-run the same
 read/grep/diff commands and full-history replay resends every byte-identical
 tool_result on every iteration, paying quadratic cost. When enabled, older
@@ -14,13 +14,13 @@ from __future__ import annotations
 from collections.abc import AsyncIterator
 from typing import Any
 
-from opensquilla.engine import Agent, AgentConfig
-from opensquilla.provider import (
+from openstarry_code.engine import Agent, AgentConfig
+from openstarry_code.provider import (
     ContentBlockToolResult,
     ContentBlockToolUse,
     Message,
 )
-from opensquilla.provider.types import ChatConfig
+from openstarry_code.provider.types import ChatConfig
 
 
 class _StubProvider:
@@ -314,21 +314,21 @@ def test_compact_does_not_recompact_dedup_survivor_in_same_request() -> None:
 
 
 def test_dedup_env_plumbing(monkeypatch) -> None:
-    from opensquilla.engine.turn_runner.agent_bootstrap_stage import (
+    from openstarry_code.engine.turn_runner.agent_bootstrap_stage import (
         _bool_from_env,
         _positive_int_from_env,
     )
 
-    assert _bool_from_env("OPENSQUILLA_PROVIDER_HISTORY_DEDUP", False) is False
-    assert _positive_int_from_env("OPENSQUILLA_PROVIDER_HISTORY_DEDUP_MIN_REPEATS", 2) == 2
-    monkeypatch.setenv("OPENSQUILLA_PROVIDER_HISTORY_DEDUP", "1")
-    monkeypatch.setenv("OPENSQUILLA_PROVIDER_HISTORY_DEDUP_MIN_REPEATS", "4")
-    assert _bool_from_env("OPENSQUILLA_PROVIDER_HISTORY_DEDUP", False) is True
-    assert _positive_int_from_env("OPENSQUILLA_PROVIDER_HISTORY_DEDUP_MIN_REPEATS", 2) == 4
+    assert _bool_from_env("OPENSTARRY_CODE_PROVIDER_HISTORY_DEDUP", False) is False
+    assert _positive_int_from_env("OPENSTARRY_CODE_PROVIDER_HISTORY_DEDUP_MIN_REPEATS", 2) == 2
+    monkeypatch.setenv("OPENSTARRY_CODE_PROVIDER_HISTORY_DEDUP", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_PROVIDER_HISTORY_DEDUP_MIN_REPEATS", "4")
+    assert _bool_from_env("OPENSTARRY_CODE_PROVIDER_HISTORY_DEDUP", False) is True
+    assert _positive_int_from_env("OPENSTARRY_CODE_PROVIDER_HISTORY_DEDUP_MIN_REPEATS", 2) == 4
 
 
 def test_tool_result_artifact_detection_is_cached() -> None:
-    from opensquilla.engine.agent import _tool_result_content_has_artifact
+    from openstarry_code.engine.agent import _tool_result_content_has_artifact
 
     content = '{"status": "published", "marker": "cache-test-unique-9f3"}'
     _tool_result_content_has_artifact.cache_clear()

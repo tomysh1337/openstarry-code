@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.memory.dream.models import PromotionEvidenceEntry, PromotionEvidenceStore
-from opensquilla.memory.dream.ranking import rank_promotion_candidates
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.memory.dream.models import PromotionEvidenceEntry, PromotionEvidenceStore
+from openstarry_code.memory.dream.ranking import rank_promotion_candidates
 
 
 def _entry(

@@ -17,19 +17,19 @@ from unittest.mock import ANY, AsyncMock, MagicMock, patch
 
 import pytest
 
-from opensquilla.engine import runtime as runtime_module
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.provider import DoneEvent as ProviderDone
-from opensquilla.provider import Message, ModelInfo
-from opensquilla.provider import TextDeltaEvent as ProviderText
-from opensquilla.provider.model_catalog import ModelCatalog
-from opensquilla.session import compaction as compaction_module
-from opensquilla.session.compaction import CompactionConfig
-from opensquilla.session.manager import SessionManager
-from opensquilla.session.models import TranscriptEntry
-from opensquilla.session.storage import SessionStorage
-from opensquilla.tools.types import CallerKind, ToolContext
+from openstarry_code.engine import runtime as runtime_module
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.provider import DoneEvent as ProviderDone
+from openstarry_code.provider import Message, ModelInfo
+from openstarry_code.provider import TextDeltaEvent as ProviderText
+from openstarry_code.provider.model_catalog import ModelCatalog
+from openstarry_code.session import compaction as compaction_module
+from openstarry_code.session.compaction import CompactionConfig
+from openstarry_code.session.manager import SessionManager
+from openstarry_code.session.models import TranscriptEntry
+from openstarry_code.session.storage import SessionStorage
+from openstarry_code.tools.types import CallerKind, ToolContext
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -590,7 +590,7 @@ async def test_preflight_skips_when_only_active_request_is_present() -> None:
     sm = _ResultCompactionSessionManager([active_user])
     runner = TurnRunner(provider_selector=MagicMock(), session_manager=sm)
 
-    with patch("opensquilla.session.tokenizer.estimate_tokens", return_value=1000):
+    with patch("openstarry_code.session.tokenizer.estimate_tokens", return_value=1000):
         await runner._maybe_preflight_compact(
             "user:session",
             1000,
@@ -661,7 +661,7 @@ async def test_preflight_legacy_compactor_uses_id_safe_ephemeral_override(
         )
 
     monkeypatch.setattr(
-        "opensquilla.session.compaction.compact_context",
+        "openstarry_code.session.compaction.compact_context",
         emergency_compact,
     )
     runner = TurnRunner(provider_selector=MagicMock(), session_manager=manager)
@@ -732,7 +732,7 @@ async def test_preflight_uses_configured_compaction_ratio() -> None:
         config=SimpleNamespace(preflight_compact_ratio=0.5),
     )
 
-    with patch("opensquilla.session.tokenizer.estimate_tokens", return_value=600):
+    with patch("openstarry_code.session.tokenizer.estimate_tokens", return_value=600):
         await runner._maybe_preflight_compact("user:session", context_window)
 
     mock_sm.compact.assert_called_once_with("user:session", context_window)
@@ -753,7 +753,7 @@ async def test_preflight_above_threshold_triggers_compact() -> None:
 
     runner = TurnRunner(provider_selector=MagicMock(), session_manager=mock_sm)
 
-    with patch("opensquilla.session.tokenizer.estimate_tokens", return_value=1000):
+    with patch("openstarry_code.session.tokenizer.estimate_tokens", return_value=1000):
         await runner._maybe_preflight_compact("user:session", context_window)
 
     mock_sm.compact.assert_called_once_with("user:session", context_window)
@@ -776,7 +776,7 @@ async def test_preflight_checkpoint_runs_before_compact() -> None:
 
     runner = TurnRunner(provider_selector=MagicMock(), session_manager=mock_sm)
 
-    with patch("opensquilla.session.tokenizer.estimate_tokens", return_value=1000):
+    with patch("openstarry_code.session.tokenizer.estimate_tokens", return_value=1000):
         await runner._maybe_preflight_compact("agent:ops:long-session", context_window)
 
     assert calls[0] == "checkpoint"
@@ -818,7 +818,7 @@ async def test_preflight_compacts_when_distill_fails_after_checkpoint() -> None:
         ),
     )
 
-    with patch("opensquilla.session.tokenizer.estimate_tokens", return_value=1000):
+    with patch("openstarry_code.session.tokenizer.estimate_tokens", return_value=1000):
         await runner._maybe_preflight_compact("agent:ops:long-session", context_window)
 
     assert calls[:2] == ["checkpoint", "compact"]
@@ -854,7 +854,7 @@ async def test_preflight_checkpoint_failure_prevents_destructive_compaction() ->
     )
 
     with (
-        patch("opensquilla.session.tokenizer.estimate_tokens", return_value=1000),
+        patch("openstarry_code.session.tokenizer.estimate_tokens", return_value=1000),
         pytest.raises(RuntimeError, match="checkpoint write failed"),
     ):
         await runner._maybe_preflight_compact("agent:ops:long-session", context_window)
@@ -878,7 +878,7 @@ async def test_preflight_completed_event_reports_compaction_metadata(
     )
     runner = TurnRunner(provider_selector=MagicMock(), session_manager=sm)
 
-    with patch("opensquilla.session.tokenizer.estimate_tokens", return_value=1000):
+    with patch("openstarry_code.session.tokenizer.estimate_tokens", return_value=1000):
         await runner._maybe_preflight_compact("user:session", context_window)
 
     compaction_config = _assert_armed_compaction_call(
@@ -944,7 +944,7 @@ async def test_preflight_counts_tool_call_arguments_when_deciding_to_compact() -
     runner = TurnRunner(provider_selector=MagicMock(), session_manager=mock_sm)
 
     with patch(
-        "opensquilla.session.tokenizer.estimate_tokens",
+        "openstarry_code.session.tokenizer.estimate_tokens",
         side_effect=lambda text: max(1, len(str(text)) // 4),
     ):
         await runner._maybe_preflight_compact("user:session", context_window)
@@ -967,7 +967,7 @@ async def test_preflight_counts_reasoning_content_when_deciding_to_compact() -> 
     runner = TurnRunner(provider_selector=MagicMock(), session_manager=mock_sm)
 
     with patch(
-        "opensquilla.session.tokenizer.estimate_tokens",
+        "openstarry_code.session.tokenizer.estimate_tokens",
         side_effect=lambda text: max(1, len(str(text)) // 4),
     ):
         await runner._maybe_preflight_compact("user:session", context_window)
@@ -1007,7 +1007,7 @@ async def test_preflight_starts_full_transcript_flush_without_blocking_compact()
         config=_flush_enabled_config(),
     )
 
-    with patch("opensquilla.session.tokenizer.estimate_tokens", return_value=1000):
+    with patch("openstarry_code.session.tokenizer.estimate_tokens", return_value=1000):
         await runner._maybe_preflight_compact("agent:ops:long-session", context_window)
 
     assert calls == ["compact"]
@@ -1057,7 +1057,7 @@ async def test_preflight_degraded_flush_receipts_do_not_block_compaction(
         config=_flush_enabled_config(),
     )
 
-    with patch("opensquilla.session.tokenizer.estimate_tokens", return_value=1000):
+    with patch("openstarry_code.session.tokenizer.estimate_tokens", return_value=1000):
         await runner._maybe_preflight_compact("agent:ops:long-session", context_window)
 
     await asyncio.sleep(0)
@@ -1092,7 +1092,7 @@ async def test_preflight_strict_flush_receipt_skips_destructive_compaction() -> 
         ),
     )
 
-    with patch("opensquilla.session.tokenizer.estimate_tokens", return_value=1000):
+    with patch("openstarry_code.session.tokenizer.estimate_tokens", return_value=1000):
         await runner._maybe_preflight_compact("agent:ops:long-session", context_window)
 
     flush_service.execute.assert_awaited_once()
@@ -1123,7 +1123,7 @@ async def test_preflight_protect_flush_receipt_marks_degraded_forensic() -> None
         ),
     )
 
-    with patch("opensquilla.session.tokenizer.estimate_tokens", return_value=1000):
+    with patch("openstarry_code.session.tokenizer.estimate_tokens", return_value=1000):
         await runner._maybe_preflight_compact("agent:ops:long-session", context_window)
 
     await asyncio.sleep(0)
@@ -1417,7 +1417,7 @@ async def test_preflight_backfilled_flush_receipt_allows_compact() -> None:
         config=_flush_enabled_config(),
     )
 
-    with patch("opensquilla.session.tokenizer.estimate_tokens", return_value=1000):
+    with patch("openstarry_code.session.tokenizer.estimate_tokens", return_value=1000):
         await runner._maybe_preflight_compact("agent:ops:long-session", context_window)
 
     await asyncio.sleep(0)
@@ -1449,7 +1449,7 @@ async def test_preflight_uses_background_timeout_for_flush_service() -> None:
         ),
     )
 
-    with patch("opensquilla.session.tokenizer.estimate_tokens", return_value=1000):
+    with patch("openstarry_code.session.tokenizer.estimate_tokens", return_value=1000):
         await runner._maybe_preflight_compact("agent:ops:long-session", context_window)
 
     await asyncio.sleep(0)
@@ -1488,7 +1488,7 @@ async def test_preflight_flush_grace_timeout_does_not_block_compaction() -> None
         ),
     )
 
-    with patch("opensquilla.session.tokenizer.estimate_tokens", return_value=1000):
+    with patch("openstarry_code.session.tokenizer.estimate_tokens", return_value=1000):
         await runner._maybe_preflight_compact("agent:ops:long-session", context_window)
 
     await asyncio.sleep(0)
@@ -1516,7 +1516,7 @@ async def test_preflight_memory_flush_disabled_compacts_without_flush() -> None:
         ),
     )
 
-    with patch("opensquilla.session.tokenizer.estimate_tokens", return_value=1000):
+    with patch("openstarry_code.session.tokenizer.estimate_tokens", return_value=1000):
         await runner._maybe_preflight_compact("agent:ops:long-session", context_window)
 
     flush_service.execute.assert_not_called()
@@ -1529,7 +1529,7 @@ async def test_preflight_env_flush_disabled_compacts_without_flush(
     monkeypatch: pytest.MonkeyPatch,
     value: str,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_SESSION_FLUSH", value)
+    monkeypatch.setenv("OPENSTARRY_CODE_SESSION_FLUSH", value)
     context_window = 1000
     entries = [_make_entry("early durable fact " + ("a" * 4000))]
     mock_sm = MagicMock()
@@ -1547,7 +1547,7 @@ async def test_preflight_env_flush_disabled_compacts_without_flush(
         ),
     )
 
-    with patch("opensquilla.session.tokenizer.estimate_tokens", return_value=1000):
+    with patch("openstarry_code.session.tokenizer.estimate_tokens", return_value=1000):
         await runner._maybe_preflight_compact("agent:ops:long-session", context_window)
 
     flush_service.execute.assert_not_called()
@@ -1571,7 +1571,7 @@ async def test_preflight_flush_service_unavailable_does_not_block_compaction() -
         ),
     )
 
-    with patch("opensquilla.session.tokenizer.estimate_tokens", return_value=1000):
+    with patch("openstarry_code.session.tokenizer.estimate_tokens", return_value=1000):
         await runner._maybe_preflight_compact("agent:ops:long-session", context_window)
 
     mock_sm.compact.assert_awaited_once_with("agent:ops:long-session", context_window)
@@ -1605,7 +1605,7 @@ async def test_preflight_passes_provider_backed_compaction_config_after_flush() 
     )
     provider = _FakeCompactionProvider(model="provider/model")
 
-    with patch("opensquilla.session.tokenizer.estimate_tokens", return_value=1000):
+    with patch("openstarry_code.session.tokenizer.estimate_tokens", return_value=1000):
         await runner._maybe_preflight_compact(
             "agent:ops:long-session",
             context_window,
@@ -1640,7 +1640,7 @@ async def test_preflight_passes_profile_config_without_provider_or_model() -> No
         ),
     )
 
-    with patch("opensquilla.session.tokenizer.estimate_tokens", return_value=1000):
+    with patch("openstarry_code.session.tokenizer.estimate_tokens", return_value=1000):
         await runner._maybe_preflight_compact("agent:ops:long-session", context_window)
 
     assert len(sm.compact_with_result_calls) == 1
@@ -1676,7 +1676,7 @@ async def test_preflight_keeps_legacy_compact_manager_compatible() -> None:
         ),
     )
 
-    with patch("opensquilla.session.tokenizer.estimate_tokens", return_value=1000):
+    with patch("openstarry_code.session.tokenizer.estimate_tokens", return_value=1000):
         await runner._maybe_preflight_compact(
             "agent:ops:long-session",
             context_window,
@@ -1765,7 +1765,7 @@ async def test_preflight_compact_called_with_correct_args() -> None:
 
     runner = TurnRunner(provider_selector=MagicMock(), session_manager=mock_sm)
 
-    with patch("opensquilla.session.tokenizer.estimate_tokens", return_value=90_000):
+    with patch("openstarry_code.session.tokenizer.estimate_tokens", return_value=90_000):
         await runner._maybe_preflight_compact("user:long-session", 100_000)
 
     mock_sm.compact.assert_called_once_with("user:long-session", 100_000)
@@ -1785,7 +1785,7 @@ async def test_preflight_exactly_at_threshold_does_not_compact() -> None:
 
     runner = TurnRunner(provider_selector=MagicMock(), session_manager=mock_sm)
 
-    with patch("opensquilla.session.tokenizer.estimate_tokens", return_value=threshold):
+    with patch("openstarry_code.session.tokenizer.estimate_tokens", return_value=threshold):
         await runner._maybe_preflight_compact("user:session", context_window)
 
     mock_sm.compact.assert_not_called()
@@ -1839,7 +1839,7 @@ async def test_preflight_integration_with_real_session_manager(session_mgr, tmp_
     mgr.compact_with_result = _spy_compact_with_result  # type: ignore[method-assign]
 
     # Force all tokens to exceed the default threshold (100 * 0.85 = 85)
-    with patch("opensquilla.session.tokenizer.estimate_tokens", return_value=1000):
+    with patch("openstarry_code.session.tokenizer.estimate_tokens", return_value=1000):
         await runner._maybe_preflight_compact(key, 100)
 
     # compact_with_result() was invoked with the correct args.
@@ -1872,7 +1872,7 @@ async def test_preflight_compaction_circuit_breaker_retries_after_cooldown() -> 
 
     runner = TurnRunner(provider_selector=MagicMock(), session_manager=mock_sm)
 
-    with patch("opensquilla.session.tokenizer.estimate_tokens", return_value=1000):
+    with patch("openstarry_code.session.tokenizer.estimate_tokens", return_value=1000):
         for _ in range(4):
             await runner._maybe_preflight_compact("user:session", context_window)
             runner.clear_compaction_turn_state("user:session")
@@ -1881,8 +1881,8 @@ async def test_preflight_compaction_circuit_breaker_retries_after_cooldown() -> 
 
     runner._compaction_failures["user:session"].opened_at = 0.0
     with (
-        patch("opensquilla.session.tokenizer.estimate_tokens", return_value=1000),
-        patch("opensquilla.engine.runtime.time.monotonic", return_value=999.0),
+        patch("openstarry_code.session.tokenizer.estimate_tokens", return_value=1000),
+        patch("openstarry_code.engine.runtime.time.monotonic", return_value=999.0),
     ):
         await runner._maybe_preflight_compact("user:session", context_window)
 

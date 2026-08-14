@@ -1,4 +1,4 @@
-"""CLI smoke tests for `opensquilla skills meta runs ...`."""
+"""CLI smoke tests for `openstarry-code skills meta runs ...`."""
 
 from __future__ import annotations
 
@@ -8,9 +8,9 @@ from pathlib import Path
 import pytest
 from typer.testing import CliRunner
 
-from opensquilla.cli.main import app as cli_app
-from opensquilla.persistence.meta_run_writer import open_meta_run_writer
-from opensquilla.skills.meta.types import MetaPlan, MetaResult, MetaStep
+from openstarry_code.cli.main import app as cli_app
+from openstarry_code.persistence.meta_run_writer import open_meta_run_writer
+from openstarry_code.skills.meta.types import MetaPlan, MetaResult, MetaStep
 
 
 @pytest.fixture
@@ -59,7 +59,7 @@ def seeded_db(migrated_db: Path, monkeypatch):
     )
     w.close()
 
-    monkeypatch.setenv("OPENSQUILLA_META_RUNS_DB", db)
+    monkeypatch.setenv("OPENSTARRY_CODE_META_RUNS_DB", db)
     return {"db": db, "rid_ok": rid_ok, "rid_fail": rid_fail}
 
 
@@ -144,7 +144,7 @@ def test_runs_show_bad_id(runner: CliRunner, seeded_db) -> None:
 
 def test_runs_list_empty(runner: CliRunner, migrated_db: Path, monkeypatch) -> None:
     db = str(migrated_db)
-    monkeypatch.setenv("OPENSQUILLA_META_RUNS_DB", db)
+    monkeypatch.setenv("OPENSTARRY_CODE_META_RUNS_DB", db)
     result = runner.invoke(cli_app, ["skills", "meta", "runs", "list", "--json"])
     assert result.exit_code == 0
     assert json.loads(result.output) == []
@@ -156,7 +156,7 @@ def test_runs_list_missing_db_prints_friendly_notice(
     """Before first gateway boot there is no sessions.db: the CLI must not
     traceback on a missing state dir and must not create a stray DB file."""
     db = tmp_path / "state" / "sessions.db"  # parent dir intentionally missing
-    monkeypatch.setenv("OPENSQUILLA_META_RUNS_DB", str(db))
+    monkeypatch.setenv("OPENSTARRY_CODE_META_RUNS_DB", str(db))
     result = runner.invoke(cli_app, ["skills", "meta", "runs", "list"])
     assert result.exit_code == 0, result.output
     assert "no meta-run history yet" in result.output
@@ -168,7 +168,7 @@ def test_runs_list_missing_db_json_emits_empty_list(
     runner: CliRunner, tmp_path: Path, monkeypatch,
 ) -> None:
     db = tmp_path / "state" / "sessions.db"
-    monkeypatch.setenv("OPENSQUILLA_META_RUNS_DB", str(db))
+    monkeypatch.setenv("OPENSTARRY_CODE_META_RUNS_DB", str(db))
     result = runner.invoke(cli_app, ["skills", "meta", "runs", "list", "--json"])
     assert result.exit_code == 0, result.output
     assert json.loads(result.output) == []
@@ -179,7 +179,7 @@ def test_runs_failures_missing_db_json_emits_empty_list(
     runner: CliRunner, tmp_path: Path, monkeypatch,
 ) -> None:
     db = tmp_path / "state" / "sessions.db"
-    monkeypatch.setenv("OPENSQUILLA_META_RUNS_DB", str(db))
+    monkeypatch.setenv("OPENSTARRY_CODE_META_RUNS_DB", str(db))
     result = runner.invoke(cli_app, ["skills", "meta", "runs", "failures", "--json"])
     assert result.exit_code == 0, result.output
     assert json.loads(result.output) == []
@@ -190,7 +190,7 @@ def test_runs_cost_missing_db_json_emits_empty_summary_shape(
     runner: CliRunner, tmp_path: Path, monkeypatch,
 ) -> None:
     db = tmp_path / "state" / "sessions.db"
-    monkeypatch.setenv("OPENSQUILLA_META_RUNS_DB", str(db))
+    monkeypatch.setenv("OPENSTARRY_CODE_META_RUNS_DB", str(db))
     result = runner.invoke(cli_app, ["skills", "meta", "runs", "cost", "--json"])
     assert result.exit_code == 0, result.output
     data = json.loads(result.output)
@@ -203,7 +203,7 @@ def test_runs_show_missing_db_exits_not_found_without_creating_db(
     runner: CliRunner, tmp_path: Path, monkeypatch,
 ) -> None:
     db = tmp_path / "state" / "sessions.db"
-    monkeypatch.setenv("OPENSQUILLA_META_RUNS_DB", str(db))
+    monkeypatch.setenv("OPENSTARRY_CODE_META_RUNS_DB", str(db))
     result = runner.invoke(cli_app, ["skills", "meta", "runs", "show", "SOMEID"])
     assert result.exit_code == 2
     assert not db.exists()

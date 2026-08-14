@@ -19,9 +19,9 @@ import pytest
 import structlog
 from starlette.websockets import WebSocketState
 
-import opensquilla.gateway.websocket as websocket_module
-from opensquilla.gateway.protocol import make_event, make_ok_res
-from opensquilla.gateway.websocket import (
+import openstarry_code.gateway.websocket as websocket_module
+from openstarry_code.gateway.protocol import make_event, make_ok_res
+from openstarry_code.gateway.websocket import (
     _LOSSY_EVENTS,
     _SENTINEL_STOP,
     WsConnection,

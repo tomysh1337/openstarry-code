@@ -2,18 +2,18 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.application.wizard import (
+from openstarry_code.application.wizard import (
     WizardRegistry,
     get_wizard_registry,
     reset_wizard_registry,
 )
-from opensquilla.application.wizard_rpc import (
+from openstarry_code.application.wizard_rpc import (
     wizard_cancel_rpc_payload,
     wizard_next_rpc_payload,
     wizard_start_rpc_payload,
     wizard_status_rpc_payload,
 )
-from opensquilla.gateway import wizard as gateway_wizard
+from openstarry_code.gateway import wizard as gateway_wizard
 
 
 def test_wizard_registry_advances_and_applies_schema_defaults() -> None:

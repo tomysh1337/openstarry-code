@@ -5,10 +5,10 @@ import json
 import pytest
 from starlette.websockets import WebSocketState
 
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.protocol import ResFrame
-from opensquilla.gateway.websocket import ConnectionRegistry, WsConnection
-from opensquilla.sandbox.legacy_codec import encode_payload_for_protocol
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.protocol import ResFrame
+from openstarry_code.gateway.websocket import ConnectionRegistry, WsConnection
+from openstarry_code.sandbox.legacy_codec import encode_payload_for_protocol
 
 
 class _Socket:

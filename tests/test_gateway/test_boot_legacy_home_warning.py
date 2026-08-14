@@ -1,9 +1,9 @@
-"""Boot-time advisory hint for importable legacy OpenSquilla homes.
+"""Boot-time advisory hint for importable legacy OpenStarry Code homes.
 
 ``_warn_legacy_home_detected`` must log exactly once on the fresh-home +
 candidate combination and stay silent (without even running detection) on an
 established home. Migration itself stays settings- and CLI-only: the hint is
-the single log line pointing headless operators at ``opensquilla migrate
+the single log line pointing headless operators at ``openstarry-code migrate
 opensquilla`` and Settings → Advanced → Data maintenance. Structured warnings
 are captured by monkeypatching the boot module's ``log.warning``, the same
 technique as the workspace/state mismatch test in ``test_router_boot.py``.
@@ -18,16 +18,16 @@ from typing import Any
 
 import pytest
 
-from opensquilla.gateway.boot import _warn_legacy_home_detected
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.migration import legacy_detect
-from opensquilla.migration.legacy_detect import LegacyHomeCandidate
+from openstarry_code.gateway.boot import _warn_legacy_home_detected
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.migration import legacy_detect
+from openstarry_code.migration.legacy_detect import LegacyHomeCandidate
 
 
 def _capture_warnings(monkeypatch: pytest.MonkeyPatch) -> list[dict[str, Any]]:
     warnings: list[dict[str, Any]] = []
     monkeypatch.setattr(
-        "opensquilla.gateway.boot.log.warning",
+        "openstarry_code.gateway.boot.log.warning",
         lambda event, **kwargs: warnings.append({"event": event, **kwargs}),
     )
     return warnings
@@ -62,7 +62,7 @@ def test_fresh_home_with_candidate_logs_hint_once(
     assert warnings[0]["legacy_home"] == str(legacy)
     assert warnings[0]["kind"] == "cli-home"
     # The hint must name both import surfaces without executing either.
-    assert "opensquilla migrate opensquilla" in warnings[0]["detail"]
+    assert "openstarry-code migrate opensquilla" in warnings[0]["detail"]
     assert "Data maintenance" in warnings[0]["detail"]
     # Detection ran once, against the home the gateway actually booted from.
     assert seen_targets == [(tmp_path / "home").resolve()]
@@ -94,7 +94,7 @@ def test_extended_length_established_home_skips_legacy_detection(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.persistence.migrator import _native_sqlite_path
+    from openstarry_code.persistence.migrator import _native_sqlite_path
 
     warnings = _capture_warnings(monkeypatch)
     long_root = tmp_path / "long-home"

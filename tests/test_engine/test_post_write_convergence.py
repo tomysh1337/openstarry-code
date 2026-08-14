@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from opensquilla.engine.post_write_convergence import (
+from openstarry_code.engine.post_write_convergence import (
     PostWriteConvergenceObservation,
     PostWriteConvergenceTracker,
 )

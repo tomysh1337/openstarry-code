@@ -4,7 +4,7 @@ import sys
 
 import pytest
 
-from opensquilla.sandbox.runtime_launcher import (
+from openstarry_code.sandbox.runtime_launcher import (
     ChildRole,
     InternalChildDispatchError,
     dispatch_internal_child,
@@ -15,15 +15,15 @@ from opensquilla.sandbox.runtime_launcher import (
 @pytest.mark.parametrize(
     ("role", "module"),
     [
-        (ChildRole.FILESYSTEM_WORKER, "opensquilla.sandbox.filesystem_worker"),
-        (ChildRole.LINUX_HELPER, "opensquilla.sandbox.backend.linux_helper"),
+        (ChildRole.FILESYSTEM_WORKER, "openstarry_code.sandbox.filesystem_worker"),
+        (ChildRole.LINUX_HELPER, "openstarry_code.sandbox.backend.linux_helper"),
         (
             ChildRole.WINDOWS_DEFAULT_RUNNER,
-            "opensquilla.sandbox.backend.windows_default_runner",
+            "openstarry_code.sandbox.backend.windows_default_runner",
         ),
         (
             ChildRole.DIRECTORY_PICKER,
-            "opensquilla.gateway.windows_directory_picker",
+            "openstarry_code.gateway.windows_directory_picker",
         ),
     ],
 )
@@ -57,10 +57,10 @@ def test_frozen_child_uses_internal_role(
     role: ChildRole,
 ) -> None:
     monkeypatch.setattr(sys, "frozen", True, raising=False)
-    monkeypatch.setattr(sys, "executable", "C:\\OpenSquilla\\gateway.exe")
+    monkeypatch.setattr(sys, "executable", "C:\\OpenStarry Code\\gateway.exe")
 
     assert internal_child_argv(role, args=("--probe",)) == (
-        "C:\\OpenSquilla\\gateway.exe",
+        "C:\\OpenStarry Code\\gateway.exe",
         "--internal-child",
         role.value,
         "--probe",

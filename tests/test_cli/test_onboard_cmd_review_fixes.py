@@ -16,8 +16,8 @@ import tomllib
 import pytest
 from typer.testing import CliRunner
 
-from opensquilla.cli.main import app
-from opensquilla.onboarding.config_store import load_config
+from openstarry_code.cli.main import app
+from openstarry_code.onboarding.config_store import load_config
 
 runner = CliRunner()
 _ANSI_RE = re.compile(r"\x1b\[[0-?]*[ -/]*[@-~]")
@@ -47,7 +47,7 @@ def test_onboard_provider_key_rotation_keeps_router_disabled_and_model(
         "enabled = false\n",
         encoding="utf-8",
     )
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     result = runner.invoke(
         app,
@@ -87,7 +87,7 @@ def test_onboard_provider_key_rotation_keeps_hand_customized_tiers(
         'model = "my-org/custom-c3"\n',
         encoding="utf-8",
     )
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     result = runner.invoke(
         app,
@@ -115,7 +115,7 @@ def test_onboard_provider_explicit_router_flag_still_applies_on_resave(
         "enabled = false\n",
         encoding="utf-8",
     )
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     result = runner.invoke(
         app,
@@ -143,8 +143,8 @@ def test_onboard_provider_first_run_still_applies_recommended_router(
     # Fresh/unconfigured install: an omitted --router keeps today's first-run
     # behavior and applies the recommended profile.
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
-    monkeypatch.delenv("OPENSQUILLA_LLM_API_KEY", raising=False)
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.delenv("OPENSTARRY_CODE_LLM_API_KEY", raising=False)
 
     result = runner.invoke(
         app,
@@ -164,8 +164,8 @@ def test_onboard_provider_first_run_with_env_key_still_applies_router(
     # An env-absorbed credential must not make a fresh install look
     # configured: the recommended profile still applies on first setup.
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
-    monkeypatch.setenv("OPENSQUILLA_LLM_API_KEY", "sk-from-env")
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_API_KEY", "sk-from-env")
 
     result = runner.invoke(
         app,
@@ -184,10 +184,10 @@ def test_onboard_provider_first_run_with_env_key_still_applies_router(
 
 
 def test_onboard_wizard_eof_is_productized_as_cancellation(tmp_path, monkeypatch):
-    from opensquilla.cli import onboard_cmd
+    from openstarry_code.cli import onboard_cmd
 
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     def eof(_options):
         raise EOFError
@@ -204,10 +204,10 @@ def test_onboard_wizard_eof_is_productized_as_cancellation(tmp_path, monkeypatch
 
 
 def test_configure_wizard_eof_is_productized_as_cancellation(tmp_path, monkeypatch):
-    from opensquilla.cli import onboard_cmd
+    from openstarry_code.cli import onboard_cmd
 
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     def eof(_section, *, config_path=None):
         raise EOFError
@@ -232,15 +232,15 @@ def test_configure_wizard_eof_is_productized_as_cancellation(tmp_path, monkeypat
 def test_bare_onboard_prints_restart_guidance_when_result_requires_it(
     tmp_path, monkeypatch
 ):
-    from opensquilla.cli import onboard_cmd
-    from opensquilla.onboarding.config_store import PersistResult
+    from openstarry_code.cli import onboard_cmd
+    from openstarry_code.onboarding.config_store import PersistResult
 
     target = tmp_path / "c.toml"
     target.write_text(
         '[llm]\nprovider = "openrouter"\nmodel = "m"\napi_key = "sk"\n',
         encoding="utf-8",
     )
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     def hub_edit(_options):
         # Simulates onboard -> "Change specific sections" -> a channel edit:
@@ -259,19 +259,19 @@ def test_bare_onboard_prints_restart_guidance_when_result_requires_it(
     assert result.exit_code == 0, result.output
     plain = _plain(result.stdout)
     assert "restart required" in plain
-    assert "opensquilla gateway restart" in plain
+    assert "openstarry-code gateway restart" in plain
 
 
 def test_bare_onboard_prints_no_restart_guidance_without_flag(tmp_path, monkeypatch):
-    from opensquilla.cli import onboard_cmd
-    from opensquilla.onboarding.config_store import PersistResult
+    from openstarry_code.cli import onboard_cmd
+    from openstarry_code.onboarding.config_store import PersistResult
 
     target = tmp_path / "c.toml"
     target.write_text(
         '[llm]\nprovider = "openrouter"\nmodel = "m"\napi_key = "sk"\n',
         encoding="utf-8",
     )
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     monkeypatch.setattr(
         onboard_cmd,
@@ -300,14 +300,14 @@ def test_bare_onboard_prints_no_restart_guidance_without_flag(tmp_path, monkeypa
 def test_onboard_wizard_write_oserror_is_not_misdiagnosed_as_load_error(
     tmp_path, monkeypatch
 ):
-    from opensquilla.cli import onboard_cmd
+    from openstarry_code.cli import onboard_cmd
 
     target = tmp_path / "c.toml"
     target.write_text(
         '[llm]\nprovider = "openrouter"\nmodel = "m"\napi_key = "sk"\n',
         encoding="utf-8",
     )
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     def disk_full(_options):
         raise OSError(errno.ENOSPC, "No space left on device")
@@ -319,17 +319,17 @@ def test_onboard_wizard_write_oserror_is_not_misdiagnosed_as_load_error(
     assert result.exit_code == 2
     plain = _plain(result.stderr)
     assert "No space left on device" in plain
-    assert "OpenSquilla config error" not in plain
+    assert "OpenStarry Code config error" not in plain
     assert "edit or move this config" not in plain
     assert "Traceback" not in result.output + result.stderr
 
 
 def test_onboard_prevalidates_config_before_entering_wizard(tmp_path, monkeypatch):
-    from opensquilla.cli import onboard_cmd
+    from openstarry_code.cli import onboard_cmd
 
     target = tmp_path / "c.toml"
     target.write_text("not toml :::", encoding="utf-8")
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     def must_not_run(_options):  # pragma: no cover - the pre-check exits first
         raise AssertionError("the wizard must not start over a corrupt config")
@@ -339,7 +339,7 @@ def test_onboard_prevalidates_config_before_entering_wizard(tmp_path, monkeypatc
     result = runner.invoke(app, ["onboard"])
 
     assert result.exit_code == 2
-    assert "OpenSquilla config error" in result.stderr
+    assert "OpenStarry Code config error" in result.stderr
 
 
 # ---------------------------------------------------------------------------
@@ -353,7 +353,7 @@ def test_onboard_provider_validation_error_redacts_secret_shaped_values(
 ):
     from pydantic import BaseModel, ValidationError, field_validator
 
-    from opensquilla.cli import onboard_cmd
+    from openstarry_code.cli import onboard_cmd
 
     secret = "sk-live-SECRETSECRETSECRETSECRET123456"
 
@@ -373,7 +373,7 @@ def test_onboard_provider_validation_error_redacts_secret_shaped_values(
         raise AssertionError("expected a ValidationError")
 
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     class _RaisingEngine:
         def __init__(self, *_a, **_kw):
@@ -403,7 +403,7 @@ def test_onboard_provider_validation_error_redacts_secret_shaped_values(
 def test_format_validation_error_masks_interpolated_secret_unit():
     from pydantic import BaseModel, ValidationError, field_validator
 
-    from opensquilla.cli.onboard_cmd import _format_validation_error
+    from openstarry_code.cli.onboard_cmd import _format_validation_error
 
     secret = "sk-live-UNITSECRETUNITSECRET987654"
 
@@ -431,11 +431,11 @@ def test_format_validation_error_masks_interpolated_secret_unit():
 
 
 def test_onboard_provider_reuses_preflight_load_for_the_save(tmp_path, monkeypatch):
-    from opensquilla.cli import onboard_cmd
-    from opensquilla.onboarding import setup_engine
+    from openstarry_code.cli import onboard_cmd
+    from openstarry_code.onboarding import setup_engine
 
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     def engine_must_not_load(*_a, **_kw):  # pragma: no cover - regression guard
         raise AssertionError(

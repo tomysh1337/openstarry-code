@@ -5,10 +5,10 @@ from pathlib import Path
 
 import pytest
 
-import opensquilla.gateway.rpc_wizard as rpc_wizard  # noqa: F401  ensures registration
-from opensquilla.application.wizard import reset_wizard_registry
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.rpc import RpcContext, get_dispatcher
+import openstarry_code.gateway.rpc_wizard as rpc_wizard  # noqa: F401  ensures registration
+from openstarry_code.application.wizard import reset_wizard_registry
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.rpc import RpcContext, get_dispatcher
 
 
 def _admin_ctx() -> RpcContext:
@@ -128,7 +128,7 @@ def test_gateway_rpc_wizard_depends_on_application_boundary() -> None:
     imported_helpers = {
         alias.name
         for node in imports
-        if node.module == "opensquilla.application.wizard_rpc"
+        if node.module == "openstarry_code.application.wizard_rpc"
         for alias in node.names
     }
     handlers = {
@@ -162,8 +162,8 @@ def test_gateway_rpc_wizard_depends_on_application_boundary() -> None:
         if isinstance(node, ast.Attribute)
     }
 
-    assert any(node.module == "opensquilla.application.wizard" for node in imports)
-    assert all(node.module != "opensquilla.gateway.wizard" for node in imports)
+    assert any(node.module == "openstarry_code.application.wizard" for node in imports)
+    assert all(node.module != "openstarry_code.gateway.wizard" for node in imports)
     assert helper_names.issubset(imported_helpers)
     assert helper_names.issubset(handler_names)
     assert ("wizardId", "step") not in direct_key_sets

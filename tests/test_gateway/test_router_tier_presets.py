@@ -2,7 +2,7 @@
 
 The golden fixture (``tests/test_provider/golden/router_tier_profiles.json``)
 was captured from
-``git show staging/provider-overhaul:src/opensquilla/gateway/config.py``
+``git show staging/provider-overhaul:src/openstarry_code/gateway/config.py``
 (the ``_router_tier_profile_defaults`` dict literals at f884d4c9). Every test
 here pins that moving the preset data into packaged TOML changed nothing about
 how existing configs load: the fixture battery shapes come from the upgrade
@@ -18,7 +18,7 @@ from pathlib import Path
 import pytest
 import tomli_w
 
-from opensquilla.gateway.config import (
+from openstarry_code.gateway.config import (
     ROUTER_TIER_PROFILE_IDS,
     GatewayConfig,
     _default_tiers,

@@ -4,8 +4,8 @@ import types
 
 import pytest
 
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.tools.types import ToolContext
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.tools.types import ToolContext
 
 
 @pytest.mark.asyncio

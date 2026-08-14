@@ -5,10 +5,10 @@ from collections import OrderedDict
 
 import pytest
 
-from opensquilla.engine import cache_break_monitor
-from opensquilla.engine.cache_break_monitor import CacheBreakMonitor
-from opensquilla.provider import ChatConfig, Message, ToolDefinition, ToolInputSchema
-from opensquilla.session.turn_context import current_turn_context, turn_context_scope
+from openstarry_code.engine import cache_break_monitor
+from openstarry_code.engine.cache_break_monitor import CacheBreakMonitor
+from openstarry_code.provider import ChatConfig, Message, ToolDefinition, ToolInputSchema
+from openstarry_code.session.turn_context import current_turn_context, turn_context_scope
 
 
 def _tool(name: str) -> ToolDefinition:

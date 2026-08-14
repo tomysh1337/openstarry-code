@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from opensquilla.engine.outcome import outcome_from_error
+from openstarry_code.engine.outcome import outcome_from_error
 
 
 def test_max_iterations_is_partial_not_failed() -> None:

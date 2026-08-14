@@ -11,8 +11,8 @@ from typing import Any
 
 import pytest
 
-from opensquilla.migration import opensquilla_home as home_migration
-from opensquilla.migration import source_snapshot_windows as windows_snapshot
+from openstarry_code.migration import opensquilla_home as home_migration
+from openstarry_code.migration import source_snapshot_windows as windows_snapshot
 
 
 def _information(

@@ -4,9 +4,9 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.sandbox.capability_service import CapabilityReport
-from opensquilla.sandbox.mode_resolver import ModeResolutionError, resolve_mode
-from opensquilla.sandbox.run_mode import RunMode
+from openstarry_code.sandbox.capability_service import CapabilityReport
+from openstarry_code.sandbox.mode_resolver import ModeResolutionError, resolve_mode
+from openstarry_code.sandbox.run_mode import RunMode
 
 
 def _principal(*capabilities: str, auth_state: str = "authenticated"):

@@ -14,11 +14,11 @@ from typing import Any
 
 import httpx
 
-from opensquilla.provider.compat_policy import compat_policy_for_kind
-from opensquilla.provider.openai import OpenAIProvider
-from opensquilla.provider.registry import get_provider_spec
-from opensquilla.provider.selector import build_provider
-from opensquilla.provider.types import ChatConfig, DoneEvent, Message
+from openstarry_code.provider.compat_policy import compat_policy_for_kind
+from openstarry_code.provider.openai import OpenAIProvider
+from openstarry_code.provider.registry import get_provider_spec
+from openstarry_code.provider.selector import build_provider
+from openstarry_code.provider.types import ChatConfig, DoneEvent, Message
 
 
 def test_litellm_proxy_registered_with_policy() -> None:
@@ -69,7 +69,7 @@ def _run_capture(monkeypatch: Any, headers: dict[str, str]) -> dict[str, Any]:
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client)
 
     provider = OpenAIProvider(
         api_key="sk-x",
@@ -126,7 +126,7 @@ def test_other_kinds_do_not_send_disable_fallbacks(monkeypatch: Any) -> None:
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client)
     provider = OpenAIProvider(api_key="k", model="m", provider_kind="openai")
 
     async def _run() -> None:

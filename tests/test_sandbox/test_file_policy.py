@@ -6,7 +6,7 @@ from pathlib import Path, PurePosixPath, PureWindowsPath
 
 import pytest
 
-from opensquilla.sandbox.file_policy import (
+from openstarry_code.sandbox.file_policy import (
     GuestWorkspacePolicyError,
     builtin_deny_write_paths,
     compile_safe_file_profile,
@@ -14,8 +14,8 @@ from opensquilla.sandbox.file_policy import (
     decide_file_access,
     validate_web_guest_workspace,
 )
-from opensquilla.sandbox.permissions import FileSystemAccess
-from opensquilla.sandbox.policy_models import SandboxPolicy
+from openstarry_code.sandbox.permissions import FileSystemAccess
+from openstarry_code.sandbox.policy_models import SandboxPolicy
 
 
 def test_windows_builtin_deny_write_contains_requested_credentials() -> None:
@@ -160,11 +160,11 @@ def test_safe_profile_freezes_posix_alias_and_canonical_protected_paths(
 
 def test_windows_web_guest_profile_denies_credentials_and_writes_only_workspace() -> None:
     home = PureWindowsPath(r"C:\Users\alice")
-    workspace = PureWindowsPath(r"D:\OpenSquilla\workspace")
-    authority = PureWindowsPath(r"C:\Users\alice\.opensquilla\state")
+    workspace = PureWindowsPath(r"D:\OpenStarry Code\workspace")
+    authority = PureWindowsPath(r"C:\Users\alice\.openstarry-code\state")
     guest_home = workspace.parent / "guest-home"
     guest_temp = workspace.parent / "guest-temp"
-    runtime = PureWindowsPath(r"C:\Program Files\OpenSquilla\runtime\python")
+    runtime = PureWindowsPath(r"C:\Program Files\OpenStarry Code\runtime\python")
     custom = PureWindowsPath(r"C:\Company\protected")
     profile = compile_web_guest_file_profile(
         SandboxPolicy.model_validate(
@@ -198,11 +198,11 @@ def test_windows_web_guest_profile_denies_credentials_and_writes_only_workspace(
 def test_posix_web_guest_profile_denies_credentials_and_writes_only_workspace(
 ) -> None:
     home = PurePosixPath("/home/alice")
-    workspace = PurePosixPath("/srv/opensquilla/workspace")
-    authority = PurePosixPath("/srv/opensquilla/state")
+    workspace = PurePosixPath("/srv/openstarry_code/workspace")
+    authority = PurePosixPath("/srv/openstarry_code/state")
     guest_home = workspace.parent / "guest-home"
     guest_temp = workspace.parent / "guest-temp"
-    runtime = PurePosixPath("/opt/opensquilla/runtime/python")
+    runtime = PurePosixPath("/opt/openstarry_code/runtime/python")
     custom = PurePosixPath("/srv/company/protected")
     profile = compile_web_guest_file_profile(
         SandboxPolicy.model_validate(

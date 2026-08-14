@@ -1,12 +1,12 @@
 """event_bridge 把 3 个新 meta 事件 dataclass 映射到正确的 session.event 名。"""
 
-from opensquilla.engine.types import (
+from openstarry_code.engine.types import (
     MetaPreflightEvent,
     MetaRunAnnouncedEvent,
     MetaRunCompletedEvent,
     MetaStepStateEvent,
 )
-from opensquilla.gateway.event_bridge import bridge_event_name
+from openstarry_code.gateway.event_bridge import bridge_event_name
 
 
 def test_meta_run_announced_event_name():

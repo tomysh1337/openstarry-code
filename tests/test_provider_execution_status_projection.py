@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import json
 
-from opensquilla.execution_status import execution_status_for_tool_result
-from opensquilla.provider.anthropic import _build_message_payload
-from opensquilla.provider.openai import _build_openai_messages
-from opensquilla.provider.types import ContentBlockToolResult, Message
+from openstarry_code.execution_status import execution_status_for_tool_result
+from openstarry_code.provider.anthropic import _build_message_payload
+from openstarry_code.provider.openai import _build_openai_messages
+from openstarry_code.provider.types import ContentBlockToolResult, Message
 
 
 def _failure_status() -> dict[str, object]:

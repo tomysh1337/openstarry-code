@@ -4,21 +4,21 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.channels._attachment_io import (
+from openstarry_code.channels._attachment_io import (
     attachment_limit_for_mime,
     ensure_declared_size_within_limit,
     preferred_attachment_mime,
 )
-from opensquilla.channels.discord import DiscordChannel, DiscordChannelConfig
-from opensquilla.channels.matrix import MatrixChannel, MatrixChannelConfig
-from opensquilla.channels.telegram import TelegramChannel, TelegramChannelConfig
-from opensquilla.channels.types import Attachment
-from opensquilla.contracts.attachments import (
+from openstarry_code.channels.discord import DiscordChannel, DiscordChannelConfig
+from openstarry_code.channels.matrix import MatrixChannel, MatrixChannelConfig
+from openstarry_code.channels.telegram import TelegramChannel, TelegramChannelConfig
+from openstarry_code.channels.types import Attachment
+from openstarry_code.contracts.attachments import (
     EMAIL_ATTACHMENT_BYTES,
     MAX_STAGED_TEXT_BYTES,
     OPAQUE_ATTACHMENT_BYTES,
 )
-from opensquilla.gateway.attachment_ingest import (
+from openstarry_code.gateway.attachment_ingest import (
     IMAGE_ATTACHMENT_BYTES,
     MAX_ATTACHMENT_BYTES,
     MAX_STAGED_PDF_BYTES,

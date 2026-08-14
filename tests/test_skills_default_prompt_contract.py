@@ -5,16 +5,16 @@ from types import SimpleNamespace
 
 import pytest
 
-import opensquilla.engine.steps.skills_filter as skills_filter_step
-from opensquilla.engine.pipeline import TurnContext
-from opensquilla.engine.steps.skills_filter import filter_skills
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.skills.eligibility import EligibilityContext
-from opensquilla.skills.loader import SkillLoader
-from opensquilla.skills.types import SkillLayer, SkillSpec
+import openstarry_code.engine.steps.skills_filter as skills_filter_step
+from openstarry_code.engine.pipeline import TurnContext
+from openstarry_code.engine.steps.skills_filter import filter_skills
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.skills.eligibility import EligibilityContext
+from openstarry_code.skills.loader import SkillLoader
+from openstarry_code.skills.types import SkillLayer, SkillSpec
 
 ROOT = Path(__file__).resolve().parents[1]
-BUNDLED = ROOT / "src" / "opensquilla" / "skills" / "bundled"
+BUNDLED = ROOT / "src" / "openstarry_code" / "skills" / "bundled"
 AUDIO_DEFAULTS = {
     "advanced-dubbing-studio",
     "music-and-singing-studio",
@@ -157,8 +157,8 @@ def test_bundled_directory_only_contains_retained_skills_and_tombstones() -> Non
 
 
 def test_skill_filter_defaults_are_release_safe(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("OPENSQUILLA_SKILLS_FILTER_ENABLED", raising=False)
-    monkeypatch.delenv("OPENSQUILLA_SKILLS_FILTER_STRATEGY", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_SKILLS_FILTER_ENABLED", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_SKILLS_FILTER_STRATEGY", raising=False)
 
     cfg = GatewayConfig()
 
@@ -462,7 +462,7 @@ async def test_lexical_skill_filter_is_opt_in_and_dependency_free(
         raise AssertionError("lexical skill filtering must not load embeddings")
 
     monkeypatch.setattr(skills_filter_step, "_retriever", None)
-    monkeypatch.setattr("opensquilla.skills.retrieval.embedder.get_embedder", fail_get_embedder)
+    monkeypatch.setattr("openstarry_code.skills.retrieval.embedder.get_embedder", fail_get_embedder)
     loader = SkillLoader(workspace_dir=workspace, snapshot_path=tmp_path / "snapshot.json")
 
     ctx = await filter_skills(

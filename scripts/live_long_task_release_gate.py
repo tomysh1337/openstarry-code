@@ -41,7 +41,7 @@ if str(REPO_ROOT) not in sys.path:
 if str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))
 
-from opensquilla.provider.registry import get_provider_spec  # noqa: E402
+from openstarry_code.provider.registry import get_provider_spec  # noqa: E402
 from scripts.live_harness_security import (  # noqa: E402
     child_environment,
     classify_failure,
@@ -61,9 +61,9 @@ EXIT_INTERRUPTED: Final = 130
 MAX_CASE_WALL_SECONDS: Final = 30 * 60
 DEFAULT_CASE_DRIVER: Final = REPO_ROOT / "scripts" / "live_long_task_case_driver.py"
 PERFORMANCE_REPORT_ENV: Final[dict[str, str]] = {
-    "baseline": "OPENSQUILLA_LONG_TASK_PERF_BASELINE_PATH",
-    "candidate": "OPENSQUILLA_LONG_TASK_PERF_CANDIDATE_PATH",
-    "resilience": "OPENSQUILLA_LONG_TASK_PERF_RESILIENCE_PATH",
+    "baseline": "OPENSTARRY_CODE_LONG_TASK_PERF_BASELINE_PATH",
+    "candidate": "OPENSTARRY_CODE_LONG_TASK_PERF_CANDIDATE_PATH",
+    "resilience": "OPENSTARRY_CODE_LONG_TASK_PERF_RESILIENCE_PATH",
 }
 
 CREDENTIAL_ENV_BY_PROVIDER: Final[dict[str, str]] = {
@@ -1086,8 +1086,8 @@ class SubprocessCaseExecutor:
                     env[fallback_spec.env_key] = fallback_secret
             env.update(
                 {
-                    "OPENSQUILLA_LONG_TASK_LIVE": "1",
-                    "OPENSQUILLA_LIVE_DISABLE_DOTENV": "1",
+                    "OPENSTARRY_CODE_LONG_TASK_LIVE": "1",
+                    "OPENSTARRY_CODE_LIVE_DISABLE_DOTENV": "1",
                     "PYTHONPATH": os.pathsep.join((str(REPO_ROOT), str(SRC_DIR))),
                 }
             )

@@ -4,21 +4,21 @@ import ast
 from pathlib import Path
 from types import SimpleNamespace
 
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.tools import policy_helpers
-from opensquilla.tools.policy import apply_tool_policy_from_config
-from opensquilla.tools.policy_config import (
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.tools import policy_helpers
+from openstarry_code.tools.policy import apply_tool_policy_from_config
+from openstarry_code.tools.policy_config import (
     ToolPolicy,
     expand_selectors,
     policy_from_config,
     profile_allowlist,
     sender_policy,
 )
-from opensquilla.tools.types import CallerKind, ToolContext
+from openstarry_code.tools.types import CallerKind, ToolContext
 
 ROOT = Path(__file__).resolve().parents[2]
-POLICY_HELPERS = ROOT / "src/opensquilla/tools/policy_helpers.py"
-POLICY_CONFIG = ROOT / "src/opensquilla/tools/policy_config.py"
+POLICY_HELPERS = ROOT / "src/openstarry_code/tools/policy_helpers.py"
+POLICY_CONFIG = ROOT / "src/openstarry_code/tools/policy_config.py"
 
 
 def _imports_from(path: Path) -> set[tuple[str, str]]:
@@ -63,7 +63,7 @@ def test_policy_helpers_delegates_config_policy_to_boundary() -> None:
     helper_functions = _top_level_functions(POLICY_HELPERS)
     helper_assignments = _top_level_assignments(POLICY_HELPERS)
 
-    assert ("opensquilla.tools", "policy_config") in imports
+    assert ("openstarry_code.tools", "policy_config") in imports
     assert policy_helpers.ToolPolicy is ToolPolicy
     assert "ToolPolicy" not in _top_level_classes(POLICY_HELPERS)
     assert "ToolPolicy" in helper_assignments
@@ -323,7 +323,7 @@ def test_policy_helpers_apply_runtime_policy_through_config_boundary(
     # The sender-scoped group mechanism has no built-in members since the
     # vendor tool strip; exercise it with a synthetic dangerous tool so the
     # machinery keeps regression coverage.
-    from opensquilla.tools import policy_config as pc
+    from openstarry_code.tools import policy_config as pc
 
     monkeypatch.setitem(pc._TOOL_GROUPS, "channel:perm", frozenset({"danger_grant"}))
     monkeypatch.setattr(pc, "_SENDER_SCOPED_TOOL_NAMES", frozenset({"danger_grant"}))

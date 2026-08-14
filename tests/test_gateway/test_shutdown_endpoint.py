@@ -11,8 +11,8 @@ from __future__ import annotations
 
 from starlette.testclient import TestClient
 
-from opensquilla.gateway.app import create_gateway_app
-from opensquilla.gateway.config import GatewayConfig
+from openstarry_code.gateway.app import create_gateway_app
+from openstarry_code.gateway.config import GatewayConfig
 
 # A loopback peer on a loopback-bound, no-auth gateway is the proven owner;
 # a non-loopback peer is not (see gateway.auth.OpenScopeResolver).

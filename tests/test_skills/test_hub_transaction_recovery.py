@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.skills.hub.transaction import (
+from openstarry_code.skills.hub.transaction import (
     SkillTransactionJournal,
     ensure_safe_transaction_roots,
     fsync_directory,
@@ -285,7 +285,7 @@ def test_committed_recovery_keeps_new_tree_and_cleans_reservations(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.skills.hub import transaction as transaction_module
+    from openstarry_code.skills.hub import transaction as transaction_module
 
     managed = tmp_path / "managed"
     target = managed / "example"
@@ -428,7 +428,7 @@ def test_recovery_fails_closed_for_foreign_managed_root(tmp_path: Path) -> None:
 
 @pytest.mark.parametrize(
     "reserved_name",
-    [".opensquilla-staging", ".opensquilla-rollback"],
+    [".openstarry-code-staging", ".openstarry-code-rollback"],
 )
 def test_transaction_roots_reject_non_directory_entries(
     tmp_path: Path,
@@ -485,7 +485,7 @@ def test_transaction_journal_removal_unlinks_before_syncing_parent(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.skills.hub import transaction as transaction_module
+    from openstarry_code.skills.hub import transaction as transaction_module
 
     journal_path = tmp_path / "state" / "transaction.json"
     journal_path.parent.mkdir()

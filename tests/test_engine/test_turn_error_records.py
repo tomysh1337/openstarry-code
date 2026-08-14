@@ -14,12 +14,12 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.engine.types import ErrorEvent
-from opensquilla.persistence.migrator import apply_pending
-from opensquilla.persistence.turn_error_writer import open_turn_error_writer
-from opensquilla.session.terminal_reply import append_error_ref
-from opensquilla.tools.types import ToolContext
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.engine.types import ErrorEvent
+from openstarry_code.persistence.migrator import apply_pending
+from openstarry_code.persistence.turn_error_writer import open_turn_error_writer
+from openstarry_code.session.terminal_reply import append_error_ref
+from openstarry_code.tools.types import ToolContext
 
 MIGRATIONS_DIR = Path(__file__).resolve().parents[2] / "migrations"
 

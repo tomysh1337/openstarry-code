@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.application.approval_queue import ApprovalQueue
-from opensquilla.application.approval_rpc import (
+from openstarry_code.application.approval_queue import ApprovalQueue
+from openstarry_code.application.approval_rpc import (
     approval_extend_rpc_payload,
     approval_forget_rpc_payload,
     approval_request_rpc_payload,

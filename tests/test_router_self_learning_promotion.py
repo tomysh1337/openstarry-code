@@ -7,19 +7,19 @@ from datetime import UTC, datetime
 import numpy as np
 import pytest
 
-from opensquilla.gateway.config import RouterSelfLearningConfig, SquillaRouterConfig
-from opensquilla.squilla_router.self_learning import encode_features, write_sample
-from opensquilla.squilla_router.self_learning.dataset import TrainingDataset
-from opensquilla.squilla_router.self_learning.evaluate import (
+from openstarry_code.gateway.config import RouterSelfLearningConfig, SquillaRouterConfig
+from openstarry_code.squilla_router.self_learning import encode_features, write_sample
+from openstarry_code.squilla_router.self_learning.dataset import TrainingDataset
+from openstarry_code.squilla_router.self_learning.evaluate import (
     decide_promotion,
     route_metrics,
     session_holdout_splits,
 )
-from opensquilla.squilla_router.self_learning.orchestrator import (
+from openstarry_code.squilla_router.self_learning.orchestrator import (
     in_process_trainer,
     maybe_run_update_router,
 )
-from opensquilla.squilla_router.self_learning.promotion import (
+from openstarry_code.squilla_router.self_learning.promotion import (
     learned_bundle_dir,
     promote_candidate,
     quarantine_candidate,
@@ -29,8 +29,8 @@ from opensquilla.squilla_router.self_learning.promotion import (
     should_rollback,
     write_active_atomic,
 )
-from opensquilla.squilla_router.self_learning.schema import RouterTrainSample
-from opensquilla.squilla_router.self_learning.state import (
+from openstarry_code.squilla_router.self_learning.schema import RouterTrainSample
+from openstarry_code.squilla_router.self_learning.state import (
     TrainState,
     load_train_state,
     save_train_state,
@@ -190,7 +190,7 @@ def test_decide_promotion_paths() -> None:
 
 
 def test_invalidate_strategy_cache(monkeypatch) -> None:
-    from opensquilla.engine.steps import squilla_router as step
+    from openstarry_code.engine.steps import squilla_router as step
 
     step._strategy = object()
     step._strategy_key = ("x",)
@@ -199,7 +199,7 @@ def test_invalidate_strategy_cache(monkeypatch) -> None:
 
 
 def test_cache_key_tracks_active_bundle(monkeypatch) -> None:
-    from opensquilla.engine.steps import squilla_router as step
+    from openstarry_code.engine.steps import squilla_router as step
 
     cfg = SquillaRouterConfig(self_learning=_cfg())
     monkeypatch.setattr(step, "_active_bundle_dir", lambda _c: "learned/v1")
@@ -210,7 +210,7 @@ def test_cache_key_tracks_active_bundle(monkeypatch) -> None:
 
 
 def test_active_bundle_dir_none_when_disabled() -> None:
-    from opensquilla.engine.steps import squilla_router as step
+    from openstarry_code.engine.steps import squilla_router as step
 
     cfg = SquillaRouterConfig(self_learning=RouterSelfLearningConfig(enabled=False))
     assert step._active_bundle_dir(cfg) is None
@@ -367,7 +367,7 @@ def test_orchestrator_auto_rolls_back_regressed_candidate(tmp_path) -> None:
 @pytest.fixture(autouse=True)
 def _reset_verify_memo():
     """The verify memo is process-global; isolate it per test."""
-    import opensquilla.squilla_router.self_learning.promotion as promo
+    import openstarry_code.squilla_router.self_learning.promotion as promo
 
     promo._verify_key = None
     promo._verify_result = None
@@ -398,8 +398,8 @@ def _make_base(tmp_path, content: bytes = b"base-model-v1"):
 
 
 def test_verify_detaches_on_base_upgrade(tmp_path) -> None:
-    from opensquilla.squilla_router.self_learning.promotion import verify_active_bundle
-    from opensquilla.squilla_router.self_learning.train import base_bundle_fingerprint
+    from openstarry_code.squilla_router.self_learning.promotion import verify_active_bundle
+    from openstarry_code.squilla_router.self_learning.train import base_bundle_fingerprint
 
     base = _make_base(tmp_path)
     old_fp = base_bundle_fingerprint(base)
@@ -420,7 +420,7 @@ def test_verify_detaches_on_base_upgrade(tmp_path) -> None:
 
 def test_verify_trusts_legacy_bundle_without_fingerprint(tmp_path) -> None:
     """Pre-fingerprint candidates must not be mass-detached on upgrade."""
-    from opensquilla.squilla_router.self_learning.promotion import verify_active_bundle
+    from openstarry_code.squilla_router.self_learning.promotion import verify_active_bundle
 
     base = _make_base(tmp_path)
     _make_learned(tmp_path, "vLegacy", base_fingerprint=None)
@@ -433,8 +433,8 @@ def test_verify_trusts_legacy_bundle_without_fingerprint(tmp_path) -> None:
 
 def test_verify_memoizes_per_pointer_and_base(tmp_path, monkeypatch) -> None:
     """The 39MB hash must not run on every strategy-cache-key computation."""
-    import opensquilla.squilla_router.self_learning.train as train_mod
-    from opensquilla.squilla_router.self_learning.promotion import verify_active_bundle
+    import openstarry_code.squilla_router.self_learning.train as train_mod
+    from openstarry_code.squilla_router.self_learning.promotion import verify_active_bundle
 
     base = _make_base(tmp_path)
     fp = train_mod.base_bundle_fingerprint(base)
@@ -449,7 +449,7 @@ def test_verify_memoizes_per_pointer_and_base(tmp_path, monkeypatch) -> None:
         return real(base_dir)
 
     monkeypatch.setattr(train_mod, "base_bundle_fingerprint", counting)
-    import opensquilla.squilla_router.self_learning.promotion as promo
+    import openstarry_code.squilla_router.self_learning.promotion as promo
 
     promo._fp_cache = None
     verify_active_bundle(base, tmp_path)
@@ -463,7 +463,7 @@ def test_verify_memoizes_per_pointer_and_base(tmp_path, monkeypatch) -> None:
 
 
 def test_verify_noop_on_baseline_pointer(tmp_path) -> None:
-    from opensquilla.squilla_router.self_learning.promotion import verify_active_bundle
+    from openstarry_code.squilla_router.self_learning.promotion import verify_active_bundle
 
     base = _make_base(tmp_path)
     check = verify_active_bundle(base, tmp_path)
@@ -473,7 +473,7 @@ def test_verify_noop_on_baseline_pointer(tmp_path) -> None:
 
 def test_orchestrator_reconciles_detached_candidate(tmp_path) -> None:
     """After a base upgrade the offline pass clears promotion-monitor state."""
-    from opensquilla.squilla_router.self_learning.train import base_bundle_fingerprint
+    from openstarry_code.squilla_router.self_learning.train import base_bundle_fingerprint
 
     base = _make_base(tmp_path)
     old_fp = base_bundle_fingerprint(base)
@@ -515,7 +515,7 @@ def test_candidate_manifest_records_base_fingerprint(tmp_path) -> None:
     pytest.importorskip("lightgbm")
     from types import SimpleNamespace
 
-    from opensquilla.squilla_router.self_learning.train import (
+    from openstarry_code.squilla_router.self_learning.train import (
         base_bundle_fingerprint,
         build_candidate_bundle,
         train_booster,
@@ -567,7 +567,7 @@ def _mini_dataset() -> TrainingDataset:
 def test_broken_learned_bundle_falls_back_to_baseline(tmp_path, monkeypatch) -> None:
     """A corrupt learned bundle must degrade to the shipped ML baseline, not
     straight to heuristic tiering."""
-    from opensquilla.engine.steps import squilla_router as step
+    from openstarry_code.engine.steps import squilla_router as step
 
     built = []
 
@@ -580,7 +580,7 @@ def test_broken_learned_bundle_falls_back_to_baseline(tmp_path, monkeypatch) -> 
             if bundle_dir == "/learned/broken":
                 raise RuntimeError("incomplete V4 router artifact bundle")
 
-    import opensquilla.squilla_router.v4_phase3 as v4mod
+    import openstarry_code.squilla_router.v4_phase3 as v4mod
 
     monkeypatch.setattr(v4mod, "V4Phase3Strategy", _FakeStrategy)
     monkeypatch.setattr(step, "_active_bundle_dir", lambda _c: "/learned/broken")
@@ -597,8 +597,8 @@ def test_broken_learned_bundle_falls_back_to_baseline(tmp_path, monkeypatch) -> 
 def test_learned_and_baseline_both_broken_degrades_to_heuristic(
     tmp_path, monkeypatch
 ) -> None:
-    from opensquilla.engine.routing.heuristic import HeuristicRouterStrategy
-    from opensquilla.engine.steps import squilla_router as step
+    from openstarry_code.engine.routing.heuristic import HeuristicRouterStrategy
+    from openstarry_code.engine.steps import squilla_router as step
 
     class _AlwaysBroken:
         source = "v4_phase3"
@@ -606,7 +606,7 @@ def test_learned_and_baseline_both_broken_degrades_to_heuristic(
         def __init__(self, **_kw):
             raise RuntimeError("no runtime")
 
-    import opensquilla.squilla_router.v4_phase3 as v4mod
+    import openstarry_code.squilla_router.v4_phase3 as v4mod
 
     monkeypatch.setattr(v4mod, "V4Phase3Strategy", _AlwaysBroken)
     monkeypatch.setattr(step, "_active_bundle_dir", lambda _c: "/learned/broken")
@@ -621,9 +621,9 @@ def test_learned_and_baseline_both_broken_degrades_to_heuristic(
 
 def test_failed_detach_is_not_memoized_and_retries(tmp_path, monkeypatch) -> None:
     """A transient detach failure must not permanently trust the stale bundle."""
-    import opensquilla.squilla_router.self_learning.promotion as promo
-    from opensquilla.squilla_router.self_learning.promotion import verify_active_bundle
-    from opensquilla.squilla_router.self_learning.train import base_bundle_fingerprint
+    import openstarry_code.squilla_router.self_learning.promotion as promo
+    from openstarry_code.squilla_router.self_learning.promotion import verify_active_bundle
+    from openstarry_code.squilla_router.self_learning.train import base_bundle_fingerprint
 
     base = _make_base(tmp_path)
     old_fp = base_bundle_fingerprint(base)
@@ -654,9 +654,9 @@ def test_failed_detach_is_not_memoized_and_retries(tmp_path, monkeypatch) -> Non
 
 def test_fingerprint_hash_runs_once_per_base_file_change(tmp_path, monkeypatch) -> None:
     """The 39MB sha256 must be stat-gated, not recomputed per call."""
-    import opensquilla.squilla_router.self_learning.promotion as promo
-    import opensquilla.squilla_router.self_learning.train as train_mod
-    from opensquilla.squilla_router.self_learning.promotion import verify_active_bundle
+    import openstarry_code.squilla_router.self_learning.promotion as promo
+    import openstarry_code.squilla_router.self_learning.train as train_mod
+    from openstarry_code.squilla_router.self_learning.promotion import verify_active_bundle
 
     base = _make_base(tmp_path)
     fp = train_mod.base_bundle_fingerprint(base)
@@ -688,10 +688,10 @@ def test_engine_active_bundle_dir_invokes_verify_and_detaches(
     at a synthetic base, the state home holds a promoted-but-stale candidate,
     and resolving the bundle through the engine must detach it.
     """
-    from opensquilla.engine.steps import squilla_router as step
-    from opensquilla.squilla_router.self_learning.train import base_bundle_fingerprint
+    from openstarry_code.engine.steps import squilla_router as step
+    from openstarry_code.squilla_router.self_learning.train import base_bundle_fingerprint
 
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path))
     base = _make_base(tmp_path)
     old_fp = base_bundle_fingerprint(base)
     _make_learned(tmp_path, "vStale", base_fingerprint=old_fp)

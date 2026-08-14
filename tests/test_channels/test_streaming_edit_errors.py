@@ -5,8 +5,8 @@ from collections.abc import AsyncIterator
 import httpx
 import pytest
 
-from opensquilla.channels.discord import DiscordChannel, DiscordChannelConfig
-from opensquilla.channels.slack import SLACK_API_BASE, SlackChannel
+from openstarry_code.channels.discord import DiscordChannel, DiscordChannelConfig
+from openstarry_code.channels.slack import SLACK_API_BASE, SlackChannel
 
 
 async def _two_chunks() -> AsyncIterator[str]:

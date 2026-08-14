@@ -15,7 +15,7 @@ def test_search_docs_describe_runtime_provider_matrix() -> None:
             _read("docs/troubleshooting.md"),
             _read("README.md"),
             _read("README.product.md"),
-            _read("opensquilla.toml.example"),
+            _read("openstarry-code.toml.example"),
         ]
     )
 
@@ -44,7 +44,7 @@ def test_search_docs_describe_runtime_provider_matrix() -> None:
 
 def test_desktop_search_surfaces_use_shared_runtime_provider_catalog() -> None:
     main_ts = _read("desktop/electron/src/main.ts")
-    platform_types = _read("opensquilla-webui/src/platform/types.ts")
+    platform_types = _read("openstarry-code-webui/src/platform/types.ts")
 
     # The desktop native onboarding wizard and the desktop settings snapshot
     # surface the full runtime search catalog (Bocha/Tavily/Exa), never a
@@ -76,19 +76,19 @@ def test_desktop_search_surfaces_use_shared_runtime_provider_catalog() -> None:
     # That is the strongest form of "shared runtime provider catalog" — desktop
     # cannot drift back to a hardcoded list because it owns no search picker.
     assert not (
-        ROOT / "opensquilla-webui/src/views/desktop/DesktopSettingsView.vue"
+        ROOT / "openstarry-code-webui/src/views/desktop/DesktopSettingsView.vue"
     ).exists()
     assert not (
-        ROOT / "opensquilla-webui/src/components/settings/SearchProviderSelector.vue"
+        ROOT / "openstarry-code-webui/src/components/settings/SearchProviderSelector.vue"
     ).exists()
 
-    web_routes = _read("opensquilla-webui/src/router/webRoutes.ts")
+    web_routes = _read("openstarry-code-webui/src/router/webRoutes.ts")
     assert "platforms: ['web', 'desktop']" in web_routes
 
-    desktop_routes = _read("opensquilla-webui/src/router/desktopRoutes.ts")
+    desktop_routes = _read("openstarry-code-webui/src/router/desktopRoutes.ts")
     assert "DesktopSettingsView" not in desktop_routes
 
     settings_dialog = _read(
-        "opensquilla-webui/src/components/settings/SettingsDialog.vue"
+        "openstarry-code-webui/src/components/settings/SettingsDialog.vue"
     )
     assert "SetupCapabilitiesPanel" in settings_dialog

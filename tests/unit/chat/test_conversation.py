@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from opensquilla.chat.conversation import ChatSendRequest, sessions_send_params
-from opensquilla.chat.source import chat_source_metadata
+from openstarry_code.chat.conversation import ChatSendRequest, sessions_send_params
+from openstarry_code.chat.source import chat_source_metadata
 
 
 def test_web_chat_source_metadata_matches_existing_rpc_shape() -> None:

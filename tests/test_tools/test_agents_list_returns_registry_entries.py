@@ -6,8 +6,8 @@ import json
 
 import pytest
 
-from opensquilla.tools.builtin import agents as agents_tool
-from opensquilla.tools.types import ToolError
+from openstarry_code.tools.builtin import agents as agents_tool
+from openstarry_code.tools.types import ToolError
 
 
 class _StubRegistry:

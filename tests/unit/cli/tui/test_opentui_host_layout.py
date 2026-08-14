@@ -236,11 +236,11 @@ def test_composer_router_state_carries_structured_fields() -> None:
 
 def test_composer_router_model_downgrade_keeps_target_model_visible() -> None:
     module_path = (
-        "./src/opensquilla/cli/tui/opentui/package/src/"
+        "./src/openstarry_code/cli/tui/opentui/package/src/"
         "composer.mjs"
     )
     prim_path = (
-        "./src/opensquilla/cli/tui/opentui/package/src/"
+        "./src/openstarry_code/cli/tui/opentui/package/src/"
         "primitives.mjs"
     )
     data = _node_json(

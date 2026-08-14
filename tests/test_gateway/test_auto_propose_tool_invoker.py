@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.gateway.boot import _make_auto_propose_tool_invoker
-from opensquilla.tools.registry import ToolRegistry
-from opensquilla.tools.types import ToolSpec
+from openstarry_code.gateway.boot import _make_auto_propose_tool_invoker
+from openstarry_code.tools.registry import ToolRegistry
+from openstarry_code.tools.types import ToolSpec
 
 
 @pytest.mark.asyncio

@@ -5,12 +5,12 @@ from typing import Any
 
 import pytest
 
-from opensquilla.cli.chat.turn_stream import (
+from openstarry_code.cli.chat.turn_stream import (
     default_turn_stream_dependencies,
     stream_response_gateway,
     stream_response_turnrunner,
 )
-from opensquilla.cli.tui.backend.domain_events import (
+from openstarry_code.cli.tui.backend.domain_events import (
     KIND_DONE,
     KIND_STATUS,
     KIND_TEXT_FLUSH,
@@ -19,12 +19,12 @@ from opensquilla.cli.tui.backend.domain_events import (
     TuiDomainEvent,
     now_ms,
 )
-from opensquilla.cli.tui.backend.plugins import (
+from openstarry_code.cli.tui.backend.plugins import (
     TuiPluginContext,
     TuiPluginManager,
 )
-from opensquilla.engine.types import DoneEvent, ToolResultEvent, ToolUseStartEvent
-from opensquilla.tools.types import CallerKind, ToolContext
+from openstarry_code.engine.types import DoneEvent, ToolResultEvent, ToolUseStartEvent
+from openstarry_code.tools.types import CallerKind, ToolContext
 
 
 @dataclass
@@ -172,7 +172,7 @@ async def test_gateway_turn_stream_emits_tool_and_done_domain_events() -> None:
 async def test_turnrunner_stream_emits_matching_tool_and_done_domain_events(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", _TurnRunner)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", _TurnRunner)
     events: list[TuiDomainEvent] = []
     deps = default_turn_stream_dependencies(
         stream_wrapper=lambda stream, _svc: stream,

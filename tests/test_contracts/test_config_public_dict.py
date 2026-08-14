@@ -1,7 +1,7 @@
 """Wire-contract freeze for the ``config.get`` public config view.
 
 ``config.get`` returns ``GatewayConfig.to_public_dict()`` verbatim, and both
-the Web UI settings screens and ``opensquilla config`` script against its
+the Web UI settings screens and ``openstarry-code config`` script against its
 key names, so they are a public protocol contract (see CLAUDE.md: config
 keys and public RPC field names are stable).
 
@@ -20,7 +20,7 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.gateway.config import GatewayConfig, LlmProviderConfig
+from openstarry_code.gateway.config import GatewayConfig, LlmProviderConfig
 
 # Top-level sections/scalars shipped in the public config view today.
 # Presence-only on purpose (see module docstring): additions are free,
@@ -87,8 +87,8 @@ REDACTION_MARKER = "[redacted]"
 
 @pytest.fixture()
 def public_config(tmp_path, monkeypatch: pytest.MonkeyPatch) -> GatewayConfig:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "state"))
-    return GatewayConfig(config_path=str(tmp_path / "opensquilla.toml"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "state"))
+    return GatewayConfig(config_path=str(tmp_path / "openstarry-code.toml"))
 
 
 def test_public_dict_top_level_sections_are_present(public_config: GatewayConfig) -> None:
@@ -112,10 +112,10 @@ def test_squilla_router_public_keys_are_frozen(public_config: GatewayConfig) -> 
 
 
 def test_secret_keys_are_redacted_not_leaked(tmp_path, monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "state"))
     secret = "sk-test-000"  # synthetic; never a real credential
     cfg = GatewayConfig(
-        config_path=str(tmp_path / "opensquilla.toml"),
+        config_path=str(tmp_path / "openstarry-code.toml"),
         llm=LlmProviderConfig(api_key=secret),
     )
 

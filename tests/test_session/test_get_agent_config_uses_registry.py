@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.session.manager import SessionManager
+from openstarry_code.session.manager import SessionManager
 
 
 class _StubRegistry:

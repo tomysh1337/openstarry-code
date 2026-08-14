@@ -12,20 +12,20 @@ import pytest
 import tomli_w
 from typer.testing import CliRunner
 
-from opensquilla.cli.main import app
+from openstarry_code.cli.main import app
 
 runner = CliRunner()
 
 _EMPTY_MIGRATION_ENV_KEYS = (
-    "OPENSQUILLA_PROFILE",
-    "OPENSQUILLA_HOME",
-    "OPENSQUILLA_GATEWAY_CONFIG_PATH",
-    "OPENSQUILLA_GATEWAY_STATE_DIR",
-    "OPENSQUILLA_GATEWAY_WORKSPACE_DIR",
-    "OPENSQUILLA_WORKSPACE_DIR",
-    "OPENSQUILLA_PROFILE_KIND",
-    "OPENSQUILLA_DESKTOP_PROFILE_KIND",
-    "OPENSQUILLA_DESKTOP",
+    "OPENSTARRY_CODE_PROFILE",
+    "OPENSTARRY_CODE_HOME",
+    "OPENSTARRY_CODE_GATEWAY_CONFIG_PATH",
+    "OPENSTARRY_CODE_GATEWAY_STATE_DIR",
+    "OPENSTARRY_CODE_GATEWAY_WORKSPACE_DIR",
+    "OPENSTARRY_CODE_WORKSPACE_DIR",
+    "OPENSTARRY_CODE_PROFILE_KIND",
+    "OPENSTARRY_CODE_DESKTOP_PROFILE_KIND",
+    "OPENSTARRY_CODE_DESKTOP",
 )
 
 
@@ -50,10 +50,10 @@ def _isolate_migration_process_paths(
     monkeypatch.setenv("TEMP", str(runtime_temp))
     monkeypatch.setenv("TMP", str(runtime_temp))
     monkeypatch.setenv("TMPDIR", str(runtime_temp))
-    monkeypatch.setenv("OPENSQUILLA_TEST", "1")
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "opensquilla-home"))
-    monkeypatch.setenv("OPENSQUILLA_LOG_DIR", str(tmp_path / "logs"))
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "user-state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_TEST", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "opensquilla-home"))
+    monkeypatch.setenv("OPENSTARRY_CODE_LOG_DIR", str(tmp_path / "logs"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "user-state"))
     monkeypatch.chdir(tmp_path)
 
 
@@ -103,7 +103,7 @@ def test_migrate_pytest_isolates_inherited_process_paths(tmp_path: Path) -> None
     ):
         directory.mkdir(parents=True)
 
-    config_path = hostile_cwd / "opensquilla.toml"
+    config_path = hostile_cwd / "openstarry-code.toml"
     config_bytes = (
         b"# synthetic operator config must remain byte-for-byte unchanged\n"
         b"[llm]\n"
@@ -145,19 +145,19 @@ def test_migrate_pytest_isolates_inherited_process_paths(tmp_path: Path) -> None
             "TEMP": str(runtime_temp),
             "APPDATA": str(hostile_root / "appdata"),
             "LOCALAPPDATA": str(hostile_root / "local-appdata"),
-            "OPENSQUILLA_TEST": "1",
-            "OPENSQUILLA_PROFILE": "operator",
-            "OPENSQUILLA_HOME": str(hostile_root / "profiles"),
-            "OPENSQUILLA_STATE_DIR": str(hostile_state),
-            "OPENSQUILLA_LOG_DIR": str(hostile_logs),
-            "OPENSQUILLA_USER_STATE_DIR": str(hostile_user_state),
-            "OPENSQUILLA_GATEWAY_CONFIG_PATH": str(config_path),
-            "OPENSQUILLA_GATEWAY_STATE_DIR": str(hostile_state),
-            "OPENSQUILLA_GATEWAY_WORKSPACE_DIR": str(hostile_workspace),
-            "OPENSQUILLA_WORKSPACE_DIR": str(hostile_workspace),
-            "OPENSQUILLA_PROFILE_KIND": "desktop-primary",
-            "OPENSQUILLA_DESKTOP_PROFILE_KIND": "desktop-primary",
-            "OPENSQUILLA_DESKTOP": "1",
+            "OPENSTARRY_CODE_TEST": "1",
+            "OPENSTARRY_CODE_PROFILE": "operator",
+            "OPENSTARRY_CODE_HOME": str(hostile_root / "profiles"),
+            "OPENSTARRY_CODE_STATE_DIR": str(hostile_state),
+            "OPENSTARRY_CODE_LOG_DIR": str(hostile_logs),
+            "OPENSTARRY_CODE_USER_STATE_DIR": str(hostile_user_state),
+            "OPENSTARRY_CODE_GATEWAY_CONFIG_PATH": str(config_path),
+            "OPENSTARRY_CODE_GATEWAY_STATE_DIR": str(hostile_state),
+            "OPENSTARRY_CODE_GATEWAY_WORKSPACE_DIR": str(hostile_workspace),
+            "OPENSTARRY_CODE_WORKSPACE_DIR": str(hostile_workspace),
+            "OPENSTARRY_CODE_PROFILE_KIND": "desktop-primary",
+            "OPENSTARRY_CODE_DESKTOP_PROFILE_KIND": "desktop-primary",
+            "OPENSTARRY_CODE_DESKTOP": "1",
         }
     )
     test_file = Path(__file__).resolve()
@@ -188,7 +188,7 @@ def test_migrate_pytest_isolates_inherited_process_paths(tmp_path: Path) -> None
 
     assert result.returncode == 0, f"{result.stdout}\n{result.stderr}"
     assert config_path.read_bytes() == config_bytes
-    assert not list(hostile_cwd.glob("opensquilla.toml.backup.*"))
+    assert not list(hostile_cwd.glob("openstarry-code.toml.backup.*"))
     assert {root: _tree_snapshot(root) for root in protected_roots} == before
 
 
@@ -196,7 +196,7 @@ def test_migrate_openclaw_json_dry_run(tmp_path: Path, monkeypatch) -> None:
     source = _make_source(tmp_path)
     home = tmp_path / "opensquilla-home"
     target = tmp_path / "config.toml"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     result = runner.invoke(
         app,
@@ -225,7 +225,7 @@ def test_migrate_openclaw_apply_writes_config_and_workspace(
     source = _make_source(tmp_path)
     home = tmp_path / "opensquilla-home"
     target = tmp_path / "config.toml"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     result = runner.invoke(
         app,
@@ -271,7 +271,7 @@ def test_migrate_openclaw_exclude_skips_workspace_item(
     source = _make_source(tmp_path)
     home = tmp_path / "opensquilla-home"
     target = tmp_path / "config.toml"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     result = runner.invoke(
         app,
@@ -352,7 +352,7 @@ def test_migrate_openclaw_rejects_unknown_skill_conflict(tmp_path: Path) -> None
 
 
 # ---------------------------------------------------------------------------
-# OpenSquilla self-migration CLI contract
+# OpenStarry Code self-migration CLI contract
 # ---------------------------------------------------------------------------
 
 
@@ -363,7 +363,7 @@ def test_migrate_opensquilla_plain_error_reports_failure(tmp_path: Path) -> None
     )
 
     assert result.exit_code == 1
-    assert "OpenSquilla self-migration failed" in result.stdout
+    assert "OpenStarry Code self-migration failed" in result.stdout
     assert "error: 1" in result.stdout
     assert "complete" not in result.stdout.lower()
 
@@ -403,8 +403,8 @@ def test_migrate_opensquilla_rejects_config_with_target_home_guidance(
     )
 
     assert result.exit_code == 2
-    assert "--config is not supported for OpenSquilla self-migration" in result.stdout
-    assert "OPENSQUILLA_STATE_DIR" in result.stdout
+    assert "--config is not supported for OpenStarry Code self-migration" in result.stdout
+    assert "OPENSTARRY_CODE_STATE_DIR" in result.stdout
     assert "target home" in result.stdout
 
 
@@ -412,8 +412,8 @@ def test_migrate_opensquilla_keeps_its_internal_multi_profile_lock(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla import recovery
-    from opensquilla.cli import migrate_cmd
+    from openstarry_code import recovery
+    from openstarry_code.cli import migrate_cmd
 
     source = tmp_path / "source-profile"
     (source / "workspace").mkdir(parents=True)
@@ -421,12 +421,12 @@ def test_migrate_opensquilla_keeps_its_internal_multi_profile_lock(
     (source / "config.toml").write_text("port = 18790\n", encoding="utf-8")
     (source / "workspace" / "SOUL.md").write_text("source soul\n", encoding="utf-8")
     target = tmp_path / "desktop-primary"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(target))
-    monkeypatch.setenv("OPENSQUILLA_PROFILE_KIND", "desktop-primary")
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_PROFILE_KIND", "desktop-primary")
     monkeypatch.delattr(os, "fchmod", raising=False)
 
     def fail_foreign_guard() -> None:
-        pytest.fail("OpenSquilla self-import must not take the foreign migration lifecycle")
+        pytest.fail("OpenStarry Code self-import must not take the foreign migration lifecycle")
 
     acquired: list[tuple[Path, ...]] = []
     original_acquire = recovery.acquire_profile_locks
@@ -458,7 +458,7 @@ def test_migrate_opensquilla_keeps_its_internal_multi_profile_lock(
 
 
 # ---------------------------------------------------------------------------
-# Auto-detect entry point: ``opensquilla migrate`` (no subcommand)
+# Auto-detect entry point: ``openstarry-code migrate`` (no subcommand)
 # ---------------------------------------------------------------------------
 
 
@@ -473,14 +473,14 @@ def _seed_openclaw(home: Path) -> Path:
 
 
 def _seed_opensquilla(home: Path) -> Path:
-    source = home / ".opensquilla"
+    source = home / ".openstarry-code"
     source.mkdir(parents=True)
     (source / "config.toml").write_text("port = 18790\n", encoding="utf-8")
     return source
 
 
 def _seed_portable(base: Path) -> Path:
-    source = base / "OpenSquilla" / "portable" / "dummy-release"
+    source = base / "OpenStarry Code" / "portable" / "dummy-release"
     source.mkdir(parents=True)
     (source / "config.toml").write_text("port = 18790\n", encoding="utf-8")
     return source
@@ -493,7 +493,7 @@ def test_migrate_batch_rejects_config_when_opensquilla_is_selected(
     fake_home.mkdir()
     _seed_opensquilla(fake_home)
     _set_fake_home(monkeypatch, fake_home)
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "desktop-home"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "desktop-home"))
 
     result = runner.invoke(
         app,
@@ -507,7 +507,7 @@ def test_migrate_batch_rejects_config_when_opensquilla_is_selected(
     )
 
     assert result.exit_code == 2, result.stdout
-    assert "--config is not supported for OpenSquilla self-migration" in result.stdout
+    assert "--config is not supported for OpenStarry Code self-migration" in result.stdout
 
 
 def _seed_hermes(home: Path) -> Path:
@@ -535,7 +535,7 @@ def test_foreign_migration_blocks_unsafe_desktop_before_any_write(
     source_name: str,
     entrypoint: str,
 ) -> None:
-    from opensquilla.recovery import RecoveryRequiredError
+    from openstarry_code.recovery import RecoveryRequiredError
 
     fake_home = tmp_path / "fake-home"
     fake_home.mkdir()
@@ -555,8 +555,8 @@ def test_foreign_migration_blocks_unsafe_desktop_before_any_write(
     ).encode()
     config.write_bytes(config_bytes)
     _set_fake_home(monkeypatch, fake_home)
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(target))
-    monkeypatch.setenv("OPENSQUILLA_PROFILE_KIND", "desktop-primary")
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_PROFILE_KIND", "desktop-primary")
 
     if entrypoint == "subcommand":
         args = [
@@ -596,9 +596,9 @@ def test_foreign_migration_guard_is_noop_for_ordinary_cli_profile(
         tomli_w.dumps({"workspace_dir": str(workspace)}),
         encoding="utf-8",
     )
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(target))
-    monkeypatch.delenv("OPENSQUILLA_PROFILE_KIND", raising=False)
-    monkeypatch.delenv("OPENSQUILLA_DESKTOP", raising=False)
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(target))
+    monkeypatch.delenv("OPENSTARRY_CODE_PROFILE_KIND", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_DESKTOP", raising=False)
 
     result = runner.invoke(
         app,
@@ -624,7 +624,7 @@ def test_migrate_auto_detect_no_source_reports_nothing(
     home = tmp_path / "fake_home"
     home.mkdir()
     _set_fake_home(monkeypatch, home)
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "opensquilla"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "opensquilla"))
 
     result = runner.invoke(app, ["migrate", "--json"])
 
@@ -643,7 +643,7 @@ def test_migrate_auto_detect_single_source_auto_picks(
     home.mkdir()
     _seed_hermes(home)
     _set_fake_home(monkeypatch, home)
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "opensquilla"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "opensquilla"))
 
     result = runner.invoke(app, ["migrate", "--apply", "--json"])
 
@@ -660,7 +660,7 @@ def test_migrate_auto_detect_single_cli_home_still_requires_confirmation(
     home.mkdir()
     source = _seed_opensquilla(home)
     _set_fake_home(monkeypatch, home)
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "desktop-home"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "desktop-home"))
 
     result = runner.invoke(app, ["migrate", "--json"])
 
@@ -694,7 +694,7 @@ def test_migrate_auto_detect_single_portable_requires_explicit_confirmation(
     _set_fake_home(monkeypatch, home)
     monkeypatch.setenv("LOCALAPPDATA", str(portable_base))
     monkeypatch.delenv("TEMP", raising=False)
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "opensquilla"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "opensquilla"))
 
     result = runner.invoke(app, ["migrate", "--json"])
 
@@ -718,7 +718,7 @@ def test_migrate_opensquilla_single_portable_requires_home_flag(
     portable = _seed_portable(portable_base)
     monkeypatch.setenv("LOCALAPPDATA", str(portable_base))
     monkeypatch.delenv("TEMP", raising=False)
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "target-home"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "target-home"))
 
     refused = runner.invoke(
         app, ["migrate", "opensquilla", "--kind", "windows-portable", "--json"]
@@ -752,7 +752,7 @@ def test_migrate_opensquilla_direct_same_product_source_requires_confirmation(
     monkeypatch: pytest.MonkeyPatch,
     kind: str,
 ) -> None:
-    import opensquilla.cli.migrate_cmd as migrate_cmd
+    import openstarry_code.cli.migrate_cmd as migrate_cmd
 
     fake_home = tmp_path / "fake-home"
     fake_home.mkdir()
@@ -767,7 +767,7 @@ def test_migrate_opensquilla_direct_same_product_source_requires_confirmation(
         monkeypatch.setattr(migrate_cmd, "detect_desktop_home", lambda: source)
     _set_fake_home(monkeypatch, fake_home)
     target = tmp_path / "target-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(target))
 
     refused = runner.invoke(
         app,
@@ -802,8 +802,8 @@ def test_migrate_help_treats_cli_and_desktop_as_supported_profiles() -> None:
     assert group_help.exit_code == 0
     assert command_help.exit_code == 0
     combined = f"{group_help.stdout}\n{command_help.stdout}"
-    assert "legacy OpenSquilla home" not in combined
-    assert "supported OpenSquilla CLI or Desktop profile" in combined
+    assert "legacy OpenStarry Code home" not in combined
+    assert "supported OpenStarry Code CLI or Desktop profile" in combined
     assert "historical Windows Portable" in combined
 
 
@@ -819,7 +819,7 @@ def test_portable_text_chooser_labels_activity_as_estimated_and_shows_metadata(
     )
     monkeypatch.setenv("LOCALAPPDATA", str(portable_base))
     monkeypatch.delenv("TEMP", raising=False)
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "target-home"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "target-home"))
 
     result = runner.invoke(
         app,
@@ -853,7 +853,7 @@ def test_migrate_opensquilla_inspect_candidate_json_is_metadata_only(
     finally:
         connection.close()
     target = tmp_path / "target"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(target))
 
     result = runner.invoke(
         app,
@@ -890,7 +890,7 @@ def test_migrate_opensquilla_replacement_flags_require_exact_target(
     target = tmp_path / "target-home"
     target.mkdir()
     (target / "existing.txt").write_text("preserve", encoding="utf-8")
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(target))
 
     refused = runner.invoke(
         app,
@@ -937,7 +937,7 @@ def test_migrate_auto_detect_multiple_sources_non_tty_lists_and_exits(
     _seed_openclaw(home)
     _seed_hermes(home)
     _set_fake_home(monkeypatch, home)
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "opensquilla"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "opensquilla"))
 
     result = runner.invoke(app, ["migrate", "--json"])
 
@@ -956,7 +956,7 @@ def test_migrate_auto_detect_source_filter_runs_only_selected(
     _seed_openclaw(home)
     _seed_hermes(home)
     _set_fake_home(monkeypatch, home)
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "opensquilla"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "opensquilla"))
 
     result = runner.invoke(
         app, ["migrate", "--source", "hermes", "--apply", "--json"]
@@ -976,7 +976,7 @@ def test_migrate_auto_detect_source_filter_runs_both_in_order(
     _seed_openclaw(home)
     _seed_hermes(home)
     _set_fake_home(monkeypatch, home)
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "opensquilla"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "opensquilla"))
 
     result = runner.invoke(
         app,
@@ -999,7 +999,7 @@ def test_migrate_auto_detect_rejects_unknown_source_name(
     home.mkdir()
     _seed_openclaw(home)
     _set_fake_home(monkeypatch, home)
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "opensquilla"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "opensquilla"))
 
     result = runner.invoke(app, ["migrate", "--source", "bogus", "--json"])
 
@@ -1016,7 +1016,7 @@ def test_migrate_auto_detect_rejects_requested_but_undetected_source(
     home.mkdir()
     _seed_openclaw(home)
     _set_fake_home(monkeypatch, home)
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "opensquilla"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "opensquilla"))
 
     result = runner.invoke(app, ["migrate", "--source", "hermes", "--json"])
 
@@ -1040,11 +1040,11 @@ def test_migrate_auto_detect_tty_prompt_path_is_invoked(
     _seed_hermes(home)
     state = tmp_path / "opensquilla"
     _set_fake_home(monkeypatch, home)
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(state))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(state))
 
-    from opensquilla.cli import migrate_cmd
+    from openstarry_code.cli import migrate_cmd
 
-    monkeypatch.setattr("opensquilla.cli.migrate_cmd._stdin_is_tty", lambda: True)
+    monkeypatch.setattr("openstarry_code.cli.migrate_cmd._stdin_is_tty", lambda: True)
     captured: list[list[object]] = []
 
     def fake_prompt(detected):
@@ -1078,7 +1078,7 @@ def test_migrate_auto_detect_validates_all_selected_before_running_any(
     _seed_hermes(home)
     state = tmp_path / "opensquilla"
     _set_fake_home(monkeypatch, home)
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(state))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(state))
 
     result = runner.invoke(
         app,
@@ -1108,11 +1108,11 @@ def test_migrate_auto_detect_tty_prompt_cancellation_exits_cleanly(
     _seed_openclaw(home)
     _seed_hermes(home)
     _set_fake_home(monkeypatch, home)
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "opensquilla"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "opensquilla"))
 
-    from opensquilla.cli import migrate_cmd
+    from openstarry_code.cli import migrate_cmd
 
-    monkeypatch.setattr("opensquilla.cli.migrate_cmd._stdin_is_tty", lambda: True)
+    monkeypatch.setattr("openstarry_code.cli.migrate_cmd._stdin_is_tty", lambda: True)
     monkeypatch.setattr(migrate_cmd, "_prompt_source_selection", lambda _detected: [])
 
     result = runner.invoke(app, ["migrate"])

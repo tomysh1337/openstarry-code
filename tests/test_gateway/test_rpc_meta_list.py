@@ -5,11 +5,11 @@ from __future__ import annotations
 import asyncio
 from types import SimpleNamespace
 
-import opensquilla.gateway.rpc_meta_runs as meta_rpc
-from opensquilla.gateway.rpc.registry import RpcContext
-from opensquilla.gateway.rpc_meta_runs import _handle_meta_list
-from opensquilla.skills.meta.readiness import MetaSkillReadiness
-from opensquilla.skills.types import (
+import openstarry_code.gateway.rpc_meta_runs as meta_rpc
+from openstarry_code.gateway.rpc.registry import RpcContext
+from openstarry_code.gateway.rpc_meta_runs import _handle_meta_list
+from openstarry_code.skills.meta.readiness import MetaSkillReadiness
+from openstarry_code.skills.types import (
     SkillLayer,
     SkillPlatformMeta,
     SkillRequires,

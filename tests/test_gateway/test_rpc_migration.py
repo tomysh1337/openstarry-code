@@ -7,11 +7,11 @@ from typing import Any
 
 import pytest
 
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.rpc import RpcContext, get_dispatcher
-from opensquilla.gateway.scopes import ADMIN_SCOPE, METHOD_SCOPES
-from opensquilla.migration.legacy_detect import LegacyHomeCandidate
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.rpc import RpcContext, get_dispatcher
+from openstarry_code.gateway.scopes import ADMIN_SCOPE, METHOD_SCOPES
+from openstarry_code.migration.legacy_detect import LegacyHomeCandidate
 
 
 def _make_home(path: Path, *, running: bool = False) -> Path:
@@ -74,7 +74,7 @@ def _all_keys(value: Any) -> set[str]:
 
 @pytest.fixture(autouse=True)
 def _clear_candidate_cache() -> None:
-    from opensquilla.gateway import rpc_migration
+    from openstarry_code.gateway import rpc_migration
 
     rpc_migration._candidate_cache.clear()
     yield
@@ -87,7 +87,7 @@ def _patch_one_candidate(
     *,
     kind: str = "cli-home",
 ) -> None:
-    from opensquilla.migration import legacy_detect
+    from openstarry_code.migration import legacy_detect
 
     monkeypatch.setattr(
         legacy_detect,
@@ -132,7 +132,7 @@ async def test_list_is_settings_only_privacy_narrow_and_uses_actual_target(
     target = _make_home(tmp_path / "active-target")
     _patch_one_candidate(monkeypatch, source)
     seen_targets: list[Path] = []
-    from opensquilla.migration import legacy_detect
+    from openstarry_code.migration import legacy_detect
 
     original = legacy_detect.detect_legacy_homes
 
@@ -211,7 +211,7 @@ async def test_list_caps_untrusted_detector_output_at_twelve(
 ) -> None:
     sources = [_make_home(tmp_path / f"source-{index:02d}") for index in range(20)]
     target = _make_home(tmp_path / "target")
-    from opensquilla.migration import legacy_detect
+    from openstarry_code.migration import legacy_detect
 
     monkeypatch.setattr(
         legacy_detect,
@@ -236,7 +236,7 @@ async def test_list_caps_untrusted_detector_output_at_twelve(
 async def test_missing_gateway_config_returns_unavailable_without_scanning(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.gateway import rpc_migration
+    from openstarry_code.gateway import rpc_migration
 
     monkeypatch.setattr(
         rpc_migration,
@@ -363,7 +363,7 @@ async def test_candidate_is_connection_bound_and_expiring(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.gateway import rpc_migration
+    from openstarry_code.gateway import rpc_migration
 
     source = _make_home(tmp_path / "source")
     target = _make_home(tmp_path / "target")
@@ -478,7 +478,7 @@ async def test_non_plain_target_returns_capability_unavailable_without_scanning(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.gateway import rpc_migration
+    from openstarry_code.gateway import rpc_migration
 
     target = tmp_path / "target-is-a-file"
     target.write_text("not a profile directory", encoding="utf-8")
@@ -505,7 +505,7 @@ async def test_unknown_discovery_and_preview_errors_do_not_leak_paths(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.gateway import rpc_migration
+    from openstarry_code.gateway import rpc_migration
 
     source = _make_home(tmp_path / "private-source")
     target = _make_home(tmp_path / "private-target")
@@ -558,7 +558,7 @@ async def test_unknown_discovery_and_preview_errors_do_not_leak_paths(
 def test_candidate_cache_is_globally_bounded_and_lru(
     tmp_path: Path,
 ) -> None:
-    from opensquilla.gateway import rpc_migration
+    from openstarry_code.gateway import rpc_migration
 
     target = _make_home(tmp_path / "target")
     ctx = _ctx(target)

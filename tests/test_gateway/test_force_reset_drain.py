@@ -13,10 +13,10 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-import opensquilla.gateway.rpc_sessions  # noqa: F401 — ensures handler registration
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.rpc import RpcContext, get_dispatcher
+import openstarry_code.gateway.rpc_sessions  # noqa: F401 — ensures handler registration
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.rpc import RpcContext, get_dispatcher
 
 _ADMIN_PRINCIPAL = Principal(
     role="operator",
@@ -111,7 +111,7 @@ async def test_drain_called_when_flush_service_none():
     task_runtime = _make_task_runtime()
     ctx = _make_ctx(flush_service=None, task_runtime=task_runtime)
 
-    target = "opensquilla.gateway.rpc_sessions._drain_task_runtime_for_reset"
+    target = "openstarry_code.gateway.rpc_sessions._drain_task_runtime_for_reset"
     with patch(target, new_callable=AsyncMock) as mock_drain:
         result = await get_dispatcher().dispatch(
             "r1",
@@ -127,7 +127,7 @@ async def test_drain_called_when_flush_service_none():
 @pytest.mark.asyncio
 async def test_drain_called_with_flush_service():
     """drain is called when flush_service is wired (normal path)."""
-    from opensquilla.memory.session_flush import FlushReceipt
+    from openstarry_code.memory.session_flush import FlushReceipt
 
     task_runtime = _make_task_runtime()
 
@@ -146,7 +146,7 @@ async def test_drain_called_with_flush_service():
 
     ctx = _make_ctx(flush_service=fake_flush_service, task_runtime=task_runtime)
 
-    target = "opensquilla.gateway.rpc_sessions._drain_task_runtime_for_reset"
+    target = "openstarry_code.gateway.rpc_sessions._drain_task_runtime_for_reset"
     with patch(target, new_callable=AsyncMock) as mock_drain:
         result = await get_dispatcher().dispatch(
             "r1",

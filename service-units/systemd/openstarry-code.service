@@ -1,0 +1,36 @@
+# OpenStarry Code Linux systemd --user unit — user-scope only.
+#
+# Install:
+#   mkdir -p ~/.config/systemd/user
+#   cp service-units/systemd/openstarry-code.service ~/.config/systemd/user/
+#   systemctl --user daemon-reload
+#   systemctl --user enable --now openstarry-code.service
+#
+# Safety contract — DO NOT REMOVE:
+#   OPENSTARRY_CODE_LISTEN=127.0.0.1 binds the gateway to loopback only. Network
+#   exposure is an explicit operator opt-in. To expose the gateway on the
+#   network, create a drop-in override at
+#     ~/.config/systemd/user/openstarry-code.service.d/override.conf
+#   with:
+#     [Service]
+#     Environment="OPENSTARRY_CODE_LISTEN=0.0.0.0"
+#   then re-run `systemctl --user daemon-reload` + `systemctl --user restart
+#   openstarry-code.service`. Only run with OPENSTARRY_CODE_LISTEN=0.0.0.0 behind a trusted
+#   reverse proxy or VPN — OpenStarry Code's first-class auth assumes loopback scope
+#   by default. The S19 boot WARNING (gateway.bind.public) will fire whenever
+#   the unit is configured for wildcard bind.
+
+[Unit]
+Description=OpenStarry Code agent runtime gateway (loopback default)
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/openstarry-code gateway run
+Environment="OPENSTARRY_CODE_LISTEN=127.0.0.1"
+Environment="OPENSTARRY_CODE_GATEWAY_PORT=18790"
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=default.target

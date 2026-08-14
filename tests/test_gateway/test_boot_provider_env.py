@@ -5,16 +5,16 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.llm_runtime import resolve_llm_runtime_config
-from opensquilla.gateway.rpc_config import (
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.llm_runtime import resolve_llm_runtime_config
+from openstarry_code.gateway.rpc_config import (
     _handle_config_apply,
     _handle_config_patch,
     _handle_config_patch_safe,
     _handle_config_set,
     _sync_provider_selector,
 )
-from opensquilla.onboarding.config_store import load_config
+from openstarry_code.onboarding.config_store import load_config
 
 
 class _CapturingSelector:
@@ -69,8 +69,8 @@ def test_boot_uses_explicit_key_and_base_url_before_standard_env(monkeypatch) ->
 
 def test_existing_custom_provider_keeps_implicit_env_compatibility(monkeypatch) -> None:
     monkeypatch.setenv("CUSTOM_LLM_API_KEY", "custom-env-key")
-    monkeypatch.delenv("OPENSQUILLA_LLM_API_KEY", raising=False)
-    monkeypatch.delenv("OPENSQUILLA_LLM_API_KEY_ENV", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_LLM_API_KEY", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_LLM_API_KEY_ENV", raising=False)
     cfg = GatewayConfig(
         llm={
             "provider": "custom",
@@ -99,7 +99,7 @@ def test_configured_missing_env_does_not_fall_back_to_generic_key(
     base_url: str,
 ) -> None:
     monkeypatch.delenv("NEW_ENDPOINT_KEY", raising=False)
-    monkeypatch.setenv("OPENSQUILLA_LLM_API_KEY", "synthetic-old-origin-key")
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_API_KEY", "synthetic-old-origin-key")
     cfg = GatewayConfig(
         llm={
             "provider": provider,
@@ -119,8 +119,8 @@ def test_configured_missing_env_does_not_fall_back_to_generic_key(
 
 def test_generic_key_remains_fallback_without_configured_env(monkeypatch) -> None:
     monkeypatch.delenv("CUSTOM_LLM_API_KEY", raising=False)
-    monkeypatch.delenv("OPENSQUILLA_LLM_API_KEY_ENV", raising=False)
-    monkeypatch.setenv("OPENSQUILLA_LLM_API_KEY", "synthetic-generic-key")
+    monkeypatch.delenv("OPENSTARRY_CODE_LLM_API_KEY_ENV", raising=False)
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_API_KEY", "synthetic-generic-key")
     cfg = GatewayConfig(
         llm={
             "provider": "custom",
@@ -135,14 +135,14 @@ def test_generic_key_remains_fallback_without_configured_env(monkeypatch) -> Non
 
     assert runtime.api_key == "synthetic-generic-key"
     assert runtime.api_key_from_env is True
-    assert runtime.api_key_env_name == "OPENSQUILLA_LLM_API_KEY"
+    assert runtime.api_key_env_name == "OPENSTARRY_CODE_LLM_API_KEY"
 
 
 def test_configured_env_does_not_reuse_runtime_cache_after_variable_removed(
     monkeypatch,
 ) -> None:
     monkeypatch.setenv("NEW_ENDPOINT_KEY", "synthetic-new-origin-key")
-    monkeypatch.setenv("OPENSQUILLA_LLM_API_KEY", "synthetic-old-origin-key")
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_API_KEY", "synthetic-old-origin-key")
     cfg = GatewayConfig(
         llm={
             "provider": "custom",
@@ -167,7 +167,7 @@ def test_loaded_config_missing_env_rejects_absorbed_generic_key(
     monkeypatch,
 ) -> None:
     monkeypatch.delenv("NEW_ENDPOINT_KEY", raising=False)
-    monkeypatch.setenv("OPENSQUILLA_LLM_API_KEY", "synthetic-old-origin-key")
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_API_KEY", "synthetic-old-origin-key")
     config_path = tmp_path / "config.toml"
     config_path.write_text(
         """
@@ -206,7 +206,7 @@ def test_load_from_toml_marks_absorbed_generic_key_before_resolution(
     base_url: str,
 ) -> None:
     monkeypatch.delenv("NEW_ENDPOINT_KEY", raising=False)
-    monkeypatch.setenv("OPENSQUILLA_LLM_API_KEY", "synthetic-generic-key")
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_API_KEY", "synthetic-generic-key")
     config_path = tmp_path / "config.toml"
     config_path.write_text(
         "\n".join(
@@ -249,7 +249,7 @@ async def test_config_apply_marks_absorbed_generic_key_before_persist_and_resolu
     monkeypatch.delenv("NEW_ENDPOINT_KEY", raising=False)
     config_path = tmp_path / "config.toml"
     cfg = GatewayConfig(config_path=str(config_path))
-    monkeypatch.setenv("OPENSQUILLA_LLM_API_KEY", "synthetic-generic-key")
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_API_KEY", "synthetic-generic-key")
     selector = _CapturingSelector()
     ctx = SimpleNamespace(config=cfg, provider_selector=selector)
 
@@ -283,7 +283,7 @@ async def test_config_section_replacement_marks_absorbed_generic_key(
 ) -> None:
     monkeypatch.delenv("OLD_ENDPOINT_KEY", raising=False)
     monkeypatch.delenv("NEW_ENDPOINT_KEY", raising=False)
-    monkeypatch.setenv("OPENSQUILLA_LLM_API_KEY", "synthetic-generic-key")
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_API_KEY", "synthetic-generic-key")
     config_path = tmp_path / "config.toml"
     config_path.write_text(
         "\n".join(

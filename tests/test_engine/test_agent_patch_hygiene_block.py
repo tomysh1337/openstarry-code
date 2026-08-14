@@ -1,7 +1,7 @@
 """Agent-loop tests for the finalize-time patch hygiene hard block.
 
 Scripted-provider tests covering the loop-level contract of
-OPENSQUILLA_PATCH_HYGIENE_BLOCK: off by default, challenge injection while
+OPENSTARRY_CODE_PATCH_HYGIENE_BLOCK: off by default, challenge injection while
 the live diff still touches offending paths (test-classified in
 ``test_paths`` mode; deployment write-deny-glob matches in
 ``protected_paths`` mode), dedup on the same offending path set, the
@@ -19,22 +19,22 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine import (
+from openstarry_code.engine import (
     Agent,
     AgentConfig,
     DoneEvent,
     ToolResult,
     WarningEvent,
 )
-from opensquilla.engine.turn_runner.agent_bootstrap_stage import (
+from openstarry_code.engine.turn_runner.agent_bootstrap_stage import (
     _patch_hygiene_block_from_env,
 )
-from opensquilla.provider import ChatConfig, Message
-from opensquilla.provider import DoneEvent as ProviderDone
-from opensquilla.provider import TextDeltaEvent as ProviderText
-from opensquilla.provider import ToolUseEndEvent as ProviderToolUseEnd
-from opensquilla.provider import ToolUseStartEvent as ProviderToolUseStart
-from opensquilla.tools.types import ToolContext
+from openstarry_code.provider import ChatConfig, Message
+from openstarry_code.provider import DoneEvent as ProviderDone
+from openstarry_code.provider import TextDeltaEvent as ProviderText
+from openstarry_code.provider import ToolUseEndEvent as ProviderToolUseEnd
+from openstarry_code.provider import ToolUseStartEvent as ProviderToolUseStart
+from openstarry_code.tools.types import ToolContext
 
 
 def _init_git_workspace(tmp_path) -> None:
@@ -414,16 +414,16 @@ def test_porcelain_status_test_paths_classification() -> None:
 
 
 def test_patch_hygiene_block_env_parsing(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("OPENSQUILLA_PATCH_HYGIENE_BLOCK", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_PATCH_HYGIENE_BLOCK", raising=False)
     assert _patch_hygiene_block_from_env() == "off"
     assert _patch_hygiene_block_from_env("test_paths") == "test_paths"
-    monkeypatch.setenv("OPENSQUILLA_PATCH_HYGIENE_BLOCK", "test_paths")
+    monkeypatch.setenv("OPENSTARRY_CODE_PATCH_HYGIENE_BLOCK", "test_paths")
     assert _patch_hygiene_block_from_env() == "test_paths"
-    monkeypatch.setenv("OPENSQUILLA_PATCH_HYGIENE_BLOCK", "OFF")
+    monkeypatch.setenv("OPENSTARRY_CODE_PATCH_HYGIENE_BLOCK", "OFF")
     assert _patch_hygiene_block_from_env("test_paths") == "off"
-    monkeypatch.setenv("OPENSQUILLA_PATCH_HYGIENE_BLOCK", "")
+    monkeypatch.setenv("OPENSTARRY_CODE_PATCH_HYGIENE_BLOCK", "")
     assert _patch_hygiene_block_from_env("test_paths") == "test_paths"
-    monkeypatch.setenv("OPENSQUILLA_PATCH_HYGIENE_BLOCK", "bogus")
+    monkeypatch.setenv("OPENSTARRY_CODE_PATCH_HYGIENE_BLOCK", "bogus")
     with pytest.raises(ValueError):
         _patch_hygiene_block_from_env()
 
@@ -437,7 +437,7 @@ def test_patch_hygiene_block_env_parsing(monkeypatch: pytest.MonkeyPatch) -> Non
 def test_patch_hygiene_block_env_parsing_protected_paths(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_PATCH_HYGIENE_BLOCK", "protected_paths")
+    monkeypatch.setenv("OPENSTARRY_CODE_PATCH_HYGIENE_BLOCK", "protected_paths")
     assert _patch_hygiene_block_from_env() == "protected_paths"
     assert _patch_hygiene_block_from_env("test_paths") == "protected_paths"
 

@@ -4,8 +4,8 @@ from pathlib import Path
 
 import pytest
 
-import opensquilla.cli.main as cli_main
-from opensquilla.gateway.config import GatewayConfig
+import openstarry_code.cli.main as cli_main
+from openstarry_code.gateway.config import GatewayConfig
 
 
 @pytest.mark.parametrize(
@@ -32,7 +32,7 @@ def test_cli_dream_uses_configured_agent_workspace(
     dream = cli_main._build_cli_dream(agent_id, need_provider=False)
 
     assert dream.workspace == configured_workspace.joinpath(*expected_suffix)
-    assert not (cwd / ".opensquilla").exists()
+    assert not (cwd / ".openstarry-code").exists()
 
 
 def test_cli_dream_prewarms_install_id_before_building_provider(
@@ -61,10 +61,10 @@ def test_cli_dream_prewarms_install_id_before_building_provider(
         return _Dream()
 
     monkeypatch.setattr(
-        "opensquilla.provider.tokenrhythm_correlation.prewarm_tokenrhythm_install_id",
+        "openstarry_code.provider.tokenrhythm_correlation.prewarm_tokenrhythm_install_id",
         _prewarm,
     )
-    monkeypatch.setattr("opensquilla.memory.dream_factory.build_dream_factory", _build)
+    monkeypatch.setattr("openstarry_code.memory.dream_factory.build_dream_factory", _build)
 
     cli_main._build_cli_dream("main")
 

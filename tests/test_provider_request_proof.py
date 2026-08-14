@@ -4,12 +4,12 @@ import json
 
 import pytest
 
-from opensquilla.provider import request_proof
-from opensquilla.provider.anthropic import AnthropicProvider
-from opensquilla.provider.ollama import OllamaProvider
-from opensquilla.provider.openai import OpenAIProvider
-from opensquilla.provider.protocol import project_provider_final_request
-from opensquilla.provider.request_proof import (
+from openstarry_code.provider import request_proof
+from openstarry_code.provider.anthropic import AnthropicProvider
+from openstarry_code.provider.ollama import OllamaProvider
+from openstarry_code.provider.openai import OpenAIProvider
+from openstarry_code.provider.protocol import project_provider_final_request
+from openstarry_code.provider.request_proof import (
     ProviderRequestBudgetExceeded,
     _final_hard_cap_payload_once,
     project_final_request_payload,
@@ -18,18 +18,18 @@ from opensquilla.provider.request_proof import (
     prove_or_compact_provider_payload,
     prove_provider_payload,
 )
-from opensquilla.provider.types import ChatConfig, ContentBlockToolResult, Message
+from openstarry_code.provider.types import ChatConfig, ContentBlockToolResult, Message
 
 
 @pytest.fixture(autouse=True)
 def _rollback_default_safety_levers(monkeypatch: pytest.MonkeyPatch) -> None:
     for name in (
-        "OPENSQUILLA_PROVIDER_COMPACTION_PROTECT_RECENT_ASSISTANT",
-        "OPENSQUILLA_PROVIDER_COMPACTION_PROTECT_RECENT_RESULTS",
-        "OPENSQUILLA_PROVIDER_COMPACTION_PROTECT_ERROR_RESULTS",
-        "OPENSQUILLA_PROVIDER_COMPACTION_PROTECT_UNRESOLVED_RESULTS",
-        "OPENSQUILLA_PROVIDER_COMPACTION_SKIP_PROJECTED",
-        "OPENSQUILLA_PROVIDER_COMPACTION_NEVER_WORSE",
+        "OPENSTARRY_CODE_PROVIDER_COMPACTION_PROTECT_RECENT_ASSISTANT",
+        "OPENSTARRY_CODE_PROVIDER_COMPACTION_PROTECT_RECENT_RESULTS",
+        "OPENSTARRY_CODE_PROVIDER_COMPACTION_PROTECT_ERROR_RESULTS",
+        "OPENSTARRY_CODE_PROVIDER_COMPACTION_PROTECT_UNRESOLVED_RESULTS",
+        "OPENSTARRY_CODE_PROVIDER_COMPACTION_SKIP_PROJECTED",
+        "OPENSTARRY_CODE_PROVIDER_COMPACTION_NEVER_WORSE",
     ):
         monkeypatch.setenv(name, "0")
     monkeypatch.setattr(
@@ -478,7 +478,7 @@ def test_logical_unresolved_tool_result_stays_raw_after_wire_projection(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setenv(
-        "OPENSQUILLA_PROVIDER_COMPACTION_PROTECT_UNRESOLVED_RESULTS",
+        "OPENSTARRY_CODE_PROVIDER_COMPACTION_PROTECT_UNRESOLVED_RESULTS",
         "1",
     )
     unresolved = "unresolved-" + ("x" * 3000)
@@ -542,7 +542,7 @@ def test_adapter_projection_keeps_unresolved_protection_out_of_band(
     provider: object,
 ) -> None:
     monkeypatch.setenv(
-        "OPENSQUILLA_PROVIDER_COMPACTION_PROTECT_UNRESOLVED_RESULTS",
+        "OPENSTARRY_CODE_PROVIDER_COMPACTION_PROTECT_UNRESOLVED_RESULTS",
         "1",
     )
     messages = [

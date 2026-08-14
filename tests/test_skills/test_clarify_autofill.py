@@ -4,10 +4,10 @@ import json
 
 import pytest
 
-from opensquilla.skills.meta.clarify_autofill import (
+from openstarry_code.skills.meta.clarify_autofill import (
     autofill_required_clarify_fields,
 )
-from opensquilla.skills.meta.types import ClarifyField, ClarifyStepConfig
+from openstarry_code.skills.meta.types import ClarifyField, ClarifyStepConfig
 
 
 @pytest.mark.asyncio

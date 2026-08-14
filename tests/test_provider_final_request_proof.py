@@ -6,10 +6,10 @@ from typing import Any
 
 import httpx
 
-from opensquilla.provider import openai as openai_module
-from opensquilla.provider.anthropic import AnthropicProvider
-from opensquilla.provider.openai import OpenAIProvider
-from opensquilla.provider.types import (
+from openstarry_code.provider import openai as openai_module
+from openstarry_code.provider.anthropic import AnthropicProvider
+from openstarry_code.provider.openai import OpenAIProvider
+from openstarry_code.provider.types import (
     ChatConfig,
     ContentBlockImage,
     ContentBlockText,
@@ -61,7 +61,7 @@ def test_openai_final_request_proof_blocks_oversized_send(monkeypatch: Any) -> N
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client)
     provider = OpenAIProvider(api_key="test", model="gpt-test")
 
     async def run() -> list[Any]:
@@ -98,8 +98,8 @@ def test_openai_env_request_proof_blocks_as_controlled_error(monkeypatch: Any) -
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setenv("OPENSQUILLA_PROVIDER_REQUEST_PROOF_MAX_CHARS", "1")
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setenv("OPENSTARRY_CODE_PROVIDER_REQUEST_PROOF_MAX_CHARS", "1")
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client)
     provider = OpenAIProvider(api_key="test", model="gpt-test")
 
     async def run() -> list[Any]:
@@ -140,7 +140,7 @@ def test_openai_final_request_proof_allows_native_image_payload(
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client)
     provider = OpenAIProvider(
         api_key="test",
         model="vision-test",
@@ -193,7 +193,7 @@ def test_anthropic_final_request_proof_blocks_oversized_send(monkeypatch: Any) -
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.anthropic.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.anthropic.httpx.AsyncClient", patched_async_client)
     provider = AnthropicProvider(api_key="test", model="claude-test")
 
     async def run() -> list[Any]:
@@ -229,8 +229,8 @@ def test_anthropic_env_request_proof_blocks_as_controlled_error(monkeypatch: Any
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setenv("OPENSQUILLA_PROVIDER_REQUEST_PROOF_MAX_CHARS", "1")
-    monkeypatch.setattr("opensquilla.provider.anthropic.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setenv("OPENSTARRY_CODE_PROVIDER_REQUEST_PROOF_MAX_CHARS", "1")
+    monkeypatch.setattr("openstarry_code.provider.anthropic.httpx.AsyncClient", patched_async_client)
     provider = AnthropicProvider(api_key="test", model="claude-test")
 
     async def run() -> list[Any]:
@@ -286,7 +286,7 @@ def test_anthropic_final_request_proof_allows_native_image_payload(
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.anthropic.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.anthropic.httpx.AsyncClient", patched_async_client)
     provider = AnthropicProvider(api_key="test", model="claude-test")
     messages = [
         Message(
@@ -355,7 +355,7 @@ def test_openai_request_proof_serialization_failure_is_controlled(
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client)
     provider = OpenAIProvider(api_key="test", model="gpt-test")
 
     async def run() -> list[Any]:
@@ -384,9 +384,9 @@ def test_openai_final_request_proof_compacts_adapter_payload_with_tools(
 ) -> None:
     # Exercise the documented one-version rollback path for installations
     # that still permit request-only rewriting of recent/unresolved results.
-    monkeypatch.setenv("OPENSQUILLA_PROVIDER_COMPACTION_PROTECT_RECENT_RESULTS", "0")
-    monkeypatch.setenv("OPENSQUILLA_PROVIDER_COMPACTION_PROTECT_ERROR_RESULTS", "0")
-    monkeypatch.setenv("OPENSQUILLA_PROVIDER_COMPACTION_PROTECT_UNRESOLVED_RESULTS", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_PROVIDER_COMPACTION_PROTECT_RECENT_RESULTS", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_PROVIDER_COMPACTION_PROTECT_ERROR_RESULTS", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_PROVIDER_COMPACTION_PROTECT_UNRESOLVED_RESULTS", "0")
     requests: list[httpx.Request] = []
     payloads: list[dict[str, Any]] = []
     proofs: list[dict[str, Any]] = []
@@ -408,7 +408,7 @@ def test_openai_final_request_proof_compacts_adapter_payload_with_tools(
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client)
     real_log = openai_module.log
 
     class _ProofLogShim:
@@ -474,9 +474,9 @@ def test_anthropic_final_request_proof_compacts_adapter_payload_with_tools(
 ) -> None:
     # Exercise the documented one-version rollback path for installations
     # that still permit request-only rewriting of recent/unresolved results.
-    monkeypatch.setenv("OPENSQUILLA_PROVIDER_COMPACTION_PROTECT_RECENT_RESULTS", "0")
-    monkeypatch.setenv("OPENSQUILLA_PROVIDER_COMPACTION_PROTECT_ERROR_RESULTS", "0")
-    monkeypatch.setenv("OPENSQUILLA_PROVIDER_COMPACTION_PROTECT_UNRESOLVED_RESULTS", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_PROVIDER_COMPACTION_PROTECT_RECENT_RESULTS", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_PROVIDER_COMPACTION_PROTECT_ERROR_RESULTS", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_PROVIDER_COMPACTION_PROTECT_UNRESOLVED_RESULTS", "0")
     requests: list[httpx.Request] = []
     payloads: list[dict[str, Any]] = []
     proofs: list[dict[str, Any]] = []
@@ -512,9 +512,9 @@ def test_anthropic_final_request_proof_compacts_adapter_payload_with_tools(
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.anthropic.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.anthropic.httpx.AsyncClient", patched_async_client)
     monkeypatch.setattr(
-        "opensquilla.provider.anthropic.log.info",
+        "openstarry_code.provider.anthropic.log.info",
         lambda event, **kwargs: (
             proofs.append(kwargs) if event == "provider.request_proof" else None
         ),

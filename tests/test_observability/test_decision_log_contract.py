@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 
-from opensquilla.observability.decision_log import (
+from openstarry_code.observability.decision_log import (
     DecisionEntry,
     build_intent_summary,
     compute_hashes,
@@ -12,7 +12,7 @@ from opensquilla.observability.decision_log import (
 
 
 def test_decision_debug_mirror_stays_structured_not_raw(monkeypatch, tmp_path) -> None:
-    monkeypatch.setenv("OPENSQUILLA_DEBUG_LOG", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_DEBUG_LOG", "1")
     raw_prompt = "secret prompt that must not be mirrored"
     prompt_hash, system_hash, tools_hash = compute_hashes(
         raw_prompt,

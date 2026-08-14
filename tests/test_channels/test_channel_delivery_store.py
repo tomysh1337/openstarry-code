@@ -10,28 +10,28 @@ from unittest.mock import AsyncMock, MagicMock
 import httpx
 import pytest
 
-from opensquilla.channels.contract import (
+from openstarry_code.channels.contract import (
     UNCLASSIFIED_ERROR_CLASS,
     ChannelCapabilities,
     ChannelCapabilityProfile,
     ChannelSendResult,
 )
-from opensquilla.channels.delivery_store import (
+from openstarry_code.channels.delivery_store import (
     ChannelDeliveryStore,
     deliver_with_outbox,
     durable_enqueue,
     inbound_event_key,
     install_outbox,
 )
-from opensquilla.channels.manager import ChannelManager
-from opensquilla.channels.types import (
+from openstarry_code.channels.manager import ChannelManager
+from openstarry_code.channels.types import (
     AuthenticatedPrincipal,
     IncomingMessage,
     IngressProvenance,
     IngressVerification,
     OutgoingMessage,
 )
-from opensquilla.gateway.config import DiscordChannelEntry
+from openstarry_code.gateway.config import DiscordChannelEntry
 
 
 def _message(event_id: str = "event-1") -> IncomingMessage:
@@ -342,7 +342,7 @@ def test_normal_duplicate_without_fault_is_still_rejected(tmp_path) -> None:
 
 async def test_telegram_poll_loop_survives_journal_write_failure(tmp_path) -> None:
     """One SQLite fault must not kill the Telegram receive path."""
-    from opensquilla.channels.telegram import TelegramChannel, TelegramChannelConfig
+    from openstarry_code.channels.telegram import TelegramChannel, TelegramChannelConfig
 
     store = ChannelDeliveryStore(tmp_path / "channel_delivery.sqlite")
     channel = TelegramChannel(TelegramChannelConfig(token="synthetic-token"))
@@ -382,7 +382,7 @@ async def test_telegram_poll_loop_survives_journal_write_failure(tmp_path) -> No
 
 async def test_discord_dispatch_enqueue_survives_journal_write_failure(tmp_path) -> None:
     """A journal fault in the Discord dispatch path must not raise."""
-    from opensquilla.channels.discord import DiscordChannel, DiscordChannelConfig
+    from openstarry_code.channels.discord import DiscordChannel, DiscordChannelConfig
 
     store = ChannelDeliveryStore(tmp_path / "channel_delivery.sqlite")
     channel = DiscordChannel(DiscordChannelConfig(token="synthetic-token"))
@@ -407,7 +407,7 @@ async def test_discord_dispatch_enqueue_survives_journal_write_failure(tmp_path)
 
 def test_qq_enqueue_survives_journal_write_failure(tmp_path) -> None:
     """A journal fault in the QQ message hook must not raise."""
-    from opensquilla.channels.qq import QQChannel, QQChannelConfig
+    from openstarry_code.channels.qq import QQChannel, QQChannelConfig
 
     store = ChannelDeliveryStore(tmp_path / "channel_delivery.sqlite")
     channel = QQChannel(

@@ -10,7 +10,7 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.commands import Surface
+from openstarry_code.engine.commands import Surface
 
 
 class _FakeOutputHandle:
@@ -63,7 +63,7 @@ class _FakeOpenTuiSurface:
 async def test_opentui_chat_runtime_exposes_tui_output_and_reuses_runtime(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.tui.opentui import runtime as opentui_runtime
+    from openstarry_code.cli.tui.opentui import runtime as opentui_runtime
 
     scope: dict[str, Any] = {
         "model": "model-a",
@@ -123,7 +123,7 @@ async def test_opentui_chat_runtime_exposes_tui_output_and_reuses_runtime(
 async def test_opentui_chat_runtime_forwards_workspace_dir_from_tool_context(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.tui.opentui import runtime as opentui_runtime
+    from openstarry_code.cli.tui.opentui import runtime as opentui_runtime
 
     scope: dict[str, Any] = {
         "model": "model-a",
@@ -162,8 +162,8 @@ async def test_opentui_chat_runtime_forwards_workspace_dir_from_tool_context(
 async def test_opentui_chat_runtime_uses_footer_native_echo_hooks(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.tui.adapters import runtime_helpers
-    from opensquilla.cli.tui.opentui import runtime as opentui_runtime
+    from openstarry_code.cli.tui.adapters import runtime_helpers
+    from openstarry_code.cli.tui.opentui import runtime as opentui_runtime
 
     assert runtime_helpers.classify_chat_input("/help") is not None
 
@@ -209,7 +209,7 @@ async def test_opentui_chat_runtime_reprints_exit_notices_to_real_stderr(
     reason, and the Goodbye notice is emitted with the bridge already doomed.
     Both must reach the real terminal stderr after teardown instead of dying
     with the captured console."""
-    from opensquilla.cli.tui.opentui import runtime as opentui_runtime
+    from openstarry_code.cli.tui.opentui import runtime as opentui_runtime
 
     scope: dict[str, Any] = {"model": "model-a", "session_key": "session-a"}
     fake_surface = _FakeOpenTuiSurface()
@@ -250,8 +250,8 @@ async def test_forward_console_notice_prunes_completed_pending_tasks() -> None:
     """The session-scoped pending set must shed tasks as their sends finish —
     every captured console line schedules one, so retaining completed tasks
     grows without bound over a long interactive session."""
-    from opensquilla.cli.tui.backend.output_binding import TuiOutputBinding
-    from opensquilla.cli.tui.opentui import runtime as opentui_runtime
+    from openstarry_code.cli.tui.backend.output_binding import TuiOutputBinding
+    from openstarry_code.cli.tui.opentui import runtime as opentui_runtime
 
     scope: dict[str, Any] = {}
     TuiOutputBinding(scope).expose(_FakeOutputHandle())
@@ -268,8 +268,8 @@ async def test_forward_console_notice_prunes_completed_pending_tasks() -> None:
 
 
 def test_opentui_notice_renders_through_captured_console() -> None:
-    from opensquilla.cli.tui.opentui.notice_capture import capture_stdout_as_notices
-    from opensquilla.cli.tui.opentui.runtime import opentui_notice
+    from openstarry_code.cli.tui.opentui.notice_capture import capture_stdout_as_notices
+    from openstarry_code.cli.tui.opentui.runtime import opentui_notice
 
     lines: list[str] = []
     # Runtime notices must render as clean styled host notices, never as raw Rich

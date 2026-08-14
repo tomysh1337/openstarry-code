@@ -7,8 +7,8 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.mcp.stdio import MCPStdioClient
-from opensquilla.mcp.types import MCPServerConfig
+from openstarry_code.mcp.stdio import MCPStdioClient
+from openstarry_code.mcp.types import MCPServerConfig
 
 _SDK_SERVER_SCRIPT = str(Path(__file__).parent / "fixtures" / "fastmcp_server.py")
 

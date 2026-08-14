@@ -10,13 +10,13 @@ import pytest
 
 WINDOWS_ADMIN_NETWORK = pytest.mark.skipif(
     not sys.platform.startswith("win")
-    or os.environ.get("OPENSQUILLA_RUN_WINDOWS_NETWORK_INTEGRATION") != "1",
-    reason="requires Windows admin setup and OPENSQUILLA_RUN_WINDOWS_NETWORK_INTEGRATION=1",
+    or os.environ.get("OPENSTARRY_CODE_RUN_WINDOWS_NETWORK_INTEGRATION") != "1",
+    reason="requires Windows admin setup and OPENSTARRY_CODE_RUN_WINDOWS_NETWORK_INTEGRATION=1",
 )
 
 
 def _proxy_port_from_marker() -> int:
-    from opensquilla.sandbox.backend.windows_default_setup import (
+    from openstarry_code.sandbox.backend.windows_default_setup import (
         default_setup_marker_path,
         read_setup_marker,
     )
@@ -28,7 +28,7 @@ def _proxy_port_from_marker() -> int:
 
 
 def _policy(tmp_path: Path):
-    from opensquilla.sandbox.types import (
+    from openstarry_code.sandbox.types import (
         NetworkMode,
         NetworkProxySpec,
         ResourceLimits,
@@ -50,8 +50,8 @@ def _policy(tmp_path: Path):
 
 
 async def _run_argv(tmp_path: Path, argv: tuple[str, ...]):
-    from opensquilla.sandbox.backend.windows_default import WindowsDefaultBackend
-    from opensquilla.sandbox.types import SandboxRequest
+    from openstarry_code.sandbox.backend.windows_default import WindowsDefaultBackend
+    from openstarry_code.sandbox.types import SandboxRequest
 
     _ = tmp_path
     request = SandboxRequest(

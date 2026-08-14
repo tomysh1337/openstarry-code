@@ -20,15 +20,15 @@ concurrency:
 jobs:
   live-skill-hub:
     name: Fetch, publish, view, verify immutable no-op, and uninstall
-    if: github.repository == 'opensquilla/opensquilla'
+    if: github.repository == 'tomysh1337/openstarry-code'
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
     env:
       GITHUB_TOKEN: ${{ github.token }}
-      OPENSQUILLA_RUN_LIVE_SKILL_HUB: "1"
-      OPENSQUILLA_LIVE_SKILL_FIXTURE_REVISION: ${{ inputs.fixture_revision || github.sha }}
-      OPENSQUILLA_LIVE_SKILL_INSTALL_REFERENCE: ${{ format('{0}@{1}:tests/fixtures/live_skill_hub/opensquilla-live-skill-hub-canary', github.repository, inputs.fixture_revision || github.sha) }}
+      OPENSTARRY_CODE_RUN_LIVE_SKILL_HUB: "1"
+      OPENSTARRY_CODE_LIVE_SKILL_FIXTURE_REVISION: ${{ inputs.fixture_revision || github.sha }}
+      OPENSTARRY_CODE_LIVE_SKILL_INSTALL_REFERENCE: ${{ format('{0}@{1}:tests/fixtures/live_skill_hub/opensquilla-live-skill-hub-canary', github.repository, inputs.fixture_revision || github.sha) }}
       PYTHONUTF8: "1"
 
     steps:
@@ -54,7 +54,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [[ ! "${OPENSQUILLA_LIVE_SKILL_FIXTURE_REVISION}" =~ ^[0-9a-fA-F]{40}$ ]]; then
+          if [[ ! "${OPENSTARRY_CODE_LIVE_SKILL_FIXTURE_REVISION}" =~ ^[0-9a-fA-F]{40}$ ]]; then
             echo "fixture_revision must be a full 40-character commit SHA" >&2
             exit 2
           fi

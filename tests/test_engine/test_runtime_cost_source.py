@@ -7,13 +7,13 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.provider import DoneEvent as ProviderDone
-from opensquilla.provider import Message, ModelInfo
-from opensquilla.provider import TextDeltaEvent as ProviderText
-from opensquilla.session.manager import SessionManager
-from opensquilla.session.storage import SessionStorage
-from opensquilla.tools.types import CallerKind, ToolContext
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.provider import DoneEvent as ProviderDone
+from openstarry_code.provider import Message, ModelInfo
+from openstarry_code.provider import TextDeltaEvent as ProviderText
+from openstarry_code.session.manager import SessionManager
+from openstarry_code.session.storage import SessionStorage
+from openstarry_code.tools.types import CallerKind, ToolContext
 
 
 class _CostProvider:

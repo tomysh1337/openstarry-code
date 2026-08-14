@@ -1,7 +1,7 @@
 """Sandbox-disabled Full Host Access fallback and its opt-out lever.
 
 A runtime configured with ``sandbox=False`` implies Full Host Access by
-default. OPENSQUILLA_SANDBOX_DISABLED_FULL_HOST=off suppresses only that
+default. OPENSTARRY_CODE_SANDBOX_DISABLED_FULL_HOST=off suppresses only that
 fallback so run-mode semantics come from the tool context alone and the
 workspace policy layers stay active; explicit Full run mode is unaffected.
 """
@@ -12,17 +12,17 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.sandbox.config import SandboxSettings
-from opensquilla.sandbox.integration import configure_runtime, reset_runtime
-from opensquilla.tools.run_mode import (
+from openstarry_code.sandbox.config import SandboxSettings
+from openstarry_code.sandbox.integration import configure_runtime, reset_runtime
+from openstarry_code.tools.run_mode import (
     current_run_mode,
     full_host_access_active,
     full_host_access_for_context,
     trusted_sandbox_active,
 )
-from opensquilla.tools.types import CallerKind, ToolContext, current_tool_context
+from openstarry_code.tools.types import CallerKind, ToolContext, current_tool_context
 
-_ENV = "OPENSQUILLA_SANDBOX_DISABLED_FULL_HOST"
+_ENV = "OPENSTARRY_CODE_SANDBOX_DISABLED_FULL_HOST"
 
 
 @pytest.fixture(autouse=True)

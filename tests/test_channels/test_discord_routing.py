@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from opensquilla.channels.contract import ChannelCapabilities
-from opensquilla.channels.discord import DiscordChannel, DiscordChannelConfig
-from opensquilla.channels.manager import ChannelManager
+from openstarry_code.channels.contract import ChannelCapabilities
+from openstarry_code.channels.discord import DiscordChannel, DiscordChannelConfig
+from openstarry_code.channels.manager import ChannelManager
 
 
 def test_discord_profile_declares_precise_implemented_capabilities() -> None:

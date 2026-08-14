@@ -21,8 +21,8 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.engine.types import ErrorEvent
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.engine.types import ErrorEvent
 
 # Reuse upstream patch helpers from's equivalence harness — this
 # stage sits AFTER all five prior stages so the same upstream patching
@@ -351,8 +351,8 @@ def _setup_runner(monkeypatch: pytest.MonkeyPatch) -> TurnRunner:
     # Replace the Agent class with the stub so the post-slice probe fires when
     # ``agent.run_turn`` is invoked. Patch both runtime and adapter import sites
     # so construction uses the stub consistently.
-    monkeypatch.setattr("opensquilla.engine.runtime.Agent", _StubAgent)
-    monkeypatch.setattr("opensquilla.engine.agent.Agent", _StubAgent)
+    monkeypatch.setattr("openstarry_code.engine.runtime.Agent", _StubAgent)
+    monkeypatch.setattr("openstarry_code.engine.agent.Agent", _StubAgent)
     return runner
 
 
@@ -406,7 +406,7 @@ async def test_attachment_stage_snapshot(
     # The raising-fake case substitutes the AttachmentStage instance on
     # the runner with one whose builder raises RuntimeError.
     if case.get("raises_runtime_error_via_fake"):
-        from opensquilla.engine.turn_runner.attachment_stage import (
+        from openstarry_code.engine.turn_runner.attachment_stage import (
             AttachmentStage,
         )
 

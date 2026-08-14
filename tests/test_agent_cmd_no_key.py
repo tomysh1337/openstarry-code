@@ -10,7 +10,7 @@ import pytest
 import typer
 from typer.testing import CliRunner
 
-from opensquilla.cli.agent_cmd import AgentRunResult
+from openstarry_code.cli.agent_cmd import AgentRunResult
 
 # Provider env vars the project supports
 _PROVIDER_ENV_VARS = [
@@ -36,7 +36,7 @@ _NO_KEY_RESULT = AgentRunResult(
 
 
 def _make_app() -> typer.Typer:
-    from opensquilla.cli.agent_cmd import run_agent_command
+    from openstarry_code.cli.agent_cmd import run_agent_command
 
     app = typer.Typer()
     app.command()(run_agent_command)
@@ -45,7 +45,7 @@ def _make_app() -> typer.Typer:
 
 def _mock_patch():
     return patch(
-        "opensquilla.cli.agent_cmd.run_agent_once",
+        "openstarry_code.cli.agent_cmd.run_agent_once",
         new=AsyncMock(return_value=_NO_KEY_RESULT),
     )
 
@@ -54,7 +54,7 @@ def test_tty_message_contains_onboard_and_envvar(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    """Error output contains 'opensquilla onboard' and at least one provider env var."""
+    """Error output contains 'openstarry-code onboard' and at least one provider env var."""
     for key in _PROVIDER_ENV_VARS:
         monkeypatch.delenv(key, raising=False)
     monkeypatch.setenv("HOME", str(tmp_path))
@@ -67,7 +67,7 @@ def test_tty_message_contains_onboard_and_envvar(
         result = runner.invoke(app, ["-m", "hi"])
 
     combined = result.output or ""
-    assert "opensquilla onboard" in combined
+    assert "openstarry-code onboard" in combined
     assert any(var in combined for var in _PROVIDER_ENV_VARS)
 
 

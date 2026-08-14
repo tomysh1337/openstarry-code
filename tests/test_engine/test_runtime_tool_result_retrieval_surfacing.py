@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.tools.registry import get_default_registry
-from opensquilla.tools.types import CallerKind, ToolContext
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.tools.registry import get_default_registry
+from openstarry_code.tools.types import CallerKind, ToolContext
 
 
 def _runner() -> TurnRunner:

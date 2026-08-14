@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from opensquilla.skills.loader import SkillLoader
-from opensquilla.skills.meta.trigger_accuracy import TriggerCase, evaluate_trigger_cases
+from openstarry_code.skills.loader import SkillLoader
+from openstarry_code.skills.meta.trigger_accuracy import TriggerCase, evaluate_trigger_cases
 
-SKILLS_DIR = Path(__file__).resolve().parents[2] / "src" / "opensquilla" / "skills"
+SKILLS_DIR = Path(__file__).resolve().parents[2] / "src" / "openstarry_code" / "skills"
 BUNDLED = SKILLS_DIR / "bundled"
 EXP = SKILLS_DIR / "exp"
 

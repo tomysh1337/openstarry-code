@@ -5,9 +5,9 @@ from __future__ import annotations
 import json
 from dataclasses import asdict
 
-from opensquilla.engine.agent import _cost_source_for_usage
-from opensquilla.engine.types import DoneEvent
-from opensquilla.engine.usage import UsageTracker
+from openstarry_code.engine.agent import _cost_source_for_usage
+from openstarry_code.engine.types import DoneEvent
+from openstarry_code.engine.usage import UsageTracker
 
 
 def test_tracked_session_emits_six_field_snapshot():

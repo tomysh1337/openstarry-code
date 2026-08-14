@@ -5,9 +5,9 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.runtime import _SelectorFallbackProvider
-from opensquilla.provider import DoneEvent, ErrorEvent, ProviderActivityEvent, TextDeltaEvent
-from opensquilla.provider.selector import ModelSelector, ProviderConfig, SelectorConfig
+from openstarry_code.engine.runtime import _SelectorFallbackProvider
+from openstarry_code.provider import DoneEvent, ErrorEvent, ProviderActivityEvent, TextDeltaEvent
+from openstarry_code.provider.selector import ModelSelector, ProviderConfig, SelectorConfig
 
 HIGH_TIER_MODEL = "openrouter/high-tier-region-locked"
 MID_TIER_MODEL = "openrouter/mid-tier-available"
@@ -71,7 +71,7 @@ async def test_runtime_falls_back_from_region_unavailable_router_model(
             calls,
         )
 
-    monkeypatch.setattr("opensquilla.provider.selector._build_provider", fake_build_provider)
+    monkeypatch.setattr("openstarry_code.provider.selector._build_provider", fake_build_provider)
     selector = ModelSelector(
         SelectorConfig(
             primary=ProviderConfig(
@@ -126,7 +126,7 @@ async def test_runtime_keeps_successful_router_model_without_fallback(
             calls,
         )
 
-    monkeypatch.setattr("opensquilla.provider.selector._build_provider", fake_build_provider)
+    monkeypatch.setattr("openstarry_code.provider.selector._build_provider", fake_build_provider)
     selector = ModelSelector(
         SelectorConfig(
             primary=ProviderConfig(

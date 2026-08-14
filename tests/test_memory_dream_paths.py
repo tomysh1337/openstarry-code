@@ -5,7 +5,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.memory.dream import Dream
+from openstarry_code.memory.dream import Dream
 
 
 class _Response:

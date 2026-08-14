@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from opensquilla.application.approval_queue import classify_command
+from openstarry_code.application.approval_queue import classify_command
 
 
 def test_deny_only_match_returns_deny() -> None:

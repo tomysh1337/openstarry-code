@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from opensquilla.health.model import FixStep, HealthFinding, build_report
+from openstarry_code.health.model import FixStep, HealthFinding, build_report
 
 
 def test_build_report_ready_when_all_findings_ok() -> None:
@@ -37,7 +37,7 @@ def test_build_report_summary_explains_optional_items_without_degrading_readines
                 severity="info",
                 surface="sandbox",
                 title="Sandbox posture is bypass",
-                detail="OpenSquilla is configured for maximum convenience.",
+                detail="OpenStarry Code is configured for maximum convenience.",
             ),
             HealthFinding(
                 id="gateway.ready",
@@ -66,7 +66,7 @@ def test_build_report_action_required_for_error() -> None:
                 fix_steps=[
                     FixStep(
                         label="Configure provider",
-                        command="opensquilla providers configure openrouter --api-key YOUR_API_KEY",
+                        command="openstarry-code providers configure openrouter --api-key YOUR_API_KEY",
                     )
                 ],
                 restart_required=True,
@@ -78,7 +78,7 @@ def test_build_report_action_required_for_error() -> None:
     assert report["status"] == "action_required"
     assert report["summary"] == "1 action required"
     assert report["impactCounts"]["blocks_ready"] == 1
-    assert report["findings"][0]["fixSteps"][0]["command"].startswith("opensquilla providers")
+    assert report["findings"][0]["fixSteps"][0]["command"].startswith("openstarry-code providers")
     assert report["findings"][0]["restartRequired"] is True
 
 

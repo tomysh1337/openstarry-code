@@ -9,13 +9,13 @@ from unittest.mock import ANY
 
 import pytest
 
-from opensquilla.gateway.rpc import RpcUnavailableError
+from openstarry_code.gateway.rpc import RpcUnavailableError
 
 
 def test_windows_directory_picker_marks_owner_topmost_before_opening(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.gateway import windows_directory_picker
+    from openstarry_code.gateway import windows_directory_picker
 
     calls: list[object] = []
 
@@ -65,7 +65,7 @@ def test_windows_directory_picker_main_serializes_cancellation(
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    from opensquilla.gateway import windows_directory_picker
+    from openstarry_code.gateway import windows_directory_picker
 
     monkeypatch.setattr(
         windows_directory_picker,
@@ -81,7 +81,7 @@ def test_windows_directory_picker_main_serializes_cancellation(
 async def test_gateway_windows_picker_waits_in_child_process_without_blocking(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.gateway.rpc_sandbox as rpc_sandbox
+    import openstarry_code.gateway.rpc_sandbox as rpc_sandbox
 
     communicate_started = asyncio.Event()
     release_process = asyncio.Event()
@@ -120,7 +120,7 @@ async def test_gateway_windows_picker_waits_in_child_process_without_blocking(
     assert argv == (
         sys.executable,
         "-m",
-        "opensquilla.gateway.windows_directory_picker",
+        "openstarry_code.gateway.windows_directory_picker",
         r"C:\repos",
     )
     assert kwargs == {
@@ -134,7 +134,7 @@ async def test_gateway_windows_picker_waits_in_child_process_without_blocking(
 async def test_gateway_windows_picker_terminates_child_when_request_is_cancelled(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.gateway.rpc_sandbox as rpc_sandbox
+    import openstarry_code.gateway.rpc_sandbox as rpc_sandbox
 
     communicate_started = asyncio.Event()
 
@@ -182,7 +182,7 @@ async def test_gateway_windows_picker_terminates_child_when_request_is_cancelled
 async def test_gateway_windows_picker_maps_child_failure_to_rpc_unavailable(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.gateway.rpc_sandbox as rpc_sandbox
+    import openstarry_code.gateway.rpc_sandbox as rpc_sandbox
 
     class FakeProcess:
         returncode = 1

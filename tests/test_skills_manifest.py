@@ -6,15 +6,15 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.skills.hub.lockfile import LockEntry, Lockfile
-from opensquilla.skills.loader import SkillLoader
-from opensquilla.skills.manifest import (
+from openstarry_code.skills.hub.lockfile import LockEntry, Lockfile
+from openstarry_code.skills.loader import SkillLoader
+from openstarry_code.skills.manifest import (
     MAX_STANDARD_SKILL_DESCRIPTION_LENGTH,
     SkillCompileProfile,
     compile_skill_manifest,
     validate_hub_candidate,
 )
-from opensquilla.skills.types import SkillLayer
+from openstarry_code.skills.types import SkillLayer
 
 
 def _write_skill(
@@ -388,7 +388,7 @@ def test_strict_candidate_accepts_allowed_tools_as_degraded_compatibility(
             "code": "TOOL_PREAPPROVAL_IGNORED",
             "message": (
                 "allowed-tools requests dialect-specific tool preapproval; "
-                "OpenSquilla will keep its normal tool approval policy"
+                "OpenStarry Code will keep its normal tool approval policy"
             ),
             "path": str(skill_dir / "SKILL.md"),
             "field": "allowed-tools",

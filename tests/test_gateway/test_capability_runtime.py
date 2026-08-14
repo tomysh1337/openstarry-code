@@ -8,9 +8,9 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.llm_runtime import reset_profile_credential_pools
-from opensquilla.skills.capability_runtime import (
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.llm_runtime import reset_profile_credential_pools
+from openstarry_code.skills.capability_runtime import (
     CAPABILITY_AUDIO_GENERATE,
     CAPABILITY_IMAGE_GENERATE,
     CAPABILITY_VIDEO_GENERATE,
@@ -28,9 +28,9 @@ from opensquilla.skills.capability_runtime import (
     resolve_capability_status,
     trusted_capability_consumers_for_meta_plan,
 )
-from opensquilla.skills.loader import SkillLoader
-from opensquilla.skills.meta.parser import parse_meta_plan
-from opensquilla.skills.types import SkillLayer
+from openstarry_code.skills.loader import SkillLoader
+from openstarry_code.skills.meta.parser import parse_meta_plan
+from openstarry_code.skills.types import SkillLayer
 
 _BUNDLED = (
     Path(__file__).resolve().parents[2]
@@ -133,7 +133,7 @@ def _isolated_credentials(monkeypatch: pytest.MonkeyPatch):
         "OPENROUTER_POOL_A",
         "OPENROUTER_POOL_B",
         "LEGACY_MEDIA_KEY",
-        "OPENSQUILLA_LLM_PROXY",
+        "OPENSTARRY_CODE_LLM_PROXY",
         "OPENROUTER_BASE_URL",
     ):
         monkeypatch.delenv(name, raising=False)
@@ -735,7 +735,7 @@ def test_workspace_shadow_of_review_normalizer_revokes_provider_lease(
         raise AssertionError("a shadowed consent producer must not acquire a lease")
 
     monkeypatch.setattr(
-        "opensquilla.skills.capability_runtime.lease_capability_connection",
+        "openstarry_code.skills.capability_runtime.lease_capability_connection",
         forbidden_lease,
     )
 
@@ -771,7 +771,7 @@ def test_non_bundled_parent_cannot_lease_genuine_bundled_children(
         raise AssertionError("untrusted parent must not acquire a provider lease")
 
     monkeypatch.setattr(
-        "opensquilla.skills.capability_runtime.lease_capability_connection",
+        "openstarry_code.skills.capability_runtime.lease_capability_connection",
         forbidden_lease,
     )
 
@@ -923,7 +923,7 @@ def test_awesome_workspace_shadow_of_paid_child_revokes_provider_lease(
         raise AssertionError("a shadowed child must not acquire a provider lease")
 
     monkeypatch.setattr(
-        "opensquilla.skills.capability_runtime.lease_capability_connection",
+        "openstarry_code.skills.capability_runtime.lease_capability_connection",
         forbidden_lease,
     )
 

@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.gateway.auth import OpenScopeResolver
-from opensquilla.gateway.config import AuthConfig, GatewayConfig
-from opensquilla.gateway.scopes import (
+from openstarry_code.gateway.auth import OpenScopeResolver
+from openstarry_code.gateway.config import AuthConfig, GatewayConfig
+from openstarry_code.gateway.scopes import (
     CLI_DEFAULT_OPERATOR_SCOPES,
     PROPOSALS_SCOPE,
     REMOTE_OPERATOR_SCOPES,

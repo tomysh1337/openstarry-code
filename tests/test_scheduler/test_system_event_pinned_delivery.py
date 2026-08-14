@@ -9,12 +9,12 @@ from __future__ import annotations
 
 import pytest
 
-import opensquilla.scheduler.handlers as handlers_mod
-from opensquilla.scheduler.handlers import (
+import openstarry_code.scheduler.handlers as handlers_mod
+from openstarry_code.scheduler.handlers import (
     _resolve_system_event_heartbeat_delivery_override,
     make_system_event_handler,
 )
-from opensquilla.scheduler.types import (
+from openstarry_code.scheduler.types import (
     CronJob,
     CronWakeMode,
     DeliveryConfig,

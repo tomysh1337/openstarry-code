@@ -8,11 +8,11 @@ from dataclasses import dataclass
 import pytest
 import structlog.testing
 
-from opensquilla.gateway.project_workspace_runtime import AcceptedRunModeOverride
-from opensquilla.gateway.routing import RouteEnvelope, SourceKind
-from opensquilla.gateway.task_runtime import TaskRuntime
-from opensquilla.sandbox.run_mode import RunMode
-from opensquilla.session.models import AgentTaskRecord, AgentTaskStatus
+from openstarry_code.gateway.project_workspace_runtime import AcceptedRunModeOverride
+from openstarry_code.gateway.routing import RouteEnvelope, SourceKind
+from openstarry_code.gateway.task_runtime import TaskRuntime
+from openstarry_code.sandbox.run_mode import RunMode
+from openstarry_code.session.models import AgentTaskRecord, AgentTaskStatus
 
 
 @dataclass

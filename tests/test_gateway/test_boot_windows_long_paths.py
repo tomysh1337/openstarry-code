@@ -6,11 +6,11 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.gateway.boot import build_services
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.session_services import get_session_storage
-from opensquilla.persistence.migrator import _native_sqlite_path
-from opensquilla.tools.registry import ToolRegistry
+from openstarry_code.gateway.boot import build_services
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.session_services import get_session_storage
+from openstarry_code.persistence.migrator import _native_sqlite_path
+from openstarry_code.tools.registry import ToolRegistry
 
 
 @pytest.mark.asyncio
@@ -19,31 +19,31 @@ async def test_extended_length_state_keeps_gateway_services_operational(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.application import approval_queue as approval_queue_module
-    from opensquilla.gateway import uploads as uploads_module
-    from opensquilla.gateway.app import create_gateway_app
-    from opensquilla.gateway.approval_queue import reset_approval_queue
-    from opensquilla.gateway.uploads import get_upload_store, set_upload_store
+    from openstarry_code.application import approval_queue as approval_queue_module
+    from openstarry_code.gateway import uploads as uploads_module
+    from openstarry_code.gateway.app import create_gateway_app
+    from openstarry_code.gateway.approval_queue import reset_approval_queue
+    from openstarry_code.gateway.uploads import get_upload_store, set_upload_store
 
     reset_approval_queue()
     original_upload_store = uploads_module._default_store
     set_upload_store(None)
     for name in (
-        "OPENSQUILLA_GATEWAY_CONFIG_PATH",
-        "OPENSQUILLA_MEMORY_DB",
-        "OPENSQUILLA_MEMORY_DIR",
-        "OPENSQUILLA_SCHEDULER_DB",
+        "OPENSTARRY_CODE_GATEWAY_CONFIG_PATH",
+        "OPENSTARRY_CODE_MEMORY_DB",
+        "OPENSTARRY_CODE_MEMORY_DIR",
+        "OPENSTARRY_CODE_SCHEDULER_DB",
     ):
         monkeypatch.delenv(name, raising=False)
-    monkeypatch.setenv("OPENSQUILLA_DESKTOP_FAST_START", "1")
-    monkeypatch.setenv("OPENSQUILLA_TEST_PROFILE_LOCK_ROOT", "1")
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "user-state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_DESKTOP_FAST_START", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_TEST_PROFILE_LOCK_ROOT", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "user-state"))
     monkeypatch.setattr(
-        "opensquilla.agents.scope.maybe_migrate_legacy_memory",
+        "openstarry_code.agents.scope.maybe_migrate_legacy_memory",
         lambda *_: None,
     )
     monkeypatch.setattr(
-        "opensquilla.migration.legacy_detect.detect_legacy_home",
+        "openstarry_code.migration.legacy_detect.detect_legacy_home",
         lambda *_: None,
     )
 
@@ -54,7 +54,7 @@ async def test_extended_length_state_keeps_gateway_services_operational(
         state_dir /= f"external-state-segment-{index:02d}-0123456789"
         index += 1
     os.makedirs(_native_sqlite_path(state_dir))
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(state_dir))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(state_dir))
 
     monkeypatch.setattr(
         approval_queue_module,
@@ -166,9 +166,9 @@ async def test_extended_length_state_keeps_gateway_services_operational(
         if services is not None:
             await services.close()
 
-        from opensquilla.sandbox.integration import reset_runtime
-        from opensquilla.session.material_cleanup import reset_session_material_cleanup
-        from opensquilla.tools.builtin import admin as admin_tools
+        from openstarry_code.sandbox.integration import reset_runtime
+        from openstarry_code.session.material_cleanup import reset_session_material_cleanup
+        from openstarry_code.tools.builtin import admin as admin_tools
 
         admin_tools.set_scheduler(None)  # type: ignore[arg-type]
         admin_tools.set_gateway_config(None)

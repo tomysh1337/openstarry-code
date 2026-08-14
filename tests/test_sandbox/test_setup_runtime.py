@@ -8,17 +8,17 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.sandbox.capability_service import (
+from openstarry_code.sandbox.capability_service import (
     REQUIRED_SAFE_CAPABILITIES,
     WINDOWS_REQUIRED_SAFE_CAPABILITIES,
     CapabilityReport,
 )
-from opensquilla.sandbox.setup_state import SandboxSetupState, SetupResult
+from openstarry_code.sandbox.setup_state import SandboxSetupState, SetupResult
 
 
 @pytest.fixture(autouse=True)
 def reset_setup_runtime_state():
-    from opensquilla.sandbox.setup_runtime import reset_sandbox_setup_runtime_state
+    from openstarry_code.sandbox.setup_runtime import reset_sandbox_setup_runtime_state
 
     reset_sandbox_setup_runtime_state()
     yield
@@ -48,7 +48,7 @@ class _CapabilityBackend:
         return frozenset({"filesystem"})
 
     async def run(self, request: object):
-        from opensquilla.sandbox.types import SandboxResult
+        from openstarry_code.sandbox.types import SandboxResult
 
         action_kind = str(getattr(request, "action_kind", ""))
         argv_text = " ".join(str(item) for item in getattr(request, "argv", ()))
@@ -85,7 +85,7 @@ class _CapabilityBackend:
         )
 
     async def run_operation(self, operation: object):
-        from opensquilla.sandbox.operation_runtime import SandboxOperationResult
+        from openstarry_code.sandbox.operation_runtime import SandboxOperationResult
 
         path = Path(str(getattr(getattr(operation, "request", None), "path", "")))
         self.operation_paths.append(path.name)
@@ -108,8 +108,8 @@ async def _live_report_for_backend(
     *,
     platform: str = "linux",
 ) -> CapabilityReport:
-    from opensquilla.sandbox import setup_runtime
-    from opensquilla.sandbox.config import SandboxSettings
+    from openstarry_code.sandbox import setup_runtime
+    from openstarry_code.sandbox.config import SandboxSettings
 
     async def current_probe(_config: object) -> SetupResult:
         return SetupResult(
@@ -120,7 +120,7 @@ async def _live_report_for_backend(
 
     monkeypatch.setattr(setup_runtime, "current_sandbox_setup_status", current_probe)
     monkeypatch.setattr(
-        "opensquilla.sandbox.integration.get_runtime",
+        "openstarry_code.sandbox.integration.get_runtime",
         lambda: SimpleNamespace(backend=backend),
     )
     config = SimpleNamespace(
@@ -134,7 +134,7 @@ async def _live_report_for_backend(
 
 
 def test_live_capability_budget_covers_native_windows_canary_startup() -> None:
-    from opensquilla.sandbox import setup_runtime
+    from openstarry_code.sandbox import setup_runtime
 
     assert setup_runtime._CAPABILITY_PROBE_TIMEOUT_SECONDS == 30.0
     assert (
@@ -163,7 +163,7 @@ def test_windows_available_report_requires_current_readiness_capabilities() -> N
 def test_native_write_denial_canary_suppresses_expected_redirection_error(
     tmp_path: Path,
 ) -> None:
-    from opensquilla.sandbox import setup_runtime
+    from openstarry_code.sandbox import setup_runtime
 
     target = tmp_path / "missing-parent" / "protected.txt"
     marker = "opensquilla-deny-write-ok"
@@ -201,7 +201,7 @@ def test_native_denial_canary_never_marks_an_allowed_windows_target_as_denied(
     unexpected_exit: int,
     target_name: str,
 ) -> None:
-    from opensquilla.sandbox import setup_runtime
+    from openstarry_code.sandbox import setup_runtime
 
     target = tmp_path / target_name
     target.write_text("unchanged", encoding="utf-8")
@@ -235,7 +235,7 @@ def test_native_denial_canary_never_marks_an_allowed_windows_target_as_denied(
 def test_native_denial_canary_preserves_a_windows_write_failure(
     tmp_path: Path,
 ) -> None:
-    from opensquilla.sandbox import setup_runtime
+    from openstarry_code.sandbox import setup_runtime
 
     target = tmp_path / "protected.txt"
     target.write_text("unchanged", encoding="utf-8")
@@ -333,7 +333,7 @@ async def test_windows_capability_requires_current_setup_readiness(
     support_overrides: dict[str, bool],
     missing_capability: str,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_support
+    from openstarry_code.sandbox.backend import windows_default_support
 
     support = {
         "identity_ready": True,
@@ -366,7 +366,7 @@ async def test_windows_capability_includes_current_setup_readiness(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_support
+    from openstarry_code.sandbox.backend import windows_default_support
 
     monkeypatch.setattr(
         windows_default_support,
@@ -397,7 +397,7 @@ async def test_windows_capability_includes_current_setup_readiness(
 
 @pytest.mark.asyncio
 async def test_status_reports_setting_up_while_auto_setup_is_running(monkeypatch) -> None:
-    from opensquilla.sandbox import setup_runtime
+    from openstarry_code.sandbox import setup_runtime
 
     entered = asyncio.Event()
     release = asyncio.Event()
@@ -431,7 +431,7 @@ async def test_status_reports_setting_up_while_auto_setup_is_running(monkeypatch
 
 @pytest.mark.asyncio
 async def test_auto_setup_failure_remains_visible_after_setup_finishes(monkeypatch) -> None:
-    from opensquilla.sandbox import setup_runtime
+    from openstarry_code.sandbox import setup_runtime
 
     config = SimpleNamespace()
 
@@ -459,7 +459,7 @@ async def test_auto_setup_failure_remains_visible_after_setup_finishes(monkeypat
 
 @pytest.mark.asyncio
 async def test_windows_auto_setup_promotes_runtime_backend_after_setup(monkeypatch) -> None:
-    from opensquilla.sandbox import integration, setup_runtime
+    from openstarry_code.sandbox import integration, setup_runtime
 
     config = SimpleNamespace()
     promotions = []
@@ -490,7 +490,7 @@ async def test_windows_auto_setup_promotes_runtime_backend_after_setup(monkeypat
 async def test_windows_auto_setup_reports_failed_when_runtime_cannot_be_promoted(
     monkeypatch,
 ) -> None:
-    from opensquilla.sandbox import integration, setup_runtime
+    from openstarry_code.sandbox import integration, setup_runtime
 
     async def ready_setup(_config):
         return SetupResult(
@@ -517,7 +517,7 @@ async def test_windows_auto_setup_reports_failed_when_runtime_cannot_be_promoted
 
 @pytest.mark.asyncio
 async def test_reset_setup_runtime_state_delegates_to_current_probe_again(monkeypatch) -> None:
-    from opensquilla.sandbox import setup_runtime
+    from openstarry_code.sandbox import setup_runtime
 
     config = SimpleNamespace()
 
@@ -547,7 +547,7 @@ async def test_reset_setup_runtime_state_delegates_to_current_probe_again(monkey
 async def test_capability_report_uses_live_setup_and_configured_backend(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox import setup_runtime
+    from openstarry_code.sandbox import setup_runtime
 
     config = SimpleNamespace(sandbox=SimpleNamespace(backend="windows_default"))
 
@@ -571,7 +571,7 @@ async def test_capability_report_uses_live_setup_and_configured_backend(
 
     monkeypatch.setattr(setup_runtime, "_probe_runtime_capabilities", live_probe)
     monkeypatch.setattr(
-        "opensquilla.sandbox.integration.get_runtime",
+        "openstarry_code.sandbox.integration.get_runtime",
         lambda: SimpleNamespace(
             backend=SimpleNamespace(name="windows_default"),
         ),
@@ -589,7 +589,7 @@ async def test_capability_report_uses_live_setup_and_configured_backend(
 async def test_capability_report_force_refresh_bypasses_cached_probe(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox import setup_runtime
+    from openstarry_code.sandbox import setup_runtime
 
     config = SimpleNamespace(sandbox=SimpleNamespace(backend="windows_default"))
 
@@ -614,7 +614,7 @@ async def test_capability_report_force_refresh_bypasses_cached_probe(
     monkeypatch.setattr(setup_runtime, "current_sandbox_setup_status", current_probe)
     monkeypatch.setattr(setup_runtime, "_probe_runtime_capabilities", live_probe)
     monkeypatch.setattr(
-        "opensquilla.sandbox.integration.get_runtime",
+        "openstarry_code.sandbox.integration.get_runtime",
         lambda: SimpleNamespace(
             backend=SimpleNamespace(name="windows_default"),
         ),
@@ -636,7 +636,7 @@ async def test_capability_report_force_refresh_bypasses_cached_probe(
 async def test_concurrent_force_refreshes_share_one_live_probe(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox import setup_runtime
+    from openstarry_code.sandbox import setup_runtime
 
     config = SimpleNamespace(sandbox=SimpleNamespace(backend="windows_default"))
 
@@ -665,7 +665,7 @@ async def test_concurrent_force_refreshes_share_one_live_probe(
     monkeypatch.setattr(setup_runtime, "current_sandbox_setup_status", current_probe)
     monkeypatch.setattr(setup_runtime, "_probe_runtime_capabilities", live_probe)
     monkeypatch.setattr(
-        "opensquilla.sandbox.integration.get_runtime",
+        "openstarry_code.sandbox.integration.get_runtime",
         lambda: SimpleNamespace(
             backend=SimpleNamespace(name="windows_default"),
         ),
@@ -692,7 +692,7 @@ async def test_concurrent_force_refreshes_share_one_live_probe(
 async def test_failed_capability_report_expires_before_successful_report(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox import setup_runtime
+    from openstarry_code.sandbox import setup_runtime
 
     config = SimpleNamespace(sandbox=SimpleNamespace(backend="windows_default"))
 
@@ -734,7 +734,7 @@ async def test_failed_capability_report_expires_before_successful_report(
     monkeypatch.setattr(setup_runtime, "_probe_runtime_capabilities", live_probe)
     monkeypatch.setattr(setup_runtime.time, "monotonic", lambda: clock[0])
     monkeypatch.setattr(
-        "opensquilla.sandbox.integration.get_runtime",
+        "openstarry_code.sandbox.integration.get_runtime",
         lambda: SimpleNamespace(backend=SimpleNamespace(name="windows_default")),
     )
 
@@ -754,9 +754,9 @@ async def test_live_capability_probe_scopes_file_profile_to_canary_workspace(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    from opensquilla.sandbox import file_policy, setup_runtime
-    from opensquilla.sandbox.config import SandboxSettings
-    from opensquilla.sandbox.permissions import FileSystemPermissionProfile
+    from openstarry_code.sandbox import file_policy, setup_runtime
+    from openstarry_code.sandbox.config import SandboxSettings
+    from openstarry_code.sandbox.permissions import FileSystemPermissionProfile
 
     captured: dict[str, object] = {}
 

@@ -7,13 +7,13 @@ import json
 
 import pytest
 
-from opensquilla.session.models import (
+from openstarry_code.session.models import (
     AgentTaskRecord,
     AgentTaskStatus,
     SessionNode,
     TranscriptEntry,
 )
-from opensquilla.session.storage import (
+from openstarry_code.session.storage import (
     MAX_PENDING_CHAT_INPUTS,
     PendingChatInputAlreadyDispatchedError,
     PendingChatInputCancelledError,

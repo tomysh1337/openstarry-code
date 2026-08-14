@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.memory.sync_manager import MemorySyncManager
+from openstarry_code.memory.sync_manager import MemorySyncManager
 
 
 class NoopStore:

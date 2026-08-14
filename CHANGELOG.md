@@ -6,10 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-## [0.5.3] - 2026-08-13
+## [0.5.3] - 2026-08-14
 
 ### Added
 
+- OpenStarry Code adds four independent OpenAI-compatible API slots
+  (`custom`, `custom_2`, `custom_3`, and `custom_4`) with isolated base URLs,
+  credentials, models, and proxy settings. The slots can be selected directly
+  or composed through the existing `custom_b5` ensemble strategy.
+- Each custom OpenAI-compatible slot now probes `<base_url>/models` after a
+  successful connection check. Discovered model IDs populate the control UI;
+  endpoints without a model catalog retain the manual model-ID workflow.
+- The fork now has an OpenStarry Code release surface with source-first install
+  instructions, wheel/sdist artifact documentation, SHA-256 verification, and
+  a technology-focused English and Simplified Chinese README.
 - Durable Goals can continue across turns with explicit progress, pause,
   resume, edit, clear, and Plan-mode deferral controls. Queued follow-ups,
   attachments, project handoffs, and session forks now survive reconnects and
@@ -42,6 +52,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
+- Source distributions now exclude local dependency trees, generated desktop
+  output, virtual environments, and nested release artifacts, reducing the
+  0.5.3 sdist from 127 MB to about 19 MB without changing wheel contents.
 - Long-running chat streams recover more reliably from renderer reconnects and
   provider activity gaps, while bounded history rendering keeps large sessions
   responsive. Assistant answers, tool markers, pending input, session counts,
@@ -58,6 +71,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
+- The GitHub repository, Python distribution, CLI, configuration files, and
+  state directory now use `openstarry-code`. The Python import and source
+  package use the syntax-safe `openstarry_code` identifier.
 - The landing-page game suggestion now submits only its visible localized
   label. The previously hidden, detailed game request is no longer bundled in
   the client or sent when the suggestion is selected.
@@ -79,6 +95,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Security
 
+- Updated DOMPurify from 3.4.12 to 3.4.13 to address
+  `GHSA-55q2-fjhq-7xh7`, and updated the locked Nano ID transitive dependency
+  from 3.3.16 to 3.3.18 to address `GHSA-2v37-7h3g-55p8`. The Web UI dependency
+  audit now reports zero known vulnerabilities.
 - Community Skill ingestion now fails closed on unsafe archive paths and links,
   ambiguous package roots, source drift, malformed manifests, YAML alias/depth
   expansion, bounded artifact limits, and interrupted publication recovery.

@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from opensquilla.skills.paths import resolve_skill_layer_dirs
+from openstarry_code.skills.paths import resolve_skill_layer_dirs
 
 
 def test_default_managed_dir_is_kept_before_directory_exists(tmp_path, monkeypatch) -> None:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path))
 
     layer_dirs = resolve_skill_layer_dirs(allow_bundled=False)
 

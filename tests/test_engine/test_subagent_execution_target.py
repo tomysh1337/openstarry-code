@@ -9,9 +9,9 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine import Agent, AgentConfig
-from opensquilla.engine.runtime import _SelectorFallbackProvider
-from opensquilla.engine.subagent import (
+from openstarry_code.engine import Agent, AgentConfig
+from openstarry_code.engine.runtime import _SelectorFallbackProvider
+from openstarry_code.engine.subagent import (
     SubagentExecutionTarget,
     SubagentManager,
     SubagentSpec,
@@ -19,17 +19,17 @@ from opensquilla.engine.subagent import (
     subagent_task_inline_limit_bytes,
     subagent_task_reference_slice_limit_chars,
 )
-from opensquilla.engine.tool_result_store import ToolResultStore
-from opensquilla.engine.types import ToolResult
-from opensquilla.provider import (
+from openstarry_code.engine.tool_result_store import ToolResultStore
+from openstarry_code.engine.types import ToolResult
+from openstarry_code.provider import (
     ChatConfig,
     DoneEvent,
     Message,
     ToolDefinition,
     ToolInputSchema,
 )
-from opensquilla.provider.model_catalog import shared_catalog
-from opensquilla.provider.selector import ModelSelector, ProviderConfig, SelectorConfig
+from openstarry_code.provider.model_catalog import shared_catalog
+from openstarry_code.provider.selector import ModelSelector, ProviderConfig, SelectorConfig
 
 
 class _ModelProvider:
@@ -246,7 +246,7 @@ def test_subagent_output_budget_uses_catalog_safety_clamp(monkeypatch) -> None:
             del model, provider_name, base_url
 
     monkeypatch.setattr(
-        "opensquilla.provider.model_catalog.shared_catalog",
+        "openstarry_code.provider.model_catalog.shared_catalog",
         lambda: _SafetyCatalog(),
     )
     parent = Agent(

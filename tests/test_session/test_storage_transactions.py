@@ -15,8 +15,8 @@ from typing import Any
 
 import pytest
 
-from opensquilla.session.models import AgentTaskRecord, AgentTaskStatus
-from opensquilla.session.storage import (
+from openstarry_code.session.models import AgentTaskRecord, AgentTaskStatus
+from openstarry_code.session.storage import (
     SessionStorage,
     StorageBusyError,
     bounded_interactive_storage_reads,

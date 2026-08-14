@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock
 
-from opensquilla.engine.runtime import TurnRunner
+from openstarry_code.engine.runtime import TurnRunner
 
 
 def test_turnrunner_accepts_meta_run_writer_kwarg() -> None:

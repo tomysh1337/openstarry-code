@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from opensquilla.uninstall import safety
+from openstarry_code.uninstall import safety
 
 
 def test_is_within_true_for_child(tmp_path: Path) -> None:
@@ -50,7 +50,7 @@ def test_protected_root_allows_normal_opensquilla_home(monkeypatch, tmp_path: Pa
     fake_home = tmp_path / "user"
     fake_home.mkdir()
     monkeypatch.setenv("HOME", str(fake_home))
-    target = fake_home / ".opensquilla"
+    target = fake_home / ".openstarry-code"
     target.mkdir()
     assert safety.protected_root_reason(target) is None
     assert not safety.is_protected_root(target)
@@ -61,7 +61,7 @@ def test_protected_root_flags_mount_point(monkeypatch, tmp_path: Path) -> None:
     (tmp_path / "user").mkdir()
     mountish = tmp_path / "vol"
     mountish.mkdir()
-    # Simulate the path being a mount root (e.g. OPENSQUILLA_STATE_DIR=/Volumes/X).
+    # Simulate the path being a mount root (e.g. OPENSTARRY_CODE_STATE_DIR=/Volumes/X).
     monkeypatch.setattr(safety.os.path, "ismount", lambda p: str(p) == str(mountish.resolve()))
     assert safety.protected_root_reason(mountish) is not None
 
@@ -78,13 +78,13 @@ def test_protected_root_flags_top_level_home_dirs(monkeypatch, tmp_path: Path) -
     monkeypatch.setenv("HOME", str(fake_home))
     # A relocated home at ~/Dropbox (sync root) must be refused for blanket rmtree.
     assert safety.protected_root_reason(fake_home / "Dropbox") is not None
-    # ...but the canonical ~/.opensquilla is allowed.
-    (fake_home / ".opensquilla").mkdir()
-    assert safety.protected_root_reason(fake_home / ".opensquilla") is None
+    # ...but the canonical ~/.openstarry-code is allowed.
+    (fake_home / ".openstarry-code").mkdir()
+    assert safety.protected_root_reason(fake_home / ".openstarry-code") is None
 
 
 def test_looks_like_opensquilla_home(tmp_path: Path) -> None:
-    canonical = tmp_path / ".opensquilla"
+    canonical = tmp_path / ".openstarry-code"
     canonical.mkdir()
     assert safety.looks_like_opensquilla_home(canonical)  # by canonical name
 
@@ -95,6 +95,6 @@ def test_looks_like_opensquilla_home(tmp_path: Path) -> None:
     (shaped / "config.toml").write_text("x")
     (shaped / "state").mkdir()
     assert not safety.looks_like_opensquilla_home(shaped)
-    # The OpenSquilla-specific receipt IS an unambiguous signal.
+    # The OpenStarry Code-specific receipt IS an unambiguous signal.
     (shaped / "install-receipt.json").write_text("{}")
     assert safety.looks_like_opensquilla_home(shaped)

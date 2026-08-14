@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from opensquilla.engine.turn_runner.harness import _TurnRunnerAttachmentMessageBuilderAdapter
+from openstarry_code.engine.turn_runner.harness import _TurnRunnerAttachmentMessageBuilderAdapter
 
 
 def test_attachment_builder_adapter_prefers_resolved_workspace(tmp_path: Path) -> None:

@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.scheduler.schedule_normalizer import coerce_schedule_from_params
-from opensquilla.scheduler.types import ScheduleKind
+from openstarry_code.scheduler.schedule_normalizer import coerce_schedule_from_params
+from openstarry_code.scheduler.types import ScheduleKind
 
 
 def test_normalizer_accepts_structured_cron_with_tz() -> None:

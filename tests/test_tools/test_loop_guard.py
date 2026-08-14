@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.result_budget import (
+from openstarry_code.result_budget import (
     DuplicateRetrievalInFlightError,
     TerminalRetrievalReplayError,
     ToolRunBudgetExceededError,
@@ -157,14 +157,14 @@ async def test_loop_guard_counts_web_search_repeated_queries_too() -> None:
 
     first = await tracker.reserve_tool_call(
         tool_name="web_search",
-        arguments={"query": "OpenSquilla"},
+        arguments={"query": "OpenStarry Code"},
     )
     await tracker.commit_tool_result(first, '{"ok": true, "results": []}')
 
     with pytest.raises(ToolRunBudgetExceededError):
         await tracker.reserve_tool_call(
             tool_name="web_search",
-            arguments={"query": " opensquilla "},
+            arguments={"query": " openstarry-code "},
         )
 
 
@@ -176,14 +176,14 @@ async def test_loop_guard_counts_web_discover_repeated_queries_too() -> None:
 
     first = await tracker.reserve_tool_call(
         tool_name="web_discover",
-        arguments={"query": "OpenSquilla"},
+        arguments={"query": "OpenStarry Code"},
     )
     await tracker.commit_tool_result(first, '{"ok": true, "results": []}')
 
     with pytest.raises(ToolRunBudgetExceededError):
         await tracker.reserve_tool_call(
             tool_name="web_discover",
-            arguments={"query": " opensquilla "},
+            arguments={"query": " openstarry-code "},
         )
 
 
@@ -262,7 +262,7 @@ async def test_semantic_guard_replays_terminal_non_retryable_failure() -> None:
     reservation = await tracker.reserve_tool_call(
         tool_name="web_search",
         arguments={
-            "query": "OpenSquilla release",
+            "query": "OpenStarry Code release",
             "mode": "auto",
             "exclude_domains": ["EXAMPLE.com"],
             "provider": "tavily",
@@ -278,7 +278,7 @@ async def test_semantic_guard_replays_terminal_non_retryable_failure() -> None:
         await tracker.reserve_tool_call(
             tool_name="web_discover",
             arguments={
-                "query": " opensquilla   RELEASE ",
+                "query": " openstarry-code   RELEASE ",
                 "exclude_domains": ["example.com"],
                 "provider": "duckduckgo",
                 "max_results": 10,
@@ -296,7 +296,7 @@ async def test_semantic_guard_does_not_ledger_success_or_retryable_failure() -> 
     )
     first = await tracker.reserve_tool_call(
         tool_name="web_search",
-        arguments={"query": "OpenSquilla"},
+        arguments={"query": "OpenStarry Code"},
     )
     await tracker.commit_tool_result(first, '{"ok": true, "results": []}')
 
@@ -319,7 +319,7 @@ async def test_semantic_guard_does_not_ledger_success_or_retryable_failure() -> 
 @pytest.mark.asyncio
 async def test_semantic_guard_key_includes_mode_recency_and_domain_filters() -> None:
     base = {
-        "query": "OpenSquilla",
+        "query": "OpenStarry Code",
         "mode": "auto",
         "recency": "week",
         "include_domains": ["example.com"],
@@ -327,7 +327,7 @@ async def test_semantic_guard_key_includes_mode_recency_and_domain_filters() -> 
     }
 
     for changed in (
-        {**base, "query": "OpenSquilla docs"},
+        {**base, "query": "OpenStarry Code docs"},
         {**base, "mode": "technical"},
         {**base, "recency": "month"},
         {**base, "include_domains": ["docs.example.com"]},
@@ -352,7 +352,7 @@ async def test_semantic_guard_isolated_between_trackers() -> None:
     first_turn = ToolRunBudgetTracker()
     reservation = await first_turn.reserve_tool_call(
         tool_name="web_search",
-        arguments={"query": "OpenSquilla"},
+        arguments={"query": "OpenStarry Code"},
     )
     await first_turn.commit_tool_result(
         reservation,
@@ -362,7 +362,7 @@ async def test_semantic_guard_isolated_between_trackers() -> None:
     next_turn = ToolRunBudgetTracker()
     allowed = await next_turn.reserve_tool_call(
         tool_name="web_search",
-        arguments={"query": "OpenSquilla"},
+        arguments={"query": "OpenStarry Code"},
     )
 
     assert allowed.counted_as_search is True

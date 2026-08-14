@@ -113,8 +113,8 @@ def _build_agent(
     extra_metadata: dict[str, Any] | None = None,
 ):
     """Construct a minimal Agent wired with a stub loader + writer."""
-    from opensquilla.engine.agent import Agent
-    from opensquilla.engine.types import AgentConfig
+    from openstarry_code.engine.agent import Agent
+    from openstarry_code.engine.types import AgentConfig
 
     metadata: dict[str, Any] = {
         "skill_loader": loader,
@@ -185,7 +185,7 @@ def _install_orchestrator_spy(
     # The synthetic spec is not a real SkillSpec, so stub the parser to
     # return a usable MetaPlan-like object (only ``name`` is read by the
     # spy path; the real orchestrator is never built).
-    import opensquilla.skills.meta.parser as parser_mod
+    import openstarry_code.skills.meta.parser as parser_mod
 
     monkeypatch.setattr(
         parser_mod,
@@ -216,7 +216,7 @@ async def _drain_replay(agent: Any, name: str, run_id: str) -> list[Any]:
 
 
 def _done_event_of(events: list[Any]) -> Any:
-    from opensquilla.engine.types import DoneEvent
+    from openstarry_code.engine.types import DoneEvent
 
     dones = [e for e in events if isinstance(e, DoneEvent)]
     assert dones, f"expected a terminal DoneEvent; got {events!r}"
@@ -224,7 +224,7 @@ def _done_event_of(events: list[Any]) -> Any:
 
 
 def _streamed_text(events: list[Any]) -> str:
-    from opensquilla.engine.types import TextDeltaEvent
+    from openstarry_code.engine.types import TextDeltaEvent
 
     return "".join(e.text for e in events if isinstance(e, TextDeltaEvent))
 
@@ -241,7 +241,7 @@ async def test_run_meta_launch_dispatches_and_yields_done_event(
     """A registered meta-skill launches: the orchestrator is built with
     triggered_by='manual_command', the terminal DoneEvent carries the
     MetaResult.final_text, and the meta_launch marker is popped."""
-    from opensquilla.skills.meta.types import MetaResult
+    from openstarry_code.skills.meta.types import MetaResult
 
     spec = _meta_spec("meta-tiny")
     loader = _StubLoader(spec)
@@ -277,11 +277,11 @@ async def test_run_meta_resume_does_not_trust_parent_name_without_persisted_bind
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """A resume name and forged provider callable are insufficient authority."""
-    from opensquilla.skills.meta.readiness import (
+    from openstarry_code.skills.meta.readiness import (
         META_OPENROUTER_API_KEY_ENV,
         META_SKILL_RUNTIME_ENV_PROVIDER_METADATA_KEY,
     )
-    from opensquilla.skills.meta.types import MetaResult
+    from openstarry_code.skills.meta.types import MetaResult
 
     secret = "synthetic-resume-only-openrouter-key"
     loader = _StubLoader(_meta_spec("meta-short-drama"))
@@ -336,15 +336,15 @@ async def test_run_meta_resume_binds_current_bundled_parent_to_persisted_plan(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.skills.loader import SkillLoader
-    from opensquilla.skills.meta.parser import parse_meta_plan
-    from opensquilla.skills.meta.plan_serde import to_jsonable
-    from opensquilla.skills.meta.readiness import (
+    from openstarry_code.skills.loader import SkillLoader
+    from openstarry_code.skills.meta.parser import parse_meta_plan
+    from openstarry_code.skills.meta.plan_serde import to_jsonable
+    from openstarry_code.skills.meta.readiness import (
         META_OPENROUTER_API_KEY_ENV,
         META_SKILL_RUNTIME_ENV_PROVIDER_METADATA_KEY,
         configured_meta_skill_runtime_env,
     )
-    from opensquilla.skills.meta.types import MetaResult
+    from openstarry_code.skills.meta.types import MetaResult
 
     bundled = (
         Path(__file__).resolve().parents[2]
@@ -446,14 +446,14 @@ async def test_run_meta_resume_with_incomplete_durable_binding_gets_no_credentia
     monkeypatch: pytest.MonkeyPatch,
     invalid_binding: str,
 ) -> None:
-    from opensquilla.skills.loader import SkillLoader
-    from opensquilla.skills.meta.parser import parse_meta_plan
-    from opensquilla.skills.meta.plan_serde import to_jsonable
-    from opensquilla.skills.meta.readiness import (
+    from openstarry_code.skills.loader import SkillLoader
+    from openstarry_code.skills.meta.parser import parse_meta_plan
+    from openstarry_code.skills.meta.plan_serde import to_jsonable
+    from openstarry_code.skills.meta.readiness import (
         META_OPENROUTER_API_KEY_ENV,
         META_SKILL_RUNTIME_ENV_PROVIDER_METADATA_KEY,
     )
-    from opensquilla.skills.meta.types import MetaResult
+    from openstarry_code.skills.meta.types import MetaResult
 
     bundled = (
         Path(__file__).resolve().parents[2]
@@ -561,8 +561,8 @@ async def test_run_meta_launch_never_reemits_a_terminal_prefix_or_conflict(
     allowing surfaces to replace the stale preview without first displaying an
     invalid concatenation.
     """
-    from opensquilla.engine.types import TextDeltaEvent
-    from opensquilla.skills.meta.types import MetaResult
+    from openstarry_code.engine.types import TextDeltaEvent
+    from openstarry_code.skills.meta.types import MetaResult
 
     spec = _meta_spec("meta-tiny")
     agent = _build_agent(loader=_StubLoader(spec), writer=_StubWriter())
@@ -600,14 +600,14 @@ async def test_turn_generator_routes_meta_launch_marker(
     seen: dict[str, Any] = {}
 
     async def _fake_run_meta_launch(name: str):
-        from opensquilla.engine.types import DoneEvent
+        from openstarry_code.engine.types import DoneEvent
 
         seen["name"] = name
         yield DoneEvent(text="from-launch", input_tokens=0, output_tokens=0)
 
     monkeypatch.setattr(agent, "_run_meta_launch", _fake_run_meta_launch)
 
-    from opensquilla.engine.types import DoneEvent
+    from openstarry_code.engine.types import DoneEvent
 
     events = [ev async for ev in agent.run_turn("anything")]
     assert seen.get("name") == "meta-tiny"
@@ -634,7 +634,7 @@ async def test_turn_generator_routes_explicit_request_to_meta_launch(
     seen: dict[str, Any] = {}
 
     async def _fake_run_meta_launch(name: str, *, user_request: str | None = None):
-        from opensquilla.engine.types import DoneEvent
+        from openstarry_code.engine.types import DoneEvent
 
         seen.update(name=name, user_request=user_request)
         yield DoneEvent(text="from-launch", input_tokens=0, output_tokens=0)
@@ -678,7 +678,7 @@ async def test_turn_generator_routes_meta_replay_marker_without_provider_call(
         replay_run_id: str | None = None,
         replay_mode: str | None = None,
     ):
-        from opensquilla.engine.types import DoneEvent
+        from openstarry_code.engine.types import DoneEvent
 
         seen.update(
             name=name,
@@ -705,7 +705,7 @@ async def test_turn_generator_routes_meta_replay_marker_without_provider_call(
 async def test_run_meta_launch_uses_request_in_orchestrator_inputs(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.skills.meta.types import MetaResult
+    from openstarry_code.skills.meta.types import MetaResult
 
     agent = _build_agent(
         loader=_StubLoader(_meta_spec("meta-tiny")),
@@ -735,8 +735,8 @@ async def test_run_meta_launch_uses_request_in_orchestrator_inputs(
 async def test_run_meta_replay_rehydrates_retired_plan_and_preserves_successful_outputs(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.skills.meta.plan_serde import to_jsonable
-    from opensquilla.skills.meta.types import MetaPlan, MetaResult, MetaStep
+    from openstarry_code.skills.meta.plan_serde import to_jsonable
+    from openstarry_code.skills.meta.types import MetaPlan, MetaResult, MetaStep
 
     plan = MetaPlan(
         name="meta-paper-write",
@@ -823,8 +823,8 @@ async def test_run_meta_replay_aliases_complete_substitute_output_to_primary(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """A successful fallback is reused under both durable DAG identities."""
-    from opensquilla.skills.meta.plan_serde import to_jsonable
-    from opensquilla.skills.meta.types import MetaPlan, MetaResult, MetaStep
+    from openstarry_code.skills.meta.plan_serde import to_jsonable
+    from openstarry_code.skills.meta.types import MetaPlan, MetaResult, MetaStep
 
     plan = MetaPlan(
         name="meta-failover",
@@ -907,8 +907,8 @@ async def test_run_meta_replay_does_not_seed_incomplete_failover_pair(
     fallback_case: str,
 ) -> None:
     """Missing, failed, truncated, or corrupt fallback evidence is rerun."""
-    from opensquilla.skills.meta.plan_serde import to_jsonable
-    from opensquilla.skills.meta.types import MetaPlan, MetaResult, MetaStep
+    from openstarry_code.skills.meta.plan_serde import to_jsonable
+    from openstarry_code.skills.meta.types import MetaPlan, MetaResult, MetaStep
 
     plan = MetaPlan(
         name="meta-failover",
@@ -1023,8 +1023,8 @@ async def test_run_meta_replay_safely_recovers_persisted_or_legacy_artifact_id(
     source_run_id: str,
     expected_meta_run_id: str,
 ) -> None:
-    from opensquilla.skills.meta.plan_serde import to_jsonable
-    from opensquilla.skills.meta.types import MetaPlan, MetaResult, MetaStep
+    from openstarry_code.skills.meta.plan_serde import to_jsonable
+    from openstarry_code.skills.meta.types import MetaPlan, MetaResult, MetaStep
 
     plan = MetaPlan(
         name="meta-short-drama",
@@ -1065,8 +1065,8 @@ async def test_run_meta_replay_refuses_persisted_modified_inputs(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """The turn boundary independently rejects non-exact saved requests."""
-    from opensquilla.skills.meta.plan_serde import to_jsonable
-    from opensquilla.skills.meta.types import MetaPlan, MetaResult, MetaStep
+    from openstarry_code.skills.meta.plan_serde import to_jsonable
+    from openstarry_code.skills.meta.types import MetaPlan, MetaResult, MetaStep
 
     plan = MetaPlan(
         name="meta-modified-inputs",
@@ -1114,7 +1114,7 @@ async def test_run_meta_launch_refuses_disabled_skill(
     """A spec flagged disable_model_invocation=True is refused with a
     'not available for invocation' message and the orchestrator is never
     built."""
-    from opensquilla.skills.meta.types import MetaResult
+    from openstarry_code.skills.meta.types import MetaResult
 
     spec = _meta_spec("meta-hidden", disable_model_invocation=True)
     loader = _StubLoader(spec)
@@ -1148,7 +1148,7 @@ async def test_run_meta_launch_refuses_disabled_skill(
 async def test_run_meta_launch_explains_retired_compatibility_tombstone(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.skills.meta.types import MetaResult
+    from openstarry_code.skills.meta.types import MetaResult
 
     spec = _meta_spec(
         "meta-retired",
@@ -1180,8 +1180,8 @@ async def test_run_meta_launch_refuses_missing_runtime_dependency(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """A stale launch marker cannot bypass the shared readiness preflight."""
-    from opensquilla.skills.meta.types import MetaResult
-    from opensquilla.skills.types import SkillPlatformMeta, SkillRequires
+    from openstarry_code.skills.meta.types import MetaResult
+    from openstarry_code.skills.types import SkillPlatformMeta, SkillRequires
 
     spec = _meta_spec("meta-needs-setup")
     spec.metadata = SkillPlatformMeta(
@@ -1208,8 +1208,8 @@ async def test_run_meta_launch_rejects_global_alias_for_untrusted_parent(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Manual launch cannot consume an alias without a trusted parent plan."""
-    from opensquilla.skills.meta.types import MetaResult
-    from opensquilla.skills.types import SkillPlatformMeta, SkillRequires
+    from openstarry_code.skills.meta.types import MetaResult
+    from openstarry_code.skills.types import SkillPlatformMeta, SkillRequires
 
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     spec = _meta_spec("meta-config-key")
@@ -1251,7 +1251,7 @@ async def test_run_meta_launch_refused_when_meta_disabled(
     """When the master meta_skill gate is off (meta_skill_enabled=False in
     metadata), _run_meta_launch emits the 'disabled by configuration' message
     and the orchestrator is never built."""
-    from opensquilla.skills.meta.types import MetaResult
+    from openstarry_code.skills.meta.types import MetaResult
 
     spec = _meta_spec("meta-tiny")
     loader = _StubLoader(spec)
@@ -1295,7 +1295,7 @@ async def test_run_meta_launch_blocks_when_awaiting_input(
 ) -> None:
     """When peek_awaiting returns non-None, launch is refused with the
     'waiting for your answer' message and the orchestrator is never built."""
-    from opensquilla.skills.meta.types import MetaResult
+    from openstarry_code.skills.meta.types import MetaResult
 
     spec = _meta_spec("meta-tiny")
     loader = _StubLoader(spec)

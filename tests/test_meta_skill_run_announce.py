@@ -5,13 +5,13 @@ from dataclasses import replace
 
 import pytest
 
-from opensquilla.engine.types import (
+from openstarry_code.engine.types import (
     MetaPreflightEvent,
     MetaRunAnnouncedEvent,
     ToolUseStartEvent,
 )
-from opensquilla.skills.meta.events import _StepDone
-from opensquilla.skills.meta.types import MetaMatch, MetaPlan, MetaResult, MetaStep
+from openstarry_code.skills.meta.events import _StepDone
+from openstarry_code.skills.meta.types import MetaMatch, MetaPlan, MetaResult, MetaStep
 
 
 @pytest.fixture
@@ -67,7 +67,7 @@ def fake_preface():
 
 
 async def _collect_events(match, dispatch, preface, *, limit=None):
-    from opensquilla.skills.meta.scheduler import run_dag
+    from openstarry_code.skills.meta.scheduler import run_dag
 
     events = []
     agen = run_dag(

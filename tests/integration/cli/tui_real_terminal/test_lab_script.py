@@ -23,12 +23,12 @@ def _load_lab_script() -> ModuleType:
 
 def test_live_opentui_lab_requires_explicit_live_env(monkeypatch: pytest.MonkeyPatch) -> None:
     lab = _load_lab_script()
-    monkeypatch.delenv("OPENSQUILLA_TUI_LIVE_REAL", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_TUI_LIVE_REAL", raising=False)
 
-    with pytest.raises(SystemExit, match="OPENSQUILLA_TUI_LIVE_REAL=1"):
+    with pytest.raises(SystemExit, match="OPENSTARRY_CODE_TUI_LIVE_REAL=1"):
         lab._assert_live_backend_enabled("live-opentui")
 
-    monkeypatch.setenv("OPENSQUILLA_TUI_LIVE_REAL", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_TUI_LIVE_REAL", "1")
     lab._assert_live_backend_enabled("live-opentui")
     lab._assert_live_backend_enabled("opentui")
 

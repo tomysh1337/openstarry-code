@@ -4,9 +4,9 @@ import os
 
 import pytest
 
-from opensquilla.agents.registry import AgentRegistry
-from opensquilla.agents.scope import resolve_agent_workspace_dir
-from opensquilla.gateway.config import AgentEntryConfig, GatewayConfig
+from openstarry_code.agents.registry import AgentRegistry
+from openstarry_code.agents.scope import resolve_agent_workspace_dir
+from openstarry_code.gateway.config import AgentEntryConfig, GatewayConfig
 
 
 @pytest.mark.asyncio

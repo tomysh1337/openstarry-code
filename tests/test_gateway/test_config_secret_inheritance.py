@@ -1,7 +1,7 @@
 """Redaction round-trip + D19 secret-inheritance regression tests.
 
 Pins the behavior of the consolidated secret-inheritance service
-(``opensquilla.gateway.config_secrets``) and proves that every config-mutation
+(``openstarry_code.gateway.config_secrets``) and proves that every config-mutation
 surface routes through it identically:
 
 * the redaction round-trip restores a redaction *marker* back to the stored
@@ -25,14 +25,14 @@ from pathlib import Path
 import pytest
 import structlog
 
-import opensquilla.gateway.rpc_config  # noqa: F401  ensures config.* handlers register
-from opensquilla.gateway import config_secrets
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.rpc import RpcContext, get_dispatcher
-from opensquilla.gateway.rpc_config import _persist_config
-from opensquilla.onboarding.mutations import upsert_llm_provider
-from opensquilla.onboarding.redaction import REDACTED_PLACEHOLDER
+import openstarry_code.gateway.rpc_config  # noqa: F401  ensures config.* handlers register
+from openstarry_code.gateway import config_secrets
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.rpc import RpcContext, get_dispatcher
+from openstarry_code.gateway.rpc_config import _persist_config
+from openstarry_code.onboarding.mutations import upsert_llm_provider
+from openstarry_code.onboarding.redaction import REDACTED_PLACEHOLDER
 
 # A secret that must never appear in any wire response, persisted file, or log.
 SENTINEL_SECRET = "sk-SEN71NEL-do-not-leak-Zz9"
@@ -58,7 +58,7 @@ def _admin_ctx(config: GatewayConfig) -> RpcContext:
 def test_marker_constant_matches_read_side_redaction() -> None:
     # The write-side marker must equal the read-side redaction value so a
     # public config round-trips.
-    from opensquilla.gateway.config import _REDACTED
+    from openstarry_code.gateway.config import _REDACTED
 
     assert config_secrets.REDACTED_PUBLIC_VALUE == _REDACTED
 
@@ -263,7 +263,7 @@ def test_onboarding_explicit_key_replaces_and_clears_marker() -> None:
 async def test_config_set_does_not_bake_env_auth_token_into_toml(
     tmp_path, monkeypatch
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_AUTH_TOKEN", "tok-env-original")
+    monkeypatch.setenv("OPENSTARRY_CODE_AUTH_TOKEN", "tok-env-original")
     cfg_path = tmp_path / "config.toml"
     cfg_path.write_text('[auth]\nmode = "token"\n')
 
@@ -281,7 +281,7 @@ async def test_config_set_does_not_bake_env_auth_token_into_toml(
 
 
 async def test_env_auth_token_rotation_survives_config_save(tmp_path, monkeypatch) -> None:
-    monkeypatch.setenv("OPENSQUILLA_AUTH_TOKEN", "tok-env-original")
+    monkeypatch.setenv("OPENSTARRY_CODE_AUTH_TOKEN", "tok-env-original")
     cfg_path = tmp_path / "config.toml"
     cfg_path.write_text('[auth]\nmode = "token"\n')
 
@@ -290,14 +290,14 @@ async def test_env_auth_token_rotation_survives_config_save(tmp_path, monkeypatc
         "r1", "config.set", {"path": "port", "value": 18795}, _admin_ctx(cfg)
     )
 
-    monkeypatch.setenv("OPENSQUILLA_AUTH_TOKEN", "tok-env-rotated")
+    monkeypatch.setenv("OPENSTARRY_CODE_AUTH_TOKEN", "tok-env-rotated")
     rebooted = GatewayConfig.load(cfg_path)
     assert rebooted.auth.token == "tok-env-rotated"
 
 
 @pytest.mark.skipif(os.name == "nt", reason="Windows st_mode does not represent DACLs")
 def test_persist_config_fresh_file_has_owner_only_posix_mode(tmp_path, monkeypatch) -> None:
-    monkeypatch.setenv("OPENSQUILLA_AUTH_TOKEN", "tok-env-original")
+    monkeypatch.setenv("OPENSTARRY_CODE_AUTH_TOKEN", "tok-env-original")
     old_umask = os.umask(0o022)
     try:
         cfg = GatewayConfig()

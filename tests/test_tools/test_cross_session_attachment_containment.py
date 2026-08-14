@@ -1,7 +1,7 @@
 """Cross-session attachment read containment (F-WS-1 / #268).
 
 Materialized attachments live under the shared per-agent workspace at
-``.opensquilla/attachments/<session>/``. Strict-mode reads must allow the
+``.openstarry-code/attachments/<session>/``. Strict-mode reads must allow the
 current session's own subdir and shared authored files, but deny a sibling
 session's subdir.
 """
@@ -12,17 +12,17 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.attachment_workspace import _safe_path_segment
-from opensquilla.tools.builtin.filesystem import (
+from openstarry_code.attachment_workspace import _safe_path_segment
+from openstarry_code.tools.builtin.filesystem import (
     _workspace_strict_candidate_marker,
     _workspace_strict_read_block,
 )
-from opensquilla.tools.types import ToolContext, current_tool_context
+from openstarry_code.tools.types import ToolContext, current_tool_context
 
 
 def _attach_dir(workspace: Path, session_id: str) -> Path:
     seg = _safe_path_segment(session_id, fallback="session")
-    d = workspace / ".opensquilla" / "attachments" / seg
+    d = workspace / ".openstarry-code" / "attachments" / seg
     d.mkdir(parents=True, exist_ok=True)
     return d
 

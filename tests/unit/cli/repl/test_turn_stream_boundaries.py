@@ -5,19 +5,19 @@ import importlib
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[4]
-CHAT_CMD = PROJECT_ROOT / "src/opensquilla/cli/chat_cmd.py"
-TURN_STREAM = PROJECT_ROOT / "src/opensquilla/cli/chat/turn_stream.py"
-TURN_BRIDGE = PROJECT_ROOT / "src/opensquilla/cli/tui/turn_bridge.py"
+CHAT_CMD = PROJECT_ROOT / "src/openstarry_code/cli/chat_cmd.py"
+TURN_STREAM = PROJECT_ROOT / "src/openstarry_code/cli/chat/turn_stream.py"
+TURN_BRIDGE = PROJECT_ROOT / "src/openstarry_code/cli/tui/turn_bridge.py"
 TURN_STREAM_DEFAULTS = (
-    PROJECT_ROOT / "src/opensquilla/cli/tui/adapters/turn_stream_defaults.py"
+    PROJECT_ROOT / "src/openstarry_code/cli/tui/adapters/turn_stream_defaults.py"
 )
 GATEWAY_SLASH_ADAPTER = (
-    PROJECT_ROOT / "src/opensquilla/cli/tui/adapters/slash_gateway.py"
+    PROJECT_ROOT / "src/openstarry_code/cli/tui/adapters/slash_gateway.py"
 )
 STANDALONE_SLASH_ADAPTER = (
-    PROJECT_ROOT / "src/opensquilla/cli/tui/adapters/slash_standalone.py"
+    PROJECT_ROOT / "src/openstarry_code/cli/tui/adapters/slash_standalone.py"
 )
-OPENTUI_RENDERER = "opensquilla.cli.tui.opentui.renderer"
+OPENTUI_RENDERER = "openstarry_code.cli.tui.opentui.renderer"
 REMOVED_TERMINAL_BRIDGE = "terminal" + "_bridge"
 
 
@@ -95,12 +95,12 @@ def _module_aliases(path: Path, module_alias: str) -> dict[str, str]:
 def test_chat_cmd_does_not_import_legacy_renderer_or_approval_handler() -> None:
     assert not _imports_name_from_module(
         CHAT_CMD,
-        "opensquilla.cli.repl.stream",
+        "openstarry_code.cli.repl.stream",
         "StreamingRenderer",
     )
     assert not _imports_name_from_module(
         CHAT_CMD,
-        "opensquilla.cli.repl.approval",
+        "openstarry_code.cli.repl.approval",
         "maybe_handle_approval",
     )
 
@@ -108,34 +108,34 @@ def test_chat_cmd_does_not_import_legacy_renderer_or_approval_handler() -> None:
 def test_chat_cmd_does_not_import_raw_slash_adapters_or_context() -> None:
     assert not _imports_module_from_package(
         CHAT_CMD,
-        "opensquilla.cli.repl",
+        "openstarry_code.cli.repl",
         "slash_adapter",
     )
     assert not _imports_module_from_package(
         CHAT_CMD,
-        "opensquilla.cli.repl",
+        "openstarry_code.cli.repl",
         "standalone_slash_adapter",
     )
     assert not _imports_from_module(
         CHAT_CMD,
-        "opensquilla.cli.repl.slash_adapter",
+        "openstarry_code.cli.repl.slash_adapter",
     )
 
 
 def test_chat_cmd_does_not_import_raw_runtime_or_removed_bridges() -> None:
     assert not _imports_module_from_package(
         CHAT_CMD,
-        "opensquilla.cli.repl",
+        "openstarry_code.cli.repl",
         "gateway_runtime",
     )
     assert not _imports_module_from_package(
         CHAT_CMD,
-        "opensquilla.cli.repl",
+        "openstarry_code.cli.repl",
         "standalone_runtime",
     )
     assert not _imports_module_from_package(
         CHAT_CMD,
-        "opensquilla.cli.repl",
+        "openstarry_code.cli.repl",
         REMOVED_TERMINAL_BRIDGE,
     )
 
@@ -143,12 +143,12 @@ def test_chat_cmd_does_not_import_raw_runtime_or_removed_bridges() -> None:
 def test_chat_cmd_does_not_import_raw_input_assets() -> None:
     assert not _imports_module_from_package(
         CHAT_CMD,
-        "opensquilla.cli.repl",
+        "openstarry_code.cli.repl",
         "input_assets",
     )
     assert not _imports_from_module(
         CHAT_CMD,
-        "opensquilla.cli.repl.input_assets",
+        "openstarry_code.cli.repl.input_assets",
     )
 
 
@@ -156,12 +156,12 @@ def test_chat_cmd_does_not_import_backend_helper_bridges() -> None:
     for module_name in ("input_bridge", "slash_bridge", "turn_bridge"):
         assert not _imports_module_from_package(
             CHAT_CMD,
-            "opensquilla.cli.repl",
+            "openstarry_code.cli.repl",
             module_name,
         )
         assert not _imports_from_module(
             CHAT_CMD,
-            f"opensquilla.cli.repl.{module_name}",
+            f"openstarry_code.cli.repl.{module_name}",
         )
 
 
@@ -182,12 +182,12 @@ def test_chat_cmd_private_compat_surface_is_dynamic_legacy_exports() -> None:
     )
     assert not _imports_module_from_package(
         CHAT_CMD,
-        "opensquilla.cli.repl",
+        "openstarry_code.cli.repl",
         "chat_compat",
     )
     assert not _imports_from_module(
         CHAT_CMD,
-        "opensquilla.cli.repl.chat_compat",
+        "openstarry_code.cli.repl.chat_compat",
     )
 
 
@@ -204,7 +204,7 @@ def test_chat_cmd_uses_typed_launch_request_instead_of_private_runner_names() ->
 
 
 def test_chat_cmd_star_import_keeps_legacy_public_names_visible() -> None:
-    chat_cmd = importlib.import_module("opensquilla.cli.chat_cmd")
+    chat_cmd = importlib.import_module("openstarry_code.cli.chat_cmd")
 
     assert "run_chat" in chat_cmd.__all__
     assert "GATEWAY_SLASH_HANDLER_WORDS" in chat_cmd.__all__
@@ -214,7 +214,7 @@ def test_chat_cmd_star_import_keeps_legacy_public_names_visible() -> None:
     assert "_file_prompt_and_attachments" in dir(chat_cmd)
 
     namespace: dict[str, object] = {}
-    exec("from opensquilla.cli.chat_cmd import *", namespace)
+    exec("from openstarry_code.cli.chat_cmd import *", namespace)
     assert "run_chat" in namespace
     assert "GATEWAY_SLASH_HANDLER_WORDS" in namespace
     assert "_file_prompt_and_attachments" not in namespace
@@ -229,82 +229,82 @@ def test_chat_cmd_does_not_import_launch_presentation_details() -> None:
     assert not _imports_module(CHAT_CMD, "os")
     assert not _imports_module(CHAT_CMD, "sys")
     assert not _imports_name_from_module(CHAT_CMD, "rich.panel", "Panel")
-    assert not _imports_name_from_module(CHAT_CMD, "opensquilla.cli.ui", "ACCENT")
+    assert not _imports_name_from_module(CHAT_CMD, "openstarry_code.cli.ui", "ACCENT")
 
 
 def test_chat_cmd_does_not_import_cli_presentation_defaults() -> None:
-    assert not _imports_from_module(CHAT_CMD, "opensquilla.cli.ui")
+    assert not _imports_from_module(CHAT_CMD, "openstarry_code.cli.ui")
 
 
 def test_chat_cmd_does_not_import_raw_turn_stream_facade() -> None:
     assert not _imports_module_from_package(
         CHAT_CMD,
-        "opensquilla.cli.repl",
+        "openstarry_code.cli.repl",
         "turn_stream",
     )
     assert not _imports_from_module(
         CHAT_CMD,
-        "opensquilla.cli.repl.turn_stream",
+        "openstarry_code.cli.repl.turn_stream",
     )
     assert not _imports_from_module(
         CHAT_CMD,
-        "opensquilla.cli.repl.stream",
+        "openstarry_code.cli.repl.stream",
     )
 
 
 def test_turn_stream_does_not_import_raw_input_assets() -> None:
     assert not _imports_module_from_package(
         TURN_STREAM,
-        "opensquilla.cli.repl",
+        "openstarry_code.cli.repl",
         "input_assets",
     )
     assert not _imports_from_module(
         TURN_STREAM,
-        "opensquilla.cli.repl.input_assets",
+        "openstarry_code.cli.repl.input_assets",
     )
 
 
 def test_turn_stream_does_not_import_frontend_default_dependencies() -> None:
     assert not _imports_module_from_package(
         TURN_STREAM,
-        "opensquilla.cli.repl",
+        "openstarry_code.cli.repl",
         "input_bridge",
     )
     assert not _imports_from_module(
         TURN_STREAM,
-        "opensquilla.cli.repl.approval",
+        "openstarry_code.cli.repl.approval",
     )
     assert not _imports_name_from_module(
         TURN_STREAM,
-        "opensquilla.cli.repl.stream",
+        "openstarry_code.cli.repl.stream",
         "StreamingRenderer",
     )
     assert not _imports_from_module(
         TURN_STREAM,
-        f"opensquilla.cli.repl.{REMOVED_TERMINAL_BRIDGE}",
+        f"openstarry_code.cli.repl.{REMOVED_TERMINAL_BRIDGE}",
     )
     assert not _imports_from_module(
         TURN_STREAM,
-        "opensquilla.cli.ui",
+        "openstarry_code.cli.ui",
     )
     assert not _imports_from_module(
         TURN_STREAM,
-        "opensquilla.cli.repl.slash_adapter",
+        "openstarry_code.cli.repl.slash_adapter",
     )
     assert not _imports_from_module(
         TURN_STREAM,
-        "opensquilla.cli.tui.contracts",
+        "openstarry_code.cli.tui.contracts",
     )
     assert not _imports_from_module(
         TURN_STREAM,
-        "opensquilla.engine.commands",
+        "openstarry_code.engine.commands",
     )
 
 
 def test_turn_bridge_does_not_import_concrete_streaming_renderer() -> None:
     assert not _imports_name_from_module(
         TURN_BRIDGE,
-        "opensquilla.cli.repl.stream",
+        "openstarry_code.cli.repl.stream",
         "StreamingRenderer",
     )
 
@@ -317,7 +317,7 @@ def test_turn_stream_defaults_uses_opentui_renderer_default() -> None:
     )
     assert not _imports_name_from_module(
         TURN_STREAM_DEFAULTS,
-        "opensquilla.cli.repl.approval",
+        "openstarry_code.cli.repl.approval",
         "maybe_handle_approval",
     )
 
@@ -325,7 +325,7 @@ def test_turn_stream_defaults_uses_opentui_renderer_default() -> None:
 def test_turn_bridge_delegates_tui_approval_defaults() -> None:
     assert _imports_from_module(
         TURN_BRIDGE,
-        "opensquilla.cli.tui.adapters.turn_stream_defaults",
+        "openstarry_code.cli.tui.adapters.turn_stream_defaults",
     )
     assert not _imports_name_from_module(
         TURN_BRIDGE,
@@ -338,10 +338,10 @@ def test_slash_adapters_do_not_import_raw_input_assets() -> None:
     for path in (GATEWAY_SLASH_ADAPTER, STANDALONE_SLASH_ADAPTER):
         assert not _imports_module_from_package(
             path,
-            "opensquilla.cli.repl",
+            "openstarry_code.cli.repl",
             "input_assets",
         )
         assert not _imports_from_module(
             path,
-            "opensquilla.cli.repl.input_assets",
+            "openstarry_code.cli.repl.input_assets",
         )

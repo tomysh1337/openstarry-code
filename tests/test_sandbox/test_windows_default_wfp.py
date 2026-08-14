@@ -4,7 +4,7 @@ import sys
 
 import pytest
 
-from opensquilla.sandbox.backend.windows_default_wfp import WFP_FILTER_SPECS
+from openstarry_code.sandbox.backend.windows_default_wfp import WFP_FILTER_SPECS
 
 
 def test_wfp_filter_specs_have_unique_keys_and_names() -> None:
@@ -27,7 +27,7 @@ def test_wfp_filter_specs_cover_dns_icmp_and_smb() -> None:
 
 
 def test_wfp_filter_specs_cover_loopback_non_proxy_ports() -> None:
-    from opensquilla.sandbox.backend.windows_default_wfp import wfp_filter_specs
+    from openstarry_code.sandbox.backend.windows_default_wfp import wfp_filter_specs
 
     specs = wfp_filter_specs((48123,))
     by_name = {spec.name: spec for spec in specs}
@@ -53,7 +53,7 @@ def test_wfp_filter_specs_are_scoped_to_user_condition() -> None:
 
 
 def test_install_wfp_filters_calls_native_installer(monkeypatch) -> None:
-    from opensquilla.sandbox.backend import windows_default_wfp as mod
+    from openstarry_code.sandbox.backend import windows_default_wfp as mod
 
     calls: list[tuple[str, tuple[int, ...]]] = []
     monkeypatch.setattr(mod.sys, "platform", "win32")
@@ -69,7 +69,7 @@ def test_install_wfp_filters_calls_native_installer(monkeypatch) -> None:
 
 
 def test_native_installer_orchestrates_persistent_filters(monkeypatch) -> None:
-    from opensquilla.sandbox.backend import windows_default_wfp as mod
+    from openstarry_code.sandbox.backend import windows_default_wfp as mod
 
     events: list[tuple[str, str]] = []
 
@@ -145,7 +145,7 @@ def test_native_installer_orchestrates_persistent_filters(monkeypatch) -> None:
 
 @pytest.mark.skipif(not sys.platform.startswith("win"), reason="Windows WFP only")
 def test_wfp_native_installer_rejects_empty_sid() -> None:
-    from opensquilla.sandbox.backend.windows_default_wfp import install_wfp_filters_for_user
+    from openstarry_code.sandbox.backend.windows_default_wfp import install_wfp_filters_for_user
 
     with pytest.raises(Exception, match="offline SID"):
         install_wfp_filters_for_user("")

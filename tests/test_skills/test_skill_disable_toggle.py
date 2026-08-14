@@ -6,11 +6,11 @@ to ``skills.disabled`` via config.patch.safe.
 
 from __future__ import annotations
 
-from opensquilla.engine.steps import skills_filter
-from opensquilla.gateway.config import GatewayConfig, SkillsConfig
-from opensquilla.gateway.rpc_config import _SAFE_WRITE_PATCH_PATHS
-from opensquilla.skills.eligibility import EligibilityContext, check_eligibility
-from opensquilla.skills.types import SkillSpec
+from openstarry_code.engine.steps import skills_filter
+from openstarry_code.gateway.config import GatewayConfig, SkillsConfig
+from openstarry_code.gateway.rpc_config import _SAFE_WRITE_PATCH_PATHS
+from openstarry_code.skills.eligibility import EligibilityContext, check_eligibility
+from openstarry_code.skills.types import SkillSpec
 
 
 def _skill(name: str) -> SkillSpec:

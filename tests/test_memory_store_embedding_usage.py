@@ -11,8 +11,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from opensquilla.memory.store import LongTermMemoryStore, _estimate_embedding_cost_usd
-from opensquilla.memory.types import MemorySource
+from openstarry_code.memory.store import LongTermMemoryStore, _estimate_embedding_cost_usd
+from openstarry_code.memory.types import MemorySource
 
 
 def test_estimate_embedding_cost_local_provider_is_free() -> None:

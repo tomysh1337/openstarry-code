@@ -14,7 +14,7 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.provider.failures import ProviderFailureKind, classify_provider_error
+from openstarry_code.provider.failures import ProviderFailureKind, classify_provider_error
 
 K = ProviderFailureKind
 

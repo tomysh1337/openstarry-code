@@ -22,7 +22,7 @@ from typing import Any
 
 import pytest
 
-from opensquilla.cli.gateway_client import GatewayClient
+from openstarry_code.cli.gateway_client import GatewayClient
 
 
 class _FakeWebSocket:

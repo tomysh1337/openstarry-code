@@ -3,7 +3,7 @@ from __future__ import annotations
 import asyncio
 from types import SimpleNamespace
 
-from opensquilla.gateway.rpc import RpcContext, get_dispatcher
+from openstarry_code.gateway.rpc import RpcContext, get_dispatcher
 
 
 async def _list_for_surface(surface: str) -> dict:

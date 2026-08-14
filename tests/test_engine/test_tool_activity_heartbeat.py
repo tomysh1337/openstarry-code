@@ -6,12 +6,12 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine import Agent, AgentConfig, ToolResult
-from opensquilla.engine.types import RunHeartbeatEvent, ToolCall, ToolResultEvent
-from opensquilla.provider import ChatConfig, Message, ToolDefinition, ToolInputSchema
-from opensquilla.provider import DoneEvent as ProviderDone
-from opensquilla.provider import ToolUseEndEvent as ProviderToolUseEnd
-from opensquilla.provider import ToolUseStartEvent as ProviderToolUseStart
+from openstarry_code.engine import Agent, AgentConfig, ToolResult
+from openstarry_code.engine.types import RunHeartbeatEvent, ToolCall, ToolResultEvent
+from openstarry_code.provider import ChatConfig, Message, ToolDefinition, ToolInputSchema
+from openstarry_code.provider import DoneEvent as ProviderDone
+from openstarry_code.provider import ToolUseEndEvent as ProviderToolUseEnd
+from openstarry_code.provider import ToolUseStartEvent as ProviderToolUseStart
 
 
 class _OneToolProvider:

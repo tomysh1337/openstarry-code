@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 
-from opensquilla.identity.workspace import load_workspace_files_budgeted_with_report
+from openstarry_code.identity.workspace import load_workspace_files_budgeted_with_report
 
 
 def test_workspace_injection_report_mode_logs_without_mutating_content(tmp_path) -> None:

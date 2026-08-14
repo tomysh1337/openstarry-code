@@ -1,6 +1,6 @@
 """Tests for router onboarding catalog."""
 
-from opensquilla.onboarding.router_specs import (
+from openstarry_code.onboarding.router_specs import (
     get_router_setup_profile,
     router_catalog_payload,
 )

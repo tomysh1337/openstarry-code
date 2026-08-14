@@ -18,18 +18,18 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.agent import Agent
-from opensquilla.engine.types import AgentConfig, TextDeltaEvent
-from opensquilla.skills.meta.types import (
+from openstarry_code.engine.agent import Agent
+from openstarry_code.engine.types import AgentConfig, TextDeltaEvent
+from openstarry_code.skills.meta.types import (
     ClarifyField,
     ClarifyStepConfig,
     MetaPaused,
     MetaResult,
 )
-from opensquilla.tool_boundary import ToolCall, ToolResult
-from opensquilla.tools.builtin import meta_tools  # noqa: F401 — registers meta_invoke
-from opensquilla.tools.registry import get_default_registry
-from opensquilla.tools.types import ToolContext
+from openstarry_code.tool_boundary import ToolCall, ToolResult
+from openstarry_code.tools.builtin import meta_tools  # noqa: F401 — registers meta_invoke
+from openstarry_code.tools.registry import get_default_registry
+from openstarry_code.tools.types import ToolContext
 
 
 class _NullProvider:
@@ -64,7 +64,7 @@ def _make_paused_result() -> MetaResult:
 
 def _make_skill(tmp_path, name: str = "meta-paused-stub") -> Any:
     """Author a minimal meta-skill so meta_invoke validates ``name``."""
-    from opensquilla.skills.loader import SkillLoader
+    from openstarry_code.skills.loader import SkillLoader
 
     bundled = tmp_path / "skills" / "bundled"
     bundled.mkdir(parents=True)
@@ -128,7 +128,7 @@ async def test_paused_meta_result_yields_text_and_non_error_result(tmp_path) -> 
 
     # Monkeypatch the orchestrator factory at the module the agent
     # imports it from (local import inside _run_one_streaming).
-    import opensquilla.skills.meta.orchestrator as orch_mod
+    import openstarry_code.skills.meta.orchestrator as orch_mod
     original = orch_mod.MetaOrchestrator
     orch_mod.MetaOrchestrator = lambda *a, **k: _StubOrch()  # type: ignore[assignment]
     try:
@@ -187,7 +187,7 @@ async def test_completed_meta_result_with_empty_final_text_yields_visible_fallba
         async def iter_events(self, _match):
             yield MetaResult(ok=True, final_text="")
 
-    import opensquilla.skills.meta.orchestrator as orch_mod
+    import openstarry_code.skills.meta.orchestrator as orch_mod
 
     original = orch_mod.MetaOrchestrator
     orch_mod.MetaOrchestrator = lambda *a, **k: _StubOrch()  # type: ignore[assignment]
@@ -246,7 +246,7 @@ async def test_completed_meta_empty_final_text_fallback_follows_english_input(
         async def iter_events(self, _match):
             yield MetaResult(ok=True, final_text="")
 
-    import opensquilla.skills.meta.orchestrator as orch_mod
+    import openstarry_code.skills.meta.orchestrator as orch_mod
 
     original = orch_mod.MetaOrchestrator
     orch_mod.MetaOrchestrator = lambda *a, **k: _StubOrch()  # type: ignore[assignment]

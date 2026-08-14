@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from opensquilla.tools.builtin.memory_tools import create_memory_tools
-from opensquilla.tools.registry import ToolRegistry
+from openstarry_code.tools.builtin.memory_tools import create_memory_tools
+from openstarry_code.tools.registry import ToolRegistry
 
 
 def test_memory_tool_descriptions_keep_profile_out_of_memory_save() -> None:

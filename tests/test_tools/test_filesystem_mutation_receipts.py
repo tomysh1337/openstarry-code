@@ -6,8 +6,8 @@ from typing import Any
 
 import pytest
 
-from opensquilla.tools.builtin import filesystem
-from opensquilla.tools.types import (
+from openstarry_code.tools.builtin import filesystem
+from openstarry_code.tools.types import (
     CallerKind,
     RetryableToolInputError,
     ToolContext,

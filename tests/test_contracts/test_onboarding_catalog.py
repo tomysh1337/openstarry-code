@@ -17,11 +17,11 @@ Everything asserted here is built from pure in-process catalog builders
 
 from __future__ import annotations
 
-from opensquilla.gateway import rpc_onboarding
-from opensquilla.gateway.config import ROUTER_TIER_PROFILE_IDS
-from opensquilla.gateway.rpc import RpcContext
-from opensquilla.onboarding.provider_specs import provider_catalog_payload
-from opensquilla.onboarding.router_specs import router_catalog_payload
+from openstarry_code.gateway import rpc_onboarding
+from openstarry_code.gateway.config import ROUTER_TIER_PROFILE_IDS
+from openstarry_code.gateway.rpc import RpcContext
+from openstarry_code.onboarding.provider_specs import provider_catalog_payload
+from openstarry_code.onboarding.router_specs import router_catalog_payload
 
 # Top-level catalog sections the Web UI switches on. Exact set: a renamed or
 # dropped section silently blanks a wizard page.

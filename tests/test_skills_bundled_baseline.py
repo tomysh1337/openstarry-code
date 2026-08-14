@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from opensquilla.skills.loader import SkillLoader
+from openstarry_code.skills.loader import SkillLoader
 
 
 def test_bundled_skill_visibility_baseline_is_stable(tmp_path: Path) -> None:
-    bundled = Path(__file__).parents[1] / "src" / "opensquilla" / "skills" / "bundled"
+    bundled = Path(__file__).parents[1] / "src" / "openstarry_code" / "skills" / "bundled"
     loader = SkillLoader(
         bundled_dir=bundled,
         snapshot_path=tmp_path / "bundled-snapshot.json",

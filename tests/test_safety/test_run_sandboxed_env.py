@@ -10,7 +10,7 @@ must not strip PATH/HOME from the spawned process.
 
 from __future__ import annotations
 
-from opensquilla.safety.sandbox import _filtered_env
+from openstarry_code.safety.sandbox import _filtered_env
 
 _WHITELIST = ["PATH", "HOME", "LANG"]
 

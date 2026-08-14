@@ -6,11 +6,11 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine import Agent, AgentConfig, ToolResult
-from opensquilla.engine.agent_injection import ListPendingInputProvider
-from opensquilla.engine.types import ToolCall, ToolResultEvent
-from opensquilla.gateway.user_input_broker import StructuredUserInputBroker
-from opensquilla.provider import (
+from openstarry_code.engine import Agent, AgentConfig, ToolResult
+from openstarry_code.engine.agent_injection import ListPendingInputProvider
+from openstarry_code.engine.types import ToolCall, ToolResultEvent
+from openstarry_code.gateway.user_input_broker import StructuredUserInputBroker
+from openstarry_code.provider import (
     ChatConfig,
     ContentBlockText,
     Message,
@@ -18,19 +18,19 @@ from opensquilla.provider import (
     ToolDefinition,
     ToolInputSchema,
 )
-from opensquilla.provider import (
+from openstarry_code.provider import (
     DoneEvent as ProviderDone,
 )
-from opensquilla.provider import (
+from openstarry_code.provider import (
     TextDeltaEvent as ProviderText,
 )
-from opensquilla.provider import (
+from openstarry_code.provider import (
     ToolUseEndEvent as ProviderToolUseEnd,
 )
-from opensquilla.provider import (
+from openstarry_code.provider import (
     ToolUseStartEvent as ProviderToolUseStart,
 )
-from opensquilla.tools.types import ToolContext
+from openstarry_code.tools.types import ToolContext
 
 
 class _ToolBoundaryProvider:
@@ -417,7 +417,7 @@ async def test_pending_input_waits_for_the_complete_tool_batch() -> None:
 async def test_no_pending_provider_anchors_current_request_after_tool_result(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_TURN_OBJECTIVE_REMINDER", "on")
+    monkeypatch.setenv("OPENSTARRY_CODE_TURN_OBJECTIVE_REMINDER", "on")
     provider = _ToolBoundaryProvider()
     agent = _agent(provider)
 
@@ -438,7 +438,7 @@ async def test_no_pending_provider_anchors_current_request_after_tool_result(
 async def test_no_pending_default_sends_no_reminder_after_tool_result(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.delenv("OPENSQUILLA_TURN_OBJECTIVE_REMINDER", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_TURN_OBJECTIVE_REMINDER", raising=False)
     provider = _ToolBoundaryProvider()
     agent = _agent(provider)
 

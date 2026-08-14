@@ -1,6 +1,6 @@
 """Coding mode: process(wait) default timeout is 90 minutes; off stays 10 min."""
-from opensquilla.tools.builtin import shell
-from opensquilla.tools.types import CallerKind, ToolContext
+from openstarry_code.tools.builtin import shell
+from openstarry_code.tools.types import CallerKind, ToolContext
 
 
 def _with_ctx(ctx):

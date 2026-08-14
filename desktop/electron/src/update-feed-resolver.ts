@@ -1,7 +1,7 @@
 // Pure release-tag resolution for the macOS desktop updater, split out of
 // main.ts so it can be unit-tested without pulling in Electron.
 //
-// OpenSquilla ships two spellings of the same release: PEP440 for the Git tag /
+// OpenStarry Code ships two spellings of the same release: PEP440 for the Git tag /
 // Python wheel (e.g. v0.5.0rc2) and npm semver for the Electron app metadata
 // (0.5.0-rc2). electron-updater's GitHub provider filters release tags with
 // semver.valid(), which rejects PEP440 rc tags, so a packaged prerelease build
@@ -9,8 +9,8 @@
 // channels (rc1 vs rc2), so rc1 would never see rc2. This module resolves the
 // correct candidate release ourselves; a generic feed is then pointed at it.
 
-export const GITHUB_UPDATE_OWNER = 'opensquilla'
-export const GITHUB_UPDATE_REPO = 'opensquilla'
+export const GITHUB_UPDATE_OWNER = 'tomysh1337'
+export const GITHUB_UPDATE_REPO = 'openstarry-code'
 export const MAC_UPDATE_FEED_ASSET = 'latest-mac.yml'
 
 export interface ParsedReleaseTag {

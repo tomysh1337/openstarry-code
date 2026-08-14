@@ -20,9 +20,9 @@ import pytest
 from yoyo import exceptions
 from yoyo import migrations as yoyo_migrations
 
-from opensquilla.persistence import migrator
-from opensquilla.persistence.migrator import apply_pending
-from opensquilla.session.storage import SessionStorage
+from openstarry_code.persistence import migrator
+from openstarry_code.persistence.migrator import apply_pending
+from openstarry_code.session.storage import SessionStorage
 
 _REPO_MIGRATIONS_DIR = Path(__file__).resolve().parents[2] / "migrations"
 
@@ -359,7 +359,7 @@ def test_apply_pending_does_not_clear_live_yoyo_lock(
         apply_pending(str(db_path), migrations_dir)
 
     # The message carries concrete remediation for operators.
-    assert "Stop the other OpenSquilla process" in str(excinfo.value)
+    assert "Stop the other OpenStarry Code process" in str(excinfo.value)
     assert "break-lock" in str(excinfo.value)
     assert applied == []
     assert closed == ["closed"]
@@ -545,8 +545,8 @@ def test_apply_pending_process_lock_precedes_sqlite_open(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    from opensquilla.recovery.errors import ProfileLockBusyError
-    from opensquilla.recovery.locking import ProfileOperationLock
+    from openstarry_code.recovery.errors import ProfileLockBusyError
+    from openstarry_code.recovery.locking import ProfileOperationLock
 
     migrations_dir = tmp_path / "migrations"
     _write_demo_migration(migrations_dir)
@@ -671,7 +671,7 @@ import sys
 import time
 from pathlib import Path
 
-from opensquilla.persistence.migrator import apply_pending
+from openstarry_code.persistence.migrator import apply_pending
 
 db_url, migrations_dir, go_file = sys.argv[1], sys.argv[2], sys.argv[3]
 print("READY", flush=True)
@@ -687,7 +687,7 @@ print("APPLIED:" + json.dumps(applied), flush=True)
 
 def test_apply_pending_two_concurrent_callers_real_migrations(tmp_path: Path) -> None:
     """Two boot-style processes race on one DB using the repo migration chain."""
-    from opensquilla.recovery.locking import ProfileOperationLock
+    from openstarry_code.recovery.locking import ProfileOperationLock
 
     assert _REPO_MIGRATIONS_DIR.is_dir()
     expected = sorted(entry.stem for entry in _REPO_MIGRATIONS_DIR.glob("V*.py"))
@@ -1281,7 +1281,7 @@ def test_backup_survives_chmod_failure_and_still_rotates(
     def _chmod_unsupported(path: object, mode: int) -> None:
         raise OSError("chmod unsupported on this filesystem")
 
-    monkeypatch.setattr("opensquilla.persistence.migrator.os.chmod", _chmod_unsupported)
+    monkeypatch.setattr("openstarry_code.persistence.migrator.os.chmod", _chmod_unsupported)
     _write_demo_migration(migrations_dir, name="V002__second")
 
     applied = apply_pending(str(db_path), migrations_dir)

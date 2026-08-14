@@ -5,10 +5,10 @@ from pathlib import Path
 
 
 def test_live_soft_activation_harness_observes_model_meta_invoke(tmp_path: Path) -> None:
-    from opensquilla.provider.types import DoneEvent as ProviderDoneEvent
-    from opensquilla.provider.types import ToolUseDeltaEvent as ProviderToolUseDelta
-    from opensquilla.provider.types import ToolUseEndEvent as ProviderToolUseEnd
-    from opensquilla.provider.types import ToolUseStartEvent as ProviderToolUseStart
+    from openstarry_code.provider.types import DoneEvent as ProviderDoneEvent
+    from openstarry_code.provider.types import ToolUseDeltaEvent as ProviderToolUseDelta
+    from openstarry_code.provider.types import ToolUseEndEvent as ProviderToolUseEnd
+    from openstarry_code.provider.types import ToolUseStartEvent as ProviderToolUseStart
     from scripts.live_meta_soft_activation_e2e import (
         run_live_meta_soft_activation_e2e,
     )
@@ -56,9 +56,9 @@ def test_live_soft_activation_harness_observes_model_meta_invoke(tmp_path: Path)
 def test_live_soft_activation_harness_runs_multiple_model_decision_cases(
     tmp_path: Path,
 ) -> None:
-    from opensquilla.provider.types import DoneEvent as ProviderDoneEvent
-    from opensquilla.provider.types import ToolUseEndEvent as ProviderToolUseEnd
-    from opensquilla.provider.types import ToolUseStartEvent as ProviderToolUseStart
+    from openstarry_code.provider.types import DoneEvent as ProviderDoneEvent
+    from openstarry_code.provider.types import ToolUseEndEvent as ProviderToolUseEnd
+    from openstarry_code.provider.types import ToolUseStartEvent as ProviderToolUseStart
     from scripts.live_meta_soft_activation_e2e import run_live_meta_activation_cases
 
     class _CaseProvider:

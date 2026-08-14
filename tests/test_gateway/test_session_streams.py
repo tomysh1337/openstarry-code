@@ -1,5 +1,5 @@
-from opensquilla.gateway import session_streams
-from opensquilla.gateway.session_streams import (
+from openstarry_code.gateway import session_streams
+from openstarry_code.gateway.session_streams import (
     SessionStreamRegistry,
     get_session_streams,
     reset_session_streams,

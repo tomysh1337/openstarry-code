@@ -5,9 +5,9 @@ import json
 import pytest
 import structlog.testing
 
-from opensquilla.tools.builtin import agents as agents_tool
-from opensquilla.tools.builtin import sessions as sessions_tool
-from opensquilla.tools.types import CallerKind, ToolContext, ToolError, current_tool_context
+from openstarry_code.tools.builtin import agents as agents_tool
+from openstarry_code.tools.builtin import sessions as sessions_tool
+from openstarry_code.tools.types import CallerKind, ToolContext, ToolError, current_tool_context
 
 
 class _StubSessionManager:

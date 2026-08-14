@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from opensquilla.observability.prompt_report import build_prompt_report
+from openstarry_code.observability.prompt_report import build_prompt_report
 
 
 def test_prompt_report_captures_daily_notes_policy_metadata() -> None:

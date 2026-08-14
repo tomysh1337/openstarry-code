@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from opensquilla.skills.loader import SkillLoader
-from opensquilla.skills.meta.trigger_accuracy import (
+from openstarry_code.skills.loader import SkillLoader
+from openstarry_code.skills.meta.trigger_accuracy import (
     TriggerCase,
     evaluate_trigger_cases,
 )

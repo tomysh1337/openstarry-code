@@ -3,8 +3,8 @@ from __future__ import annotations
 import httpx
 import pytest
 
-from opensquilla.channels.discord import DiscordChannel, DiscordChannelConfig
-from opensquilla.onboarding.channel_specs import get_channel_setup_spec
+from openstarry_code.channels.discord import DiscordChannel, DiscordChannelConfig
+from openstarry_code.onboarding.channel_specs import get_channel_setup_spec
 
 
 @pytest.fixture

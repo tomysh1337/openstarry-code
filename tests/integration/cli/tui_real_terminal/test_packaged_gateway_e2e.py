@@ -24,7 +24,7 @@ from typing import Any
 import httpx
 import pytest
 
-from opensquilla.cli.gateway_client import GatewayClient
+from openstarry_code.cli.gateway_client import GatewayClient
 from tui_real_terminal.driver import (
     TerminalFrame,
     TerminalSize,
@@ -196,8 +196,8 @@ async def test_packaged_tui_real_gateway_shared_session_release_gate(
 ) -> None:
     """One release-blocking flow across the packaged public product boundary."""
 
-    if os.environ.get("OPENSQUILLA_TUI_PACKAGED_GATE") != "1":
-        pytest.skip("release-only: set OPENSQUILLA_TUI_PACKAGED_GATE=1")
+    if os.environ.get("OPENSTARRY_CODE_TUI_PACKAGED_GATE") != "1":
+        pytest.skip("release-only: set OPENSTARRY_CODE_TUI_PACKAGED_GATE=1")
     capabilities = probe_terminal_capabilities()
     if not capabilities.tmux_available:
         if pytestconfig.getoption("--tui-require-capabilities"):
@@ -210,9 +210,9 @@ async def test_packaged_tui_real_gateway_shared_session_release_gate(
     os.environ["NO_PROXY"] = "127.0.0.1,localhost"
     os.environ["no_proxy"] = "127.0.0.1,localhost"
 
-    host_package = importlib.import_module("opensquilla_tui_host")
+    host_package = importlib.import_module("openstarry_code_tui_host")
     core_version = importlib.metadata.version("opensquilla")
-    companion_version = importlib.metadata.version("opensquilla-tui-host")
+    companion_version = importlib.metadata.version("openstarry-code-tui-host")
     metadata = host_package.host_metadata()
     assert companion_version == core_version == metadata.product_version
     host = Path(host_package.host_command()[0]).resolve()
@@ -259,19 +259,19 @@ async def test_packaged_tui_real_gateway_shared_session_release_gate(
     gateway_env = os.environ.copy()
     gateway_env.update(
         {
-            "OPENSQUILLA_TUI_GATEWAY_E2E_PORT": str(port),
-            "OPENSQUILLA_TUI_GATEWAY_E2E_STATE": str(state_dir),
-            "OPENSQUILLA_TUI_GATEWAY_E2E_EVENT_LOG": str(provider_log),
-            "OPENSQUILLA_STATE_DIR": str(state_dir),
-            "OPENSQUILLA_OPENROUTER_LIVE_PRICING": "0",
-            "OPENSQUILLA_MEMORY_DREAM_DISABLED": "1",
-            "OPENSQUILLA_PRIVACY_DISABLE_NETWORK_OBSERVABILITY": "true",
+            "OPENSTARRY_CODE_TUI_GATEWAY_E2E_PORT": str(port),
+            "OPENSTARRY_CODE_TUI_GATEWAY_E2E_STATE": str(state_dir),
+            "OPENSTARRY_CODE_TUI_GATEWAY_E2E_EVENT_LOG": str(provider_log),
+            "OPENSTARRY_CODE_STATE_DIR": str(state_dir),
+            "OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING": "0",
+            "OPENSTARRY_CODE_MEMORY_DREAM_DISABLED": "1",
+            "OPENSTARRY_CODE_PRIVACY_DISABLE_NETWORK_OBSERVABILITY": "true",
             "HOME": str(run_dir / "gateway-home"),
         }
     )
     gateway_env.pop("PYTHONPATH", None)
     gateway_env.pop("BUN_INSTALL", None)
-    gateway_env.pop("OPENSQUILLA_TUI_DEV_SOURCE_HOST", None)
+    gateway_env.pop("OPENSTARRY_CODE_TUI_DEV_SOURCE_HOST", None)
 
     gateway_stream = gateway_log.open("wb")
     gateway = subprocess.Popen(
@@ -313,20 +313,20 @@ async def test_packaged_tui_real_gateway_shared_session_release_gate(
         tui_env.update(
             {
                 "HOME": str(tui_home),
-                "OPENSQUILLA_GATEWAY_URL": gateway_url,
-                "OPENSQUILLA_STATE_DIR": str(evidence.run_dir / "tui-state"),
-                "OPENSQUILLA_LOG_DIR": str(evidence.run_dir / "tui-logs"),
-                "OPENSQUILLA_TUI_READY_MARKER": "OPEN_SQUILLA_TUI_READY",
-                "OPENSQUILLA_OPENROUTER_LIVE_PRICING": "0",
-                "OPENSQUILLA_MEMORY_DREAM_DISABLED": "1",
-                "OPENSQUILLA_PRIVACY_DISABLE_NETWORK_OBSERVABILITY": "true",
-                "OPENSQUILLA_TUI_PACKAGED_GATE": "1",
+                "OPENSTARRY_CODE_GATEWAY_URL": gateway_url,
+                "OPENSTARRY_CODE_STATE_DIR": str(evidence.run_dir / "tui-state"),
+                "OPENSTARRY_CODE_LOG_DIR": str(evidence.run_dir / "tui-logs"),
+                "OPENSTARRY_CODE_TUI_READY_MARKER": "OPEN_SQUILLA_TUI_READY",
+                "OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING": "0",
+                "OPENSTARRY_CODE_MEMORY_DREAM_DISABLED": "1",
+                "OPENSTARRY_CODE_PRIVACY_DISABLE_NETWORK_OBSERVABILITY": "true",
+                "OPENSTARRY_CODE_TUI_PACKAGED_GATE": "1",
                 "TERM": "xterm-256color",
             }
         )
         tui_env.pop("PYTHONPATH", None)
         tui_env.pop("BUN_INSTALL", None)
-        tui_env.pop("OPENSQUILLA_TUI_DEV_SOURCE_HOST", None)
+        tui_env.pop("OPENSTARRY_CODE_TUI_DEV_SOURCE_HOST", None)
         command = [
             str(cli),
             "chat",

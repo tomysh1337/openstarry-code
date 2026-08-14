@@ -5,9 +5,9 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.safety.sandbox import HAS_RESOURCE
-from opensquilla.sandbox.backend.noop import NoopBackend
-from opensquilla.sandbox.types import (
+from openstarry_code.safety.sandbox import HAS_RESOURCE
+from openstarry_code.sandbox.backend.noop import NoopBackend
+from openstarry_code.sandbox.types import (
     MountSpec,
     NetworkMode,
     ResourceLimits,

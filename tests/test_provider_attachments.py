@@ -26,8 +26,8 @@ from typing import Any
 
 import pytest
 
-from opensquilla.provider.anthropic import AnthropicProvider, _build_message_payload
-from opensquilla.provider.types import (
+from openstarry_code.provider.anthropic import AnthropicProvider, _build_message_payload
+from openstarry_code.provider.types import (
     ChatConfig,
     ContentBlockImage,
     ContentBlockText,
@@ -81,7 +81,7 @@ def test_existing_image_block_unchanged() -> None:
 
 def test_document_block_round_trips_through_anthropic_adapter() -> None:
     """A PDF ContentBlockDocument emits Anthropic's native document shape."""
-    from opensquilla.provider.types import ContentBlockDocument  # noqa: F401
+    from openstarry_code.provider.types import ContentBlockDocument  # noqa: F401
 
     msg = Message(
         role="user",
@@ -121,7 +121,7 @@ def test_document_block_with_unsupported_media_type_raises() -> None:
     """Constructing a ContentBlockDocument with a non-PDF media_type raises."""
     from pydantic import ValidationError
 
-    from opensquilla.provider.types import ContentBlockDocument
+    from openstarry_code.provider.types import ContentBlockDocument
 
     with pytest.raises(ValidationError):
         ContentBlockDocument(
@@ -142,7 +142,7 @@ def test_document_block_with_unsupported_media_type_raises() -> None:
 
 def test_document_block_unsupported_provider_skips_gracefully() -> None:
     """Older SKUs replace the document block with a fallback text block."""
-    from opensquilla.provider.types import ContentBlockDocument
+    from openstarry_code.provider.types import ContentBlockDocument
 
     # The adapter's payload builder accepts an optional model parameter to
     # detect SKU support. An older Haiku SKU is below the 3.5 Sonnet floor.
@@ -182,8 +182,8 @@ def test_anthropic_400_on_document_block_surfaces_actionable_error(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """A 400 response while sending a document block surfaces code + body."""
-    from opensquilla.provider import anthropic as anthropic_mod
-    from opensquilla.provider.types import ContentBlockDocument
+    from openstarry_code.provider import anthropic as anthropic_mod
+    from openstarry_code.provider.types import ContentBlockDocument
 
     captured: dict[str, Any] = {"counter_calls": []}
 

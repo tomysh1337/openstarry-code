@@ -5,7 +5,7 @@ import contextlib
 
 import pytest
 
-from opensquilla.gateway.agent_tasks import AgentTaskRegistry
+from openstarry_code.gateway.agent_tasks import AgentTaskRegistry
 
 
 @pytest.mark.asyncio

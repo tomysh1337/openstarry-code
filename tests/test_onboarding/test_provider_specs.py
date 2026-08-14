@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.provider.registry import get_provider_spec
+from openstarry_code.provider.registry import get_provider_spec
 
 
 def test_provider_spec_requires_api_key_for_openrouter():
@@ -50,7 +50,7 @@ def test_provider_spec_does_not_require_base_url_for_openrouter():
 
 # --------------- ProviderSetupSpec catalog ---------------
 
-from opensquilla.onboarding.provider_specs import (  # noqa: E402
+from openstarry_code.onboarding.provider_specs import (  # noqa: E402
     ProviderSetupSpec,
     get_provider_setup_spec,
     list_provider_setup_specs,

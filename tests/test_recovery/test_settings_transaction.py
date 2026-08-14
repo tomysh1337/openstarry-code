@@ -10,10 +10,10 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.recovery import inspect_profile
-from opensquilla.recovery.atomic import _native_io_path
-from opensquilla.recovery.errors import AtomicStateUnknownError, RecoveryError
-from opensquilla.recovery.settings_transaction import (
+from openstarry_code.recovery import inspect_profile
+from openstarry_code.recovery.atomic import _native_io_path
+from openstarry_code.recovery.errors import AtomicStateUnknownError, RecoveryError
+from openstarry_code.recovery.settings_transaction import (
     apply_desktop_settings,
     recover_desktop_settings,
     settings_transaction_exists,
@@ -27,13 +27,13 @@ class SimulatedProcessCrash(BaseException):
 
 @pytest.fixture(autouse=True)
 def _isolated_profile_locks(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "user-state"))
-    monkeypatch.setenv("OPENSQUILLA_PROFILE_KIND", "desktop-primary")
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "user-state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_PROFILE_KIND", "desktop-primary")
 
 
 def _profile(tmp_path: Path) -> tuple[Path, Path, str, str]:
     user_data = tmp_path / "user-data"
-    home = user_data / "opensquilla"
+    home = user_data / "openstarry-code"
     workspace = home / "workspace"
     state = home / "state"
     workspace.mkdir(parents=True)
@@ -218,7 +218,7 @@ def test_imported_settings_preserve_windows_acl_when_fchmod_is_unavailable(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    import opensquilla.recovery.settings_transaction as transaction
+    import openstarry_code.recovery.settings_transaction as transaction
 
     home, credential_path, old_config, old_credential = _profile(tmp_path)
     credential_path.chmod(0o666)
@@ -244,7 +244,7 @@ def test_credential_hardening_does_not_fsync_read_only_windows_descriptor(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    import opensquilla.recovery.settings_transaction as transaction
+    import openstarry_code.recovery.settings_transaction as transaction
 
     _, credential_path, _, old_credential = _profile(tmp_path)
     credential_path.chmod(0o666)
@@ -359,11 +359,11 @@ def test_extended_length_settings_transaction_recovers_silently(
     tmp_path: Path,
 ) -> None:
     user_data = tmp_path / "user-data"
-    home = user_data / "opensquilla"
+    home = user_data / "openstarry-code"
     index = 0
     while len(str(home)) < 275:
         user_data /= f"user-data-segment-{index:02d}-0123456789"
-        home = user_data / "opensquilla"
+        home = user_data / "openstarry-code"
         index += 1
     workspace = home / "workspace"
     state = home / "state"
@@ -437,7 +437,7 @@ def test_enospc_during_publication_rolls_back_both_files(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    import opensquilla.recovery.settings_transaction as transaction
+    import openstarry_code.recovery.settings_transaction as transaction
 
     home, credential_path, old_config, old_credential = _profile(tmp_path)
     new_config, new_credential = _new_pair(home)
@@ -497,7 +497,7 @@ def test_settings_publication_preserves_a_mutation_during_old_file_parking(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    import opensquilla.recovery.settings_transaction as transaction
+    import openstarry_code.recovery.settings_transaction as transaction
 
     home, credential_path, old_config, old_credential = _profile(tmp_path)
     config_path = home / "config.toml"
@@ -666,7 +666,7 @@ def test_settings_recovery_rejects_a_phase_impossible_publication_order(
 def test_fresh_onboarding_initializes_only_canonical_roots(tmp_path: Path) -> None:
     user_data = tmp_path / "user-data"
     user_data.mkdir()
-    home = user_data / "opensquilla"
+    home = user_data / "openstarry-code"
     config = (
         f"state_dir = {json.dumps(str(home / 'state'))}\n"
         'search_provider = "duckduckgo"\n\n'
@@ -692,7 +692,7 @@ def test_fresh_onboarding_initializes_only_canonical_roots(tmp_path: Path) -> No
 def test_crashed_fresh_onboarding_recovers_canonical_roots_and_pair(tmp_path: Path) -> None:
     user_data = tmp_path / "user-data"
     user_data.mkdir()
-    home = user_data / "opensquilla"
+    home = user_data / "openstarry-code"
     config = (
         f"state_dir = {json.dumps(str(home / 'state'))}\n"
         'search_provider = "duckduckgo"\n\n'
@@ -736,7 +736,7 @@ def test_settings_writer_refuses_cross_process_profile_lock(
             "-c",
             (
                 "import sys\n"
-                "from opensquilla.recovery.locking import ProfileOperationLock\n"
+                "from openstarry_code.recovery.locking import ProfileOperationLock\n"
                 "with ProfileOperationLock(sys.argv[1]):\n"
                 " print('locked', flush=True)\n"
                 " sys.stdin.readline()\n"
@@ -749,8 +749,8 @@ def test_settings_writer_refuses_cross_process_profile_lock(
         text=True,
         env={
             **dict(os.environ),
-            "OPENSQUILLA_USER_STATE_DIR": str(tmp_path / "user-state"),
-            "OPENSQUILLA_TEST": "1",
+            "OPENSTARRY_CODE_USER_STATE_DIR": str(tmp_path / "user-state"),
+            "OPENSTARRY_CODE_TEST": "1",
         },
     )
     try:
@@ -785,7 +785,7 @@ def test_settings_transaction_never_mutates_an_ordinary_cli_profile(
     home, credential_path, old_config, old_credential = _profile(tmp_path)
     new_config, new_credential = _new_pair(home)
     report = inspect_profile(home, profile_kind="desktop-primary")
-    monkeypatch.delenv("OPENSQUILLA_PROFILE_KIND", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_PROFILE_KIND", raising=False)
 
     with pytest.raises(RecoveryError) as caught:
         apply_desktop_settings(
@@ -808,7 +808,7 @@ def test_settings_transaction_never_mutates_an_ordinary_cli_profile(
 def test_windows_settings_moves_delegate_to_hardened_no_replace_primitive(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.recovery.settings_transaction as transaction
+    import openstarry_code.recovery.settings_transaction as transaction
 
     calls: list[tuple[Path, Path]] = []
     source = Path("C:/synthetic/source")

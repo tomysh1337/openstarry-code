@@ -1,4 +1,4 @@
-"""CLI tests for `opensquilla channels`."""
+"""CLI tests for `openstarry-code channels`."""
 
 from __future__ import annotations
 
@@ -6,14 +6,14 @@ from pathlib import Path
 
 from typer.testing import CliRunner
 
-from opensquilla.cli.main import app
+from openstarry_code.cli.main import app
 
 runner = CliRunner()
 
 
 def _setenv(monkeypatch, tmp_path: Path) -> Path:
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     return target
 
 
@@ -286,16 +286,16 @@ def test_channels_add_prints_status_verification_next_step(tmp_path, monkeypatch
     )
     assert result.exit_code == 0
     out = result.stdout.lower()
-    assert "opensquilla gateway restart" in out
-    assert "opensquilla channels status w --json" in out
+    assert "openstarry-code gateway restart" in out
+    assert "openstarry-code channels status w --json" in out
 
 
 def test_channels_add_echoes_resolved_path_and_source(tmp_path, monkeypatch):
-    monkeypatch.delenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", raising=False)
     monkeypatch.setenv("HOME", str(tmp_path / "home"))
     project = tmp_path / "project"
     project.mkdir()
-    (project / "opensquilla.toml").write_text("")
+    (project / "openstarry-code.toml").write_text("")
     monkeypatch.chdir(project)
     result = runner.invoke(
         app,
@@ -306,7 +306,7 @@ def test_channels_add_echoes_resolved_path_and_source(tmp_path, monkeypatch):
         ],
     )
     assert result.exit_code == 0, result.stdout
-    assert str(project / "opensquilla.toml") in result.stdout
+    assert str(project / "openstarry-code.toml") in result.stdout
     assert "cwd" in result.stdout.lower()
 
 
@@ -330,7 +330,7 @@ class _FakePairingGatewayClient:
 def _install_fake_gateway(monkeypatch) -> type[_FakePairingGatewayClient]:
     _FakePairingGatewayClient.calls = []
     monkeypatch.setattr(
-        "opensquilla.cli.gateway_client.GatewayClient", _FakePairingGatewayClient
+        "openstarry_code.cli.gateway_client.GatewayClient", _FakePairingGatewayClient
     )
     return _FakePairingGatewayClient
 

@@ -6,11 +6,11 @@ import json
 
 import pytest
 
-from opensquilla.skills.creator.patterns.schemas import (
+from openstarry_code.skills.creator.patterns.schemas import (
     FanOutMergeSlots,
     SequentialSlots,
 )
-from opensquilla.skills.creator.proposer import meta_skill_assemble
+from openstarry_code.skills.creator.proposer import meta_skill_assemble
 
 
 def test_sequential_slots_min_steps() -> None:
@@ -67,7 +67,7 @@ def test_meta_skill_assemble_rejects_invalid_slots() -> None:
 
 
 def test_meta_skill_fill_slots_with_stub_llm(monkeypatch) -> None:
-    from opensquilla.skills.creator import proposer
+    from openstarry_code.skills.creator import proposer
 
     call_log: list[str] = []
     canned_response = json.dumps({
@@ -103,13 +103,13 @@ def test_creator_package_import_registers_tools() -> None:
     """C1 regression: importing the creator package must register both tools
     in the default ToolRegistry. Phase 1 cross-task review found that the
     @tool decorators only run when the module is imported — production code
-    must import opensquilla.skills.creator somewhere in the meta-skill branch."""
+    must import openstarry_code.skills.creator somewhere in the meta-skill branch."""
     import importlib
 
-    import opensquilla.skills.creator
-    importlib.reload(opensquilla.skills.creator)
+    import openstarry_code.skills.creator
+    importlib.reload(openstarry_code.skills.creator)
 
-    from opensquilla.tools.registry import get_default_registry
+    from openstarry_code.tools.registry import get_default_registry
     names = get_default_registry().list_names()
     meta_names = sorted(n for n in names if n.startswith("meta"))
     assert "meta_skill_assemble" in names, (
@@ -119,7 +119,7 @@ def test_creator_package_import_registers_tools() -> None:
 
 
 def test_meta_skill_fill_slots_retries_once_on_validation_error(monkeypatch) -> None:
-    from opensquilla.skills.creator import proposer
+    from openstarry_code.skills.creator import proposer
 
     responses = iter([
         '{"name": "bad"}',  # missing fields → ValidationError
@@ -159,10 +159,10 @@ def test_creator_tools_hidden_from_owner_default() -> None:
     owner tool catalog. They are internal orchestrator-only tools."""
     import importlib
 
-    import opensquilla.skills.creator  # trigger @tool registration
-    importlib.reload(opensquilla.skills.creator)
+    import openstarry_code.skills.creator  # trigger @tool registration
+    importlib.reload(openstarry_code.skills.creator)
 
-    from opensquilla.tools.registry import ToolContext, get_default_registry
+    from openstarry_code.tools.registry import ToolContext, get_default_registry
 
     reg = get_default_registry()
     # Use the default owner context (is_owner=True, no allowed_tools override).
@@ -184,15 +184,15 @@ def test_creator_tools_hidden_from_owner_default() -> None:
 
 
 def test_resolve_provider_config_honors_env_overrides(monkeypatch, tmp_path) -> None:
-    """N14: GatewayConfig.load() honours OPENSQUILLA_LLM_* env vars; creator
+    """N14: GatewayConfig.load() honours OPENSTARRY_CODE_LLM_* env vars; creator
     must respect the same resolution path."""
     # Point to a non-existent config so the TOML path is empty but env wins.
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "nope.toml"))
-    monkeypatch.setenv("OPENSQUILLA_LLM_PROVIDER", "openai")
-    monkeypatch.setenv("OPENSQUILLA_LLM_MODEL", "gpt-4o-mini")
-    monkeypatch.setenv("OPENSQUILLA_LLM_API_KEY", "test-key")
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "nope.toml"))
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_PROVIDER", "openai")
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_MODEL", "gpt-4o-mini")
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_API_KEY", "test-key")
 
-    from opensquilla.skills.creator.proposer import _resolve_provider_from_config
+    from openstarry_code.skills.creator.proposer import _resolve_provider_from_config
     provider, model, api_key, base_url = _resolve_provider_from_config()
     assert provider == "openai"
     assert model == "gpt-4o-mini"
@@ -210,14 +210,14 @@ def test_resolve_provider_config_includes_base_url(monkeypatch, tmp_path) -> Non
         'base_url = "https://my-vllm.local/v1"\n',
         encoding="utf-8",
     )
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(toml))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(toml))
     # Ensure no env-LLM override interferes.
-    monkeypatch.delenv("OPENSQUILLA_LLM_PROVIDER", raising=False)
-    monkeypatch.delenv("OPENSQUILLA_LLM_MODEL", raising=False)
-    monkeypatch.delenv("OPENSQUILLA_LLM_API_KEY", raising=False)
-    monkeypatch.delenv("OPENSQUILLA_LLM_BASE_URL", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_LLM_PROVIDER", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_LLM_MODEL", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_LLM_API_KEY", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_LLM_BASE_URL", raising=False)
 
-    from opensquilla.skills.creator.proposer import _resolve_provider_from_config
+    from openstarry_code.skills.creator.proposer import _resolve_provider_from_config
     provider, model, api_key, base_url = _resolve_provider_from_config()
     assert provider == "openai"
     assert base_url == "https://my-vllm.local/v1"
@@ -228,7 +228,7 @@ def test_slot_filler_rejects_yaml_unsafe_strings() -> None:
     break YAML rendering."""
     import pytest as _pytest
 
-    from opensquilla.skills.creator.patterns.schemas import SequentialStep
+    from openstarry_code.skills.creator.patterns.schemas import SequentialStep
 
     # Acceptable
     SequentialStep(id="ok", skill="summarize", task="simple task")
@@ -262,7 +262,7 @@ def test_fill_slots_retry_no_type_error_on_custom_validator_error(monkeypatch) -
     """
     import json as _json
 
-    from opensquilla.skills.creator import proposer
+    from openstarry_code.skills.creator import proposer
 
     clean_payload = _json.dumps({
         "name": "synth-pipeline",
@@ -309,7 +309,7 @@ def test_creator_tools_registered_via_meta_invoke_module_import() -> None:
     """N10: importing the meta_invoke soft-path module (agent.py) must also
     ensure creator tools are registered. The lazy import added at the top of
     _run_meta_invoke_streaming fires whenever the method is entered; here we
-    verify the underlying registration by importing opensquilla.skills.creator
+    verify the underlying registration by importing openstarry_code.skills.creator
     directly (the same effect as the lazy import) and asserting the registry
     reflects the tools — mirrors the C1 hard-takeover test but for the
     soft-path entry in agent.py.
@@ -317,10 +317,10 @@ def test_creator_tools_registered_via_meta_invoke_module_import() -> None:
     import importlib
 
     # Simulate what the N10 lazy import does when _run_meta_invoke_streaming fires.
-    import opensquilla.skills.creator  # noqa: F401
-    importlib.reload(opensquilla.skills.creator)
+    import openstarry_code.skills.creator  # noqa: F401
+    importlib.reload(openstarry_code.skills.creator)
 
-    from opensquilla.tools.registry import get_default_registry
+    from openstarry_code.tools.registry import get_default_registry
 
     reg = get_default_registry()
     names = reg.list_names()
@@ -335,7 +335,7 @@ def test_creator_tools_registered_via_meta_invoke_module_import() -> None:
 
 
 def test_strip_code_fences_handles_json_lang_tag() -> None:
-    from opensquilla.skills.creator.proposer import _strip_code_fences
+    from openstarry_code.skills.creator.proposer import _strip_code_fences
 
     assert _strip_code_fences('```json\n{"a": 1}\n```') == '{"a": 1}'
     assert _strip_code_fences('```JSON\n{"a": 1}\n```') == '{"a": 1}'
@@ -347,7 +347,7 @@ def test_strip_code_fences_handles_json_lang_tag() -> None:
 
 def test_fill_slots_strips_code_fence_before_parsing(monkeypatch) -> None:
     """Fix #A: code-fence-wrapped JSON should parse successfully."""
-    from opensquilla.skills.creator import proposer
+    from openstarry_code.skills.creator import proposer
 
     canned = json.dumps({
         "name": "fenced-test",
@@ -374,7 +374,7 @@ def test_fill_slots_strips_code_fence_before_parsing(monkeypatch) -> None:
 def test_fill_slots_validation_error_surfaces_detail(monkeypatch) -> None:
     """Fix #B: ValidationError after retry should include actionable detail
     (response preview + error message), not just generic 'internal error'."""
-    from opensquilla.skills.creator import proposer
+    from openstarry_code.skills.creator import proposer
 
     monkeypatch.setattr(
         proposer, "_call_llm_for_slots",
@@ -402,7 +402,7 @@ def test_fill_slots_prompt_includes_schema_and_example(monkeypatch) -> None:
     - `execution_sequence` appears as an anti-pattern warning (DO NOT use)
     - an example anchors the output (example-pipeline or pdf-toolkit)
     """
-    from opensquilla.skills.creator import proposer
+    from openstarry_code.skills.creator import proposer
 
     captured: list[str] = []
     canned_resp = json.dumps({
@@ -450,14 +450,14 @@ def test_resolve_provider_config_accepts_empty_api_key(tmp_path, monkeypatch) ->
     such as ollama / lm_studio). Previously the `and api_key` truthy guard
     returned (None, None, None), causing the resolution to fall through to
     env-var scan and ultimately raise RuntimeError on keyless deployments."""
-    config_toml = tmp_path / "opensquilla.toml"
+    config_toml = tmp_path / "openstarry-code.toml"
     config_toml.write_text(
         '[llm]\nprovider = "ollama"\nmodel = "llama3"\n',
         encoding="utf-8",
     )
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(config_toml))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(config_toml))
 
-    from opensquilla.skills.creator.proposer import _resolve_provider_from_config
+    from openstarry_code.skills.creator.proposer import _resolve_provider_from_config
 
     provider, model, api_key, base_url = _resolve_provider_from_config()
     assert provider == "ollama", (
@@ -469,35 +469,35 @@ def test_resolve_provider_config_accepts_empty_api_key(tmp_path, monkeypatch) ->
 
 
 def test_resolve_provider_config_env_override_beats_toml(tmp_path, monkeypatch) -> None:
-    """Fix #C: OPENSQUILLA_LLM_MODEL env var must win over a TOML [llm] section.
+    """Fix #C: OPENSTARRY_CODE_LLM_MODEL env var must win over a TOML [llm] section.
 
     When a config.toml has [llm] provider/model values, pydantic-settings'
     nested env binding is bypassed (the parent passes the TOML dict directly).
     _resolve_provider_from_config must apply a post-override so the env vars
     always beat TOML content.
     """
-    config_toml = tmp_path / "opensquilla.toml"
+    config_toml = tmp_path / "openstarry-code.toml"
     config_toml.write_text(
         '[llm]\nprovider = "openrouter"\nmodel = "deepseek/deepseek-v3.1-terminus"\n'
         'api_key = "toml-key"\n',
         encoding="utf-8",
     )
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(config_toml))
-    monkeypatch.setenv("OPENSQUILLA_LLM_PROVIDER", "anthropic")
-    monkeypatch.setenv("OPENSQUILLA_LLM_MODEL", "claude-3-5-haiku-20241022")
-    monkeypatch.setenv("OPENSQUILLA_LLM_API_KEY", "env-key")
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(config_toml))
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_PROVIDER", "anthropic")
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_MODEL", "claude-3-5-haiku-20241022")
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_API_KEY", "env-key")
 
-    from opensquilla.skills.creator.proposer import _resolve_provider_from_config
+    from openstarry_code.skills.creator.proposer import _resolve_provider_from_config
 
     provider, model, api_key, base_url = _resolve_provider_from_config()
     assert provider == "anthropic", (
-        f"Fix #C: env var OPENSQUILLA_LLM_PROVIDER must beat TOML; got {provider!r}"
+        f"Fix #C: env var OPENSTARRY_CODE_LLM_PROVIDER must beat TOML; got {provider!r}"
     )
     assert model == "claude-3-5-haiku-20241022", (
-        f"Fix #C: env var OPENSQUILLA_LLM_MODEL must beat TOML; got {model!r}"
+        f"Fix #C: env var OPENSTARRY_CODE_LLM_MODEL must beat TOML; got {model!r}"
     )
     assert api_key == "env-key", (
-        f"Fix #C: env var OPENSQUILLA_LLM_API_KEY must beat TOML; got {api_key!r}"
+        f"Fix #C: env var OPENSTARRY_CODE_LLM_API_KEY must beat TOML; got {api_key!r}"
     )
 
 
@@ -507,7 +507,7 @@ async def test_fill_slots_tool_validation_error_returns_structured_json(monkeypa
     exhausting all retries, the @tool wrapper must catch it and return a structured
     JSON error dict rather than letting it propagate as a generic 'internal error'
     through the envelope layer."""
-    from opensquilla.skills.creator import proposer
+    from openstarry_code.skills.creator import proposer
 
     # Always return invalid JSON to exhaust retries
     monkeypatch.setattr(

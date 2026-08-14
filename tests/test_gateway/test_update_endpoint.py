@@ -7,10 +7,10 @@ from concurrent.futures import ThreadPoolExecutor
 
 from starlette.testclient import TestClient
 
-from opensquilla import __version__
-from opensquilla.gateway.app import create_gateway_app
-from opensquilla.gateway.config import AuthConfig, GatewayConfig, RateLimitConfig
-from opensquilla.observability import update_check
+from openstarry_code import __version__
+from openstarry_code.gateway.app import create_gateway_app
+from openstarry_code.gateway.config import AuthConfig, GatewayConfig, RateLimitConfig
+from openstarry_code.observability import update_check
 
 
 def test_update_endpoint_returns_fixed_uncached_shape(monkeypatch) -> None:
@@ -94,7 +94,7 @@ def test_update_endpoint_does_not_wait_for_background_release_lookup(
     monkeypatch,
 ) -> None:
     for name in (
-        "OPENSQUILLA_PRIVACY_DISABLE_NETWORK_OBSERVABILITY",
+        "OPENSTARRY_CODE_PRIVACY_DISABLE_NETWORK_OBSERVABILITY",
         update_check.UPDATE_CHECK_DISABLED_ENV,
         update_check.TELEMETRY_DISABLED_ENV,
         "GITHUB_ACTIONS",

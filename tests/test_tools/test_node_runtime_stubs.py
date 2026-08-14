@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.tools.builtin.nodes import canvas, nodes
-from opensquilla.tools.types import ToolError
+from openstarry_code.tools.builtin.nodes import canvas, nodes
+from openstarry_code.tools.types import ToolError
 
 
 @pytest.mark.asyncio

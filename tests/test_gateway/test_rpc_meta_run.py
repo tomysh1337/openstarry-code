@@ -16,33 +16,33 @@ from typing import Any
 
 import pytest
 
-import opensquilla.gateway.rpc_meta_runs as rpc_meta_runs_module
-from opensquilla.engine.steps.meta_command import (
+import openstarry_code.gateway.rpc_meta_runs as rpc_meta_runs_module
+from openstarry_code.engine.steps.meta_command import (
     meta_command_launch,
     pending_meta_launch_peek,
     pending_meta_launch_pop,
     pending_meta_launch_promote,
 )
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.protocol import (
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.protocol import (
     ERROR_INVALID_REQUEST,
     ERROR_UNAUTHORIZED,
     ERROR_UNAVAILABLE,
 )
-from opensquilla.gateway.rpc import get_dispatcher
-from opensquilla.gateway.rpc.registry import RpcContext, RpcHandlerError
-from opensquilla.gateway.rpc_meta_runs import (
+from openstarry_code.gateway.rpc import get_dispatcher
+from openstarry_code.gateway.rpc.registry import RpcContext, RpcHandlerError
+from openstarry_code.gateway.rpc_meta_runs import (
     _handle_meta_drafts_discard,
     _handle_meta_drafts_list,
     _handle_meta_run,
 )
-from opensquilla.gateway.scopes import ADMIN_SCOPE, METHOD_SCOPES, READ_SCOPE, WRITE_SCOPE
-from opensquilla.session.manager import SessionManager
-from opensquilla.session.models import SessionNode
-from opensquilla.session.storage import SessionStorage
-from opensquilla.session.turn_context import turn_context_scope
-from opensquilla.skills.loader import SkillLoader
-from opensquilla.skills.types import (
+from openstarry_code.gateway.scopes import ADMIN_SCOPE, METHOD_SCOPES, READ_SCOPE, WRITE_SCOPE
+from openstarry_code.session.manager import SessionManager
+from openstarry_code.session.models import SessionNode
+from openstarry_code.session.storage import SessionStorage
+from openstarry_code.session.turn_context import turn_context_scope
+from openstarry_code.skills.loader import SkillLoader
+from openstarry_code.skills.types import (
     SkillPlatformMeta,
     SkillRequires,
     SkillSpec,
@@ -393,7 +393,7 @@ async def test_meta_draft_discard_capacity_is_retryable_not_accepted(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(
-        "opensquilla.session.storage._META_LAUNCH_DISCARD_PER_SESSION_LIMIT",
+        "openstarry_code.session.storage._META_LAUNCH_DISCARD_PER_SESSION_LIMIT",
         0,
     )
     storage = await SessionStorage.open(str(tmp_path / "sessions.db"))
@@ -731,7 +731,7 @@ def test_meta_run_pending_capacity_is_retryable_and_not_accepted(
         skill_loader=_make_loader_with_meta(tmp_path),
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_meta_runs.pending_meta_launch_put",
+        "openstarry_code.gateway.rpc_meta_runs.pending_meta_launch_put",
         lambda *_args, **_kwargs: "capacity",
     )
 
@@ -1012,7 +1012,7 @@ def test_short_drama_missing_provider_returns_manual_action_without_launch(
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     monkeypatch.delenv("ARK_API_KEY", raising=False)
     monkeypatch.setattr(
-        "opensquilla.skills.meta.readiness.is_skill_available_live",
+        "openstarry_code.skills.meta.readiness.is_skill_available_live",
         lambda _name: True,
     )
     config = SimpleNamespace(
@@ -1066,7 +1066,7 @@ def test_short_drama_launch_accepts_secondary_openrouter_profile(
     _drain(session_key)
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     monkeypatch.setattr(
-        "opensquilla.skills.meta.readiness.is_skill_available_live",
+        "openstarry_code.skills.meta.readiness.is_skill_available_live",
         lambda _name: True,
     )
     secret = "synthetic-secondary-profile-key"
@@ -1122,7 +1122,7 @@ def test_meta_run_does_not_globally_alias_openrouter_for_untrusted_meta(
     session_key = f"sess-run-openrouter-{credential_source}"
     _drain(session_key)
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
-    custom_env = "OPENSQUILLA_TEST_META_OPENROUTER_KEY"
+    custom_env = "OPENSTARRY_CODE_TEST_META_OPENROUTER_KEY"
     monkeypatch.delenv(custom_env, raising=False)
     if credential_source == "config":
         secret = "synthetic-openrouter-config-key"

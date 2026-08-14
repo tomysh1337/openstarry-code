@@ -12,7 +12,7 @@ from typing import Any
 
 import pytest
 
-from opensquilla.skills.loader import SkillLoader
+from openstarry_code.skills.loader import SkillLoader
 
 BUNDLED = (
     Path(__file__).resolve().parents[2]

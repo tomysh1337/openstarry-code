@@ -19,16 +19,16 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from opensquilla.engine.pricing import estimate_cost, resolve_model_price  # noqa: E402
-from opensquilla.provider.model_catalog import ModelCatalog  # noqa: E402
-from opensquilla.provider.openai import _versioned_api_url  # noqa: E402
-from opensquilla.provider.reasoning_dialects import (  # noqa: E402
+from openstarry_code.engine.pricing import estimate_cost, resolve_model_price  # noqa: E402
+from openstarry_code.provider.model_catalog import ModelCatalog  # noqa: E402
+from openstarry_code.provider.openai import _versioned_api_url  # noqa: E402
+from openstarry_code.provider.reasoning_dialects import (  # noqa: E402
     ReasoningDisableArgs,
     apply_reasoning_disable,
 )
-from opensquilla.provider.registry import get_provider_spec  # noqa: E402
-from opensquilla.provider.selector import ProviderConfig, _build_provider  # noqa: E402
-from opensquilla.provider.types import (  # noqa: E402
+from openstarry_code.provider.registry import get_provider_spec  # noqa: E402
+from openstarry_code.provider.selector import ProviderConfig, _build_provider  # noqa: E402
+from openstarry_code.provider.types import (  # noqa: E402
     ChatConfig,
     DoneEvent,
     ErrorEvent,
@@ -591,7 +591,7 @@ async def smoke_provider(
         base_url_override or os.environ.get(_BASE_ENV.get(provider, ""), "").strip()
     )
     base_url = registry_endpoint(provider, requested_base_url or None)
-    expected = f"opensquilla {provider} smoke ok"
+    expected = f"openstarry-code {provider} smoke ok"
 
     # Local providers (ollama, lm_studio, ovms) declare their key optional in
     # the registry; only skip when the spec actually requires one.
@@ -770,7 +770,7 @@ async def main() -> int:
     if not is_temporary_report_path(output):
         parser.error("--output must be inside the system temporary directory")
 
-    if not args.no_env_file and os.environ.get("OPENSQUILLA_LIVE_DISABLE_DOTENV") != "1":
+    if not args.no_env_file and os.environ.get("OPENSTARRY_CODE_LIVE_DISABLE_DOTENV") != "1":
         _load_env_quietly()
     providers = [args.provider] if args.provider else list(args.providers)
     models = _csv_values(args.models)

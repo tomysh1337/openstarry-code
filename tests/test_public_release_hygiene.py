@@ -5,7 +5,7 @@ import subprocess
 import tomllib
 from pathlib import Path
 
-from opensquilla.gateway.config import GatewayConfig
+from openstarry_code.gateway.config import GatewayConfig
 
 # Real secret-shape detectors. Each pattern matches a shipped vendor key
 # format so an accidentally-committed credential is caught at CI time
@@ -66,13 +66,13 @@ PATH_POLICY_FIXTURE_FILES = {
     "tests/test_tools/test_shell_sensitive.py",
     "tests/test_tools/test_web_http_request.py",
     "tests/test_observability/test_decision_log_contract.py",
-    "opensquilla-webui/src/components/ErrorBoundary.test.ts",
-    "opensquilla-webui/src/components/errorBoundaryDetails.test.ts",
-    "opensquilla-webui/src/components/SupportDiagnosticsMenu.test.ts",
-    "opensquilla-webui/src/composables/chat/useChatShareExport.test.ts",
-    "opensquilla-webui/src/utils/chat/activityToolDetails.test.ts",
-    "opensquilla-webui/src/utils/overviewDiagnostics.test.ts",
-    "opensquilla-webui/src/views/OverviewView.diagnostics.test.ts",
+    "openstarry-code-webui/src/components/ErrorBoundary.test.ts",
+    "openstarry-code-webui/src/components/errorBoundaryDetails.test.ts",
+    "openstarry-code-webui/src/components/SupportDiagnosticsMenu.test.ts",
+    "openstarry-code-webui/src/composables/chat/useChatShareExport.test.ts",
+    "openstarry-code-webui/src/utils/chat/activityToolDetails.test.ts",
+    "openstarry-code-webui/src/utils/overviewDiagnostics.test.ts",
+    "openstarry-code-webui/src/views/OverviewView.diagnostics.test.ts",
 }
 
 

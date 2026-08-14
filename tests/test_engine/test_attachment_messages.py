@@ -22,8 +22,8 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.provider.types import (
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.provider.types import (
     ContentBlockImage,
     ContentBlockText,
 )
@@ -229,7 +229,7 @@ def test_inline_pdf_materializes_to_workspace_path(tmp_path: Path) -> None:
     wrapped = next(b for b in text_blocks if b.text.startswith("<file "))
     assert "Hello PDF Text" in wrapped.text
     assert "attachment available: report.pdf (application/pdf" in wrapped.text
-    workspace_paths = list((workspace / ".opensquilla" / "attachments").glob("**/*.pdf"))
+    workspace_paths = list((workspace / ".openstarry-code" / "attachments").glob("**/*.pdf"))
     assert len(workspace_paths) == 1
     assert workspace_paths[0].read_bytes() == pdf_bytes
 
@@ -260,7 +260,7 @@ def test_historical_inline_pdf_materializes_to_workspace_path(tmp_path: Path) ->
     assert isinstance(out, str)
     assert "use previous PDF" in out
     assert "historical attachment available: report.pdf (application/pdf" in out
-    workspace_paths = list((workspace / ".opensquilla" / "attachments").glob("**/*.pdf"))
+    workspace_paths = list((workspace / ".openstarry-code" / "attachments").glob("**/*.pdf"))
     assert len(workspace_paths) == 1
     assert workspace_paths[0].read_bytes() == pdf_bytes
 
@@ -578,7 +578,7 @@ def test_office_zip_guard_measures_real_inflated_bytes(monkeypatch) -> None:
     import io as _io
     import zipfile as _zipfile
 
-    from opensquilla.engine import runtime
+    from openstarry_code.engine import runtime
 
     buffer = _io.BytesIO()
     with _zipfile.ZipFile(buffer, "w", _zipfile.ZIP_DEFLATED) as archive:
@@ -763,7 +763,7 @@ def test_opaque_zip_emits_metadata_envelope_and_workspace_copy(tmp_path: Path) -
     assert "attachment available: paper.zip (application/zip" in wrapped.text
     # The raw payload must never reach the provider prompt.
     assert _b64(zip_bytes) not in wrapped.text
-    workspace_paths = list((workspace / ".opensquilla" / "attachments").glob("**/*.zip"))
+    workspace_paths = list((workspace / ".openstarry-code" / "attachments").glob("**/*.zip"))
     assert len(workspace_paths) == 1
     assert workspace_paths[0].read_bytes() == zip_bytes
 
@@ -828,7 +828,7 @@ def test_parameterized_text_mime_routes_to_text_family() -> None:
 def test_staged_text_ref_above_inline_cap_is_accepted(tmp_path: Path) -> None:
     # Staged text honors the staged ceiling, not the 2MB inline cap: the
     # staged flag is no longer PDF-only.
-    from opensquilla.contracts.attachments import TEXT_ATTACHMENT_BYTES
+    from openstarry_code.contracts.attachments import TEXT_ATTACHMENT_BYTES
 
     payload = b"a" * (TEXT_ATTACHMENT_BYTES + 64)
     ref = _ref(tmp_path, payload, name="huge.log", mime="text/plain")
@@ -884,7 +884,7 @@ def test_non_rendered_image_label_is_opaque_not_vision(tmp_path: Path) -> None:
     assert 'mime="image/tiff"' in wrapped.text
     assert "content is not inlined" in wrapped.text
     assert _b64(payload) not in wrapped.text
-    copies = list((workspace / ".opensquilla" / "attachments").glob("**/*.tiff"))
+    copies = list((workspace / ".openstarry-code" / "attachments").glob("**/*.tiff"))
     assert len(copies) == 1
 
 
@@ -923,5 +923,5 @@ def test_workspace_budget_degrades_materialization_to_marker(tmp_path: Path) -> 
     wrapped = next(b for b in text_blocks if b.text.startswith("<file "))
     assert "attachment unavailable" in wrapped.text
     assert "workspace attachment budget exceeded" in wrapped.text
-    files = list((workspace / ".opensquilla" / "attachments").rglob("*-blob.bin"))
+    files = list((workspace / ".openstarry-code" / "attachments").rglob("*-blob.bin"))
     assert files == []

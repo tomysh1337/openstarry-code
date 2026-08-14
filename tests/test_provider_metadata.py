@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from opensquilla.provider.protocol import (
+from openstarry_code.provider.protocol import (
     ProviderConnectionConfig,
     ProviderMetadata,
     provider_connection_config,
     provider_metadata,
 )
-from opensquilla.session.compaction import build_compaction_config_from_provider
+from openstarry_code.session.compaction import build_compaction_config_from_provider
 
 
 class _MetadataProvider:

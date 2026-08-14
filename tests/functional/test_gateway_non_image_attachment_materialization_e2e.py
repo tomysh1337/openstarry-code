@@ -19,27 +19,27 @@ from typing import Any
 import httpx
 import pytest
 
-import opensquilla.engine.steps.squilla_router as squilla_router_step
-from opensquilla.attachment_refs import transcript_material_path
-from opensquilla.engine import AgentConfig
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.gateway import rpc_sessions as _rpc_sessions  # noqa: F401
-from opensquilla.gateway.agent_tasks import get_agent_task_registry
-from opensquilla.gateway.app import create_gateway_app
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.rpc import RpcContext, get_dispatcher
-from opensquilla.gateway.uploads import UploadStore, set_upload_store
-from opensquilla.gateway.websocket import SubscriptionManager, get_registry
-from opensquilla.provider import ChatConfig, DoneEvent, Message, ModelCapabilities
-from opensquilla.provider.types import (
+import openstarry_code.engine.steps.squilla_router as squilla_router_step
+from openstarry_code.attachment_refs import transcript_material_path
+from openstarry_code.engine import AgentConfig
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.gateway import rpc_sessions as _rpc_sessions  # noqa: F401
+from openstarry_code.gateway.agent_tasks import get_agent_task_registry
+from openstarry_code.gateway.app import create_gateway_app
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.rpc import RpcContext, get_dispatcher
+from openstarry_code.gateway.uploads import UploadStore, set_upload_store
+from openstarry_code.gateway.websocket import SubscriptionManager, get_registry
+from openstarry_code.provider import ChatConfig, DoneEvent, Message, ModelCapabilities
+from openstarry_code.provider.types import (
     ContentBlockImage,
     ContentBlockText,
     ModelInfo,
     TextDeltaEvent,
 )
-from opensquilla.session.manager import SessionManager
-from opensquilla.session.storage import SessionStorage
+from openstarry_code.session.manager import SessionManager
+from openstarry_code.session.storage import SessionStorage
 
 _TEXT_MODEL = "test/text"
 _GATE_MODEL = "test/gate"
@@ -357,7 +357,7 @@ def _message_has_image(message: Message) -> bool:
 
 @pytest.fixture
 async def _e2e_stack(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
-    monkeypatch.setenv("OPENSQUILLA_OPENROUTER_LIVE_PRICING", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING", "0")
     monkeypatch.setattr(squilla_router_step, "_get_strategy", lambda _cfg: _TextTierStrategy())
     config = _configure_gateway(tmp_path)
     store = UploadStore(marker_dir=tmp_path / "upload-markers")
@@ -486,7 +486,7 @@ async def test_current_turn_pdf_is_materialized_to_workspace_path(
     assert material_path.read_bytes() == pdf_bytes
 
     workspace_paths = list(
-        (Path(config.workspace_dir or "") / ".opensquilla" / "attachments").glob("**/*.pdf")
+        (Path(config.workspace_dir or "") / ".openstarry-code" / "attachments").glob("**/*.pdf")
     )
     assert len(workspace_paths) == 1
     assert workspace_paths[0].read_bytes() == pdf_bytes
@@ -494,7 +494,7 @@ async def test_current_turn_pdf_is_materialized_to_workspace_path(
     sent_text = _all_provider_text(text_provider.calls[-1]["messages"])
     assert "Machine Learning" in sent_text
     assert "attachment available: L11 RL.pdf (application/pdf" in sent_text
-    assert ".opensquilla/attachments/" in sent_text
+    assert ".openstarry-code/attachments/" in sent_text
     assert workspace_paths[0].name in sent_text
 
 
@@ -535,7 +535,7 @@ async def test_current_turn_inline_pdf_is_materialized_to_workspace_path(
     assert "sha256_ref" not in persisted_attachment
 
     workspace_paths = list(
-        (Path(config.workspace_dir or "") / ".opensquilla" / "attachments").glob("**/*.pdf")
+        (Path(config.workspace_dir or "") / ".openstarry-code" / "attachments").glob("**/*.pdf")
     )
     assert len(workspace_paths) == 1
     assert workspace_paths[0].read_bytes() == pdf_bytes
@@ -543,7 +543,7 @@ async def test_current_turn_inline_pdf_is_materialized_to_workspace_path(
     sent_text = _all_provider_text(text_provider.calls[-1]["messages"])
     assert "Machine Learning" in sent_text
     assert "attachment available: L11 RL.pdf (application/pdf" in sent_text
-    assert ".opensquilla/attachments/" in sent_text
+    assert ".openstarry-code/attachments/" in sent_text
     assert workspace_paths[0].name in sent_text
 
 
@@ -590,11 +590,11 @@ async def test_historical_pdf_followup_materializes_path_from_sha256_ref(
     sent_text = _all_provider_text(sent_messages)
     assert "historical attachment available: L11 RL.pdf (application/pdf" in sent_text
     assert "historical attachment omitted: L11 RL.pdf" not in sent_text
-    assert ".opensquilla/attachments/" in sent_text
+    assert ".openstarry-code/attachments/" in sent_text
     assert isinstance(sent_messages[-1].content, str)
     assert sent_messages[-1].content.startswith("把刚才那个 PDF")
     workspace_paths = list(
-        (Path(config.workspace_dir or "") / ".opensquilla" / "attachments").glob("**/*.pdf")
+        (Path(config.workspace_dir or "") / ".openstarry-code" / "attachments").glob("**/*.pdf")
     )
     assert len(workspace_paths) == 1
     assert hashlib.sha256(workspace_paths[0].read_bytes()).digest() == hashlib.sha256(
@@ -645,11 +645,11 @@ async def test_historical_inline_pdf_followup_materializes_path_from_inline_data
     sent_text = _all_provider_text(sent_messages)
     assert "historical attachment available: L11 RL.pdf (application/pdf" in sent_text
     assert "historical attachment omitted: L11 RL.pdf" not in sent_text
-    assert ".opensquilla/attachments/" in sent_text
+    assert ".openstarry-code/attachments/" in sent_text
     assert isinstance(sent_messages[-1].content, str)
     assert sent_messages[-1].content.startswith("把刚才那个 PDF")
     workspace_paths = list(
-        (Path(config.workspace_dir or "") / ".opensquilla" / "attachments").glob("**/*.pdf")
+        (Path(config.workspace_dir or "") / ".openstarry-code" / "attachments").glob("**/*.pdf")
     )
     assert len(workspace_paths) == 1
     assert hashlib.sha256(workspace_paths[0].read_bytes()).digest() == hashlib.sha256(
@@ -837,7 +837,7 @@ async def test_attachment_filename_traversal_is_sanitized(
     )
 
     workspace_root = Path(config.workspace_dir or "").resolve()
-    workspace_paths = list((workspace_root / ".opensquilla" / "attachments").glob("**/*.pdf"))
+    workspace_paths = list((workspace_root / ".openstarry-code" / "attachments").glob("**/*.pdf"))
     assert len(workspace_paths) == 1
     materialized = workspace_paths[0].resolve()
     materialized.relative_to(workspace_root)
@@ -845,7 +845,7 @@ async def test_attachment_filename_traversal_is_sanitized(
     assert materialized.name.endswith("evil.pdf")
     sent_text = _all_provider_text(text_provider.calls[-1]["messages"])
     assert "../" not in sent_text
-    assert ".opensquilla/attachments/" in sent_text
+    assert ".openstarry-code/attachments/" in sent_text
 
 
 @pytest.mark.asyncio

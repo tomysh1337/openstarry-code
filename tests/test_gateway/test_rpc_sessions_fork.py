@@ -8,20 +8,20 @@ from typing import Any
 import pytest
 import pytest_asyncio
 
-from opensquilla.gateway import rpc_sessions
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.rpc import RpcContext, get_dispatcher
-from opensquilla.gateway.scopes import METHOD_SCOPES, WRITE_SCOPE
-from opensquilla.sandbox.run_context import RUN_CONTEXT_ORIGIN_KEY
-from opensquilla.session.manager import SessionManager
-from opensquilla.session.models import (
+from openstarry_code.gateway import rpc_sessions
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.rpc import RpcContext, get_dispatcher
+from openstarry_code.gateway.scopes import METHOD_SCOPES, WRITE_SCOPE
+from openstarry_code.sandbox.run_context import RUN_CONTEXT_ORIGIN_KEY
+from openstarry_code.session.manager import SessionManager
+from openstarry_code.session.models import (
     AgentTaskRecord,
     AgentTaskStatus,
     SessionStatus,
     TranscriptEntry,
 )
-from opensquilla.session.storage import SessionStorage
+from openstarry_code.session.storage import SessionStorage
 
 _PRINCIPAL = Principal(
     role="operator", scopes=frozenset(["operator.admin"]), is_owner=True, authenticated=True

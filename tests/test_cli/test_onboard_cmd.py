@@ -1,4 +1,4 @@
-"""CLI tests for `opensquilla onboard` and `configure`."""
+"""CLI tests for `openstarry-code onboard` and `configure`."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ import tomllib
 import pytest
 from typer.testing import CliRunner
 
-from opensquilla.cli.main import app
+from openstarry_code.cli.main import app
 
 runner = CliRunner()
 _ANSI_RE = re.compile(r"\x1b\[[0-?]*[ -/]*[@-~]")
@@ -48,14 +48,14 @@ def _effective_config(path):
     asserts are reserved for keys a save actually writes; everything else is
     checked against the loaded (effective) configuration.
     """
-    from opensquilla.onboarding.config_store import load_config
+    from openstarry_code.onboarding.config_store import load_config
 
     return load_config(path)
 
 
 def test_onboard_noninteractive_provider(tmp_path, monkeypatch):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     result = runner.invoke(
         app,
         [
@@ -71,7 +71,7 @@ def test_onboard_noninteractive_provider(tmp_path, monkeypatch):
     assert "sk" not in result.stdout
     assert "onboarding.config_persisted" not in result.stdout
     assert "openrouter ·" not in result.stdout
-    assert "OpenSquilla Setup Handoff" in result.stdout
+    assert "OpenStarry Code Setup Handoff" in result.stdout
     assert "Provider Configured" not in result.stdout
     # The explicitly selected direct/fallback model is independent from the
     # Router default tier and must survive onboarding unchanged.
@@ -82,7 +82,7 @@ def test_onboard_finish_commands_remain_copyable_with_long_config_path(
     tmp_path,
     monkeypatch,
 ):
-    from opensquilla.cli import onboard_cmd
+    from openstarry_code.cli import onboard_cmd
 
     target = tmp_path / "very-long-config-name-for-onboard-output.toml"
     monkeypatch.setattr(onboard_cmd.console, "width", 48)
@@ -106,10 +106,10 @@ def test_onboard_finish_commands_remain_copyable_with_long_config_path(
     )
 
     assert result.exit_code == 0, result.stdout
-    assert f"opensquilla gateway run --config {_config_arg(target)}" in result.stdout
-    assert f"opensquilla gateway start --json --config {_config_arg(target)}" in result.stdout
+    assert f"openstarry-code gateway run --config {_config_arg(target)}" in result.stdout
+    assert f"openstarry-code gateway start --json --config {_config_arg(target)}" in result.stdout
     assert (
-        f"opensquilla gateway restart --json --config {_config_arg(target)}"
+        f"openstarry-code gateway restart --json --config {_config_arg(target)}"
         in result.stdout
     )
 
@@ -118,7 +118,7 @@ def test_onboard_status_paths_remain_copyable_with_long_config_path(
     tmp_path,
     monkeypatch,
 ):
-    from opensquilla.cli import onboard_cmd
+    from openstarry_code.cli import onboard_cmd
 
     target = tmp_path / "very-long-config-name-for-onboard-status-output.toml"
     monkeypatch.setattr(onboard_cmd.console, "width", 48)
@@ -127,20 +127,20 @@ def test_onboard_status_paths_remain_copyable_with_long_config_path(
 
     assert result.exit_code == 0, result.stdout
     assert (
-        f"Guided CLI: opensquilla onboard --if-needed --config {_config_arg(target)}"
+        f"Guided CLI: openstarry-code onboard --if-needed --config {_config_arg(target)}"
         in result.stdout
     )
-    assert f"Web UI: opensquilla gateway run --config {_config_arg(target)}" in result.stdout
+    assert f"Web UI: openstarry-code gateway run --config {_config_arg(target)}" in result.stdout
     assert (
         "Provider recipes: "
-        f"opensquilla onboard catalog providers --config {_config_arg(target)}"
+        f"openstarry-code onboard catalog providers --config {_config_arg(target)}"
         in result.stdout
     )
 
 
 def test_onboard_accepts_skip_image_generation_option(tmp_path, monkeypatch):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     result = runner.invoke(
         app,
         [
@@ -171,11 +171,11 @@ def test_onboard_accepts_skip_image_generation_option(tmp_path, monkeypatch):
 
 
 def test_onboard_passes_skip_migration_to_interactive_flow(tmp_path, monkeypatch):
-    from opensquilla.cli import onboard_cmd
-    from opensquilla.onboarding.config_store import PersistResult
+    from openstarry_code.cli import onboard_cmd
+    from openstarry_code.onboarding.config_store import PersistResult
 
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     captured: dict[str, bool] = {}
 
     def fake_run_interactive_onboard(options):
@@ -201,7 +201,7 @@ def test_onboard_passes_skip_migration_to_interactive_flow(tmp_path, monkeypatch
 
 def test_onboard_noninteractive_provider_can_use_env_key_and_router(tmp_path, monkeypatch):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
     result = runner.invoke(
         app,
@@ -239,7 +239,7 @@ def test_onboard_noninteractive_provider_can_omit_model_for_router_profile(
     monkeypatch,
 ):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     result = runner.invoke(
         app,
         [
@@ -263,7 +263,7 @@ def test_onboard_noninteractive_provider_without_router_profile_seeds_router_tie
     tmp_path, monkeypatch
 ):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     result = runner.invoke(
         app,
@@ -293,7 +293,7 @@ def test_onboard_noninteractive_provider_without_router_profile_seeds_router_tie
 
 def test_onboard_noninteractive_provider_error_is_productized(tmp_path, monkeypatch):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     result = runner.invoke(
         app,
@@ -314,7 +314,7 @@ def test_onboard_noninteractive_provider_error_is_productized(tmp_path, monkeypa
 
 def test_onboard_if_needed_skips_when_configured(tmp_path, monkeypatch):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     runner.invoke(
         app,
         [
@@ -344,7 +344,7 @@ def test_onboard_if_needed_uses_explicit_config_path(tmp_path, monkeypatch):
         'api_key_env = "CUSTOM_LLM_KEY"\n',
         encoding="utf-8",
     )
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(default_target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(default_target))
     monkeypatch.setenv("CUSTOM_LLM_KEY", "sk-from-custom-env")
 
     result = runner.invoke(app, ["onboard", "--if-needed", "--config", str(target)])
@@ -366,7 +366,7 @@ def test_onboard_if_needed_skips_when_key_comes_from_env(tmp_path, monkeypatch):
         encoding="utf-8",
     )
     monkeypatch.setenv("OPENROUTER_API_KEY", "sk-from-env")
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     result = runner.invoke(app, ["onboard", "--if-needed"])
 
@@ -380,7 +380,7 @@ def test_onboard_if_needed_does_not_treat_env_as_config_without_config_file(
     monkeypatch,
 ):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     monkeypatch.setenv("OPENROUTER_API_KEY", "sk-from-env")
 
     result = runner.invoke(app, ["onboard", "--if-needed"])
@@ -403,7 +403,7 @@ def test_onboard_if_needed_accepts_default_env_key(tmp_path, monkeypatch):
         encoding="utf-8",
     )
     monkeypatch.setenv("OPENROUTER_API_KEY", "sk-from-env")
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     result = runner.invoke(app, ["onboard", "--if-needed"])
 
@@ -423,8 +423,8 @@ def test_onboard_if_needed_does_not_accept_settings_env_without_config_reference
         'model = "deepseek/deepseek-v4-flash"\n',
         encoding="utf-8",
     )
-    monkeypatch.setenv("OPENSQUILLA_LLM_API_KEY", "sk-from-settings-env")
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_API_KEY", "sk-from-settings-env")
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     result = runner.invoke(app, ["onboard", "--if-needed"])
 
@@ -439,8 +439,8 @@ def test_onboard_if_needed_does_not_accept_settings_env_with_empty_config(
 ):
     target = tmp_path / "c.toml"
     target.write_text("", encoding="utf-8")
-    monkeypatch.setenv("OPENSQUILLA_LLM_API_KEY", "sk-from-settings-env")
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_API_KEY", "sk-from-settings-env")
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     result = runner.invoke(app, ["onboard", "--if-needed"])
 
@@ -462,8 +462,8 @@ def test_onboard_if_needed_requires_referenced_env_even_with_settings_env(
         encoding="utf-8",
     )
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
-    monkeypatch.setenv("OPENSQUILLA_LLM_API_KEY", "sk-from-settings-env")
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_API_KEY", "sk-from-settings-env")
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     result = runner.invoke(app, ["onboard", "--if-needed"])
 
@@ -482,7 +482,7 @@ def test_onboard_status_uses_explicit_config_path(tmp_path, monkeypatch):
         'api_key_env = "CUSTOM_LLM_KEY"\n',
         encoding="utf-8",
     )
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(default_target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(default_target))
     monkeypatch.delenv("CUSTOM_LLM_KEY", raising=False)
 
     result = runner.invoke(app, ["onboard", "status", "--json", "--config", str(target)])
@@ -535,7 +535,7 @@ def test_onboard_status_reports_invalid_config_without_traceback(tmp_path):
     result = runner.invoke(app, ["onboard", "status", "--config", str(target)])
 
     assert result.exit_code == 2
-    assert "OpenSquilla config error" in result.stderr
+    assert "OpenStarry Code config error" in result.stderr
     assert _compact_text(str(target)) in _compact_text(result.stderr)
     assert "search" in result.stderr
     assert "Fix:" in result.stderr
@@ -560,7 +560,7 @@ def test_onboard_status_table_keeps_explicit_config_path_in_next_step(
         'api_key_env = "CUSTOM_LLM_KEY"\n',
         encoding="utf-8",
     )
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(default_target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(default_target))
     monkeypatch.delenv("CUSTOM_LLM_KEY", raising=False)
 
     result = runner.invoke(app, ["onboard", "status", "--config", str(target)])
@@ -579,7 +579,7 @@ def test_onboard_status_table_offers_cli_web_and_recipe_setup_paths(
 ):
     default_target = tmp_path / "default.toml"
     target = tmp_path / "custom.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(default_target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(default_target))
 
     result = runner.invoke(app, ["onboard", "status", "--config", str(target)])
 
@@ -602,7 +602,7 @@ def test_onboard_status_table_offers_cli_web_and_recipe_setup_paths(
         f"opensquillaonboardcatalog--config{_config_arg(target)}"
         in collapsed
     )
-    assert "opensquilla onboard catalog --json" not in result.stdout
+    assert "openstarry-code onboard catalog --json" not in result.stdout
     assert "Provider recipes:" in result.stdout
     assert (
         "opensquillaonboardcatalogproviders"
@@ -621,7 +621,7 @@ def test_onboard_status_points_missing_provider_to_provider_recipes(
 ):
     default_target = tmp_path / "default.toml"
     target = tmp_path / "custom.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(default_target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(default_target))
 
     result = runner.invoke(app, ["onboard", "status", "--config", str(target)])
 
@@ -642,7 +642,7 @@ def test_onboard_status_points_missing_provider_to_provider_recipes(
 def test_onboard_status_leads_with_recommended_next_move(tmp_path, monkeypatch):
     default_target = tmp_path / "default.toml"
     target = tmp_path / "custom.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(default_target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(default_target))
 
     result = runner.invoke(app, ["onboard", "status", "--config", str(target)])
 
@@ -674,7 +674,7 @@ def test_onboard_status_web_path_uses_gateway_and_control_ui_config(
         'base_path = "/ops"\n',
         encoding="utf-8",
     )
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "default.toml"))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "default.toml"))
 
     result = runner.invoke(app, ["onboard", "status", "--config", str(target)])
 
@@ -694,7 +694,7 @@ def test_onboard_status_does_not_offer_disabled_web_ui_path(
         "enabled = false\n",
         encoding="utf-8",
     )
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "default.toml"))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "default.toml"))
 
     result = runner.invoke(app, ["onboard", "status", "--config", str(target)])
 
@@ -718,14 +718,14 @@ def test_onboard_status_table_uses_product_labels_and_scope_column(
         'api_key_env = "CUSTOM_LLM_KEY"\n',
         encoding="utf-8",
     )
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(default_target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(default_target))
     monkeypatch.delenv("CUSTOM_LLM_KEY", raising=False)
 
     result = runner.invoke(app, ["onboard", "status", "--config", str(target)])
 
     assert result.exit_code == 0, result.stdout
-    assert "OpenSquilla setup readiness" in result.stdout
-    assert "OpenSquilla ready:" in result.stdout
+    assert "OpenStarry Code setup readiness" in result.stdout
+    assert "OpenStarry Code ready:" in result.stdout
     assert "Needs onboarding:" not in result.stdout
     assert "Provider" in result.stdout
     assert "Web search" in result.stdout
@@ -810,7 +810,7 @@ def test_onboard_help_exposes_configure_command():
 
 def test_onboard_catalog_json_exposes_all_setup_options(tmp_path, monkeypatch):
     target = tmp_path / "custom.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     result = runner.invoke(app, ["onboard", "catalog", "--json", "--config", str(target)])
 
@@ -877,7 +877,7 @@ def test_onboard_catalog_accepts_short_capability_section_aliases(
         ("providers", ["openrouter", "OPENROUTER_API_KEY", "deepseek/deepseek-v4-pro"]),
         ("router", ["recommended", "openrouter-mix", "c0", "c3"]),
         ("search", ["duckduckgo", "brave", "BRAVE_SEARCH_API_KEY"]),
-        ("channels", ["discord", "Bot token", "opensquilla channels describe discord --json"]),
+        ("channels", ["discord", "Bot token", "openstarry-code channels describe discord --json"]),
         ("image-generation", ["openrouter", "openrouter/google/gemini", "OPENROUTER_API_KEY"]),
         ("memory-embedding", ["auto", "local", "openai-compatible", "FTS-only"]),
     ],
@@ -919,17 +919,17 @@ def test_onboard_catalog_focused_commands_are_actionable_with_config_path(
     monkeypatch,
 ):
     target = tmp_path / "catalog-target.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     result = runner.invoke(app, ["onboard", "catalog", "channels", "--config", str(target)])
 
     assert result.exit_code == 0, result.stdout
     assert (
-        "Try: opensquilla onboard configure channels --channel-type discord "
+        "Try: openstarry-code onboard configure channels --channel-type discord "
         "--name <name> --token <token>"
     ) in result.stdout
     assert f"--config {_config_arg(target)}" in result.stdout
-    assert "opensquilla onboard configure channels --channel-type <type>\n" not in result.stdout
+    assert "openstarry-code onboard configure channels --channel-type <type>\n" not in result.stdout
     assert "Configure with:" not in result.stdout
     assert not target.exists()
 
@@ -937,9 +937,9 @@ def test_onboard_catalog_focused_commands_are_actionable_with_config_path(
 @pytest.mark.parametrize(
     "section, forbidden",
     [
-        ("providers", "opensquilla onboard configure provider --provider <id>"),
+        ("providers", "openstarry-code onboard configure provider --provider <id>"),
         ("search", "--search-provider <provider>"),
-        ("channels", "opensquilla onboard configure channels --channel-type <type>"),
+        ("channels", "openstarry-code onboard configure channels --channel-type <type>"),
         ("image-generation", "--image-provider <provider>"),
         ("memory-embedding", "--memory-provider <provider>"),
     ],
@@ -951,7 +951,7 @@ def test_onboard_catalog_focused_output_uses_recipes_not_generic_templates(
     monkeypatch,
 ):
     target = tmp_path / "focused-catalog.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     result = runner.invoke(app, ["onboard", "catalog", section, "--config", str(target)])
 
@@ -965,12 +965,12 @@ def test_onboard_catalog_focused_output_uses_recipes_not_generic_templates(
 
 def test_onboard_catalog_router_focus_offers_a_real_recipe(tmp_path, monkeypatch):
     target = tmp_path / "router-catalog.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     result = runner.invoke(app, ["onboard", "catalog", "router", "--config", str(target)])
 
     assert result.exit_code == 0, result.stdout
-    assert "Try: opensquilla onboard configure router --router recommended --default-tier c1" in (
+    assert "Try: openstarry-code onboard configure router --router recommended --default-tier c1" in (
         result.stdout
     )
     assert "Configure with:" not in result.stdout
@@ -983,7 +983,7 @@ def test_onboard_catalog_focused_provider_examples_match_key_requirements(
     monkeypatch,
 ):
     target = tmp_path / "provider-catalog.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     result = runner.invoke(
         app,
@@ -992,24 +992,24 @@ def test_onboard_catalog_focused_provider_examples_match_key_requirements(
 
     assert result.exit_code == 0, result.stdout
     assert (
-        "Try: opensquilla onboard configure provider --provider openrouter "
+        "Try: openstarry-code onboard configure provider --provider openrouter "
         "--model deepseek/deepseek-v4-pro --api-key-env OPENROUTER_API_KEY "
         f"--config {_config_arg(target)}"
     ) in result.stdout
     assert (
-        "Try: opensquilla onboard configure provider --provider anthropic "
+        "Try: openstarry-code onboard configure provider --provider anthropic "
         "--model <model> --api-key-env ANTHROPIC_API_KEY "
         f"--config {_config_arg(target)}"
     ) in result.stdout
     assert (
-        "Try: opensquilla onboard configure provider --provider ollama "
+        "Try: openstarry-code onboard configure provider --provider ollama "
         "--model <model> "
         f"--config {_config_arg(target)}"
     ) in result.stdout
     ollama_line = next(
         line
         for line in result.stdout.splitlines()
-        if line.startswith("  Try: opensquilla onboard configure provider --provider ollama")
+        if line.startswith("  Try: openstarry-code onboard configure provider --provider ollama")
     )
     assert "--api-key-env" not in ollama_line
     assert not target.exists()
@@ -1020,7 +1020,7 @@ def test_onboard_catalog_focused_capability_examples_match_key_requirements(
     monkeypatch,
 ):
     target = tmp_path / "capability-catalog.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     search = runner.invoke(
         app,
@@ -1033,30 +1033,30 @@ def test_onboard_catalog_focused_capability_examples_match_key_requirements(
 
     assert search.exit_code == 0, search.stdout
     assert (
-        "Try: opensquilla onboard configure search --search-provider brave "
+        "Try: openstarry-code onboard configure search --search-provider brave "
         "--api-key-env BRAVE_SEARCH_API_KEY "
         f"--config {_config_arg(target)}"
     ) in search.stdout
     assert (
-        "Try: opensquilla onboard configure search --search-provider duckduckgo "
+        "Try: openstarry-code onboard configure search --search-provider duckduckgo "
         f"--config {_config_arg(target)}"
     ) in search.stdout
     duckduckgo_line = next(
         line
         for line in search.stdout.splitlines()
         if line.startswith(
-            "  Try: opensquilla onboard configure search --search-provider duckduckgo"
+            "  Try: openstarry-code onboard configure search --search-provider duckduckgo"
         )
     )
     assert "--api-key-env" not in duckduckgo_line
 
     assert memory.exit_code == 0, memory.stdout
     assert (
-        "Try: opensquilla onboard configure memory --memory-provider auto "
+        "Try: openstarry-code onboard configure memory --memory-provider auto "
         f"--config {_config_arg(target)}"
     ) in memory.stdout
     assert (
-        "Try: opensquilla onboard configure memory --memory-provider openai "
+        "Try: openstarry-code onboard configure memory --memory-provider openai "
         "--api-key-env OPENAI_API_KEY "
         f"--config {_config_arg(target)}"
     ) in memory.stdout
@@ -1064,7 +1064,7 @@ def test_onboard_catalog_focused_capability_examples_match_key_requirements(
         line
         for line in memory.stdout.splitlines()
         if line.startswith(
-            "  Try: opensquilla onboard configure memory --memory-provider auto"
+            "  Try: openstarry-code onboard configure memory --memory-provider auto"
         )
     )
     assert "--api-key-env" not in auto_line
@@ -1077,7 +1077,7 @@ def test_onboard_catalog_focused_channel_examples_include_required_fields(
     monkeypatch,
 ):
     target = tmp_path / "channel-catalog.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     result = runner.invoke(
         app,
@@ -1086,16 +1086,16 @@ def test_onboard_catalog_focused_channel_examples_include_required_fields(
 
     assert result.exit_code == 0, result.stdout
     assert (
-        "Try: opensquilla onboard configure channels --channel-type discord "
+        "Try: openstarry-code onboard configure channels --channel-type discord "
         "--name <name> --token <token> "
         f"--config {_config_arg(target)}"
     ) in result.stdout
     assert (
-        "Try: opensquilla onboard configure channels --channel-type feishu "
+        "Try: openstarry-code onboard configure channels --channel-type feishu "
         "--name <name> --field app_id=<value> --field app_secret=<value> "
         f"--config {_config_arg(target)}"
     ) in result.stdout
-    assert "opensquilla channels describe feishu --json" in result.stdout
+    assert "openstarry-code channels describe feishu --json" in result.stdout
     assert not target.exists()
 
 
@@ -1104,7 +1104,7 @@ def test_onboard_catalog_focused_image_and_metadata_search_examples_are_specific
     monkeypatch,
 ):
     target = tmp_path / "image-catalog.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     image = runner.invoke(
         app,
@@ -1117,7 +1117,7 @@ def test_onboard_catalog_focused_image_and_metadata_search_examples_are_specific
 
     assert image.exit_code == 0, image.stdout
     assert (
-        "Try: opensquilla onboard configure image "
+        "Try: openstarry-code onboard configure image "
         "--image-provider openrouter "
         "--primary openrouter/google/gemini-3.1-flash-image-preview "
         "--api-key-env OPENROUTER_API_KEY "
@@ -1127,7 +1127,7 @@ def test_onboard_catalog_focused_image_and_metadata_search_examples_are_specific
     assert search.exit_code == 0, search.stdout
     assert "- exa: Exa | ready | key EXA_API_KEY | cloud" in search.stdout
     assert (
-        "Try: opensquilla onboard configure search --search-provider exa "
+        "Try: openstarry-code onboard configure search --search-provider exa "
         "--api-key-env EXA_API_KEY "
         f"--config {_config_arg(target)}"
     ) in search.stdout
@@ -1141,7 +1141,7 @@ def test_onboard_catalog_overview_commands_keep_active_config_path(
     monkeypatch,
 ):
     target = tmp_path / "catalog-overview.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     result = runner.invoke(app, ["onboard", "catalog", "--config", str(target)])
 
@@ -1189,13 +1189,13 @@ def test_onboard_catalog_overview_hides_generic_configure_templates(
     monkeypatch,
 ):
     target = tmp_path / "catalog-overview.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     result = runner.invoke(app, ["onboard", "catalog", "--config", str(target)])
 
     assert result.exit_code == 0, result.stdout
     assert "Configure templates:" not in result.stdout
-    assert "opensquilla onboard configure provider --provider <id>" not in result.stdout
+    assert "openstarry-code onboard configure provider --provider <id>" not in result.stdout
     assert "--api-key-env <ENV_NAME>" not in result.stdout
     assert "--search-provider <provider>" not in result.stdout
     assert "--memory-provider <provider>" not in result.stdout
@@ -1259,7 +1259,7 @@ def test_onboard_status_summarizes_blocking_and_optional_sections(
     result = runner.invoke(app, ["onboard", "status", "--config", str(target)])
 
     assert result.exit_code == 0, result.stdout
-    assert "OpenSquilla Setup Cockpit" in result.stdout
+    assert "OpenStarry Code Setup Cockpit" in result.stdout
     assert "Blocking setup: Provider" in result.stdout
     status_plain = _plain_text(result.stdout)
     assert "Optional later: LLM ensemble, Channels, Image generation, Voice audio" in status_plain
@@ -1272,7 +1272,7 @@ def test_onboard_status_explains_router_ready_before_provider_setup(
     monkeypatch,
 ):
     target = tmp_path / "custom.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "default.toml"))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "default.toml"))
 
     result = runner.invoke(app, ["onboard", "status", "--config", str(target)])
 
@@ -1379,9 +1379,9 @@ def test_onboard_status_table_names_missing_env_keys_for_optional_capabilities(
     assert result.stdout.index("Set memory key:") < result.stdout.index("Set search key:")
     assert "not configured" not in result.stdout
 
-    from opensquilla.cli.onboard_cmd import _status_cockpit_summary
-    from opensquilla.onboarding.config_store import load_config
-    from opensquilla.onboarding.status import get_onboarding_status
+    from openstarry_code.cli.onboard_cmd import _status_cockpit_summary
+    from openstarry_code.onboarding.config_store import load_config
+    from openstarry_code.onboarding.status import get_onboarding_status
 
     summary = _status_cockpit_summary(get_onboarding_status(load_config(target)))
     assert summary == (
@@ -1405,12 +1405,12 @@ def test_onboard_status_offers_optional_capability_paths_when_core_ready(
     result = runner.invoke(app, ["onboard", "status", "--config", str(target)])
 
     assert result.exit_code == 0, result.stdout
-    assert "OpenSquilla ready: yes" in result.stdout
+    assert "OpenStarry Code ready: yes" in result.stdout
     assert "Optional next moves:" in result.stdout
     assert "Web UI:" in result.stdout
     assert "Explore options:" in result.stdout
     assert "Setup catalog:" not in result.stdout
-    assert "opensquilla onboard catalog --json" not in result.stdout
+    assert "openstarry-code onboard catalog --json" not in result.stdout
     assert "Channel recipes:" in result.stdout
     compact = "".join(result.stdout.split())
     assert f"opensquillaonboardcatalog--config{_config_arg(target)}" in compact
@@ -1459,10 +1459,10 @@ def test_onboard_status_offers_ready_next_moves_when_all_sections_ready(
     result = runner.invoke(app, ["onboard", "status", "--config", str(target)])
 
     assert result.exit_code == 0, result.stdout
-    assert "OpenSquilla ready: yes" in result.stdout
+    assert "OpenStarry Code ready: yes" in result.stdout
     assert "Optional next moves:" in result.stdout
     assert "Headless ensemble:" in result.stdout
-    assert "opensquilla onboard configure ensemble --enabled" in result.stdout
+    assert "openstarry-code onboard configure ensemble --enabled" in result.stdout
     assert "Ready next moves:" not in result.stdout
     assert "Recommended next move:" not in result.stdout
 
@@ -1473,7 +1473,7 @@ def test_onboard_if_needed_non_tty_hint_keeps_explicit_config_path(
 ):
     default_target = tmp_path / "default.toml"
     target = tmp_path / "custom.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(default_target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(default_target))
 
     result = runner.invoke(app, ["onboard", "--if-needed", "--config", str(target)])
 
@@ -1492,7 +1492,7 @@ def test_onboard_if_needed_non_tty_hint_prioritizes_runnable_paths(
     monkeypatch,
 ):
     target = tmp_path / "custom.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     result = runner.invoke(app, ["onboard", "--if-needed"])
 
@@ -1500,7 +1500,7 @@ def test_onboard_if_needed_non_tty_hint_prioritizes_runnable_paths(
     assert "Use a runnable setup path from this shell:" in result.stdout
     assert result.stdout.index("Web UI:") < result.stdout.index("Provider recipes:")
     assert result.stdout.index("Provider recipes:") < result.stdout.index("Guided CLI:")
-    assert "Guided CLI: opensquilla onboard --if-needed" in result.stdout
+    assert "Guided CLI: openstarry-code onboard --if-needed" in result.stdout
     assert "(interactive terminal only)" in result.stdout
     assert not target.exists()
 
@@ -1510,14 +1510,14 @@ def test_onboard_if_needed_non_tty_hint_stays_provider_neutral(
     monkeypatch,
 ):
     target = tmp_path / "custom.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     result = runner.invoke(app, ["onboard", "--if-needed"])
 
     assert result.exit_code == 2
     assert "Provider recipes:" in result.stdout
-    assert "opensquilla onboard catalog providers" in result.stdout
-    assert "opensquilla onboard configure provider --provider <id>" not in result.stdout
+    assert "openstarry-code onboard catalog providers" in result.stdout
+    assert "openstarry-code onboard configure provider --provider <id>" not in result.stdout
     assert "--model <model>" not in result.stdout
     assert "--api-key-env <ENV_NAME>" not in result.stdout
     assert "openrouter" not in result.stdout.lower()
@@ -1534,7 +1534,7 @@ def test_onboard_if_needed_non_tty_hint_hides_disabled_web_ui_path(
 ):
     target = tmp_path / "custom.toml"
     target.write_text("[control_ui]\nenabled = false\n", encoding="utf-8")
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     result = runner.invoke(app, ["onboard", "--if-needed"])
 
@@ -1573,7 +1573,7 @@ def test_onboard_if_needed_non_tty_hint_targets_blocking_memory_section(
     assert "Use a runnable setup path from this shell:" in result.stdout
     assert "Headless memory embedding:" in result.stdout
     assert (
-        "opensquilla onboard configure memory --memory-provider auto"
+        "openstarry-code onboard configure memory --memory-provider auto"
         in result.stdout
     )
     assert f"--config {_config_arg(target)}" in result.stdout
@@ -1586,37 +1586,37 @@ def test_onboard_if_needed_non_tty_hint_targets_blocking_memory_section(
         (
             "provider",
             "Provider recipes:",
-            "opensquilla onboard catalog providers",
+            "openstarry-code onboard catalog providers",
         ),
         (
             "router",
             "Headless router:",
-            "opensquilla onboard configure router --router recommended --default-tier c1",
+            "openstarry-code onboard configure router --router recommended --default-tier c1",
         ),
         (
             "ensemble",
             "Headless ensemble:",
-            "opensquilla onboard configure ensemble --enabled",
+            "openstarry-code onboard configure ensemble --enabled",
         ),
         (
             "channels",
             "Channel recipes:",
-            "opensquilla onboard catalog channels",
+            "openstarry-code onboard catalog channels",
         ),
         (
             "search",
             "Headless search:",
-            "opensquilla onboard configure search --search-provider duckduckgo",
+            "openstarry-code onboard configure search --search-provider duckduckgo",
         ),
         (
             "image-generation",
             "Image recipes:",
-            "opensquilla onboard catalog image",
+            "openstarry-code onboard catalog image",
         ),
         (
             "memory-embedding",
             "Headless memory embedding:",
-            "opensquilla onboard configure memory --memory-provider auto",
+            "openstarry-code onboard configure memory --memory-provider auto",
         ),
     ],
 )
@@ -1628,7 +1628,7 @@ def test_configure_without_tty_hint_targets_selected_section(
     command,
 ):
     target = tmp_path / "custom.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     result = runner.invoke(app, ["configure", section, "--config", str(target)])
 
@@ -1638,15 +1638,15 @@ def test_configure_without_tty_hint_targets_selected_section(
     assert label in result.stdout
     assert command in result.stdout
     assert f"--config {_config_arg(target)}" in result.stdout
-    assert "opensquilla onboard configure provider --provider <id>" not in result.stdout
-    assert "opensquilla channels describe <type>" not in result.stdout
+    assert "openstarry-code onboard configure provider --provider <id>" not in result.stdout
+    assert "openstarry-code channels describe <type>" not in result.stdout
     assert "--image-provider <provider>" not in result.stdout
     assert not target.exists()
 
 
 def test_onboard_configure_provider_alias_uses_setup_engine(tmp_path, monkeypatch):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     result = runner.invoke(
         app,
@@ -1672,7 +1672,7 @@ def test_onboard_configure_provider_alias_uses_setup_engine(tmp_path, monkeypatc
 
 def test_configure_provider_noninteractive_uses_setup_engine(tmp_path, monkeypatch):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     result = runner.invoke(
         app,
@@ -1701,7 +1701,7 @@ def test_configure_provider_noninteractive_uses_setup_engine(tmp_path, monkeypat
 def test_configure_provider_uses_explicit_config_path(tmp_path, monkeypatch):
     default_target = tmp_path / "default.toml"
     target = tmp_path / "custom.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(default_target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(default_target))
 
     result = runner.invoke(
         app,
@@ -1728,7 +1728,7 @@ def test_configure_provider_uses_explicit_config_path(tmp_path, monkeypatch):
 
 def test_configure_provider_can_omit_model_for_router_profile(tmp_path, monkeypatch):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     result = runner.invoke(
         app,
@@ -1755,7 +1755,7 @@ def test_configure_provider_fails_closed_for_unclassified_foreign_router(tmp_pat
         '[squilla_router]\ntier_profile = "deepseek"\n',
         encoding="utf-8",
     )
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     result = runner.invoke(
         app,
@@ -1784,7 +1784,7 @@ def test_configure_saved_path_escapes_rich_markup_chars(tmp_path, monkeypatch):
     root = tmp_path / "opensquilla-[review]"
     root.mkdir()
     target = root / "config[dev].toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     result = runner.invoke(
         app,
@@ -1806,7 +1806,7 @@ def test_configure_saved_path_escapes_rich_markup_chars(tmp_path, monkeypatch):
 
 def test_configure_provider_errors_go_to_stderr(tmp_path, monkeypatch):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     result = runner.invoke(app, ["configure", "provider", "--provider", "not-a-provider"])
 
@@ -1836,7 +1836,7 @@ def test_configure_provider_reports_invalid_config_without_schema_traceback(tmp_
     )
 
     assert result.exit_code == 2
-    assert "OpenSquilla config error" in result.stderr
+    assert "OpenStarry Code config error" in result.stderr
     assert _compact_text(str(target)) in _compact_text(result.stderr)
     assert "search" in result.stderr
     assert (
@@ -1853,7 +1853,7 @@ def test_configure_router_noninteractive_can_disable(tmp_path, monkeypatch):
         '[llm]\nprovider = "openrouter"\nmodel = "deepseek/deepseek-v4-flash"\n',
         encoding="utf-8",
     )
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     result = runner.invoke(app, ["configure", "router", "--router", "disabled"])
 
@@ -1868,7 +1868,7 @@ def test_configure_router_noninteractive_can_set_default_tier(tmp_path, monkeypa
         '[llm]\nprovider = "deepseek"\nmodel = "deepseek-chat"\n',
         encoding="utf-8",
     )
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     result = runner.invoke(
         app,
@@ -1892,7 +1892,7 @@ def test_configure_router_rejects_invalid_default_tier_without_writing(
         encoding="utf-8",
     )
     before = target.read_text(encoding="utf-8")
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     result = runner.invoke(
         app,
@@ -1913,7 +1913,7 @@ def test_configure_router_invalid_mode_reports_clean_error(tmp_path, monkeypatch
         encoding="utf-8",
     )
     before = target.read_text(encoding="utf-8")
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     result = runner.invoke(app, ["configure", "router", "--router", "openrouter-mix"])
 
@@ -1925,7 +1925,7 @@ def test_configure_router_invalid_mode_reports_clean_error(tmp_path, monkeypatch
 
 def test_configure_search_noninteractive(tmp_path, monkeypatch):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     result = runner.invoke(
         app,
@@ -1957,7 +1957,7 @@ def test_configure_search_noninteractive(tmp_path, monkeypatch):
 
 def test_configure_search_can_use_env_key_reference(tmp_path, monkeypatch):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     monkeypatch.delenv("BRAVE_SEARCH_API_KEY", raising=False)
 
     result = runner.invoke(
@@ -1983,7 +1983,7 @@ def test_configure_search_can_use_env_key_reference(tmp_path, monkeypatch):
 
 def test_configure_image_generation_missing_env_is_blocked(tmp_path, monkeypatch):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
 
     result = runner.invoke(
@@ -2004,7 +2004,7 @@ def test_configure_image_generation_missing_env_is_blocked(tmp_path, monkeypatch
 
 def test_configure_channel_noninteractive_adds_slack(tmp_path, monkeypatch):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     result = runner.invoke(
         app,
@@ -2033,7 +2033,7 @@ def test_configure_channels_noninteractive_accepts_spec_fields_for_feishu(
     monkeypatch,
 ):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     result = runner.invoke(
         app,
@@ -2063,7 +2063,7 @@ def test_configure_channels_noninteractive_accepts_spec_fields_for_feishu(
 
 def test_configure_channels_rejects_unknown_field(tmp_path, monkeypatch):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     result = runner.invoke(
         app,
@@ -2089,7 +2089,7 @@ def test_configure_channels_token_only_does_not_complete_feishu(
     monkeypatch,
 ):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     result = runner.invoke(
         app,
@@ -2112,7 +2112,7 @@ def test_configure_channels_token_only_does_not_complete_feishu(
 
 def test_configure_image_generation_noninteractive_uses_env(tmp_path, monkeypatch):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     monkeypatch.setenv("OPENROUTER_API_KEY", "sk-image-env")
 
     result = runner.invoke(
@@ -2138,9 +2138,9 @@ def test_configure_image_generation_can_use_nondefault_env_reference(
     monkeypatch,
 ):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
-    monkeypatch.setenv("OPENSQUILLA_TEST_IMAGE_KEY", "sk-image-env")
+    monkeypatch.setenv("OPENSTARRY_CODE_TEST_IMAGE_KEY", "sk-image-env")
 
     result = runner.invoke(
         app,
@@ -2152,7 +2152,7 @@ def test_configure_image_generation_can_use_nondefault_env_reference(
             "--primary",
             "openrouter/google/gemini-3.1-flash-image-preview",
             "--api-key-env",
-            "OPENSQUILLA_TEST_IMAGE_KEY",
+            "OPENSTARRY_CODE_TEST_IMAGE_KEY",
         ],
     )
 
@@ -2160,7 +2160,7 @@ def test_configure_image_generation_can_use_nondefault_env_reference(
     data = tomllib.loads(target.read_text())
     provider = data["image_generation"]["providers"]["openrouter"]
     assert _effective_config(target).image_generation.providers.openrouter.api_key == ""
-    assert provider["api_key_env"] == "OPENSQUILLA_TEST_IMAGE_KEY"
+    assert provider["api_key_env"] == "OPENSTARRY_CODE_TEST_IMAGE_KEY"
 
 
 def test_configure_image_generation_can_save_missing_env_reference(
@@ -2168,8 +2168,8 @@ def test_configure_image_generation_can_save_missing_env_reference(
     monkeypatch,
 ):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
-    monkeypatch.delenv("OPENSQUILLA_TEST_IMAGE_KEY", raising=False)
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.delenv("OPENSTARRY_CODE_TEST_IMAGE_KEY", raising=False)
 
     result = runner.invoke(
         app,
@@ -2181,22 +2181,22 @@ def test_configure_image_generation_can_save_missing_env_reference(
             "--primary",
             "openrouter/google/gemini-3.1-flash-image-preview",
             "--api-key-env",
-            "OPENSQUILLA_TEST_IMAGE_KEY",
+            "OPENSTARRY_CODE_TEST_IMAGE_KEY",
         ],
     )
 
     assert result.exit_code == 0, result.stdout
     data = tomllib.loads(target.read_text())
     provider = data["image_generation"]["providers"]["openrouter"]
-    assert provider["api_key_env"] == "OPENSQUILLA_TEST_IMAGE_KEY"
+    assert provider["api_key_env"] == "OPENSTARRY_CODE_TEST_IMAGE_KEY"
     assert "warning" in result.stdout.lower()
-    assert "OPENSQUILLA_TEST_IMAGE_KEY" in result.stdout
+    assert "OPENSTARRY_CODE_TEST_IMAGE_KEY" in result.stdout
 
 
 def test_configure_image_generation_can_disable_from_cli(tmp_path, monkeypatch):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
-    monkeypatch.setenv("OPENSQUILLA_TEST_IMAGE_KEY", "sk-image-env")
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_TEST_IMAGE_KEY", "sk-image-env")
 
     result = runner.invoke(
         app,
@@ -2208,7 +2208,7 @@ def test_configure_image_generation_can_disable_from_cli(tmp_path, monkeypatch):
             "--primary",
             "openrouter/google/gemini-3.1-flash-image-preview",
             "--api-key-env",
-            "OPENSQUILLA_TEST_IMAGE_KEY",
+            "OPENSTARRY_CODE_TEST_IMAGE_KEY",
             "--no-image-enabled",
         ],
     )
@@ -2223,7 +2223,7 @@ def test_configure_image_generation_can_disable_from_cli(tmp_path, monkeypatch):
     assert data["image_generation"]["primary"] == (
         "openrouter/google/gemini-3.1-flash-image-preview"
     )
-    assert provider["api_key_env"] == "OPENSQUILLA_TEST_IMAGE_KEY"
+    assert provider["api_key_env"] == "OPENSTARRY_CODE_TEST_IMAGE_KEY"
 
 
 def test_configure_image_first_time_disable_survives_key_rotation(
@@ -2234,7 +2234,7 @@ def test_configure_image_first_time_disable_survives_key_rotation(
     must survive a later key rotation that omits the flag — the rotation used
     to fall into configure-implies-enable and flip the tool back on."""
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     first = runner.invoke(
         app,
@@ -2277,7 +2277,7 @@ def test_configure_image_generation_can_disable_without_provider_from_cli(
     monkeypatch,
 ):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     # Seed the non-default state so a silent no-op cannot masquerade as a
     # save: the command must actually flip the on-disk value.
@@ -2301,7 +2301,7 @@ def test_configure_image_generation_can_disable_without_provider_from_cli(
 
 def test_configure_accepts_short_capability_section_aliases(tmp_path, monkeypatch):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
 
     image = runner.invoke(app, ["configure", "image", "--no-image-enabled"])
@@ -2330,7 +2330,7 @@ def test_configure_image_generation_can_disable_provider_without_key_from_cli(
     monkeypatch,
 ):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
 
     result = runner.invoke(
@@ -2357,7 +2357,7 @@ def test_configure_image_generation_can_disable_provider_without_key_from_cli(
 
 def test_configure_memory_embedding_noninteractive(tmp_path, monkeypatch):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     result = runner.invoke(
         app,
@@ -2379,7 +2379,7 @@ def test_configure_memory_embedding_noninteractive(tmp_path, monkeypatch):
 
 def test_configure_memory_embedding_can_use_env_key_reference(tmp_path, monkeypatch):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     monkeypatch.delenv("OPENAI_EMBEDDINGS_API_KEY", raising=False)
 
     result = runner.invoke(
@@ -2409,14 +2409,14 @@ def test_configure_memory_embedding_can_use_env_key_reference(tmp_path, monkeypa
 
 def test_onboard_without_tty_prints_hint_without_writing_config(tmp_path, monkeypatch):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     result = runner.invoke(app, ["onboard"])
 
     assert result.exit_code == 2
     assert "requires a TTY" in result.stdout
     assert "Provider recipes:" in result.stdout
-    assert "opensquilla onboard catalog providers" in result.stdout
+    assert "openstarry-code onboard catalog providers" in result.stdout
     assert "--api-key-env" not in result.stdout
     assert "--api-key $" not in result.stdout
     assert "Check status:" in result.stdout
@@ -2430,7 +2430,7 @@ def test_init_help_mentions_onboard():
 
 def test_configure_ensemble_noninteractive(tmp_path, monkeypatch):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     result = runner.invoke(
         app,
@@ -2461,7 +2461,7 @@ def test_configure_ensemble_noninteractive(tmp_path, monkeypatch):
 
 def test_onboard_configure_ensemble_alias_uses_setup_engine(tmp_path, monkeypatch):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     # Seed the non-default state: `--disabled` must observably flip the file,
     # not exit 0 while persisting/applying nothing.
     target.write_text("[llm_ensemble]\nenabled = true\n", encoding="utf-8")
@@ -2488,7 +2488,7 @@ def test_configure_ensemble_omitted_flags_keep_stored_values(tmp_path, monkeypat
         'all_failed_policy = "error"\n',
         encoding="utf-8",
     )
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     result = runner.invoke(
         app,
@@ -2508,7 +2508,7 @@ def test_configure_ensemble_omitted_flags_keep_stored_values(tmp_path, monkeypat
 
 def test_configure_ensemble_rejects_invalid_selection_mode(tmp_path, monkeypatch):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     result = runner.invoke(
         app,
@@ -2523,7 +2523,7 @@ def test_configure_ensemble_rejects_invalid_selection_mode(tmp_path, monkeypatch
 
 def test_onboard_status_includes_ensemble_section(tmp_path, monkeypatch):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     result = runner.invoke(app, ["onboard", "status", "--json", "--config", str(target)])
 
@@ -2539,7 +2539,7 @@ def test_onboard_status_includes_ensemble_section(tmp_path, monkeypatch):
 def test_onboard_status_table_shows_disabled_ensemble_detail(tmp_path, monkeypatch):
     target = tmp_path / "c.toml"
     target.write_text("[llm_ensemble]\nenabled = false\n", encoding="utf-8")
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     result = runner.invoke(app, ["onboard", "status", "--json", "--config", str(target)])
 
@@ -2550,7 +2550,7 @@ def test_onboard_status_table_shows_disabled_ensemble_detail(tmp_path, monkeypat
 
 
 def _fake_probe_result(ok: bool, **overrides):
-    from opensquilla.onboarding.probe import ProviderProbeResult
+    from openstarry_code.onboarding.probe import ProviderProbeResult
 
     async def fake_probe(**kwargs):
         fake_probe.calls.append(kwargs)
@@ -2566,10 +2566,10 @@ def _fake_probe_result(ok: bool, **overrides):
 
 
 def test_onboard_probe_flag_exits_zero_when_probe_passes(tmp_path, monkeypatch):
-    from opensquilla.onboarding import probe as probe_module
+    from openstarry_code.onboarding import probe as probe_module
 
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     fake_probe = _fake_probe_result(ok=True)
     monkeypatch.setattr(probe_module, "probe_llm_provider", fake_probe)
 
@@ -2594,10 +2594,10 @@ def test_onboard_probe_flag_exits_zero_when_probe_passes(tmp_path, monkeypatch):
 
 
 def test_onboard_probe_flag_exits_nonzero_when_probe_fails(tmp_path, monkeypatch):
-    from opensquilla.onboarding import probe as probe_module
+    from openstarry_code.onboarding import probe as probe_module
 
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     fake_probe = _fake_probe_result(
         ok=False,
         failure_kind="auth_invalid",
@@ -2626,10 +2626,10 @@ def test_onboard_probe_flag_exits_nonzero_when_probe_fails(tmp_path, monkeypatch
 
 
 def test_onboard_without_probe_flag_never_probes(tmp_path, monkeypatch):
-    from opensquilla.onboarding import probe as probe_module
+    from openstarry_code.onboarding import probe as probe_module
 
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     def unexpected_probe(**_kwargs):
         raise AssertionError("the probe must only run behind --probe")
@@ -2659,7 +2659,7 @@ def test_advertised_router_command_actionable_for_non_registry_provider(
     'c0' must be an object"; the error must now name the provider and the
     two runnable ways out (exit code stays 2)."""
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     target.write_text(
         '[llm]\nprovider = "acme-llm"\nmodel = "acme-model"\n', encoding="utf-8"
     )
@@ -2680,7 +2680,7 @@ def test_advertised_router_command_actionable_for_non_registry_provider(
     assert result.exit_code == 2, result.output
     text = _plain_text(result.output)
     assert "acme-llm" in text
-    assert "opensquilla onboard configure provider --provider" in text
+    assert "openstarry-code onboard configure provider --provider" in text
     assert "--router disabled" in text
     assert "must be an object" not in text
 
@@ -2689,10 +2689,10 @@ def test_onboard_interactive_value_error_is_productized(tmp_path, monkeypatch):
     """R9 boundary: a mutation-level ValueError escaping the wizard (e.g.
     "model is required" for a provider without a derivable default) must
     exit 2 with a productized message, not a raw traceback."""
-    from opensquilla.cli import onboard_cmd
+    from openstarry_code.cli import onboard_cmd
 
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     def boom(_options):
         raise ValueError("model is required")
@@ -2709,10 +2709,10 @@ def test_onboard_interactive_value_error_is_productized(tmp_path, monkeypatch):
 def test_configure_interactive_value_error_is_productized(tmp_path, monkeypatch):
     """R8 boundary: a mutation ValueError from the configure wizard (e.g. a
     blank required channel secret) must exit 2 like the headless path."""
-    from opensquilla.cli import onboard_cmd
+    from openstarry_code.cli import onboard_cmd
 
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     def boom(_section, config_path=None):
         raise ValueError("channel field 'token' requires a non-empty value")

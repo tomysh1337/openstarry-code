@@ -7,11 +7,11 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.sandbox.config import SandboxSettings
-from opensquilla.sandbox.integration import configure_runtime, reset_runtime
-from opensquilla.tools.builtin.code_exec import execute_code
-from opensquilla.tools.builtin.shell import exec_command
-from opensquilla.tools.types import CallerKind, ToolContext, current_tool_context
+from openstarry_code.sandbox.config import SandboxSettings
+from openstarry_code.sandbox.integration import configure_runtime, reset_runtime
+from openstarry_code.tools.builtin.code_exec import execute_code
+from openstarry_code.tools.builtin.shell import exec_command
+from openstarry_code.tools.types import CallerKind, ToolContext, current_tool_context
 
 
 def _init_git_workspace(path: Path) -> None:

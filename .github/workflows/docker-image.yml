@@ -81,7 +81,7 @@ jobs:
           fi
 
       - name: Hydrate router assets
-        run: git lfs pull --include="src/opensquilla/squilla_router/models/**"
+        run: git lfs pull --include="src/openstarry_code/squilla_router/models/**"
 
       # The Dockerfile hard-fails on LFS pointer files; failing here first
       # gives a clearer error than a mid-build SystemExit.
@@ -90,7 +90,7 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
 
-          root = Path("src/opensquilla/squilla_router/models/v4.2_phase3_inference")
+          root = Path("src/openstarry_code/squilla_router/models/v4.2_phase3_inference")
           required = [
               root / "PROVENANCE.md",
               root / "artifact_manifest.json",
@@ -147,7 +147,7 @@ jobs:
           # ignored personal BGM. Local `docker build` keeps the opt-in custom
           # music behavior because the Dockerfile argument defaults to 0.
           build-args: |
-            OPENSQUILLA_FORBID_PERSONAL_BGM=1
+            OPENSTARRY_CODE_FORBID_PERSONAL_BGM=1
           # Keep the pushed artifact a plain two-entry manifest list; the
           # default provenance attestation adds an unknown/unknown entry that
           # confuses registry UIs and `docker pull` inspection.

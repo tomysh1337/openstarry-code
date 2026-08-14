@@ -18,7 +18,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from opensquilla.skills.creator.auto_propose import (
+from openstarry_code.skills.creator.auto_propose import (
     _META_SKILL_CREATOR_TRIGGERS,
     AutoProposeResult,
     _chain_signature,
@@ -57,11 +57,11 @@ def _seed_decision_log(
 def _stub_loader_with_creator(monkeypatch: pytest.MonkeyPatch) -> MagicMock:
     """Build a SkillLoader-shaped mock whose only kind=meta entry is the
     real bundled meta-skill-creator spec (so parse_meta_plan succeeds)."""
-    from opensquilla.skills.loader import SkillLoader
+    from openstarry_code.skills.loader import SkillLoader
 
     root = Path(__file__).resolve().parents[2]
     real = SkillLoader(
-        bundled_dir=root / "src" / "opensquilla" / "skills" / "bundled",
+        bundled_dir=root / "src" / "openstarry_code" / "skills" / "bundled",
         snapshot_path=root / ".pytest_cache" / "auto_propose_snap.json",
     )
     real.invalidate_cache()
@@ -98,7 +98,7 @@ def _make_proposer_orchestrator(
                 "smoke": {"G3": {"passed": True}, "G4": {"passed": True}},
                 "auto_enable_eligible": True,
             }), encoding="utf-8")
-        from opensquilla.skills.meta.types import MetaResult
+        from openstarry_code.skills.meta.types import MetaResult
         return MetaResult(ok=True, final_text="ok")
 
     orch.run = AsyncMock(side_effect=fake_run)
@@ -107,11 +107,11 @@ def _make_proposer_orchestrator(
 
 def _loader_with_managed_dir(home: Path) -> Any:
     """Real SkillLoader with bundled skills plus temp MANAGED layer."""
-    from opensquilla.skills.loader import SkillLoader
+    from openstarry_code.skills.loader import SkillLoader
 
     root = Path(__file__).resolve().parents[2]
     loader = SkillLoader(
-        bundled_dir=root / "src" / "opensquilla" / "skills" / "bundled",
+        bundled_dir=root / "src" / "openstarry_code" / "skills" / "bundled",
         managed_dir=home / "skills",
         snapshot_path=home / "cache" / "skills_snapshot.json",
     )
@@ -698,7 +698,7 @@ async def test_duplicate_pending_proposal_is_skipped_by_chain_hash(
     loader = _stub_loader_with_creator(monkeypatch)
 
     # Seed a pre-existing proposal carrying the same chain_hash
-    from opensquilla.skills.creator.auto_propose import _chain_hash
+    from openstarry_code.skills.creator.auto_propose import _chain_hash
     existing = proposals_dir / "dead1234"
     existing.mkdir(parents=True)
     (existing / "SKILL.md").write_text("---\nname: dup\nkind: meta\n---\n")
@@ -894,19 +894,19 @@ def test_summary_string_shape() -> None:
 
 def test_is_auto_propose_disabled_reads_env(monkeypatch: pytest.MonkeyPatch) -> None:
     """The shared kill switch predicate reads
-    ``OPENSQUILLA_AUTO_PROPOSE_DISABLED`` and only treats the literal
+    ``OPENSTARRY_CODE_AUTO_PROPOSE_DISABLED`` and only treats the literal
     value ``"1"`` as off — any other value (including ``"true"``,
     ``""``, ``"0"``) leaves auto-propose enabled."""
-    monkeypatch.delenv("OPENSQUILLA_AUTO_PROPOSE_DISABLED", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_AUTO_PROPOSE_DISABLED", raising=False)
     assert is_auto_propose_disabled() is False
 
-    monkeypatch.setenv("OPENSQUILLA_AUTO_PROPOSE_DISABLED", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_AUTO_PROPOSE_DISABLED", "1")
     assert is_auto_propose_disabled() is True
 
-    monkeypatch.setenv("OPENSQUILLA_AUTO_PROPOSE_DISABLED", "true")
+    monkeypatch.setenv("OPENSTARRY_CODE_AUTO_PROPOSE_DISABLED", "true")
     assert is_auto_propose_disabled() is False
 
-    monkeypatch.setenv("OPENSQUILLA_AUTO_PROPOSE_DISABLED", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_AUTO_PROPOSE_DISABLED", "0")
     assert is_auto_propose_disabled() is False
 
 
@@ -919,7 +919,7 @@ async def test_auto_propose_short_circuits_on_kill_switch(
     callback (which bypasses the cron handler) would silently run the
     full pipeline. Pass mocks that would raise if invoked to prove the
     pipeline never starts."""
-    monkeypatch.setenv("OPENSQUILLA_AUTO_PROPOSE_DISABLED", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_AUTO_PROPOSE_DISABLED", "1")
     loader = MagicMock()
     loader.get_by_name.side_effect = AssertionError(
         "skill_loader must not be touched once the kill switch is on",
@@ -953,7 +953,7 @@ def test_try_auto_enable_proposal_refuses_under_kill_switch(
     must also honour the kill switch. The wrapper returns a
     structured ``refused`` decision so the caller still sees a
     well-formed payload."""
-    monkeypatch.setenv("OPENSQUILLA_AUTO_PROPOSE_DISABLED", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_AUTO_PROPOSE_DISABLED", "1")
     loader = MagicMock()
     loader.get_by_name.side_effect = AssertionError(
         "skill_loader must not be touched once the kill switch is on",

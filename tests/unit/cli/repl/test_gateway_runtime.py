@@ -8,16 +8,16 @@ from typing import Any, cast
 
 import pytest
 
-from opensquilla.cli.repl.session_state import ChatSessionState
-from opensquilla.cli.repl.stream import TurnResult, UsageSummary
-from opensquilla.cli.tui.contracts import TuiOutputHandle
-from opensquilla.cli.tui.opentui.host_runtime import HostFailureReason, HostRuntimeError
+from openstarry_code.cli.repl.session_state import ChatSessionState
+from openstarry_code.cli.repl.stream import TurnResult, UsageSummary
+from openstarry_code.cli.tui.contracts import TuiOutputHandle
+from openstarry_code.cli.tui.opentui.host_runtime import HostFailureReason, HostRuntimeError
 
 
 def test_gateway_runtime_has_no_raw_prompt_application_dependency(monkeypatch) -> None:
     monkeypatch.delitem(
         sys.modules,
-        "opensquilla.cli.repl.gateway_runtime",
+        "openstarry_code.cli.repl.gateway_runtime",
         raising=False,
     )
 
@@ -31,14 +31,14 @@ def test_gateway_runtime_has_no_raw_prompt_application_dependency(monkeypatch) -
 
     monkeypatch.setattr("builtins.__import__", _guarded_import)
 
-    module = importlib.import_module("opensquilla.cli.repl.gateway_runtime")
+    module = importlib.import_module("openstarry_code.cli.repl.gateway_runtime")
     source = inspect.getsource(module)
 
     assert "ChatApplication" not in source
 
 
 def test_gateway_session_context_mirrors_state_to_legacy_scope() -> None:
-    from opensquilla.cli.repl.gateway_runtime import GatewaySessionContext
+    from openstarry_code.cli.repl.gateway_runtime import GatewaySessionContext
 
     state = ChatSessionState(session_key="agent:main:original", model="gateway/original")
     context = GatewaySessionContext.create(state)
@@ -58,7 +58,7 @@ def test_gateway_session_context_mirrors_state_to_legacy_scope() -> None:
 
 
 def test_external_turn_fence_advances_pending_identity_without_idle_gap() -> None:
-    from opensquilla.cli.repl import gateway_runtime
+    from openstarry_code.cli.repl import gateway_runtime
 
     idle = asyncio.Event()
     idle.set()
@@ -89,7 +89,7 @@ def test_external_turn_fence_advances_pending_identity_without_idle_gap() -> Non
 
 @pytest.mark.asyncio
 async def test_external_turn_discovery_error_releases_pending_fence() -> None:
-    from opensquilla.cli.repl import gateway_runtime
+    from openstarry_code.cli.repl import gateway_runtime
 
     class _Discovery:
         def __init__(self) -> None:
@@ -158,7 +158,7 @@ async def test_external_turn_discovery_error_releases_pending_fence() -> None:
 async def test_gateway_runtime_connects_to_configured_gateway_target(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.repl import gateway_runtime
+    from openstarry_code.cli.repl import gateway_runtime
 
     class _FakeGatewayClient:
         connected_url: str | None = None
@@ -189,9 +189,9 @@ async def test_gateway_runtime_connects_to_configured_gateway_target(
         async def close(self) -> None:
             type(self).closed = True
 
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _FakeGatewayClient)
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_URL", "http://127.0.0.1:18790")
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_TOKEN", "branch-token")
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _FakeGatewayClient)
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_URL", "http://127.0.0.1:18790")
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_TOKEN", "branch-token")
 
     async def fake_run_concurrent_repl(
         *,
@@ -225,8 +225,8 @@ async def test_gateway_runtime_connects_to_configured_gateway_target(
 async def test_gateway_runtime_does_not_announce_resume_before_bootstrap_succeeds(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.gateway_client import GatewayRPCError
-    from opensquilla.cli.repl import gateway_runtime
+    from openstarry_code.cli.gateway_client import GatewayRPCError
+    from openstarry_code.cli.repl import gateway_runtime
 
     class _MissingSessionGatewayClient:
         closed = False
@@ -245,7 +245,7 @@ async def test_gateway_runtime_does_not_announce_resume_before_bootstrap_succeed
             type(self).closed = True
 
     monkeypatch.setattr(
-        "opensquilla.cli.gateway_client.GatewayClient",
+        "openstarry_code.cli.gateway_client.GatewayClient",
         _MissingSessionGatewayClient,
     )
     notices: list[gateway_runtime.GatewayRuntimeNotice] = []
@@ -273,7 +273,7 @@ async def test_gateway_runtime_does_not_announce_resume_before_bootstrap_succeed
 async def test_gateway_runtime_dispatches_messages_slash_commands_and_exit(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.repl import gateway_runtime
+    from openstarry_code.cli.repl import gateway_runtime
 
     class _FakeGatewayClient:
         instances: list[_FakeGatewayClient] = []
@@ -316,7 +316,7 @@ async def test_gateway_runtime_dispatches_messages_slash_commands_and_exit(
         async def close(self) -> None:
             self.closed = True
 
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _FakeGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _FakeGatewayClient)
 
     output = cast(TuiOutputHandle, object())
     captured: dict[str, Any] = {}
@@ -440,7 +440,7 @@ async def test_gateway_runtime_dispatches_messages_slash_commands_and_exit(
 async def test_gateway_abort_targets_active_turn_session_after_session_changes(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.repl import gateway_runtime
+    from openstarry_code.cli.repl import gateway_runtime
 
     class _FakeGatewayClient:
         instances: list[_FakeGatewayClient] = []
@@ -476,7 +476,7 @@ async def test_gateway_abort_targets_active_turn_session_after_session_changes(
         async def close(self) -> None:
             return None
 
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _FakeGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _FakeGatewayClient)
 
     stream_started = asyncio.Event()
     release_stream = asyncio.Event()
@@ -553,8 +553,8 @@ async def test_gateway_abort_targets_active_turn_session_after_session_changes(
 async def test_gateway_runtime_projects_external_turn_and_converges_approval(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.repl import gateway_runtime
-    from opensquilla.cli.tui.backend.input_identity import (
+    from openstarry_code.cli.repl import gateway_runtime
+    from openstarry_code.cli.tui.backend.input_identity import (
         current_tui_client_message_id,
         tui_turn_identity_sink_scope,
     )
@@ -672,7 +672,7 @@ async def test_gateway_runtime_projects_external_turn_and_converges_approval(
         async def close(self) -> None:
             self.closed = True
 
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _Client)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _Client)
     output = _Output()
     projected = asyncio.Event()
     captured_events: list[dict[str, Any]] = []
@@ -779,7 +779,7 @@ async def test_gateway_runtime_projects_external_turn_and_converges_approval(
 async def test_local_dispatch_parked_behind_external_turn_notifies_queued(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.repl import gateway_runtime
+    from openstarry_code.cli.repl import gateway_runtime
 
     class _Subscription:
         def __init__(self) -> None:
@@ -854,7 +854,7 @@ async def test_local_dispatch_parked_behind_external_turn_notifies_queued(
         async def close(self) -> None:
             return None
 
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _Client)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _Client)
 
     external_started = asyncio.Event()
     release_external = asyncio.Event()
@@ -931,7 +931,7 @@ async def test_local_dispatch_parked_behind_external_turn_notifies_queued(
 async def test_mirrored_goal_turn_steers_exact_identity_then_race_falls_back(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.repl import gateway_runtime
+    from openstarry_code.cli.repl import gateway_runtime
 
     class _Subscription:
         def __init__(self) -> None:
@@ -1011,7 +1011,7 @@ async def test_mirrored_goal_turn_steers_exact_identity_then_race_falls_back(
         async def send_message(self, kind: str, payload: dict[str, object]) -> None:
             return None
 
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _Client)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _Client)
     external_started = asyncio.Event()
     release_external = asyncio.Event()
     streamed: list[str] = []
@@ -1101,7 +1101,7 @@ async def test_mirrored_goal_turn_steers_exact_identity_then_race_falls_back(
 async def test_discovered_external_turn_is_steerable_before_projection_queue_admission(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.repl import gateway_runtime
+    from openstarry_code.cli.repl import gateway_runtime
 
     class _Subscription:
         def __init__(self) -> None:
@@ -1178,7 +1178,7 @@ async def test_discovered_external_turn_is_steerable_before_projection_queue_adm
         async def send_message(self, kind: str, payload: dict[str, object]) -> None:
             return None
 
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _Client)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _Client)
     local_streams: list[str] = []
 
     async def stream_response(
@@ -1260,7 +1260,7 @@ async def test_discovered_external_turn_is_steerable_before_projection_queue_adm
 async def test_local_dispatch_with_idle_external_turns_emits_no_queued_notice(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.repl import gateway_runtime
+    from openstarry_code.cli.repl import gateway_runtime
 
     class _Client:
         instances: list[_Client] = []
@@ -1288,7 +1288,7 @@ async def test_local_dispatch_with_idle_external_turns_emits_no_queued_notice(
         async def close(self) -> None:
             return None
 
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _Client)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _Client)
     notices: list[gateway_runtime.GatewayRuntimeNotice] = []
 
     async def stream_response(
@@ -1325,7 +1325,7 @@ async def test_local_dispatch_with_idle_external_turns_emits_no_queued_notice(
 async def test_terminal_race_steer_false_falls_back_to_normal_send(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.repl import gateway_runtime
+    from openstarry_code.cli.repl import gateway_runtime
 
     class _Client:
         instances: list[_Client] = []
@@ -1362,7 +1362,7 @@ async def test_terminal_race_steer_false_falls_back_to_normal_send(
         async def send_message(self, kind: str, payload: dict[str, object]) -> None:
             return None
 
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _Client)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _Client)
     first_started = asyncio.Event()
     release_first = asyncio.Event()
     streamed: list[str] = []
@@ -1421,7 +1421,7 @@ async def test_terminal_race_steer_false_falls_back_to_normal_send(
 
 @pytest.mark.asyncio
 async def test_external_projection_cancellation_never_aborts_originating_turn() -> None:
-    from opensquilla.cli.repl import gateway_runtime
+    from openstarry_code.cli.repl import gateway_runtime
 
     class _RealClient:
         def __init__(self) -> None:
@@ -1448,7 +1448,7 @@ async def test_external_projection_cancellation_never_aborts_originating_turn() 
 
 @pytest.mark.asyncio
 async def test_external_projection_normalizes_legacy_task_failure_and_stops() -> None:
-    from opensquilla.cli.repl import gateway_runtime
+    from openstarry_code.cli.repl import gateway_runtime
 
     class _NoMoreFrames:
         async def get(self) -> dict[str, Any]:
@@ -1483,7 +1483,7 @@ async def test_external_projection_normalizes_legacy_task_failure_and_stops() ->
 
 @pytest.mark.asyncio
 async def test_external_projection_does_not_end_on_untracked_task_group_terminal() -> None:
-    from opensquilla.cli.repl import gateway_runtime
+    from openstarry_code.cli.repl import gateway_runtime
 
     class _RemainingFrames:
         def __init__(self) -> None:
@@ -1533,7 +1533,7 @@ async def test_external_projection_does_not_end_on_untracked_task_group_terminal
 
 @pytest.mark.asyncio
 async def test_approval_watcher_fails_pending_overlays_closed_on_disconnect() -> None:
-    from opensquilla.cli.repl import gateway_runtime
+    from openstarry_code.cli.repl import gateway_runtime
 
     class _Disconnected:
         def __aiter__(self):
@@ -1571,8 +1571,8 @@ async def test_approval_watcher_fails_pending_overlays_closed_on_disconnect() ->
 async def test_external_turn_discovery_routes_interleaved_turns_once(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.gateway_client import GatewayClient
-    from opensquilla.cli.repl import gateway_runtime
+    from openstarry_code.cli.gateway_client import GatewayClient
+    from openstarry_code.cli.repl import gateway_runtime
 
     session_key = "agent:main:shared"
     client = GatewayClient()
@@ -1691,8 +1691,8 @@ async def test_external_turn_discovery_routes_interleaved_turns_once(
 async def test_goal_system_event_mirror_has_no_fake_user_prompt_and_dedupes_turn(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.gateway_client import GatewayClient
-    from opensquilla.cli.repl import gateway_runtime
+    from openstarry_code.cli.gateway_client import GatewayClient
+    from openstarry_code.cli.repl import gateway_runtime
 
     session_key = "agent:main:goal"
     client = GatewayClient()
@@ -1817,8 +1817,8 @@ async def test_goal_system_event_mirror_has_no_fake_user_prompt_and_dedupes_turn
 async def test_external_turn_remaining_discovery_frames_do_not_duplicate_projection(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.gateway_client import GatewayClient
-    from opensquilla.cli.repl import gateway_runtime
+    from openstarry_code.cli.gateway_client import GatewayClient
+    from openstarry_code.cli.repl import gateway_runtime
 
     session_key = "agent:main:shared"
     client = GatewayClient()
@@ -1915,7 +1915,7 @@ async def test_external_turn_remaining_discovery_frames_do_not_duplicate_project
 async def test_replay_gap_bootstraps_and_hydrates_existing_surface_once(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.repl import gateway_runtime
+    from openstarry_code.cli.repl import gateway_runtime
 
     class _GapSubscription:
         needs_resync = True
@@ -1992,7 +1992,7 @@ async def test_replay_gap_bootstraps_and_hydrates_existing_surface_once(
         async def send_message(self, kind: str, payload: dict[str, Any]) -> None:
             self.messages.append((kind, payload))
 
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _Client)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _Client)
     output = _Output()
 
     async def input_loop(*, scope, dispatch, abort_active_turn=None) -> None:
@@ -2046,7 +2046,7 @@ async def test_runtime_failure_returns_queue_aware_exit_summary(
     failure: Exception,
     expected_reason: str,
 ) -> None:
-    from opensquilla.cli.repl import gateway_runtime
+    from openstarry_code.cli.repl import gateway_runtime
 
     class _Client:
         async def connect(self, url: str, *, token: str | None = None) -> None:
@@ -2072,7 +2072,7 @@ async def test_runtime_failure_returns_queue_aware_exit_summary(
         async def close(self) -> None:
             return None
 
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _Client)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _Client)
 
     async def input_loop(*, scope, dispatch, abort_active_turn=None) -> None:
         raise failure
@@ -2100,13 +2100,13 @@ async def test_runtime_failure_returns_queue_aware_exit_summary(
 async def test_gateway_runtime_preserves_pre_session_startup_error(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.repl import gateway_runtime
+    from openstarry_code.cli.repl import gateway_runtime
 
     class _Client:
         async def connect(self, url: str, *, token: str | None = None) -> None:
             raise RuntimeError("startup handshake failed")
 
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _Client)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _Client)
 
     with pytest.raises(RuntimeError, match="startup handshake failed"):
         await gateway_runtime.run_gateway_chat(

@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from starlette.testclient import TestClient
 
-from opensquilla.gateway.app import create_gateway_app
-from opensquilla.gateway.config import GatewayConfig
+from openstarry_code.gateway.app import create_gateway_app
+from openstarry_code.gateway.config import GatewayConfig
 
 
 def test_sandbox_v2_policy_get_update_and_conflict(tmp_path) -> None:

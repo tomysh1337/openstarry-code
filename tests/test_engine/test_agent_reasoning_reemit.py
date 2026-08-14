@@ -10,12 +10,12 @@ from __future__ import annotations
 from collections.abc import AsyncIterator
 from typing import Any
 
-from opensquilla.engine import Agent, AgentConfig
-from opensquilla.engine.types import ThinkingEvent
-from opensquilla.provider import ChatConfig, Message
-from opensquilla.provider import DoneEvent as ProviderDone
-from opensquilla.provider import ReasoningDeltaEvent as ProviderReasoning
-from opensquilla.provider import TextDeltaEvent as ProviderText
+from openstarry_code.engine import Agent, AgentConfig
+from openstarry_code.engine.types import ThinkingEvent
+from openstarry_code.provider import ChatConfig, Message
+from openstarry_code.provider import DoneEvent as ProviderDone
+from openstarry_code.provider import ReasoningDeltaEvent as ProviderReasoning
+from openstarry_code.provider import TextDeltaEvent as ProviderText
 
 
 class _ReasoningProvider:
@@ -101,14 +101,14 @@ def test_thinking_event_keeps_legacy_default_start_time() -> None:
     assert ThinkingEvent(text="legacy").started_at == 0
 
 
-from opensquilla.engine import ToolResult  # noqa: E402
-from opensquilla.engine.types import TextDeltaEvent, ToolCall, ToolUseStartEvent  # noqa: E402
-from opensquilla.provider import (  # noqa: E402
+from openstarry_code.engine import ToolResult  # noqa: E402
+from openstarry_code.engine.types import TextDeltaEvent, ToolCall, ToolUseStartEvent  # noqa: E402
+from openstarry_code.provider import (  # noqa: E402
     ToolDefinition,
     ToolInputSchema,
 )
-from opensquilla.provider import ToolUseEndEvent as ProviderToolEnd  # noqa: E402
-from opensquilla.provider import ToolUseStartEvent as ProviderToolStart  # noqa: E402
+from openstarry_code.provider import ToolUseEndEvent as ProviderToolEnd  # noqa: E402
+from openstarry_code.provider import ToolUseStartEvent as ProviderToolStart  # noqa: E402
 
 
 class _TextThenToolThenAnswerProvider:

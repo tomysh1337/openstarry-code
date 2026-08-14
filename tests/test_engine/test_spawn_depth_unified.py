@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from opensquilla.agents.limits import MAX_SPAWN_DEPTH
-from opensquilla.engine import subagent as engine_subagent
-from opensquilla.tools.builtin import sessions as sessions_tool
+from openstarry_code.agents.limits import MAX_SPAWN_DEPTH
+from openstarry_code.engine import subagent as engine_subagent
+from openstarry_code.tools.builtin import sessions as sessions_tool
 
 
 def test_max_spawn_depth_is_three() -> None:

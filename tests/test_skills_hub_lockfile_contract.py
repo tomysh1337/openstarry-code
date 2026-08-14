@@ -7,8 +7,8 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.skills.hub import lockfile as lockfile_module
-from opensquilla.skills.hub.contracts import (
+from openstarry_code.skills.hub import lockfile as lockfile_module
+from openstarry_code.skills.hub.contracts import (
     DiagnosticPhase,
     DiagnosticSeverity,
     SkillCompatibilityState,
@@ -20,7 +20,7 @@ from opensquilla.skills.hub.contracts import (
     SkillReadinessState,
     SkillSelectionState,
 )
-from opensquilla.skills.hub.lockfile import (
+from openstarry_code.skills.hub.lockfile import (
     LOCKFILE_SCHEMA_VERSION,
     LockEntry,
     Lockfile,

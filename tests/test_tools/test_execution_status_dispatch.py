@@ -5,11 +5,11 @@ import json
 
 import pytest
 
-from opensquilla.engine.types import ToolCall
-from opensquilla.result_budget import ToolResultBudgetPolicy
-from opensquilla.tools.dispatch import build_tool_handler
-from opensquilla.tools.registry import ToolRegistry
-from opensquilla.tools.types import ToolContext, ToolSpec
+from openstarry_code.engine.types import ToolCall
+from openstarry_code.result_budget import ToolResultBudgetPolicy
+from openstarry_code.tools.dispatch import build_tool_handler
+from openstarry_code.tools.registry import ToolRegistry
+from openstarry_code.tools.types import ToolContext, ToolSpec
 
 
 def _registry(name: str, result: str) -> ToolRegistry:

@@ -13,10 +13,10 @@ from __future__ import annotations
 from types import SimpleNamespace
 from typing import Any
 
-from opensquilla.cli.agent_cmd import _with_agent_thinking_config
-from opensquilla.engine import AgentConfig, ThinkingLevel
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.gateway.config import GatewayConfig
+from openstarry_code.cli.agent_cmd import _with_agent_thinking_config
+from openstarry_code.engine import AgentConfig, ThinkingLevel
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.gateway.config import GatewayConfig
 
 
 def _resolve_turn_thinking(
@@ -72,7 +72,7 @@ def test_cli_thinking_flag_overrides_toml_llm_thinking(
     ``--thinking xhigh``. It also means a config.toml-only edit to
     ``[llm].thinking`` is silently ignored while the runner flag persists.
     """
-    monkeypatch.delenv("OPENSQUILLA_LLM_THINKING", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_LLM_THINKING", raising=False)
     cfg = GatewayConfig(llm={"thinking": "high"})
 
     updated = _with_agent_thinking_config(cfg, "xhigh")

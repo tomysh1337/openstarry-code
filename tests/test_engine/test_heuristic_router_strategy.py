@@ -10,8 +10,8 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.engine.pipeline import TurnContext
-from opensquilla.engine.routing.heuristic import (
+from openstarry_code.engine.pipeline import TurnContext
+from openstarry_code.engine.routing.heuristic import (
     BORDERLINE_CONFIDENCE,
     CODE_OR_MATERIAL_MIN_CHARS,
     HEAVY_MIN_CHARS,
@@ -21,13 +21,13 @@ from opensquilla.engine.routing.heuristic import (
     classify_features,
     extract_features,
 )
-from opensquilla.engine.steps import squilla_router as squilla_router_step
-from opensquilla.engine.steps.squilla_router import (
+from openstarry_code.engine.steps import squilla_router as squilla_router_step
+from openstarry_code.engine.steps.squilla_router import (
     apply_squilla_router,
     router_runtime_status,
 )
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.router_runtime_diagnostics import (
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.router_runtime_diagnostics import (
     ROUTER_RUNTIME_UNAVAILABLE,
     WINDOWS_VC_RUNTIME_MISSING,
 )
@@ -285,7 +285,7 @@ async def test_unconfigured_tier_falls_to_nearest_valid() -> None:
 async def test_failed_v4_load_installs_heuristic_strategy(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.squilla_router.v4_phase3 as v4_phase3
+    import openstarry_code.squilla_router.v4_phase3 as v4_phase3
 
     monkeypatch.setattr(v4_phase3, "V4Phase3Strategy", ExplodingV4Strategy)
     ctx = make_context("Summarize the meeting notes in two sentences.")
@@ -304,7 +304,7 @@ async def test_failed_v4_load_installs_heuristic_strategy(
 async def test_heuristic_metadata_flows_through_policy_engine(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.squilla_router.v4_phase3 as v4_phase3
+    import openstarry_code.squilla_router.v4_phase3 as v4_phase3
 
     monkeypatch.setattr(v4_phase3, "V4Phase3Strategy", ExplodingV4Strategy)
     ctx = make_context("Summarize the meeting notes in two sentences.")
@@ -330,7 +330,7 @@ async def test_heuristic_metadata_flows_through_policy_engine(
 async def test_goal_routing_hint_drives_router_without_persisting_objective(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.squilla_router.v4_phase3 as v4_phase3
+    import openstarry_code.squilla_router.v4_phase3 as v4_phase3
 
     monkeypatch.setattr(v4_phase3, "V4Phase3Strategy", ExplodingV4Strategy)
     generic_event = "Continue working on the active Goal."
@@ -351,7 +351,7 @@ async def test_goal_routing_hint_drives_router_without_persisting_objective(
 async def test_borderline_band_defers_to_configured_default_tier(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.squilla_router.v4_phase3 as v4_phase3
+    import openstarry_code.squilla_router.v4_phase3 as v4_phase3
 
     monkeypatch.setattr(v4_phase3, "V4Phase3Strategy", ExplodingV4Strategy)
     ctx = make_context("please summarize the following notes " + "n" * 1500)
@@ -368,7 +368,7 @@ async def test_borderline_band_defers_to_configured_default_tier(
 async def test_heuristic_history_participates_in_anti_downgrade(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.squilla_router.v4_phase3 as v4_phase3
+    import openstarry_code.squilla_router.v4_phase3 as v4_phase3
 
     monkeypatch.setattr(v4_phase3, "V4Phase3Strategy", ExplodingV4Strategy)
     session = "agent:heuristic:anti-downgrade"
@@ -389,7 +389,7 @@ async def test_heuristic_history_participates_in_anti_downgrade(
 async def test_non_image_attachments_reach_heuristic_classifier(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.squilla_router.v4_phase3 as v4_phase3
+    import openstarry_code.squilla_router.v4_phase3 as v4_phase3
 
     monkeypatch.setattr(v4_phase3, "V4Phase3Strategy", ExplodingV4Strategy)
     ctx = make_context(
@@ -407,7 +407,7 @@ async def test_non_image_attachments_reach_heuristic_classifier(
 async def test_constructed_but_unavailable_v4_also_falls_back_to_heuristic(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.squilla_router.v4_phase3 as v4_phase3
+    import openstarry_code.squilla_router.v4_phase3 as v4_phase3
 
     monkeypatch.setattr(v4_phase3, "V4Phase3Strategy", UnavailableConstructedV4Strategy)
     ctx = make_context("Summarize the meeting notes in two sentences.")
@@ -423,8 +423,8 @@ async def test_constructed_but_unavailable_v4_also_falls_back_to_heuristic(
 async def test_unavailable_safety_net_when_heuristic_import_fails(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.engine.routing.heuristic as heuristic_module
-    import opensquilla.squilla_router.v4_phase3 as v4_phase3
+    import openstarry_code.engine.routing.heuristic as heuristic_module
+    import openstarry_code.squilla_router.v4_phase3 as v4_phase3
 
     monkeypatch.setattr(v4_phase3, "V4Phase3Strategy", ExplodingV4Strategy)
     monkeypatch.setattr(heuristic_module, "HeuristicRouterStrategy", ExplodingHeuristic)
@@ -455,7 +455,7 @@ def test_status_reports_uninitialized_before_first_strategy_load() -> None:
 async def test_status_reports_heuristic_fallback_with_diagnostics_code(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.squilla_router.v4_phase3 as v4_phase3
+    import openstarry_code.squilla_router.v4_phase3 as v4_phase3
 
     monkeypatch.setattr(v4_phase3, "V4Phase3Strategy", ExplodingV4Strategy)
     await apply_squilla_router(make_context("Explain the setup steps."))
@@ -469,7 +469,7 @@ async def test_status_reports_heuristic_fallback_with_diagnostics_code(
 
 
 def test_status_reports_loaded_v4_runtime(monkeypatch: pytest.MonkeyPatch) -> None:
-    import opensquilla.squilla_router.v4_phase3 as v4_phase3
+    import openstarry_code.squilla_router.v4_phase3 as v4_phase3
 
     monkeypatch.setattr(v4_phase3, "V4Phase3Strategy", LoadedFakeV4Strategy)
     config = GatewayConfig()
@@ -486,8 +486,8 @@ def test_status_reports_loaded_v4_runtime(monkeypatch: pytest.MonkeyPatch) -> No
 async def test_status_reports_unavailable_when_even_heuristic_failed(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.engine.routing.heuristic as heuristic_module
-    import opensquilla.squilla_router.v4_phase3 as v4_phase3
+    import openstarry_code.engine.routing.heuristic as heuristic_module
+    import openstarry_code.squilla_router.v4_phase3 as v4_phase3
 
     monkeypatch.setattr(v4_phase3, "V4Phase3Strategy", ExplodingV4Strategy)
     monkeypatch.setattr(heuristic_module, "HeuristicRouterStrategy", ExplodingHeuristic)
@@ -503,7 +503,7 @@ async def test_status_reports_unavailable_when_even_heuristic_failed(
 async def test_status_code_defaults_generic_for_unclassified_errors(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.squilla_router.v4_phase3 as v4_phase3
+    import openstarry_code.squilla_router.v4_phase3 as v4_phase3
 
     monkeypatch.setattr(v4_phase3, "V4Phase3Strategy", UnavailableConstructedV4Strategy)
     ctx = make_context("Explain the setup steps.")

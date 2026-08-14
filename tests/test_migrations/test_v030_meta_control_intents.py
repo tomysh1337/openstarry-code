@@ -8,8 +8,8 @@ from pathlib import Path
 import pytest
 from yoyo import get_backend, read_migrations
 
-from opensquilla.persistence.migrator import apply_pending
-from opensquilla.session.storage import SessionStorage
+from openstarry_code.persistence.migrator import apply_pending
+from openstarry_code.session.storage import SessionStorage
 
 MIGRATIONS_DIR = Path(__file__).resolve().parents[2] / "migrations"
 V030_ID = "V030__meta_control_intents"

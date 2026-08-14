@@ -1,7 +1,7 @@
 """collect_bundle: zip contents, redaction bar, desktop derivation, best-effort.
 
-All fixture data is synthetic. The fixture builds a fake OpenSquilla home +
-log dir, and an autouse fixture pins OPENSQUILLA_GATEWAY_CONFIG_PATH to a
+All fixture data is synthetic. The fixture builds a fake OpenStarry Code home +
+log dir, and an autouse fixture pins OPENSTARRY_CODE_GATEWAY_CONFIG_PATH to a
 synthetic TOML so no real config is ever read or rewritten.
 """
 
@@ -16,8 +16,8 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.observability.bundle import _TAIL_CAP, collect_bundle
-from opensquilla.persistence.migrator import apply_pending
+from openstarry_code.observability.bundle import _TAIL_CAP, collect_bundle
+from openstarry_code.persistence.migrator import apply_pending
 
 MIGRATIONS_DIR = Path(__file__).resolve().parents[2] / "migrations"
 
@@ -33,13 +33,13 @@ OUTDATED_TOML = '[memory]\ncapture_mode = "archive_turn_pair"\n'
 def _hermetic_config(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     """Pin config resolution to a synthetic file for every bundle test.
 
-    Without this, resolve_config_path(None) falls back to ./opensquilla.toml
+    Without this, resolve_config_path(None) falls back to ./openstarry-code.toml
     and then the developer's real home config — which the doctor collector's
     migration path could rewrite.
     """
     config_path = tmp_path / "synthetic-config.toml"
     config_path.write_text("# synthetic bundle-test config\n", encoding="utf-8")
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(config_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(config_path))
     return config_path
 
 
@@ -73,8 +73,8 @@ def _make_home(tmp_path: Path, *, desktop: bool = False) -> tuple[Path, Path]:
     (log_dir / f"turn-calls-{day}.jsonl").write_text('{"kind":"llm_request"}\n', encoding="utf-8")
     # Hard-excluded material: .env files and the raw decision debug mirror
     # must never make it into any bundle tier.
-    (home / ".env").write_text(f"OPENSQUILLA_API_KEY={FAKE_KEY}\n", encoding="utf-8")
-    (log_dir / ".env").write_text(f"OPENSQUILLA_API_KEY={FAKE_KEY}\n", encoding="utf-8")
+    (home / ".env").write_text(f"OPENSTARRY_CODE_API_KEY={FAKE_KEY}\n", encoding="utf-8")
+    (log_dir / ".env").write_text(f"OPENSTARRY_CODE_API_KEY={FAKE_KEY}\n", encoding="utf-8")
     debug_dir = log_dir / "debug"
     debug_dir.mkdir()
     (debug_dir / f"decisions-{day}-raw.jsonl").write_text(

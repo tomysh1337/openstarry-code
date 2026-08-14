@@ -159,7 +159,7 @@ def test_opensquilla_transcript_fallback_reads_final_assistant_text(tmp_path, mo
     )
     conn.commit()
     conn.close()
-    monkeypatch.setenv("OPENSQUILLA_STATE_DB", str(db_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DB", str(db_path))
 
     assert (
         _latest_opensquilla_transcript_text("agent:main:cli:test")
@@ -184,7 +184,7 @@ def test_opensquilla_meta_final_text_reads_clean_dag_deliverable(tmp_path, monke
     )
     conn.commit()
     conn.close()
-    monkeypatch.setenv("OPENSQUILLA_STATE_DB", str(db_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DB", str(db_path))
 
     assert (
         _latest_opensquilla_meta_final_text("agent:main:cli:test")
@@ -412,7 +412,7 @@ def test_judge_prompt_blinds_endpoint_names_and_includes_caps() -> None:
 
     assert "Candidate A" in prompt
     assert "Candidate B" in prompt
-    assert "OpenSquilla" not in prompt
+    assert "OpenStarry Code" not in prompt
     assert "OpenClaw" not in prompt
     assert "Hard caps" in prompt
     assert "timeout, empty response, or endpoint error" in prompt
@@ -754,7 +754,7 @@ def test_reports_persist_conclusion_and_prompts() -> None:
     prompts = render_prompts_markdown([row], jsonl_path="raw.jsonl")
 
     assert "## Conclusion" in report
-    assert "OpenSquilla won 1/1 cases" in report
+    assert "OpenStarry Code won 1/1 cases" in report
     assert "Investigate stack trace benchmark" in report
-    assert "# OpenClaw vs OpenSquilla Meta-Skill Benchmark Prompts" in prompts
+    assert "# OpenClaw vs OpenStarry Code Meta-Skill Benchmark Prompts" in prompts
     assert "meta-stack-trace-investigator" in prompts

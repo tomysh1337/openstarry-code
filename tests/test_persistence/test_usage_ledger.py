@@ -8,9 +8,9 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.session.models import SessionNode
-from opensquilla.session.storage import SCHEMA_VERSION, SessionStorage
-from opensquilla.session.usage_ledger import (
+from openstarry_code.session.models import SessionNode
+from openstarry_code.session.storage import SCHEMA_VERSION, SessionStorage
+from openstarry_code.session.usage_ledger import (
     UsageEventCompletion,
     UsageEventItem,
     UsageEventStart,

@@ -4,14 +4,14 @@ import importlib
 
 import pytest
 
-from opensquilla.compat import aiosqlite
+from openstarry_code.compat import aiosqlite
 
 
 @pytest.mark.asyncio
 async def test_sqlite3_fallback_execute_supports_await_and_async_context(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_FORCE_SQLITE3_BACKEND", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_FORCE_SQLITE3_BACKEND", "1")
     module = importlib.reload(aiosqlite)
     conn = await module.connect(":memory:")
     try:
@@ -48,5 +48,5 @@ async def test_sqlite3_fallback_execute_supports_await_and_async_context(
         assert len(traced) == traced_count
     finally:
         await conn.close()
-        monkeypatch.delenv("OPENSQUILLA_FORCE_SQLITE3_BACKEND", raising=False)
+        monkeypatch.delenv("OPENSTARRY_CODE_FORCE_SQLITE3_BACKEND", raising=False)
         importlib.reload(aiosqlite)

@@ -21,7 +21,7 @@ import httpx
 import pytest
 import structlog.testing
 
-from opensquilla.provider.compat_policy import (
+from openstarry_code.provider.compat_policy import (
     TEXT_TOOL_DIALECT_DEEPSEEK_DSML,
     TEXT_TOOL_DIALECT_MINIMAX_XML,
     TEXT_TOOL_DIALECT_PLAIN_JSON,
@@ -31,8 +31,8 @@ from opensquilla.provider.compat_policy import (
     TextToolDialect,
     compat_policy_for_kind,
 )
-from opensquilla.provider.openai import OpenAIProvider, _DeferredStreamEventBuffer
-from opensquilla.provider.text_tool_normalizer import (
+from openstarry_code.provider.openai import OpenAIProvider, _DeferredStreamEventBuffer
+from openstarry_code.provider.text_tool_normalizer import (
     PLAIN_TOOL_INTERSTITIAL_WHITESPACE_MAX,
     LiteralTextSegment,
     SyntheticToolSegment,
@@ -40,7 +40,7 @@ from opensquilla.provider.text_tool_normalizer import (
     _raw_html_code_ranges,
     classify_text_tool_segments,
 )
-from opensquilla.provider.types import (
+from openstarry_code.provider.types import (
     ChatConfig,
     DoneEvent,
     ErrorEvent,
@@ -356,7 +356,7 @@ def _collect_stream(
         return _REAL_ASYNC_CLIENT(*args, **kwargs)
 
     monkeypatch.setattr(
-        "opensquilla.provider.openai.httpx.AsyncClient",
+        "openstarry_code.provider.openai.httpx.AsyncClient",
         patched_async_client,
     )
     provider = OpenAIProvider(
@@ -450,7 +450,7 @@ def _collect_non_stream(
         return _REAL_ASYNC_CLIENT(*args, **kwargs)
 
     monkeypatch.setattr(
-        "opensquilla.provider.openai.httpx.AsyncClient",
+        "openstarry_code.provider.openai.httpx.AsyncClient",
         patched_async_client,
     )
     provider = OpenAIProvider(
@@ -3225,7 +3225,7 @@ def test_oversized_unfinished_html_token_is_bounded_for_one_character_chunks(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(
-        "opensquilla.provider.text_tool_normalizer._RAW_HTML_TOKEN_MAX_CHARS",
+        "openstarry_code.provider.text_tool_normalizer._RAW_HTML_TOKEN_MAX_CHARS",
         64,
     )
     literal = '<pre data-example="' + ("x" * 80) + "\n</pre>\n" + _QWEN_CALL
@@ -3558,7 +3558,7 @@ def test_deferred_native_queue_cap_releases_literal_before_native(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(
-        "opensquilla.provider.openai._MAX_DEFERRED_NATIVE_ARGUMENT_CHARS",
+        "openstarry_code.provider.openai._MAX_DEFERRED_NATIVE_ARGUMENT_CHARS",
         len(_QWEN_CALL) + 8,
     )
     body = _raw_sse(
@@ -3631,7 +3631,7 @@ def test_post_native_queue_cap_releases_literal_native_then_suffix(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(
-        "opensquilla.provider.openai._MAX_DEFERRED_NATIVE_ARGUMENT_CHARS",
+        "openstarry_code.provider.openai._MAX_DEFERRED_NATIVE_ARGUMENT_CHARS",
         len(_QWEN_CALL) + len('{"query":"x"}') + 3,
     )
     suffix = "long suffix"
@@ -3695,7 +3695,7 @@ def test_combined_candidate_and_unresolved_identity_share_one_holdback_budget(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(
-        "opensquilla.provider.openai._MAX_DEFERRED_NATIVE_ARGUMENT_CHARS",
+        "openstarry_code.provider.openai._MAX_DEFERRED_NATIVE_ARGUMENT_CHARS",
         len(_QWEN_CALL) + 5,
     )
     body = _raw_sse(
@@ -3781,8 +3781,8 @@ def test_empty_stream_without_terminal_evidence_is_error(
 
 def test_provider_import_before_tools_does_not_freeze_builtin_registry() -> None:
     code = """
-from opensquilla.provider.openai import OpenAIProvider
-from opensquilla.tools import get_default_registry
+from openstarry_code.provider.openai import OpenAIProvider
+from openstarry_code.tools import get_default_registry
 names = set(get_default_registry().list_names())
 required = {"cron", "gateway", "agents_list", "sessions_list"}
 missing = sorted(required - names)

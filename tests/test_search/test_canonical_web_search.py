@@ -6,10 +6,10 @@ from typing import Any
 
 import pytest
 
-import opensquilla.search.canonical as canonical_module
-from opensquilla.search.canonical import run_canonical_web_search
-from opensquilla.search.runtime_config import SearchRuntimeConfig, resolve_search_runtime
-from opensquilla.search.types import SearchOptions, SearchProviderError, SearchResult
+import openstarry_code.search.canonical as canonical_module
+from openstarry_code.search.canonical import run_canonical_web_search
+from openstarry_code.search.runtime_config import SearchRuntimeConfig, resolve_search_runtime
+from openstarry_code.search.types import SearchOptions, SearchProviderError, SearchResult
 
 
 class FakeProvider:
@@ -572,7 +572,7 @@ async def test_canonical_web_search_default_fetcher_fetches_compact_excerpt(
     fake_web_fetch = types.SimpleNamespace(
         run_web_fetch_payload=fake_run_web_fetch_payload,
     )
-    monkeypatch.setitem(sys.modules, "opensquilla.tools.builtin.web_fetch", fake_web_fetch)
+    monkeypatch.setitem(sys.modules, "openstarry_code.tools.builtin.web_fetch", fake_web_fetch)
 
     payload = await run_canonical_web_search(
         SearchOptions(query="q", fetch_top_k=1, max_chars_per_source=500),

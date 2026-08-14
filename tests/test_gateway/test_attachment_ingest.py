@@ -4,8 +4,8 @@ import base64
 
 import pytest
 
-from opensquilla.contracts.attachments import SNIFF_PEEK_BYTES
-from opensquilla.gateway.attachment_ingest import ingest_attachments
+from openstarry_code.contracts.attachments import SNIFF_PEEK_BYTES
+from openstarry_code.gateway.attachment_ingest import ingest_attachments
 
 
 @pytest.mark.asyncio
@@ -255,7 +255,7 @@ async def test_opaque_limit_bytes_caps_opaque_payloads() -> None:
 async def test_binary_claiming_text_above_inline_cap_reclassified_opaque() -> None:
     # A binary claiming a text mime must not shop for the 30MiB staged-text
     # ceiling: without whole-payload UTF-8 proof it is reclassified opaque.
-    from opensquilla.contracts.attachments import OPAQUE_MIME, TEXT_ATTACHMENT_BYTES
+    from openstarry_code.contracts.attachments import OPAQUE_MIME, TEXT_ATTACHMENT_BYTES
 
     payload = b"\xff\xfe" + b"a" * (TEXT_ATTACHMENT_BYTES + 64)
     result = await ingest_attachments(
@@ -271,7 +271,7 @@ async def test_binary_claiming_text_above_inline_cap_reclassified_opaque() -> No
 
 @pytest.mark.asyncio
 async def test_binary_claiming_text_above_inline_cap_rejected_when_strict() -> None:
-    from opensquilla.contracts.attachments import TEXT_ATTACHMENT_BYTES
+    from openstarry_code.contracts.attachments import TEXT_ATTACHMENT_BYTES
 
     payload = b"\xff\xfe" + b"a" * (TEXT_ATTACHMENT_BYTES + 64)
     result = await ingest_attachments(
@@ -477,7 +477,7 @@ async def test_unknown_textual_upload_accepted_when_opaque_admission_disabled() 
 async def test_strict_mode_keeps_staged_text_at_inline_cap() -> None:
     # accept_opaque=False restores the legacy stageable set, so staged text
     # stays at the 2MB inline cap instead of the 30MiB staged ceiling.
-    from opensquilla.contracts.attachments import TEXT_ATTACHMENT_BYTES
+    from openstarry_code.contracts.attachments import TEXT_ATTACHMENT_BYTES
 
     payload = b"a" * (TEXT_ATTACHMENT_BYTES + 1)
     result = await ingest_attachments(

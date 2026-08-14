@@ -87,8 +87,8 @@ export async function launchPackagedCandidate({
     ],
     env: {
       ...inheritedEnv,
-      OPENSQUILLA_DESKTOP_SECRET_STORAGE: 'plain',
-      OPENSQUILLA_DESKTOP_DISABLE_AUTO_UPDATE: '1',
+      OPENSTARRY_CODE_DESKTOP_SECRET_STORAGE: 'plain',
+      OPENSTARRY_CODE_DESKTOP_DISABLE_AUTO_UPDATE: '1',
       ...env,
     },
   })

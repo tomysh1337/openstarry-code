@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from opensquilla.cli.tui.state import TuiRuntimeState
+from openstarry_code.cli.tui.state import TuiRuntimeState
 
 
 def test_runtime_state_tracks_pending_queue_fifo() -> None:

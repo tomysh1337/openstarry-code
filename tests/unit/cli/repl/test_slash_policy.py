@@ -20,7 +20,7 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.cli.repl.slash_policy import (
+from openstarry_code.cli.repl.slash_policy import (
     DESTRUCTIVE_SLASH_WORDS,
     EXIT_SLASH_WORDS,
     SlashCategory,
@@ -248,7 +248,7 @@ def test_classify_local_theme(command: str) -> None:
 
 
 def test_local_set_is_narrow_and_disjoint() -> None:
-    from opensquilla.cli.repl.slash_policy import (
+    from openstarry_code.cli.repl.slash_policy import (
         LOCAL_SLASH_WORDS,
         PURE_INFO_SLASH_WORDS,
         STATE_MUTATION_SLASH_WORDS,

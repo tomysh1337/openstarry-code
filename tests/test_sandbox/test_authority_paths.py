@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from opensquilla.sandbox.file_policy import (
+from openstarry_code.sandbox.file_policy import (
     authority_roots_for_state,
     decide_file_access,
 )
-from opensquilla.sandbox.policy_models import SandboxPolicy
+from openstarry_code.sandbox.policy_models import SandboxPolicy
 
 
 def test_authority_roots_are_non_overridable_deny_read_and_write(tmp_path: Path) -> None:

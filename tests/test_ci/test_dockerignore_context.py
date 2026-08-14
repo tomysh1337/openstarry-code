@@ -18,8 +18,8 @@ def _write(path: Path, contents: str = "probe\n") -> None:
 
 
 @pytest.mark.skipif(
-    os.environ.get("OPENSQUILLA_DOCKERIGNORE_E2E") != "1",
-    reason="set OPENSQUILLA_DOCKERIGNORE_E2E=1 in the Docker contract CI check",
+    os.environ.get("OPENSTARRY_CODE_DOCKERIGNORE_E2E") != "1",
+    reason="set OPENSTARRY_CODE_DOCKERIGNORE_E2E=1 in the Docker contract CI check",
 )
 def test_dockerignore_filters_real_build_context(tmp_path: Path) -> None:
     """A scratch build makes Docker, rather than a test reimplementation, decide."""
@@ -34,21 +34,21 @@ def test_dockerignore_filters_real_build_context(tmp_path: Path) -> None:
 
     # Files that must never enter either Dockerfile stage.
     _write(context / ".env", "ROOT_SECRET=1\n")
-    _write(context / "opensquilla-webui/.env.local", "VITE_SECRET=1\n")
-    _write(context / "opensquilla-webui/.npmrc", "//registry.example/:_authToken=secret\n")
+    _write(context / "openstarry-code-webui/.env.local", "VITE_SECRET=1\n")
+    _write(context / "openstarry-code-webui/.npmrc", "//registry.example/:_authToken=secret\n")
     _write(context / "config/tls/server.pem", "private certificate material\n")
     _write(context / "config/tls/server.key", "private key material\n")
     _write(
-        context / "src/opensquilla/gateway/static/dist/assets/stale-hash.js",
+        context / "src/openstarry_code/gateway/static/dist/assets/stale-hash.js",
         "stale bundle\n",
     )
 
     # Nested dotfiles and private BGM remain supported inputs. The former is
     # harmless build metadata; the latter is deliberately allowed for local
     # images and rejected separately for official images.
-    _write(context / "opensquilla-webui/.node-version", "22.12.0\n")
-    _write(context / "opensquilla-webui/public/music/local.mp3", "local music\n")
-    _write(context / "src/opensquilla/__init__.py")
+    _write(context / "openstarry-code-webui/.node-version", "22.12.0\n")
+    _write(context / "openstarry-code-webui/public/music/local.mp3", "local music\n")
+    _write(context / "src/openstarry_code/__init__.py")
 
     result = subprocess.run(
         [
@@ -69,13 +69,13 @@ def test_dockerignore_filters_real_build_context(tmp_path: Path) -> None:
     assert result.returncode == 0, result.stdout + result.stderr
 
     copied = output / "context"
-    assert (copied / "opensquilla-webui/.node-version").is_file()
-    assert (copied / "opensquilla-webui/public/music/local.mp3").is_file()
-    assert (copied / "src/opensquilla/__init__.py").is_file()
+    assert (copied / "openstarry-code-webui/.node-version").is_file()
+    assert (copied / "openstarry-code-webui/public/music/local.mp3").is_file()
+    assert (copied / "src/openstarry_code/__init__.py").is_file()
 
     assert not (copied / ".env").exists()
-    assert not (copied / "opensquilla-webui/.env.local").exists()
-    assert not (copied / "opensquilla-webui/.npmrc").exists()
+    assert not (copied / "openstarry-code-webui/.env.local").exists()
+    assert not (copied / "openstarry-code-webui/.npmrc").exists()
     assert not (copied / "config/tls/server.pem").exists()
     assert not (copied / "config/tls/server.key").exists()
-    assert not (copied / "src/opensquilla/gateway/static/dist").exists()
+    assert not (copied / "src/openstarry_code/gateway/static/dist").exists()

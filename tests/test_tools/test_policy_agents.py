@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from opensquilla.gateway.config import AgentEntryConfig, GatewayConfig
-from opensquilla.gateway.routing import build_cron_route_envelope, tool_context_from_envelope
-from opensquilla.scheduler.types import CronJob
-from opensquilla.tools.policy import apply_tool_policy_from_config
-from opensquilla.tools.types import (
+from openstarry_code.gateway.config import AgentEntryConfig, GatewayConfig
+from openstarry_code.gateway.routing import build_cron_route_envelope, tool_context_from_envelope
+from openstarry_code.scheduler.types import CronJob
+from openstarry_code.tools.policy import apply_tool_policy_from_config
+from openstarry_code.tools.types import (
     CRON_AGENT_DENY,
     SUBAGENT_TOOL_DENY,
     CallerKind,

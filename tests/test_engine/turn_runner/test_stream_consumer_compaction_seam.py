@@ -25,8 +25,8 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.engine.types import (
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.engine.types import (
     CompactionEvent,
     DoneEvent,
     TextDeltaEvent,
@@ -194,7 +194,7 @@ async def test_notify_compaction_fires_after_persist(
     persist, with the same ``session_key``."""
 
     notify_calls: list[tuple[str, dict]] = []
-    import opensquilla.engine.runtime as runtime_mod
+    import openstarry_code.engine.runtime as runtime_mod
 
     monkeypatch.setattr(
         runtime_mod,
@@ -203,7 +203,7 @@ async def test_notify_compaction_fires_after_persist(
     )
     # The runtime adapter imports notify_compaction lazily from
     # cache_break_monitor; patch the source module too.
-    import opensquilla.engine.cache_break_monitor as cbm
+    import openstarry_code.engine.cache_break_monitor as cbm
 
     monkeypatch.setattr(
         cbm,
@@ -226,7 +226,7 @@ async def test_persist_failure_emits_failed_lifecycle_without_completed(
 ) -> None:
     notify_calls: list[tuple[str, dict]] = []
 
-    import opensquilla.engine.cache_break_monitor as cbm
+    import openstarry_code.engine.cache_break_monitor as cbm
 
     monkeypatch.setattr(
         cbm,
@@ -339,7 +339,7 @@ async def test_persist_raises_preserves_recoverable_pre_compaction_state(
     """Failed DB persistence must not refresh false post-compaction state."""
 
     refresh_calls: list[dict] = []
-    import opensquilla.engine.turn_runner.harness as harness_mod
+    import openstarry_code.engine.turn_runner.harness as harness_mod
 
     original_refresh = (
         harness_mod._TurnRunnerMemorySnapshotRefreshAdapter.refresh_snapshot

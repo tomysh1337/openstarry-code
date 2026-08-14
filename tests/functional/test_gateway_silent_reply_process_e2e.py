@@ -24,17 +24,17 @@ from typing import Any
 import httpx
 import pytest
 
-from opensquilla.cli.gateway_client import GatewayClient
-from opensquilla.gateway.boot import start_gateway_server
-from opensquilla.gateway.config import AuthConfig, GatewayConfig, GoalConfig
-from opensquilla.gateway.websocket import SubscriptionManager
-from opensquilla.provider import ChatConfig, DoneEvent, Message, ModelInfo, TextDeltaEvent
+from openstarry_code.cli.gateway_client import GatewayClient
+from openstarry_code.gateway.boot import start_gateway_server
+from openstarry_code.gateway.config import AuthConfig, GatewayConfig, GoalConfig
+from openstarry_code.gateway.websocket import SubscriptionManager
+from openstarry_code.provider import ChatConfig, DoneEvent, Message, ModelInfo, TextDeltaEvent
 
 _MODEL = "e2e/silent-reply"
 _FIRST_VISIBLE = "VISIBLE_FIRST"
 _SILENT_SENTINEL = "NO_REPLY"
 _THIRD_VISIBLE = "VISIBLE_THIRD"
-_SERVER_MODE_ENV = "OPENSQUILLA_SILENT_REPLY_E2E_SERVER"
+_SERVER_MODE_ENV = "OPENSTARRY_CODE_SILENT_REPLY_E2E_SERVER"
 
 
 def _message_text(message: Message) -> str:
@@ -128,9 +128,9 @@ class _ScriptedSelector:
 
 
 async def _serve_gateway() -> None:
-    port = int(os.environ["OPENSQUILLA_SILENT_REPLY_E2E_PORT"])
-    state_dir = Path(os.environ["OPENSQUILLA_SILENT_REPLY_E2E_STATE"])
-    provider_log = Path(os.environ["OPENSQUILLA_SILENT_REPLY_E2E_PROVIDER_LOG"])
+    port = int(os.environ["OPENSTARRY_CODE_SILENT_REPLY_E2E_PORT"])
+    state_dir = Path(os.environ["OPENSTARRY_CODE_SILENT_REPLY_E2E_STATE"])
+    provider_log = Path(os.environ["OPENSTARRY_CODE_SILENT_REPLY_E2E_PROVIDER_LOG"])
     state_dir.mkdir(parents=True, exist_ok=True)
     workspace_dir = state_dir / "workspace"
     workspace_dir.mkdir(parents=True, exist_ok=True)
@@ -270,15 +270,15 @@ def _isolated_gateway_env(
     env.update(
         {
             _SERVER_MODE_ENV: "1",
-            "OPENSQUILLA_SILENT_REPLY_E2E_PORT": str(port),
-            "OPENSQUILLA_SILENT_REPLY_E2E_STATE": str(state_dir),
-            "OPENSQUILLA_SILENT_REPLY_E2E_PROVIDER_LOG": str(provider_log),
-            "OPENSQUILLA_HOME": str(opensquilla_home),
-            "OPENSQUILLA_STATE_DIR": str(state_dir),
-            "OPENSQUILLA_LOG_DIR": str(log_dir),
-            "OPENSQUILLA_OPENROUTER_LIVE_PRICING": "0",
-            "OPENSQUILLA_MEMORY_DREAM_DISABLED": "1",
-            "OPENSQUILLA_PRIVACY_DISABLE_NETWORK_OBSERVABILITY": "true",
+            "OPENSTARRY_CODE_SILENT_REPLY_E2E_PORT": str(port),
+            "OPENSTARRY_CODE_SILENT_REPLY_E2E_STATE": str(state_dir),
+            "OPENSTARRY_CODE_SILENT_REPLY_E2E_PROVIDER_LOG": str(provider_log),
+            "OPENSTARRY_CODE_HOME": str(opensquilla_home),
+            "OPENSTARRY_CODE_STATE_DIR": str(state_dir),
+            "OPENSTARRY_CODE_LOG_DIR": str(log_dir),
+            "OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING": "0",
+            "OPENSTARRY_CODE_MEMORY_DREAM_DISABLED": "1",
+            "OPENSTARRY_CODE_PRIVACY_DISABLE_NETWORK_OBSERVABILITY": "true",
             "HOME": str(home_dir),
             "USERPROFILE": str(home_dir),
             "APPDATA": str(app_data_dir),

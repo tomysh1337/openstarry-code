@@ -6,9 +6,9 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.tools.builtin import filesystem
-from opensquilla.tools.registry import get_default_registry
-from opensquilla.tools.types import (
+from openstarry_code.tools.builtin import filesystem
+from openstarry_code.tools.registry import get_default_registry
+from openstarry_code.tools.types import (
     CallerKind,
     RetryableToolInputError,
     ToolContext,
@@ -265,12 +265,12 @@ async def test_create_source_rejects_scratch_path(
 ) -> None:
     workspace, ctx = workspace_context
     create_source = _original_async(filesystem.create_source)
-    scratch = workspace / ".opensquilla-scratch"
+    scratch = workspace / ".openstarry-code-scratch"
     scratch.mkdir()
     ctx.scratch_dir = str(scratch)
 
     with pytest.raises(ToolError, match="scratch"):
-        await create_source(".opensquilla-scratch/repro.py", "print('x')\n")
+        await create_source(".openstarry-code-scratch/repro.py", "print('x')\n")
 
 
 @pytest.mark.asyncio
@@ -279,7 +279,7 @@ async def test_edit_source_rejects_scratch_path(
 ) -> None:
     workspace, ctx = workspace_context
     edit_source = _original_async(filesystem.edit_source)
-    scratch = workspace / ".opensquilla-scratch"
+    scratch = workspace / ".openstarry-code-scratch"
     scratch.mkdir()
     target = scratch / "repro.py"
     target.write_text("before\n", encoding="utf-8")
@@ -287,7 +287,7 @@ async def test_edit_source_rejects_scratch_path(
 
     with pytest.raises(ToolError, match="edit_source refused a scratch path"):
         await edit_source(
-            ".opensquilla-scratch/repro.py",
+            ".openstarry-code-scratch/repro.py",
             "unused-revision",
             [{"start_line": 1, "end_line": 1, "replacement": "after\n"}],
         )
@@ -301,7 +301,7 @@ async def test_write_scratch_writes_only_configured_scratch_dir(
 ) -> None:
     workspace, ctx = workspace_context
     write_scratch = _original_async(filesystem.write_scratch)
-    scratch = workspace / ".opensquilla-scratch"
+    scratch = workspace / ".openstarry-code-scratch"
     scratch.mkdir()
     ctx.scratch_dir = str(scratch)
 
@@ -355,7 +355,7 @@ async def test_write_scratch_rejects_paths_outside_scratch(
 ) -> None:
     workspace, ctx = workspace_context
     write_scratch = _original_async(filesystem.write_scratch)
-    scratch = workspace / ".opensquilla-scratch"
+    scratch = workspace / ".openstarry-code-scratch"
     scratch.mkdir()
     ctx.scratch_dir = str(scratch)
 

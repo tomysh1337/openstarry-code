@@ -5,19 +5,19 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine import Agent, AgentConfig, ToolCall, ToolResult
-from opensquilla.engine.runtime_diagnostics import (
+from openstarry_code.engine import Agent, AgentConfig, ToolCall, ToolResult
+from openstarry_code.engine.runtime_diagnostics import (
     RuntimeDiagnosticsObserver,
     classify_path,
     normalize_command_family,
 )
-from opensquilla.engine.runtime_recovery import source_loop_recovery_decision
-from opensquilla.provider import DoneEvent as ProviderDoneEvent
-from opensquilla.provider import TextDeltaEvent as ProviderTextDeltaEvent
-from opensquilla.provider import ToolDefinition, ToolInputSchema
-from opensquilla.provider import ToolUseEndEvent as ProviderToolUseEndEvent
-from opensquilla.provider import ToolUseStartEvent as ProviderToolUseStartEvent
-from opensquilla.tools.types import ToolContext
+from openstarry_code.engine.runtime_recovery import source_loop_recovery_decision
+from openstarry_code.provider import DoneEvent as ProviderDoneEvent
+from openstarry_code.provider import TextDeltaEvent as ProviderTextDeltaEvent
+from openstarry_code.provider import ToolDefinition, ToolInputSchema
+from openstarry_code.provider import ToolUseEndEvent as ProviderToolUseEndEvent
+from openstarry_code.provider import ToolUseStartEvent as ProviderToolUseStartEvent
+from openstarry_code.tools.types import ToolContext
 
 
 def _call(

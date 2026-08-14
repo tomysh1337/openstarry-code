@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run a small live V4 router evidence check through the OpenSquilla gateway.
+"""Run a small live V4 router evidence check through the OpenStarry Code gateway.
 
 The script intentionally runs only three representative turns so live evidence
 is cheap but still covers model routing, thinking controls, and prompt hints.
@@ -23,7 +23,7 @@ if str(REPO_ROOT) not in sys.path:
 if str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))
 
-from opensquilla.env import load_env  # noqa: E402
+from openstarry_code.env import load_env  # noqa: E402
 from scripts.smoke_v4_phase3_router import (  # noqa: E402
     _free_port,
     _post_json,
@@ -137,20 +137,20 @@ def main() -> int:
     _write_live_gateway_config(config_path, "")
 
     env = os.environ.copy()
-    env.pop("OPENSQUILLA_LLM_THINKING", None)
+    env.pop("OPENSTARRY_CODE_LLM_THINKING", None)
     env["PYTHONPATH"] = str(SRC_DIR) + os.pathsep + env.get("PYTHONPATH", "")
-    env["OPENSQUILLA_GATEWAY_CONFIG_PATH"] = str(config_path)
-    env["OPENSQUILLA_STATE_DIR"] = str(tmp_path / "state")
-    env["OPENSQUILLA_MEMORY_DREAM_DISABLED"] = "1"
-    env["OPENSQUILLA_TOOL_PROFILE"] = "channel_default"
-    env["OPENSQUILLA_TURN_CALL_LOG"] = "1"
-    env["OPENSQUILLA_TURN_CALL_LOG_DIR"] = str(turn_log_dir)
+    env["OPENSTARRY_CODE_GATEWAY_CONFIG_PATH"] = str(config_path)
+    env["OPENSTARRY_CODE_STATE_DIR"] = str(tmp_path / "state")
+    env["OPENSTARRY_CODE_MEMORY_DREAM_DISABLED"] = "1"
+    env["OPENSTARRY_CODE_TOOL_PROFILE"] = "channel_default"
+    env["OPENSTARRY_CODE_TURN_CALL_LOG"] = "1"
+    env["OPENSTARRY_CODE_TURN_CALL_LOG_DIR"] = str(turn_log_dir)
 
     proc = subprocess.Popen(
         [
             sys.executable,
             "-m",
-            "opensquilla.cli.main",
+            "openstarry_code.cli.main",
             "gateway",
             "run",
             "--port",

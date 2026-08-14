@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from opensquilla.engine.compaction_control import decide_compaction_continuation
+from openstarry_code.engine.compaction_control import decide_compaction_continuation
 
 
 def test_valid_compaction_receipt_continues_when_prompt_changed() -> None:

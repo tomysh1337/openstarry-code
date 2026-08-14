@@ -7,9 +7,9 @@ from zoneinfo import ZoneInfo
 
 import pytest
 
-from opensquilla.gateway.rpc.registry import RpcContext
-from opensquilla.gateway.rpc_usage import _handle_usage_query
-from opensquilla.gateway.usage_query import (
+from openstarry_code.gateway.rpc.registry import RpcContext
+from openstarry_code.gateway.rpc_usage import _handle_usage_query
+from openstarry_code.gateway.usage_query import (
     UsageQueryValidationError,
     _finish_totals,
     _nanos_decimal,
@@ -17,9 +17,9 @@ from opensquilla.gateway.usage_query import (
     query_usage_ledger,
     resolve_usage_range,
 )
-from opensquilla.session.models import SessionNode
-from opensquilla.session.storage import SessionStorage
-from opensquilla.session.usage_ledger import (
+from openstarry_code.session.models import SessionNode
+from openstarry_code.session.storage import SessionStorage
+from openstarry_code.session.usage_ledger import (
     UsageBackfillCursor,
     UsageBackfillWrite,
     UsageEventCompletion,

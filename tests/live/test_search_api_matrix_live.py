@@ -1,8 +1,8 @@
 """Opt-in live API matrix for the web retrieval stack.
 
 These tests hit real public providers and public web pages only. They are
-disabled by default and require both OPENSQUILLA_LIVE_SEARCH=1 and
-OPENSQUILLA_LIVE_SEARCH_MATRIX=1 so the default CI suite only collects/skips
+disabled by default and require both OPENSTARRY_CODE_LIVE_SEARCH=1 and
+OPENSTARRY_CODE_LIVE_SEARCH_MATRIX=1 so the default CI suite only collects/skips
 them.
 """
 
@@ -16,11 +16,11 @@ from typing import Any, cast
 import pytest
 from typer.testing import CliRunner
 
-import opensquilla.tools.builtin.web as web_module
-from opensquilla.cli.main import app
-from opensquilla.search.canonical import run_canonical_web_search
-from opensquilla.search.types import SearchOptions, SearchResult
-from opensquilla.tools.builtin.web_fetch import run_web_fetch_payload
+import openstarry_code.tools.builtin.web as web_module
+from openstarry_code.cli.main import app
+from openstarry_code.search.canonical import run_canonical_web_search
+from openstarry_code.search.types import SearchOptions, SearchResult
+from openstarry_code.tools.builtin.web_fetch import run_web_fetch_payload
 
 pytestmark = pytest.mark.live_search
 
@@ -29,10 +29,10 @@ _PYTHON_DOMAIN = "python.org"
 
 
 def _require_live_matrix() -> None:
-    if os.environ.get("OPENSQUILLA_LIVE_SEARCH") != "1":
-        pytest.skip("set OPENSQUILLA_LIVE_SEARCH=1 to run live search tests")
-    if os.environ.get("OPENSQUILLA_LIVE_SEARCH_MATRIX") != "1":
-        pytest.skip("set OPENSQUILLA_LIVE_SEARCH_MATRIX=1 to run live search matrix")
+    if os.environ.get("OPENSTARRY_CODE_LIVE_SEARCH") != "1":
+        pytest.skip("set OPENSTARRY_CODE_LIVE_SEARCH=1 to run live search tests")
+    if os.environ.get("OPENSTARRY_CODE_LIVE_SEARCH_MATRIX") != "1":
+        pytest.skip("set OPENSTARRY_CODE_LIVE_SEARCH_MATRIX=1 to run live search matrix")
 
 
 def _require_env(name: str) -> None:
@@ -107,7 +107,7 @@ async def test_live_brave_provider_accepts_recency_filter() -> None:
     _require_live_matrix()
     _require_env("BRAVE_SEARCH_API_KEY")
 
-    from opensquilla.search.providers.brave import BraveSearchProvider
+    from openstarry_code.search.providers.brave import BraveSearchProvider
 
     results = await BraveSearchProvider().search(_QUERY, max_results=3, recency="year")
 
@@ -122,7 +122,7 @@ async def test_live_iqs_provider_accepts_recency_and_domain_filters() -> None:
     _require_live_matrix()
     _require_env("IQS_SEARCH_API_KEY")
 
-    from opensquilla.search.providers.iqs import IqsSearchProvider
+    from openstarry_code.search.providers.iqs import IqsSearchProvider
 
     results = await IqsSearchProvider().search(
         _QUERY,

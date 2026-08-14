@@ -9,9 +9,9 @@ from typing import Any
 
 import pytest
 
-from opensquilla.gateway.config import GoalConfig
-from opensquilla.gateway.goal_service import GoalService
-from opensquilla.gateway.task_runtime import TaskRuntime
+from openstarry_code.gateway.config import GoalConfig
+from openstarry_code.gateway.goal_service import GoalService
+from openstarry_code.gateway.task_runtime import TaskRuntime
 
 _SESSION_COUNT = 100
 _OPERATIONS_PER_SESSION = 10

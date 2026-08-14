@@ -5,15 +5,15 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.sandbox.backend.linux_permissions import compile_linux_permissions
-from opensquilla.sandbox.config import SandboxSettings
-from opensquilla.sandbox.permissions import (
+from openstarry_code.sandbox.backend.linux_permissions import compile_linux_permissions
+from openstarry_code.sandbox.config import SandboxSettings
+from openstarry_code.sandbox.permissions import (
     FileSystemAccess,
     FileSystemPermissionEntry,
     FileSystemPermissionProfile,
 )
-from opensquilla.sandbox.policy import build_policy
-from opensquilla.sandbox.types import (
+from openstarry_code.sandbox.policy import build_policy
+from openstarry_code.sandbox.types import (
     MountSpec,
     NetworkMode,
     ResourceLimits,

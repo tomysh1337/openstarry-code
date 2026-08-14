@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 
-from opensquilla.skills.meta.enabled import is_meta_auto_trigger_enabled
+from openstarry_code.skills.meta.enabled import is_meta_auto_trigger_enabled
 
 
 def test_none_config_defaults_false() -> None:

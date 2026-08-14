@@ -4,18 +4,18 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.sandbox.backup_vault import (
+from openstarry_code.sandbox.backup_vault import (
     BackupTooLarge,
     BackupUnavailable,
     BackupVault,
 )
-from opensquilla.sandbox.file_mutation_broker import (
+from openstarry_code.sandbox.file_mutation_broker import (
     RECURSIVE_DELETE_WARNING,
     ApprovalRequired,
     FileMutationBroker,
     ObjectIdentityChanged,
 )
-from opensquilla.sandbox.policy_models import SandboxPolicy
+from openstarry_code.sandbox.policy_models import SandboxPolicy
 
 
 def _policy(*, backup: bool = True, quota: int = 1024) -> SandboxPolicy:

@@ -324,7 +324,7 @@ def test_welcome_identity_passes_at_supported_visual_gate_sizes(
 
 def test_duplicate_welcome_header_is_a_blocking_violation() -> None:
     frame = _canonical_welcome_frame(120, 30)
-    frame = _write_text(frame, row=16, col=2, text="OpenSquilla · stale header")
+    frame = _write_text(frame, row=16, col=2, text="OpenStarry Code · stale header")
 
     violations = opentui_framebuffer_violations(frame)
 
@@ -357,7 +357,7 @@ def test_scrolled_partial_welcome_is_not_misclassified_as_a_duplicate_logo() -> 
         frame,
         row=16,
         col=2,
-        text="OpenSquilla · stale fixed header",
+        text="OpenStarry Code · stale fixed header",
     )
     assert any(
         "fixed-header" in violation
@@ -404,7 +404,7 @@ def _canonical_frame(cols: int, rows: int) -> StyledFramebuffer:
         _write_mutable(cells, row=0, col=content + 2, text="AGENT")
         _write_mutable(cells, row=6, col=content + 2, text="RUNTIME")
 
-    _write_mutable(cells, row=0, col=1, text="OpenSquilla · Session")
+    _write_mutable(cells, row=0, col=1, text="OpenStarry Code · Session")
 
     footer_strip = "direct · model fake-terminal"
     _write_mutable(cells, row=footer_top, col=3, text=footer_strip)
@@ -434,7 +434,7 @@ def _canonical_frame(cols: int, rows: int) -> StyledFramebuffer:
 
 def _canonical_welcome_frame(cols: int, rows: int) -> StyledFramebuffer:
     frame = replace(_canonical_frame(cols, rows), checkpoint="ready")
-    frame = _write_text(frame, row=0, col=1, text="OpenSquilla · Session")
+    frame = _write_text(frame, row=0, col=1, text="OpenStarry Code · Session")
     if frame.geometry.content_width >= 100:
         logo_start = 4
         logo_height = 6

@@ -5,33 +5,33 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine import Agent, AgentConfig, ToolResult
-from opensquilla.engine.subagent import SubagentSpec
-from opensquilla.engine.types import ArtifactEvent, ErrorEvent
-from opensquilla.engine.usage import UsageTracker, model_usage_cost_fields
-from opensquilla.engine.usage_accounting import UsageCallResult, UsageCallStart
-from opensquilla.provider import (
+from openstarry_code.engine import Agent, AgentConfig, ToolResult
+from openstarry_code.engine.subagent import SubagentSpec
+from openstarry_code.engine.types import ArtifactEvent, ErrorEvent
+from openstarry_code.engine.usage import UsageTracker, model_usage_cost_fields
+from openstarry_code.engine.usage_accounting import UsageCallResult, UsageCallStart
+from openstarry_code.provider import (
     ChatConfig,
     Message,
     ToolDefinition,
     ToolInputSchema,
 )
-from opensquilla.provider import (
+from openstarry_code.provider import (
     DoneEvent as ProviderDone,
 )
-from opensquilla.provider import (
+from openstarry_code.provider import (
     ErrorEvent as ProviderError,
 )
-from opensquilla.provider import (
+from openstarry_code.provider import (
     TextDeltaEvent as ProviderText,
 )
-from opensquilla.provider import (
+from openstarry_code.provider import (
     ToolUseEndEvent as ProviderToolUseEnd,
 )
-from opensquilla.provider import (
+from openstarry_code.provider import (
     ToolUseStartEvent as ProviderToolUseStart,
 )
-from opensquilla.provider.types import ProviderBillingReceipt
+from openstarry_code.provider.types import ProviderBillingReceipt
 
 
 class _RecordingUsageSink:
@@ -643,7 +643,7 @@ async def test_agent_enriches_model_usage_breakdown_with_estimated_costs() -> No
 async def test_agent_ensemble_breakdown_uses_member_provider_prices(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_OPENROUTER_LIVE_PRICING", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING", "0")
     tracker = UsageTracker()
     session_key = "agent:test:webchat:tokenrhythm-ensemble-costs"
     agent = Agent(

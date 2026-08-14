@@ -7,12 +7,12 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.sandbox.config import SandboxSettings
-from opensquilla.sandbox.integration import configure_runtime, reset_runtime
-from opensquilla.sandbox.types import SandboxBackendError
-from opensquilla.tools.builtin import filesystem as fs
-from opensquilla.tools.builtin import patch as patch_tool
-from opensquilla.tools.types import CallerKind, ToolContext, current_tool_context
+from openstarry_code.sandbox.config import SandboxSettings
+from openstarry_code.sandbox.integration import configure_runtime, reset_runtime
+from openstarry_code.sandbox.types import SandboxBackendError
+from openstarry_code.tools.builtin import filesystem as fs
+from openstarry_code.tools.builtin import patch as patch_tool
+from openstarry_code.tools.types import CallerKind, ToolContext, current_tool_context
 
 
 class _InlineExecutorLoop:
@@ -60,8 +60,8 @@ class _UnsupportedWindowsBackend:
 
 
 def test_native_process_backends_support_filesystem_operations() -> None:
-    from opensquilla.sandbox.backend.bubblewrap import BubblewrapBackend
-    from opensquilla.sandbox.backend.seatbelt import SeatbeltBackend
+    from openstarry_code.sandbox.backend.bubblewrap import BubblewrapBackend
+    from openstarry_code.sandbox.backend.seatbelt import SeatbeltBackend
 
     assert "filesystem" in BubblewrapBackend().operation_domains_supported()
     assert "filesystem" in SeatbeltBackend().operation_domains_supported()

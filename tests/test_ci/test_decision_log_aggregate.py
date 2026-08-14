@@ -16,7 +16,7 @@ from __future__ import annotations
 
 
 def test_module_importable_with_expected_public_api() -> None:
-    from opensquilla.observability import decision_log_aggregate as agg
+    from openstarry_code.observability import decision_log_aggregate as agg
 
     for name in (
         "parse_log_line",
@@ -45,7 +45,7 @@ def test_history_explorer_script_imports_from_aggregate_module() -> None:
         / "explore.py"
     )
     text = script.read_text(encoding="utf-8")
-    assert "from opensquilla.observability.decision_log_aggregate import" in text
+    assert "from openstarry_code.observability.decision_log_aggregate import" in text
     assert "def aggregate_co_occurrences" not in text, (
         "explore.py must import aggregate_co_occurrences, not redefine it"
     )

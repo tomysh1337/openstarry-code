@@ -17,7 +17,7 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.provider.codex_auth import _persist_refreshed_tokens
+from openstarry_code.provider.codex_auth import _persist_refreshed_tokens
 
 
 @pytest.mark.skipif(sys.platform == "win32", reason="POSIX mode bits only apply on Unix")

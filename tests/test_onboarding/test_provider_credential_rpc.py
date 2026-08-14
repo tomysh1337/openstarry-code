@@ -8,11 +8,11 @@ from typing import Any
 import httpx
 import pytest
 
-from opensquilla.gateway import rpc_onboarding
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.config import GatewayConfig, LlmProviderConfig
-from opensquilla.gateway.rpc import RpcContext, RpcHandlerError
-from opensquilla.provider.failures import ProviderFailureKind
+from openstarry_code.gateway import rpc_onboarding
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.config import GatewayConfig, LlmProviderConfig
+from openstarry_code.gateway.rpc import RpcContext, RpcHandlerError
+from openstarry_code.provider.failures import ProviderFailureKind
 
 
 def _sse_ok_body() -> bytes:
@@ -53,7 +53,7 @@ def _patch_openai_response(
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client)
     return seen_requests, seen_client_kwargs
 
 
@@ -80,7 +80,7 @@ def _stored_openai_ctx(
     if base_url is not None:
         llm_kwargs["base_url"] = base_url
     cfg = GatewayConfig(
-        config_path=str(tmp_path / "opensquilla.toml"),
+        config_path=str(tmp_path / "openstarry-code.toml"),
         llm=LlmProviderConfig(**llm_kwargs),
     )
     return RpcContext(conn_id="t", config=cfg)
@@ -102,7 +102,7 @@ def _ctx(
             authenticated=True,
         ),
         config=GatewayConfig(
-            config_path=str(tmp_path / "opensquilla.toml"),
+            config_path=str(tmp_path / "openstarry-code.toml"),
             llm=llm,
         ),
     )
@@ -124,7 +124,7 @@ async def test_provider_probe_rpc_reuses_stored_credentials_when_blank(
 async def test_provider_probe_rpc_binds_synthetic_usage_scope(
     tmp_path, monkeypatch: Any
 ) -> None:
-    from opensquilla.engine.usage_accounting import current_usage_accounting_scope
+    from openstarry_code.engine.usage_accounting import current_usage_accounting_scope
 
     observed = []
 
@@ -136,7 +136,7 @@ async def test_provider_probe_rpc_binds_synthetic_usage_scope(
         return _ProbePayload()
 
     monkeypatch.setattr(
-        "opensquilla.onboarding.probe.probe_llm_provider",
+        "openstarry_code.onboarding.probe.probe_llm_provider",
         fake_probe_llm_provider,
     )
     ctx = _stored_openai_ctx(tmp_path)
@@ -162,7 +162,7 @@ async def test_provider_probe_rpc_reuses_stored_base_url_and_proxy_when_blank(
         return _ProbePayload()
 
     monkeypatch.setattr(
-        "opensquilla.onboarding.probe.probe_llm_provider",
+        "openstarry_code.onboarding.probe.probe_llm_provider",
         fake_probe_llm_provider,
     )
     ctx = _stored_openai_ctx(

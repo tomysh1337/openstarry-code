@@ -4,7 +4,7 @@ import ast
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-SOURCE_ROOT = REPO_ROOT / "src" / "opensquilla"
+SOURCE_ROOT = REPO_ROOT / "src" / "openstarry_code"
 RAW_CONNECTION_OWNERS = {
     Path("session/storage.py"),
     Path("channels/websocket.py"),

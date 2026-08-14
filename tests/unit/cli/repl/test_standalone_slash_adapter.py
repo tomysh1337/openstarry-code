@@ -5,10 +5,10 @@ from typing import Any, cast
 
 import pytest
 
-from opensquilla.cli.repl.session_state import ChatSessionState
-from opensquilla.cli.repl.stream import TurnResult
-from opensquilla.cli.tui.contracts import TuiOutputHandle
-from opensquilla.provider.types import ProviderRequestCorrelation
+from openstarry_code.cli.repl.session_state import ChatSessionState
+from openstarry_code.cli.repl.stream import TurnResult
+from openstarry_code.cli.tui.contracts import TuiOutputHandle
+from openstarry_code.provider.types import ProviderRequestCorrelation
 
 
 class _StandaloneSlashHarness:
@@ -62,7 +62,7 @@ class _StandaloneSlashHarness:
 
 
 def _slash_services(harness: _StandaloneSlashHarness):
-    from opensquilla.cli.repl.standalone_slash_adapter import StandaloneSlashServices
+    from openstarry_code.cli.repl.standalone_slash_adapter import StandaloneSlashServices
 
     return StandaloneSlashServices(
         create_session=harness.create_session,
@@ -84,7 +84,7 @@ async def test_standalone_slash_adapter_leaves_exit_to_the_runtime_loop(
     the dispatch loop keeps running instead of terminating from inside
     slash dispatch.
     """
-    from opensquilla.cli.repl.standalone_slash_adapter import (
+    from openstarry_code.cli.repl.standalone_slash_adapter import (
         StandaloneSlashContext,
         handle_standalone_slash_command,
     )
@@ -109,7 +109,7 @@ async def test_standalone_slash_adapter_leaves_exit_to_the_runtime_loop(
 
 @pytest.mark.asyncio
 async def test_standalone_slash_adapter_updates_model_without_chat_cmd_loop() -> None:
-    from opensquilla.cli.repl.standalone_slash_adapter import (
+    from openstarry_code.cli.repl.standalone_slash_adapter import (
         StandaloneSlashContext,
         handle_standalone_slash_command,
     )
@@ -137,7 +137,7 @@ async def test_standalone_slash_adapter_updates_model_without_chat_cmd_loop() ->
 async def test_standalone_slash_adapter_streams_path_without_chat_cmd_loop(
     tmp_path,
 ) -> None:
-    from opensquilla.cli.repl.standalone_slash_adapter import (
+    from openstarry_code.cli.repl.standalone_slash_adapter import (
         StandaloneSlashContext,
         handle_standalone_slash_command,
     )
@@ -209,7 +209,7 @@ async def test_standalone_slash_adapter_streams_path_without_chat_cmd_loop(
 
 @pytest.mark.asyncio
 async def test_standalone_slash_adapter_new_session_uses_typed_create_handle() -> None:
-    from opensquilla.cli.repl.standalone_slash_adapter import (
+    from openstarry_code.cli.repl.standalone_slash_adapter import (
         StandaloneSlashContext,
         handle_standalone_slash_command,
     )
@@ -243,7 +243,7 @@ async def test_standalone_slash_adapter_new_session_uses_typed_create_handle() -
 
 @pytest.mark.asyncio
 async def test_standalone_slash_adapter_reset_uses_typed_flush_and_truncate_handles() -> None:
-    from opensquilla.cli.repl.standalone_slash_adapter import (
+    from openstarry_code.cli.repl.standalone_slash_adapter import (
         StandaloneSlashContext,
         handle_standalone_slash_command,
     )
@@ -281,7 +281,7 @@ async def test_standalone_slash_adapter_reset_uses_typed_flush_and_truncate_hand
 
 @pytest.mark.asyncio
 async def test_standalone_slash_adapter_compact_uses_typed_compact_handles() -> None:
-    from opensquilla.cli.repl.standalone_slash_adapter import (
+    from openstarry_code.cli.repl.standalone_slash_adapter import (
         StandaloneSlashContext,
         StandaloneSlashServices,
         handle_standalone_slash_command,
@@ -326,13 +326,13 @@ async def test_standalone_slash_adapter_compact_uses_typed_compact_handles() -> 
 
 @pytest.mark.asyncio
 async def test_standalone_compact_caps_configured_budget_to_consumer_window() -> None:
-    from opensquilla.cli.repl.standalone_slash_adapter import (
+    from openstarry_code.cli.repl.standalone_slash_adapter import (
         StandaloneSlashContext,
         StandaloneSlashServices,
         handle_standalone_slash_command,
     )
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.provider.selector import ProviderConfig
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.provider.selector import ProviderConfig
 
     harness = _StandaloneSlashHarness()
     session_key = "agent:main:standalone:consumer-window"
@@ -387,13 +387,13 @@ async def test_standalone_compact_caps_configured_budget_to_consumer_window() ->
 async def test_standalone_compact_does_not_bypass_unresolved_auth_profile(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.repl.standalone_slash_adapter import (
+    from openstarry_code.cli.repl.standalone_slash_adapter import (
         StandaloneSlashContext,
         StandaloneSlashServices,
         handle_standalone_slash_command,
     )
-    from opensquilla.gateway.config import GatewayConfig, LlmProviderProfile
-    from opensquilla.provider.selector import ProviderConfig
+    from openstarry_code.gateway.config import GatewayConfig, LlmProviderProfile
+    from openstarry_code.provider.selector import ProviderConfig
 
     harness = _StandaloneSlashHarness()
     session_key = "agent:main:standalone:auth-profile"
@@ -431,7 +431,7 @@ async def test_standalone_compact_does_not_bypass_unresolved_auth_profile(
         raise AssertionError("an unresolved auth profile must not use selector fallback")
 
     monkeypatch.setattr(
-        "opensquilla.cli.tui.adapters.slash_standalone._resolve_compaction_provider",
+        "openstarry_code.cli.tui.adapters.slash_standalone._resolve_compaction_provider",
         unexpected_compat_fallback,
     )
     state = ChatSessionState(session_key=session_key, model="openai/gpt-session")
@@ -463,7 +463,7 @@ async def test_standalone_compact_does_not_bypass_unresolved_auth_profile(
 
 @pytest.mark.asyncio
 async def test_standalone_compact_correlates_flush_and_compaction_to_durable_session() -> None:
-    from opensquilla.cli.repl.standalone_slash_adapter import (
+    from openstarry_code.cli.repl.standalone_slash_adapter import (
         StandaloneSlashContext,
         StandaloneSlashServices,
         handle_standalone_slash_command,

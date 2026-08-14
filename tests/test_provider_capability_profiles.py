@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from opensquilla.provider.context_capabilities import (
+from openstarry_code.provider.context_capabilities import (
     NativeCompactionSupport,
     PromptCacheSupport,
     provider_context_capabilities,
     provider_state_continuity_diagnostic,
 )
-from opensquilla.provider.model_catalog import ModelCatalog
+from openstarry_code.provider.model_catalog import ModelCatalog
 
 
 def test_deepseek_provider_profile_enables_deepseek_reasoning_format() -> None:

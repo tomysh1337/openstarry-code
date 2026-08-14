@@ -25,7 +25,7 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.hooks import (
+from openstarry_code.engine.hooks import (
     CompactionState,
     DefaultMemoryFlushHook,
     DefaultTraceEmitterHook,
@@ -40,10 +40,10 @@ from opensquilla.engine.hooks import (
     TurnHookResult,
     build_default_turn_hooks,
 )
-from opensquilla.engine.hooks.types import CompactionHook, ToolHook, TurnHook
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.observability.trace import TraceContext, TraceEvent
-from opensquilla.tool_boundary import ToolCall, ToolResult
+from openstarry_code.engine.hooks.types import CompactionHook, ToolHook, TurnHook
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.observability.trace import TraceContext, TraceEvent
+from openstarry_code.tool_boundary import ToolCall, ToolResult
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -65,7 +65,7 @@ def trace_context() -> TraceContext:
 def captured_events(monkeypatch: pytest.MonkeyPatch) -> list[TraceEvent]:
     """Replace ``write_trace_event`` in BOTH callers' modules with a capture.
 
-    Both ``opensquilla.engine.runtime`` and ``opensquilla.engine.hooks.defaults``
+    Both ``openstarry_code.engine.runtime`` and ``openstarry_code.engine.hooks.defaults``
     import the symbol by name, so we patch both bindings to make sure the
     legacy and hook paths route through the same sink.
     """
@@ -76,11 +76,11 @@ def captured_events(monkeypatch: pytest.MonkeyPatch) -> list[TraceEvent]:
         captured.append(event)
 
     monkeypatch.setattr(
-        "opensquilla.engine.runtime.write_trace_event",
+        "openstarry_code.engine.runtime.write_trace_event",
         _capture,
     )
     monkeypatch.setattr(
-        "opensquilla.engine.hooks.defaults.write_trace_event",
+        "openstarry_code.engine.hooks.defaults.write_trace_event",
         _capture,
     )
     return captured
@@ -278,7 +278,7 @@ def test_noop_compaction_hook_runs_clean() -> None:
 
 
 # ---------------------------------------------------------------------------
-# Runtime feature flag: OPENSQUILLA_HOOKS=new vs legacy must match
+# Runtime feature flag: OPENSTARRY_CODE_HOOKS=new vs legacy must match
 # ---------------------------------------------------------------------------
 
 
@@ -330,17 +330,17 @@ def test_emit_turn_event_legacy_matches_new(
     attrs: dict[str, Any] | None,
     payload: dict[str, Any],
 ) -> None:
-    """OPENSQUILLA_HOOKS=legacy and =new must produce identical TraceEvents."""
+    """OPENSTARRY_CODE_HOOKS=legacy and =new must produce identical TraceEvents."""
 
     runner = _make_runtime_with_default_hook()
 
-    monkeypatch.setenv("OPENSQUILLA_HOOKS", "legacy")
+    monkeypatch.setenv("OPENSTARRY_CODE_HOOKS", "legacy")
     _emit_through_runtime(
         runner, trace_context, kind=kind, seq=seq, attrs=attrs, payload=payload
     )
     legacy = captured_events.pop()
 
-    monkeypatch.setenv("OPENSQUILLA_HOOKS", "new")
+    monkeypatch.setenv("OPENSTARRY_CODE_HOOKS", "new")
     _emit_through_runtime(
         runner, trace_context, kind=kind, seq=seq, attrs=attrs, payload=payload
     )
@@ -376,7 +376,7 @@ def test_emit_turn_event_unknown_env_falls_back_to_default(
 ) -> None:
     """An unrecognised env value must resolve to the active default (new)."""
 
-    monkeypatch.setenv("OPENSQUILLA_HOOKS", "garbage")
+    monkeypatch.setenv("OPENSTARRY_CODE_HOOKS", "garbage")
     runner = _make_runtime_with_default_hook()
     _emit_through_runtime(
         runner, trace_context, kind="turn_end", seq=2, attrs={"x": 1}, payload={"y": 2}
@@ -409,7 +409,7 @@ def test_runtime_hook_failure_does_not_break_emission(
         def on_event(self, ctx, event):  # type: ignore[no-untyped-def]
             raise RuntimeError("boom")
 
-    monkeypatch.setenv("OPENSQUILLA_HOOKS", "new")
+    monkeypatch.setenv("OPENSTARRY_CODE_HOOKS", "new")
     runner = TurnRunner(
         provider_selector=None,
         turn_hooks=(_RaisingHook(), DefaultTraceEmitterHook()),

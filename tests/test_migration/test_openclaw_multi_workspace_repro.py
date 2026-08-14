@@ -10,7 +10,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from opensquilla.migration.openclaw import MigrationOptions, OpenClawMigrator
+from openstarry_code.migration.openclaw import MigrationOptions, OpenClawMigrator
 
 
 def _make_multi_workspace_source(root: Path) -> Path:
@@ -46,7 +46,7 @@ def _make_multi_workspace_source(root: Path) -> Path:
 def test_daily_memory_in_sibling_workspace_should_migrate(tmp_path, monkeypatch):
     source = _make_multi_workspace_source(tmp_path)
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     report = OpenClawMigrator(
         MigrationOptions(
@@ -89,7 +89,7 @@ def test_sibling_dirs_without_workspace_markers_are_ignored(tmp_path, monkeypatc
     )
     (source / "openclaw.json").write_text("{}", encoding="utf-8")
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     report = OpenClawMigrator(
         MigrationOptions(
@@ -109,7 +109,7 @@ def test_sibling_dirs_without_workspace_markers_are_ignored(tmp_path, monkeypatc
 def test_memory_report_lists_all_read_sources(tmp_path, monkeypatch):
     source = _make_multi_workspace_source(tmp_path)
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     report = OpenClawMigrator(
         MigrationOptions(

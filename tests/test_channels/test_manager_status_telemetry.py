@@ -6,8 +6,8 @@ import asyncio
 
 import pytest
 
-from opensquilla.channels.manager import ChannelManager
-from opensquilla.channels.types import ChannelHealth
+from openstarry_code.channels.manager import ChannelManager
+from openstarry_code.channels.types import ChannelHealth
 
 
 class _RecordingBridge:

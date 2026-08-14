@@ -6,10 +6,10 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.sandbox.backend import seatbelt as seatbelt_mod
-from opensquilla.sandbox.backend.bubblewrap import BubblewrapBackend
-from opensquilla.sandbox.backend.seatbelt import SeatbeltBackend
-from opensquilla.sandbox.types import (
+from openstarry_code.sandbox.backend import seatbelt as seatbelt_mod
+from openstarry_code.sandbox.backend.bubblewrap import BubblewrapBackend
+from openstarry_code.sandbox.backend.seatbelt import SeatbeltBackend
+from openstarry_code.sandbox.types import (
     MountSpec,
     NetworkMode,
     NetworkProxySpec,
@@ -18,7 +18,7 @@ from opensquilla.sandbox.types import (
     SandboxRequest,
     SecurityLevel,
 )
-from opensquilla.tools.builtin import shell
+from openstarry_code.tools.builtin import shell
 
 pytestmark = pytest.mark.skipif(
     sys.platform.startswith("win"),
@@ -189,7 +189,7 @@ async def test_spawn_sandboxed_background_seatbelt_uses_managed_proxy_env(
         assert isinstance(env, dict)
         assert env["HTTP_PROXY"] == "http://127.0.0.1:43128"
         assert env["npm_config_proxy"] == "http://127.0.0.1:43128"
-        assert env["OPENSQUILLA_SANDBOX_NETWORK"] == "proxy_allowlist"
+        assert env["OPENSTARRY_CODE_SANDBOX_NETWORK"] == "proxy_allowlist"
         assert "http://attacker.invalid:1" not in env.values()
     finally:
         for callback in spawned.cleanup_callbacks:
@@ -248,8 +248,8 @@ async def test_spawn_sandboxed_background_starts_linux_proxy_bridge_for_bubblewr
     argv = captured["argv"]
     assert isinstance(argv, tuple)
     assert str(captured["bridge"][0]) in argv
-    assert "OPENSQUILLA_SANDBOX_PROXY_UDS" in argv
-    assert "OPENSQUILLA_SANDBOX_POLICY_B64" in argv
+    assert "OPENSTARRY_CODE_SANDBOX_PROXY_UDS" in argv
+    assert "OPENSTARRY_CODE_SANDBOX_POLICY_B64" in argv
     assert "HTTP_PROXY" in argv
     assert "http://127.0.0.1:43128" in argv
     assert spawned.async_cleanup_callbacks

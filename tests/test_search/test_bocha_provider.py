@@ -5,9 +5,9 @@ import json
 import httpx
 import pytest
 
-from opensquilla.search.providers.bocha import BochaSearchProvider
-from opensquilla.search.registry import get_provider_spec
-from opensquilla.search.types import SearchProviderError
+from openstarry_code.search.providers.bocha import BochaSearchProvider
+from openstarry_code.search.registry import get_provider_spec
+from openstarry_code.search.types import SearchProviderError
 
 
 @pytest.mark.asyncio
@@ -47,7 +47,7 @@ async def test_bocha_search_posts_summary_request_and_maps_results() -> None:
         transport=httpx.MockTransport(handler),
     )
 
-    results = await provider.search("OpenSquilla", max_results=3, recency="year")
+    results = await provider.search("OpenStarry Code", max_results=3, recency="year")
 
     assert len(requests) == 1
     assert requests[0].method == "POST"
@@ -56,7 +56,7 @@ async def test_bocha_search_posts_summary_request_and_maps_results() -> None:
     assert requests[0].headers["Content-Type"] == "application/json"
     body = json.loads(requests[0].content)
     assert body == {
-        "query": "OpenSquilla",
+        "query": "OpenStarry Code",
         "count": 3,
         "summary": True,
         "freshness": "oneYear",
@@ -88,7 +88,7 @@ async def test_bocha_search_clamps_count_to_provider_limit() -> None:
         transport=httpx.MockTransport(handler),
     )
 
-    await provider.search("OpenSquilla", max_results=40)
+    await provider.search("OpenStarry Code", max_results=40)
 
     body = json.loads(requests[0].content)
     assert body["count"] == 20
@@ -102,7 +102,7 @@ async def test_bocha_missing_api_key_raises_auth_error(
     provider = BochaSearchProvider()
 
     with pytest.raises(SearchProviderError) as exc_info:
-        await provider.search("OpenSquilla")
+        await provider.search("OpenStarry Code")
 
     assert exc_info.value.provider == "bocha"
     assert exc_info.value.kind == "auth"
@@ -139,7 +139,7 @@ async def test_bocha_http_errors_are_classified(
     )
 
     with pytest.raises(SearchProviderError) as exc_info:
-        await provider.search("OpenSquilla")
+        await provider.search("OpenStarry Code")
 
     assert exc_info.value.provider == "bocha"
     assert exc_info.value.kind == kind
@@ -177,7 +177,7 @@ async def test_bocha_api_error_codes_are_classified(
     )
 
     with pytest.raises(SearchProviderError) as exc_info:
-        await provider.search("OpenSquilla")
+        await provider.search("OpenStarry Code")
 
     assert exc_info.value.provider == "bocha"
     assert exc_info.value.kind == kind
@@ -204,7 +204,7 @@ async def test_bocha_nonnumeric_api_error_is_terminal() -> None:
     )
 
     with pytest.raises(SearchProviderError) as exc_info:
-        await provider.search("OpenSquilla")
+        await provider.search("OpenStarry Code")
 
     assert exc_info.value.kind == "http"
     assert exc_info.value.retryable is False
@@ -233,7 +233,7 @@ async def test_bocha_transport_errors_are_retryable_once(
     )
 
     with pytest.raises(SearchProviderError) as exc_info:
-        await provider.search("OpenSquilla")
+        await provider.search("OpenStarry Code")
 
     assert exc_info.value.kind == kind
     assert exc_info.value.retryable is True
@@ -254,7 +254,7 @@ async def test_bocha_malformed_json_is_terminal_parse_error() -> None:
     )
 
     with pytest.raises(SearchProviderError) as exc_info:
-        await provider.search("OpenSquilla")
+        await provider.search("OpenStarry Code")
 
     assert exc_info.value.kind == "parse"
     assert exc_info.value.retryable is False
@@ -262,7 +262,7 @@ async def test_bocha_malformed_json_is_terminal_parse_error() -> None:
 
 
 def test_bocha_provider_spec_is_runtime_supported_after_import() -> None:
-    import opensquilla.search.providers.bocha  # noqa: F401
+    import openstarry_code.search.providers.bocha  # noqa: F401
 
     spec = get_provider_spec("bocha")
 

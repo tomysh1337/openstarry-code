@@ -8,15 +8,15 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.contrib.codetask import config, workspace
-from opensquilla.contrib.codetask import runner as codetask_runner
-from opensquilla.contrib.codetask.inputs import InputError
-from opensquilla.contrib.codetask.types import TaskState
-from opensquilla.contrib.codetask.verification import verify_scratch
+from openstarry_code.contrib.codetask import config, workspace
+from openstarry_code.contrib.codetask import runner as codetask_runner
+from openstarry_code.contrib.codetask.inputs import InputError
+from openstarry_code.contrib.codetask.types import TaskState
+from openstarry_code.contrib.codetask.verification import verify_scratch
 
 
 def _runs(monkeypatch, tmp_path):
-    monkeypatch.setenv("OPENSQUILLA_CODETASK_RUNS_DIR", str(tmp_path / "runs"))
+    monkeypatch.setenv("OPENSTARRY_CODE_CODETASK_RUNS_DIR", str(tmp_path / "runs"))
 
 
 def test_prompt_template_scratch() -> None:

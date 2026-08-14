@@ -2,8 +2,8 @@
 
 from types import SimpleNamespace
 
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.engine.types import DoneEvent
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.engine.types import DoneEvent
 
 
 def test_decision_log_savings_telemetry_carries_cost_source(monkeypatch) -> None:
@@ -13,7 +13,7 @@ def test_decision_log_savings_telemetry_carries_cost_source(monkeypatch) -> None
         captured["entry"] = entry
 
     monkeypatch.setattr(
-        "opensquilla.engine.runtime.write_decision_entry",
+        "openstarry_code.engine.runtime.write_decision_entry",
         fake_write_decision_entry,
     )
     runner = TurnRunner(provider_selector=None)
@@ -51,7 +51,7 @@ def test_decision_log_normalizes_tokenized_zero_cost_turns_as_unavailable(monkey
         captured["entry"] = entry
 
     monkeypatch.setattr(
-        "opensquilla.engine.runtime.write_decision_entry",
+        "openstarry_code.engine.runtime.write_decision_entry",
         fake_write_decision_entry,
     )
     runner = TurnRunner(provider_selector=None)
@@ -89,7 +89,7 @@ def test_decision_log_carries_vision_followup_metadata(monkeypatch) -> None:
         captured["entry"] = entry
 
     monkeypatch.setattr(
-        "opensquilla.engine.runtime.write_decision_entry",
+        "openstarry_code.engine.runtime.write_decision_entry",
         fake_write_decision_entry,
     )
     runner = TurnRunner(provider_selector=None)

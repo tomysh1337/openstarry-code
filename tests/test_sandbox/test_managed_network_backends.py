@@ -8,18 +8,18 @@ from types import SimpleNamespace
 
 import pytest
 
-import opensquilla.sandbox as sandbox
-from opensquilla.gateway.routing import build_cli_route_envelope, tool_context_from_envelope
-from opensquilla.sandbox import integration as integration_mod
-from opensquilla.sandbox.backend import bubblewrap as bubblewrap_mod
-from opensquilla.sandbox.backend.bubblewrap import BubblewrapBackend, build_bwrap_argv
-from opensquilla.sandbox.backend.linux_readiness import probe_bwrap
-from opensquilla.sandbox.backend.seatbelt import render_seatbelt_profile
-from opensquilla.sandbox.config import SandboxSettings
-from opensquilla.sandbox.policy import build_policy
-from opensquilla.sandbox.run_context import DomainGrant, RunContext
-from opensquilla.sandbox.run_mode import RunMode
-from opensquilla.sandbox.types import (
+import openstarry_code.sandbox as sandbox
+from openstarry_code.gateway.routing import build_cli_route_envelope, tool_context_from_envelope
+from openstarry_code.sandbox import integration as integration_mod
+from openstarry_code.sandbox.backend import bubblewrap as bubblewrap_mod
+from openstarry_code.sandbox.backend.bubblewrap import BubblewrapBackend, build_bwrap_argv
+from openstarry_code.sandbox.backend.linux_readiness import probe_bwrap
+from openstarry_code.sandbox.backend.seatbelt import render_seatbelt_profile
+from openstarry_code.sandbox.config import SandboxSettings
+from openstarry_code.sandbox.policy import build_policy
+from openstarry_code.sandbox.run_context import DomainGrant, RunContext
+from openstarry_code.sandbox.run_mode import RunMode
+from openstarry_code.sandbox.types import (
     MountSpec,
     NetworkMode,
     NetworkProxySpec,
@@ -30,7 +30,7 @@ from opensquilla.sandbox.types import (
     SandboxResult,
     SecurityLevel,
 )
-from opensquilla.tools.types import current_tool_context
+from openstarry_code.tools.types import current_tool_context
 
 _UNSET = object()
 _BWRAP_PROXY_BRIDGE_LINUX_ONLY = pytest.mark.skipif(
@@ -122,8 +122,8 @@ async def test_noop_backend_passes_request_proxy_env_to_child(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.safety.sandbox import SandboxResult as SafetySandboxResult
-    from opensquilla.sandbox.backend import noop as noop_mod
+    from openstarry_code.safety.sandbox import SandboxResult as SafetySandboxResult
+    from openstarry_code.sandbox.backend import noop as noop_mod
 
     policy = dataclasses.replace(
         _policy(tmp_path, network_proxy=_proxy_spec()),
@@ -196,10 +196,10 @@ def test_bubblewrap_proxy_allowlist_with_proxy_builds_bridge_argv(
     assert child_argv[3:] == ["sh", "-lc", "echo ok"]
     assert sys.executable not in child_argv
     assert "-m" not in child_argv
-    assert "opensquilla.sandbox.backend.linux_proxy_bridge" not in child_argv
+    assert "openstarry_code.sandbox.backend.linux_proxy_bridge" not in child_argv
     assert argv.count("echo ok") == 1
-    assert "OPENSQUILLA_SANDBOX_PROXY_UDS" in argv
-    assert "OPENSQUILLA_SANDBOX_PROXY_PORT" in argv
+    assert "OPENSTARRY_CODE_SANDBOX_PROXY_UDS" in argv
+    assert "OPENSTARRY_CODE_SANDBOX_PROXY_PORT" in argv
     assert "HTTP_PROXY" in argv
     assert "http://127.0.0.1:8080" in argv
 
@@ -230,8 +230,8 @@ def test_bubblewrap_proxy_allowlist_injects_package_manager_proxy_env(
     assert "NODE_USE_ENV_PROXY" in argv
     assert "GIT_CONFIG_KEY_0" not in argv
     assert "GIT_CONFIG_VALUE_0" not in argv
-    assert "OPENSQUILLA_SANDBOX_NETWORK" in argv
-    network_index = argv.index("OPENSQUILLA_SANDBOX_NETWORK")
+    assert "OPENSTARRY_CODE_SANDBOX_NETWORK" in argv
+    network_index = argv.index("OPENSTARRY_CODE_SANDBOX_NETWORK")
     assert argv[network_index + 1] == "proxy_allowlist"
 
 
@@ -576,7 +576,7 @@ async def test_real_bubblewrap_proxy_allowlist_reaches_managed_proxy(
         "print('PROXY', proxy)\n"
         "print('NPM_PROXY', os.environ.get('npm_config_proxy', ''))\n"
         "print('NODE_USE_ENV_PROXY', os.environ.get('NODE_USE_ENV_PROXY', ''))\n"
-        "print('OPENSQUILLA_SANDBOX_NETWORK', os.environ.get('OPENSQUILLA_SANDBOX_NETWORK', ''))\n"
+        "print('OPENSTARRY_CODE_SANDBOX_NETWORK', os.environ.get('OPENSTARRY_CODE_SANDBOX_NETWORK', ''))\n"
         "print('CODEX_NETWORK_PROXY_ACTIVE', os.environ.get('CODEX_NETWORK_PROXY_ACTIVE', ''))\n"
         "print('CODEX_NETWORK_ALLOW_LOCAL_BINDING', "
         "os.environ.get('CODEX_NETWORK_ALLOW_LOCAL_BINDING', ''))\n"
@@ -608,7 +608,7 @@ async def test_real_bubblewrap_proxy_allowlist_reaches_managed_proxy(
     assert "PROXY http://127.0.0.1:" in result.stdout
     assert "NPM_PROXY http://127.0.0.1:" in result.stdout
     assert "NODE_USE_ENV_PROXY 1" in result.stdout
-    assert "OPENSQUILLA_SANDBOX_NETWORK proxy_allowlist" in result.stdout
+    assert "OPENSTARRY_CODE_SANDBOX_NETWORK proxy_allowlist" in result.stdout
     assert "CODEX_NETWORK_PROXY_ACTIVE 1" in result.stdout
     assert "CODEX_NETWORK_ALLOW_LOCAL_BINDING 0" in result.stdout
     assert "GIT_SSL_KEY \n" in result.stdout
@@ -618,7 +618,7 @@ async def test_real_bubblewrap_proxy_allowlist_reaches_managed_proxy(
 
 
 def test_linux_proxy_routing_rewrites_proxy_env_to_inner_loopback() -> None:
-    from opensquilla.sandbox.backend.linux_proxy_routing import proxy_env_for_inner_port
+    from openstarry_code.sandbox.backend.linux_proxy_routing import proxy_env_for_inner_port
 
     env = proxy_env_for_inner_port(
         base_env={"HTTP_PROXY": "http://127.0.0.1:3128"},
@@ -986,7 +986,7 @@ def test_policy_summary_includes_network_proxy_object(tmp_path: Path) -> None:
 def test_windows_proxy_allowlist_preflight_uses_marker_ports(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_support as support_mod
+    from openstarry_code.sandbox.backend import windows_default_support as support_mod
 
     calls: list[tuple[int, ...]] = []
 

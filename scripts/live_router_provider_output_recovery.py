@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Live router-enabled provider output recovery evidence.
 
-Opt-in maintainer script. It uses OpenRouter and temporary OpenSquilla state to
+Opt-in maintainer script. It uses OpenRouter and temporary OpenStarry Code state to
 capture evidence for two provider-output failure modes:
 
 * provider output stopped by the length cap
@@ -29,7 +29,7 @@ if str(REPO_ROOT) not in sys.path:
 if str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))
 
-from opensquilla.env import load_env  # noqa: E402
+from openstarry_code.env import load_env  # noqa: E402
 from scripts.smoke_v4_phase3_router import (  # noqa: E402
     _live_tier_model_map,
     _read_turn_call_records,
@@ -152,7 +152,7 @@ def _openrouter_chat(
             "authorization": f"Bearer {os.environ['OPENROUTER_API_KEY']}",
             "content-type": "application/json",
             "http-referer": "https://github.com/opensquilla/opensquilla",
-            "x-title": "OpenSquilla provider output recovery live evidence",
+            "x-title": "OpenStarry Code provider output recovery live evidence",
         },
         method="POST",
     )
@@ -201,7 +201,7 @@ def _write_config(
 
 def _runtime_router_available() -> dict[str, Any]:
     try:
-        from opensquilla.squilla_router.v4_phase3 import V4Phase3Strategy
+        from openstarry_code.squilla_router.v4_phase3 import V4Phase3Strategy
 
         V4Phase3Strategy(require_router_runtime=True)
         return {"ok": True}
@@ -232,22 +232,22 @@ def _run_cli_case(
 
     env = os.environ.copy()
     env["PYTHONPATH"] = str(SRC_DIR) + os.pathsep + env.get("PYTHONPATH", "")
-    env["OPENSQUILLA_GATEWAY_CONFIG_PATH"] = str(config_path)
-    env["OPENSQUILLA_STATE_DIR"] = str(state_dir)
-    env["OPENSQUILLA_LOG_DIR"] = str(log_dir)
-    env["OPENSQUILLA_MEMORY_DREAM_DISABLED"] = "1"
-    env["OPENSQUILLA_TURN_CALL_LOG"] = "1"
-    env["OPENSQUILLA_TURN_CALL_LOG_DIR"] = str(turn_log_dir)
-    env["OPENSQUILLA_SANDBOX_SANDBOX"] = "false"
-    env["OPENSQUILLA_SANDBOX_SECURITY_GRADING"] = "false"
-    env["OPENSQUILLA_TOOL_PROFILE"] = "channel_default"
-    env.pop("OPENSQUILLA_LLM_THINKING", None)
+    env["OPENSTARRY_CODE_GATEWAY_CONFIG_PATH"] = str(config_path)
+    env["OPENSTARRY_CODE_STATE_DIR"] = str(state_dir)
+    env["OPENSTARRY_CODE_LOG_DIR"] = str(log_dir)
+    env["OPENSTARRY_CODE_MEMORY_DREAM_DISABLED"] = "1"
+    env["OPENSTARRY_CODE_TURN_CALL_LOG"] = "1"
+    env["OPENSTARRY_CODE_TURN_CALL_LOG_DIR"] = str(turn_log_dir)
+    env["OPENSTARRY_CODE_SANDBOX_SANDBOX"] = "false"
+    env["OPENSTARRY_CODE_SANDBOX_SECURITY_GRADING"] = "false"
+    env["OPENSTARRY_CODE_TOOL_PROFILE"] = "channel_default"
+    env.pop("OPENSTARRY_CODE_LLM_THINKING", None)
 
     session_id = f"live-provider-output-{case_id}-{int(time.time() * 1000)}"
     cmd = [
         sys.executable,
         "-m",
-        "opensquilla.cli.main",
+        "openstarry_code.cli.main",
         "agent",
         "--message",
         message,

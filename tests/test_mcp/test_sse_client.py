@@ -11,8 +11,8 @@ from urllib.parse import parse_qs, urlparse
 
 import pytest
 
-from opensquilla.mcp.sse import MCPSSEClient
-from opensquilla.mcp.types import MCPServerConfig
+from openstarry_code.mcp.sse import MCPSSEClient
+from openstarry_code.mcp.types import MCPServerConfig
 
 TOOLS = [
     {
@@ -142,7 +142,7 @@ class EndpointHandshakeSSEServer:
 @pytest.fixture
 def sse_server(monkeypatch: pytest.MonkeyPatch) -> Any:
     for var in ("HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "http_proxy", "https_proxy",
-                "all_proxy", "OPENSQUILLA_TRUST_ENV"):
+                "all_proxy", "OPENSTARRY_CODE_TRUST_ENV"):
         monkeypatch.delenv(var, raising=False)
     server = EndpointHandshakeSSEServer()
     server.start()

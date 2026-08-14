@@ -16,7 +16,7 @@ from email.utils import format_datetime
 
 import structlog
 
-from opensquilla.engine.routing.health import (
+from openstarry_code.engine.routing.health import (
     BENCHABLE_FAILURE_KINDS,
     DEFAULT_COOLDOWN_S,
     DEFAULT_FAILURE_THRESHOLD,
@@ -24,13 +24,13 @@ from opensquilla.engine.routing.health import (
     ProviderHealthLedger,
     get_provider_health_ledger,
 )
-from opensquilla.engine.runtime import _SelectorFallbackProvider
-from opensquilla.provider.failures import (
+from openstarry_code.engine.runtime import _SelectorFallbackProvider
+from openstarry_code.provider.failures import (
     ProviderFailureKind,
     parse_retry_after,
     retry_after_from_headers,
 )
-from opensquilla.provider.selector import (
+from openstarry_code.provider.selector import (
     ModelSelector,
     ProviderConfig,
     SelectorConfig,

@@ -10,7 +10,7 @@ from typing import Any
 
 import pytest
 
-from opensquilla.observability import network_policy, update_check
+from openstarry_code.observability import network_policy, update_check
 
 
 @pytest.fixture(autouse=True)
@@ -99,7 +99,7 @@ def _install_httpx_payload(
         def get(self, endpoint: str, *, headers: dict[str, str]):
             assert endpoint == expected_endpoint
             assert headers["Accept"] == "application/json"
-            assert headers["User-Agent"].startswith("opensquilla/")
+            assert headers["User-Agent"].startswith("openstarry_code/")
             return SimpleNamespace(status_code=status_code, json=lambda: payload)
 
     monkeypatch.setattr(httpx, "Client", FakeClient)

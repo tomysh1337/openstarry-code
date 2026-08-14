@@ -7,14 +7,14 @@ from pathlib import Path
 
 import pytest
 
-import opensquilla.session.storage as storage_module
-from opensquilla.session.models import (
+import openstarry_code.session.storage as storage_module
+from openstarry_code.session.models import (
     AgentTaskRecord,
     AgentTaskStatus,
     SessionNode,
     TranscriptEntry,
 )
-from opensquilla.session.storage import (
+from openstarry_code.session.storage import (
     MetaLaunchDraftCapacityError,
     MetaLaunchDraftConflictError,
     MetaLaunchDraftDiscardedError,

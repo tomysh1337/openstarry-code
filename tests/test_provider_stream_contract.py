@@ -24,10 +24,10 @@ from typing import Any
 
 import httpx
 
-from opensquilla.provider.anthropic import AnthropicProvider
-from opensquilla.provider.ollama import OllamaProvider
-from opensquilla.provider.openai import OpenAIProvider
-from opensquilla.provider.types import (
+from openstarry_code.provider.anthropic import AnthropicProvider
+from openstarry_code.provider.ollama import OllamaProvider
+from openstarry_code.provider.openai import OpenAIProvider
+from openstarry_code.provider.types import (
     ChatConfig,
     DoneEvent,
     ErrorEvent,
@@ -73,7 +73,7 @@ def _patch_transport(monkeypatch: Any, module: str, response: httpx.Response) ->
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr(f"opensquilla.provider.{module}.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr(f"openstarry_code.provider.{module}.httpx.AsyncClient", patched_async_client)
 
 
 def _patch_stream_body(monkeypatch: Any, module: str, body: bytes) -> None:
@@ -227,7 +227,7 @@ def test_empty_stream_falls_back_to_non_stream_for_policy_kind(monkeypatch: Any)
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client)
     provider = OpenAIProvider(api_key="k", model="kimi-for-coding", provider_kind="moonshot")
     events = _collect(provider)
 
@@ -268,7 +268,7 @@ def test_reasoning_only_stream_does_not_trigger_empty_stream_fallback(monkeypatc
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client)
     provider = OpenAIProvider(api_key="k", model="kimi-for-coding", provider_kind="moonshot")
     events = _collect(provider)
 

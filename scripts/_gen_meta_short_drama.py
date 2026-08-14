@@ -5,7 +5,7 @@ script composes the per-shot YAML blocks from a template and prints
 the full SKILL.md to stdout. Pipe to the bundled SKILL.md path:
 
     python scripts/_gen_meta_short_drama.py > \
-        src/opensquilla/skills/bundled/meta-short-drama/SKILL.md
+        src/openstarry_code/skills/bundled/meta-short-drama/SKILL.md
 """
 from __future__ import annotations
 
@@ -1239,13 +1239,13 @@ produces a revised preview and requires a second explicit approval.
 | `srt-from-script` | VOICEOVER → SRT with cover offset | Python stdlib |
 | `subtitle-burner` | Burn SRT into MP4 | ffmpeg + libass |
 | `title-card-image` | Pillow cover + ending PNG cards | Pillow |
-| (builtin) `write_file` | Save script.txt (no skill needed) | OpenSquilla builtin |
+| (builtin) `write_file` | Save script.txt (no skill needed) | OpenStarry Code builtin |
 | `text-file-read` | Re-read script.txt after review pause | Python stdlib |
 
 Environment:
 - `OPENROUTER_API_KEY` must be set.
 - `ffmpeg` and `ffprobe` on PATH.
-- Pillow installed (already in opensquilla deps).
+- Pillow installed (already in openstarry-code deps).
 
 ## Risk
 

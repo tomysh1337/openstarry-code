@@ -9,7 +9,7 @@ from types import ModuleType
 
 def _load_search_module() -> ModuleType:
     root = Path(__file__).resolve().parents[2]
-    script = root / "src/opensquilla/skills/bundled/multi-search-engine/scripts/search.py"
+    script = root / "src/openstarry_code/skills/bundled/multi-search-engine/scripts/search.py"
     spec = importlib.util.spec_from_file_location("multi_search_engine_search", script)
     assert spec is not None
     module = importlib.util.module_from_spec(spec)

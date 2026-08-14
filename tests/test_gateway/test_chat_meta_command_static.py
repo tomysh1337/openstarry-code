@@ -1,6 +1,6 @@
 """Static contract for the web ``/meta`` slash-command wiring.
 
-The served web UI is the Vite SPA under ``opensquilla-webui/``; its slash
+The served web UI is the Vite SPA under ``openstarry-code-webui/``; its slash
 dispatch lives in ``composables/chat/useChatSlashCommands.ts``. JS/TS is not
 unit-tested with a JS runner here, so we lock the SPA source text:
 
@@ -14,7 +14,7 @@ generated browser bundle.
 
 from pathlib import Path
 
-SPA_SLASH = Path("opensquilla-webui/src/composables/chat/useChatSlashCommands.ts")
+SPA_SLASH = Path("openstarry-code-webui/src/composables/chat/useChatSlashCommands.ts")
 
 
 def _read() -> str:

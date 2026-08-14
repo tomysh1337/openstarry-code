@@ -444,8 +444,8 @@ def test_gateway_batch_isolates_user_state_and_profile_lock_root(
 
     env = captured["env"]
     assert isinstance(env, dict)
-    assert env["OPENSQUILLA_USER_STATE_DIR"] == str(temp_root / "user-state")
-    assert env["OPENSQUILLA_TEST_PROFILE_LOCK_ROOT"] == "1"
+    assert env["OPENSTARRY_CODE_USER_STATE_DIR"] == str(temp_root / "user-state")
+    assert env["OPENSTARRY_CODE_TEST_PROFILE_LOCK_ROOT"] == "1"
     assert (temp_root / "user-state").is_dir()
     assert captured["cwd"] == temp_root
     assert result["error"] == "synthetic offline stop"

@@ -4,13 +4,13 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from opensquilla.gateway.rpc import RpcContext
-from opensquilla.gateway.rpc_cron import _handle_cron_add, _handle_cron_update
-from opensquilla.scheduler.engine import SchedulerEngine
-from opensquilla.scheduler.jobs import apply_result
-from opensquilla.scheduler.payloads import make_agent_turn_payload, payload_text
-from opensquilla.scheduler.persistence import JobStore
-from opensquilla.scheduler.types import JobExecution, JobStatus, ScheduleKind, SessionTarget
+from openstarry_code.gateway.rpc import RpcContext
+from openstarry_code.gateway.rpc_cron import _handle_cron_add, _handle_cron_update
+from openstarry_code.scheduler.engine import SchedulerEngine
+from openstarry_code.scheduler.jobs import apply_result
+from openstarry_code.scheduler.payloads import make_agent_turn_payload, payload_text
+from openstarry_code.scheduler.persistence import JobStore
+from openstarry_code.scheduler.types import JobExecution, JobStatus, ScheduleKind, SessionTarget
 
 
 async def _make_engine(tmp_path: Path) -> tuple[SchedulerEngine, JobStore]:

@@ -11,10 +11,10 @@ import uuid
 
 import pytest
 
-from opensquilla.provider.model_catalog import ModelCatalog
-from opensquilla.provider.openai import OpenAIProvider
-from opensquilla.provider.selector import ProviderConfig, _build_provider
-from opensquilla.provider.types import (
+from openstarry_code.provider.model_catalog import ModelCatalog
+from openstarry_code.provider.openai import OpenAIProvider
+from openstarry_code.provider.selector import ProviderConfig, _build_provider
+from openstarry_code.provider.types import (
     ChatConfig,
     DoneEvent,
     ErrorEvent,

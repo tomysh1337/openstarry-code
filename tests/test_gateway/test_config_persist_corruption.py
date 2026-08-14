@@ -14,8 +14,8 @@ import tomllib
 
 import pytest
 
-from opensquilla.onboarding.config_store import load_config, persist_config
-from opensquilla.onboarding.mutations import upsert_audio_provider
+from openstarry_code.onboarding.config_store import load_config, persist_config
+from openstarry_code.onboarding.mutations import upsert_audio_provider
 
 # Valid GBK-encoded Chinese ("配置"), invalid as UTF-8 — the observed corruption.
 GBK_BYTES = "# 配置\n".encode("gbk")
@@ -23,7 +23,7 @@ GBK_BYTES = "# 配置\n".encode("gbk")
 
 def _fresh_config(tmp_path, monkeypatch):
     target = tmp_path / "config.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     monkeypatch.delenv("ELEVENLABS_API_KEY", raising=False)
     return load_config(path=target), target
 

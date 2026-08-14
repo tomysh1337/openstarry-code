@@ -1,5 +1,5 @@
 [project]
-name = "opensquilla"
+name = "openstarry-code"
 version = "0.5.3"
 description = "OpenStarry Code - stackable multi-provider Python agent runtime with automatic model discovery"
 license = "Apache-2.0"
@@ -92,8 +92,8 @@ document-extras = [
     "weasyprint>=60.0",
 ]
 [project.scripts]
-opensquilla = "opensquilla.cli.main:app"
-gateway = "opensquilla.cli.main:gateway_app"
+openstarry-code = "openstarry_code.cli.main:app"
+gateway = "openstarry_code.cli.main:gateway_app"
 
 [build-system]
 requires = ["hatchling>=1.31,<2"]
@@ -104,39 +104,39 @@ build-backend = "hatchling.build"
 # the current frontend source. Editable installs intentionally skip this hook.
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/opensquilla"]
+packages = ["src/openstarry_code"]
 # Hatch normally honors .gitignore. This explicit artifact rule lets a
 # verified, generated WebUI bundle enter wheels without tracking it in Git.
-artifacts = ["src/opensquilla/gateway/static/dist/**"]
+artifacts = ["src/openstarry_code/gateway/static/dist/**"]
 exclude = [
-    "src/opensquilla/scheduler/templates/*.md",
-    "src/opensquilla/skills/bundled/**/THIRD_PARTY_NOTICES.md",
-    "src/opensquilla/skills/bundled/**/README.md",
-    "src/opensquilla/skills/bundled/**/LICENSE.md",
-    "src/opensquilla/skills/bundled/**/skill-card.md",
-    "src/opensquilla/skills/bundled/**/references/*.md",
-    "src/opensquilla/skills/exp/**",
-    "src/opensquilla/skills/meta/META_SKILL_AUTHORING.md",
+    "src/openstarry_code/scheduler/templates/*.md",
+    "src/openstarry_code/skills/bundled/**/THIRD_PARTY_NOTICES.md",
+    "src/openstarry_code/skills/bundled/**/README.md",
+    "src/openstarry_code/skills/bundled/**/LICENSE.md",
+    "src/openstarry_code/skills/bundled/**/skill-card.md",
+    "src/openstarry_code/skills/bundled/**/references/*.md",
+    "src/openstarry_code/skills/exp/**",
+    "src/openstarry_code/skills/meta/META_SKILL_AUTHORING.md",
     # The core distribution may carry the OpenTUI JavaScript sources for
     # explicit source-development mode, but never local dependency installs or
-    # compiled platform artifacts. Those belong to opensquilla-tui-host.
-    "src/opensquilla/cli/tui/opentui/package/node_modules/**",
-    "src/opensquilla/cli/tui/opentui/package/bin/**",
-    "src/opensquilla/cli/tui/opentui/package/build/**",
-    "src/opensquilla/cli/tui/opentui/package/dist/**",
+    # compiled platform artifacts. Those belong to openstarry-code-tui-host.
+    "src/openstarry_code/cli/tui/opentui/package/node_modules/**",
+    "src/openstarry_code/cli/tui/opentui/package/bin/**",
+    "src/openstarry_code/cli/tui/opentui/package/build/**",
+    "src/openstarry_code/cli/tui/opentui/package/dist/**",
 ]
 
 [tool.hatch.build.targets.wheel.force-include]
-"migrations/" = "opensquilla/_migrations/"
-"src/opensquilla/skills/bundled/html-coder/references/add-css-style.md" = "opensquilla/skills/bundled/html-coder/references/add-css-style.md"
-"src/opensquilla/skills/bundled/html-coder/references/add-javascript.md" = "opensquilla/skills/bundled/html-coder/references/add-javascript.md"
-"src/opensquilla/skills/bundled/html-coder/references/attributes.md" = "opensquilla/skills/bundled/html-coder/references/attributes.md"
-"src/opensquilla/skills/bundled/html-coder/references/essentials.md" = "opensquilla/skills/bundled/html-coder/references/essentials.md"
-"src/opensquilla/skills/bundled/html-coder/references/global-attributes.md" = "opensquilla/skills/bundled/html-coder/references/global-attributes.md"
-"src/opensquilla/skills/bundled/html-coder/references/glossary.md" = "opensquilla/skills/bundled/html-coder/references/glossary.md"
-"src/opensquilla/skills/bundled/html-coder/references/standards.md" = "opensquilla/skills/bundled/html-coder/references/standards.md"
-"src/opensquilla/skills/bundled/pptx/references/pptxgenjs.md" = "opensquilla/skills/bundled/pptx/references/pptxgenjs.md"
-"src/opensquilla/skills/bundled/pptx/references/python_pptx.md" = "opensquilla/skills/bundled/pptx/references/python_pptx.md"
+"migrations/" = "openstarry_code/_migrations/"
+"src/openstarry_code/skills/bundled/html-coder/references/add-css-style.md" = "openstarry_code/skills/bundled/html-coder/references/add-css-style.md"
+"src/openstarry_code/skills/bundled/html-coder/references/add-javascript.md" = "openstarry_code/skills/bundled/html-coder/references/add-javascript.md"
+"src/openstarry_code/skills/bundled/html-coder/references/attributes.md" = "openstarry_code/skills/bundled/html-coder/references/attributes.md"
+"src/openstarry_code/skills/bundled/html-coder/references/essentials.md" = "openstarry_code/skills/bundled/html-coder/references/essentials.md"
+"src/openstarry_code/skills/bundled/html-coder/references/global-attributes.md" = "openstarry_code/skills/bundled/html-coder/references/global-attributes.md"
+"src/openstarry_code/skills/bundled/html-coder/references/glossary.md" = "openstarry_code/skills/bundled/html-coder/references/glossary.md"
+"src/openstarry_code/skills/bundled/html-coder/references/standards.md" = "openstarry_code/skills/bundled/html-coder/references/standards.md"
+"src/openstarry_code/skills/bundled/pptx/references/pptxgenjs.md" = "openstarry_code/skills/bundled/pptx/references/pptxgenjs.md"
+"src/openstarry_code/skills/bundled/pptx/references/python_pptx.md" = "openstarry_code/skills/bundled/pptx/references/python_pptx.md"
 
 [tool.hatch.build.targets.sdist]
 # Published sdists remain self-contained: downstream wheel builds do not need
@@ -144,7 +144,17 @@ exclude = [
 # Standard sdists deliberately reject ignored personal BGM so an ordinary
 # source-archive build cannot leak private or copyrighted audio. Developers who
 # need a private customized artifact can build a direct local wheel instead.
-artifacts = ["src/opensquilla/gateway/static/dist/**"]
+artifacts = ["src/openstarry_code/gateway/static/dist/**"]
+exclude = [
+    "/.venv/**",
+    "/artifacts/**",
+    "/build/**",
+    "/dist/**",
+    "/desktop/electron/dist/**",
+    "/desktop/electron/node_modules/**",
+    "/openstarry-code-webui/node_modules/**",
+    "/openstarry-code-webui/test-results/**",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -180,24 +190,24 @@ select = ["E", "F", "I", "N", "W", "UP"]
 # Skill-creator template scripts: long lines carry help strings and
 # example code meant to be copy-pasted verbatim; reformatting would
 # harm readability. E402 imports-after-sys.path-munge is intentional.
-"src/opensquilla/skills/bundled/skill-creator/scripts/*.py" = ["E501", "N806", "E402"]
-"src/opensquilla/skills/bundled/skill-creator-linter/scripts/*.py" = ["E402", "I001"]
+"src/openstarry_code/skills/bundled/skill-creator/scripts/*.py" = ["E501", "N806", "E402"]
+"src/openstarry_code/skills/bundled/skill-creator-linter/scripts/*.py" = ["E402", "I001"]
 # meta-short-drama subprocess scripts: long lines hold argv arrays,
 # ffmpeg filter graphs, Chinese error strings, and OpenRouter payload
 # field comments meant to stay readable as one unit.
-"src/opensquilla/skills/bundled/ai-video-script/scripts/*.py" = ["E501"]
-"src/opensquilla/skills/bundled/AwesomeWebpageMetaSkill/scripts/*.py" = ["E501"]
-"src/opensquilla/skills/bundled/nano-banana-pro/scripts/*.py" = ["E501"]
-"src/opensquilla/skills/bundled/seedance-2-prompt/scripts/*.py" = ["E501"]
-"src/opensquilla/skills/bundled/srt-from-script/scripts/*.py" = ["E501"]
-"src/opensquilla/skills/bundled/subtitle-burner/scripts/*.py" = ["E501"]
-"src/opensquilla/skills/bundled/text-file-read/scripts/*.py" = ["E501"]
-"src/opensquilla/skills/bundled/title-card-image/scripts/*.py" = ["E501"]
-"src/opensquilla/skills/bundled/video-merger/scripts/*.py" = ["E501"]
+"src/openstarry_code/skills/bundled/ai-video-script/scripts/*.py" = ["E501"]
+"src/openstarry_code/skills/bundled/AwesomeWebpageMetaSkill/scripts/*.py" = ["E501"]
+"src/openstarry_code/skills/bundled/nano-banana-pro/scripts/*.py" = ["E501"]
+"src/openstarry_code/skills/bundled/seedance-2-prompt/scripts/*.py" = ["E501"]
+"src/openstarry_code/skills/bundled/srt-from-script/scripts/*.py" = ["E501"]
+"src/openstarry_code/skills/bundled/subtitle-burner/scripts/*.py" = ["E501"]
+"src/openstarry_code/skills/bundled/text-file-read/scripts/*.py" = ["E501"]
+"src/openstarry_code/skills/bundled/title-card-image/scripts/*.py" = ["E501"]
+"src/openstarry_code/skills/bundled/video-merger/scripts/*.py" = ["E501"]
 # video-merger src/ is vendored from upstream MIT-0 clawhub package; keep
 # its Chinese docstrings + ffmpeg argv lines unwrapped.
-"src/opensquilla/skills/bundled/video-merger/src/*.py" = ["E501", "F401"]
-"src/opensquilla/skills/bundled/video-still-animator/scripts/*.py" = ["E501"]
+"src/openstarry_code/skills/bundled/video-merger/src/*.py" = ["E501", "F401"]
+"src/openstarry_code/skills/bundled/video-still-animator/scripts/*.py" = ["E501"]
 # meta-short-drama DAG generator: template strings embed YAML blocks
 # whose original line breaks must be preserved.
 "scripts/_gen_meta_short_drama.py" = ["E501"]
@@ -209,11 +219,11 @@ platform = "linux"
 warn_return_any = true
 warn_unused_configs = true
 exclude = [
-    "^src/opensquilla/squilla_router/models/",
-    "^src/opensquilla/skills/bundled/.*/scripts/",
+    "^src/openstarry_code/squilla_router/models/",
+    "^src/openstarry_code/skills/bundled/.*/scripts/",
     # video-merger ships an upstream MIT-0 library under src/; same
     # treatment as the per-skill scripts/ trees.
-    "^src/opensquilla/skills/bundled/video-merger/src/",
+    "^src/openstarry_code/skills/bundled/video-merger/src/",
 ]
 
 [[tool.mypy.overrides]]

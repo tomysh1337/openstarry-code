@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from opensquilla.gateway.boot import build_provider_call_observer
-from opensquilla.gateway.provider_stats import ProviderStatsStore
+from openstarry_code.gateway.boot import build_provider_call_observer
+from openstarry_code.gateway.provider_stats import ProviderStatsStore
 
 
 class _Clock:

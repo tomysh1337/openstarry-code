@@ -24,15 +24,15 @@ import yaml
 from pypdf import PdfReader, PdfWriter
 from pypdf.generic import DecodedStreamObject, DictionaryObject, NameObject
 
-from opensquilla.skills.loader import SkillLoader
-from opensquilla.skills.meta.executors.skill_exec import run_skill_exec_step
-from opensquilla.skills.meta.parser import parse_meta_plan
-from opensquilla.skills.runtime_env import managed_skill_env
+from openstarry_code.skills.loader import SkillLoader
+from openstarry_code.skills.meta.executors.skill_exec import run_skill_exec_step
+from openstarry_code.skills.meta.parser import parse_meta_plan
+from openstarry_code.skills.runtime_env import managed_skill_env
 
 ROOT = Path(__file__).resolve().parents[2]
 
-BUNDLED = ROOT / "src" / "opensquilla" / "skills" / "bundled"
-EXP = ROOT / "src" / "opensquilla" / "skills" / "exp"
+BUNDLED = ROOT / "src" / "openstarry_code" / "skills" / "bundled"
+EXP = ROOT / "src" / "openstarry_code" / "skills" / "exp"
 TEST_META_RUN_ID = "run-test-paper"
 
 
@@ -1086,13 +1086,13 @@ def test_meta_default_compact_contract_compiles_real_content_to_four_pages(
     runtime_env = managed_skill_env(os.environ)
     xelatex = shutil.which("xelatex", path=runtime_env.get("PATH"))
     bibtex = shutil.which("bibtex", path=runtime_env.get("PATH"))
-    require_managed = os.environ.get("OPENSQUILLA_REQUIRE_MANAGED_TOOLCHAIN_E2E") == "1"
+    require_managed = os.environ.get("OPENSTARRY_CODE_REQUIRE_MANAGED_TOOLCHAIN_E2E") == "1"
     if xelatex is None or bibtex is None:
         if require_managed:
             pytest.fail("managed XeLaTeX and BibTeX are required for artifact CI")
         pytest.skip("real xelatex and bibtex are required for the artifact test")
     if require_managed:
-        configured_root = os.environ.get("OPENSQUILLA_TOOLCHAIN_VALIDATION_ROOT", "")
+        configured_root = os.environ.get("OPENSTARRY_CODE_TOOLCHAIN_VALIDATION_ROOT", "")
         assert configured_root, "artifact CI must declare its managed toolchain root"
         validation_root = Path(configured_root).resolve(strict=True)
         for binary in (xelatex, bibtex):

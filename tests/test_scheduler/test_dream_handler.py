@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.memory.dream_factory import _session_lock_for
-from opensquilla.scheduler.dream_handler import make_memory_dream_handler
-from opensquilla.scheduler.types import CronJob
+from openstarry_code.memory.dream_factory import _session_lock_for
+from openstarry_code.scheduler.dream_handler import make_memory_dream_handler
+from openstarry_code.scheduler.types import CronJob
 
 
 @pytest.mark.asyncio
@@ -76,7 +76,7 @@ async def test_post_dream_hook_invoked_on_successful_run() -> None:
 
 @pytest.mark.asyncio
 async def test_memory_dream_handler_binds_synthetic_usage_scope() -> None:
-    from opensquilla.engine.usage_accounting import current_usage_accounting_scope
+    from openstarry_code.engine.usage_accounting import current_usage_accounting_scope
 
     observed = []
 
@@ -159,7 +159,7 @@ async def test_post_dream_hook_not_called_when_dream_skipped() -> None:
 async def test_memory_dream_handler_kill_switch_skips_before_guard(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_MEMORY_DREAM_DISABLED", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_MEMORY_DREAM_DISABLED", "1")
 
     def build_dream(agent_id: str) -> object:
         raise AssertionError(f"dream should not be built for {agent_id}")

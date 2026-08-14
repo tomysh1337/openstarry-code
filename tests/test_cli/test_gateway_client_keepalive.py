@@ -9,14 +9,14 @@ from unittest.mock import AsyncMock, call
 
 import pytest
 
-from opensquilla.cli.gateway_client import (
+from openstarry_code.cli.gateway_client import (
     GatewayClient,
     GatewayRPCError,
     _normalize_session_error_payload,
     _task_terminal_as_session_event,
     session_history_all,
 )
-from opensquilla.contracts.gateway_transport import (
+from openstarry_code.contracts.gateway_transport import (
     GATEWAY_CLIENT_MAX_MESSAGE_BYTES,
     GATEWAY_CLIENT_MAX_QUEUE,
 )
@@ -549,7 +549,7 @@ async def test_send_message_filters_local_identity_without_dropping_external_or_
 async def test_send_message_preserves_tui_client_message_identity(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.tui.backend.input_identity import (
+    from openstarry_code.cli.tui.backend.input_identity import (
         tui_input_identity_scope,
         tui_turn_identity_sink_scope,
     )

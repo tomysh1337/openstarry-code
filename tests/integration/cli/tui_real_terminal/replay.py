@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from opensquilla.cli.chat.turn import UsageSummary  # type: ignore[import-untyped]
+from openstarry_code.cli.chat.turn import UsageSummary  # type: ignore[import-untyped]
 
 ARCHITECTURE_PROMPT_FIXTURE = (
     Path(__file__).resolve().parents[3]

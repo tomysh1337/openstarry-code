@@ -6,10 +6,10 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.skills.loader import SkillLoader
+from openstarry_code.skills.loader import SkillLoader
 
 BUNDLED = (
-    Path(__file__).resolve().parents[1].parent / "src" / "opensquilla" / "skills" / "bundled"
+    Path(__file__).resolve().parents[1].parent / "src" / "openstarry_code" / "skills" / "bundled"
 )
 
 
@@ -45,7 +45,7 @@ def test_codetask_skill_declares_requirements(loader):
 def test_codetask_skill_body_documents_cli_and_states(loader):
     spec = loader.get_by_name("code-task")
     assert spec is not None
-    assert "opensquilla code-task solve" in spec.content
+    assert "openstarry-code code-task solve" in spec.content
     # The six result states must be documented for the agent to interpret.
     for state in ("verified", "already_satisfied", "not_testable", "environment_blocked"):
         assert state in spec.content

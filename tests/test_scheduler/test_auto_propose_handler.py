@@ -7,10 +7,10 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from opensquilla.gateway.config import MetaSkillAutoProposeConfig
-from opensquilla.scheduler.auto_propose_handler import make_auto_propose_handler
-from opensquilla.scheduler.types import CronJob
-from opensquilla.skills.creator.auto_propose import AutoProposeResult
+from openstarry_code.gateway.config import MetaSkillAutoProposeConfig
+from openstarry_code.scheduler.auto_propose_handler import make_auto_propose_handler
+from openstarry_code.scheduler.types import CronJob
+from openstarry_code.skills.creator.auto_propose import AutoProposeResult
 
 
 def _make_job(agent_id: str = "main") -> CronJob:
@@ -36,7 +36,7 @@ def _make_config(**overrides: object) -> MetaSkillAutoProposeConfig:
 async def test_kill_switch_short_circuits_before_orchestrator_build(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_AUTO_PROPOSE_DISABLED", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_AUTO_PROPOSE_DISABLED", "1")
 
     def build(_aid: str) -> object:
         raise AssertionError("orchestrator should not be built when kill switch on")
@@ -95,7 +95,7 @@ async def test_happy_path_runs_pipeline_and_summarises(
         )
 
     monkeypatch.setattr(
-        "opensquilla.scheduler.auto_propose_handler.auto_propose",
+        "openstarry_code.scheduler.auto_propose_handler.auto_propose",
         fake_auto_propose,
     )
 
@@ -201,8 +201,8 @@ async def test_register_auto_propose_crons_resumes_a_paused_job(
     """
     from unittest.mock import AsyncMock, MagicMock
 
-    from opensquilla.gateway.boot import _register_auto_propose_crons
-    from opensquilla.scheduler.types import JobStatus, SessionTarget
+    from openstarry_code.gateway.boot import _register_auto_propose_crons
+    from openstarry_code.scheduler.types import JobStatus, SessionTarget
 
     paused_job = MagicMock()
     paused_job.id = "job-id-1"
@@ -233,8 +233,8 @@ async def test_register_auto_propose_crons_uses_structured_schedule_for_new_jobs
 ) -> None:
     from unittest.mock import AsyncMock, MagicMock
 
-    from opensquilla.gateway.boot import _register_auto_propose_crons
-    from opensquilla.scheduler.types import ScheduleKind, SessionTarget
+    from openstarry_code.gateway.boot import _register_auto_propose_crons
+    from openstarry_code.scheduler.types import ScheduleKind, SessionTarget
 
     scheduler = MagicMock()
     scheduler.list_jobs = MagicMock(return_value=[])
@@ -263,8 +263,8 @@ async def test_register_auto_propose_crons_updates_schedule_with_structured_patc
 ) -> None:
     from unittest.mock import AsyncMock, MagicMock
 
-    from opensquilla.gateway.boot import _register_auto_propose_crons
-    from opensquilla.scheduler.types import JobStatus, ScheduleKind, SessionTarget
+    from openstarry_code.gateway.boot import _register_auto_propose_crons
+    from openstarry_code.scheduler.types import JobStatus, ScheduleKind, SessionTarget
 
     existing = MagicMock()
     existing.id = "job-id-3"
@@ -301,8 +301,8 @@ async def test_register_auto_propose_crons_does_not_resume_active_jobs(
     call (idempotent re-register at boot)."""
     from unittest.mock import AsyncMock, MagicMock
 
-    from opensquilla.gateway.boot import _register_auto_propose_crons
-    from opensquilla.scheduler.types import JobStatus, SessionTarget
+    from openstarry_code.gateway.boot import _register_auto_propose_crons
+    from openstarry_code.scheduler.types import JobStatus, SessionTarget
 
     active_job = MagicMock()
     active_job.id = "job-id-2"

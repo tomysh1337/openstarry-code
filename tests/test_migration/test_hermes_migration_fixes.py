@@ -16,7 +16,7 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.migration.hermes import (
+from openstarry_code.migration.hermes import (
     DEFERRED_OPTIONS,
     MAX_MEMORY_CHARS,
     HermesMigrationOptions,
@@ -42,7 +42,7 @@ def test_overwrite_creates_item_level_backup_before_replacing(
 ) -> None:
     source = _make_hermes_home_with_user_data(tmp_path)
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
     workspace_soul = home / "workspace" / "SOUL.md"
     workspace_soul.parent.mkdir(parents=True)
     workspace_soul.write_text("pre-existing opensquilla soul to preserve\n", encoding="utf-8")
@@ -67,7 +67,7 @@ def test_short_source_substring_match_is_not_falsely_deduped(
     # would silently drop the source; semantic dedupe should merge it.
     (source / "memories" / "MEMORY.md").write_text("tea\n", encoding="utf-8")
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
     dest = home / "workspace" / "MEMORY.md"
     dest.parent.mkdir(parents=True)
     dest.write_text(
@@ -90,7 +90,7 @@ def test_deferred_option_ids_appear_in_report(
 ) -> None:
     source = _make_hermes_home_with_user_data(tmp_path)
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     report = HermesMigrator(
         HermesMigrationOptions(
@@ -125,14 +125,14 @@ def test_workspace_prose_is_rebranded(
         encoding="utf-8",
     )
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     report = HermesMigrator(HermesMigrationOptions(source=source, apply=True)).migrate()
 
     migrated = (home / "workspace" / "SOUL.md").read_text(encoding="utf-8")
     assert "OpenSquilla assistant" in migrated
     assert "OpenSquilla memory" in migrated
-    assert ".opensquilla/" in migrated
+    assert ".openstarry-code/" in migrated
     # Source-reference tokens are protected.
     assert "NousResearch" in migrated
     assert "hermes-agent" in migrated
@@ -177,7 +177,7 @@ def test_rebrand_helper_skips_text_that_already_mentions_opensquilla() -> None:
 
 
 def test_rebrand_skip_reason_detects_opensquilla_case_insensitively() -> None:
-    from opensquilla.migration.hermes import (
+    from openstarry_code.migration.hermes import (
         REBRAND_SKIP_REASON_MIXED,
         _rebrand_skip_reason,
     )
@@ -212,7 +212,7 @@ def test_workspace_prose_with_opensquilla_mention_is_kept_verbatim(
     )
     (source / "memories" / "MEMORY.md").write_text(mixed, encoding="utf-8")
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     report = HermesMigrator(HermesMigrationOptions(source=source, apply=True)).migrate()
 
@@ -248,9 +248,9 @@ def test_rebrand_does_not_mangle_path_substrings_of_dot_hermes() -> None:
         ("Cache .hermes-cache here", "Cache .hermes-cache here"),
         ("Backup ~/.hermes_backup", "Backup ~/.hermes_backup"),
         # Legit path forms still rebrand:
-        ("Use ~/.hermes for state", "Use ~/.opensquilla for state"),
-        ('Quoted "~/.hermes" works', 'Quoted "~/.opensquilla" works'),
-        ("Slashed ~/.hermes/sub", "Slashed ~/.opensquilla/sub"),
+        ("Use ~/.hermes for state", "Use ~/.openstarry-code for state"),
+        ('Quoted "~/.hermes" works', 'Quoted "~/.openstarry-code" works'),
+        ("Slashed ~/.hermes/sub", "Slashed ~/.openstarry-code/sub"),
     ]
     for source_text, expected in cases:
         out, _ = _hermes_rebrand_text(source_text)
@@ -271,7 +271,7 @@ def test_hermes_migrate_survives_non_utf8_source_bytes(
         b"\xff garbage \xff\nthen valid markdown\n"
     )
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     # The previous version raised here. Should now succeed.
     report = HermesMigrator(HermesMigrationOptions(source=source, apply=True)).migrate()
@@ -299,7 +299,7 @@ def test_hermes_mcp_enabled_false_is_preserved_when_user_has_servers(
         encoding="utf-8",
     )
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
     home.mkdir(parents=True, exist_ok=True)
     (home / "config.toml").write_text(
         "[mcp]\nenabled = false\n\n"
@@ -338,7 +338,7 @@ def test_hermes_mcp_enabled_flips_when_default_and_no_existing_servers(
         encoding="utf-8",
     )
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
     # No pre-existing config.toml at all — MCP defaulted off.
 
     HermesMigrator(HermesMigrationOptions(source=source, apply=True)).migrate()
@@ -359,7 +359,7 @@ def test_pure_hermes_prose_still_rebrands(
         encoding="utf-8",
     )
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     report = HermesMigrator(HermesMigrationOptions(source=source, apply=True)).migrate()
 
@@ -381,7 +381,7 @@ def test_skill_overwrite_creates_backup_dir(
         "---\nname: demo\ndescription: New\n---\nNew body\n", encoding="utf-8"
     )
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
     # Pre-existing skill at the target with local edits the user does not want lost.
     existing = home / "skills" / "hermes-imports" / "demo"
     existing.mkdir(parents=True)
@@ -411,7 +411,7 @@ def test_oversized_memory_is_split_with_overflow_archived(
     huge = "block\n\n" * ((MAX_MEMORY_CHARS // 7) + 1000)
     (source / "memories" / "MEMORY.md").write_text(huge, encoding="utf-8")
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     report = HermesMigrator(HermesMigrationOptions(source=source, apply=True)).migrate()
 
@@ -439,7 +439,7 @@ def test_repeat_migration_reports_dedupe_as_skipped(
     # with a clear reason, not `migrated`, because nothing was written.
     source = _make_hermes_home_with_user_data(tmp_path)
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     HermesMigrator(HermesMigrationOptions(source=source, apply=True)).migrate()
     second = HermesMigrator(HermesMigrationOptions(source=source, apply=True)).migrate()
@@ -465,7 +465,7 @@ def test_multi_block_memory_is_correctly_deduped_on_re_migration(
     )
     (source / "memories" / "MEMORY.md").write_text(multi_block, encoding="utf-8")
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     HermesMigrator(HermesMigrationOptions(source=source, apply=True)).migrate()
     after_first = (home / "workspace" / "MEMORY.md").read_text(encoding="utf-8")
@@ -495,7 +495,7 @@ def test_subset_dedupe_skips_when_all_source_blocks_already_present(
         "Block one.\n\nBlock two.\n", encoding="utf-8"
     )
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
     dest = home / "workspace" / "MEMORY.md"
     dest.parent.mkdir(parents=True)
     dest.write_text(
@@ -536,7 +536,7 @@ def test_invalid_profile_name_is_rejected_before_path_resolution(
     (real_home / "config.yaml").write_text("model:\n  provider: openrouter\n", encoding="utf-8")
     monkeypatch.setenv("HERMES_HOME", str(real_home))
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     for bad in ("../escape", "..", "with/slash", "UpperCase", " spaced ", "../../etc"):
         report = HermesMigrator(HermesMigrationOptions(profile=bad)).migrate()
@@ -563,7 +563,7 @@ def test_unknown_provider_is_not_written_to_config(
         "model:\n  provider: bedrock\n  model: claude-3-opus\n", encoding="utf-8"
     )
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     report = HermesMigrator(HermesMigrationOptions(source=source, apply=True)).migrate()
 
@@ -589,7 +589,7 @@ def test_hermes_auto_provider_does_not_crash_when_tier_profile_already_set(
     # The reported user-facing crash:
     #   ValidationError: squilla_router.tier_profile requires llm.provider
     #   to match ('openrouter' != 'auto')
-    # Reproduce it by pre-seeding ~/.opensquilla/config.toml with a valid
+    # Reproduce it by pre-seeding ~/.openstarry_code/config.toml with a valid
     # (openrouter, openrouter) pair, then run `migrate hermes` against a
     # config that says model.provider: "auto". The migrator must NOT
     # rewrite llm.provider to "auto" or persist_config will refuse to
@@ -600,7 +600,7 @@ def test_hermes_auto_provider_does_not_crash_when_tier_profile_already_set(
         encoding="utf-8",
     )
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
     # Seed the existing opensquilla config with matching (provider,
     # tier_profile) — same situation the user reported on their machine.
     (home).mkdir(parents=True, exist_ok=True)
@@ -647,7 +647,7 @@ def test_known_provider_differing_from_tier_profile_does_not_crash(
         encoding="utf-8",
     )
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
     (home).mkdir(parents=True, exist_ok=True)
     (home / "config.toml").write_text(
         "[llm]\nprovider = \"openrouter\"\nmodel = \"anthropic/claude-opus-4-7\"\n"
@@ -695,7 +695,7 @@ def test_model_id_extracted_from_nested_dict_config(
         encoding="utf-8",
     )
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     HermesMigrator(HermesMigrationOptions(source=source, apply=True)).migrate()
 
@@ -733,7 +733,7 @@ def test_export_prefixed_secret_is_actually_migrated(
         "export OPENROUTER_API_KEY=sk-or-from-export-form\n", encoding="utf-8"
     )
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     HermesMigrator(
         HermesMigrationOptions(source=source, apply=True, migrate_secrets=True)
@@ -763,7 +763,7 @@ mcp:
         encoding="utf-8",
     )
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     report = HermesMigrator(HermesMigrationOptions(source=source, apply=True)).migrate()
 
@@ -794,7 +794,7 @@ def test_mcp_servers_malformed_entries_are_reported_as_dropped(
         encoding="utf-8",
     )
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     report = HermesMigrator(HermesMigrationOptions(source=source, apply=True)).migrate()
 
@@ -825,7 +825,7 @@ mcp:
         encoding="utf-8",
     )
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
     home.mkdir(parents=True)
     (home / "config.toml").write_text(
         "[mcp]\nenabled = true\n\n"
@@ -871,7 +871,7 @@ def test_repeated_migrate_secrets_does_not_duplicate_env_entries(
         "OPENROUTER_API_KEY=sk-stable\n", encoding="utf-8"
     )
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     for _ in range(3):
         HermesMigrator(
@@ -885,14 +885,14 @@ def test_repeated_migrate_secrets_does_not_duplicate_env_entries(
 def test_env_write_updates_existing_key_value(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    # If the user already has an unrelated key in ~/.opensquilla/.env, the
+    # If the user already has an unrelated key in ~/.openstarry_code/.env, the
     # migrator should keep it and only update / add migrated keys.
     source = _make_hermes_home_with_user_data(tmp_path)
     (source / ".env").write_text(
         "OPENROUTER_API_KEY=sk-new\n", encoding="utf-8"
     )
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
     (home).mkdir(parents=True)
     (home / ".env").write_text(
         "# user existing config\nUNRELATED_KEY=keep-me\nOPENROUTER_API_KEY=sk-old\n",
@@ -923,7 +923,7 @@ def test_malformed_config_yaml_does_not_crash_migration(
         "model:\n  provider: openrouter\nfoo: [unclosed\n", encoding="utf-8"
     )
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     report = HermesMigrator(HermesMigrationOptions(source=source, apply=True)).migrate()
 
@@ -945,7 +945,7 @@ def test_empty_skills_dir_emits_skipped_record(
     source = _make_hermes_home_with_user_data(tmp_path)
     (source / "skills").mkdir()
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     report = HermesMigrator(HermesMigrationOptions(source=source, apply=True)).migrate()
 
@@ -964,7 +964,7 @@ def test_skills_path_is_file_does_not_crash(
     source = _make_hermes_home_with_user_data(tmp_path)
     (source / "skills").write_text("this is a file, not a directory", encoding="utf-8")
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     report = HermesMigrator(HermesMigrationOptions(source=source, apply=True)).migrate()
 
@@ -986,7 +986,7 @@ def test_migrate_secrets_with_no_env_still_records_channels(
     if env_path.exists():
         env_path.unlink()
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     report = HermesMigrator(
         HermesMigrationOptions(source=source, apply=True, migrate_secrets=True)
@@ -1022,7 +1022,7 @@ def test_skill_with_missing_frontmatter_is_reported_not_loadable(
     skill.mkdir(parents=True)
     (skill / "SKILL.md").write_text("just plain markdown, no frontmatter\n", encoding="utf-8")
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     report = HermesMigrator(HermesMigrationOptions(source=source, apply=True)).migrate()
 
@@ -1046,7 +1046,7 @@ def test_skill_with_empty_frontmatter_does_not_crash_migration(
     skill.mkdir(parents=True)
     (skill / "SKILL.md").write_text("---\n\n---\nbody\n", encoding="utf-8")
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     report = HermesMigrator(HermesMigrationOptions(source=source, apply=True)).migrate()
 
@@ -1069,7 +1069,7 @@ def test_skill_with_list_frontmatter_does_not_crash_migration(
     skill.mkdir(parents=True)
     (skill / "SKILL.md").write_text("---\n- one\n- two\n---\nbody\n", encoding="utf-8")
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     report = HermesMigrator(HermesMigrationOptions(source=source, apply=True)).migrate()
 

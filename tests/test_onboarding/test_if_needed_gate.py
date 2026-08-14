@@ -4,7 +4,7 @@ The gate represents first-run readiness. Optional capability sections still
 surface action-required metadata, but they must not keep provider-complete
 installs inside the interactive wizard forever.
 
-Console output is captured by monkeypatching ``opensquilla.cli.onboard_cmd.console``
+Console output is captured by monkeypatching ``openstarry_code.cli.onboard_cmd.console``
 rather than ``capsys``. Rich consoles bind to a stdout reference at import
 time, which makes ``capsys`` brittle under full-suite execution.
 """
@@ -14,9 +14,9 @@ from __future__ import annotations
 import pytest
 from typer.testing import CliRunner
 
-from opensquilla.cli.main import app
-from opensquilla.gateway.config import GatewayConfig, LlmProviderConfig
-from opensquilla.onboarding.status import get_onboarding_status
+from openstarry_code.cli.main import app
+from openstarry_code.gateway.config import GatewayConfig, LlmProviderConfig
+from openstarry_code.onboarding.status import get_onboarding_status
 
 
 class _RecordingConsole:
@@ -38,7 +38,7 @@ def runner() -> CliRunner:
 @pytest.fixture()
 def recorder(monkeypatch) -> _RecordingConsole:
     instance = _RecordingConsole()
-    monkeypatch.setattr("opensquilla.cli.onboard_cmd.console", instance)
+    monkeypatch.setattr("openstarry_code.cli.onboard_cmd.console", instance)
     return instance
 
 
@@ -62,7 +62,7 @@ def test_if_needed_skips_when_all_sections_ok_or_optional(
     config_path.write_text("")
     cfg.config_path = str(config_path)
 
-    monkeypatch.setattr("opensquilla.cli.onboard_cmd.load_config", lambda _path=None: cfg)
+    monkeypatch.setattr("openstarry_code.cli.onboard_cmd.load_config", lambda _path=None: cfg)
 
     result = runner.invoke(app, ["onboard", "--if-needed"])
     assert result.exit_code == 0, result.output
@@ -95,7 +95,7 @@ def test_if_needed_surfaces_optional_actions_without_running_wizard(
     cfg.config_path = str(config_path)
     monkeypatch.delenv("BRAVE_API_KEY", raising=False)
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
-    monkeypatch.setattr("opensquilla.cli.onboard_cmd.load_config", lambda _path=None: cfg)
+    monkeypatch.setattr("openstarry_code.cli.onboard_cmd.load_config", lambda _path=None: cfg)
 
     status = get_onboarding_status(cfg)
     assert status.needs_onboarding is False
@@ -104,7 +104,7 @@ def test_if_needed_surfaces_optional_actions_without_running_wizard(
         assert status.section_details[section]["actionRequired"] is True
 
     # Guard the assertion: this path should exit before the wizard is reached.
-    monkeypatch.setattr("opensquilla.onboarding.flow._is_tty", lambda: False)
+    monkeypatch.setattr("openstarry_code.onboarding.flow._is_tty", lambda: False)
 
     result = runner.invoke(app, ["onboard", "--if-needed"])
     assert result.exit_code == 0, result.output
@@ -121,7 +121,7 @@ def test_onboard_status_subcommand_emits_json(monkeypatch, tmp_path, runner):
     config_path = tmp_path / "config.toml"
     config_path.write_text("")
     cfg.config_path = str(config_path)
-    monkeypatch.setattr("opensquilla.cli.onboard_cmd.load_config", lambda _path=None: cfg)
+    monkeypatch.setattr("openstarry_code.cli.onboard_cmd.load_config", lambda _path=None: cfg)
 
     result = runner.invoke(app, ["onboard", "status", "--json"])
     assert result.exit_code == 0, result.output

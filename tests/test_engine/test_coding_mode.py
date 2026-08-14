@@ -8,16 +8,16 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.engine.steps.coding_mode import enforce_coding_mode
-from opensquilla.engine.steps.skills_filter import _eligibility_ctx
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.rpc_config import _SAFE_WRITE_PATCH_PATHS
-from opensquilla.skills.eligibility import (
+from openstarry_code.engine.steps.coding_mode import enforce_coding_mode
+from openstarry_code.engine.steps.skills_filter import _eligibility_ctx
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.rpc_config import _SAFE_WRITE_PATCH_PATHS
+from openstarry_code.skills.eligibility import (
     CODING_MODE_SKILLS,
     effective_disabled,
     is_skill_available,
 )
-from opensquilla.tools.policy_config import (
+from openstarry_code.tools.policy_config import (
     CODING_MODE_DENIED_TOOLS,
     coding_mode_denied_tools,
 )
@@ -54,10 +54,10 @@ class TestRuntimeToolContextCodingMode:
     async def test_build_tools_threads_config_coding_mode_into_tool_context(self):
         import json
 
-        from opensquilla.engine.runtime import TurnRunner
-        from opensquilla.tool_boundary import ToolCall
-        from opensquilla.tools.registry import ToolRegistry
-        from opensquilla.tools.types import ToolContext, ToolSpec, current_tool_context
+        from openstarry_code.engine.runtime import TurnRunner
+        from openstarry_code.tool_boundary import ToolCall
+        from openstarry_code.tools.registry import ToolRegistry
+        from openstarry_code.tools.types import ToolContext, ToolSpec, current_tool_context
 
         async def capture_coding_mode() -> str:
             ctx = current_tool_context.get()
@@ -95,10 +95,10 @@ class TestRuntimeToolContextCodingMode:
         assert json.loads(result.content) == {"coding_mode": True}
 
     def test_build_tools_applies_coding_mode_denies_to_live_surface(self):
-        import opensquilla.tools.builtin  # noqa: F401  (registers builtins)
-        from opensquilla.engine.runtime import TurnRunner
-        from opensquilla.tools.registry import get_default_registry
-        from opensquilla.tools.types import CallerKind, ToolContext
+        import openstarry_code.tools.builtin  # noqa: F401  (registers builtins)
+        from openstarry_code.engine.runtime import TurnRunner
+        from openstarry_code.tools.registry import get_default_registry
+        from openstarry_code.tools.types import CallerKind, ToolContext
 
         config = GatewayConfig()
         config.skills.coding_mode = True
@@ -126,10 +126,10 @@ class TestRuntimeToolContextCodingMode:
     def test_verified_channel_admin_matches_web_owner_live_surface(self, coding_mode: bool):
         """Keep the final tool surface equal after all runtime policy layers."""
 
-        import opensquilla.tools.builtin  # noqa: F401  (registers builtins)
-        from opensquilla.engine.runtime import TurnRunner
-        from opensquilla.tools.registry import get_default_registry
-        from opensquilla.tools.types import CallerKind, InteractionMode, ToolContext
+        import openstarry_code.tools.builtin  # noqa: F401  (registers builtins)
+        from openstarry_code.engine.runtime import TurnRunner
+        from openstarry_code.tools.registry import get_default_registry
+        from openstarry_code.tools.types import CallerKind, InteractionMode, ToolContext
 
         config = GatewayConfig()
         config.skills.coding_mode = coding_mode
@@ -183,9 +183,9 @@ class TestDirectiveInjection:
     def _stub_resolver(self, monkeypatch):
         # Deterministic, no subprocess: the directive's command line is the
         # resolved code-task invocation; pin it for these assertions.
-        from opensquilla.engine.steps import coding_mode as _cm
+        from openstarry_code.engine.steps import coding_mode as _cm
         monkeypatch.setattr(
-            _cm, "resolve_code_task_command", lambda: "/opt/x/opensquilla code-task"
+            _cm, "resolve_code_task_command", lambda: "/opt/x/openstarry-code code-task"
         )
 
     def _ctx(self, coding_mode: bool):
@@ -205,7 +205,7 @@ class TestDirectiveInjection:
         base, suffix = ctx.system_prompt
         assert base == "BASE"
         assert "CODING MODE" in suffix
-        assert "opensquilla code-task solve" in suffix
+        assert "openstarry-code code-task solve" in suffix
         assert "DISABLED while coding mode is on" in suffix
         assert "code-task" in ctx.metadata["pinned_skills"]
         assert ctx.metadata["coding_mode"] is True
@@ -329,9 +329,9 @@ class TestDirectiveInjection:
         "No such option: -c".  The directive must route staging through the
         verified code-task command prefix instead.
         """
-        from opensquilla.engine.steps import coding_mode as _cm
+        from openstarry_code.engine.steps import coding_mode as _cm
         packaged_code_task = (
-            "/Applications/OpenSquilla.app/Contents/Resources/runtime/"
+            "/Applications/OpenStarry Code.app/Contents/Resources/runtime/"
             "gateway/opensquilla-gateway code-task"
         )
         monkeypatch.setattr(
@@ -389,9 +389,9 @@ class TestWriteToolDenyEnforcement:
     not just the pure helper)."""
 
     def _surface(self, denied):
-        import opensquilla.tools.builtin  # noqa: F401  (registers builtins)
-        from opensquilla.tools.registry import get_default_registry
-        from opensquilla.tools.types import CallerKind, ToolContext
+        import openstarry_code.tools.builtin  # noqa: F401  (registers builtins)
+        from openstarry_code.tools.registry import get_default_registry
+        from openstarry_code.tools.types import CallerKind, ToolContext
 
         registry = get_default_registry()
         ctx = ToolContext(
@@ -412,7 +412,7 @@ class TestWriteToolDenyEnforcement:
         }.isdisjoint(names)
 
     def test_on_keeps_codetask_launch_and_read_tools(self):
-        # shell stays so the agent can still LAUNCH `opensquilla code-task solve`;
+        # shell stays so the agent can still LAUNCH `openstarry-code code-task solve`;
         # read-only tools stay so it can understand the repo.
         names = self._surface(coding_mode_denied_tools(True))
         for keep in ("exec_command", "background_process", "process",
@@ -429,10 +429,10 @@ class TestPackagedCodeTaskResolution:
     """Packaged desktop gateways are the CLI executable, not a Python binary."""
 
     def test_uses_current_executable_when_it_runs_codetask(self, monkeypatch, tmp_path):
-        from opensquilla.engine.steps import coding_mode as cm
+        from openstarry_code.engine.steps import coding_mode as cm
 
         cm._reset_resolution_cache()
-        app_dir = tmp_path / "OpenSquilla App"
+        app_dir = tmp_path / "OpenStarry Code App"
         app_dir.mkdir()
         exe = app_dir / "opensquilla-gateway"
         exe.write_text("")
@@ -446,10 +446,10 @@ class TestPackagedCodeTaskResolution:
         cm._reset_resolution_cache()
 
     def test_uses_current_windows_gateway_executable_path(self, monkeypatch):
-        from opensquilla.engine.steps import coding_mode as cm
+        from openstarry_code.engine.steps import coding_mode as cm
 
         cm._reset_resolution_cache()
-        exe = r"C:\Program Files\OpenSquilla\opensquilla-gateway.exe"
+        exe = r"C:\Program Files\OpenStarry Code\opensquilla-gateway.exe"
         monkeypatch.setattr(cm.sys, "executable", exe)
         monkeypatch.setattr(cm.shutil, "which", lambda name: None)
         monkeypatch.setattr(cm, "_runs_code_task", lambda argv: argv == [exe])
@@ -459,7 +459,7 @@ class TestPackagedCodeTaskResolution:
         cm._reset_resolution_cache()
 
     def test_does_not_accept_direct_probe_for_plain_python(self, monkeypatch, tmp_path):
-        from opensquilla.engine.steps import coding_mode as cm
+        from openstarry_code.engine.steps import coding_mode as cm
 
         cm._reset_resolution_cache()
         py = str(tmp_path / "python")
@@ -484,7 +484,7 @@ class TestCodeTaskResolution:
     """resolve_code_task_command picks a PATH-independent, runnable invocation."""
 
     def test_prefers_adjacent_cli(self, monkeypatch, tmp_path):
-        from opensquilla.engine.steps import coding_mode as cm
+        from openstarry_code.engine.steps import coding_mode as cm
         cm._reset_resolution_cache()
         cli = tmp_path / "opensquilla"
         cli.write_text("")
@@ -495,20 +495,20 @@ class TestCodeTaskResolution:
         cm._reset_resolution_cache()
 
     def test_falls_back_to_module_invocation(self, monkeypatch, tmp_path):
-        from opensquilla.engine.steps import coding_mode as cm
+        from openstarry_code.engine.steps import coding_mode as cm
         cm._reset_resolution_cache()
-        py = str(tmp_path / "python")  # no adjacent opensquilla file exists
+        py = str(tmp_path / "python")  # no adjacent openstarry-code file exists
         monkeypatch.setattr(cm.sys, "executable", py)
         monkeypatch.setattr(cm.shutil, "which", lambda name: None)
         monkeypatch.setattr(cm, "_runs_code_task", lambda argv: argv[:2] == [py, "-P"])
         assert (
             cm.resolve_code_task_command()
-            == f"{shlex.quote(py)} -P -m opensquilla.cli.main code-task"
+            == f"{shlex.quote(py)} -P -m openstarry_code.cli.main code-task"
         )
         cm._reset_resolution_cache()
 
     def test_adjacent_exists_but_preflight_fails_falls_through(self, monkeypatch, tmp_path):
-        from opensquilla.engine.steps import coding_mode as cm
+        from openstarry_code.engine.steps import coding_mode as cm
         cm._reset_resolution_cache()
         cli = tmp_path / "opensquilla"
         cli.write_text("")
@@ -520,12 +520,12 @@ class TestCodeTaskResolution:
         monkeypatch.setattr(cm, "_runs_code_task", lambda argv: argv[:2] == [py, "-P"])
         assert (
             cm.resolve_code_task_command()
-            == f"{shlex.quote(py)} -P -m opensquilla.cli.main code-task"
+            == f"{shlex.quote(py)} -P -m openstarry_code.cli.main code-task"
         )
         cm._reset_resolution_cache()
 
     def test_failure_is_not_cached_retries(self, monkeypatch, tmp_path):
-        from opensquilla.engine.steps import coding_mode as cm
+        from openstarry_code.engine.steps import coding_mode as cm
         cm._reset_resolution_cache()
         py = str(tmp_path / "python")
         monkeypatch.setattr(cm.sys, "executable", py)
@@ -540,16 +540,16 @@ class TestCodeTaskResolution:
         cm._reset_resolution_cache()
 
     def test_falls_back_to_path_which(self, monkeypatch, tmp_path):
-        from opensquilla.engine.steps import coding_mode as cm
+        from openstarry_code.engine.steps import coding_mode as cm
         cm._reset_resolution_cache()
         monkeypatch.setattr(cm.sys, "executable", str(tmp_path / "python"))
         monkeypatch.setattr(cm.shutil, "which", lambda name: "/usr/bin/opensquilla")
         monkeypatch.setattr(cm, "_runs_code_task", lambda argv: argv[0] == "/usr/bin/opensquilla")
-        assert cm.resolve_code_task_command() == "/usr/bin/opensquilla code-task"
+        assert cm.resolve_code_task_command() == "/usr/bin/openstarry-code code-task"
         cm._reset_resolution_cache()
 
     def test_none_when_nothing_runs(self, monkeypatch, tmp_path):
-        from opensquilla.engine.steps import coding_mode as cm
+        from openstarry_code.engine.steps import coding_mode as cm
         cm._reset_resolution_cache()
         monkeypatch.setattr(cm.sys, "executable", str(tmp_path / "python"))
         monkeypatch.setattr(cm.shutil, "which", lambda name: None)
@@ -558,19 +558,19 @@ class TestCodeTaskResolution:
         cm._reset_resolution_cache()
 
     def test_directive_uses_resolved_command_not_bare(self, monkeypatch):
-        from opensquilla.engine.steps import coding_mode as cm
+        from openstarry_code.engine.steps import coding_mode as cm
         monkeypatch.setattr(
             cm, "resolve_code_task_command",
-            lambda: "/opt/env/bin/python -P -m opensquilla.cli.main code-task",
+            lambda: "/opt/env/bin/python -P -m openstarry_code.cli.main code-task",
         )
         d = cm._build_coding_mode_directive()
-        assert "/opt/env/bin/python -P -m opensquilla.cli.main code-task solve --repo" in d
+        assert "/opt/env/bin/python -P -m openstarry_code.cli.main code-task solve --repo" in d
         low = d.lower()
         assert "pip install" in low and "do not" in low
         assert "stop and report" in low
 
     def test_directive_fail_loud_when_unavailable(self, monkeypatch):
-        from opensquilla.engine.steps import coding_mode as cm
+        from openstarry_code.engine.steps import coding_mode as cm
         monkeypatch.setattr(cm, "resolve_code_task_command", lambda: None)
         d = cm._build_coding_mode_directive()
         assert "UNAVAILABLE" in d

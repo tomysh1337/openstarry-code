@@ -4,8 +4,8 @@ from starlette.applications import Starlette
 from starlette.responses import JSONResponse
 from starlette.testclient import TestClient
 
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.middleware import RateLimitMiddleware
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.middleware import RateLimitMiddleware
 
 
 def test_approval_polling_does_not_consume_generic_api_rate_limit() -> None:

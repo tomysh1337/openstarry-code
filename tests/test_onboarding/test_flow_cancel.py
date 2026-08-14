@@ -6,8 +6,8 @@ from typing import Any
 
 import pytest
 
-from opensquilla.onboarding import flow
-from opensquilla.onboarding.errors import UserCancelledError
+from openstarry_code.onboarding import flow
+from openstarry_code.onboarding.errors import UserCancelledError
 
 
 class _Prompt:
@@ -146,7 +146,7 @@ def test_provider_choice_cancel_raises_user_cancelled():
     """Provider select returning ``None`` previously crashed with
     ``AttributeError: 'NoneType' object has no attribute 'split'``."""
 
-    from opensquilla.onboarding.flow import OnboardOptions
+    from openstarry_code.onboarding.flow import OnboardOptions
 
     q = _Questionary(select_value=None)
     with pytest.raises(UserCancelledError) as exc_info:
@@ -155,7 +155,7 @@ def test_provider_choice_cancel_raises_user_cancelled():
 
 
 class _RecordingConsole:
-    """Stand-in for ``opensquilla.ui.console`` that records ``print`` calls.
+    """Stand-in for ``openstarry_code.ui.console`` that records ``print`` calls.
 
     The real ``console`` is a Rich ``Console`` constructed at import time with
     a captured stdout reference, which makes ``capsys`` brittle under full
@@ -186,7 +186,7 @@ def test_optional_section_runner_swallows_user_cancelled(monkeypatch):
 
     text = recorder.joined().lower()
     assert "search setup cancelled" in text
-    assert "opensquilla onboard configure search" in recorder.joined()
+    assert "openstarry-code onboard configure search" in recorder.joined()
 
 
 def test_optional_section_runner_resume_hint_uses_section_slug_not_label(monkeypatch):
@@ -205,7 +205,7 @@ def test_optional_section_runner_resume_hint_uses_section_slug_not_label(monkeyp
         runner=_runner,
     )
 
-    assert "opensquilla onboard configure image-generation" in recorder.joined()
+    assert "openstarry-code onboard configure image-generation" in recorder.joined()
 
 
 def test_optional_section_runner_swallows_keyboard_interrupt(monkeypatch):
@@ -263,7 +263,7 @@ def test_image_generation_provider_choice_cancel_raises_user_cancelled():
     ``AttributeError: 'NoneType' object has no attribute 'split'`` — which
     escapes ``_run_optional_section`` and kills the whole wizard."""
 
-    from opensquilla.gateway.config import GatewayConfig
+    from openstarry_code.gateway.config import GatewayConfig
 
     q = _Questionary(select_value=None)
     with pytest.raises(UserCancelledError) as exc_info:
@@ -275,8 +275,8 @@ def test_image_generation_enabled_confirm_cancel_raises_user_cancelled(monkeypat
     """Cancelling the "Image generation enabled?" consent confirm used to
     store ``None`` and persist ``enabled = false`` under a success banner."""
 
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.onboarding.image_generation_specs import (
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.onboarding.image_generation_specs import (
         get_image_generation_provider_setup_spec,
     )
 
@@ -317,7 +317,7 @@ def test_image_generation_configure_cancel_persists_nothing(tmp_path, monkeypatc
     import types
 
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     monkeypatch.setenv("OPENAI_API_KEY", "sk-image-env")
     monkeypatch.setattr(flow, "_is_tty", lambda: True)
     monkeypatch.setattr(flow, "console", _RecordingConsole())
@@ -414,7 +414,7 @@ def test_channel_edit_picker_cancel_raises_user_cancelled(tmp_path, monkeypatch)
 
     import sys
 
-    from opensquilla.onboarding.setup_engine import SetupEngine
+    from openstarry_code.onboarding.setup_engine import SetupEngine
 
     target = tmp_path / "c.toml"
     engine = SetupEngine(path=target)
@@ -455,7 +455,7 @@ def test_channel_field_prompt_cancel_raises_user_cancelled(field_type, extra):
     error instead of storing ``None``/coerced garbage for pydantic to
     reject much later."""
 
-    from opensquilla.onboarding.channel_specs import ChannelSetupField
+    from openstarry_code.onboarding.channel_specs import ChannelSetupField
 
     field = ChannelSetupField(
         name="sample",
@@ -486,7 +486,7 @@ def test_router_mode_cancel_raises_user_cancelled():
     """Cancelling the "Router mode" consent select used to map ``None`` to
     "recommended" and persist ``squilla_router.enabled = true``."""
 
-    from opensquilla.gateway.config import GatewayConfig
+    from openstarry_code.gateway.config import GatewayConfig
 
     q = _Questionary(select_value=None)
     with pytest.raises(UserCancelledError) as exc_info:
@@ -502,7 +502,7 @@ def test_router_mode_cancel_raises_user_cancelled():
 def test_router_default_tier_cancel_raises_user_cancelled(monkeypatch):
     """Cancelling the default-tier select must not silently persist c1."""
 
-    from opensquilla.gateway.config import GatewayConfig
+    from openstarry_code.gateway.config import GatewayConfig
 
     monkeypatch.setattr(flow, "console", _RecordingConsole())
 
@@ -537,8 +537,8 @@ def test_provider_key_source_cancel_raises_before_password_prompt(monkeypatch):
     "Paste API key now" and dropped the user into a required password
     prompt."""
 
-    from opensquilla.onboarding.flow import OnboardOptions, _ask_provider_fields
-    from opensquilla.onboarding.provider_specs import get_provider_setup_spec
+    from openstarry_code.onboarding.flow import OnboardOptions, _ask_provider_fields
+    from openstarry_code.onboarding.provider_specs import get_provider_setup_spec
 
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     password_fired: list[str] = []
@@ -576,7 +576,7 @@ def test_onboard_cancel_at_required_provider_stage_propagates(tmp_path, monkeypa
     import types
 
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     monkeypatch.setattr(flow, "_is_tty", lambda: True)
     monkeypatch.setattr(flow, "_wait_for_setup_start", lambda: None)
     monkeypatch.setattr(flow, "detect_default_sources", lambda: [])
@@ -623,7 +623,7 @@ def test_onboard_router_cancel_keeps_provider_and_skips_router(tmp_path, monkeyp
     import types
 
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     monkeypatch.setattr(flow, "_is_tty", lambda: True)
     monkeypatch.setattr(flow, "_wait_for_setup_start", lambda: None)
@@ -684,7 +684,7 @@ def test_onboard_router_cancel_keeps_provider_and_skips_router(tmp_path, monkeyp
     assert router_calls == [], "a cancelled router step must not call upsert_router"
     joined = recorder.joined()
     assert "router setup cancelled" in joined.lower()
-    assert "opensquilla onboard configure router" in joined
+    assert "openstarry-code onboard configure router" in joined
     import tomllib
 
     data = tomllib.loads(target.read_text())
@@ -702,7 +702,7 @@ def test_router_tier_editor_select_cancel_raises_user_cancelled():
     upsert_router + persist_config — a destructive re-save on explicit
     abort. It must raise the typed cancel like every sibling prompt."""
 
-    from opensquilla.gateway.config import GatewayConfig
+    from openstarry_code.gateway.config import GatewayConfig
 
     q = _Questionary(select_value=None)
     with pytest.raises(UserCancelledError) as exc_info:
@@ -714,7 +714,7 @@ def test_router_tier_editor_text_prompt_cancel_raises_user_cancelled():
     """Esc at the tier provider/model text prompts used to silently mean
     keep-current-and-continue."""
 
-    from opensquilla.gateway.config import GatewayConfig
+    from openstarry_code.gateway.config import GatewayConfig
 
     class _Prompted:
         def select(self, message, **_kw):
@@ -739,7 +739,7 @@ def test_router_configure_tier_editor_cancel_persists_nothing(tmp_path, monkeypa
     import types
 
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     monkeypatch.setattr(flow, "_is_tty", lambda: True)
     monkeypatch.setattr(flow, "console", _RecordingConsole())
 

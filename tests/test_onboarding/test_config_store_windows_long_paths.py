@@ -7,9 +7,9 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.onboarding.config_store import load_config, persist_config
-from opensquilla.onboarding.mutations import reset_capability
-from opensquilla.paths import native_io_path
+from openstarry_code.onboarding.config_store import load_config, persist_config
+from openstarry_code.onboarding.mutations import reset_capability
+from openstarry_code.paths import native_io_path
 
 pytestmark = pytest.mark.skipif(os.name != "nt", reason="Windows long-path regression")
 

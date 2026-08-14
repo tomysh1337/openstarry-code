@@ -2,12 +2,12 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.engine import Agent, AgentConfig, ToolResult
-from opensquilla.engine.subagent import SubagentSpec
-from opensquilla.engine.types import ToolCall
-from opensquilla.sandbox.run_context import MountGrant, RunContext, TemporaryGrant
-from opensquilla.sandbox.run_mode import RunMode
-from opensquilla.tools.types import CallerKind, ToolContext, current_tool_context
+from openstarry_code.engine import Agent, AgentConfig, ToolResult
+from openstarry_code.engine.subagent import SubagentSpec
+from openstarry_code.engine.types import ToolCall
+from openstarry_code.sandbox.run_context import MountGrant, RunContext, TemporaryGrant
+from openstarry_code.sandbox.run_mode import RunMode
+from openstarry_code.tools.types import CallerKind, ToolContext, current_tool_context
 
 
 class _Provider:

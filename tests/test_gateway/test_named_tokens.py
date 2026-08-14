@@ -5,10 +5,10 @@ from starlette.responses import JSONResponse
 from starlette.routing import Route
 from starlette.testclient import TestClient
 
-from opensquilla.gateway.auth import resolve_auth
-from opensquilla.gateway.config import AuthConfig, GatewayConfig
-from opensquilla.gateway.middleware import AuthMiddleware
-from opensquilla.gateway.token_store import TokenStore
+from openstarry_code.gateway.auth import resolve_auth
+from openstarry_code.gateway.config import AuthConfig, GatewayConfig
+from openstarry_code.gateway.middleware import AuthMiddleware
+from openstarry_code.gateway.token_store import TokenStore
 
 
 def test_named_token_is_returned_once_and_verified_by_digest(tmp_path) -> None:

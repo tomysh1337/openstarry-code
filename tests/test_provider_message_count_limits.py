@@ -9,12 +9,12 @@ import httpx
 import pytest
 import structlog.testing
 
-from opensquilla.provider import project_provider_message_count
-from opensquilla.provider.openai import (
+from openstarry_code.provider import project_provider_message_count
+from openstarry_code.provider.openai import (
     OpenAIProvider,
     _tokenrhythm_message_limit_evidence,
 )
-from opensquilla.provider.types import (
+from openstarry_code.provider.types import (
     ChatConfig,
     ContentBlockToolResult,
     ErrorEvent,
@@ -58,7 +58,7 @@ def _patch_chat_response(
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client)
 
 
 def _collect_errors(
@@ -190,8 +190,8 @@ def test_tokenrhythm_original_583_envelope_yields_typed_limit_proof(
         captured=captured,
     )
     trace_path = tmp_path / "llm-calls.jsonl"
-    monkeypatch.setenv("OPENSQUILLA_LLM_TRACE_RECORDER", "full")
-    monkeypatch.setenv("OPENSQUILLA_LLM_TRACE_PATH", str(trace_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_TRACE_RECORDER", "full")
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_TRACE_PATH", str(trace_path))
     provider = OpenAIProvider(
         api_key="test",
         model="deepseek-v4-pro",

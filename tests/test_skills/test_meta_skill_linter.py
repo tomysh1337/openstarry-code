@@ -11,9 +11,9 @@ from pathlib import Path
 import pytest
 
 REPO = Path(__file__).resolve().parents[2]
-_LINTER_DIR = REPO / "src" / "opensquilla" / "skills" / "bundled" / "skill-creator-linter"
-_BUNDLED_DIR = REPO / "src" / "opensquilla" / "skills" / "bundled"
-_EXP_DIR = REPO / "src" / "opensquilla" / "skills" / "exp"
+_LINTER_DIR = REPO / "src" / "openstarry_code" / "skills" / "bundled" / "skill-creator-linter"
+_BUNDLED_DIR = REPO / "src" / "openstarry_code" / "skills" / "bundled"
+_EXP_DIR = REPO / "src" / "openstarry_code" / "skills" / "exp"
 LINT = _LINTER_DIR / "scripts" / "lint.py"
 
 

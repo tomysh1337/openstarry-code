@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from opensquilla.redaction import redact_error_text
+from openstarry_code.redaction import redact_error_text
 
 
 def test_empty_text_stays_empty() -> None:
@@ -103,6 +103,6 @@ def test_secret_beyond_truncation_window_never_survives() -> None:
 
 
 def test_onboarding_module_reexports_the_primitive() -> None:
-    from opensquilla.onboarding import redaction as onboarding_redaction
+    from openstarry_code.onboarding import redaction as onboarding_redaction
 
     assert onboarding_redaction.redact_error_text is redact_error_text

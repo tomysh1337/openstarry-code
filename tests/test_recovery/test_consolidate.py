@@ -18,16 +18,16 @@ from types import SimpleNamespace
 import pytest
 from typer.testing import CliRunner
 
-from opensquilla.cli.recovery_cmd import recovery_app
-from opensquilla.cli.session_schema import prepare_session_schema
-from opensquilla.recovery.atomic import _native_io_path
-from opensquilla.recovery.consolidate import (
+from openstarry_code.cli.recovery_cmd import recovery_app
+from openstarry_code.cli.session_schema import prepare_session_schema
+from openstarry_code.recovery.atomic import _native_io_path
+from openstarry_code.recovery.consolidate import (
     ConsolidationResult,
 )
-from opensquilla.recovery.consolidate import (
+from openstarry_code.recovery.consolidate import (
     consolidate_recovery_profiles as _consolidate_recovery_profiles,
 )
-from opensquilla.recovery.errors import UnsafePathError
+from openstarry_code.recovery.errors import UnsafePathError
 
 
 def consolidate_recovery_profiles(
@@ -125,7 +125,7 @@ def test_commit_primary_rejects_dangling_move_destination(
     phase: str,
     destination_name: str,
 ) -> None:
-    consolidate_module = importlib.import_module("opensquilla.recovery.consolidate")
+    consolidate_module = importlib.import_module("openstarry_code.recovery.consolidate")
     primary = tmp_path / "primary"
     staging = tmp_path / "staging"
     backup = tmp_path / "backup"
@@ -153,7 +153,7 @@ def test_commit_primary_rejects_dangling_move_destination(
 
 
 def test_archive_finish_rejects_dangling_archive_destination(tmp_path: Path) -> None:
-    consolidate_module = importlib.import_module("opensquilla.recovery.consolidate")
+    consolidate_module = importlib.import_module("openstarry_code.recovery.consolidate")
     recovery_id = str(uuid.uuid4())
     primary = tmp_path / "primary"
     backup = tmp_path / "backup"
@@ -244,7 +244,7 @@ def _recovery(
     session_key: str,
 ) -> Path:
     root = user_data / "recovery-profiles" / recovery_id
-    home = root / "opensquilla"
+    home = root / "openstarry-code"
     workspace = home / "workspace"
     workspace.mkdir(parents=True)
     (home / "config.toml").write_text(
@@ -281,7 +281,7 @@ def _recovery(
         encoding="utf-8",
     )
     (home / "state" / ".env").write_text(
-        "OPENSQUILLA_HOME=D:\\External\\profile\n",
+        "OPENSTARRY_CODE_HOME=D:\\External\\profile\n",
         encoding="utf-8",
     )
     (home / "state" / "sessions.db-journal").write_bytes(b"stale journal")
@@ -316,9 +316,9 @@ def test_consolidates_all_recoveries_into_primary_and_archives_sources(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     workspace = primary / "workspace"
     workspace.mkdir(parents=True)
     (primary / "config.toml").write_text("primary = true\n", encoding="utf-8")
@@ -379,12 +379,12 @@ def test_consolidates_all_recoveries_into_primary_and_archives_sources(
     assert not (user_data / "recovery-profiles").exists()
     assert result.backup_path is not None
     archived = result.backup_path / "recovery-profiles"
-    assert _is_file(archived / first_id / "opensquilla" / "config.toml")
+    assert _is_file(archived / first_id / "openstarry-code" / "config.toml")
     assert _is_file(archived / second_id / "desktop-credential.json")
     assert _is_file(
         archived
         / first_id
-        / "opensquilla"
+        / "openstarry-code"
         / "workspace"
         / "state"
         / "matrix"
@@ -479,9 +479,9 @@ def test_colliding_daily_memory_notes_merge_into_active_memory(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     daily_note = Path("memory") / "2026-07-27.md"
     primary_note = primary / "workspace" / daily_note
     primary_note.parent.mkdir(parents=True)
@@ -498,7 +498,7 @@ def test_colliding_daily_memory_notes_merge_into_active_memory(
         extra_name="recovery.txt",
         session_key="agent:main:daily-memory",
     )
-    recovery_note = recovery / "opensquilla" / "workspace" / daily_note
+    recovery_note = recovery / "openstarry-code" / "workspace" / daily_note
     recovery_note.parent.mkdir(parents=True)
     recovery_note.write_text("recovery memory\n", encoding="utf-8")
 
@@ -524,9 +524,9 @@ def test_consolidates_extended_length_recovery_leaf(
 ) -> None:
     """Long-path support must not depend on the machine-wide registry policy."""
 
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     (primary / "workspace").mkdir(parents=True)
     (primary / "config.toml").write_text("primary = true\n", encoding="utf-8")
     recovery_id = str(uuid.uuid4())
@@ -541,13 +541,13 @@ def test_consolidates_extended_length_recovery_leaf(
         session_key="agent:main:long-path",
     )
     relative = Path("deep") / ("a" * 100) / ("b" * 100) / "preserved-session-metadata.bin"
-    source_leaf = recovery / "opensquilla" / "state" / relative
+    source_leaf = recovery / "openstarry-code" / "state" / relative
     os.makedirs(_native_io_path(source_leaf.parent), exist_ok=True)
     with open(_native_io_path(source_leaf), "wb") as handle:
         handle.write(b"long path recovery data")
     assert len(str(source_leaf)) > 260
     workspace_relative = Path("shared-" + ("w" * 90)) / ("x" * 100) / "MEMORY.md"
-    source_workspace_leaf = recovery / "opensquilla" / "workspace" / workspace_relative
+    source_workspace_leaf = recovery / "openstarry-code" / "workspace" / workspace_relative
     os.makedirs(_native_io_path(source_workspace_leaf.parent), exist_ok=True)
     with open(_native_io_path(source_workspace_leaf), "wb") as handle:
         handle.write(b"long path workspace data")
@@ -556,7 +556,7 @@ def test_consolidates_extended_length_recovery_leaf(
     with open(_native_io_path(primary_workspace_leaf), "w", encoding="utf-8") as handle:
         handle.write("primary memory\n")
     media_relative = Path("shared-" + ("m" * 90)) / ("n" * 100) / "deep-transcript-attachment.bin"
-    source_media_leaf = recovery / "opensquilla" / "media" / media_relative
+    source_media_leaf = recovery / "openstarry-code" / "media" / media_relative
     os.makedirs(_native_io_path(source_media_leaf.parent), exist_ok=True)
     with open(_native_io_path(source_media_leaf), "wb") as handle:
         handle.write(b"long path media data")
@@ -575,7 +575,12 @@ def test_consolidates_extended_length_recovery_leaf(
     assert not str(result.backup_path).startswith("\\\\?\\")
     assert not str(result.receipt_path).startswith("\\\\?\\")
     archived_leaf = (
-        result.backup_path / "recovery-profiles" / recovery_id / "opensquilla" / "state" / relative
+        result.backup_path
+        / "recovery-profiles"
+        / recovery_id
+        / "openstarry-code"
+        / "state"
+        / relative
     )
     preserved_leaf = primary / "recovered-data" / recovery_id / "profile" / "state" / relative
     assert _read_bytes(archived_leaf) == b"long path recovery data"
@@ -596,9 +601,9 @@ def test_empty_primary_uses_newest_recovery_configuration_bundle(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     (primary / "workspace").mkdir(parents=True)
     older_id = str(uuid.uuid4())
     newer_id = str(uuid.uuid4())
@@ -634,23 +639,23 @@ def test_empty_primary_uses_newest_recovery_configuration_bundle(
         extra_name="newer.txt",
         session_key="agent:main:newer",
     )
-    (newer / "opensquilla" / ".env").write_text(
-        "OPENSQUILLA_HOME=C:\\Recovery\\profiles\n"
-        "OPENSQUILLA_GATEWAY_CONFIG_PATH=D:\\External\\config.toml\n"
-        "OPENSQUILLA_GATEWAY_STATE_DIR=E:\\External\\state\n"
-        "OPENSQUILLA_SCHEDULER_DB=F:\\External\\scheduler.db\n"
-        "OPENSQUILLA_MEMORY_DB=G:\\External\\memory.db\n"
-        "OPENSQUILLA_MEMORY_DIR=H:\\External\\memory\n"
-        "OPENSQUILLA_META_RUNS_DB=I:\\External\\meta.db\n"
-        "OPENSQUILLA_ROUTER_DECISIONS_DB=J:\\External\\router.db\n"
-        "OPENSQUILLA_SESSION_ARCHIVE_DIR=K:\\External\\archive\n"
-        "OPENSQUILLA_LOG_DIR=L:\\External\\logs\n"
-        "OPENSQUILLA_LLM_TRACE_PATH=M:\\External\\trace.jsonl\n"
-        "OPENSQUILLA_RUNTIME_EVENTS_PATH=N:\\External\\events.jsonl\n"
-        "OPENSQUILLA_USER_STATE_DIR=O:\\External\\user-state\n"
-        "OPENSQUILLA_CODETASK_RUNS_DIR=P:\\External\\code-task\n"
+    (newer / "openstarry-code" / ".env").write_text(
+        "OPENSTARRY_CODE_HOME=C:\\Recovery\\profiles\n"
+        "OPENSTARRY_CODE_GATEWAY_CONFIG_PATH=D:\\External\\config.toml\n"
+        "OPENSTARRY_CODE_GATEWAY_STATE_DIR=E:\\External\\state\n"
+        "OPENSTARRY_CODE_SCHEDULER_DB=F:\\External\\scheduler.db\n"
+        "OPENSTARRY_CODE_MEMORY_DB=G:\\External\\memory.db\n"
+        "OPENSTARRY_CODE_MEMORY_DIR=H:\\External\\memory\n"
+        "OPENSTARRY_CODE_META_RUNS_DB=I:\\External\\meta.db\n"
+        "OPENSTARRY_CODE_ROUTER_DECISIONS_DB=J:\\External\\router.db\n"
+        "OPENSTARRY_CODE_SESSION_ARCHIVE_DIR=K:\\External\\archive\n"
+        "OPENSTARRY_CODE_LOG_DIR=L:\\External\\logs\n"
+        "OPENSTARRY_CODE_LLM_TRACE_PATH=M:\\External\\trace.jsonl\n"
+        "OPENSTARRY_CODE_RUNTIME_EVENTS_PATH=N:\\External\\events.jsonl\n"
+        "OPENSTARRY_CODE_USER_STATE_DIR=O:\\External\\user-state\n"
+        "OPENSTARRY_CODE_CODETASK_RUNS_DIR=P:\\External\\code-task\n"
         "PROVIDER_SECRET=keep-me\n"
-        "OPENSQUILLA_LOG_LEVEL=DEBUG\n",
+        "OPENSTARRY_CODE_LOG_LEVEL=DEBUG\n",
         encoding="utf-8",
     )
     os.utime(older, ns=(1_000_000_000, 1_000_000_000))
@@ -663,7 +668,7 @@ def test_empty_primary_uses_newest_recovery_configuration_bundle(
     assert result.credential_adoption_status == "pending"
     selected_config = (primary / "config.toml").read_text(encoding="utf-8")
     assert "selected = 'newer'" in selected_config
-    assert str(newer / "opensquilla") not in selected_config
+    assert str(newer / "openstarry-code") not in selected_config
     assert "state_dir" not in selected_config
     assert "workspace_dir" not in selected_config
     assert "media_root" not in selected_config
@@ -673,7 +678,7 @@ def test_empty_primary_uses_newest_recovery_configuration_bundle(
         primary / "workspace" / "agents" / "ops"
     )
     selected_env = (primary / ".env").read_text(encoding="utf-8")
-    assert selected_env == "PROVIDER_SECRET=keep-me\nOPENSQUILLA_LOG_LEVEL=DEBUG\n"
+    assert selected_env == "PROVIDER_SECRET=keep-me\nOPENSTARRY_CODE_LOG_LEVEL=DEBUG\n"
     assert not (user_data / "desktop-credential.json").exists()
     assert result.backup_path is not None
     expected_credential = (
@@ -694,9 +699,9 @@ def test_empty_primary_credential_does_not_override_recovery_configuration(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     (primary / "workspace").mkdir(parents=True)
     (user_data / "desktop-credential.json").write_text("{}\n", encoding="utf-8")
     recovery_id = str(uuid.uuid4())
@@ -729,9 +734,9 @@ def test_recovery_root_mtime_breaks_configuration_recency_tie(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     (primary / "workspace").mkdir(parents=True)
     older_id = str(uuid.uuid4())
     newer_id = str(uuid.uuid4())
@@ -758,9 +763,9 @@ def test_recovery_root_mtime_breaks_configuration_recency_tie(
     equal_file_mtime = 1_000_000_000
     for recovery in (older, newer):
         for candidate in (
-            recovery / "opensquilla" / "config.toml",
+            recovery / "openstarry-code" / "config.toml",
             recovery / "desktop-credential.json",
-            recovery / "opensquilla" / "state" / "sessions.db",
+            recovery / "openstarry-code" / "state" / "sessions.db",
         ):
             os.utime(candidate, ns=(equal_file_mtime, equal_file_mtime))
     os.utime(older, ns=(2_000_000_000, 2_000_000_000))
@@ -777,9 +782,9 @@ def test_newer_config_only_profile_beats_older_credential_timestamp(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     (primary / "workspace").mkdir(parents=True)
     older_id = str(uuid.uuid4())
     older = _recovery(
@@ -804,22 +809,22 @@ def test_newer_config_only_profile_beats_older_credential_timestamp(
         session_key="agent:main:newer-config-only",
     )
     (newer / "desktop-credential.json").unlink()
-    (newer / "opensquilla" / ".env").unlink()
-    (newer / "opensquilla" / "state" / ".env").unlink()
+    (newer / "openstarry-code" / ".env").unlink()
+    (newer / "openstarry-code" / "state" / ".env").unlink()
     older_mtime = 1_600_000_000_000_000_000
     newer_mtime = 1_800_000_000_000_000_000
     for candidate in (
         older,
-        older / "opensquilla" / "config.toml",
+        older / "openstarry-code" / "config.toml",
         older / "desktop-credential.json",
-        older / "opensquilla" / ".env",
-        older / "opensquilla" / "state" / "sessions.db",
+        older / "openstarry-code" / ".env",
+        older / "openstarry-code" / "state" / "sessions.db",
     ):
         os.utime(candidate, ns=(older_mtime, older_mtime))
     for candidate in (
         newer,
-        newer / "opensquilla" / "config.toml",
-        newer / "opensquilla" / "state" / "sessions.db",
+        newer / "openstarry-code" / "config.toml",
+        newer / "openstarry-code" / "state" / "sessions.db",
     ):
         os.utime(candidate, ns=(newer_mtime, newer_mtime))
 
@@ -838,9 +843,9 @@ def test_non_finite_credential_timestamp_does_not_block_valid_config(
     monkeypatch,
     updated_at: str,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     (primary / "workspace").mkdir(parents=True)
     recovery_id = str(uuid.uuid4())
     _recovery(
@@ -865,7 +870,7 @@ def test_non_finite_credential_timestamp_does_not_block_valid_config(
     "primary_env",
     [
         "",
-        "OPENSQUILLA_HOME=C:\\Recovery\\profile\n",
+        "OPENSTARRY_CODE_HOME=C:\\Recovery\\profile\n",
     ],
 )
 def test_empty_or_path_only_primary_dotenv_does_not_override_recovery_config(
@@ -873,9 +878,9 @@ def test_empty_or_path_only_primary_dotenv_does_not_override_recovery_config(
     monkeypatch,
     primary_env: str,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     (primary / "workspace").mkdir(parents=True)
     (primary / ".env").write_text(primary_env, encoding="utf-8")
     recovery_id = str(uuid.uuid4())
@@ -899,11 +904,11 @@ def test_empty_or_path_only_primary_dotenv_does_not_override_recovery_config(
 
 
 def test_profile_scoped_dotenv_keys_are_classified_case_insensitively() -> None:
-    consolidate_module = importlib.import_module("opensquilla.recovery.consolidate")
+    consolidate_module = importlib.import_module("openstarry_code.recovery.consolidate")
     raw = (
         "opensquilla_gateway_workspace_dir=C:\\Old\\workspace\n"
         "OpenSquilla_Gateway_State_Dir=C:\\Old\\state\n"
-        "OPENSQUILLA_GATEWAY_ATTACHMENTS__media_root=C:\\Old\\media\n"
+        "OPENSTARRY_CODE_GATEWAY_ATTACHMENTS__media_root=C:\\Old\\media\n"
         "PROVIDER_SECRET=keep-me\n"
     )
 
@@ -918,9 +923,9 @@ def test_primary_dotenv_data_routes_survive_recovery_configuration_selection(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     primary.mkdir(parents=True)
     external = tmp_path / "external"
     workspace = external / "workspace"
@@ -929,9 +934,9 @@ def test_primary_dotenv_data_routes_survive_recovery_configuration_selection(
     for path in (workspace, state, media):
         path.mkdir(parents=True)
     dotenv = (
-        f"OPENSQUILLA_GATEWAY_WORKSPACE_DIR={workspace}\n"
-        f"OPENSQUILLA_GATEWAY_STATE_DIR={state}\n"
-        f"OPENSQUILLA_GATEWAY_ATTACHMENTS__MEDIA_ROOT={media}\n"
+        f"OPENSTARRY_CODE_GATEWAY_WORKSPACE_DIR={workspace}\n"
+        f"OPENSTARRY_CODE_GATEWAY_STATE_DIR={state}\n"
+        f"OPENSTARRY_CODE_GATEWAY_ATTACHMENTS__MEDIA_ROOT={media}\n"
     )
     (primary / ".env").write_text(dotenv, encoding="utf-8")
     (workspace / "primary-existing.txt").write_text("primary\n", encoding="utf-8")
@@ -953,9 +958,9 @@ def test_primary_dotenv_data_routes_survive_recovery_configuration_selection(
     assert result.configuration_source_recovery_id == recovery_id
     assert (primary / "config.toml").read_text(encoding="utf-8") == ("selected = 'recovery'\n")
     primary_dotenv = (primary / ".env").read_text(encoding="utf-8")
-    assert "OPENSQUILLA_GATEWAY_WORKSPACE_DIR=" + str(workspace) in primary_dotenv
-    assert "OPENSQUILLA_GATEWAY_STATE_DIR=" + str(state) in primary_dotenv
-    assert "OPENSQUILLA_GATEWAY_ATTACHMENTS__MEDIA_ROOT=" + str(media) in primary_dotenv
+    assert "OPENSTARRY_CODE_GATEWAY_WORKSPACE_DIR=" + str(workspace) in primary_dotenv
+    assert "OPENSTARRY_CODE_GATEWAY_STATE_DIR=" + str(state) in primary_dotenv
+    assert "OPENSTARRY_CODE_GATEWAY_ATTACHMENTS__MEDIA_ROOT=" + str(media) in primary_dotenv
     assert f"SOURCE={recovery_id}" in primary_dotenv
     assert (workspace / "primary-existing.txt").read_text(encoding="utf-8") == "primary\n"
     assert (workspace / "dotenv-routed.txt").read_text(encoding="utf-8") == recovery_id
@@ -972,17 +977,17 @@ def test_empty_primary_config_and_path_env_use_config_only_recovery(
     monkeypatch,
     primary_config: str,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     (primary / "state").mkdir(parents=True)
     (primary / "config.toml").write_text(primary_config, encoding="utf-8")
     (primary / ".env").write_text(
-        "OPENSQUILLA_HOME=C:\\Old\\primary\n",
+        "OPENSTARRY_CODE_HOME=C:\\Old\\primary\n",
         encoding="utf-8",
     )
     (primary / "state" / ".env").write_text(
-        "OPENSQUILLA_STATE_DIR=C:\\Old\\primary\\state\n",
+        "OPENSTARRY_CODE_STATE_DIR=C:\\Old\\primary\\state\n",
         encoding="utf-8",
     )
     recovery_id = str(uuid.uuid4())
@@ -997,8 +1002,8 @@ def test_empty_primary_config_and_path_env_use_config_only_recovery(
         session_key="agent:main:config-only",
     )
     (recovery / "desktop-credential.json").unlink()
-    (recovery / "opensquilla" / ".env").unlink()
-    (recovery / "opensquilla" / "state" / ".env").unlink()
+    (recovery / "openstarry-code" / ".env").unlink()
+    (recovery / "openstarry-code" / "state" / ".env").unlink()
 
     result = consolidate_recovery_profiles(user_data, primary)
 
@@ -1015,9 +1020,9 @@ def test_user_dotenv_only_recovery_is_a_configuration_source(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     (primary / "workspace").mkdir(parents=True)
     recovery_id = str(uuid.uuid4())
     recovery = _recovery(
@@ -1030,10 +1035,10 @@ def test_user_dotenv_only_recovery_is_a_configuration_source(
         extra_name="recovery.txt",
         session_key="agent:main:dotenv-only",
     )
-    (recovery / "opensquilla" / "config.toml").unlink()
+    (recovery / "openstarry-code" / "config.toml").unlink()
     (recovery / "desktop-credential.json").unlink()
-    (recovery / "opensquilla" / ".env").write_text(
-        "OPENSQUILLA_HOME=C:\\Old\\recovery\nPROVIDER_SECRET=dotenv-only-secret\n",
+    (recovery / "openstarry-code" / ".env").write_text(
+        "OPENSTARRY_CODE_HOME=C:\\Old\\recovery\nPROVIDER_SECRET=dotenv-only-secret\n",
         encoding="utf-8",
     )
 
@@ -1052,12 +1057,12 @@ def test_credential_only_recovery_is_a_configuration_source(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     (primary / "workspace").mkdir(parents=True)
     (primary / ".env").write_text(
-        "OPENSQUILLA_HOME=C:\\Old\\primary\n",
+        "OPENSTARRY_CODE_HOME=C:\\Old\\primary\n",
         encoding="utf-8",
     )
     recovery_id = str(uuid.uuid4())
@@ -1071,8 +1076,8 @@ def test_credential_only_recovery_is_a_configuration_source(
         extra_name="recovery.txt",
         session_key="agent:main:credential-only",
     )
-    (recovery / "opensquilla" / "config.toml").unlink()
-    (recovery / "opensquilla" / ".env").unlink()
+    (recovery / "openstarry-code" / "config.toml").unlink()
+    (recovery / "openstarry-code" / ".env").unlink()
     credential_bytes = (recovery / "desktop-credential.json").read_bytes()
 
     result = consolidate_recovery_profiles(user_data, primary)
@@ -1095,9 +1100,9 @@ def test_invalid_credential_does_not_override_valid_recovery_config(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     (primary / "workspace").mkdir(parents=True)
     recovery_id = str(uuid.uuid4())
     recovery = _recovery(
@@ -1110,8 +1115,8 @@ def test_invalid_credential_does_not_override_valid_recovery_config(
         extra_name="recovery.txt",
         session_key="agent:main:invalid-credential-valid-config",
     )
-    (recovery / "opensquilla" / ".env").unlink()
-    (recovery / "opensquilla" / "state" / ".env").unlink()
+    (recovery / "openstarry-code" / ".env").unlink()
+    (recovery / "openstarry-code" / "state" / ".env").unlink()
 
     result = consolidate_recovery_profiles(user_data, primary)
 
@@ -1126,9 +1131,9 @@ def test_invalid_credential_only_recovery_is_not_a_configuration_source(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     (primary / "workspace").mkdir(parents=True)
     recovery_id = str(uuid.uuid4())
     recovery = _recovery(
@@ -1141,9 +1146,9 @@ def test_invalid_credential_only_recovery_is_not_a_configuration_source(
         extra_name="recovery.txt",
         session_key="agent:main:invalid-credential-only",
     )
-    (recovery / "opensquilla" / "config.toml").unlink()
-    (recovery / "opensquilla" / ".env").unlink()
-    (recovery / "opensquilla" / "state" / ".env").unlink()
+    (recovery / "openstarry-code" / "config.toml").unlink()
+    (recovery / "openstarry-code" / ".env").unlink()
+    (recovery / "openstarry-code" / "state" / ".env").unlink()
 
     result = consolidate_recovery_profiles(user_data, primary)
 
@@ -1158,9 +1163,9 @@ def test_invalid_newest_recovery_dotenv_falls_back_without_losing_its_data(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     (primary / "workspace").mkdir(parents=True)
     older_id = str(uuid.uuid4())
     newer_id = str(uuid.uuid4())
@@ -1184,7 +1189,7 @@ def test_invalid_newest_recovery_dotenv_falls_back_without_losing_its_data(
         extra_name="newer-data.txt",
         session_key="agent:main:newer-invalid-env",
     )
-    (newer / "opensquilla" / ".env").write_bytes(b"\xff\xfe")
+    (newer / "openstarry-code" / ".env").write_bytes(b"\xff\xfe")
 
     result = consolidate_recovery_profiles(user_data, primary)
 
@@ -1194,7 +1199,7 @@ def test_invalid_newest_recovery_dotenv_falls_back_without_losing_its_data(
     assert (primary / "workspace" / "newer-data.txt").read_text(encoding="utf-8") == newer_id
     assert result.backup_path is not None
     assert (
-        result.backup_path / "recovery-profiles" / newer_id / "opensquilla" / ".env"
+        result.backup_path / "recovery-profiles" / newer_id / "openstarry-code" / ".env"
     ).read_bytes() == b"\xff\xfe"
     assert older.is_dir() is False
 
@@ -1203,9 +1208,9 @@ def test_corrupt_primary_config_remains_authoritative(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     primary.mkdir(parents=True)
     (primary / "config.toml").write_bytes(b"\xff\xfe")
     recovery_id = str(uuid.uuid4())
@@ -1231,9 +1236,9 @@ def test_consolidate_cli_emits_fixed_json_and_blocks_unsafe_recovery(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     primary.mkdir(parents=True)
     recovery_root = user_data / "recovery-profiles"
     recovery_root.mkdir(parents=True)
@@ -1282,9 +1287,9 @@ def test_consolidate_allows_regular_finder_metadata_in_recovery_root(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     (primary / "workspace").mkdir(parents=True)
     (primary / "config.toml").write_text("primary = true\n", encoding="utf-8")
     recovery_id = str(uuid.uuid4())
@@ -1314,9 +1319,9 @@ def test_consolidate_rejects_directory_named_like_finder_metadata(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     primary.mkdir(parents=True)
     recovery_root = user_data / "recovery-profiles"
     recovery_root.mkdir()
@@ -1333,9 +1338,9 @@ def test_consolidate_rejects_finder_metadata_symlink(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     primary.mkdir(parents=True)
     recovery_root = user_data / "recovery-profiles"
     recovery_root.mkdir()
@@ -1359,9 +1364,9 @@ def test_consolidate_preserves_finder_metadata_in_empty_recovery_root(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     primary.mkdir(parents=True)
     recovery_root = user_data / "recovery-profiles"
     recovery_root.mkdir()
@@ -1378,9 +1383,9 @@ def test_fresh_noop_does_not_create_context_or_follow_backup_symlink(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     primary.mkdir(parents=True)
     receipts = user_data / "backups" / "profile-consolidation"
     receipts.mkdir(parents=True)
@@ -1403,12 +1408,12 @@ def test_fresh_noop_does_not_scan_primary_profile_tree(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     primary.mkdir(parents=True)
     (primary / "config.toml").write_text("primary = true\n", encoding="utf-8")
-    consolidate_module = importlib.import_module("opensquilla.recovery.consolidate")
+    consolidate_module = importlib.import_module("openstarry_code.recovery.consolidate")
 
     def fail_if_primary_is_scanned(_home: Path) -> object:
         raise AssertionError("a primary-only startup must not scan the primary profile tree")
@@ -1431,9 +1436,9 @@ def test_fresh_noop_ignores_unrelated_primary_directory_link(
     monkeypatch,
     target_kind: str,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     primary.mkdir(parents=True)
     (primary / "config.toml").write_text("primary = true\n", encoding="utf-8")
     unrelated_link = primary / "unrelated-link"
@@ -1460,9 +1465,9 @@ def test_consolidate_cli_no_recovery_ignores_primary_directory_link(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     primary.mkdir(parents=True)
     (primary / "config.toml").write_text("primary = true\n", encoding="utf-8")
     unrelated_link = primary / "unrelated-link"
@@ -1495,9 +1500,9 @@ def test_real_recovery_accepts_normal_unrelated_primary_directory(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     (primary / "unrelated-directory").mkdir(parents=True)
     (primary / "config.toml").write_text("primary = true\n", encoding="utf-8")
     recovery_id = str(uuid.uuid4())
@@ -1525,9 +1530,9 @@ def test_real_recovery_rejects_unrelated_unsafe_primary_directory_link(
     monkeypatch,
     target_kind: str,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     primary.mkdir(parents=True)
     (primary / "config.toml").write_text("primary = true\n", encoding="utf-8")
     recovery_id = str(uuid.uuid4())
@@ -1554,7 +1559,7 @@ def test_real_recovery_rejects_unrelated_unsafe_primary_directory_link(
         assert str(unrelated_link) in result.errors[0]
         assert recovery_root.is_dir()
         assert os.path.lexists(_native_io_path(unrelated_link))
-        assert not (user_data / ".opensquilla-profile-consolidation.json").exists()
+        assert not (user_data / ".openstarry-code-profile-consolidation.json").exists()
     finally:
         _remove_directory_link(unrelated_link)
 
@@ -1563,9 +1568,9 @@ def test_consolidate_cli_preserves_recovery_and_reports_offending_path(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     primary.mkdir(parents=True)
     (primary / "config.toml").write_text("primary = true\n", encoding="utf-8")
     recovery_root = user_data / "recovery-profiles" / str(uuid.uuid4())
@@ -1602,9 +1607,9 @@ def test_unsafe_primary_authority_link_does_not_enable_fallback(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     primary.mkdir(parents=True)
     real_config = tmp_path / "real-config.toml"
     real_config.write_text("primary = true\n", encoding="utf-8")
@@ -1628,9 +1633,9 @@ def test_unsafe_primary_state_junction_does_not_enable_fallback(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     primary.mkdir(parents=True)
     (primary / "config.toml").write_text("primary = true\n", encoding="utf-8")
     state_link = primary / "state"
@@ -1654,9 +1659,9 @@ def test_primary_configuration_still_validates_unsafe_credential_leaf(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     primary.mkdir(parents=True)
     (primary / "config.toml").write_text("primary = true\n", encoding="utf-8")
     real_credential = user_data / "real-credential.json"
@@ -1688,9 +1693,9 @@ def test_config_source_without_credential_keeps_source_metadata(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     primary.mkdir(parents=True)
     recovery_id = str(uuid.uuid4())
     recovery = _recovery(
@@ -1717,9 +1722,9 @@ def test_consolidation_publishes_when_primary_home_does_not_exist(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     recovery_id = str(uuid.uuid4())
     _recovery(
         user_data,
@@ -1746,14 +1751,14 @@ def test_tampered_journal_paths_are_rejected_before_resume(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     primary.mkdir(parents=True)
     transaction_id = str(uuid.uuid4())
     backup = user_data / "backups" / "profile-consolidation" / transaction_id
     receipt = backup / "receipt.json"
-    (user_data / ".opensquilla-profile-consolidation.json").write_text(
+    (user_data / ".openstarry-code-profile-consolidation.json").write_text(
         json.dumps(
             {
                 "schema_version": 1,
@@ -1797,9 +1802,9 @@ def test_resume_rejects_recovery_home_symlink_before_acquiring_legacy_lock(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     (primary / "workspace").mkdir(parents=True)
     (primary / "config.toml").write_text("primary = true\n", encoding="utf-8")
     recovery_id = str(uuid.uuid4())
@@ -1813,7 +1818,7 @@ def test_resume_rejects_recovery_home_symlink_before_acquiring_legacy_lock(
         extra_name="recovery.txt",
         session_key="agent:main:resume-symlink",
     )
-    consolidate_module = importlib.import_module("opensquilla.recovery.consolidate")
+    consolidate_module = importlib.import_module("openstarry_code.recovery.consolidate")
     original_finish = consolidate_module._archive_and_finish
 
     def interrupt_after_publish(*_args, **_kwargs):
@@ -1828,11 +1833,11 @@ def test_resume_rejects_recovery_home_symlink_before_acquiring_legacy_lock(
     monkeypatch.setattr(consolidate_module, "_archive_and_finish", original_finish)
     assert interrupted.outcome == "blocked"
     journal = json.loads(
-        (user_data / ".opensquilla-profile-consolidation.json").read_text(encoding="utf-8")
+        (user_data / ".openstarry-code-profile-consolidation.json").read_text(encoding="utf-8")
     )
     assert journal["phase"] == "primary_published"
 
-    recovery_home = recovery / "opensquilla"
+    recovery_home = recovery / "openstarry-code"
     recovery_home.rename(recovery / "opensquilla-original")
     outside = tmp_path / "outside"
     outside.mkdir()
@@ -1852,9 +1857,9 @@ def test_resume_rejects_recovery_id_set_that_differs_from_journal(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     (primary / "workspace").mkdir(parents=True)
     (primary / "config.toml").write_text("primary = true\n", encoding="utf-8")
     recovery_id = str(uuid.uuid4())
@@ -1868,7 +1873,7 @@ def test_resume_rejects_recovery_id_set_that_differs_from_journal(
         extra_name="recovery.txt",
         session_key="agent:main:resume-id",
     )
-    consolidate_module = importlib.import_module("opensquilla.recovery.consolidate")
+    consolidate_module = importlib.import_module("openstarry_code.recovery.consolidate")
     original_finish = consolidate_module._archive_and_finish
 
     def interrupt_after_publish(*_args, **_kwargs):
@@ -1896,9 +1901,9 @@ def test_non_utf8_recovery_config_is_skipped_with_fixed_json_result(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     (primary / "workspace").mkdir(parents=True)
     recovery_id = str(uuid.uuid4())
     recovery = _recovery(
@@ -1911,7 +1916,7 @@ def test_non_utf8_recovery_config_is_skipped_with_fixed_json_result(
         extra_name="recovery.txt",
         session_key="agent:main:invalid-config",
     )
-    (recovery / "opensquilla" / "config.toml").write_bytes(b"\xff\xfe")
+    (recovery / "openstarry-code" / "config.toml").write_bytes(b"\xff\xfe")
 
     completed = CliRunner().invoke(
         recovery_app,
@@ -1937,9 +1942,9 @@ def test_incompatible_sessions_schema_returns_fixed_blocked_json(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     _session_database(
         primary / "state" / "sessions.db",
         "agent:main:primary",
@@ -1957,7 +1962,7 @@ def test_incompatible_sessions_schema_returns_fixed_blocked_json(
         extra_name="recovery.txt",
         session_key="agent:main:invalid-schema",
     )
-    source_db = recovery / "opensquilla" / "state" / "sessions.db"
+    source_db = recovery / "openstarry-code" / "state" / "sessions.db"
     source_db.unlink()
     with contextlib.closing(sqlite3.connect(source_db)) as connection, connection:
         connection.execute("CREATE TABLE sessions (unexpected TEXT)")
@@ -1985,9 +1990,9 @@ def test_credential_adoption_ack_is_atomic_and_idempotent(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     (primary / "workspace").mkdir(parents=True)
     recovery_id = str(uuid.uuid4())
     _recovery(
@@ -2061,9 +2066,9 @@ def test_credential_ack_rejects_archived_credential_tampering(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     (primary / "workspace").mkdir(parents=True)
     recovery_id = str(uuid.uuid4())
     _recovery(
@@ -2124,9 +2129,9 @@ def test_only_legacy_prepared_journal_changed_by_sqlite_sidecars_restarts(
     legacy_journal: bool,
     missing_transaction_path: str | None,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     (primary / "workspace").mkdir(parents=True)
     (primary / "config.toml").write_text("primary = true\n", encoding="utf-8")
     recovery_id = str(uuid.uuid4())
@@ -2140,7 +2145,7 @@ def test_only_legacy_prepared_journal_changed_by_sqlite_sidecars_restarts(
         extra_name="sqlite-sidecar.txt",
         session_key="agent:main:sqlite-sidecar",
     )
-    source_database = recovery / "opensquilla" / "state" / "sessions.db"
+    source_database = recovery / "openstarry-code" / "state" / "sessions.db"
     connection = sqlite3.connect(source_database)
     try:
         assert connection.execute("PRAGMA journal_mode=WAL").fetchone()[0] == "wal"
@@ -2150,7 +2155,7 @@ def test_only_legacy_prepared_journal_changed_by_sqlite_sidecars_restarts(
     assert not source_database.with_name("sessions.db-wal").exists()
     assert not source_database.with_name("sessions.db-shm").exists()
 
-    consolidate_module = importlib.import_module("opensquilla.recovery.consolidate")
+    consolidate_module = importlib.import_module("openstarry_code.recovery.consolidate")
     original_merge = consolidate_module._merge_prepared_profiles
 
     def simulate_old_sqlite_read(**kwargs):
@@ -2181,7 +2186,7 @@ def test_only_legacy_prepared_journal_changed_by_sqlite_sidecars_restarts(
     )
 
     assert interrupted.outcome == "blocked"
-    journal_path = user_data / ".opensquilla-profile-consolidation.json"
+    journal_path = user_data / ".openstarry-code-profile-consolidation.json"
     journal = json.loads(journal_path.read_text(encoding="utf-8"))
     assert journal["phase"] == "prepared"
     assert journal["source_read_protocol"] == "private-sqlite-v1"
@@ -2244,9 +2249,9 @@ def test_legacy_prepared_journal_restart_remains_fail_closed(
     monkeypatch,
     unsafe_restart_state: str,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     (primary / "workspace").mkdir(parents=True)
     (primary / "config.toml").write_text("primary = true\n", encoding="utf-8")
     recovery_id = str(uuid.uuid4())
@@ -2260,7 +2265,7 @@ def test_legacy_prepared_journal_restart_remains_fail_closed(
         extra_name="fail-closed.txt",
         session_key="agent:main:fail-closed",
     )
-    consolidate_module = importlib.import_module("opensquilla.recovery.consolidate")
+    consolidate_module = importlib.import_module("openstarry_code.recovery.consolidate")
     original_merge = consolidate_module._merge_prepared_profiles
 
     def stop_after_prepared(**_kwargs):
@@ -2279,14 +2284,14 @@ def test_legacy_prepared_journal_restart_remains_fail_closed(
     )
     assert interrupted.outcome == "blocked"
 
-    journal_path = user_data / ".opensquilla-profile-consolidation.json"
+    journal_path = user_data / ".openstarry-code-profile-consolidation.json"
     journal = json.loads(journal_path.read_text(encoding="utf-8"))
     journal.pop("source_read_protocol")
     old_staging = Path(journal["staging"])
     old_backup = Path(journal["backup_path"])
     # Make the legacy source token stale so falling back to normal resume must
     # block instead of accidentally completing the transaction.
-    (recovery / "opensquilla" / "ordinary.txt").write_text(
+    (recovery / "openstarry-code" / "ordinary.txt").write_text(
         "changed after prepared",
         encoding="utf-8",
     )
@@ -2339,12 +2344,12 @@ def test_session_id_remap_moves_transcript_attachment_material(
     monkeypatch,
     use_external_media: bool,
 ) -> None:
-    from opensquilla.artifacts import ArtifactStore
-    from opensquilla.engine.tool_result_store import ToolResultStore
+    from openstarry_code.artifacts import ArtifactStore
+    from openstarry_code.engine.tool_result_store import ToolResultStore
 
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     (primary / "config.toml").parent.mkdir(parents=True)
     primary_media = (
         tmp_path / "external-media"
@@ -2381,14 +2386,14 @@ def test_session_id_remap_moves_transcript_attachment_material(
         extra_name="recovery.txt",
         session_key="agent:main:attachment-recovery",
     )
-    source_db = recovery / "opensquilla" / "state" / "sessions.db"
+    source_db = recovery / "openstarry-code" / "state" / "sessions.db"
     with contextlib.closing(sqlite3.connect(source_db)) as connection, connection:
         connection.execute("UPDATE sessions SET session_id='shared-session-id'")
         connection.execute("UPDATE transcript_entries SET session_id='shared-session-id'")
-    recovery_material = recovery / "opensquilla" / "media" / "transcripts" / "shared-session-id"
+    recovery_material = recovery / "openstarry-code" / "media" / "transcripts" / "shared-session-id"
     recovery_material.mkdir(parents=True)
     (recovery_material / "recovery-sha").write_bytes(b"recovery attachment")
-    recovery_media = recovery / "opensquilla" / "media"
+    recovery_media = recovery / "openstarry-code" / "media"
     artifact = ArtifactStore(recovery_media).publish_bytes(
         b"recovery artifact",
         session_id="shared-session-id",
@@ -2450,7 +2455,7 @@ def test_copying_workspace_symlink_never_follows_it_for_directory_hint(
     except OSError:
         pytest.skip("symlink creation is not available")
     destination = tmp_path / "destination" / "copied-link"
-    consolidate_module = importlib.import_module("opensquilla.recovery.consolidate")
+    consolidate_module = importlib.import_module("openstarry_code.recovery.consolidate")
 
     def reject_follow(*_args, **_kwargs):
         raise AssertionError("Path.is_dir would follow the symlink")
@@ -2495,9 +2500,9 @@ def test_primary_external_roots_receive_active_data_without_canonical_duplicates
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     external = tmp_path / "external"
     workspace = external / "workspace"
     state = external / "state"
@@ -2529,7 +2534,7 @@ def test_primary_external_roots_receive_active_data_without_canonical_duplicates
         extra_name="external-only.txt",
         session_key="agent:main:external-recovery",
     )
-    recovery_workspace = recovery / "opensquilla" / "workspace"
+    recovery_workspace = recovery / "openstarry-code" / "workspace"
     (recovery_workspace / "agents" / "ops").mkdir(parents=True)
     (recovery_workspace / "agents" / "ops" / "OPS.md").write_text(
         "ops data\n",
@@ -2540,11 +2545,11 @@ def test_primary_external_roots_receive_active_data_without_canonical_duplicates
         "other data\n",
         encoding="utf-8",
     )
-    source_db = recovery / "opensquilla" / "state" / "sessions.db"
+    source_db = recovery / "openstarry-code" / "state" / "sessions.db"
     with contextlib.closing(sqlite3.connect(source_db)) as connection, connection:
         connection.execute("UPDATE sessions SET session_id='shared-external-id'")
         connection.execute("UPDATE transcript_entries SET session_id='shared-external-id'")
-    transcript = recovery / "opensquilla" / "media" / "transcripts" / "shared-external-id"
+    transcript = recovery / "openstarry-code" / "media" / "transcripts" / "shared-external-id"
     transcript.mkdir(parents=True)
     (transcript / "attachment").write_bytes(b"external transcript")
 
@@ -2580,9 +2585,9 @@ def test_overlapping_independent_external_roots_fail_before_writes(
     monkeypatch,
     relationship: str,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     external = tmp_path / "external"
     workspace = external / "workspace"
     state = workspace if relationship == "same" else workspace / "arbitrary-state-root"
@@ -2612,7 +2617,7 @@ def test_overlapping_independent_external_roots_fail_before_writes(
     assert result.outcome == "blocked"
     assert result.stable_code == "unsafe_path"
     assert not (workspace / "must-not-copy.txt").exists()
-    assert not (user_data / ".opensquilla-profile-consolidation.json").exists()
+    assert not (user_data / ".openstarry-code-profile-consolidation.json").exists()
     assert (user_data / "recovery-profiles" / recovery_id).is_dir()
 
 
@@ -2620,9 +2625,9 @@ def test_explicit_media_cannot_overlap_canonical_workspace(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     primary.mkdir(parents=True)
     workspace = primary / "workspace"
     (primary / "config.toml").write_text(
@@ -2646,7 +2651,7 @@ def test_explicit_media_cannot_overlap_canonical_workspace(
     assert result.outcome == "blocked"
     assert result.stable_code == "unsafe_path"
     assert not (workspace / "must-not-copy.txt").exists()
-    assert not (user_data / ".opensquilla-profile-consolidation.json").exists()
+    assert not (user_data / ".openstarry-code-profile-consolidation.json").exists()
     assert (user_data / "recovery-profiles" / recovery_id).is_dir()
 
 
@@ -2659,9 +2664,9 @@ def test_explicit_agent_cannot_overlap_any_effective_root(
     monkeypatch,
     overlap_role: str,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     primary.mkdir(parents=True)
     roots = {
         "workspace": primary / "workspace",
@@ -2701,7 +2706,7 @@ def test_explicit_agent_cannot_overlap_any_effective_root(
     assert result.outcome == "blocked"
     assert result.stable_code == "unsafe_path"
     assert not (primary / "workspace" / "must-not-copy.txt").exists()
-    assert not (user_data / ".opensquilla-profile-consolidation.json").exists()
+    assert not (user_data / ".openstarry-code-profile-consolidation.json").exists()
     assert (user_data / "recovery-profiles" / recovery_id).is_dir()
 
 
@@ -2711,9 +2716,9 @@ def test_single_explicit_workspace_state_alias_fails_before_writes(
     monkeypatch,
     explicit_role: str,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     primary.mkdir(parents=True)
     canonical_workspace = primary / "workspace"
     canonical_state = primary / "state"
@@ -2740,7 +2745,7 @@ def test_single_explicit_workspace_state_alias_fails_before_writes(
     assert result.stable_code == "unsafe_path"
     assert not (canonical_workspace / "must-not-copy.txt").exists()
     assert not (canonical_state / "must-not-copy.txt").exists()
-    assert not (user_data / ".opensquilla-profile-consolidation.json").exists()
+    assert not (user_data / ".openstarry-code-profile-consolidation.json").exists()
     assert (user_data / "recovery-profiles" / recovery_id).is_dir()
 
 
@@ -2748,9 +2753,9 @@ def test_relative_media_and_agent_roots_fail_closed(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     workspace = tmp_path / "external" / "workspace"
     state = tmp_path / "external" / "state"
     workspace.mkdir(parents=True)
@@ -2789,9 +2794,9 @@ def test_prepared_resume_revalidates_config_before_external_active_writes(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     external = tmp_path / "external"
     workspace = external / "workspace"
     state = external / "state"
@@ -2815,11 +2820,11 @@ def test_prepared_resume_revalidates_config_before_external_active_writes(
         extra_name="must-not-copy.txt",
         session_key="agent:main:prepared-config",
     )
-    consolidate_module = importlib.import_module("opensquilla.recovery.consolidate")
+    consolidate_module = importlib.import_module("openstarry_code.recovery.consolidate")
     original_merge = consolidate_module._merge_prepared_profiles
 
     def fail_after_prepared(**_kwargs):
-        assert (user_data / ".opensquilla-profile-consolidation.json").is_file()
+        assert (user_data / ".openstarry-code-profile-consolidation.json").is_file()
         raise OSError("simulated hard stop after prepared")
 
     monkeypatch.setattr(
@@ -2852,9 +2857,9 @@ def test_partial_external_copy_resumes_without_duplicate_memory(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     external = tmp_path / "external"
     workspace = external / "workspace"
     state = external / "state"
@@ -2878,7 +2883,7 @@ def test_partial_external_copy_resumes_without_duplicate_memory(
         extra_name="resume-copy.txt",
         session_key="agent:main:partial-copy",
     )
-    consolidate_module = importlib.import_module("opensquilla.recovery.consolidate")
+    consolidate_module = importlib.import_module("openstarry_code.recovery.consolidate")
     original_copy = consolidate_module._atomic_copy_regular
     injected = False
 
@@ -2902,7 +2907,7 @@ def test_partial_external_copy_resumes_without_duplicate_memory(
     )
     assert interrupted.outcome == "blocked"
     journal = json.loads(
-        (user_data / ".opensquilla-profile-consolidation.json").read_text(encoding="utf-8")
+        (user_data / ".openstarry-code-profile-consolidation.json").read_text(encoding="utf-8")
     )
     assert journal["phase"] == "prepared"
 
@@ -2917,9 +2922,9 @@ def test_external_roots_merged_resume_remerges_once_before_commit(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     external = tmp_path / "external"
     workspace = external / "workspace"
     state = external / "state"
@@ -2943,7 +2948,7 @@ def test_external_roots_merged_resume_remerges_once_before_commit(
         extra_name="merged-once.txt",
         session_key="agent:main:external-stage",
     )
-    consolidate_module = importlib.import_module("opensquilla.recovery.consolidate")
+    consolidate_module = importlib.import_module("openstarry_code.recovery.consolidate")
     original_commit = consolidate_module._commit_primary
     original_merge = consolidate_module._merge_recovery_data
 
@@ -2961,7 +2966,7 @@ def test_external_roots_merged_resume_remerges_once_before_commit(
     assert interrupted.outcome == "blocked"
     assert (
         json.loads(
-            (user_data / ".opensquilla-profile-consolidation.json").read_text(encoding="utf-8")
+            (user_data / ".openstarry-code-profile-consolidation.json").read_text(encoding="utf-8")
         )["phase"]
         == "external_roots_merged"
     )
@@ -2989,9 +2994,9 @@ def test_primary_dotenv_data_root_overrides_are_authoritative(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     primary.mkdir(parents=True)
     (primary / "config.toml").write_text("primary = true\n", encoding="utf-8")
     external = tmp_path / "external"
@@ -3001,9 +3006,9 @@ def test_primary_dotenv_data_root_overrides_are_authoritative(
     for path in (workspace, state, media):
         path.mkdir(parents=True)
     dotenv = (
-        f"OPENSQUILLA_GATEWAY_WORKSPACE_DIR={workspace}\n"
-        f"OPENSQUILLA_GATEWAY_STATE_DIR={state}\n"
-        f"OPENSQUILLA_GATEWAY_ATTACHMENTS__MEDIA_ROOT={media}\n"
+        f"OPENSTARRY_CODE_GATEWAY_WORKSPACE_DIR={workspace}\n"
+        f"OPENSTARRY_CODE_GATEWAY_STATE_DIR={state}\n"
+        f"OPENSTARRY_CODE_GATEWAY_ATTACHMENTS__MEDIA_ROOT={media}\n"
     )
     (primary / ".env").write_text(dotenv, encoding="utf-8")
     recovery_id = str(uuid.uuid4())
@@ -3032,9 +3037,9 @@ def test_publish_then_archive_failure_resumes_with_recovery_configuration_source
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     (primary / "workspace").mkdir(parents=True)
     (primary / "config.toml").write_text("# intentionally empty\n", encoding="utf-8")
     recovery_id = str(uuid.uuid4())
@@ -3048,7 +3053,7 @@ def test_publish_then_archive_failure_resumes_with_recovery_configuration_source
         extra_name="publish-resume.txt",
         session_key="agent:main:publish-resume",
     )
-    consolidate_module = importlib.import_module("opensquilla.recovery.consolidate")
+    consolidate_module = importlib.import_module("openstarry_code.recovery.consolidate")
     original_finish = consolidate_module._archive_and_finish
 
     def fail_after_publish(*_args, **_kwargs):
@@ -3068,7 +3073,7 @@ def test_publish_then_archive_failure_resumes_with_recovery_configuration_source
     assert interrupted.outcome == "blocked"
     assert (
         json.loads(
-            (user_data / ".opensquilla-profile-consolidation.json").read_text(encoding="utf-8")
+            (user_data / ".openstarry-code-profile-consolidation.json").read_text(encoding="utf-8")
         )["phase"]
         == "primary_published"
     )
@@ -3086,7 +3091,7 @@ def test_publish_then_archive_failure_resumes_with_recovery_configuration_source
 def test_partial_recovered_data_directory_is_completed_on_retry(
     tmp_path: Path,
 ) -> None:
-    consolidate_module = importlib.import_module("opensquilla.recovery.consolidate")
+    consolidate_module = importlib.import_module("openstarry_code.recovery.consolidate")
     source = tmp_path / "source"
     (source / "nested").mkdir(parents=True)
     (source / "first.txt").write_text("first\n", encoding="utf-8")
@@ -3111,9 +3116,9 @@ def test_canonical_sessions_external_media_resume_rebuilds_transcript_remap(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     media = tmp_path / "external-media"
     media.mkdir()
     primary.mkdir(parents=True)
@@ -3138,14 +3143,14 @@ def test_canonical_sessions_external_media_resume_rebuilds_transcript_remap(
         extra_name="canonical-state.txt",
         session_key="agent:main:canonical-recovery",
     )
-    source_db = recovery / "opensquilla" / "state" / "sessions.db"
+    source_db = recovery / "openstarry-code" / "state" / "sessions.db"
     with contextlib.closing(sqlite3.connect(source_db)) as connection, connection:
         connection.execute("UPDATE sessions SET session_id='shared-media-id'")
         connection.execute("UPDATE transcript_entries SET session_id='shared-media-id'")
-    transcript = recovery / "opensquilla" / "media" / "transcripts" / "shared-media-id"
+    transcript = recovery / "openstarry-code" / "media" / "transcripts" / "shared-media-id"
     transcript.mkdir(parents=True)
     (transcript / "attachment").write_bytes(b"remapped")
-    consolidate_module = importlib.import_module("opensquilla.recovery.consolidate")
+    consolidate_module = importlib.import_module("openstarry_code.recovery.consolidate")
     original_copy = consolidate_module._atomic_copy_regular
     injected = False
 
@@ -3170,7 +3175,7 @@ def test_canonical_sessions_external_media_resume_rebuilds_transcript_remap(
     assert interrupted.outcome == "blocked"
     assert (
         json.loads(
-            (user_data / ".opensquilla-profile-consolidation.json").read_text(encoding="utf-8")
+            (user_data / ".openstarry-code-profile-consolidation.json").read_text(encoding="utf-8")
         )["phase"]
         == "prepared"
     )
@@ -3195,9 +3200,9 @@ def test_recovery_archive_finishes_while_legacy_exclusion_is_held(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     (primary / "workspace").mkdir(parents=True)
     (primary / "config.toml").write_text("primary = true\n", encoding="utf-8")
     recovery_id = str(uuid.uuid4())
@@ -3211,7 +3216,7 @@ def test_recovery_archive_finishes_while_legacy_exclusion_is_held(
         extra_name="archive-order.txt",
         session_key="agent:main:archive-order",
     )
-    consolidate_module = importlib.import_module("opensquilla.recovery.consolidate")
+    consolidate_module = importlib.import_module("openstarry_code.recovery.consolidate")
     original_acquire = consolidate_module.acquire_legacy_gateway_locks
     original_finish = consolidate_module._archive_and_finish
     legacy_active = False
@@ -3250,9 +3255,9 @@ def test_missing_external_root_suffixes_are_created_after_prepared_journal(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     external = tmp_path / "external"
     external.mkdir()
     workspace = external / "workspace"
@@ -3277,8 +3282,8 @@ def test_missing_external_root_suffixes_are_created_after_prepared_journal(
         extra_name="created-root.txt",
         session_key="agent:main:missing-roots",
     )
-    (recovery / "opensquilla" / "workspace" / "agents" / "ops").mkdir(parents=True)
-    (recovery / "opensquilla" / "workspace" / "agents" / "ops" / "OPS.md").write_text(
+    (recovery / "openstarry-code" / "workspace" / "agents" / "ops").mkdir(parents=True)
+    (recovery / "openstarry-code" / "workspace" / "agents" / "ops" / "OPS.md").write_text(
         "ops\n", encoding="utf-8"
     )
 
@@ -3295,9 +3300,9 @@ def test_main_agent_workspace_entry_is_ignored_like_runtime(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     workspace = tmp_path / "external" / "workspace"
     ignored_main = tmp_path / "external" / "ignored-main"
     workspace.mkdir(parents=True)
@@ -3321,7 +3326,7 @@ def test_main_agent_workspace_entry_is_ignored_like_runtime(
         extra_name="main-root.txt",
         session_key="agent:main:main-workspace",
     )
-    main_agent = recovery / "opensquilla" / "workspace" / "agents" / "main"
+    main_agent = recovery / "openstarry-code" / "workspace" / "agents" / "main"
     main_agent.mkdir(parents=True)
     (main_agent / "MAIN.md").write_text("main agent\n", encoding="utf-8")
 
@@ -3337,9 +3342,9 @@ def test_recovery_agent_ids_are_normalized_when_config_is_rebased(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     primary.mkdir(parents=True)
     recovery_id = str(uuid.uuid4())
     _recovery(
@@ -3373,9 +3378,9 @@ def test_ambient_gateway_root_overrides_match_consolidation_routes(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     primary.mkdir(parents=True)
     (primary / "config.toml").write_text("primary = true\n", encoding="utf-8")
     external = tmp_path / "ambient"
@@ -3384,10 +3389,10 @@ def test_ambient_gateway_root_overrides_match_consolidation_routes(
     media = external / "media"
     for path in (workspace, state, media):
         path.mkdir(parents=True)
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_WORKSPACE_DIR", str(workspace))
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_STATE_DIR", str(state))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_WORKSPACE_DIR", str(workspace))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_STATE_DIR", str(state))
     monkeypatch.setenv(
-        "OPENSQUILLA_GATEWAY_ATTACHMENTS__MEDIA_ROOT",
+        "OPENSTARRY_CODE_GATEWAY_ATTACHMENTS__MEDIA_ROOT",
         str(media),
     )
     recovery_id = str(uuid.uuid4())
@@ -3415,9 +3420,9 @@ def test_primary_configuration_appearing_before_profile_lock_wins(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     (primary / "workspace").mkdir(parents=True)
     recovery_id = str(uuid.uuid4())
     _recovery(
@@ -3430,7 +3435,7 @@ def test_primary_configuration_appearing_before_profile_lock_wins(
         extra_name="lock-selection.txt",
         session_key="agent:main:lock-selection",
     )
-    consolidate_module = importlib.import_module("opensquilla.recovery.consolidate")
+    consolidate_module = importlib.import_module("openstarry_code.recovery.consolidate")
     original_acquire = consolidate_module.acquire_profile_locks
 
     @consolidate_module.contextlib.contextmanager
@@ -3459,9 +3464,9 @@ def test_new_recovery_profile_before_archive_is_not_silently_consumed(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     (primary / "workspace").mkdir(parents=True)
     (primary / "config.toml").write_text("primary = true\n", encoding="utf-8")
     first_id = str(uuid.uuid4())
@@ -3476,7 +3481,7 @@ def test_new_recovery_profile_before_archive_is_not_silently_consumed(
         session_key="agent:main:first-before-archive",
     )
     second_id = str(uuid.uuid4())
-    consolidate_module = importlib.import_module("opensquilla.recovery.consolidate")
+    consolidate_module = importlib.import_module("openstarry_code.recovery.consolidate")
     original_finish = consolidate_module._archive_and_finish
     injected = False
 
@@ -3514,10 +3519,10 @@ def test_state_parent_with_direct_workspace_child_is_supported(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
-    state = tmp_path / "external" / "OpenSquilla"
+    primary = user_data / "openstarry-code"
+    state = tmp_path / "external" / "OpenStarry Code"
     workspace = state / "workspace"
     media = state / "media"
     for path in (workspace, media):
@@ -3552,10 +3557,10 @@ def test_workspace_parent_with_direct_state_child_protects_reserved_state(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
-    workspace = tmp_path / "external" / "OpenSquilla"
+    primary = user_data / "openstarry-code"
+    workspace = tmp_path / "external" / "OpenStarry Code"
     state = workspace / "state"
     media = workspace / "media"
     for path in (state, media):
@@ -3578,12 +3583,12 @@ def test_workspace_parent_with_direct_state_child_protects_reserved_state(
         extra_name="workspace-parent.txt",
         session_key="agent:main:workspace-parent",
     )
-    recovery_workspace_state = recovery / "opensquilla" / "workspace" / "state"
+    recovery_workspace_state = recovery / "openstarry-code" / "workspace" / "state"
     (recovery_workspace_state / "reserved.txt").write_text(
         "must-not-overwrite",
         encoding="utf-8",
     )
-    recovery_workspace_media = recovery / "opensquilla" / "workspace" / "media"
+    recovery_workspace_media = recovery / "openstarry-code" / "workspace" / "media"
     recovery_workspace_media.mkdir()
     (recovery_workspace_media / "reserved.txt").write_text(
         "workspace-media",
@@ -3608,9 +3613,9 @@ def test_invalid_latest_receipt_does_not_fall_back_to_older_pending_credential(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     (primary / "workspace").mkdir(parents=True)
     recovery_id = str(uuid.uuid4())
     _recovery(
@@ -3647,9 +3652,9 @@ def test_semantically_invalid_newest_credential_only_falls_back(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     (primary / "workspace").mkdir(parents=True)
     older_id = str(uuid.uuid4())
     older = _recovery(
@@ -3662,8 +3667,8 @@ def test_semantically_invalid_newest_credential_only_falls_back(
         extra_name="older-semantic.txt",
         session_key="agent:main:older-semantic",
     )
-    (older / "opensquilla" / ".env").unlink()
-    (older / "opensquilla" / "state" / ".env").unlink()
+    (older / "openstarry-code" / ".env").unlink()
+    (older / "openstarry-code" / "state" / ".env").unlink()
     newer_id = str(uuid.uuid4())
     newer = _recovery(
         user_data,
@@ -3675,9 +3680,9 @@ def test_semantically_invalid_newest_credential_only_falls_back(
         extra_name="newer-semantic.txt",
         session_key="agent:main:newer-semantic",
     )
-    (newer / "opensquilla" / "config.toml").unlink()
-    (newer / "opensquilla" / ".env").unlink()
-    (newer / "opensquilla" / "state" / ".env").unlink()
+    (newer / "openstarry-code" / "config.toml").unlink()
+    (newer / "openstarry-code" / ".env").unlink()
+    (newer / "openstarry-code" / "state" / ".env").unlink()
 
     result = consolidate_recovery_profiles(user_data, primary)
 
@@ -3690,13 +3695,13 @@ def test_legacy_workspace_alias_matches_desktop_gateway_route(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     primary.mkdir(parents=True)
     (primary / "config.toml").write_text("primary = true\n", encoding="utf-8")
     standalone_workspace = tmp_path / "standalone-workspace"
-    monkeypatch.setenv("OPENSQUILLA_WORKSPACE_DIR", str(standalone_workspace))
+    monkeypatch.setenv("OPENSTARRY_CODE_WORKSPACE_DIR", str(standalone_workspace))
     recovery_id = str(uuid.uuid4())
     _recovery(
         user_data,
@@ -3720,14 +3725,14 @@ def test_recovery_agent_config_tracks_ambient_workspace_route(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     (primary / "workspace").mkdir(parents=True)
     external_workspace = tmp_path / "external-workspace"
     external_workspace.mkdir()
     monkeypatch.setenv(
-        "OPENSQUILLA_GATEWAY_WORKSPACE_DIR",
+        "OPENSTARRY_CODE_GATEWAY_WORKSPACE_DIR",
         str(external_workspace),
     )
     recovery_id = str(uuid.uuid4())
@@ -3746,7 +3751,7 @@ def test_recovery_agent_config_tracks_ambient_workspace_route(
         extra_name="ambient-agent-route.txt",
         session_key="agent:main:ambient-agent-route",
     )
-    source_agent = recovery / "opensquilla" / "workspace" / "agents" / "ops"
+    source_agent = recovery / "openstarry-code" / "workspace" / "agents" / "ops"
     source_agent.mkdir(parents=True)
     (source_agent / "OPS.md").write_text("ops data\n", encoding="utf-8")
 
@@ -3764,9 +3769,9 @@ def test_toml_media_root_precedes_ambient_media_override(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     external = tmp_path / "external"
     workspace = external / "workspace"
     state = external / "state"
@@ -3781,7 +3786,7 @@ def test_toml_media_root_precedes_ambient_media_override(
         media=configured_media,
     )
     monkeypatch.setenv(
-        "OPENSQUILLA_GATEWAY_ATTACHMENTS__MEDIA_ROOT",
+        "OPENSTARRY_CODE_GATEWAY_ATTACHMENTS__MEDIA_ROOT",
         str(ambient_media),
     )
     recovery_id = str(uuid.uuid4())
@@ -3807,9 +3812,9 @@ def test_prepared_resume_rebuilds_and_discards_staging_tampering(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     (primary / "workspace").mkdir(parents=True)
     (primary / "config.toml").write_text("primary = true\n", encoding="utf-8")
     recovery_id = str(uuid.uuid4())
@@ -3823,7 +3828,7 @@ def test_prepared_resume_rebuilds_and_discards_staging_tampering(
         extra_name="prepared-rebuild.txt",
         session_key="agent:main:prepared-rebuild",
     )
-    consolidate_module = importlib.import_module("opensquilla.recovery.consolidate")
+    consolidate_module = importlib.import_module("openstarry_code.recovery.consolidate")
     original_merge = consolidate_module._merge_prepared_profiles
 
     def stop_after_prepared(**_kwargs):
@@ -3842,7 +3847,7 @@ def test_prepared_resume_rebuilds_and_discards_staging_tampering(
     )
     assert interrupted.outcome == "blocked"
     journal = json.loads(
-        (user_data / ".opensquilla-profile-consolidation.json").read_text(encoding="utf-8")
+        (user_data / ".openstarry-code-profile-consolidation.json").read_text(encoding="utf-8")
     )
     assert journal["phase"] == "prepared"
     staging = Path(journal["staging"])
@@ -3862,9 +3867,9 @@ def test_external_stage_resume_restores_deleted_recovery_leaf(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     external = tmp_path / "external"
     workspace = external / "workspace"
     state = external / "state"
@@ -3888,7 +3893,7 @@ def test_external_stage_resume_restores_deleted_recovery_leaf(
         extra_name="restore-after-delete.txt",
         session_key="agent:main:restore-after-delete",
     )
-    consolidate_module = importlib.import_module("opensquilla.recovery.consolidate")
+    consolidate_module = importlib.import_module("openstarry_code.recovery.consolidate")
     original_commit = consolidate_module._commit_primary
 
     def stop_before_commit(_journal_path, payload):
@@ -3913,9 +3918,9 @@ def test_external_root_identity_replacement_after_merge_is_blocked(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     external = tmp_path / "external"
     external.mkdir()
     workspace = external / "workspace"
@@ -3938,7 +3943,7 @@ def test_external_root_identity_replacement_after_merge_is_blocked(
         extra_name="identity-replacement.txt",
         session_key="agent:main:identity-replacement",
     )
-    consolidate_module = importlib.import_module("opensquilla.recovery.consolidate")
+    consolidate_module = importlib.import_module("openstarry_code.recovery.consolidate")
     original_commit = consolidate_module._commit_primary
 
     def stop_before_commit(_journal_path, payload):
@@ -3963,9 +3968,9 @@ def test_archived_credential_mutation_before_context_write_blocks_resume(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     (primary / "workspace").mkdir(parents=True)
     recovery_id = str(uuid.uuid4())
     _recovery(
@@ -3978,7 +3983,7 @@ def test_archived_credential_mutation_before_context_write_blocks_resume(
         extra_name="archived-credential.txt",
         session_key="agent:main:archived-credential",
     )
-    consolidate_module = importlib.import_module("opensquilla.recovery.consolidate")
+    consolidate_module = importlib.import_module("openstarry_code.recovery.consolidate")
     original_context = consolidate_module._write_primary_context
 
     def stop_before_context(_user_data):
@@ -3997,7 +4002,7 @@ def test_archived_credential_mutation_before_context_write_blocks_resume(
     )
     assert interrupted.outcome == "blocked"
     journal = json.loads(
-        (user_data / ".opensquilla-profile-consolidation.json").read_text(encoding="utf-8")
+        (user_data / ".openstarry-code-profile-consolidation.json").read_text(encoding="utf-8")
     )
     assert journal["phase"] == "recoveries_archived"
     archived_credential = (
@@ -4015,9 +4020,9 @@ def test_credential_authority_is_captured_after_profile_lock(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     (primary / "workspace").mkdir(parents=True)
     recovery_id = str(uuid.uuid4())
     recovery = _recovery(
@@ -4031,7 +4036,7 @@ def test_credential_authority_is_captured_after_profile_lock(
         session_key="agent:main:credential-lock",
     )
     updated = b'{"provider":"openai","model":"after"}\n'
-    consolidate_module = importlib.import_module("opensquilla.recovery.consolidate")
+    consolidate_module = importlib.import_module("openstarry_code.recovery.consolidate")
     original_acquire = consolidate_module.acquire_profile_locks
 
     @consolidate_module.contextlib.contextmanager
@@ -4069,9 +4074,9 @@ def test_consolidate_allows_stray_regular_files_in_recovery_root(
     stray regular file is inert: it rides into the archive with the container.
     """
 
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     (primary / "workspace").mkdir(parents=True)
     (primary / "config.toml").write_text("primary = true\n", encoding="utf-8")
     recovery_id = str(uuid.uuid4())
@@ -4103,9 +4108,9 @@ def test_consolidate_with_only_stray_files_boots_without_blocking(
 ) -> None:
     """A container holding no real profile is a noop, not a blocked startup."""
 
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     (primary / "workspace").mkdir(parents=True)
     (primary / "config.toml").write_text("primary = true\n", encoding="utf-8")
     recovery_root = user_data / "recovery-profiles"
@@ -4132,9 +4137,9 @@ def test_consolidate_still_rejects_stray_directory_and_names_it(
     diagnostic must name the entry so the user can remove it.
     """
 
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     primary.mkdir(parents=True)
     recovery_root = user_data / "recovery-profiles"
     recovery_root.mkdir()
@@ -4152,9 +4157,9 @@ def test_consolidate_still_rejects_stray_symlink(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     primary.mkdir(parents=True)
     recovery_root = user_data / "recovery-profiles"
     recovery_root.mkdir()
@@ -4187,12 +4192,12 @@ def test_key_collision_keeps_session_id_so_artifacts_stay_downloadable(
     the oracle here rather than asserting on paths.
     """
 
-    from opensquilla.artifacts import ArtifactNotFoundError, ArtifactStore
-    from opensquilla.engine.tool_result_store import ToolResultStore
+    from openstarry_code.artifacts import ArtifactNotFoundError, ArtifactStore
+    from openstarry_code.engine.tool_result_store import ToolResultStore
 
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     (primary / "workspace").mkdir(parents=True)
     (primary / "config.toml").write_text("log_file_backup_count = 1\n", encoding="utf-8")
     # The primary owns the same deterministic session key, which is what forces a
@@ -4215,7 +4220,7 @@ def test_key_collision_keeps_session_id_so_artifacts_stay_downloadable(
         extra_name="recovery.txt",
         session_key="agent:main:main",
     )
-    recovery_home = user_data / "recovery-profiles" / recovery_id / "opensquilla"
+    recovery_home = user_data / "recovery-profiles" / recovery_id / "openstarry-code"
     recovered_session_id = f"session-{recovery_id}"
 
     source_store = ArtifactStore(recovery_home / "media")
@@ -4285,9 +4290,9 @@ def test_unreadable_recovery_source_defers_startup_and_still_converges(
     the legacy conversations would never arrive.
     """
 
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     (primary / "workspace").mkdir(parents=True)
     (primary / "config.toml").write_text("log_file_backup_count = 1\n", encoding="utf-8")
     _session_database(
@@ -4307,10 +4312,10 @@ def test_unreadable_recovery_source_defers_startup_and_still_converges(
         extra_name="recovery.txt",
         session_key="agent:main:recovered",
     )
-    recovery_engine = importlib.import_module("opensquilla.recovery.engine")
+    recovery_engine = importlib.import_module("openstarry_code.recovery.engine")
     copy_source_file = recovery_engine._copy_source_file_no_follow
     source_db = (
-        user_data / "recovery-profiles" / recovery_id / "opensquilla" / "state" / "sessions.db"
+        user_data / "recovery-profiles" / recovery_id / "openstarry-code" / "state" / "sessions.db"
     )
     deny_source_read = True
 
@@ -4318,7 +4323,7 @@ def test_unreadable_recovery_source_defers_startup_and_still_converges(
         if deny_source_read and source == source_db:
             # The journal is written before the real copy boundary, leaving the
             # exact pre-park transaction that the next launch must recover.
-            assert (user_data / ".opensquilla-profile-consolidation.json").is_file()
+            assert (user_data / ".openstarry-code-profile-consolidation.json").is_file()
             raise PermissionError(
                 errno.EACCES,
                 "simulated unreadable recovery source",
@@ -4366,13 +4371,13 @@ def test_parked_primary_keeps_blocking_startup(
     application while the real data sits in the transaction backup.
     """
 
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     (primary / "workspace").mkdir(parents=True)
     (primary / "config.toml").write_text("log_file_backup_count = 1\n", encoding="utf-8")
 
-    from opensquilla.recovery.consolidate import _primary_home_survives_failure
+    from openstarry_code.recovery.consolidate import _primary_home_survives_failure
 
     assert _primary_home_survives_failure(user_data, primary) is True
 
@@ -4390,9 +4395,9 @@ def test_existing_extended_length_external_state_merges_sessions(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     user_data = tmp_path / "user-data"
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
     workspace = tmp_path / "workspace"
     media = tmp_path / "media"
     workspace.mkdir()
@@ -4452,9 +4457,9 @@ def test_extended_length_user_data_root_consolidates_sessions(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "locks"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "locks"))
     seed = tmp_path / "seed-user-data"
-    seed_primary = seed / "opensquilla"
+    seed_primary = seed / "openstarry-code"
     (seed_primary / "workspace").mkdir(parents=True)
     (seed_primary / "config.toml").write_text("primary = true\n", encoding="utf-8")
     _session_database(
@@ -4483,7 +4488,7 @@ def test_extended_length_user_data_root_consolidates_sessions(
     user_data = prefix / ("u" * first_padding) / ("v" * second_padding)
     shutil.copytree(_native_io_path(seed), _native_io_path(user_data))
     assert len(str(user_data)) == 270
-    primary = user_data / "opensquilla"
+    primary = user_data / "openstarry-code"
 
     result = consolidate_recovery_profiles(user_data, primary)
 
@@ -4537,7 +4542,7 @@ def test_copy_leaf_preserves_verbatim_symlink_payload(
     source.write_bytes(b"synthetic source")
     destination = tmp_path / "destination" / "copied-link"
     target = "\\\\?\\C:\\verbatim\\" + ("x" * 270) + "\\tail. "
-    consolidate_module = importlib.import_module("opensquilla.recovery.consolidate")
+    consolidate_module = importlib.import_module("openstarry_code.recovery.consolidate")
     real_lstat = consolidate_module.os.lstat
     native_source = os.path.normcase(os.path.normpath(str(_native_io_path(source))))
 
@@ -4584,7 +4589,7 @@ def test_durable_junction_resume_ignores_crashed_temporary_and_publishes(
         pytest.skip(f"junction creation is unavailable: {completed.stderr}")
     destination = tmp_path / "external" / "workspace-link"
     destination.parent.mkdir()
-    consolidate_module = importlib.import_module("opensquilla.recovery.consolidate")
+    consolidate_module = importlib.import_module("openstarry_code.recovery.consolidate")
     real_copy = consolidate_module._copy_windows_mount_point_no_follow
     attempted_temporaries: list[Path] = []
 
@@ -4651,7 +4656,7 @@ def test_durable_junction_is_idempotent_when_destination_already_matches(
         )
         if completed.returncode != 0:
             pytest.skip(f"junction creation is unavailable: {completed.stderr}")
-    consolidate_module = importlib.import_module("opensquilla.recovery.consolidate")
+    consolidate_module = importlib.import_module("openstarry_code.recovery.consolidate")
 
     consolidate_module._copy_leaf(
         source,
@@ -4665,7 +4670,7 @@ def test_durable_junction_is_idempotent_when_destination_already_matches(
     assert not [
         entry.name
         for entry in os.scandir(destination_parent)
-        if entry.name.startswith(".opensquilla-junction-")
+        if entry.name.startswith(".openstarry-code-junction-")
     ]
 
 
@@ -4678,7 +4683,7 @@ def test_clone_primary_keeps_windows_directory_metadata_best_effort(
     (primary / "workspace").mkdir(parents=True)
     (primary / "workspace" / "MEMORY.md").write_text("preserved\n", encoding="utf-8")
     staging = tmp_path / "staging"
-    consolidate_module = importlib.import_module("opensquilla.recovery.consolidate")
+    consolidate_module = importlib.import_module("openstarry_code.recovery.consolidate")
     calls: list[tuple[object, object, bool]] = []
 
     def fail_windows_directory_metadata(source, destination, *, follow_symlinks):
@@ -4703,7 +4708,7 @@ def test_clone_primary_propagates_non_win32_directory_metadata_error(
     primary.mkdir()
     (primary / "config.toml").write_text("port = 18789\n", encoding="utf-8")
     staging = tmp_path / "staging"
-    consolidate_module = importlib.import_module("opensquilla.recovery.consolidate")
+    consolidate_module = importlib.import_module("openstarry_code.recovery.consolidate")
 
     def fail_directory_metadata(*_args, **_kwargs):
         raise OSError(errno.EIO, "injected non-Win32 metadata failure")
@@ -4740,7 +4745,7 @@ def test_clone_primary_preserves_nested_junction_without_symlink_privilege(
         pytest.skip(f"junction creation is unavailable: {completed.stderr}")
     source_target = os.readlink(source_junction)
     staging = tmp_path / "staging"
-    consolidate_module = importlib.import_module("opensquilla.recovery.consolidate")
+    consolidate_module = importlib.import_module("openstarry_code.recovery.consolidate")
 
     def reject_symlink(*_args, **_kwargs) -> None:
         raise AssertionError("junction cloning must not call os.symlink")
@@ -4766,7 +4771,7 @@ def test_copy_leaf_rejects_unknown_windows_reparse_tag(
     source = tmp_path / "source"
     source.mkdir()
     destination = tmp_path / "destination" / "copied"
-    consolidate_module = importlib.import_module("opensquilla.recovery.consolidate")
+    consolidate_module = importlib.import_module("openstarry_code.recovery.consolidate")
     real_lstat = os.lstat
     native_source = os.path.normcase(os.path.normpath(str(_native_io_path(source))))
 
@@ -4792,7 +4797,7 @@ def test_copy_leaf_rejects_unknown_windows_reparse_tag(
 def test_same_leaf_distinguishes_windows_junction_from_symlink(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    consolidate_module = importlib.import_module("opensquilla.recovery.consolidate")
+    consolidate_module = importlib.import_module("openstarry_code.recovery.consolidate")
     source = Path("C:/synthetic/source")
     destination = Path("C:/synthetic/destination")
     values = {
@@ -4826,7 +4831,7 @@ def test_same_leaf_distinguishes_windows_junction_from_symlink(
 def test_same_leaf_keeps_verbatim_and_non_verbatim_targets_distinct(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    consolidate_module = importlib.import_module("opensquilla.recovery.consolidate")
+    consolidate_module = importlib.import_module("openstarry_code.recovery.consolidate")
     source = Path("C:/synthetic/source")
     destination = Path("C:/synthetic/destination")
     values = {

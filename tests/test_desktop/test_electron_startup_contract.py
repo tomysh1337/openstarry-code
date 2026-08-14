@@ -86,8 +86,8 @@ def test_desktop_owned_gateway_is_unconditionally_loopback_bound() -> None:
     # ``host = \"0.0.0.0\"`` silently makes the desktop-owned Gateway public.
     assert "'--listen', '127.0.0.1'" in start_gateway
     assert "'--bind', '127.0.0.1'" not in start_gateway
-    assert "OPENSQUILLA_GATEWAY_HOST" not in start_gateway
-    assert "OPENSQUILLA_LISTEN" not in start_gateway
+    assert "OPENSTARRY_CODE_GATEWAY_HOST" not in start_gateway
+    assert "OPENSTARRY_CODE_LISTEN" not in start_gateway
     assert "'0.0.0.0'" not in start_gateway
 
 
@@ -134,7 +134,7 @@ def test_desktop_deep_link_protocol_is_registered_and_safely_activated() -> None
 
     assert package["build"]["protocols"] == [
         {
-            "name": "OpenSquilla",
+            "name": "OpenStarry Code",
             "schemes": ["opensquilla"],
         }
     ]
@@ -370,7 +370,7 @@ def test_boot_retry_surfaces_failed_restart_and_prevents_repeat_clicks() -> None
         "('click', () => retryStartup())"
         in boot_html
     )
-    assert "rawMessage.includes('OPENSQUILLA_PROFILE_IN_USE')" in apply_error
+    assert "rawMessage.includes('OPENSTARRY_CODE_PROFILE_IN_USE')" in apply_error
     assert boot_html.count("profileInUse:") == 6
 
 
@@ -403,8 +403,8 @@ def test_boot_error_and_recovery_states_pause_all_indeterminate_motion() -> None
 def test_boot_and_native_window_backgrounds_match_control_ui_theme_tokens() -> None:
     boot_html = _read("desktop/electron/src/boot.html")
     main_ts = _read("desktop/electron/src/main.ts")
-    light_tokens = _read("opensquilla-webui/src/themes/light/tokens.css")
-    dark_tokens = _read("opensquilla-webui/src/themes/dark/tokens.css")
+    light_tokens = _read("openstarry-code-webui/src/themes/light/tokens.css")
+    dark_tokens = _read("openstarry-code-webui/src/themes/dark/tokens.css")
 
     assert "--bg: #F7F7F8;" in light_tokens
     assert "--bg: #18181A;" in dark_tokens
@@ -544,7 +544,7 @@ def test_primary_repair_ui_scaffold_has_all_six_locales() -> None:
 def test_primary_repair_ui_gives_actionable_copy_for_user_resolvable_blockers() -> None:
     """The two blockers a user can act on directly drop the generic framing.
 
-    A profile held by another OpenSquilla process resolves by letting that
+    A profile held by another OpenStarry Code process resolves by letting that
     process finish (or quitting it); a config authored by a newer build
     resolves by updating the app, so that state alone surfaces a download
     entry pointing at the canonical releases page.
@@ -747,7 +747,7 @@ def test_legacy_profiles_are_consolidated_before_primary_inspection_and_gateway_
     assert "'consolidate-profiles'" in runner
     assert "'--user-data', app.getPath('userData')" in runner
     assert "'--primary-home', profile.home" in runner
-    assert "OPENSQUILLA_RECOVERY_OFFLINE: '1'" in runner
+    assert "OPENSTARRY_CODE_RECOVERY_OFFLINE: '1'" in runner
     assert "const recoveryProfiles = legacyRecoveryProfiles()" in consolidation
     assert "for (const profile of [...recoveryProfiles, primary])" in consolidation
     assert "await recoverVerifiedOrphanGatewayBeforeSpawn(profile)" in consolidation
@@ -957,20 +957,20 @@ def test_desktop_gateway_port_selection_is_bind_aware_and_bounded() -> None:
     assert "server.listen({ host: '127.0.0.1', port, exclusive: true })" in port_selection
     assert "await isPortBindable(port)" in port_selection
     assert "gatewayPortCursor = nextGatewayPortAfter(port)" in port_selection
-    assert "OPENSQUILLA_DESKTOP_GATEWAY_PORT" in port_selection
+    assert "OPENSTARRY_CODE_DESKTOP_GATEWAY_PORT" in port_selection
     assert "function gatewayExitLooksLikePortInUse(output: string): boolean" in main_ts
-    assert "OPENSQUILLA_GATEWAY_PORT_IN_USE" in main_ts
+    assert "OPENSTARRY_CODE_GATEWAY_PORT_IN_USE" in main_ts
     assert "gateway port is already in use" in main_ts
     assert "function gatewayExitLooksLikeProfileInUse(output: string): boolean" in main_ts
-    assert "OPENSQUILLA_PROFILE_IN_USE" in main_ts
-    assert "Another OpenSquilla runtime is still using this profile." in main_ts
+    assert "OPENSTARRY_CODE_PROFILE_IN_USE" in main_ts
+    assert "Another OpenStarry Code runtime is still using this profile." in main_ts
     assert "Do not delete profile lock files." in main_ts
     port_classifier = _section(
         main_ts,
         "function gatewayExitLooksLikePortInUse",
         "function gatewayExitLooksLikeProfileInUse",
     )
-    assert "OPENSQUILLA_PROFILE_IN_USE" not in port_classifier
+    assert "OPENSTARRY_CODE_PROFILE_IN_USE" not in port_classifier
     assert (
         "const maxAttempts = hasExplicitGatewayPort() ? 1 : "
         "GATEWAY_PORT_LAST - GATEWAY_PORT_FIRST + 1"
@@ -1026,7 +1026,7 @@ def test_desktop_local_web_build_installs_locked_dependencies_first() -> None:
     package_json = json.loads(_read("desktop/electron/package.json"))
 
     assert package_json["scripts"]["build:web"] == (
-        "cd ../../opensquilla-webui && npm ci && npm run build"
+        "cd ../../openstarry-code-webui && npm ci && npm run build"
     )
 
 
@@ -1203,7 +1203,7 @@ def test_start_gateway_does_not_attach_to_unrequested_default_dev_gateway() -> N
     assert "const activeProfile = activeDesktopProfile()" in start
     assert "activeProfile.kind === 'primary'" not in start
     assert "return primaryProfilePaths(app.getPath('userData'))" in main_ts
-    assert "process.env.OPENSQUILLA_DESKTOP_GATEWAY_URL" in start
+    assert "process.env.OPENSTARRY_CODE_DESKTOP_GATEWAY_URL" in start
     assert "await healthCheck('http://127.0.0.1:18791')" not in start
     assert "gatewayState.url = 'http://127.0.0.1:18791'" not in start
 
@@ -1239,8 +1239,8 @@ def test_desktop_recovers_only_cryptographically_verified_orphan_gateway() -> No
     assert preflight_call in inspect
     assert inspect.index(preflight_call) < inspect.index("inspectDesktopProfile(active)")
     assert "liveLifecycleOwnedGatewayProcesses().length === 0" in inspect
-    assert "OPENSQUILLA_DESKTOP_GATEWAY_URL" in inspect
-    assert "OPENSQUILLA_DESKTOP_GATEWAY_INSTANCE_NONCE" in start
+    assert "OPENSTARRY_CODE_DESKTOP_GATEWAY_URL" in inspect
+    assert "OPENSTARRY_CODE_DESKTOP_GATEWAY_INSTANCE_NONCE" in start
     assert "createDesktopGatewayInstanceNonce()" in start
 
 
@@ -1279,8 +1279,8 @@ def test_desktop_blocks_macos_app_translocation_without_forcing_applications() -
     assert "process.platform !== 'darwin' || !app.isPackaged" in main_ts
     assert "blocked: translocated" in main_ts
     assert "translocated || !inApplications" not in main_ts
-    assert "drag OpenSquilla.app from the DMG into Applications" in main_ts
-    assert "then open OpenSquilla again" in main_ts
+    assert "drag OpenStarry Code.app from the DMG into Applications" in main_ts
+    assert "then open OpenStarry Code again" in main_ts
     assert "assertSupportedMacInstallLocation()" in start
     assert start.index("if (reusableGateway) return reusableGateway") < start.index(
         "assertSupportedMacInstallLocation()"
@@ -1309,7 +1309,7 @@ def test_desktop_gateway_exit_classifies_newer_config_validation_errors() -> Non
         "function classifyGatewayExitMessage(message: string, outputTail: string): string"
         in main_ts
     )
-    assert "settings written by a newer OpenSquilla version" in main_ts
+    assert "settings written by a newer OpenStarry Code version" in main_ts
     assert "let gatewayOutputTail = ''" in start
     assert "let childExitMessage: string | null = null" in start
     assert "appendGatewayOutputTail(gatewayOutputTail, chunk)" in start
@@ -1330,7 +1330,7 @@ def test_start_gateway_enriches_child_path_for_code_task_builds() -> None:
     assert "function desktopChildPath" in main_ts
     assert "function desktopNodeBinCandidates" in main_ts
     assert "packagedRuntimeRoot(), 'node', 'bin'" in main_ts
-    assert "OPENSQUILLA_NODE_BIN_DIR" in start
+    assert "OPENSTARRY_CODE_NODE_BIN_DIR" in start
     assert "PATH: childPath" in start
 
 
@@ -1497,7 +1497,7 @@ def test_desktop_mock_update_is_dev_only_and_uses_native_update_surface() -> Non
     )
     startup = _section(main_ts, "void app.whenReady().then", "})\n}")
 
-    assert "const MOCK_UPDATE_VERSION_ENV = 'OPENSQUILLA_DESKTOP_MOCK_UPDATE_VERSION'" in main_ts
+    assert "const MOCK_UPDATE_VERSION_ENV = 'OPENSTARRY_CODE_DESKTOP_MOCK_UPDATE_VERSION'" in main_ts
     assert "if (app.isPackaged) return null" in mock_version
     assert "process.env[MOCK_UPDATE_VERSION_ENV]" in mock_version
     assert "mockUpdateVersion() !== null" in native_gate
@@ -1610,7 +1610,7 @@ def test_desktop_mock_update_dialog_auto_responder_is_mock_only() -> None:
 
     assert (
         "const MOCK_UPDATE_DIALOG_RESPONSES_ENV = "
-        "'OPENSQUILLA_DESKTOP_MOCK_UPDATE_DIALOG_RESPONSES'"
+        "'OPENSTARRY_CODE_DESKTOP_MOCK_UPDATE_DIALOG_RESPONSES'"
     ) in main_ts
     assert "if (mockUpdateVersion() === null) return null" in responder
     assert "process.env[MOCK_UPDATE_DIALOG_RESPONSES_ENV]" in responder
@@ -1628,10 +1628,10 @@ def test_desktop_mock_update_flow_has_automated_e2e_script() -> None:
         "npm run build && node scripts/test-mock-update-flow.mjs"
     )
     assert "_electron" in script
-    assert "OPENSQUILLA_DESKTOP_MOCK_UPDATE_VERSION" in script
-    assert "OPENSQUILLA_DESKTOP_MOCK_UPDATE_DIALOG_RESPONSES" in script
-    assert "window.opensquillaDesktop.isAutoUpdateEnabled()" in script
-    assert "window.opensquillaDesktop.getUpdateState" in script
+    assert "OPENSTARRY_CODE_DESKTOP_MOCK_UPDATE_VERSION" in script
+    assert "OPENSTARRY_CODE_DESKTOP_MOCK_UPDATE_DIALOG_RESPONSES" in script
+    assert "window.openstarry-codeDesktop.isAutoUpdateEnabled()" in script
+    assert "window.openstarry-codeDesktop.getUpdateState" in script
     assert 'data-testid="desktop-update-download"' in script
     assert 'data-testid="update-banner"' in script
     assert "Menu.getApplicationMenu()" in script
@@ -1786,8 +1786,8 @@ def test_apply_downloaded_update_handoff_error_restores_retry_state() -> None:
 
 def test_desktop_persists_network_observability_privacy_setting() -> None:
     main_ts = _read("desktop/electron/src/main.ts")
-    types_ts = _read("opensquilla-webui/src/platform/types.ts")
-    vite_env = _read("opensquilla-webui/src/vite-env.d.ts")
+    types_ts = _read("openstarry-code-webui/src/platform/types.ts")
+    vite_env = _read("openstarry-code-webui/src/vite-env.d.ts")
     connection = _section(
         main_ts,
         "interface DesktopConnection",
@@ -2000,17 +2000,17 @@ def test_desktop_network_observability_disable_gates_native_update_and_gateway_e
         "return desktopPersistedNetworkObservabilityDisabled() || "
         "desktopConfigNetworkObservabilityDisabled()" in network_gate
     )
-    assert "OPENSQUILLA_PRIVACY_DISABLE_NETWORK_OBSERVABILITY" in main_ts
-    assert "OPENSQUILLA_TELEMETRY_DISABLED" in main_ts
-    assert "OPENSQUILLA_UPDATE_CHECK_DISABLED" in main_ts
+    assert "OPENSTARRY_CODE_PRIVACY_DISABLE_NETWORK_OBSERVABILITY" in main_ts
+    assert "OPENSTARRY_CODE_TELEMETRY_DISABLED" in main_ts
+    assert "OPENSTARRY_CODE_UPDATE_CHECK_DISABLED" in main_ts
     assert "if (desktopNetworkObservabilityDisabled()) return false" in update_managed
     assert update_managed.index("desktopNetworkObservabilityDisabled()") < update_managed.index(
-        "process.env.OPENSQUILLA_DESKTOP_DISABLE_AUTO_UPDATE"
+        "process.env.OPENSTARRY_CODE_DESKTOP_DISABLE_AUTO_UPDATE"
     )
     assert "else if (desktopUpdateManaged())" in startup
     assert "desktopUpdateCheckScheduler.start(UPDATE_CHECK_INITIAL_DELAY_MS)" in startup
     assert "connection.disableNetworkObservability" in start
-    assert "OPENSQUILLA_PRIVACY_DISABLE_NETWORK_OBSERVABILITY: '1'" in start
+    assert "OPENSTARRY_CODE_PRIVACY_DISABLE_NETWORK_OBSERVABILITY: '1'" in start
 
 
 def test_desktop_native_update_rechecks_daily_without_overlapping() -> None:
@@ -2122,11 +2122,11 @@ def test_desktop_gateway_build_and_verifier_cover_runtime_capabilities() -> None
     assert "code-task', 'smoke-router'" in verifier
     assert "timeout: 120000" in verifier
     gateway_smoke = _read("desktop/electron/scripts/smoke-gateway.mjs")
-    assert "OPENSQUILLA_GATEWAY_SMOKE_TIMEOUT_MS" in gateway_smoke
+    assert "OPENSTARRY_CODE_GATEWAY_SMOKE_TIMEOUT_MS" in gateway_smoke
     assert "'90000'" in gateway_smoke
     assert "function smokeEnv(tempHome, config)" in gateway_smoke
-    assert "OPENSQUILLA_STATE_DIR: tempHome" in gateway_smoke
-    assert "OPENSQUILLA_STATE_DIR: stateDir" not in gateway_smoke
+    assert "OPENSTARRY_CODE_STATE_DIR: tempHome" in gateway_smoke
+    assert "OPENSTARRY_CODE_STATE_DIR: stateDir" not in gateway_smoke
     assert "const env = smokeEnv(tempHome, config)" in gateway_smoke
     assert "verifyGatewayCaStore(gatewayBinary, env)" in gateway_smoke
     assert re.search(r"spawn\(gatewayBinary,.*?\{.*?\benv,", gateway_smoke, re.DOTALL)
@@ -2139,7 +2139,7 @@ def test_packaged_gateway_smoke_profile_satisfies_recovery_guard(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    from opensquilla.recovery import guard_desktop_profile
+    from openstarry_code.recovery import guard_desktop_profile
 
     home = tmp_path / "opensquilla-gateway-smoke"
     (home / "state").mkdir(parents=True)
@@ -2150,10 +2150,10 @@ def test_packaged_gateway_smoke_profile_satisfies_recovery_guard(
         encoding="utf-8",
     )
     (home / "config.toml").write_text('[auth]\nmode = "none"\n', encoding="utf-8")
-    monkeypatch.setenv("OPENSQUILLA_DESKTOP", "1")
-    monkeypatch.setenv("OPENSQUILLA_INSTALL_METHOD", "desktop")
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(home / "config.toml"))
+    monkeypatch.setenv("OPENSTARRY_CODE_DESKTOP", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_INSTALL_METHOD", "desktop")
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(home / "config.toml"))
 
     report = guard_desktop_profile(home)
 
@@ -2173,7 +2173,7 @@ def test_desktop_gateway_bundle_collects_usage_ledger_and_verifies_query_ui() ->
 
     build_script = _read("desktop/electron/scripts/build-gateway.mjs")
     migration = ROOT / "migrations" / "V021__usage_ledger.py"
-    usage_query = _read("opensquilla-webui/src/composables/usage/useUsageQuery.ts")
+    usage_query = _read("openstarry-code-webui/src/composables/usage/useUsageQuery.ts")
 
     assert "'--collect-all',\n  'opensquilla'," in build_script
     assert migration.is_file()
@@ -2202,7 +2202,7 @@ def test_windows_release_workflow_fails_fast_after_gateway_build_failure() -> No
 
 def test_desktop_native_artifact_open_allows_active_documents_with_file_extensions() -> None:
     main_ts = _read("desktop/electron/src/main.ts")
-    artifact_list_vue = _read("opensquilla-webui/src/components/chat/ChatArtifactList.vue")
+    artifact_list_vue = _read("openstarry-code-webui/src/components/chat/ChatArtifactList.vue")
     mime_extensions = _section(main_ts, "const MIME_EXTENSIONS", "}\n\n")
     native_open = _section(
         main_ts,
@@ -2220,13 +2220,13 @@ def test_desktop_native_artifact_open_allows_active_documents_with_file_extensio
 def test_desktop_cleanup_does_not_claim_os_app_uninstall() -> None:
     main_ts = _read("desktop/electron/src/main.ts")
     runtime_panel_vue = _read(
-        "opensquilla-webui/src/components/settings/DesktopRuntimePanel.vue"
+        "openstarry-code-webui/src/components/settings/DesktopRuntimePanel.vue"
     )
     maintenance_panel_vue = _read(
-        "opensquilla-webui/src/components/settings/DataMigrationPanel.vue"
+        "openstarry-code-webui/src/components/settings/DataMigrationPanel.vue"
     )
-    en_locale = json.loads(_read("opensquilla-webui/src/locales/en.json"))
-    zh_locale = json.loads(_read("opensquilla-webui/src/locales/zh-Hans.json"))
+    en_locale = json.loads(_read("openstarry-code-webui/src/locales/en.json"))
+    zh_locale = json.loads(_read("openstarry-code-webui/src/locales/zh-Hans.json"))
 
     cleanup = _section(
         main_ts,
@@ -2242,8 +2242,8 @@ def test_desktop_cleanup_does_not_claim_os_app_uninstall() -> None:
     assert "desktopChildEnvironment(profile" in cleanup
     assert "desktop:uninstall:summary" not in main_ts
     assert "desktop:uninstall:run" not in main_ts
-    assert "OPENSQUILLA_INSTALL_METHOD: 'desktop'" in child_environment
-    assert "OPENSQUILLA_STATE_DIR: profile.home" in child_environment
+    assert "OPENSTARRY_CODE_INSTALL_METHOD: 'desktop'" in child_environment
+    assert "OPENSTARRY_CODE_STATE_DIR: profile.home" in child_environment
     assert "installed app itself will remain" in main_ts
     assert "setup.runtime.cleanup.label" not in runtime_panel_vue
     assert "setup.runtime.cleanup.label" in maintenance_panel_vue
@@ -2253,7 +2253,7 @@ def test_desktop_cleanup_does_not_claim_os_app_uninstall() -> None:
     assert "desktop data cleanup" in en_runtime["uninstallLabel"]
     assert "remove the installed app itself" in en_runtime["uninstallDesc"]
     assert "uninstalled" not in en_runtime["uninstallDone"].lower()
-    assert "remove OpenSquilla through your OS" in en_runtime["uninstallDone"]
+    assert "remove OpenStarry Code through your OS" in en_runtime["uninstallDone"]
     assert "清理桌面本地数据" in zh_runtime["uninstallLabel"]
     assert "移除已安装的应用本体" in zh_runtime["uninstallDesc"]
     assert "已卸载" not in zh_runtime["uninstallDone"]
@@ -2472,7 +2472,7 @@ def test_desktop_gateway_ownership_control_dir_is_outside_profile_data_state() -
     assert "'gateway-ownership'" in helper
     assert "desktopProfileFingerprint(profile.home)" in helper
     assert "desktopStateDir()" not in helper
-    assert "OPENSQUILLA_DESKTOP_GATEWAY_OWNERSHIP_DIR: gatewayOwnershipDir" in start
+    assert "OPENSTARRY_CODE_DESKTOP_GATEWAY_OWNERSHIP_DIR: gatewayOwnershipDir" in start
 
     ownership = _read("desktop/electron/src/desktop-gateway-ownership.ts")
     launch_match = _section(
@@ -2641,17 +2641,17 @@ def test_gateway_spawn_state_dir_is_the_desktop_home_root() -> None:
         "// ── Legacy home import detection",
     )
 
-    # OPENSQUILLA_STATE_DIR names the OpenSquilla HOME ROOT on the Python side
+    # OPENSTARRY_CODE_STATE_DIR names the OpenStarry Code HOME ROOT on the Python side
     # (paths.default_opensquilla_home); runtime state lives in its state/
     # subdir. The gateway child must receive desktopHome(), not the state
     # subdir, or home-derived data (managed skills, workspace/MEMORY.md,
     # session-archive, .env) nests one level too deep — the pre-0.5.x layout
     # bug now handled by the Python recovery engine before gateway startup.
     assert "desktopChildEnvironment(activeProfile" in start
-    assert "OPENSQUILLA_STATE_DIR: profile.home" in child_environment
-    assert "OPENSQUILLA_PROFILE_KIND: 'desktop-primary'" in child_environment
+    assert "OPENSTARRY_CODE_STATE_DIR: profile.home" in child_environment
+    assert "OPENSTARRY_CODE_PROFILE_KIND: 'desktop-primary'" in child_environment
     assert "profileKindEnvironment" not in main_ts
-    assert "OPENSQUILLA_STATE_DIR: desktopStateDir()" not in main_ts
+    assert "OPENSTARRY_CODE_STATE_DIR: desktopStateDir()" not in main_ts
     # The generated TOML keeps pinning the runtime state dir to <home>/state so
     # database paths (sessions.db, scheduler.db, agents/) never move.
     assert "state_dir = ${tomlString(join(profile.home, 'state'))}" in main_ts
@@ -2768,7 +2768,7 @@ def test_run_migrate_cli_targets_desktop_home_via_bundled_cli() -> None:
 
     assert "[...prefix, 'migrate', subcommand, ...extraArgs]" in migrate
     assert "runtime.args.slice(0, -2)" in migrate
-    # OPENSQUILLA_STATE_DIR names the OpenSquilla HOME ROOT (the migrator's
+    # OPENSTARRY_CODE_STATE_DIR names the OpenStarry Code HOME ROOT (the migrator's
     # import target) and must match the gateway spawn: desktopHome(), never the
     # state subdir.
     assert "const primary = primaryDesktopProfile()" in migrate
@@ -2778,13 +2778,13 @@ def test_run_migrate_cli_targets_desktop_home_via_bundled_cli() -> None:
         "function desktopChildEnvironment",
         "// ── Legacy home import detection",
     )
-    assert "OPENSQUILLA_STATE_DIR: profile.home" in child_environment
-    assert "OPENSQUILLA_GATEWAY_CONFIG_PATH: join(profile.home, 'config.toml')" in child_environment
-    assert "OPENSQUILLA_INSTALL_METHOD: 'desktop'" in child_environment
+    assert "OPENSTARRY_CODE_STATE_DIR: profile.home" in child_environment
+    assert "OPENSTARRY_CODE_GATEWAY_CONFIG_PATH: join(profile.home, 'config.toml')" in child_environment
+    assert "OPENSTARRY_CODE_INSTALL_METHOD: 'desktop'" in child_environment
     for env in ("PYTHONUNBUFFERED: '1'", "PYTHONUTF8: '1'", "PYTHONIOENCODING: 'utf-8:replace'"):
         assert env in migrate
     assert "subcommand === 'verify-opensquilla-import'" in migrate
-    assert "OPENSQUILLA_RECOVERY_OFFLINE: '1'" in migrate
+    assert "OPENSTARRY_CODE_RECOVERY_OFFLINE: '1'" in migrate
 
     summary_json = _section(
         main_ts,
@@ -2867,7 +2867,7 @@ def test_desktop_migration_receipt_authority_is_bounded_python_verification() ->
     )
 
     assert "sourceWasImportedToTarget" not in main_ts
-    assert "'.opensquilla-imported.json'" not in main_ts
+    assert "'.openstarry-code-imported.json'" not in main_ts
     assert "join(receiptDir, 'report.json')" not in main_ts
     assert "layout-receipt.json" not in main_ts
     assert "trustedMigrationReceiptRoot" not in main_ts
@@ -3259,7 +3259,7 @@ def test_obsolete_profile_consolidation_escape_hatch_is_removed() -> None:
     main_ts = _read("desktop/electron/src/main.ts")
     preload = _read("desktop/electron/src/preload.cts")
 
-    assert "OPENSQUILLA_DESKTOP_SKIP_PROFILE_CONSOLIDATION" not in main_ts
+    assert "OPENSTARRY_CODE_DESKTOP_SKIP_PROFILE_CONSOLIDATION" not in main_ts
     assert "profileConsolidationOptOut" not in main_ts
     assert "desktop_profile_consolidation_skipped" not in main_ts
     assert "desktopProfileConsolidationMaintenance" in main_ts

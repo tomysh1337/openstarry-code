@@ -4,7 +4,7 @@ from dataclasses import FrozenInstanceError, asdict
 
 import pytest
 
-from opensquilla.search.types import SearchDiagnostics, SearchHit, SearchOptions, SearchResult
+from openstarry_code.search.types import SearchDiagnostics, SearchHit, SearchOptions, SearchResult
 
 
 def test_search_result_keeps_existing_constructor_shape() -> None:
@@ -24,7 +24,7 @@ def test_search_result_keeps_existing_constructor_shape() -> None:
 
 def test_search_options_clamps_public_limits() -> None:
     options = SearchOptions(
-        query="  OpenSquilla search  ",
+        query="  OpenStarry Code search  ",
         max_results=100,
         fetch_top_k=100,
         max_chars_per_source=100_000,
@@ -32,7 +32,7 @@ def test_search_options_clamps_public_limits() -> None:
         exclude_domains=["Spam.example"],  # type: ignore[arg-type]
     )
 
-    assert options.query == "OpenSquilla search"
+    assert options.query == "OpenStarry Code search"
     assert options.max_results == 20
     assert options.fetch_top_k == 5
     assert options.max_chars_per_source == 5000

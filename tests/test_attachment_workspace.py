@@ -3,8 +3,8 @@ from __future__ import annotations
 import hashlib
 from pathlib import Path
 
-from opensquilla.attachment_refs import make_attachment_ref, write_transcript_material
-from opensquilla.attachment_workspace import (
+from openstarry_code.attachment_refs import make_attachment_ref, write_transcript_material
+from openstarry_code.attachment_workspace import (
     AttachmentWorkspaceMaterializer,
     is_materializable_attachment_mime,
 )
@@ -30,7 +30,7 @@ def test_unsupported_mime_is_not_materialized(tmp_path: Path) -> None:
 
     assert result.available is False
     assert result.error == "attachment type is not materializable"
-    assert not (workspace / ".opensquilla").exists()
+    assert not (workspace / ".openstarry-code").exists()
     assert not is_materializable_attachment_mime("image/png", _MATERIALIZABLE_MIMES)
 
 
@@ -60,7 +60,7 @@ def test_materializes_transcript_ref_inside_workspace(tmp_path: Path) -> None:
 
     assert result.available is True
     assert result.rel_path is not None
-    assert result.rel_path.startswith(".opensquilla/attachments/session-a/")
+    assert result.rel_path.startswith(".openstarry-code/attachments/session-a/")
     assert ".." not in result.rel_path
     materialized = (workspace / result.rel_path).resolve()
     materialized.relative_to(workspace.resolve())
@@ -72,7 +72,7 @@ def test_existing_materialized_file_is_reused_when_hash_matches(tmp_path: Path) 
     workspace = tmp_path / "workspace"
     payload = b"hello,world\n"
     sha = hashlib.sha256(payload).hexdigest()
-    rel_dir = workspace / ".opensquilla" / "attachments" / "session-a"
+    rel_dir = workspace / ".openstarry-code" / "attachments" / "session-a"
     rel_dir.mkdir(parents=True)
     existing = rel_dir / f"{sha[:12]}-notes.txt"
     existing.write_bytes(payload)
@@ -118,7 +118,7 @@ def test_budget_rejects_materialization_that_would_exceed_it(tmp_path: Path) -> 
     assert "workspace attachment budget exceeded" in result.error
     # The marker text names the remedy for the operator/model to see.
     assert "workspace_attachment_disk_budget_bytes" in result.error
-    files = list((tmp_path / "workspace" / ".opensquilla" / "attachments").rglob("*-big.bin"))
+    files = list((tmp_path / "workspace" / ".openstarry-code" / "attachments").rglob("*-big.bin"))
     assert files == []
 
 
@@ -184,7 +184,7 @@ def test_budget_shared_across_one_instance_batch(tmp_path: Path) -> None:
 def test_workspace_attachment_budget_from_config_guards() -> None:
     from types import SimpleNamespace
 
-    from opensquilla.attachment_workspace import workspace_attachment_budget_from_config
+    from openstarry_code.attachment_workspace import workspace_attachment_budget_from_config
 
     good = SimpleNamespace(
         attachments=SimpleNamespace(workspace_attachment_disk_budget_bytes=123)
@@ -213,7 +213,7 @@ def test_budget_overwrite_of_mismatched_file_frees_replaced_bytes(tmp_path: Path
     workspace = tmp_path / "workspace"
     payload = b"h" * 10
     sha = hashlib.sha256(payload).hexdigest()
-    target_dir = workspace / ".opensquilla" / "attachments" / "session-a"
+    target_dir = workspace / ".openstarry-code" / "attachments" / "session-a"
     target_dir.mkdir(parents=True)
     stale = target_dir / f"{sha[:12]}-h.bin"
     stale.write_bytes(b"stale-different-content-12345")  # 29 bytes at the target path

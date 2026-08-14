@@ -62,11 +62,11 @@ dist
 build
 *.egg-info
 **/node_modules
-opensquilla-webui/test-results
+openstarry-code-webui/test-results
 
 # The WebUI bundle is rebuilt in the builder stage. Never merge a local,
 # potentially stale bundle into the generated artifact copied from that stage.
-src/opensquilla/gateway/static/dist
+src/openstarry_code/gateway/static/dist
 
 # --- CI / local tooling -----------------------------------------------------
 uv.lock

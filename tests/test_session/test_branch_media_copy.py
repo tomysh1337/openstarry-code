@@ -16,17 +16,17 @@ from pathlib import Path
 import pytest
 import pytest_asyncio
 
-from opensquilla.artifacts import ArtifactNotFoundError, ArtifactStore, artifact_payload
-from opensquilla.attachment_refs import (
+from openstarry_code.artifacts import ArtifactNotFoundError, ArtifactStore, artifact_payload
+from openstarry_code.attachment_refs import (
     copy_transcript_material,
     make_attachment_ref,
     read_attachment_ref_bytes,
     transcript_material_path,
     write_transcript_material,
 )
-from opensquilla.session.manager import SessionManager
-from opensquilla.session.models import AgentTaskRecord, AgentTaskStatus, TranscriptEntry
-from opensquilla.session.storage import SessionStorage
+from openstarry_code.session.manager import SessionManager
+from openstarry_code.session.models import AgentTaskRecord, AgentTaskStatus, TranscriptEntry
+from openstarry_code.session.storage import SessionStorage
 
 
 def _png_bytes() -> bytes:

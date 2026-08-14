@@ -1,4 +1,4 @@
-"""CLI tests for `opensquilla search query` canonical web search mode."""
+"""CLI tests for `openstarry-code search query` canonical web search mode."""
 
 from __future__ import annotations
 
@@ -6,9 +6,9 @@ import json
 
 from typer.testing import CliRunner
 
-import opensquilla.cli.search_cmd as search_cmd
-from opensquilla.cli.main import app
-from opensquilla.search.types import SearchOptions
+import openstarry_code.cli.search_cmd as search_cmd
+from openstarry_code.cli.main import app
+from openstarry_code.search.types import SearchOptions
 
 runner = CliRunner()
 

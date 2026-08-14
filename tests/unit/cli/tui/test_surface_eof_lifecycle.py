@@ -6,11 +6,11 @@ from typing import Any
 
 import pytest
 
-from opensquilla.cli.tui.adapters import native_bridge
-from opensquilla.cli.tui.adapters.native_bridge import NativeTerminalSurface
-from opensquilla.cli.tui.opentui.messages import HostInputEof, HostInputSubmit
-from opensquilla.cli.tui.opentui.surface import OpenTuiSurface
-from opensquilla.engine.commands import Surface
+from openstarry_code.cli.tui.adapters import native_bridge
+from openstarry_code.cli.tui.adapters.native_bridge import NativeTerminalSurface
+from openstarry_code.cli.tui.opentui.messages import HostInputEof, HostInputSubmit
+from openstarry_code.cli.tui.opentui.surface import OpenTuiSurface
+from openstarry_code.engine.commands import Surface
 
 
 class _FakeOpenTuiBridge:

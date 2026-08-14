@@ -4,12 +4,12 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.gateway import rpc_skills
-from opensquilla.gateway.rpc import RpcContext
-from opensquilla.gateway.scopes import ADMIN_SCOPE, METHOD_SCOPES
-from opensquilla.skills.hub.management import InstallResult
-from opensquilla.skills.hub.router import SourceRouter
-from opensquilla.skills.loader import SkillLoader
+from openstarry_code.gateway import rpc_skills
+from openstarry_code.gateway.rpc import RpcContext
+from openstarry_code.gateway.scopes import ADMIN_SCOPE, METHOD_SCOPES
+from openstarry_code.skills.hub.management import InstallResult
+from openstarry_code.skills.hub.router import SourceRouter
+from openstarry_code.skills.loader import SkillLoader
 
 
 def _write_skill(root, name: str, description: str = "Demo") -> None:
@@ -47,7 +47,7 @@ async def test_skills_reload_forces_running_loader_and_returns_stable_diff(tmp_p
 
 @pytest.mark.asyncio
 async def test_skills_reload_no_change_keeps_generation(tmp_path) -> None:
-    from opensquilla.engine.steps import skills_filter
+    from openstarry_code.engine.steps import skills_filter
 
     managed_dir = tmp_path / "managed"
     _write_skill(managed_dir, "plotter")

@@ -22,14 +22,14 @@ from typing import Any
 
 import pytest
 
-from opensquilla.contracts.attachments import MAX_STAGED_TEXT_BYTES
-from opensquilla.gateway.attachment_ingest import (
+from openstarry_code.contracts.attachments import MAX_STAGED_TEXT_BYTES
+from openstarry_code.gateway.attachment_ingest import (
     IMAGE_ATTACHMENT_BYTES,
     MAX_STAGED_PDF_BYTES,
     MAX_TOTAL_ATTACHMENT_BYTES,
     TEXT_ATTACHMENT_BYTES,
 )
-from opensquilla.gateway.uploads import (
+from openstarry_code.gateway.uploads import (
     AttachmentLostInRestartError,
     AttachmentNotFoundError,
     UploadOversizeError,
@@ -236,7 +236,7 @@ def test_file_uuid_resolved_via_store_returns_material_ref(
     material ref; it must not carry the upload uuid or long-lived base64 data.
     """
 
-    from opensquilla.gateway.rpc_sessions import (
+    from openstarry_code.gateway.rpc_sessions import (
         _resolve_attachments,
         _validate_attachments,
     )
@@ -273,7 +273,7 @@ def test_file_uuid_resolved_via_store_returns_material_ref(
 
 
 def test_file_uuid_resolution_requires_material_target(store: UploadStore) -> None:
-    from opensquilla.gateway.rpc_sessions import (
+    from openstarry_code.gateway.rpc_sessions import (
         _resolve_attachments,
         _validate_attachments,
     )
@@ -291,7 +291,7 @@ def test_file_uuid_resolution_revalidates_mime_from_staged_bytes(
     store: UploadStore,
     tmp_path: Path,
 ) -> None:
-    from opensquilla.gateway.rpc_sessions import (
+    from openstarry_code.gateway.rpc_sessions import (
         _resolve_attachments,
         _validate_attachments,
     )
@@ -322,7 +322,7 @@ def test_file_uuid_resolution_allows_large_staged_pdf(
     store: UploadStore,
     tmp_path: Path,
 ) -> None:
-    from opensquilla.gateway.rpc_sessions import (
+    from openstarry_code.gateway.rpc_sessions import (
         _MAX_ATTACHMENT_BYTES,
         _MAX_STAGED_PDF_BYTES,
         _resolve_attachments,
@@ -354,7 +354,7 @@ def test_file_uuid_resolution_allows_large_staged_pdf(
 
 
 def test_file_uuid_resolution_rejects_large_staged_image() -> None:
-    from opensquilla.gateway.rpc_sessions import (
+    from openstarry_code.gateway.rpc_sessions import (
         _resolve_attachments,
         _validate_attachments,
     )
@@ -393,7 +393,7 @@ def test_file_uuid_resolution_accepts_staged_text_above_inline_threshold(
 ) -> None:
     # Text is stageable: a clean-UTF-8 text file above the 2MB inline threshold
     # resolves instead of dead-ending (the inline cap only bounds inline sends).
-    from opensquilla.gateway.rpc_sessions import (
+    from openstarry_code.gateway.rpc_sessions import (
         _resolve_attachments,
         _validate_attachments,
     )
@@ -430,7 +430,7 @@ def test_file_uuid_resolution_accepts_staged_text_above_inline_threshold(
 
 
 def test_file_uuid_resolution_rejects_aggregate_raw_bytes_above_cap(tmp_path: Path) -> None:
-    from opensquilla.gateway.rpc_sessions import (
+    from openstarry_code.gateway.rpc_sessions import (
         _resolve_attachments,
         _validate_attachments,
     )
@@ -552,8 +552,8 @@ def test_upload_route_accepts_text_above_inline_threshold() -> None:
     from starlette.applications import Starlette
     from starlette.testclient import TestClient
 
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.gateway.uploads import UploadStore, register_upload_routes
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.gateway.uploads import UploadStore, register_upload_routes
 
     store = UploadStore(marker_dir=None, ttl_seconds=600, max_file_bytes=30 * 1024 * 1024)
     app = Starlette(debug=False)
@@ -574,8 +574,8 @@ def test_upload_route_rejects_text_above_staged_ceiling() -> None:
     from starlette.applications import Starlette
     from starlette.testclient import TestClient
 
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.gateway.uploads import UploadStore, register_upload_routes
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.gateway.uploads import UploadStore, register_upload_routes
 
     store = UploadStore(
         marker_dir=None, ttl_seconds=600, max_file_bytes=MAX_STAGED_TEXT_BYTES + 1024
@@ -598,8 +598,8 @@ def _route_client(config=None, store=None):
     from starlette.applications import Starlette
     from starlette.testclient import TestClient
 
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.gateway.uploads import UploadStore, register_upload_routes
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.gateway.uploads import UploadStore, register_upload_routes
 
     store = store or UploadStore(marker_dir=None, ttl_seconds=600, max_file_bytes=30 * 1024 * 1024)
     app = Starlette(debug=False)
@@ -667,7 +667,7 @@ def test_upload_route_sniffs_text_for_missing_claim() -> None:
 
 
 def test_upload_route_caps_opaque_via_config() -> None:
-    from opensquilla.gateway.config import GatewayConfig
+    from openstarry_code.gateway.config import GatewayConfig
 
     config = GatewayConfig(attachments={"opaque_max_bytes": 1024})
     with _route_client(config=config) as client:
@@ -681,8 +681,8 @@ def test_upload_route_caps_opaque_via_config() -> None:
 
 
 def test_upload_route_strict_mode_rejects_zip_and_missing_mime() -> None:
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.gateway.uploads import UploadStore
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.gateway.uploads import UploadStore
 
     config = GatewayConfig(attachments={"accept_opaque": False})
     strict_store = UploadStore(
@@ -713,9 +713,9 @@ def test_upload_unauthenticated_rejected() -> None:
     from starlette.applications import Starlette
     from starlette.testclient import TestClient
 
-    from opensquilla.gateway.config import AuthConfig, GatewayConfig
-    from opensquilla.gateway.middleware import AuthMiddleware
-    from opensquilla.gateway.uploads import UploadStore, register_upload_routes
+    from openstarry_code.gateway.config import AuthConfig, GatewayConfig
+    from openstarry_code.gateway.middleware import AuthMiddleware
+    from openstarry_code.gateway.uploads import UploadStore, register_upload_routes
 
     config = GatewayConfig(auth=AuthConfig(mode="token", token="secret"))
     store = UploadStore(marker_dir=None, ttl_seconds=600, max_file_bytes=30 * 1024 * 1024)
@@ -743,9 +743,9 @@ def test_upload_rejects_query_token_when_disallowed_for_multipart() -> None:
     from starlette.applications import Starlette
     from starlette.testclient import TestClient
 
-    from opensquilla.gateway.config import AuthConfig, GatewayConfig
-    from opensquilla.gateway.middleware import AuthMiddleware
-    from opensquilla.gateway.uploads import UploadStore, register_upload_routes
+    from openstarry_code.gateway.config import AuthConfig, GatewayConfig
+    from openstarry_code.gateway.middleware import AuthMiddleware
+    from openstarry_code.gateway.uploads import UploadStore, register_upload_routes
 
     config = GatewayConfig(auth=AuthConfig(mode="token", token="secret"))
     store = UploadStore(marker_dir=None, ttl_seconds=600, max_file_bytes=30 * 1024 * 1024)
@@ -772,8 +772,8 @@ def test_upload_route_response_exposes_expires_at_and_ttl() -> None:
     from starlette.applications import Starlette
     from starlette.testclient import TestClient
 
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.gateway.uploads import UploadStore, register_upload_routes
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.gateway.uploads import UploadStore, register_upload_routes
 
     store = UploadStore(marker_dir=None, ttl_seconds=600, max_file_bytes=30 * 1024 * 1024)
     app = Starlette(debug=False)
@@ -826,9 +826,9 @@ def test_app_factory_wires_strict_admission_into_route_and_store(tmp_path: Path)
     pytest.importorskip("starlette.testclient")
     from starlette.testclient import TestClient
 
-    from opensquilla.gateway.app import create_gateway_app
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.gateway.uploads import get_upload_store, set_upload_store
+    from openstarry_code.gateway.app import create_gateway_app
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.gateway.uploads import get_upload_store, set_upload_store
 
     original_store = get_upload_store()
     set_upload_store(None)
@@ -857,7 +857,7 @@ def test_app_factory_wires_strict_admission_into_route_and_store(tmp_path: Path)
 def test_file_uuid_opaque_reference_resolves_with_store_mime(tmp_path: Path) -> None:
     # An opaque staged upload referenced WITHOUT a declared mime resolves via
     # the store's own metadata into a content-addressed attachment_ref.
-    from opensquilla.gateway.rpc_sessions import (
+    from openstarry_code.gateway.rpc_sessions import (
         _resolve_attachments,
         _validate_attachments,
     )
@@ -978,9 +978,9 @@ def test_non_positive_total_cap_falls_back_to_default(tmp_path: Path) -> None:
     # The RAM cap can be raised but not disabled: a non-positive config value
     # falls back to the default at app construction (with a boot warning).
     pytest.importorskip("starlette.testclient")
-    from opensquilla.gateway.app import create_gateway_app
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.gateway.uploads import (
+    from openstarry_code.gateway.app import create_gateway_app
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.gateway.uploads import (
         _DEFAULT_MAX_TOTAL_BYTES,
         get_upload_store,
         set_upload_store,

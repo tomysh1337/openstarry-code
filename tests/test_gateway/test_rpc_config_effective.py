@@ -12,18 +12,18 @@ from typing import Any
 
 import pytest
 
-import opensquilla.gateway.rpc_config as rpc_config
-import opensquilla.provider.resolution as resolution
-from opensquilla.gateway.config import GatewayConfig, LlmProviderConfig
-from opensquilla.gateway.rpc import RpcContext, get_registry, validate_classification
-from opensquilla.gateway.scopes import METHOD_SCOPES, READ_SCOPE, resolve_required_scope
-from opensquilla.provider.resolution import ResolvedField
+import openstarry_code.gateway.rpc_config as rpc_config
+import openstarry_code.provider.resolution as resolution
+from openstarry_code.gateway.config import GatewayConfig, LlmProviderConfig
+from openstarry_code.gateway.rpc import RpcContext, get_registry, validate_classification
+from openstarry_code.gateway.scopes import METHOD_SCOPES, READ_SCOPE, resolve_required_scope
+from openstarry_code.provider.resolution import ResolvedField
 
 
 @pytest.fixture()
 def cfg(tmp_path, monkeypatch: pytest.MonkeyPatch) -> GatewayConfig:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "state"))
-    return GatewayConfig(config_path=str(tmp_path / "opensquilla.toml"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "state"))
+    return GatewayConfig(config_path=str(tmp_path / "openstarry-code.toml"))
 
 
 def _ctx(config: Any) -> RpcContext:
@@ -69,9 +69,9 @@ async def test_effective_envelope_and_provenance(cfg: GatewayConfig) -> None:
 async def test_effective_reflects_config_overrides(
     tmp_path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "state"))
     cfg = GatewayConfig(
-        config_path=str(tmp_path / "opensquilla.toml"),
+        config_path=str(tmp_path / "openstarry-code.toml"),
         llm=LlmProviderConfig(model="synthetic/custom-model", max_tokens=2_048),
     )
     result = await rpc_config._handle_config_effective(None, _ctx(cfg))
@@ -83,9 +83,9 @@ async def test_effective_reflects_config_overrides(
 async def test_effective_reports_tokenrhythm_qwen_output_limit(
     tmp_path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "state"))
     config = GatewayConfig(
-        config_path=str(tmp_path / "opensquilla.toml"),
+        config_path=str(tmp_path / "openstarry-code.toml"),
         llm={"provider": "tokenrhythm", "model": "qwen3.7-max"},
     )
 

@@ -14,10 +14,10 @@ from typing import Any
 
 import httpx
 
-from opensquilla.provider.model_catalog import ModelCatalog
-from opensquilla.provider.registry import get_provider_spec
-from opensquilla.provider.selector import ProviderConfig, _build_provider
-from opensquilla.provider.types import ChatConfig, DoneEvent, ErrorEvent, Message, TextDeltaEvent
+from openstarry_code.provider.model_catalog import ModelCatalog
+from openstarry_code.provider.registry import get_provider_spec
+from openstarry_code.provider.selector import ProviderConfig, _build_provider
+from openstarry_code.provider.types import ChatConfig, DoneEvent, ErrorEvent, Message, TextDeltaEvent
 
 _MODEL_ENV = {
     "volcengine": "VOLCENGINE_MODEL",

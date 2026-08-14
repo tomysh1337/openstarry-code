@@ -19,13 +19,13 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.turn_runner.turn_finalizer_stage import (
+from openstarry_code.engine.turn_runner.turn_finalizer_stage import (
     CostRollupResult,
     TranscriptAppendResult,
     TurnFinalizerStage,
     TurnFinalizerStageInput,
 )
-from opensquilla.engine.types import DoneEvent, ErrorEvent
+from openstarry_code.engine.types import DoneEvent, ErrorEvent
 
 # ---------------------------------------------------------------------------
 # Recording fakes

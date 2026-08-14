@@ -6,11 +6,11 @@ import tomllib
 
 import pytest
 
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.onboarding.config_store import load_config
-from opensquilla.onboarding.section_status import SectionStatus
-from opensquilla.onboarding.setup_engine import SetupEngine
-from opensquilla.onboarding.status import get_onboarding_status
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.onboarding.config_store import load_config
+from openstarry_code.onboarding.section_status import SectionStatus
+from openstarry_code.onboarding.setup_engine import SetupEngine
+from openstarry_code.onboarding.status import get_onboarding_status
 
 
 def test_setup_engine_applies_provider_and_router_without_persisting_secret(tmp_path):
@@ -206,7 +206,7 @@ def test_setup_engine_next_steps_do_not_include_secret(tmp_path):
     text = engine.preview_next_steps()
 
     assert "sk-secret" not in text
-    assert "opensquilla gateway start" in text
+    assert "openstarry-code gateway start" in text
     assert "openrouter" in text
 
 
@@ -215,7 +215,7 @@ def test_setup_engine_image_generation_can_use_custom_env_reference(
     monkeypatch,
 ):
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
-    monkeypatch.setenv("OPENSQUILLA_TEST_IMAGE_KEY", "sk-image-env")
+    monkeypatch.setenv("OPENSTARRY_CODE_TEST_IMAGE_KEY", "sk-image-env")
     target = tmp_path / "config.toml"
     engine = SetupEngine(path=target)
 
@@ -224,7 +224,7 @@ def test_setup_engine_image_generation_can_use_custom_env_reference(
         {
             "providerId": "openrouter",
             "primary": "openrouter/google/gemini-3.1-flash-image-preview",
-            "apiKeyEnv": "OPENSQUILLA_TEST_IMAGE_KEY",
+            "apiKeyEnv": "OPENSTARRY_CODE_TEST_IMAGE_KEY",
         },
     )
     engine.persist()
@@ -232,7 +232,7 @@ def test_setup_engine_image_generation_can_use_custom_env_reference(
     data = tomllib.loads(target.read_text())
     provider = data["image_generation"]["providers"]["openrouter"]
     assert load_config(target).image_generation.providers.openrouter.api_key == ""
-    assert provider["api_key_env"] == "OPENSQUILLA_TEST_IMAGE_KEY"
+    assert provider["api_key_env"] == "OPENSTARRY_CODE_TEST_IMAGE_KEY"
 
 
 def test_setup_engine_forwards_image_format_size_fallbacks_and_explicit_resets(tmp_path):
@@ -438,7 +438,7 @@ def test_setup_engine_search_none_payload_values_keep_stored_settings(tmp_path):
 def test_setup_engine_image_enabled_none_keeps_stored_disabled_flag(
     tmp_path, monkeypatch
 ):
-    monkeypatch.setenv("OPENSQUILLA_TEST_IMAGE_KEY", "sk-image-env")
+    monkeypatch.setenv("OPENSTARRY_CODE_TEST_IMAGE_KEY", "sk-image-env")
     target = tmp_path / "config.toml"
     target.write_text(
         "[image_generation]\n"
@@ -446,7 +446,7 @@ def test_setup_engine_image_enabled_none_keeps_stored_disabled_flag(
         'primary = "openrouter/google/gemini-3.1-flash-image-preview"\n'
         "\n"
         "[image_generation.providers.openrouter]\n"
-        'api_key_env = "OPENSQUILLA_TEST_IMAGE_KEY"\n',
+        'api_key_env = "OPENSTARRY_CODE_TEST_IMAGE_KEY"\n',
         encoding="utf-8",
     )
     engine = SetupEngine(path=target)
@@ -456,7 +456,7 @@ def test_setup_engine_image_enabled_none_keeps_stored_disabled_flag(
         {
             "providerId": "openrouter",
             "primary": "openrouter/google/gemini-3.1-flash-image-preview",
-            "apiKeyEnv": "OPENSQUILLA_TEST_IMAGE_KEY",
+            "apiKeyEnv": "OPENSTARRY_CODE_TEST_IMAGE_KEY",
             "enabled": None,
         },
     )

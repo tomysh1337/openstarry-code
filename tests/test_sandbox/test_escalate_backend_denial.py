@@ -6,19 +6,19 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.application.approval_queue import ApprovalQueue
-from opensquilla.sandbox.config import SandboxSettings
-from opensquilla.sandbox.elevation import ElevationGateResult
-from opensquilla.sandbox.integration import (
+from openstarry_code.application.approval_queue import ApprovalQueue
+from openstarry_code.sandbox.config import SandboxSettings
+from openstarry_code.sandbox.elevation import ElevationGateResult
+from openstarry_code.sandbox.integration import (
     configure_runtime,
     consume_backend_denial_retry,
     escalate_backend_denial,
     get_runtime,
     reset_runtime,
 )
-from opensquilla.sandbox.run_context import RunContext
-from opensquilla.sandbox.run_mode import RunMode
-from opensquilla.sandbox.types import (
+from openstarry_code.sandbox.run_context import RunContext
+from openstarry_code.sandbox.run_mode import RunMode
+from openstarry_code.sandbox.types import (
     DenialReason,
     DenialResult,
     MountSpec,
@@ -29,7 +29,7 @@ from opensquilla.sandbox.types import (
     SandboxResult,
     SecurityLevel,
 )
-from opensquilla.tools.types import ToolContext, current_tool_context
+from openstarry_code.tools.types import ToolContext, current_tool_context
 
 
 def _policy(workspace: Path) -> SandboxPolicy:
@@ -451,7 +451,7 @@ async def test_shell_backend_denial_resumes_same_command_as_one_host_retry(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     queue = ApprovalQueue(db_path=str(tmp_path / "approvals.sqlite"))
     backend_calls = 0
@@ -514,7 +514,7 @@ async def test_generic_shell_nonzero_does_not_request_or_run_host_retry(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.tools.builtin import shell
 
     queue = ApprovalQueue(db_path=str(tmp_path / "approvals.sqlite"))
 

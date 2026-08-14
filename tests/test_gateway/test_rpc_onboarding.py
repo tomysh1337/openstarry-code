@@ -8,9 +8,9 @@ import tomllib
 import httpx
 import pytest
 
-import opensquilla.gateway.rpc_onboarding  # noqa: F401  ensures registration
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.rpc import RpcContext, get_dispatcher
+import openstarry_code.gateway.rpc_onboarding  # noqa: F401  ensures registration
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.rpc import RpcContext, get_dispatcher
 
 
 def _env_command(env_key: str) -> str:
@@ -45,7 +45,7 @@ def _read_ctx() -> RpcContext:
 
 @pytest.mark.asyncio
 async def test_onboarding_status_works_with_read_scope(tmp_path, monkeypatch):
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
     res = await get_dispatcher().dispatch("r1", "onboarding.status", {}, _read_ctx())
     assert res.error is None, res.error
     assert "needsOnboarding" in res.payload
@@ -57,7 +57,7 @@ async def test_onboarding_status_works_with_read_scope(tmp_path, monkeypatch):
 
 @pytest.mark.asyncio
 async def test_onboarding_catalog_returns_providers_and_channels(tmp_path, monkeypatch):
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
     res = await get_dispatcher().dispatch("r1", "onboarding.catalog", {}, _read_ctx())
     assert res.error is None, res.error
     payload = res.payload
@@ -93,7 +93,7 @@ async def test_onboarding_catalog_returns_providers_and_channels(tmp_path, monke
 
 @pytest.mark.asyncio
 async def test_provider_configure_redacts_api_key(tmp_path, monkeypatch):
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
     res = await get_dispatcher().dispatch(
         "r1",
         "onboarding.provider.configure",
@@ -112,7 +112,7 @@ async def test_provider_configure_can_atomically_enable_openrouter_image_default
     monkeypatch,
 ):
     config_path = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(config_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(config_path))
 
     res = await get_dispatcher().dispatch(
         "r1",
@@ -155,7 +155,7 @@ async def test_provider_configure_image_default_intent_preserves_explicit_off(
 ):
     config_path = tmp_path / "c.toml"
     config_path.write_text("[image_generation]\nenabled = false\n")
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(config_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(config_path))
 
     res = await get_dispatcher().dispatch(
         "r1",
@@ -179,7 +179,7 @@ async def test_provider_configure_image_default_intent_preserves_explicit_off(
 
 @pytest.mark.asyncio
 async def test_provider_configure_can_omit_model_for_router_profile(tmp_path, monkeypatch):
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
     res = await get_dispatcher().dispatch(
         "r1",
         "onboarding.provider.configure",
@@ -195,8 +195,8 @@ async def test_provider_configure_can_omit_model_for_router_profile(tmp_path, mo
 
 @pytest.mark.asyncio
 async def test_router_configure_recommended_profile(tmp_path, monkeypatch):
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
-    from opensquilla.gateway.config import GatewayConfig
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    from openstarry_code.gateway.config import GatewayConfig
 
     ctx = _admin_ctx()
     ctx.config = GatewayConfig(llm={"provider": "deepseek", "model": "deepseek-chat"})
@@ -222,8 +222,8 @@ async def test_router_configure_accepts_tier_overrides_without_rebinding_direct_
     tmp_path,
     monkeypatch,
 ):
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
-    from opensquilla.gateway.config import GatewayConfig
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    from openstarry_code.gateway.config import GatewayConfig
 
     ctx = _admin_ctx()
     ctx.config = GatewayConfig(llm={"provider": "openai", "model": "gpt-5.4-mini"})
@@ -261,8 +261,8 @@ async def test_router_configure_persists_image_model_as_image_capable(
     tmp_path,
     monkeypatch,
 ):
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
-    from opensquilla.gateway.config import GatewayConfig
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    from openstarry_code.gateway.config import GatewayConfig
 
     ctx = _admin_ctx()
     ctx.config = GatewayConfig(llm={"provider": "openrouter", "model": "z-ai/glm-5.1"})
@@ -297,8 +297,8 @@ async def test_router_configure_persists_image_model_as_image_capable(
 
 @pytest.mark.asyncio
 async def test_router_configure_persists_cross_provider_tiers(tmp_path, monkeypatch):
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
-    from opensquilla.gateway.config import GatewayConfig
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    from openstarry_code.gateway.config import GatewayConfig
 
     ctx = _admin_ctx()
     ctx.config = GatewayConfig(llm={"provider": "openai", "model": "gpt-5.4-mini"})
@@ -335,8 +335,8 @@ async def test_router_configure_mixed_default_preserves_primary_deployment(
     monkeypatch,
 ):
     """A foreign default tier must not become the primary fallback model."""
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
-    from opensquilla.gateway.config import GatewayConfig
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    from openstarry_code.gateway.config import GatewayConfig
 
     sync_calls: list[object] = []
 
@@ -400,8 +400,8 @@ async def test_router_configure_rejects_image_model_as_default_tier(
     tmp_path,
     monkeypatch,
 ):
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
-    from opensquilla.gateway.config import GatewayConfig
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    from openstarry_code.gateway.config import GatewayConfig
 
     ctx = _admin_ctx()
     ctx.config = GatewayConfig(llm={"provider": "openrouter", "model": "m"})
@@ -420,8 +420,8 @@ async def test_router_configure_rejects_image_model_as_default_tier(
 
 @pytest.mark.asyncio
 async def test_provider_configure_recomputes_existing_router_profile(tmp_path, monkeypatch):
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
-    from opensquilla.gateway.config import GatewayConfig
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    from openstarry_code.gateway.config import GatewayConfig
 
     ctx = _admin_ctx()
     ctx.config = GatewayConfig(
@@ -454,8 +454,8 @@ async def test_provider_configure_recomputes_existing_router_profile(tmp_path, m
 
 @pytest.mark.asyncio
 async def test_provider_configure_recomputes_openrouter_mix_router(tmp_path, monkeypatch):
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
-    from opensquilla.gateway.config import GatewayConfig
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    from openstarry_code.gateway.config import GatewayConfig
 
     ctx = _admin_ctx()
     ctx.config = GatewayConfig(
@@ -486,7 +486,7 @@ async def test_provider_configure_recomputes_openrouter_mix_router(tmp_path, mon
 
 @pytest.mark.asyncio
 async def test_router_catalog_rpc(tmp_path, monkeypatch):
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
 
     res = await get_dispatcher().dispatch(
         "r1",
@@ -504,8 +504,8 @@ async def test_router_catalog_rpc(tmp_path, monkeypatch):
 async def test_ensemble_configure_partial_payload_updates_and_persists(
     tmp_path, monkeypatch
 ):
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
-    from opensquilla.gateway.config import GatewayConfig
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    from openstarry_code.gateway.config import GatewayConfig
 
     ctx = _admin_ctx()
     ctx.config = GatewayConfig(
@@ -543,7 +543,7 @@ async def test_ensemble_configure_partial_payload_updates_and_persists(
 async def test_ensemble_configure_accepts_full_camel_case_payload(
     tmp_path, monkeypatch
 ):
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
     res = await get_dispatcher().dispatch(
         "r1",
         "onboarding.ensemble.configure",
@@ -573,7 +573,7 @@ async def test_ensemble_configure_accepts_full_camel_case_payload(
 
 @pytest.mark.asyncio
 async def test_ensemble_configure_rejects_unknown_selection_mode(tmp_path, monkeypatch):
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
     res = await get_dispatcher().dispatch(
         "r1",
         "onboarding.ensemble.configure",
@@ -587,7 +587,7 @@ async def test_ensemble_configure_rejects_unknown_selection_mode(tmp_path, monke
 
 @pytest.mark.asyncio
 async def test_ensemble_configure_requires_admin(tmp_path, monkeypatch):
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
     res = await get_dispatcher().dispatch(
         "r1",
         "onboarding.ensemble.configure",
@@ -601,7 +601,7 @@ async def test_ensemble_configure_requires_admin(tmp_path, monkeypatch):
 
 @pytest.mark.asyncio
 async def test_channel_upsert_redacts_secrets(tmp_path, monkeypatch):
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
     res = await get_dispatcher().dispatch(
         "r1",
         "onboarding.channel.upsert",
@@ -623,7 +623,7 @@ async def test_channel_upsert_redacts_secrets(tmp_path, monkeypatch):
 
 @pytest.mark.asyncio
 async def test_channel_upsert_rejects_slack_webhook_without_signing_secret(tmp_path, monkeypatch):
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
     res = await get_dispatcher().dispatch(
         "r1",
         "onboarding.channel.upsert",
@@ -637,7 +637,7 @@ async def test_channel_upsert_rejects_slack_webhook_without_signing_secret(tmp_p
 
 @pytest.mark.asyncio
 async def test_channel_upsert_rejects_slack_socket_without_app_token(tmp_path, monkeypatch):
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
     res = await get_dispatcher().dispatch(
         "r1",
         "onboarding.channel.upsert",
@@ -659,7 +659,7 @@ async def test_channel_upsert_rejects_slack_socket_without_app_token(tmp_path, m
 @pytest.mark.asyncio
 async def test_channel_probe_validates_and_redacts_without_persisting(tmp_path, monkeypatch):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     res = await get_dispatcher().dispatch(
         "r1",
         "onboarding.channel.probe",
@@ -683,7 +683,7 @@ async def test_channel_probe_validates_and_redacts_without_persisting(tmp_path, 
 
 @pytest.mark.asyncio
 async def test_search_configure_redacts_api_key(tmp_path, monkeypatch):
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
     res = await get_dispatcher().dispatch(
         "r1",
         "onboarding.search.configure",
@@ -697,7 +697,7 @@ async def test_search_configure_redacts_api_key(tmp_path, monkeypatch):
 
 @pytest.mark.asyncio
 async def test_search_configure_accepts_webui_string_max_results(tmp_path, monkeypatch):
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
 
     res = await get_dispatcher().dispatch(
         "r1",
@@ -713,7 +713,7 @@ async def test_search_configure_accepts_webui_string_max_results(tmp_path, monke
 @pytest.mark.asyncio
 async def test_image_generation_configure_redacts_api_key(tmp_path, monkeypatch):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     res = await get_dispatcher().dispatch(
         "r1",
         "onboarding.imageGeneration.configure",
@@ -743,10 +743,10 @@ async def test_image_generation_configure_accepts_exact_legacy_direct_key_payloa
     tmp_path,
     monkeypatch,
 ):
-    from opensquilla.gateway.config import GatewayConfig
+    from openstarry_code.gateway.config import GatewayConfig
 
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     ctx = _admin_ctx()
     ctx.config = GatewayConfig(config_path=str(target))
@@ -784,10 +784,10 @@ async def test_image_generation_configure_normalizes_0_5_0_provider_switch_paylo
     tmp_path,
     monkeypatch,
 ):
-    from opensquilla.gateway.config import GatewayConfig
+    from openstarry_code.gateway.config import GatewayConfig
 
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     ctx = _admin_ctx()
     ctx.config = GatewayConfig(config_path=str(target))
@@ -829,10 +829,10 @@ async def test_image_generation_configure_normalizes_custom_0_5_0_provider_switc
     tmp_path,
     monkeypatch,
 ):
-    from opensquilla.gateway.config import GatewayConfig
+    from openstarry_code.gateway.config import GatewayConfig
 
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     ctx = _admin_ctx()
     ctx.config = GatewayConfig(
@@ -881,10 +881,10 @@ async def test_image_generation_legacy_config_get_resave_preserves_direct_key_an
     tmp_path,
     monkeypatch,
 ):
-    from opensquilla.gateway.config import GatewayConfig
+    from openstarry_code.gateway.config import GatewayConfig
 
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     ctx = _admin_ctx()
     ctx.config = GatewayConfig(
@@ -935,7 +935,7 @@ async def test_image_generation_configure_replaces_direct_key_and_resets_optiona
     monkeypatch,
 ):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     first = await get_dispatcher().dispatch(
         "r1",
         "onboarding.imageGeneration.configure",
@@ -956,7 +956,7 @@ async def test_image_generation_configure_replaces_direct_key_and_resets_optiona
         {
             "providerId": "openrouter",
             "primary": "openrouter/google/gemini-3.1-flash-image-preview",
-            "apiKeyEnv": "OPENSQUILLA_TEST_IMAGE_KEY",
+            "apiKeyEnv": "OPENSTARRY_CODE_TEST_IMAGE_KEY",
             "credentialMode": "env",
             "baseUrl": "",
             "fallbacks": [],
@@ -969,7 +969,7 @@ async def test_image_generation_configure_replaces_direct_key_and_resets_optiona
     data = tomllib.loads(target.read_text())
     provider = data["image_generation"]["providers"]["openrouter"]
     assert provider.get("api_key", "") == ""
-    assert provider["api_key_env"] == "OPENSQUILLA_TEST_IMAGE_KEY"
+    assert provider["api_key_env"] == "OPENSTARRY_CODE_TEST_IMAGE_KEY"
     assert provider["base_url"] == "https://openrouter.ai/api/v1"
     assert data["image_generation"]["fallbacks"] == []
 
@@ -980,9 +980,9 @@ async def test_image_generation_configure_can_use_custom_env_reference(
     monkeypatch,
 ):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
-    monkeypatch.setenv("OPENSQUILLA_TEST_IMAGE_KEY", "sk-image-env")
+    monkeypatch.setenv("OPENSTARRY_CODE_TEST_IMAGE_KEY", "sk-image-env")
 
     res = await get_dispatcher().dispatch(
         "r1",
@@ -990,20 +990,20 @@ async def test_image_generation_configure_can_use_custom_env_reference(
         {
             "providerId": "openrouter",
             "primary": "openrouter/google/gemini-3.1-flash-image-preview",
-            "apiKeyEnv": "OPENSQUILLA_TEST_IMAGE_KEY",
+            "apiKeyEnv": "OPENSTARRY_CODE_TEST_IMAGE_KEY",
         },
         _admin_ctx(),
     )
 
     assert res.error is None, res.error
     assert res.payload["entry"]["api_key_source"] == "env"
-    assert res.payload["entry"]["api_key_env"] == "OPENSQUILLA_TEST_IMAGE_KEY"
+    assert res.payload["entry"]["api_key_env"] == "OPENSTARRY_CODE_TEST_IMAGE_KEY"
     data = tomllib.loads(target.read_text())
     provider = data["image_generation"]["providers"]["openrouter"]
     # Sparse persistence omits the default empty api_key; either way the
     # key material must not be baked into the file.
     assert provider.get("api_key", "") == ""
-    assert provider["api_key_env"] == "OPENSQUILLA_TEST_IMAGE_KEY"
+    assert provider["api_key_env"] == "OPENSTARRY_CODE_TEST_IMAGE_KEY"
 
 
 @pytest.mark.asyncio
@@ -1012,9 +1012,9 @@ async def test_image_generation_configure_can_save_missing_custom_env_reference(
     monkeypatch,
 ):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
-    monkeypatch.delenv("OPENSQUILLA_TEST_IMAGE_KEY", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_TEST_IMAGE_KEY", raising=False)
 
     res = await get_dispatcher().dispatch(
         "r1",
@@ -1022,20 +1022,20 @@ async def test_image_generation_configure_can_save_missing_custom_env_reference(
         {
             "providerId": "openrouter",
             "primary": "openrouter/google/gemini-3.1-flash-image-preview",
-            "apiKeyEnv": "OPENSQUILLA_TEST_IMAGE_KEY",
+            "apiKeyEnv": "OPENSTARRY_CODE_TEST_IMAGE_KEY",
         },
         _admin_ctx(),
     )
 
     assert res.error is None, res.error
     assert res.payload["entry"]["api_key_source"] == "missing_env"
-    assert res.payload["entry"]["api_key_env"] == "OPENSQUILLA_TEST_IMAGE_KEY"
+    assert res.payload["entry"]["api_key_env"] == "OPENSTARRY_CODE_TEST_IMAGE_KEY"
     data = tomllib.loads(target.read_text())
     provider = data["image_generation"]["providers"]["openrouter"]
     # Sparse persistence omits the default empty api_key; either way the
     # key material must not be baked into the file.
     assert provider.get("api_key", "") == ""
-    assert provider["api_key_env"] == "OPENSQUILLA_TEST_IMAGE_KEY"
+    assert provider["api_key_env"] == "OPENSTARRY_CODE_TEST_IMAGE_KEY"
 
 
 @pytest.mark.asyncio
@@ -1044,7 +1044,7 @@ async def test_image_generation_configure_can_disable_without_visible_key(
     monkeypatch,
 ):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
 
     res = await get_dispatcher().dispatch(
@@ -1073,10 +1073,10 @@ async def test_image_generation_configure_can_disable_legacy_invalid_config(
     tmp_path,
     monkeypatch,
 ):
-    from opensquilla.gateway.config import GatewayConfig
+    from openstarry_code.gateway.config import GatewayConfig
 
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     ctx = _admin_ctx()
     ctx.config = GatewayConfig(
         config_path=str(target),
@@ -1123,8 +1123,8 @@ async def test_onboarding_status_requires_image_generation_enable_for_llm_fallba
     tmp_path,
     monkeypatch,
 ):
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
-    from opensquilla.gateway.config import GatewayConfig
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    from openstarry_code.gateway.config import GatewayConfig
 
     ctx = _read_ctx()
     ctx.config = GatewayConfig()
@@ -1145,8 +1145,8 @@ async def test_onboarding_status_marks_legacy_image_endpoint_mismatch_degraded(
     tmp_path,
     monkeypatch,
 ):
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
-    from opensquilla.gateway.config import GatewayConfig
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    from openstarry_code.gateway.config import GatewayConfig
 
     ctx = _read_ctx()
     ctx.config = GatewayConfig()
@@ -1182,8 +1182,8 @@ async def test_onboarding_status_exposes_missing_env_keys_for_optional_capabilit
     system_name,
 ):
     monkeypatch.setattr(platform, "system", lambda: system_name)
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
-    from opensquilla.gateway.config import GatewayConfig
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    from openstarry_code.gateway.config import GatewayConfig
 
     ctx = _read_ctx()
     ctx.config = GatewayConfig()
@@ -1236,8 +1236,8 @@ async def test_onboarding_status_exposes_missing_env_keys_for_optional_capabilit
 @pytest.mark.asyncio
 async def test_image_generation_configure_can_enable_llm_fallback(tmp_path, monkeypatch):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
-    from opensquilla.gateway.config import GatewayConfig
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
+    from openstarry_code.gateway.config import GatewayConfig
 
     ctx = _admin_ctx()
     ctx.config = GatewayConfig()
@@ -1269,7 +1269,7 @@ async def test_audio_configure_redacts_api_key_and_persists_tts_defaults(
     monkeypatch,
 ):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     res = await get_dispatcher().dispatch(
         "r1",
@@ -1303,7 +1303,7 @@ async def test_audio_configure_redacts_api_key_and_persists_tts_defaults(
 @pytest.mark.asyncio
 async def test_audio_configure_can_save_missing_env_reference(tmp_path, monkeypatch):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     monkeypatch.delenv("ELEVENLABS_API_KEY", raising=False)
 
     res = await get_dispatcher().dispatch(
@@ -1330,7 +1330,7 @@ async def test_audio_configure_can_save_missing_env_reference(tmp_path, monkeypa
 
 @pytest.mark.asyncio
 async def test_memory_embedding_configure_redacts_remote_api_key(tmp_path, monkeypatch):
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
     res = await get_dispatcher().dispatch(
         "r1",
         "onboarding.memory_embedding.configure",
@@ -1354,7 +1354,7 @@ async def test_memory_embedding_configure_can_use_env_key_reference(
     monkeypatch,
 ):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     res = await get_dispatcher().dispatch(
         "r1",
@@ -1377,8 +1377,8 @@ async def test_memory_embedding_configure_can_use_env_key_reference(
 
 @pytest.mark.asyncio
 async def test_memory_embedding_configure_updates_ctx_config(tmp_path, monkeypatch):
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
-    from opensquilla.gateway.config import GatewayConfig
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    from openstarry_code.gateway.config import GatewayConfig
 
     ctx = _admin_ctx()
     ctx.config = GatewayConfig()
@@ -1399,8 +1399,8 @@ async def test_memory_embedding_configure_updates_ctx_config(tmp_path, monkeypat
 async def test_memory_embedding_configure_auto_can_store_remote_fallback(
     tmp_path, monkeypatch
 ):
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
-    from opensquilla.gateway.config import GatewayConfig
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    from openstarry_code.gateway.config import GatewayConfig
 
     ctx = _admin_ctx()
     ctx.config = GatewayConfig()
@@ -1427,7 +1427,7 @@ async def test_memory_embedding_configure_auto_can_store_remote_fallback(
 
 @pytest.mark.asyncio
 async def test_admin_required_for_mutations(tmp_path, monkeypatch):
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
     res = await get_dispatcher().dispatch(
         "r1",
         "onboarding.provider.configure",
@@ -1440,11 +1440,11 @@ async def test_admin_required_for_mutations(tmp_path, monkeypatch):
 
 @pytest.mark.asyncio
 async def test_provider_configure_writes_to_active_config_path(tmp_path, monkeypatch):
-    # Gateway booted from ./opensquilla.toml — RPC must respect ctx.config.config_path.
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "wrong.toml"))
+    # Gateway booted from ./openstarry-code.toml — RPC must respect ctx.config.config_path.
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "wrong.toml"))
     project_config = tmp_path / "project.toml"
 
-    from opensquilla.gateway.config import GatewayConfig
+    from openstarry_code.gateway.config import GatewayConfig
 
     ctx = _admin_ctx()
     ctx.config = GatewayConfig()
@@ -1464,8 +1464,8 @@ async def test_provider_configure_writes_to_active_config_path(tmp_path, monkeyp
 
 @pytest.mark.asyncio
 async def test_provider_configure_updates_ctx_config_in_place(tmp_path, monkeypatch):
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
-    from opensquilla.gateway.config import GatewayConfig
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    from openstarry_code.gateway.config import GatewayConfig
 
     ctx = _admin_ctx()
     ctx.config = GatewayConfig()
@@ -1485,8 +1485,8 @@ async def test_provider_configure_updates_ctx_config_in_place(tmp_path, monkeypa
 
 @pytest.mark.asyncio
 async def test_provider_configure_does_not_persist_runtime_api_key(tmp_path, monkeypatch):
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
-    from opensquilla.gateway.config import GatewayConfig
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    from openstarry_code.gateway.config import GatewayConfig
 
     target = tmp_path / "c.toml"
     ctx = _admin_ctx()
@@ -1518,7 +1518,7 @@ async def test_provider_configure_persists_explicit_replacement_for_env_key(
     tmp_path, monkeypatch
 ):
     monkeypatch.setenv("OPENROUTER_API_KEY", "startup-key")
-    from opensquilla.gateway.config import GatewayConfig
+    from openstarry_code.gateway.config import GatewayConfig
 
     target = tmp_path / "c.toml"
     ctx = _admin_ctx()
@@ -1564,7 +1564,7 @@ async def test_provider_configure_persists_explicit_replacement_for_env_key(
     # Desktop still exports its original onboarding key on restart. The
     # explicit replacement in TOML must remain authoritative over that stale
     # environment value after a fresh config load/runtime resolution.
-    from opensquilla.gateway.llm_runtime import resolve_llm_runtime_config
+    from openstarry_code.gateway.llm_runtime import resolve_llm_runtime_config
 
     reloaded = GatewayConfig.load(target)
     runtime = resolve_llm_runtime_config(reloaded)
@@ -1574,8 +1574,8 @@ async def test_provider_configure_persists_explicit_replacement_for_env_key(
 
 @pytest.mark.asyncio
 async def test_provider_configure_calls_provider_selector_sync(tmp_path, monkeypatch):
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
-    from opensquilla.gateway.config import GatewayConfig
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    from openstarry_code.gateway.config import GatewayConfig
 
     sync_calls: list[object] = []
 
@@ -1602,9 +1602,9 @@ async def test_provider_configure_calls_provider_selector_sync(tmp_path, monkeyp
 
 @pytest.mark.asyncio
 async def test_provider_configure_syncs_env_key_to_provider_selector(tmp_path, monkeypatch):
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
     monkeypatch.setenv("OPENROUTER_API_KEY", "from-env")
-    from opensquilla.gateway.config import GatewayConfig
+    from openstarry_code.gateway.config import GatewayConfig
 
     sync_calls: list[object] = []
 
@@ -1640,13 +1640,13 @@ async def test_provider_configure_syncs_env_key_to_provider_selector(tmp_path, m
 async def test_provider_configure_refreshes_shared_live_catalog_before_return(
     tmp_path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.provider.model_catalog import ModelCatalog, set_shared_catalog
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.provider.model_catalog import ModelCatalog, set_shared_catalog
 
     fetches: list[str] = []
 
-    from opensquilla.provider.tokenrhythm_catalog import (
+    from openstarry_code.provider.tokenrhythm_catalog import (
         parse_tokenrhythm_declared,
         parse_tokenrhythm_published,
     )
@@ -1682,11 +1682,11 @@ async def test_provider_configure_refreshes_shared_live_catalog_before_return(
         )
 
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
         fake_public_fetch,
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
         fake_auth_fetch,
     )
     catalog = ModelCatalog()
@@ -1715,7 +1715,7 @@ async def test_provider_configure_refreshes_shared_live_catalog_before_return(
         assert catalog.resolve_entry("qwen3.7-max", provider="tokenrhythm").source == "live"
         assert catalog.resolve_max_tokens("qwen3.7-max", provider="tokenrhythm") == 131_072
     finally:
-        from opensquilla.gateway.model_catalog_refresh import (
+        from openstarry_code.gateway.model_catalog_refresh import (
             install_tokenrhythm_catalog_coordinator,
         )
 
@@ -1727,19 +1727,19 @@ async def test_provider_configure_refreshes_shared_live_catalog_before_return(
 async def test_provider_configure_survives_live_catalog_failure(
     tmp_path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.provider.model_catalog import ModelCatalog, set_shared_catalog
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.provider.model_catalog import ModelCatalog, set_shared_catalog
 
     async def failing_fetch(*args, **kwargs) -> dict:
         raise OSError("synthetic catalog outage")
 
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
         failing_fetch,
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
         failing_fetch,
     )
     catalog = ModelCatalog()
@@ -1766,7 +1766,7 @@ async def test_provider_configure_survives_live_catalog_failure(
         assert catalog.resolve_max_tokens("qwen3.7-max", provider="tokenrhythm") == 131_072
         assert catalog.resolve_entry("qwen3.7-max", provider="tokenrhythm").source == "corrections"
     finally:
-        from opensquilla.gateway.model_catalog_refresh import (
+        from openstarry_code.gateway.model_catalog_refresh import (
             install_tokenrhythm_catalog_coordinator,
         )
 
@@ -1776,7 +1776,7 @@ async def test_provider_configure_survives_live_catalog_failure(
 
 @pytest.mark.asyncio
 async def test_channel_disable_then_remove(tmp_path, monkeypatch):
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
     d = get_dispatcher()
     await d.dispatch(
         "r1",
@@ -1800,12 +1800,12 @@ def _stub_openai_transport(monkeypatch, response):
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched)
 
 
 @pytest.mark.asyncio
 async def test_models_discover_requires_admin_scope(tmp_path, monkeypatch):
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
     res = await get_dispatcher().dispatch(
         "r1",
         "onboarding.models.discover",
@@ -1818,7 +1818,7 @@ async def test_models_discover_requires_admin_scope(tmp_path, monkeypatch):
 
 @pytest.mark.asyncio
 async def test_models_discover_lists_live_models(tmp_path, monkeypatch):
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
     _stub_openai_transport(
         monkeypatch,
         httpx.Response(
@@ -1854,8 +1854,8 @@ async def test_models_discover_lists_live_models(tmp_path, monkeypatch):
 async def test_models_discover_equivalent_active_url_can_persist_forced_refresh(
     tmp_path, monkeypatch, active_url: str, candidate_url: str
 ) -> None:
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.onboarding.probe import ProviderModelsDiscoverResult
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.onboarding.probe import ProviderModelsDiscoverResult
 
     captured: dict[str, object] = {}
 
@@ -1869,7 +1869,7 @@ async def test_models_discover_equivalent_active_url_can_persist_forced_refresh(
         )
 
     monkeypatch.setattr(
-        "opensquilla.onboarding.probe.discover_selectable_provider_models",
+        "openstarry_code.onboarding.probe.discover_selectable_provider_models",
         fake_discover,
     )
     ctx = _admin_ctx()
@@ -1904,12 +1904,12 @@ async def test_models_discover_equivalent_active_url_can_persist_forced_refresh(
 async def test_models_discover_unverified_provider_stays_empty_without_build(
     tmp_path, monkeypatch
 ):
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
 
     def _unexpected_build(*_args, **_kwargs):
         raise AssertionError("unverified providers must not be built for selector discovery")
 
-    monkeypatch.setattr("opensquilla.onboarding.probe.build_provider", _unexpected_build)
+    monkeypatch.setattr("openstarry_code.onboarding.probe.build_provider", _unexpected_build)
 
     res = await get_dispatcher().dispatch(
         "r1",
@@ -1931,7 +1931,7 @@ async def test_models_discover_unverified_provider_stays_empty_without_build(
 
 @pytest.mark.asyncio
 async def test_image_models_discover_requires_admin_scope(tmp_path, monkeypatch):
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
 
     res = await get_dispatcher().dispatch(
         "r1",
@@ -1948,7 +1948,7 @@ async def test_image_models_discover_requires_admin_scope(tmp_path, monkeypatch)
 async def test_image_models_discover_returns_image_specific_catalog(
     tmp_path, monkeypatch
 ):
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
 
     async def _discover(provider_id: str):
         assert provider_id == "openrouter"
@@ -1960,7 +1960,7 @@ async def test_image_models_discover_returns_image_specific_catalog(
         }
 
     monkeypatch.setattr(
-        "opensquilla.onboarding.image_generation_model_discovery."
+        "openstarry_code.onboarding.image_generation_model_discovery."
         "discover_image_generation_models",
         _discover,
     )
@@ -1979,7 +1979,7 @@ async def test_image_models_discover_returns_image_specific_catalog(
 
 @pytest.mark.asyncio
 async def test_image_models_discover_rejects_unknown_provider(tmp_path, monkeypatch):
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
 
     res = await get_dispatcher().dispatch(
         "r1",
@@ -1994,7 +1994,7 @@ async def test_image_models_discover_rejects_unknown_provider(tmp_path, monkeypa
 
 @pytest.fixture()
 def _clean_channels_reconciler():
-    from opensquilla.gateway.channels_bridge import reset_channels_reconciler
+    from openstarry_code.gateway.channels_bridge import reset_channels_reconciler
 
     reset_channels_reconciler()
     yield
@@ -2005,9 +2005,9 @@ def _clean_channels_reconciler():
 async def test_channel_upsert_applies_live_when_reconciler_succeeds(
     tmp_path, monkeypatch, _clean_channels_reconciler
 ):
-    from opensquilla.gateway.channels_bridge import register_channels_reconciler
+    from openstarry_code.gateway.channels_bridge import register_channels_reconciler
 
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
     calls: list[int] = []
 
     async def _reconciler() -> dict[str, str]:
@@ -2040,9 +2040,9 @@ async def test_channel_upsert_applies_live_when_reconciler_succeeds(
 async def test_channel_upsert_stays_restart_gated_for_webhook_outcomes(
     tmp_path, monkeypatch, _clean_channels_reconciler
 ):
-    from opensquilla.gateway.channels_bridge import register_channels_reconciler
+    from openstarry_code.gateway.channels_bridge import register_channels_reconciler
 
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
 
     async def _reconciler() -> dict[str, str]:
         return {"w": "pending_restart"}
@@ -2072,9 +2072,9 @@ async def test_channel_upsert_failed_start_does_not_flag_restart(
 ):
     # A bad entry is not fixed by restarting: it stays visible through
     # channels.status start errors and is retried via channels.restart.
-    from opensquilla.gateway.channels_bridge import register_channels_reconciler
+    from openstarry_code.gateway.channels_bridge import register_channels_reconciler
 
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "c.toml"))
 
     async def _reconciler() -> dict[str, str]:
         return {"w": "failed"}
@@ -2102,7 +2102,7 @@ async def test_channel_upsert_failed_start_does_not_flag_restart(
 async def test_channel_remove_degrades_honestly_when_reconciler_raises(
     tmp_path, monkeypatch, _clean_channels_reconciler
 ):
-    from opensquilla.gateway.channels_bridge import register_channels_reconciler
+    from openstarry_code.gateway.channels_bridge import register_channels_reconciler
 
     config_path = tmp_path / "c.toml"
     config_path.write_text(
@@ -2110,7 +2110,7 @@ async def test_channel_remove_degrades_honestly_when_reconciler_raises(
         'token = "supersecret"\nsigning_secret = "ss"\n',
         encoding="utf-8",
     )
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(config_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(config_path))
 
     async def _reconciler() -> dict[str, str]:
         raise RuntimeError("manager exploded")

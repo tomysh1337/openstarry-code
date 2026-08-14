@@ -5,9 +5,9 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.sandbox.policy_models import RuntimePolicySettings
-from opensquilla.sandbox.run_mode import RunMode
-from opensquilla.sandbox.runtime_manifest import (
+from openstarry_code.sandbox.policy_models import RuntimePolicySettings
+from openstarry_code.sandbox.run_mode import RunMode
+from openstarry_code.sandbox.runtime_manifest import (
     BundledRuntimeResolver,
     RuntimeManifest,
     RuntimeManifestError,

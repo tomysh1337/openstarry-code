@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
-from opensquilla.squilla_router.self_learning.feedback import (
+from openstarry_code.squilla_router.self_learning.feedback import (
     FeedbackStats,
     feedback_path,
     load_feedback_map,

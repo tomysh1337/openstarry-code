@@ -4,9 +4,9 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.rpc import RpcContext, RpcHandlerError
-from opensquilla.gateway.rpc_sandbox import (
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.rpc import RpcContext, RpcHandlerError
+from openstarry_code.gateway.rpc_sandbox import (
     _handle_sandbox_policy_defaults,
     _handle_sandbox_policy_get,
     _handle_sandbox_policy_update,

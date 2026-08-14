@@ -5,11 +5,11 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.engine.types import ToolCall
-from opensquilla.tools.builtin import sessions as sessions_tools
-from opensquilla.tools.dispatch import build_tool_handler
-from opensquilla.tools.registry import ToolRegistry
-from opensquilla.tools.types import ToolContext, ToolError, ToolSpec, current_tool_context
+from openstarry_code.engine.types import ToolCall
+from openstarry_code.tools.builtin import sessions as sessions_tools
+from openstarry_code.tools.dispatch import build_tool_handler
+from openstarry_code.tools.registry import ToolRegistry
+from openstarry_code.tools.types import ToolContext, ToolError, ToolSpec, current_tool_context
 
 
 class _TerminalSessionManager:

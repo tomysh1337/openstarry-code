@@ -7,10 +7,10 @@ import subprocess
 import sys
 from pathlib import Path
 
-from opensquilla.skills.loader import SkillLoader
+from openstarry_code.skills.loader import SkillLoader
 
 REPO = Path(__file__).resolve().parents[2]
-_BUNDLED = REPO / "src" / "opensquilla" / "skills" / "bundled"
+_BUNDLED = REPO / "src" / "openstarry_code" / "skills" / "bundled"
 PROPOSALS = _BUNDLED / "skill-creator-proposals" / "scripts" / "proposals.py"
 
 VALID_SKILL_MD = """---
@@ -38,7 +38,7 @@ def _run(args: list[str], stdin: str | None = None) -> dict:
 
 
 def test_accept_flow_moves_to_skills_dir_and_loader_picks_up(tmp_path: Path) -> None:
-    home = tmp_path / ".opensquilla"
+    home = tmp_path / ".openstarry-code"
 
     # Step 1: write proposal (eligible)
     out = _run([
@@ -105,7 +105,7 @@ def test_accept_quoted_name_from_tojson_template(tmp_path: Path) -> None:
     """N3 regression: cmd_accept must parse names in both quoted and unquoted
     YAML form. Creator-generated SKILL.md uses `name: "synth-pipeline"` (tojson
     output); the previous regex only matched bare `name: synth-pipeline`."""
-    home = tmp_path / ".opensquilla"
+    home = tmp_path / ".openstarry-code"
 
     out = _run([
         sys.executable, str(PROPOSALS),

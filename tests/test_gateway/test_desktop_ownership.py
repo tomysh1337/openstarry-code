@@ -12,9 +12,9 @@ from pathlib import Path
 import pytest
 from starlette.testclient import TestClient
 
-from opensquilla.gateway.app import create_gateway_app
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.desktop_ownership import (
+from openstarry_code.gateway.app import create_gateway_app
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.desktop_ownership import (
     DESKTOP_GATEWAY_INSTANCE_NONCE_ENV,
     DESKTOP_GATEWAY_OWNERSHIP_DIR_ENV,
     DESKTOP_GATEWAY_OWNERSHIP_FILENAME,
@@ -26,7 +26,7 @@ from opensquilla.gateway.desktop_ownership import (
     canonical_shutdown_payload,
     release_active_desktop_gateway_ownership,
 )
-from opensquilla.recovery.locking import profile_lock_key
+from openstarry_code.recovery.locking import profile_lock_key
 
 _NONCE = "n" * 43
 _CHALLENGE = "c" * 43
@@ -39,8 +39,8 @@ def _owner(tmp_path: Path, monkeypatch, *, port: int = 18791) -> DesktopGatewayO
     ownership_dir = (
         tmp_path / "gateway-ownership" / profile_lock_key(profile_home)
     )
-    monkeypatch.setenv("OPENSQUILLA_DESKTOP", "1")
-    monkeypatch.setenv("OPENSQUILLA_DESKTOP_GATEWAY_INSTANCE_NONCE", _NONCE)
+    monkeypatch.setenv("OPENSTARRY_CODE_DESKTOP", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_DESKTOP_GATEWAY_INSTANCE_NONCE", _NONCE)
     monkeypatch.setenv(DESKTOP_GATEWAY_OWNERSHIP_DIR_ENV, str(ownership_dir))
     owner = DesktopGatewayOwnership.from_environment(
         profile_home=profile_home,
@@ -56,8 +56,8 @@ def test_desktop_ownership_is_disabled_without_explicit_desktop_nonce(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_DESKTOP", "1")
-    monkeypatch.delenv("OPENSQUILLA_DESKTOP_GATEWAY_INSTANCE_NONCE", raising=False)
+    monkeypatch.setenv("OPENSTARRY_CODE_DESKTOP", "1")
+    monkeypatch.delenv("OPENSTARRY_CODE_DESKTOP_GATEWAY_INSTANCE_NONCE", raising=False)
 
     assert (
         DesktopGatewayOwnership.from_environment(
@@ -114,7 +114,7 @@ def test_desktop_ownership_release_serializes_compare_and_unlink_with_successor(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    from opensquilla.gateway import desktop_ownership
+    from openstarry_code.gateway import desktop_ownership
 
     owner = _owner(tmp_path, monkeypatch)
     owner.acquire()
@@ -163,7 +163,7 @@ def test_desktop_ownership_uses_control_dir_when_runtime_state_is_external(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    from opensquilla.gateway.boot import _desktop_ownership_profile_home
+    from openstarry_code.gateway.boot import _desktop_ownership_profile_home
 
     profile_home = tmp_path / "profile"
     profile_home.mkdir()
@@ -179,8 +179,8 @@ def test_desktop_ownership_uses_control_dir_when_runtime_state_is_external(
         tmp_path / "electron-user-data" / "gateway-ownership" / profile_lock_key(profile_home)
     )
 
-    monkeypatch.setenv("OPENSQUILLA_DESKTOP", "1")
-    monkeypatch.setenv("OPENSQUILLA_DESKTOP_GATEWAY_INSTANCE_NONCE", _NONCE)
+    monkeypatch.setenv("OPENSTARRY_CODE_DESKTOP", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_DESKTOP_GATEWAY_INSTANCE_NONCE", _NONCE)
     monkeypatch.setenv(DESKTOP_GATEWAY_OWNERSHIP_DIR_ENV, str(ownership_dir))
     owner = DesktopGatewayOwnership.from_environment(
         profile_home=selected_home,
@@ -202,8 +202,8 @@ def test_desktop_ownership_requires_absolute_profile_bound_control_dir(
     monkeypatch,
 ) -> None:
     profile_home = tmp_path / "profile"
-    monkeypatch.setenv("OPENSQUILLA_DESKTOP", "1")
-    monkeypatch.setenv("OPENSQUILLA_DESKTOP_GATEWAY_INSTANCE_NONCE", _NONCE)
+    monkeypatch.setenv("OPENSTARRY_CODE_DESKTOP", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_DESKTOP_GATEWAY_INSTANCE_NONCE", _NONCE)
 
     for invalid in (
         "",
@@ -397,7 +397,7 @@ def test_desktop_shutdown_requires_nonce_proof_and_uses_distinct_hmac_domain(
 
 
 def test_desktop_shutdown_requested_before_cli_handler_is_replayed() -> None:
-    from opensquilla.gateway.boot import _GatewayShutdownRelay
+    from openstarry_code.gateway.boot import _GatewayShutdownRelay
 
     relay = _GatewayShutdownRelay()
     reasons: list[str] = []
@@ -417,8 +417,8 @@ def test_active_desktop_record_cleanup_is_ownership_safe(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_DESKTOP", "1")
-    monkeypatch.setenv("OPENSQUILLA_DESKTOP_GATEWAY_INSTANCE_NONCE", _NONCE)
+    monkeypatch.setenv("OPENSTARRY_CODE_DESKTOP", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_DESKTOP_GATEWAY_INSTANCE_NONCE", _NONCE)
     monkeypatch.setenv(
         DESKTOP_GATEWAY_OWNERSHIP_DIR_ENV,
         str(tmp_path / "gateway-ownership" / profile_lock_key(tmp_path / "profile")),
@@ -440,9 +440,9 @@ def test_active_desktop_record_cleanup_is_ownership_safe(
 def test_gateway_cli_removes_record_after_profile_writer_lock_exits(
     monkeypatch,
 ) -> None:
-    from opensquilla import recovery
-    from opensquilla.cli import gateway_cmd, main
-    from opensquilla.gateway import desktop_ownership
+    from openstarry_code import recovery
+    from openstarry_code.cli import gateway_cmd, main
+    from openstarry_code.gateway import desktop_ownership
 
     events: list[str] = []
 

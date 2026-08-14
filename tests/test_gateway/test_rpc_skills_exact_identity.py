@@ -4,14 +4,14 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.gateway import rpc_skills
-from opensquilla.gateway.rpc import RpcContext
-from opensquilla.skills.hub.contracts import DiagnosticPhase
-from opensquilla.skills.hub.lockfile import LockEntry, Lockfile, compute_tree_sha256
-from opensquilla.skills.hub.management import SkillManagementService
-from opensquilla.skills.hub.router import SourceRouter
-from opensquilla.skills.hub.source import SkillMeta, SkillSourceFetchError
-from opensquilla.skills.loader import SkillLoader
+from openstarry_code.gateway import rpc_skills
+from openstarry_code.gateway.rpc import RpcContext
+from openstarry_code.skills.hub.contracts import DiagnosticPhase
+from openstarry_code.skills.hub.lockfile import LockEntry, Lockfile, compute_tree_sha256
+from openstarry_code.skills.hub.management import SkillManagementService
+from openstarry_code.skills.hub.router import SourceRouter
+from openstarry_code.skills.hub.source import SkillMeta, SkillSourceFetchError
+from openstarry_code.skills.loader import SkillLoader
 
 
 def _write_skill(root: Path, directory: str, description: str, body: str) -> None:
@@ -250,7 +250,7 @@ async def test_lifecycle_identity_opens_shadowed_candidate_not_bare_name_winner(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path))
     managed = tmp_path / "managed"
     workspace = tmp_path / "workspace"
     _write_skill(managed, "managed-copy", "managed copy", "Managed exact body.")
@@ -352,7 +352,7 @@ async def test_install_identity_returns_rejected_doctor_item_not_same_name_winne
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path))
     bundled = tmp_path / "bundled"
     managed = tmp_path / "managed"
     _write_skill(bundled, "winner", "bundled winner", "Winner body.")

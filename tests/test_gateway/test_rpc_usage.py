@@ -5,12 +5,12 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.engine.usage import UsageTracker
-from opensquilla.gateway import rpc_usage
-from opensquilla.gateway.rpc.registry import RpcContext
-from opensquilla.gateway.rpc_usage import _handle_usage_cost, _handle_usage_status
-from opensquilla.session.manager import SessionManager
-from opensquilla.session.storage import SessionStorage
+from openstarry_code.engine.usage import UsageTracker
+from openstarry_code.gateway import rpc_usage
+from openstarry_code.gateway.rpc.registry import RpcContext
+from openstarry_code.gateway.rpc_usage import _handle_usage_cost, _handle_usage_status
+from openstarry_code.session.manager import SessionManager
+from openstarry_code.session.storage import SessionStorage
 
 
 def _ctx(*, session_manager=None, usage_tracker=None) -> RpcContext:

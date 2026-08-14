@@ -8,18 +8,18 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from opensquilla.gateway.boot import _make_task_session_lifecycle_listener
-from opensquilla.gateway.routing import RouteEnvelope, SourceKind
-from opensquilla.gateway.rpc_sessions import _active_task_summary
-from opensquilla.gateway.session_events import build_sessions_changed_payload
-from opensquilla.gateway.session_lifecycle import (
+from openstarry_code.gateway.boot import _make_task_session_lifecycle_listener
+from openstarry_code.gateway.routing import RouteEnvelope, SourceKind
+from openstarry_code.gateway.rpc_sessions import _active_task_summary
+from openstarry_code.gateway.session_events import build_sessions_changed_payload
+from openstarry_code.gateway.session_lifecycle import (
     SessionTaskSnapshot,
     TaskLifecycleEvent,
     apply_task_lifecycle_to_session,
     session_status_for_task_status,
 )
-from opensquilla.gateway.task_runtime import TaskRuntime
-from opensquilla.session.models import (
+from openstarry_code.gateway.task_runtime import TaskRuntime
+from openstarry_code.session.models import (
     AgentTaskRecord,
     AgentTaskStatus,
     SessionNode,

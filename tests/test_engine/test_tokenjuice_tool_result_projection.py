@@ -8,15 +8,15 @@ from typing import Any
 
 import pytest
 
-import opensquilla.engine.agent as agent_mod
-import opensquilla.engine.tokenjuice_adapter as tokenjuice_adapter_mod
-from opensquilla.engine import Agent, AgentConfig, ToolCall, ToolResult
-from opensquilla.engine.session_sanitize import session_payload_chars
-from opensquilla.engine.tool_result_store import ToolResultStore
-from opensquilla.engine.types import ToolResultEvent, ToolUseDeltaEvent
-from opensquilla.gateway.approval_queue import get_approval_queue, reset_approval_queue
-from opensquilla.plugins.tokenjuice import reduce_tool_result as backend_reduce_tool_result
-from opensquilla.provider import (
+import openstarry_code.engine.agent as agent_mod
+import openstarry_code.engine.tokenjuice_adapter as tokenjuice_adapter_mod
+from openstarry_code.engine import Agent, AgentConfig, ToolCall, ToolResult
+from openstarry_code.engine.session_sanitize import session_payload_chars
+from openstarry_code.engine.tool_result_store import ToolResultStore
+from openstarry_code.engine.types import ToolResultEvent, ToolUseDeltaEvent
+from openstarry_code.gateway.approval_queue import get_approval_queue, reset_approval_queue
+from openstarry_code.plugins.tokenjuice import reduce_tool_result as backend_reduce_tool_result
+from openstarry_code.provider import (
     ContentBlockThinking,
     ContentBlockToolResult,
     Message,
@@ -24,11 +24,11 @@ from opensquilla.provider import (
     ToolDefinition,
     ToolInputSchema,
 )
-from opensquilla.provider import DoneEvent as ProviderDoneEvent
-from opensquilla.provider import ToolUseDeltaEvent as ProviderToolUseDeltaEvent
-from opensquilla.provider import ToolUseEndEvent as ProviderToolUseEndEvent
-from opensquilla.provider import ToolUseStartEvent as ProviderToolUseStartEvent
-from opensquilla.tools.types import ToolContext
+from openstarry_code.provider import DoneEvent as ProviderDoneEvent
+from openstarry_code.provider import ToolUseDeltaEvent as ProviderToolUseDeltaEvent
+from openstarry_code.provider import ToolUseEndEvent as ProviderToolUseEndEvent
+from openstarry_code.provider import ToolUseStartEvent as ProviderToolUseStartEvent
+from openstarry_code.tools.types import ToolContext
 
 
 class _Provider:
@@ -2229,7 +2229,7 @@ def test_python_backend_generic_fallback_head_tail() -> None:
 def test_typescript_runtime_directory_is_not_present() -> None:
     from pathlib import Path
 
-    assert not (Path(__file__).resolve().parents[2] / "src/opensquilla/tokenjuice_runtime").exists()
+    assert not (Path(__file__).resolve().parents[2] / "src/openstarry_code/tokenjuice_runtime").exists()
 
 
 @pytest.mark.asyncio

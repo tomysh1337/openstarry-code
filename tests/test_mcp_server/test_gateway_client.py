@@ -7,11 +7,11 @@ from typing import Any
 
 import pytest
 
-from opensquilla.contracts.gateway_transport import (
+from openstarry_code.contracts.gateway_transport import (
     GATEWAY_CLIENT_MAX_MESSAGE_BYTES,
     GATEWAY_CLIENT_MAX_QUEUE,
 )
-from opensquilla.gateway_client import GatewayRPCClient, normalize_gateway_url
+from openstarry_code.gateway_client import GatewayRPCClient, normalize_gateway_url
 
 
 class _SilentWebSocket:

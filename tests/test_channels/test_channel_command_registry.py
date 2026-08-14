@@ -4,24 +4,24 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.channels.command_registry import (
+from openstarry_code.channels.command_registry import (
     DEFAULT_COMMAND_REGISTRY,
     build_channel_rpc_context,
 )
-from opensquilla.channels.system_messages import _MESSAGES, render_channel_message
-from opensquilla.channels.types import (
+from openstarry_code.channels.system_messages import _MESSAGES, render_channel_message
+from openstarry_code.channels.types import (
     AuthenticatedPrincipal,
     IncomingMessage,
     IngressProvenance,
     IngressVerification,
 )
-from opensquilla.engine.commands import DEFAULT_REGISTRY, Surface
-from opensquilla.gateway.channel_dispatch import (
+from openstarry_code.engine.commands import DEFAULT_REGISTRY, Surface
+from openstarry_code.gateway.channel_dispatch import (
     _dispatch_channel_slash_command,
     _stamp_channel_admin_principal,
 )
-from opensquilla.gateway.protocol import make_error_res, make_ok_res
-from opensquilla.gateway.routing import build_channel_route_envelope
+from openstarry_code.gateway.protocol import make_error_res, make_ok_res
+from openstarry_code.gateway.routing import build_channel_route_envelope
 
 
 def test_channel_command_names_include_usage_and_registry_words() -> None:
@@ -386,8 +386,8 @@ def test_channel_admin_matcher_is_shared_across_rpc_and_dispatch():
     # registry (operator Principal for channel RPC) and gateway dispatch
     # (who may resolve sandbox approvals from chat) must never diverge on
     # str vs list vs mixed-type configured entries.
-    from opensquilla.channels._util import sender_is_channel_admin
-    from opensquilla.gateway.channel_dispatch import _sender_is_channel_admin
+    from openstarry_code.channels._util import sender_is_channel_admin
+    from openstarry_code.gateway.channel_dispatch import _sender_is_channel_admin
 
     cases = [
         ("u-1", "u-1", True),

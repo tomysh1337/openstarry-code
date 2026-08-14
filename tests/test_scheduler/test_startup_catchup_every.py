@@ -14,9 +14,9 @@ from datetime import UTC, datetime, timedelta
 
 import pytest
 
-from opensquilla.scheduler.persistence import JobStore
-from opensquilla.scheduler.timer import SchedulerTimer
-from opensquilla.scheduler.types import CronJob, JobStatus, ScheduleKind, SessionTarget
+from openstarry_code.scheduler.persistence import JobStore
+from openstarry_code.scheduler.timer import SchedulerTimer
+from openstarry_code.scheduler.types import CronJob, JobStatus, ScheduleKind, SessionTarget
 
 
 def _every_job(

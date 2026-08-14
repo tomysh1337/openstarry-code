@@ -5,7 +5,7 @@ from typing import Any
 
 from typer.testing import CliRunner
 
-from opensquilla.cli.main import app
+from openstarry_code.cli.main import app
 
 runner = CliRunner()
 
@@ -33,7 +33,7 @@ class OfflineGatewayClient(FakeGatewayClient):
 def _install(monkeypatch, payload: dict[str, Any]) -> type[FakeGatewayClient]:
     FakeGatewayClient.calls = []
     FakeGatewayClient.payload = payload
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", FakeGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", FakeGatewayClient)
     return FakeGatewayClient
 
 
@@ -119,7 +119,7 @@ def test_skills_reload_gateway_unavailable_is_nonzero_and_never_falls_back(
     monkeypatch,
 ) -> None:
     OfflineGatewayClient.calls = []
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", OfflineGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", OfflineGatewayClient)
 
     result = runner.invoke(app, ["skills", "reload", "--json"])
 

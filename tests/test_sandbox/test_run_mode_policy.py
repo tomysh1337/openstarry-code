@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 
-from opensquilla.sandbox.run_mode import RunMode
-from opensquilla.sandbox.run_mode_policy import (
+from openstarry_code.sandbox.run_mode import RunMode
+from openstarry_code.sandbox.run_mode_policy import (
     allowed_run_modes_for_principal,
     coerce_run_mode_for_principal,
     default_run_mode_for_principal,

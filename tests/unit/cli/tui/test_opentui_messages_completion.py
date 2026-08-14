@@ -4,7 +4,7 @@ import json
 
 import pytest
 
-from opensquilla.cli.tui.opentui.messages import (
+from openstarry_code.cli.tui.opentui.messages import (
     CompletionCandidate,
     HostCompletionRequest,
     HostToPythonMessageError,

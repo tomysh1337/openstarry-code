@@ -5,8 +5,8 @@ from typing import Any
 
 import pytest
 
-from opensquilla.skills.meta.parser import MetaPlanError, parse_meta_plan
-from opensquilla.skills.meta.types import MetaStep
+from openstarry_code.skills.meta.parser import MetaPlanError, parse_meta_plan
+from openstarry_code.skills.meta.types import MetaStep
 
 
 def test_meta_step_default_label_empty():

@@ -10,14 +10,14 @@ from types import SimpleNamespace
 import pytest
 from PIL import Image
 
-import opensquilla.gateway.rpc_artifacts as rpc_artifacts
-from opensquilla.artifacts import ArtifactStore
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.guest_rpc_policy import guest_owned_session_key
-from opensquilla.gateway.rpc import RpcContext, get_dispatcher, validate_classification
-from opensquilla.gateway.scopes import METHOD_SCOPES, READ_SCOPE
-from opensquilla.session.manager import SessionManager
-from opensquilla.session.storage import SessionStorage
+import openstarry_code.gateway.rpc_artifacts as rpc_artifacts
+from openstarry_code.artifacts import ArtifactStore
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.guest_rpc_policy import guest_owned_session_key
+from openstarry_code.gateway.rpc import RpcContext, get_dispatcher, validate_classification
+from openstarry_code.gateway.scopes import METHOD_SCOPES, READ_SCOPE
+from openstarry_code.session.manager import SessionManager
+from openstarry_code.session.storage import SessionStorage
 
 
 @pytest.fixture

@@ -25,8 +25,8 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from opensquilla.engine.runtime import _SESSION_LOCK_OWNER, TurnRunner
-from opensquilla.engine.types import DoneEvent
+from openstarry_code.engine.runtime import _SESSION_LOCK_OWNER, TurnRunner
+from openstarry_code.engine.types import DoneEvent
 
 
 def _make_minimal_turn_runner(
@@ -74,7 +74,7 @@ async def test_no_self_deadlock() -> None:
 
     runner = _make_minimal_turn_runner(lock_provider)
 
-    from opensquilla.tools.types import ToolContext
+    from openstarry_code.tools.types import ToolContext
 
     tool_ctx = ToolContext(session_key=session_key)
 
@@ -120,7 +120,7 @@ async def test_no_self_deadlock_when_run_consumed_by_child_task() -> None:
 
     runner._run_turn = _fake_run_turn  # type: ignore[method-assign]
 
-    from opensquilla.tools.types import ToolContext
+    from openstarry_code.tools.types import ToolContext
 
     tool_ctx = ToolContext(session_key=session_key)
 

@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from opensquilla.sandbox.config import SandboxSettings
-from opensquilla.sandbox.integration import build_request, configure_runtime, reset_runtime
-from opensquilla.sandbox.policy import build_policy
-from opensquilla.sandbox.run_mode import RunMode
-from opensquilla.sandbox.types import NetworkMode, SecurityLevel
-from opensquilla.tools.run_mode import full_host_access_for_context
-from opensquilla.tools.types import ToolContext, current_tool_context
+from openstarry_code.sandbox.config import SandboxSettings
+from openstarry_code.sandbox.integration import build_request, configure_runtime, reset_runtime
+from openstarry_code.sandbox.policy import build_policy
+from openstarry_code.sandbox.run_mode import RunMode
+from openstarry_code.sandbox.types import NetworkMode, SecurityLevel
+from openstarry_code.tools.run_mode import full_host_access_for_context
+from openstarry_code.tools.types import ToolContext, current_tool_context
 
 
 class _FakeApprovalQueue:
@@ -98,8 +98,8 @@ def test_hybrid_runtime_uses_full_without_context_and_standard_with_context(
 
 
 def test_managed_network_env_preserves_run_mode(tmp_path: Path) -> None:
-    from opensquilla.sandbox.integration import request_with_managed_network_proxy_env
-    from opensquilla.sandbox.types import (
+    from openstarry_code.sandbox.integration import request_with_managed_network_proxy_env
+    from openstarry_code.sandbox.types import (
         NetworkProxySpec,
         ResourceLimits,
         SandboxPolicy,

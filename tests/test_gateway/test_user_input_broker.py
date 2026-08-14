@@ -4,7 +4,7 @@ import asyncio
 
 import pytest
 
-from opensquilla.gateway.user_input_broker import (
+from openstarry_code.gateway.user_input_broker import (
     StructuredUserInputBroker,
     UserInputRequestConflictError,
     UserInputValidationError,

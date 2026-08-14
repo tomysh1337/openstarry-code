@@ -12,14 +12,14 @@ from types import SimpleNamespace
 import pytest
 import pytest_asyncio
 
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.rpc import RpcContext, RpcHandlerError
-from opensquilla.project_workspaces import project_path_key
-from opensquilla.sandbox.run_context import RUN_CONTEXT_ORIGIN_KEY
-from opensquilla.session.manager import SessionManager
-from opensquilla.session.models import ProjectWorkspace, SessionNode
-from opensquilla.session.storage import SessionStorage
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.rpc import RpcContext, RpcHandlerError
+from openstarry_code.project_workspaces import project_path_key
+from openstarry_code.sandbox.run_context import RUN_CONTEXT_ORIGIN_KEY
+from openstarry_code.session.manager import SessionManager
+from openstarry_code.session.models import ProjectWorkspace, SessionNode
+from openstarry_code.session.storage import SessionStorage
 
 
 class _SessionManager:
@@ -91,8 +91,8 @@ def _ctx(
     permissions_default_mode: str = "off",
     scopes: frozenset[str] | None = None,
 ):
-    from opensquilla.gateway.auth import Principal
-    from opensquilla.gateway.rpc import RpcContext
+    from openstarry_code.gateway.auth import Principal
+    from openstarry_code.gateway.rpc import RpcContext
 
     config = SimpleNamespace(
         workspace_dir="/tmp/ws",
@@ -123,10 +123,10 @@ def _request_generated_sandbox_approval(
     manager: _SessionManager,
     params: dict[str, object],
 ) -> str:
-    from opensquilla.sandbox.escalation import request_sandbox_approval
-    from opensquilla.sandbox.run_context import RunContext
-    from opensquilla.sandbox.run_mode import RunMode
-    from opensquilla.tools.types import ToolContext, current_tool_context
+    from openstarry_code.sandbox.escalation import request_sandbox_approval
+    from openstarry_code.sandbox.run_context import RunContext
+    from openstarry_code.sandbox.run_mode import RunMode
+    from openstarry_code.tools.types import ToolContext, current_tool_context
 
     workspace = str(params.get("workspace") or "/tmp/ws")
     Path(workspace).mkdir(parents=True, exist_ok=True)
@@ -159,7 +159,7 @@ def _request_generated_sandbox_approval(
 
 @pytest.fixture(autouse=True)
 def _reset_resolved_overlays() -> None:
-    from opensquilla.sandbox.escalation import reset_resolved_run_context_overlays
+    from openstarry_code.sandbox.escalation import reset_resolved_run_context_overlays
 
     reset_resolved_run_context_overlays()
     yield
@@ -211,7 +211,7 @@ async def project_sandbox_ctx(
 async def test_sandbox_context_get_uses_bound_project_not_agent_default(
     tmp_path: Path,
 ) -> None:
-    from opensquilla.gateway.rpc_sandbox import _handle_sandbox_run_context_get
+    from openstarry_code.gateway.rpc_sandbox import _handle_sandbox_run_context_get
 
     storage = await SessionStorage.open(str(tmp_path / "sessions.db"))
     manager = SessionManager(storage)
@@ -258,7 +258,7 @@ async def test_sandbox_context_get_uses_bound_project_not_agent_default(
 async def test_sandbox_context_get_defaults_fresh_bound_owner_project_to_full(
     project_sandbox_ctx: tuple[RpcContext, SessionNode, ProjectWorkspace],
 ) -> None:
-    from opensquilla.gateway.rpc_sandbox import _handle_sandbox_run_context_get
+    from openstarry_code.gateway.rpc_sandbox import _handle_sandbox_run_context_get
 
     ctx, project_session, project = project_sandbox_ctx
     await ctx.session_manager.update(project_session.session_key, origin=None)
@@ -277,7 +277,7 @@ async def test_bound_project_workspace_cannot_be_changed(
     project_sandbox_ctx: tuple[RpcContext, SessionNode, ProjectWorkspace],
     tmp_path: Path,
 ) -> None:
-    from opensquilla.gateway.rpc_sandbox import _handle_sandbox_workspace_set
+    from openstarry_code.gateway.rpc_sandbox import _handle_sandbox_workspace_set
 
     ctx, project_session, _project = project_sandbox_ctx
     other = tmp_path / "other"
@@ -298,7 +298,7 @@ async def test_project_mount_validation_is_relative_to_authoritative_workspace(
     project_sandbox_ctx: tuple[RpcContext, SessionNode, ProjectWorkspace],
     tmp_path: Path,
 ) -> None:
-    from opensquilla.gateway.rpc_sandbox import _handle_sandbox_mount_add
+    from openstarry_code.gateway.rpc_sandbox import _handle_sandbox_mount_add
 
     ctx, project_session, project = project_sandbox_ctx
     inside = Path(project.path) / "inside"
@@ -335,7 +335,7 @@ async def test_project_run_context_set_preserves_authoritative_workspace(
     project_sandbox_ctx: tuple[RpcContext, SessionNode, ProjectWorkspace],
     tmp_path: Path,
 ) -> None:
-    from opensquilla.gateway.rpc_sandbox import _handle_sandbox_run_context_set
+    from openstarry_code.gateway.rpc_sandbox import _handle_sandbox_run_context_set
 
     ctx, project_session, project = project_sandbox_ctx
     outside = tmp_path / "tampered-context-origin"
@@ -372,7 +372,7 @@ async def test_project_sandbox_rpc_fails_when_workspace_becomes_unavailable(
     project_sandbox_ctx: tuple[RpcContext, SessionNode, ProjectWorkspace],
     tmp_path: Path,
 ) -> None:
-    from opensquilla.gateway.rpc_sandbox import _handle_sandbox_run_context_get
+    from openstarry_code.gateway.rpc_sandbox import _handle_sandbox_run_context_get
 
     ctx, project_session, project = project_sandbox_ctx
     project_path = Path(project.path)
@@ -396,7 +396,7 @@ async def test_project_run_context_set_reports_workspace_before_setup_readiness(
     project_sandbox_ctx: tuple[RpcContext, SessionNode, ProjectWorkspace],
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.gateway import rpc_sandbox
+    from openstarry_code.gateway import rpc_sandbox
 
     ctx, project_session, project = project_sandbox_ctx
     Path(project.path).rmdir()
@@ -429,7 +429,7 @@ async def test_project_run_context_set_reports_workspace_before_setup_readiness(
 
 @pytest.mark.asyncio
 async def test_rpc_add_domain_returns_updated_context() -> None:
-    from opensquilla.gateway.rpc_sandbox import _handle_sandbox_domain_add
+    from openstarry_code.gateway.rpc_sandbox import _handle_sandbox_domain_add
 
     manager = _SessionManager()
 
@@ -447,8 +447,8 @@ async def test_rpc_add_domain_returns_updated_context() -> None:
 
 @pytest.mark.asyncio
 async def test_rpc_add_mount_rejects_non_owner() -> None:
-    from opensquilla.gateway.rpc import RpcHandlerError
-    from opensquilla.gateway.rpc_sandbox import _handle_sandbox_mount_add
+    from openstarry_code.gateway.rpc import RpcHandlerError
+    from openstarry_code.gateway.rpc_sandbox import _handle_sandbox_mount_add
 
     manager = _SessionManager()
 
@@ -477,7 +477,7 @@ async def test_rpc_mount_mutations_require_path_without_mutating_origin(
     handler_name: str,
     params: dict[str, str],
 ) -> None:
-    import opensquilla.gateway.rpc_sandbox as rpc_sandbox
+    import openstarry_code.gateway.rpc_sandbox as rpc_sandbox
 
     manager = _SessionManager()
     handler = getattr(rpc_sandbox, handler_name)
@@ -494,7 +494,7 @@ async def test_rpc_mount_mutations_require_path_without_mutating_origin(
 
 @pytest.mark.asyncio
 async def test_rpc_mutation_rejects_whitespace_session_key_without_creating_session() -> None:
-    from opensquilla.gateway.rpc_sandbox import _handle_sandbox_mount_add
+    from openstarry_code.gateway.rpc_sandbox import _handle_sandbox_mount_add
 
     manager = _SessionManager()
 
@@ -510,15 +510,15 @@ async def test_rpc_mutation_rejects_whitespace_session_key_without_creating_sess
 
 @pytest.mark.asyncio
 async def test_rpc_run_context_get_includes_bundles_and_temporary_grants() -> None:
-    from opensquilla.gateway.rpc_sandbox import _handle_sandbox_run_context_get
-    from opensquilla.sandbox.run_context import (
+    from openstarry_code.gateway.rpc_sandbox import _handle_sandbox_run_context_get
+    from openstarry_code.sandbox.run_context import (
         PublicNetworkGrant,
         RunContext,
         TemporaryGrant,
         persist_run_context,
     )
-    from opensquilla.sandbox.run_mode import RunMode
-    from opensquilla.sandbox.user_grants import upsert_bundle_grant
+    from openstarry_code.sandbox.run_mode import RunMode
+    from openstarry_code.sandbox.user_grants import upsert_bundle_grant
 
     manager = _SessionManager()
     upsert_bundle_grant(
@@ -576,11 +576,11 @@ async def test_rpc_run_context_get_includes_bundles_and_temporary_grants() -> No
 
 @pytest.mark.asyncio
 async def test_exec_approval_resolve_allows_non_owner_chat_scoped_sandbox_grant() -> None:
-    from opensquilla.gateway.approval_queue import get_approval_queue, reset_approval_queue
-    from opensquilla.gateway.rpc_approvals import _handle_exec_approval_resolve
-    from opensquilla.sandbox.escalation import build_network_approval_params
-    from opensquilla.sandbox.network_guard import NetworkDecision
-    from opensquilla.sandbox.run_context import get_run_context
+    from openstarry_code.gateway.approval_queue import get_approval_queue, reset_approval_queue
+    from openstarry_code.gateway.rpc_approvals import _handle_exec_approval_resolve
+    from openstarry_code.sandbox.escalation import build_network_approval_params
+    from openstarry_code.sandbox.network_guard import NetworkDecision
+    from openstarry_code.sandbox.run_context import get_run_context
 
     reset_approval_queue()
     manager = _SessionManager()
@@ -622,10 +622,10 @@ async def test_exec_approval_resolve_allows_non_owner_chat_scoped_sandbox_grant(
 
 @pytest.mark.asyncio
 async def test_exec_approval_resolve_returns_first_cross_surface_decision() -> None:
-    from opensquilla.gateway.approval_queue import get_approval_queue, reset_approval_queue
-    from opensquilla.gateway.rpc_approvals import _handle_exec_approval_resolve
-    from opensquilla.sandbox.escalation import build_network_approval_params
-    from opensquilla.sandbox.network_guard import NetworkDecision
+    from openstarry_code.gateway.approval_queue import get_approval_queue, reset_approval_queue
+    from openstarry_code.gateway.rpc_approvals import _handle_exec_approval_resolve
+    from openstarry_code.sandbox.escalation import build_network_approval_params
+    from openstarry_code.sandbox.network_guard import NetworkDecision
 
     reset_approval_queue()
     manager = _SessionManager()
@@ -667,10 +667,10 @@ async def test_exec_approval_resolve_returns_first_cross_surface_decision() -> N
 async def test_exec_approval_resolve_joins_active_cross_surface_claim(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.gateway import rpc_approvals
-    from opensquilla.gateway.approval_queue import get_approval_queue, reset_approval_queue
-    from opensquilla.sandbox.escalation import build_network_approval_params
-    from opensquilla.sandbox.network_guard import NetworkDecision
+    from openstarry_code.gateway import rpc_approvals
+    from openstarry_code.gateway.approval_queue import get_approval_queue, reset_approval_queue
+    from openstarry_code.sandbox.escalation import build_network_approval_params
+    from openstarry_code.sandbox.network_guard import NetworkDecision
 
     reset_approval_queue()
     manager = _SessionManager()
@@ -731,11 +731,11 @@ async def test_exec_approval_resolve_rejects_legacy_intent_flags() -> None:
     # "Allow always" / rememberIntent were a removed no-op; a truthy value must
     # now be rejected loudly rather than silently accepted, and must not resolve
     # the approval or apply any grant.
-    from opensquilla.gateway.approval_queue import get_approval_queue, reset_approval_queue
-    from opensquilla.gateway.rpc import RpcHandlerError
-    from opensquilla.gateway.rpc_approvals import _handle_exec_approval_resolve
-    from opensquilla.sandbox.escalation import build_network_approval_params
-    from opensquilla.sandbox.network_guard import NetworkDecision
+    from openstarry_code.gateway.approval_queue import get_approval_queue, reset_approval_queue
+    from openstarry_code.gateway.rpc import RpcHandlerError
+    from openstarry_code.gateway.rpc_approvals import _handle_exec_approval_resolve
+    from openstarry_code.sandbox.escalation import build_network_approval_params
+    from openstarry_code.sandbox.network_guard import NetworkDecision
 
     reset_approval_queue()
     manager = _SessionManager()
@@ -779,11 +779,11 @@ async def test_exec_approval_resolve_rejects_legacy_intent_flags() -> None:
 
 @pytest.mark.asyncio
 async def test_exec_approval_resolve_rejects_non_owner_missing_sandbox_choice() -> None:
-    from opensquilla.gateway.approval_queue import get_approval_queue, reset_approval_queue
-    from opensquilla.gateway.rpc import RpcHandlerError
-    from opensquilla.gateway.rpc_approvals import _handle_exec_approval_resolve
-    from opensquilla.sandbox.escalation import build_network_approval_params
-    from opensquilla.sandbox.network_guard import NetworkDecision
+    from openstarry_code.gateway.approval_queue import get_approval_queue, reset_approval_queue
+    from openstarry_code.gateway.rpc import RpcHandlerError
+    from openstarry_code.gateway.rpc_approvals import _handle_exec_approval_resolve
+    from openstarry_code.sandbox.escalation import build_network_approval_params
+    from openstarry_code.sandbox.network_guard import NetworkDecision
 
     reset_approval_queue()
     manager = _SessionManager()
@@ -820,11 +820,11 @@ async def test_exec_approval_resolve_rejects_non_owner_missing_sandbox_choice() 
 
 @pytest.mark.asyncio
 async def test_exec_approval_resolve_allows_non_owner_chat_scoped_path_mount(tmp_path) -> None:
-    from opensquilla.gateway.approval_queue import reset_approval_queue
-    from opensquilla.gateway.rpc_approvals import _handle_exec_approval_resolve
-    from opensquilla.sandbox.escalation import build_path_approval_params
-    from opensquilla.sandbox.path_validation import MountDecision
-    from opensquilla.sandbox.run_context import get_run_context
+    from openstarry_code.gateway.approval_queue import reset_approval_queue
+    from openstarry_code.gateway.rpc_approvals import _handle_exec_approval_resolve
+    from openstarry_code.sandbox.escalation import build_path_approval_params
+    from openstarry_code.sandbox.path_validation import MountDecision
+    from openstarry_code.sandbox.run_context import get_run_context
 
     reset_approval_queue()
     manager = _SessionManager()
@@ -871,11 +871,11 @@ async def test_exec_approval_resolve_allows_non_owner_chat_scoped_path_mount(tmp
 
 @pytest.mark.asyncio
 async def test_exec_approval_resolve_allows_non_owner_sandbox_grant_denial() -> None:
-    from opensquilla.gateway.approval_queue import reset_approval_queue
-    from opensquilla.gateway.rpc_approvals import _handle_exec_approval_resolve
-    from opensquilla.sandbox.escalation import build_network_approval_params
-    from opensquilla.sandbox.network_guard import NetworkDecision
-    from opensquilla.sandbox.run_context import get_run_context
+    from openstarry_code.gateway.approval_queue import reset_approval_queue
+    from openstarry_code.gateway.rpc_approvals import _handle_exec_approval_resolve
+    from openstarry_code.sandbox.escalation import build_network_approval_params
+    from openstarry_code.sandbox.network_guard import NetworkDecision
+    from openstarry_code.sandbox.run_context import get_run_context
 
     reset_approval_queue()
     manager = _SessionManager()
@@ -919,11 +919,11 @@ async def test_exec_approval_resolve_allows_non_owner_sandbox_grant_denial() -> 
 async def test_exec_approval_resolve_leaves_sandbox_approval_pending_when_mutation_fails(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.gateway.approval_queue import get_approval_queue, reset_approval_queue
-    from opensquilla.gateway.rpc import get_dispatcher
-    from opensquilla.sandbox.escalation import build_network_approval_params
-    from opensquilla.sandbox.network_guard import NetworkDecision
-    from opensquilla.sandbox.run_context import get_run_context
+    from openstarry_code.gateway.approval_queue import get_approval_queue, reset_approval_queue
+    from openstarry_code.gateway.rpc import get_dispatcher
+    from openstarry_code.sandbox.escalation import build_network_approval_params
+    from openstarry_code.sandbox.network_guard import NetworkDecision
+    from openstarry_code.sandbox.run_context import get_run_context
 
     reset_approval_queue()
     manager = _SessionManager()
@@ -946,7 +946,7 @@ async def test_exec_approval_resolve_leaves_sandbox_approval_pending_when_mutati
         raise RuntimeError("mutation failed")
 
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_approvals.apply_sandbox_approval_choice",
+        "openstarry_code.gateway.rpc_approvals.apply_sandbox_approval_choice",
         fail_apply,
     )
 
@@ -977,12 +977,12 @@ async def test_exec_approval_resolve_leaves_sandbox_approval_pending_when_mutati
 async def test_exec_approval_resolve_claim_prevents_deny_race_from_landing_grant(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.gateway.approval_queue import get_approval_queue, reset_approval_queue
-    from opensquilla.gateway.rpc import get_dispatcher
-    from opensquilla.sandbox import escalation as escalation_mod
-    from opensquilla.sandbox.escalation import build_network_approval_params
-    from opensquilla.sandbox.network_guard import NetworkDecision
-    from opensquilla.sandbox.run_context import get_run_context
+    from openstarry_code.gateway.approval_queue import get_approval_queue, reset_approval_queue
+    from openstarry_code.gateway.rpc import get_dispatcher
+    from openstarry_code.sandbox import escalation as escalation_mod
+    from openstarry_code.sandbox.escalation import build_network_approval_params
+    from openstarry_code.sandbox.network_guard import NetworkDecision
+    from openstarry_code.sandbox.run_context import get_run_context
 
     reset_approval_queue()
     manager = _SessionManager()
@@ -1011,7 +1011,7 @@ async def test_exec_approval_resolve_claim_prevents_deny_race_from_landing_grant
         await escalation_mod.apply_sandbox_approval_choice(*args, **kwargs)
 
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_approvals.apply_sandbox_approval_choice",
+        "openstarry_code.gateway.rpc_approvals.apply_sandbox_approval_choice",
         delayed_apply,
     )
 
@@ -1056,11 +1056,11 @@ async def test_exec_approval_resolve_claim_prevents_deny_race_from_landing_grant
 async def test_exec_approval_wait_and_consume_wait_for_sandbox_grant_apply(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.gateway.approval_queue import get_approval_queue, reset_approval_queue
-    from opensquilla.gateway.rpc import get_dispatcher
-    from opensquilla.sandbox import escalation as escalation_mod
-    from opensquilla.sandbox.escalation import build_network_approval_params
-    from opensquilla.sandbox.network_guard import NetworkDecision
+    from openstarry_code.gateway.approval_queue import get_approval_queue, reset_approval_queue
+    from openstarry_code.gateway.rpc import get_dispatcher
+    from openstarry_code.sandbox import escalation as escalation_mod
+    from openstarry_code.sandbox.escalation import build_network_approval_params
+    from openstarry_code.sandbox.network_guard import NetworkDecision
 
     reset_approval_queue()
     manager = _SessionManager()
@@ -1089,7 +1089,7 @@ async def test_exec_approval_wait_and_consume_wait_for_sandbox_grant_apply(
         await escalation_mod.apply_sandbox_approval_choice(*args, **kwargs)
 
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_approvals.apply_sandbox_approval_choice",
+        "openstarry_code.gateway.rpc_approvals.apply_sandbox_approval_choice",
         delayed_apply,
     )
 
@@ -1138,11 +1138,11 @@ async def test_exec_approval_wait_and_consume_wait_for_sandbox_grant_apply(
 async def test_exec_approval_resolve_recovers_complete_failure_after_grant_apply(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.gateway.approval_queue import get_approval_queue, reset_approval_queue
-    from opensquilla.gateway.rpc import get_dispatcher
-    from opensquilla.sandbox.escalation import build_network_approval_params
-    from opensquilla.sandbox.network_guard import NetworkDecision
-    from opensquilla.sandbox.run_context import get_run_context
+    from openstarry_code.gateway.approval_queue import get_approval_queue, reset_approval_queue
+    from openstarry_code.gateway.rpc import get_dispatcher
+    from openstarry_code.sandbox.escalation import build_network_approval_params
+    from openstarry_code.sandbox.network_guard import NetworkDecision
+    from openstarry_code.sandbox.run_context import get_run_context
 
     reset_approval_queue()
     manager = _SessionManager()
@@ -1199,11 +1199,11 @@ async def test_exec_approval_resolve_recovers_complete_failure_after_grant_apply
 async def test_exec_approval_resolve_finalize_failure_does_not_land_grant(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.gateway.approval_queue import get_approval_queue, reset_approval_queue
-    from opensquilla.gateway.rpc import get_dispatcher
-    from opensquilla.sandbox.escalation import build_network_approval_params
-    from opensquilla.sandbox.network_guard import NetworkDecision
-    from opensquilla.sandbox.run_context import get_run_context
+    from openstarry_code.gateway.approval_queue import get_approval_queue, reset_approval_queue
+    from openstarry_code.gateway.rpc import get_dispatcher
+    from openstarry_code.sandbox.escalation import build_network_approval_params
+    from openstarry_code.sandbox.network_guard import NetworkDecision
+    from openstarry_code.sandbox.run_context import get_run_context
 
     reset_approval_queue()
     manager = _SessionManager()
@@ -1252,7 +1252,7 @@ async def test_exec_approval_resolve_finalize_failure_does_not_land_grant(
 
 
 def test_claimed_approval_reappears_after_claim_lease_expires(tmp_path) -> None:
-    from opensquilla.application.approval_queue import ApprovalQueue
+    from openstarry_code.application.approval_queue import ApprovalQueue
 
     db_path = tmp_path / "approval_queue.sqlite"
     queue = ApprovalQueue(db_path=str(db_path), claim_ttl_seconds=0)
@@ -1276,22 +1276,22 @@ async def test_rpc_once_rw_mount_preserves_durable_ro_through_expiry(
 ) -> None:
     import json
 
-    from opensquilla.gateway.rpc_sandbox import _handle_sandbox_mount_add
-    from opensquilla.sandbox.escalation import (
+    from openstarry_code.gateway.rpc_sandbox import _handle_sandbox_mount_add
+    from openstarry_code.sandbox.escalation import (
         current_tool_run_context,
         prune_once_mount_grants,
         reset_resolved_run_context_overlays,
         resolved_run_context_overlay,
     )
-    from opensquilla.sandbox.operation_runtime import SandboxOperationResult
-    from opensquilla.sandbox.run_context import (
+    from openstarry_code.sandbox.operation_runtime import SandboxOperationResult
+    from openstarry_code.sandbox.run_context import (
         MountGrant,
         RunContext,
         get_run_context,
     )
-    from opensquilla.sandbox.run_mode import RunMode
-    from opensquilla.tools.builtin import filesystem
-    from opensquilla.tools.types import ToolContext, current_tool_context
+    from openstarry_code.sandbox.run_mode import RunMode
+    from openstarry_code.tools.builtin import filesystem
+    from openstarry_code.tools.types import ToolContext, current_tool_context
 
     manager = _SessionManager()
     ctx = _ctx(manager)
@@ -1418,11 +1418,11 @@ async def test_rpc_once_rw_mount_preserves_durable_ro_through_expiry(
 
 @pytest.mark.asyncio
 async def test_rpc_mount_remove_updates_resolved_overlay_for_current_tool_mounts() -> None:
-    from opensquilla.gateway.rpc_sandbox import _handle_sandbox_mount_remove
-    from opensquilla.sandbox.escalation import current_tool_mounts, remember_resolved_run_context
-    from opensquilla.sandbox.run_context import MountGrant, RunContext
-    from opensquilla.sandbox.run_mode import RunMode
-    from opensquilla.tools.types import CallerKind, ToolContext, current_tool_context
+    from openstarry_code.gateway.rpc_sandbox import _handle_sandbox_mount_remove
+    from openstarry_code.sandbox.escalation import current_tool_mounts, remember_resolved_run_context
+    from openstarry_code.sandbox.run_context import MountGrant, RunContext
+    from openstarry_code.sandbox.run_mode import RunMode
+    from openstarry_code.tools.types import CallerKind, ToolContext, current_tool_context
 
     manager = _SessionManager()
     ctx = _ctx(manager)
@@ -1483,11 +1483,11 @@ async def test_rpc_mount_remove_updates_resolved_overlay_for_current_tool_mounts
 
 @pytest.mark.asyncio
 async def test_rpc_mount_remove_chat_scope_leaves_user_scope_mount_visible() -> None:
-    from opensquilla.gateway.rpc_sandbox import _handle_sandbox_mount_remove
-    from opensquilla.sandbox.path_validation import normalize_path
-    from opensquilla.sandbox.run_context import MountGrant, RunContext, get_run_context
-    from opensquilla.sandbox.run_mode import RunMode
-    from opensquilla.sandbox.user_grants import upsert_mount_grant
+    from openstarry_code.gateway.rpc_sandbox import _handle_sandbox_mount_remove
+    from openstarry_code.sandbox.path_validation import normalize_path
+    from openstarry_code.sandbox.run_context import MountGrant, RunContext, get_run_context
+    from openstarry_code.sandbox.run_mode import RunMode
+    from openstarry_code.sandbox.user_grants import upsert_mount_grant
 
     manager = _SessionManager()
     ctx = _ctx(manager)
@@ -1522,15 +1522,15 @@ async def test_rpc_mount_remove_chat_scope_leaves_user_scope_mount_visible() -> 
 
 @pytest.mark.asyncio
 async def test_rpc_domain_remove_updates_resolved_overlay_for_current_tool_context() -> None:
-    from opensquilla.gateway.rpc_sandbox import _handle_sandbox_domain_remove
-    from opensquilla.sandbox.escalation import (
+    from openstarry_code.gateway.rpc_sandbox import _handle_sandbox_domain_remove
+    from openstarry_code.sandbox.escalation import (
         current_tool_run_context,
         remember_resolved_run_context,
     )
-    from opensquilla.sandbox.network_guard import decide_network_access
-    from opensquilla.sandbox.run_context import DomainGrant, RunContext
-    from opensquilla.sandbox.run_mode import RunMode
-    from opensquilla.tools.types import CallerKind, ToolContext, current_tool_context
+    from openstarry_code.sandbox.network_guard import decide_network_access
+    from openstarry_code.sandbox.run_context import DomainGrant, RunContext
+    from openstarry_code.sandbox.run_mode import RunMode
+    from openstarry_code.tools.types import CallerKind, ToolContext, current_tool_context
 
     manager = _SessionManager()
     ctx = _ctx(manager)
@@ -1590,10 +1590,10 @@ async def test_rpc_domain_remove_updates_resolved_overlay_for_current_tool_conte
 
 @pytest.mark.asyncio
 async def test_rpc_domain_remove_chat_scope_leaves_user_scope_domain_visible() -> None:
-    from opensquilla.gateway.rpc_sandbox import _handle_sandbox_domain_remove
-    from opensquilla.sandbox.run_context import DomainGrant, RunContext, get_run_context
-    from opensquilla.sandbox.run_mode import RunMode
-    from opensquilla.sandbox.user_grants import upsert_domain_grant
+    from openstarry_code.gateway.rpc_sandbox import _handle_sandbox_domain_remove
+    from openstarry_code.sandbox.run_context import DomainGrant, RunContext, get_run_context
+    from openstarry_code.sandbox.run_mode import RunMode
+    from openstarry_code.sandbox.user_grants import upsert_domain_grant
 
     manager = _SessionManager()
     ctx = _ctx(manager)
@@ -1628,7 +1628,7 @@ async def test_rpc_domain_remove_chat_scope_leaves_user_scope_domain_visible() -
 
 @pytest.mark.asyncio
 async def test_rpc_sandbox_status_reports_backend_managed_network_and_run_mode() -> None:
-    from opensquilla.gateway.rpc_sandbox import _handle_sandbox_status
+    from openstarry_code.gateway.rpc_sandbox import _handle_sandbox_status
 
     manager = _SessionManager()
 
@@ -1694,7 +1694,7 @@ async def test_rpc_sandbox_status_reports_backend_managed_network_and_run_mode()
 
 @pytest.mark.asyncio
 async def test_rpc_sandbox_status_reports_full_host_access_without_managed_controls() -> None:
-    from opensquilla.gateway.rpc_sandbox import _handle_sandbox_status
+    from openstarry_code.gateway.rpc_sandbox import _handle_sandbox_status
 
     result = await _handle_sandbox_status(
         {},
@@ -1716,9 +1716,9 @@ async def test_rpc_sandbox_status_reports_full_host_access_without_managed_contr
 
 @pytest.mark.asyncio
 async def test_rpc_sandbox_explain_returns_status_messages_and_optional_context() -> None:
-    from opensquilla.gateway.rpc_sandbox import _handle_sandbox_explain
-    from opensquilla.sandbox.run_context import RunContext, persist_run_context
-    from opensquilla.sandbox.run_mode import RunMode
+    from openstarry_code.gateway.rpc_sandbox import _handle_sandbox_explain
+    from openstarry_code.sandbox.run_context import RunContext, persist_run_context
+    from openstarry_code.sandbox.run_mode import RunMode
 
     manager = _SessionManager()
     await persist_run_context(
@@ -1759,8 +1759,8 @@ async def test_rpc_sandbox_mutations_reject_non_owner(
     handler_name: str,
     params: dict[str, str],
 ) -> None:
-    import opensquilla.gateway.rpc_sandbox as rpc_sandbox
-    from opensquilla.gateway.rpc import RpcHandlerError
+    import openstarry_code.gateway.rpc_sandbox as rpc_sandbox
+    from openstarry_code.gateway.rpc import RpcHandlerError
 
     manager = _SessionManager()
     handler = getattr(rpc_sandbox, handler_name)
@@ -1799,7 +1799,7 @@ async def test_rpc_sandbox_invalid_params_do_not_create_missing_session(
     params: dict[str, str],
     message: str,
 ) -> None:
-    import opensquilla.gateway.rpc_sandbox as rpc_sandbox
+    import openstarry_code.gateway.rpc_sandbox as rpc_sandbox
 
     manager = _SessionManager()
     missing_session_key = "agent:main:webchat:missing"
@@ -1819,7 +1819,7 @@ async def test_rpc_sandbox_invalid_params_do_not_create_missing_session(
 async def test_rpc_sandbox_path_pick_uses_permission_based_workspace_selection(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.gateway.rpc_sandbox as rpc_sandbox
+    import openstarry_code.gateway.rpc_sandbox as rpc_sandbox
 
     manager = _SessionManager()
 
@@ -1851,7 +1851,7 @@ async def test_rpc_sandbox_path_pick_returns_valid_mount_selection(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path,
 ) -> None:
-    import opensquilla.gateway.rpc_sandbox as rpc_sandbox
+    import openstarry_code.gateway.rpc_sandbox as rpc_sandbox
 
     manager = _SessionManager()
     selected = tmp_path / "external"
@@ -1882,7 +1882,7 @@ async def test_rpc_sandbox_path_pick_returns_valid_mount_selection(
 async def test_rpc_sandbox_path_pick_returns_null_when_selection_is_cancelled(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.gateway.rpc_sandbox as rpc_sandbox
+    import openstarry_code.gateway.rpc_sandbox as rpc_sandbox
 
     manager = _SessionManager()
 
@@ -1909,7 +1909,7 @@ async def test_rpc_sandbox_path_pick_returns_null_when_selection_is_cancelled(
 def test_pick_directory_path_uses_native_macos_picker(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.gateway.rpc_sandbox as rpc_sandbox
+    import openstarry_code.gateway.rpc_sandbox as rpc_sandbox
 
     native_picker = SimpleNamespace(calls=[])
 
@@ -1949,7 +1949,7 @@ def _install_fake_native_macos_picker(
     *,
     selected_path: str | None,
 ):
-    import opensquilla.gateway.rpc_sandbox as rpc_sandbox
+    import openstarry_code.gateway.rpc_sandbox as rpc_sandbox
 
     run_calls = []
     observations = {}
@@ -2018,7 +2018,7 @@ def test_native_macos_picker_returns_path_and_launches_a_native_app_bundle(
     assert "-o" in compile_command
     assert "/Volumes/workspace" in compile_command[-1]
     assert launch_command[:3] == ["open", "-W", "-n"]
-    assert launch_command[-1].endswith("OpenSquilla Directory Picker.app")
+    assert launch_command[-1].endswith("OpenStarry Code Directory Picker.app")
     assert compile_kwargs == {
         "capture_output": True,
         "check": False,
@@ -2108,7 +2108,7 @@ def test_native_macos_picker_treats_user_cancellation_as_no_selection(
 def test_native_macos_picker_reports_an_invalid_app_bundle_as_unavailable(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.gateway.rpc_sandbox as rpc_sandbox
+    import openstarry_code.gateway.rpc_sandbox as rpc_sandbox
 
     def fake_run(command, **_kwargs):
         app_path = Path(command[command.index("-o") + 1])
@@ -2131,7 +2131,7 @@ async def test_path_list_omitted_path_uses_agent_workspace_not_process_cwd(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    from opensquilla.gateway.rpc_sandbox import _handle_sandbox_path_list
+    from openstarry_code.gateway.rpc_sandbox import _handle_sandbox_path_list
 
     manager = _SessionManager()
     agent_workspace = tmp_path / "agent-workspace"
@@ -2166,7 +2166,7 @@ async def test_path_list_reports_system_picker_availability_for_gateway_host(
     platform: str,
     expected: bool,
 ) -> None:
-    import opensquilla.gateway.rpc_sandbox as rpc_sandbox
+    import openstarry_code.gateway.rpc_sandbox as rpc_sandbox
 
     manager = _SessionManager()
     workspace = tmp_path / "workspace"
@@ -2187,7 +2187,7 @@ async def test_path_list_reports_system_picker_availability_for_gateway_host(
 async def test_path_list_omitted_path_uses_validated_project_session(
     project_sandbox_ctx: tuple[RpcContext, SessionNode, ProjectWorkspace],
 ) -> None:
-    from opensquilla.gateway.rpc_sandbox import _handle_sandbox_path_list
+    from openstarry_code.gateway.rpc_sandbox import _handle_sandbox_path_list
 
     ctx, project_session, project = project_sandbox_ctx
     agent_workspace = Path(ctx.config.workspace_dir or "")
@@ -2207,7 +2207,7 @@ async def test_path_list_omitted_path_uses_validated_project_session(
 async def test_path_list_invalid_bound_project_does_not_fall_back(
     project_sandbox_ctx: tuple[RpcContext, SessionNode, ProjectWorkspace],
 ) -> None:
-    from opensquilla.gateway.rpc_sandbox import _handle_sandbox_path_list
+    from openstarry_code.gateway.rpc_sandbox import _handle_sandbox_path_list
 
     ctx, project_session, project = project_sandbox_ctx
     Path(project.path).rmdir()
@@ -2229,7 +2229,7 @@ async def test_path_list_explicit_path_precedes_invalid_bound_project(
     project_sandbox_ctx: tuple[RpcContext, SessionNode, ProjectWorkspace],
     tmp_path: Path,
 ) -> None:
-    from opensquilla.gateway.rpc_sandbox import _handle_sandbox_path_list
+    from openstarry_code.gateway.rpc_sandbox import _handle_sandbox_path_list
 
     ctx, project_session, project = project_sandbox_ctx
     Path(project.path).rmdir()
@@ -2253,7 +2253,7 @@ async def test_path_list_falls_back_to_home_when_agent_workspace_is_missing(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    import opensquilla.gateway.rpc_sandbox as rpc_sandbox
+    import openstarry_code.gateway.rpc_sandbox as rpc_sandbox
 
     manager = _SessionManager()
     home = tmp_path / "home"
@@ -2281,7 +2281,7 @@ async def test_path_list_falls_back_to_home_when_agent_workspace_symlink_loops(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    import opensquilla.gateway.rpc_sandbox as rpc_sandbox
+    import openstarry_code.gateway.rpc_sandbox as rpc_sandbox
 
     manager = _SessionManager()
     home = tmp_path / "home"
@@ -2311,7 +2311,7 @@ async def test_path_list_falls_back_to_home_when_agent_workspace_symlink_loops(
 
 @pytest.mark.asyncio
 async def test_path_list_explicit_symlink_loop_remains_strict(tmp_path: Path) -> None:
-    from opensquilla.gateway.rpc_sandbox import _handle_sandbox_path_list
+    from openstarry_code.gateway.rpc_sandbox import _handle_sandbox_path_list
 
     manager = _SessionManager()
     looping_path = tmp_path / "looping-explicit-path"
@@ -2338,7 +2338,7 @@ async def test_path_list_falls_back_to_home_when_agent_workspace_is_not_director
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    import opensquilla.gateway.rpc_sandbox as rpc_sandbox
+    import openstarry_code.gateway.rpc_sandbox as rpc_sandbox
 
     manager = _SessionManager()
     home = tmp_path / "home"
@@ -2365,7 +2365,7 @@ async def test_path_list_falls_back_to_home_when_agent_workspace_is_not_director
 async def test_path_list_parent_and_selectability_contract(
     tmp_path: Path,
 ) -> None:
-    from opensquilla.gateway.rpc_sandbox import _handle_sandbox_path_list
+    from openstarry_code.gateway.rpc_sandbox import _handle_sandbox_path_list
 
     manager = _SessionManager()
     root = tmp_path / "root"
@@ -2398,7 +2398,7 @@ async def test_path_list_parent_and_selectability_contract(
 
 @pytest.mark.asyncio
 async def test_path_list_mount_files_are_selectable(tmp_path: Path) -> None:
-    from opensquilla.gateway.rpc_sandbox import _handle_sandbox_path_list
+    from openstarry_code.gateway.rpc_sandbox import _handle_sandbox_path_list
 
     manager = _SessionManager()
     target = tmp_path / "mount"
@@ -2422,7 +2422,7 @@ async def test_path_list_mount_files_are_selectable(tmp_path: Path) -> None:
 
 @pytest.mark.asyncio
 async def test_path_list_root_has_null_parent(tmp_path: Path) -> None:
-    from opensquilla.gateway.rpc_sandbox import _handle_sandbox_path_list
+    from openstarry_code.gateway.rpc_sandbox import _handle_sandbox_path_list
 
     manager = _SessionManager()
     root = Path(tmp_path.anchor)
@@ -2448,7 +2448,7 @@ async def test_path_list_relative_path_requires_absolute_base(
     tmp_path: Path,
     base_path: object,
 ) -> None:
-    from opensquilla.gateway.rpc_sandbox import _handle_sandbox_path_list
+    from openstarry_code.gateway.rpc_sandbox import _handle_sandbox_path_list
 
     manager = _SessionManager()
     (tmp_path / "child").mkdir()
@@ -2469,7 +2469,7 @@ async def test_path_list_relative_path_requires_absolute_base(
 
 @pytest.mark.asyncio
 async def test_path_list_relative_path_resolves_against_base(tmp_path: Path) -> None:
-    from opensquilla.gateway.rpc_sandbox import _handle_sandbox_path_list
+    from openstarry_code.gateway.rpc_sandbox import _handle_sandbox_path_list
 
     manager = _SessionManager()
     target = tmp_path / "child"
@@ -2494,7 +2494,7 @@ async def test_path_list_relative_path_requires_existing_directory_base(
     tmp_path: Path,
     base_kind: str,
 ) -> None:
-    from opensquilla.gateway.rpc_sandbox import _handle_sandbox_path_list
+    from openstarry_code.gateway.rpc_sandbox import _handle_sandbox_path_list
 
     manager = _SessionManager()
     base = tmp_path / "base"
@@ -2517,7 +2517,7 @@ async def test_path_list_relative_path_requires_existing_directory_base(
 @pytest.mark.asyncio
 @pytest.mark.parametrize("path", ["", "   ", 42, [], {}])
 async def test_path_list_rejects_invalid_explicit_path(path: object) -> None:
-    from opensquilla.gateway.rpc_sandbox import _handle_sandbox_path_list
+    from openstarry_code.gateway.rpc_sandbox import _handle_sandbox_path_list
 
     manager = _SessionManager()
 
@@ -2536,7 +2536,7 @@ async def test_path_list_rejects_invalid_explicit_path(path: object) -> None:
 async def test_path_list_missing_or_inaccessible_directory_is_an_error(
     tmp_path: Path,
 ) -> None:
-    from opensquilla.gateway.rpc_sandbox import _handle_sandbox_path_list
+    from openstarry_code.gateway.rpc_sandbox import _handle_sandbox_path_list
 
     manager = _SessionManager()
 
@@ -2553,7 +2553,7 @@ async def test_path_list_missing_or_inaccessible_directory_is_an_error(
 
 @pytest.mark.asyncio
 async def test_path_list_file_target_is_an_error(tmp_path: Path) -> None:
-    from opensquilla.gateway.rpc_sandbox import _handle_sandbox_path_list
+    from openstarry_code.gateway.rpc_sandbox import _handle_sandbox_path_list
 
     manager = _SessionManager()
     file_target = tmp_path / "notes.txt"
@@ -2575,7 +2575,7 @@ async def test_path_list_does_not_swallow_directory_access_errors(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    from opensquilla.gateway.rpc_sandbox import _handle_sandbox_path_list
+    from openstarry_code.gateway.rpc_sandbox import _handle_sandbox_path_list
 
     manager = _SessionManager()
     target = tmp_path / "blocked"
@@ -2602,8 +2602,8 @@ async def test_path_list_does_not_swallow_directory_access_errors(
 
 @pytest.mark.asyncio
 async def test_rpc_sandbox_path_list_requires_owner(tmp_path) -> None:
-    from opensquilla.gateway.rpc import RpcHandlerError
-    from opensquilla.gateway.rpc_sandbox import _handle_sandbox_path_list
+    from openstarry_code.gateway.rpc import RpcHandlerError
+    from openstarry_code.gateway.rpc_sandbox import _handle_sandbox_path_list
 
     manager = _SessionManager()
     target = tmp_path / "target"
@@ -2621,7 +2621,7 @@ async def test_rpc_sandbox_path_list_requires_owner(tmp_path) -> None:
 
 @pytest.mark.asyncio
 async def test_path_create_directory_creates_single_child(tmp_path: Path) -> None:
-    from opensquilla.gateway.rpc_sandbox import _handle_sandbox_path_create_directory
+    from openstarry_code.gateway.rpc_sandbox import _handle_sandbox_path_create_directory
 
     manager = _SessionManager()
     parent = tmp_path / "parent"
@@ -2652,7 +2652,7 @@ async def test_path_create_directory_rejects_invalid_name(
     tmp_path: Path,
     name: str,
 ) -> None:
-    from opensquilla.gateway.rpc_sandbox import _handle_sandbox_path_create_directory
+    from openstarry_code.gateway.rpc_sandbox import _handle_sandbox_path_create_directory
 
     manager = _SessionManager()
     with pytest.raises(ValueError, match="params.name"):
@@ -2668,7 +2668,7 @@ async def test_path_create_directory_rejects_invalid_name(
 
 @pytest.mark.asyncio
 async def test_path_create_directory_requires_owner(tmp_path: Path) -> None:
-    from opensquilla.gateway.rpc_sandbox import _handle_sandbox_path_create_directory
+    from openstarry_code.gateway.rpc_sandbox import _handle_sandbox_path_create_directory
 
     manager = _SessionManager()
     with pytest.raises(RpcHandlerError, match="requires owner principal"):
@@ -2686,7 +2686,7 @@ async def test_path_create_directory_requires_owner(tmp_path: Path) -> None:
 async def test_rpc_sandbox_path_list_ignores_legacy_browse_children(
     tmp_path,
 ) -> None:
-    from opensquilla.gateway.rpc_sandbox import _handle_sandbox_path_list
+    from openstarry_code.gateway.rpc_sandbox import _handle_sandbox_path_list
 
     manager = _SessionManager()
     parent = tmp_path / "parent"
@@ -2723,7 +2723,7 @@ async def test_rpc_sandbox_path_list_ignores_legacy_browse_children(
 async def test_rpc_workspace_save_does_not_use_sensitive_path_names(
     tmp_path,
 ) -> None:
-    from opensquilla.gateway.rpc_sandbox import _handle_sandbox_workspace_set
+    from openstarry_code.gateway.rpc_sandbox import _handle_sandbox_workspace_set
 
     manager = _SessionManager()
     selected = tmp_path / ".aws" / "credentials"
@@ -2757,7 +2757,7 @@ async def test_rpc_sandbox_semantic_validation_does_not_create_missing_session(
     params: dict[str, str],
     message: str,
 ) -> None:
-    import opensquilla.gateway.rpc_sandbox as rpc_sandbox
+    import openstarry_code.gateway.rpc_sandbox as rpc_sandbox
 
     manager = _SessionManager()
     missing_session_key = "agent:main:webchat:missing"
@@ -2774,9 +2774,9 @@ async def test_rpc_sandbox_semantic_validation_does_not_create_missing_session(
 
 
 def test_non_owner_route_full_hint_coerces_to_safe() -> None:
-    from opensquilla.gateway.routing import build_web_route_envelope, tool_context_from_envelope
-    from opensquilla.sandbox.run_context import RunContext
-    from opensquilla.sandbox.run_mode import RunMode
+    from openstarry_code.gateway.routing import build_web_route_envelope, tool_context_from_envelope
+    from openstarry_code.sandbox.run_context import RunContext
+    from openstarry_code.sandbox.run_mode import RunMode
 
     envelope = build_web_route_envelope(
         session_key="agent:main:webchat:abc",
@@ -2796,9 +2796,9 @@ def test_non_owner_route_full_hint_coerces_to_safe() -> None:
 
 
 def test_non_owner_route_legacy_trusted_hint_decodes_to_safe() -> None:
-    from opensquilla.gateway.routing import build_web_route_envelope, tool_context_from_envelope
-    from opensquilla.sandbox.run_context import RunContext
-    from opensquilla.sandbox.run_mode import RunMode
+    from openstarry_code.gateway.routing import build_web_route_envelope, tool_context_from_envelope
+    from openstarry_code.sandbox.run_context import RunContext
+    from openstarry_code.sandbox.run_mode import RunMode
 
     envelope = build_web_route_envelope(
         session_key="agent:main:webchat:abc",
@@ -2821,15 +2821,15 @@ def test_non_owner_route_legacy_trusted_hint_decodes_to_safe() -> None:
 async def test_rpc_sandbox_resume_clears_denial_pause(monkeypatch) -> None:
     # The owner-scoped resume RPC is the recovery surface for the sticky denial
     # pause (issue #469): it must clear the pause so the run can continue.
-    from opensquilla.gateway.rpc_sandbox import _handle_sandbox_resume
-    from opensquilla.sandbox.governance import DenialLedger
+    from openstarry_code.gateway.rpc_sandbox import _handle_sandbox_resume
+    from openstarry_code.sandbox.governance import DenialLedger
 
     ledger = DenialLedger(threshold=3)
     manager = _SessionManager()
     key = manager.node.session_key
     await ledger.mark_paused(key)
     monkeypatch.setattr(
-        "opensquilla.sandbox.integration.get_runtime",
+        "openstarry_code.sandbox.integration.get_runtime",
         lambda: SimpleNamespace(ledger=ledger),
     )
 
@@ -2842,8 +2842,8 @@ async def test_rpc_sandbox_resume_clears_denial_pause(monkeypatch) -> None:
 
 @pytest.mark.asyncio
 async def test_rpc_sandbox_resume_rejects_non_owner() -> None:
-    from opensquilla.gateway.rpc import RpcHandlerError
-    from opensquilla.gateway.rpc_sandbox import _handle_sandbox_resume
+    from openstarry_code.gateway.rpc import RpcHandlerError
+    from openstarry_code.gateway.rpc_sandbox import _handle_sandbox_resume
 
     manager = _SessionManager()
     with pytest.raises(RpcHandlerError, match="requires owner principal"):

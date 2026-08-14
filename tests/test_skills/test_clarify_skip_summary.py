@@ -11,8 +11,8 @@ skipped path so the surface can render a "we inferred this — confirm
 
 from __future__ import annotations
 
-from opensquilla.skills.meta.scheduler import _build_clarify_skip_summary
-from opensquilla.skills.meta.types import (
+from openstarry_code.skills.meta.scheduler import _build_clarify_skip_summary
+from openstarry_code.skills.meta.types import (
     ClarifyField,
     ClarifyStepConfig,
     MetaStep,

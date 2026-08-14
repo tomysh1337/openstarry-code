@@ -3,8 +3,8 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
-from opensquilla.contracts import attachments
-from opensquilla.gateway import attachment_ingest
+from openstarry_code.contracts import attachments
+from openstarry_code.gateway import attachment_ingest
 
 
 def test_attachment_policy_is_shared_with_gateway_ingest() -> None:
@@ -127,27 +127,27 @@ def test_opaque_types_are_stageable_and_capped() -> None:
 def test_sniff_module_stays_out_of_gateway() -> None:
     # The sniffer lives in contracts precisely so policy-only consumers can
     # sniff without importing gateway internals; it must never grow one.
-    imports = _imports_from(Path("src/opensquilla/contracts/attachment_sniff.py"))
-    assert not any(module.startswith("opensquilla.gateway") for module in imports)
-    assert "opensquilla.contracts.attachments" in imports
+    imports = _imports_from(Path("src/openstarry_code/contracts/attachment_sniff.py"))
+    assert not any(module.startswith("openstarry_code.gateway") for module in imports)
+    assert "openstarry_code.contracts.attachments" in imports
 
 
 def test_channel_attachment_io_does_not_import_gateway_policy() -> None:
-    imports = _imports_from(Path("src/opensquilla/channels/_attachment_io.py"))
+    imports = _imports_from(Path("src/openstarry_code/channels/_attachment_io.py"))
 
-    assert "opensquilla.gateway.attachment_ingest" not in imports
-    assert "opensquilla.contracts.attachments" in imports
+    assert "openstarry_code.gateway.attachment_ingest" not in imports
+    assert "openstarry_code.contracts.attachments" in imports
 
 
 def test_policy_only_consumers_do_not_import_gateway_ingest() -> None:
     for relative in [
-        "src/opensquilla/cli/attachments.py",
-        "src/opensquilla/engine/runtime.py",
-        "src/opensquilla/gateway/uploads.py",
+        "src/openstarry_code/cli/attachments.py",
+        "src/openstarry_code/engine/runtime.py",
+        "src/openstarry_code/gateway/uploads.py",
     ]:
         imports = _imports_from(Path(relative))
-        assert "opensquilla.gateway.attachment_ingest" not in imports
-        assert "opensquilla.contracts.attachments" in imports
+        assert "openstarry_code.gateway.attachment_ingest" not in imports
+        assert "openstarry_code.contracts.attachments" in imports
 
 
 def _imports_from(path: Path) -> list[str]:

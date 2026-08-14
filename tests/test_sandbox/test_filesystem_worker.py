@@ -10,8 +10,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.sandbox import directory_listing, filesystem_worker
-from opensquilla.sandbox.permissions import FileSystemAccess
+from openstarry_code.sandbox import directory_listing, filesystem_worker
+from openstarry_code.sandbox.permissions import FileSystemAccess
 
 
 class _LocaleTextStream:
@@ -544,7 +544,7 @@ def test_grep_search_only_enters_current_transcript_session(tmp_path: Path) -> N
 
 def test_write_text_blocks_another_attachment_session(tmp_path: Path) -> None:
     workspace = tmp_path / "workspace"
-    attachment_root = workspace / ".opensquilla" / "attachments"
+    attachment_root = workspace / ".openstarry-code" / "attachments"
     current = attachment_root / "session-current"
     other = attachment_root / "session-other"
     current.mkdir(parents=True)
@@ -579,7 +579,7 @@ def test_write_text_rejects_redirected_current_attachment_root(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     workspace = tmp_path / "workspace"
-    attachment_root = workspace / ".opensquilla" / "attachments"
+    attachment_root = workspace / ".openstarry-code" / "attachments"
     current = attachment_root / "session-current"
     other = attachment_root / "session-other"
     current.mkdir(parents=True)
@@ -649,7 +649,7 @@ def test_edit_text_preserves_existing_file_when_utf8_encoding_fails(
 
 def test_write_text_writes_chinese_and_emoji_as_exact_utf8_bytes(tmp_path: Path) -> None:
     target = tmp_path / "赛车.html"
-    content = "OpenSquilla 体素竞速 🏁"
+    content = "OpenStarry Code 体素竞速 🏁"
 
     filesystem_worker._write_text({"path": str(target), "content": content})
 

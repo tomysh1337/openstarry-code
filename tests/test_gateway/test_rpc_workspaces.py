@@ -15,21 +15,21 @@ from unittest.mock import AsyncMock
 import pytest
 import pytest_asyncio
 
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.rpc import RpcContext
-from opensquilla.gateway.rpc_workspaces import (
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.rpc import RpcContext
+from openstarry_code.gateway.rpc_workspaces import (
     _handle_workspaces_list,
     _handle_workspaces_open,
 )
-from opensquilla.project_workspaces import (
+from openstarry_code.project_workspaces import (
     ProjectWorkspaceGuard,
     ProjectWorkspaceStateError,
     project_path_key,
     resolve_validated_project_workspace,
 )
-from opensquilla.session.models import SessionNode, TranscriptEntry
-from opensquilla.session.storage import SessionStorage
+from openstarry_code.session.models import SessionNode, TranscriptEntry
+from openstarry_code.session.storage import SessionStorage
 
 
 @pytest_asyncio.fixture
@@ -229,7 +229,7 @@ async def test_validated_workspace_normalizes_post_scan_path_key_failure(
         raise FileNotFoundError(value)
 
     monkeypatch.setattr(
-        "opensquilla.project_workspaces.project_path_key",
+        "openstarry_code.project_workspaces.project_path_key",
         fail_strict_path_key,
     )
 
@@ -378,7 +378,7 @@ async def test_validated_workspace_rejects_windows_junction_retarget(
 async def test_open_lists_empty_workspace_and_normalizes_duplicates(
     workspace_ctx, tmp_path
 ) -> None:
-    from opensquilla.gateway import rpc_workspaces
+    from openstarry_code.gateway import rpc_workspaces
 
     ctx, _storage = workspace_ctx
     project = tmp_path / "demo"
@@ -411,8 +411,8 @@ async def test_open_lists_empty_workspace_and_normalizes_duplicates(
 async def test_open_rejects_untrusted_missing_file_and_root(
     workspace_ctx, tmp_path
 ) -> None:
-    from opensquilla.gateway import rpc_workspaces
-    from opensquilla.gateway.rpc import RpcHandlerError
+    from openstarry_code.gateway import rpc_workspaces
+    from openstarry_code.gateway.rpc import RpcHandlerError
 
     ctx, _storage = workspace_ctx
     file_path = tmp_path / "file.txt"
@@ -432,7 +432,7 @@ async def test_open_rejects_untrusted_missing_file_and_root(
 async def test_workspace_mutations_preserve_fixed_project_order(
     workspace_ctx, tmp_path
 ) -> None:
-    from opensquilla.gateway import rpc_workspaces
+    from openstarry_code.gateway import rpc_workspaces
 
     ctx, _storage = workspace_ctx
     first_path = tmp_path / "first"
@@ -485,7 +485,7 @@ async def test_workspace_mutations_preserve_fixed_project_order(
 async def test_remove_restores_identity_and_history_delete_keeps_project(
     workspace_ctx, tmp_path
 ) -> None:
-    from opensquilla.gateway import rpc_workspaces
+    from openstarry_code.gateway import rpc_workspaces
 
     ctx, storage = workspace_ctx
     project = tmp_path / "history"
@@ -530,7 +530,7 @@ async def test_remove_pauses_and_preserves_linked_cron_jobs(
     workspace_ctx,
     tmp_path,
 ) -> None:
-    from opensquilla.gateway import rpc_workspaces
+    from openstarry_code.gateway import rpc_workspaces
 
     ctx, _storage = workspace_ctx
     project = tmp_path / "linked-cron"
@@ -587,8 +587,8 @@ async def test_history_delete_maps_transactional_missing_to_workspace_not_found(
     workspace_ctx,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.gateway import rpc_workspaces
-    from opensquilla.gateway.rpc import RpcHandlerError
+    from openstarry_code.gateway import rpc_workspaces
+    from openstarry_code.gateway.rpc import RpcHandlerError
 
     ctx, storage = workspace_ctx
 
@@ -632,8 +632,8 @@ async def test_history_delete_maps_remove_race_to_workspace_not_found(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.gateway import rpc_workspaces
-    from opensquilla.gateway.rpc import RpcHandlerError
+    from openstarry_code.gateway import rpc_workspaces
+    from openstarry_code.gateway.rpc import RpcHandlerError
 
     ctx, storage = workspace_ctx
     project_path = tmp_path / "remove-race"
@@ -696,8 +696,8 @@ async def test_history_delete_maps_removed_workspace_to_not_found(
     workspace_ctx,
     tmp_path: Path,
 ) -> None:
-    from opensquilla.gateway import rpc_workspaces
-    from opensquilla.gateway.rpc import RpcHandlerError
+    from openstarry_code.gateway import rpc_workspaces
+    from openstarry_code.gateway.rpc import RpcHandlerError
 
     ctx, storage = workspace_ctx
     project_path = tmp_path / "removed-history"
@@ -724,7 +724,7 @@ async def test_history_delete_retries_changed_snapshot(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.gateway import rpc_workspaces
+    from openstarry_code.gateway import rpc_workspaces
 
     ctx, storage = workspace_ctx
     project_path = tmp_path / "snapshot-retry"
@@ -819,7 +819,7 @@ async def test_history_delete_holds_sorted_session_locks_through_all_cleanup(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.gateway import rpc_workspaces
+    from openstarry_code.gateway import rpc_workspaces
 
     ctx, storage = workspace_ctx
     project_path = tmp_path / "locked-cleanup"
@@ -904,7 +904,7 @@ async def test_history_delete_waits_for_accepted_turn_runtime_lock(
     workspace_ctx,
     tmp_path: Path,
 ) -> None:
-    from opensquilla.gateway import rpc_workspaces
+    from openstarry_code.gateway import rpc_workspaces
 
     ctx, storage = workspace_ctx
     project_path = tmp_path / "accepted-turn"
@@ -1003,7 +1003,7 @@ async def test_history_delete_orders_all_fences_drains_and_identity_eviction(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.gateway import rpc_workspaces
+    from openstarry_code.gateway import rpc_workspaces
 
     ctx, storage = workspace_ctx
     project_path = tmp_path / "ordered-history-fences"
@@ -1182,7 +1182,7 @@ async def test_history_delete_repeated_cancellation_waits_for_whole_fenced_opera
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.gateway import rpc_workspaces
+    from openstarry_code.gateway import rpc_workspaces
 
     ctx, storage = workspace_ctx
     project_path = tmp_path / "cancelled-history-fences"
@@ -1329,15 +1329,15 @@ async def test_history_delete_real_quiescers_leave_no_late_rows_after_cancellati
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.gateway import rpc_workspaces
-    from opensquilla.gateway.agent_tasks import get_agent_task_registry
-    from opensquilla.gateway.background_completion import BackgroundCompletionManager
-    from opensquilla.gateway.routing import RouteEnvelope, SourceKind
-    from opensquilla.gateway.subagent_announce import (
+    from openstarry_code.gateway import rpc_workspaces
+    from openstarry_code.gateway.agent_tasks import get_agent_task_registry
+    from openstarry_code.gateway.background_completion import BackgroundCompletionManager
+    from openstarry_code.gateway.routing import RouteEnvelope, SourceKind
+    from openstarry_code.gateway.subagent_announce import (
         set_background_completion_manager,
     )
-    from opensquilla.gateway.task_runtime import TaskRuntime
-    from opensquilla.session.manager import SessionManager
+    from openstarry_code.gateway.task_runtime import TaskRuntime
+    from openstarry_code.session.manager import SessionManager
 
     ctx, storage = workspace_ctx
     manager = SessionManager(storage, inject_time_prefix=False)
@@ -1526,7 +1526,7 @@ async def test_history_delete_real_quiescers_leave_no_late_rows_after_cancellati
 async def test_list_adopts_legacy_non_default_workspace(
     workspace_ctx, tmp_path, monkeypatch
 ) -> None:
-    from opensquilla.gateway import rpc_workspaces
+    from openstarry_code.gateway import rpc_workspaces
 
     ctx, storage = workspace_ctx
     candidate_scan = AsyncMock(
@@ -1572,7 +1572,7 @@ async def test_list_adopts_legacy_non_default_workspace(
 async def test_concurrent_workspace_lists_share_one_legacy_adoption_scan(
     workspace_ctx, tmp_path, monkeypatch
 ) -> None:
-    from opensquilla.gateway import rpc_workspaces
+    from openstarry_code.gateway import rpc_workspaces
 
     ctx, storage = workspace_ctx
     legacy = tmp_path / "legacy-concurrent"
@@ -1621,7 +1621,7 @@ async def test_concurrent_workspace_lists_share_one_legacy_adoption_scan(
 async def test_failed_legacy_adoption_is_retried(
     workspace_ctx, tmp_path, monkeypatch
 ) -> None:
-    from opensquilla.gateway import rpc_workspaces
+    from openstarry_code.gateway import rpc_workspaces
 
     ctx, storage = workspace_ctx
     legacy = tmp_path / "legacy-retry"
@@ -1666,8 +1666,8 @@ async def test_failed_legacy_adoption_is_retried(
 async def test_all_workspace_handlers_require_local_owner(
     workspace_ctx, tmp_path
 ) -> None:
-    from opensquilla.gateway import rpc_workspaces
-    from opensquilla.gateway.rpc import RpcHandlerError
+    from openstarry_code.gateway import rpc_workspaces
+    from openstarry_code.gateway.rpc import RpcHandlerError
 
     owner_ctx, _storage = workspace_ctx
     ctx = _remote_ctx(owner_ctx)

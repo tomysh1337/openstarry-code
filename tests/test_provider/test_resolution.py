@@ -9,13 +9,13 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.gateway.config import GatewayConfig, LlmProviderConfig, is_sensitive_config_key
-from opensquilla.provider.model_catalog import (
+from openstarry_code.gateway.config import GatewayConfig, LlmProviderConfig, is_sensitive_config_key
+from openstarry_code.provider.model_catalog import (
     DEFAULT_CONTEXT_WINDOW,
     DEFAULT_MAX_TOKENS,
     ModelCatalog,
 )
-from opensquilla.provider.resolution import ResolvedField, resolve_effective_llm
+from openstarry_code.provider.resolution import ResolvedField, resolve_effective_llm
 
 UNKNOWN_MODEL = "synthetic/unknown-model-z"
 CATALOG_MODEL = "synthetic/model-x"
@@ -23,7 +23,7 @@ CATALOG_MODEL = "synthetic/model-x"
 
 @pytest.fixture(autouse=True)
 def _state_dir(tmp_path, monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "state"))
 
 
 def _config(**kwargs) -> GatewayConfig:

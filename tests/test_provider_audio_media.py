@@ -5,8 +5,8 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.gateway.config import AudioConfig
-from opensquilla.provider.audio import (
+from openstarry_code.gateway.config import AudioConfig
+from openstarry_code.provider.audio import (
     AudioGenerationResult,
     DubbingResult,
     ElevenLabsSharedVoicesResult,
@@ -16,7 +16,7 @@ from opensquilla.provider.audio import (
     VoiceCloneResult,
     VoiceConversionResult,
 )
-from opensquilla.tools.types import CallerKind, ToolContext, current_tool_context
+from openstarry_code.tools.types import CallerKind, ToolContext, current_tool_context
 
 
 def _audio_config(*, enabled: bool = True, api_key: str = "el-test") -> AudioConfig:
@@ -34,7 +34,7 @@ def _tool_context(tmp_path: Path) -> ToolContext:
 
 
 def test_audio_default_env_does_not_cross_endpoint_origin(monkeypatch) -> None:
-    from opensquilla.tools.builtin import media
+    from openstarry_code.tools.builtin import media
 
     monkeypatch.setenv("ELEVENLABS_API_KEY", "sk-default-origin-key")
     config = AudioConfig(enabled=True)
@@ -49,7 +49,7 @@ def test_audio_default_env_does_not_cross_endpoint_origin(monkeypatch) -> None:
 
 
 def test_audio_explicit_env_is_allowed_for_custom_origin(monkeypatch) -> None:
-    from opensquilla.tools.builtin import media
+    from openstarry_code.tools.builtin import media
 
     monkeypatch.setenv("ELEVENLABS_API_KEY", "sk-default-origin-key")
     monkeypatch.setenv("CUSTOM_AUDIO_KEY", "sk-custom-origin-key")
@@ -66,7 +66,7 @@ def test_audio_explicit_env_is_allowed_for_custom_origin(monkeypatch) -> None:
 
 @pytest.mark.anyio
 async def test_tts_uses_elevenlabs_and_writes_audio(monkeypatch, tmp_path: Path) -> None:
-    from opensquilla.tools.builtin import media
+    from openstarry_code.tools.builtin import media
 
     captured: dict[str, object] = {}
 
@@ -129,7 +129,7 @@ async def test_tts_uses_elevenlabs_and_writes_audio(monkeypatch, tmp_path: Path)
 async def test_tts_uses_configured_elevenlabs_voice_when_voice_is_omitted(
     monkeypatch, tmp_path: Path
 ) -> None:
-    from opensquilla.tools.builtin import media
+    from openstarry_code.tools.builtin import media
 
     captured: dict[str, object] = {}
 
@@ -168,7 +168,7 @@ async def test_tts_uses_configured_elevenlabs_voice_when_voice_is_omitted(
 
 @pytest.mark.anyio
 async def test_voice_clone_requires_consent_metadata(tmp_path: Path) -> None:
-    from opensquilla.tools.builtin import media
+    from openstarry_code.tools.builtin import media
 
     sample = tmp_path / "workspace" / "sample.mp3"
     sample.parent.mkdir(parents=True)
@@ -189,7 +189,7 @@ async def test_voice_clone_requires_consent_metadata(tmp_path: Path) -> None:
 
 @pytest.mark.anyio
 async def test_voice_clone_calls_elevenlabs_with_consent(monkeypatch, tmp_path: Path) -> None:
-    from opensquilla.tools.builtin import media
+    from openstarry_code.tools.builtin import media
 
     captured: dict[str, object] = {}
 
@@ -232,7 +232,7 @@ async def test_voice_clone_calls_elevenlabs_with_consent(monkeypatch, tmp_path: 
 
 @pytest.mark.anyio
 async def test_voice_convert_calls_elevenlabs_and_writes_audio(monkeypatch, tmp_path: Path) -> None:
-    from opensquilla.tools.builtin import media
+    from openstarry_code.tools.builtin import media
 
     class FakeProvider:
         def __init__(self, **_kwargs):
@@ -275,7 +275,7 @@ async def test_voice_convert_calls_elevenlabs_and_writes_audio(monkeypatch, tmp_
 
 @pytest.mark.anyio
 async def test_dubbing_generate_submits_elevenlabs_job(monkeypatch, tmp_path: Path) -> None:
-    from opensquilla.tools.builtin import media
+    from openstarry_code.tools.builtin import media
 
     captured: dict[str, object] = {}
 
@@ -321,7 +321,7 @@ async def test_dubbing_generate_submits_elevenlabs_job(monkeypatch, tmp_path: Pa
 async def test_music_generate_calls_elevenlabs_and_writes_audio(
     monkeypatch, tmp_path: Path
 ) -> None:
-    from opensquilla.tools.builtin import media
+    from openstarry_code.tools.builtin import media
 
     captured: dict[str, object] = {}
 
@@ -370,7 +370,7 @@ async def test_music_generate_calls_elevenlabs_and_writes_audio(
 async def test_song_generate_calls_elevenlabs_music_provider_with_lyrics(
     monkeypatch, tmp_path: Path
 ) -> None:
-    from opensquilla.tools.builtin import media
+    from openstarry_code.tools.builtin import media
 
     captured: dict[str, object] = {}
 
@@ -417,7 +417,7 @@ async def test_song_generate_calls_elevenlabs_music_provider_with_lyrics(
 async def test_song_generate_retries_short_preview_when_quota_exceeded(
     monkeypatch, tmp_path: Path
 ) -> None:
-    from opensquilla.tools.builtin import media
+    from openstarry_code.tools.builtin import media
 
     requests: list[object] = []
 
@@ -487,7 +487,7 @@ async def test_song_generate_retries_short_preview_when_quota_exceeded(
 async def test_audio_provider_capabilities_reports_live_subscription(
     monkeypatch,
 ) -> None:
-    from opensquilla.tools.builtin import media
+    from openstarry_code.tools.builtin import media
 
     class FakeProvider:
         def __init__(self, **_kwargs):
@@ -526,7 +526,7 @@ async def test_audio_provider_capabilities_reports_live_subscription(
 
 @pytest.mark.anyio
 async def test_voice_search_returns_shared_voices_for_locale_matching(monkeypatch) -> None:
-    from opensquilla.tools.builtin import media
+    from openstarry_code.tools.builtin import media
 
     captured: dict[str, object] = {}
 

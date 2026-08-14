@@ -9,8 +9,8 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla import subprocess_encoding
-from opensquilla.subprocess_encoding import apply_utf8_child_env, decode_subprocess_output
+from openstarry_code import subprocess_encoding
+from openstarry_code.subprocess_encoding import apply_utf8_child_env, decode_subprocess_output
 
 _HELLO = "你好世界"
 
@@ -121,14 +121,14 @@ class TestDecodeSubprocessOutput:
     def test_realistic_output_survives_truncation_both_encodings(self) -> None:
         # Real mixed CJK+ASCII output, in either encoding, truncated by up to a
         # full multibyte char, must decode cleanly and keep the right prefix.
-        text = "你好，OpenSquilla 支持中文输出！日志：正常运行 abc123。"
+        text = "你好，OpenStarry Code 支持中文输出！日志：正常运行 abc123。"
         for encoding in ("utf-8", "gbk"):
             body = (text * 5).encode(encoding)
             for cut in range(5):
                 raw = body[: len(body) - cut]
                 got = decode_subprocess_output(raw, fallback_encoding="gbk")
                 assert "�" not in got, (encoding, cut)
-                assert got.startswith("你好，OpenSquilla"), (encoding, cut)
+                assert got.startswith("你好，OpenStarry Code"), (encoding, cut)
 
 
 class TestApplyUtf8ChildEnv:

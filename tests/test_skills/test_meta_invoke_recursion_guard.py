@@ -24,7 +24,7 @@ def _isolate_meta_invoke_contextvars() -> Iterator[None]:
     restore them after, so a test that does ``set(99)`` cannot leak that
     value to the event loop's root context and pollute later tests.
     """
-    from opensquilla.engine import agent as agent_module
+    from openstarry_code.engine import agent as agent_module
 
     depth_token = agent_module._meta_invoke_depth.set(
         agent_module._meta_invoke_depth.get()
@@ -48,8 +48,8 @@ def test_sub_agent_tool_list_excludes_meta_invoke() -> None:
     """make_agent_runner_from_parent must strip meta_invoke from the
     tool_definitions passed to the sub-Agent factory, so a sub-Agent cannot
     issue a nested meta_invoke call."""
-    from opensquilla.engine.types import AgentConfig
-    from opensquilla.skills.meta.orchestrator import make_agent_runner_from_parent
+    from openstarry_code.engine.types import AgentConfig
+    from openstarry_code.skills.meta.orchestrator import make_agent_runner_from_parent
 
     fake_meta = SimpleNamespace(name="meta_invoke")
     fake_other = SimpleNamespace(name="bash")
@@ -108,16 +108,16 @@ def test_sub_agent_tool_list_excludes_meta_invoke() -> None:
 
 
 def test_meta_sub_agent_reuses_explicit_provider_request_correlation() -> None:
-    from opensquilla.engine.types import AgentConfig
-    from opensquilla.provider.correlation_context import (
+    from openstarry_code.engine.types import AgentConfig
+    from openstarry_code.provider.correlation_context import (
         bind_provider_request_correlation,
         current_provider_request_correlation,
     )
-    from opensquilla.provider.types import (
+    from openstarry_code.provider.types import (
         ProviderRequestCorrelation,
         derive_provider_request_correlation,
     )
-    from opensquilla.skills.meta.orchestrator import make_agent_runner_from_parent
+    from openstarry_code.skills.meta.orchestrator import make_agent_runner_from_parent
 
     meta_correlation = ProviderRequestCorrelation(
         session_id="session-1",
@@ -205,12 +205,12 @@ def test_meta_sub_agent_reuses_explicit_provider_request_correlation() -> None:
 
 @pytest.mark.asyncio
 async def test_meta_direct_tool_invoker_binds_explicit_correlation() -> None:
-    from opensquilla.provider.correlation_context import (
+    from openstarry_code.provider.correlation_context import (
         bind_provider_request_correlation,
         current_provider_request_correlation,
     )
-    from opensquilla.provider.types import ProviderRequestCorrelation
-    from opensquilla.skills.meta.orchestrator import make_tool_invoker_from_handler
+    from openstarry_code.provider.types import ProviderRequestCorrelation
+    from openstarry_code.skills.meta.orchestrator import make_tool_invoker_from_handler
 
     meta_correlation = ProviderRequestCorrelation(
         session_id="session-1",
@@ -243,10 +243,10 @@ async def test_meta_direct_tool_invoker_binds_explicit_correlation() -> None:
 
 
 def test_meta_sub_agent_derives_correlation_from_context_when_not_explicit() -> None:
-    from opensquilla.engine.types import AgentConfig
-    from opensquilla.provider.correlation_context import bind_provider_request_correlation
-    from opensquilla.provider.types import ProviderRequestCorrelation
-    from opensquilla.skills.meta.orchestrator import make_agent_runner_from_parent
+    from openstarry_code.engine.types import AgentConfig
+    from openstarry_code.provider.correlation_context import bind_provider_request_correlation
+    from openstarry_code.provider.types import ProviderRequestCorrelation
+    from openstarry_code.skills.meta.orchestrator import make_agent_runner_from_parent
 
     root = ProviderRequestCorrelation(
         session_id="session-1",
@@ -300,8 +300,8 @@ def test_sub_agent_tool_list_excludes_openai_function_wrapped_meta_invoke() -> N
     recursive meta-A → meta-B → meta-A loop that the guard exists to
     close. This test pins the function-wrapped shape so the filter
     cannot regress."""
-    from opensquilla.engine.types import AgentConfig
-    from opensquilla.skills.meta.orchestrator import make_agent_runner_from_parent
+    from openstarry_code.engine.types import AgentConfig
+    from openstarry_code.skills.meta.orchestrator import make_agent_runner_from_parent
 
     function_wrapped_meta = {
         "type": "function",
@@ -366,8 +366,8 @@ def test_sub_agent_tool_list_filter_handles_mixed_shapes() -> None:
     function-wrapped entries depending on provider and registration
     path. The filter must remove every meta_invoke variant in one
     pass."""
-    from opensquilla.engine.types import AgentConfig
-    from opensquilla.skills.meta.orchestrator import make_agent_runner_from_parent
+    from openstarry_code.engine.types import AgentConfig
+    from openstarry_code.skills.meta.orchestrator import make_agent_runner_from_parent
 
     tool_definitions = [
         SimpleNamespace(name="meta_invoke"),               # attribute-style
@@ -436,8 +436,8 @@ def test_sub_agent_metadata_excludes_outer_meta_activation_controls() -> None:
     removed from their tool surface, so inheriting that tool_choice makes
     providers reject otherwise valid agent steps.
     """
-    from opensquilla.engine.types import AgentConfig
-    from opensquilla.skills.meta.orchestrator import make_agent_runner_from_parent
+    from openstarry_code.engine.types import AgentConfig
+    from openstarry_code.skills.meta.orchestrator import make_agent_runner_from_parent
 
     captured: dict[str, Any] = {}
 
@@ -499,8 +499,8 @@ def test_meta_sub_agent_inherits_physical_request_contract_without_outer_state(
     recoverable-result storage describe the physical deployment and must not
     silently fall back to :class:`AgentConfig` defaults.
     """
-    from opensquilla.engine.types import AgentConfig, ThinkingLevel
-    from opensquilla.skills.meta.orchestrator import _derive_meta_subagent_config
+    from openstarry_code.engine.types import AgentConfig, ThinkingLevel
+    from openstarry_code.skills.meta.orchestrator import _derive_meta_subagent_config
 
     observer = lambda **_kwargs: None  # noqa: E731
     capabilities = object()
@@ -666,9 +666,9 @@ async def test_meta_sub_agent_uses_live_tool_context_workspace_for_prompt_and_co
     tmp_path,
 ) -> None:
     """The per-call ToolContext wins over the factory's stale workspace."""
-    from opensquilla.engine.types import AgentConfig
-    from opensquilla.skills.meta.orchestrator import make_agent_runner_from_parent
-    from opensquilla.tools.types import ToolContext, current_tool_context
+    from openstarry_code.engine.types import AgentConfig
+    from openstarry_code.skills.meta.orchestrator import make_agent_runner_from_parent
+    from openstarry_code.tools.types import ToolContext, current_tool_context
 
     factory_workspace = tmp_path / "factory-workspace"
     live_workspace = tmp_path / "live-workspace"
@@ -717,11 +717,11 @@ async def test_meta_sub_agent_uses_live_tool_context_workspace_for_prompt_and_co
 def _make_agent_with_meta_skill(tmp_path):
     """Helper: build an Agent wired with a tiny meta-skill registered in a
     fresh SkillLoader, mirroring test_meta_invoke_tool fixtures."""
-    from opensquilla.engine.agent import Agent
-    from opensquilla.engine.types import AgentConfig
-    from opensquilla.skills.loader import SkillLoader
-    from opensquilla.tools.builtin import meta_tools  # noqa: F401 — side-effect register
-    from opensquilla.tools.registry import get_default_registry
+    from openstarry_code.engine.agent import Agent
+    from openstarry_code.engine.types import AgentConfig
+    from openstarry_code.skills.loader import SkillLoader
+    from openstarry_code.tools.builtin import meta_tools  # noqa: F401 — side-effect register
+    from openstarry_code.tools.registry import get_default_registry
 
     bundled = tmp_path / "skills" / "bundled"
     bundled.mkdir(parents=True)
@@ -788,9 +788,9 @@ async def test_recursion_depth_limit_exceeded_returns_structured_failure(
     """When _meta_invoke_depth is already at MAX_META_INVOKE_DEPTH, a new
     meta_invoke call must return a structured failure (is_error=True,
     terminates_turn=False) and not actually run the orchestrator."""
-    from opensquilla.engine import agent as agent_module
-    from opensquilla.tool_boundary import ToolCall, ToolResult
-    from opensquilla.tools.types import ToolContext
+    from openstarry_code.engine import agent as agent_module
+    from openstarry_code.tool_boundary import ToolCall, ToolResult
+    from openstarry_code.tools.types import ToolContext
 
     agent = _make_agent_with_meta_skill(tmp_path)
     tc = ToolCall(
@@ -823,9 +823,9 @@ async def test_recursion_depth_limit_exceeded_returns_structured_failure(
 async def test_recursion_within_limit_proceeds(tmp_path) -> None:
     """When depth is below the cap, _run_one_streaming proceeds through the
     normal flow (does NOT yield the depth-cap structured failure)."""
-    from opensquilla.engine import agent as agent_module
-    from opensquilla.tool_boundary import ToolCall, ToolResult
-    from opensquilla.tools.types import ToolContext
+    from openstarry_code.engine import agent as agent_module
+    from openstarry_code.tool_boundary import ToolCall, ToolResult
+    from openstarry_code.tools.types import ToolContext
 
     agent = _make_agent_with_meta_skill(tmp_path)
     tc = ToolCall(
@@ -858,11 +858,11 @@ async def test_meta_invoke_depth_reset_valueerror_restores_previous_depth() -> N
     the one that created the ContextVar token. meta_invoke should still
     restore the previous depth instead of surfacing that ValueError.
     """
-    from opensquilla.engine import agent as agent_module
-    from opensquilla.engine.agent import Agent
-    from opensquilla.engine.types import AgentConfig
-    from opensquilla.tool_boundary import ToolCall, ToolResult
-    from opensquilla.tools.types import ToolContext
+    from openstarry_code.engine import agent as agent_module
+    from openstarry_code.engine.agent import Agent
+    from openstarry_code.engine.types import AgentConfig
+    from openstarry_code.tool_boundary import ToolCall, ToolResult
+    from openstarry_code.tools.types import ToolContext
 
     class _FakeDepthVar:
         def __init__(self, value: int) -> None:
@@ -928,9 +928,9 @@ async def test_per_turn_invocation_cap_exceeded_returns_structured_failure(
 ) -> None:
     """When _meta_invoke_turn_count is at MAX_META_INVOKE_PER_TURN, a new
     meta_invoke must short-circuit to a structured failure."""
-    from opensquilla.engine import agent as agent_module
-    from opensquilla.tool_boundary import ToolCall, ToolResult
-    from opensquilla.tools.types import ToolContext
+    from openstarry_code.engine import agent as agent_module
+    from openstarry_code.tool_boundary import ToolCall, ToolResult
+    from openstarry_code.tools.types import ToolContext
 
     agent = _make_agent_with_meta_skill(tmp_path)
     tc = ToolCall(
@@ -966,7 +966,7 @@ async def test_run_turn_resets_per_turn_counter(tmp_path) -> None:
     Asserted by pre-setting the counter to a non-zero value, driving one
     event out of run_turn, and observing the counter has been reset.
     """
-    from opensquilla.engine import agent as agent_module
+    from openstarry_code.engine import agent as agent_module
 
     agent = _make_agent_with_meta_skill(tmp_path)
 

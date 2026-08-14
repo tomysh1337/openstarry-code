@@ -15,15 +15,15 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.turn_runner.outcome import StageOutcome
-from opensquilla.engine.turn_runner.provider_and_tools_stage import (
+from openstarry_code.engine.turn_runner.outcome import StageOutcome
+from openstarry_code.engine.turn_runner.provider_and_tools_stage import (
     ProviderAndToolsStage,
     ProviderAndToolsStageInput,
     ProviderResolverPort,
     ToolBuilderPort,
 )
-from opensquilla.engine.types import ErrorEvent
-from opensquilla.tools.types import CallerKind, ToolContext
+from openstarry_code.engine.types import ErrorEvent
+from openstarry_code.tools.types import CallerKind, ToolContext
 
 
 @dataclass

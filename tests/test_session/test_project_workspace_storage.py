@@ -6,21 +6,21 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.persistence.migrator import apply_pending
-from opensquilla.persistence.router_decision_writer import (
+from openstarry_code.persistence.migrator import apply_pending
+from openstarry_code.persistence.router_decision_writer import (
     open_router_decision_writer,
 )
-from opensquilla.persistence.turn_error_writer import open_turn_error_writer
-from opensquilla.project_workspaces import ProjectWorkspaceGuard
-from opensquilla.session.models import (
+from openstarry_code.persistence.turn_error_writer import open_turn_error_writer
+from openstarry_code.project_workspaces import ProjectWorkspaceGuard
+from openstarry_code.session.models import (
     AgentTaskRecord,
     MemoryDurableReceipt,
     SessionContextState,
     SessionNode,
     TranscriptEntry,
 )
-from opensquilla.session.storage import SessionStorage
-from opensquilla.session.usage_ledger import UsageEventStart
+from openstarry_code.session.storage import SessionStorage
+from openstarry_code.session.usage_ledger import UsageEventStart
 
 MIGRATIONS_DIR = Path(__file__).resolve().parents[2] / "migrations"
 

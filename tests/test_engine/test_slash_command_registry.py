@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.engine.commands import (
+from openstarry_code.engine.commands import (
     DEFAULT_REGISTRY,
     CommandBusyPolicy,
     CommandCategory,

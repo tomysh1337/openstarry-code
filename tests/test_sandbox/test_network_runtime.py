@@ -6,30 +6,30 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.gateway.approval_queue import get_approval_queue, reset_approval_queue
-from opensquilla.sandbox import integration as integration_mod
-from opensquilla.sandbox.config import SandboxSettings
-from opensquilla.sandbox.escalation import (
+from openstarry_code.gateway.approval_queue import get_approval_queue, reset_approval_queue
+from openstarry_code.sandbox import integration as integration_mod
+from openstarry_code.sandbox.config import SandboxSettings
+from openstarry_code.sandbox.escalation import (
     build_network_approval_params,
     request_sandbox_approval,
 )
-from opensquilla.sandbox.network_guard import NetworkDecision
-from opensquilla.sandbox.network_proxy import SandboxProxyServer
-from opensquilla.sandbox.network_runtime import (
+from openstarry_code.sandbox.network_guard import NetworkDecision
+from openstarry_code.sandbox.network_proxy import SandboxProxyServer
+from openstarry_code.sandbox.network_runtime import (
     NetworkApprovalService,
     NetworkPolicyRequest,
     NetworkProtocol,
 )
-from opensquilla.sandbox.run_context import DomainGrant, RunContext
-from opensquilla.sandbox.run_mode import RunMode
-from opensquilla.sandbox.types import (
+from openstarry_code.sandbox.run_context import DomainGrant, RunContext
+from openstarry_code.sandbox.run_mode import RunMode
+from openstarry_code.sandbox.types import (
     NetworkMode,
     ResourceLimits,
     SandboxPolicy,
     SandboxRequest,
     SecurityLevel,
 )
-from opensquilla.tools.types import CallerKind, ToolContext, current_tool_context
+from openstarry_code.tools.types import CallerKind, ToolContext, current_tool_context
 
 
 def _proxy_policy() -> SandboxPolicy:
@@ -281,7 +281,7 @@ async def test_safe_default_open_does_not_create_human_review(
     )
 
     def _request(params: dict[str, object], **kwargs: object) -> dict[str, object]:
-        from opensquilla.sandbox.escalation import request_sandbox_approval
+        from openstarry_code.sandbox.escalation import request_sandbox_approval
 
         seen_params.update(params)
         payload = request_sandbox_approval(params, **kwargs)

@@ -41,7 +41,7 @@ def load_script():
 
 def test_build_wheel_retries_once_after_transient_uv_failure(monkeypatch, tmp_path: Path) -> None:
     module = load_script()
-    wheel_path = tmp_path / "wheels" / "opensquilla-0.1.0-py3-none-any.whl"
+    wheel_path = tmp_path / "wheels" / "openstarry_code-0.1.0-py3-none-any.whl"
     calls = []
 
     def fake_run(args, *, cwd, env):
@@ -79,7 +79,7 @@ def test_build_subprocess_env_keeps_uv_cache_outside_repo_root(tmp_path: Path) -
 def test_build_webui_checks_node_then_installs_and_builds(monkeypatch, tmp_path: Path) -> None:
     module = load_script()
     repo_root = tmp_path / "repo"
-    webui_dir = repo_root / "opensquilla-webui"
+    webui_dir = repo_root / "openstarry-code-webui"
     webui_dir.mkdir(parents=True)
     (webui_dir / ".node-version").write_text("22.12.0\n", encoding="utf-8")
     calls = []
@@ -114,7 +114,7 @@ def test_build_webui_rejects_node_older_than_pinned_minimum(
 ) -> None:
     module = load_script()
     repo_root = tmp_path / "repo"
-    webui_dir = repo_root / "opensquilla-webui"
+    webui_dir = repo_root / "openstarry-code-webui"
     webui_dir.mkdir(parents=True)
     (webui_dir / ".node-version").write_text("22.12.0\n", encoding="utf-8")
 
@@ -190,8 +190,8 @@ def test_release_name_records_platform_python_profile() -> None:
         portable=True,
     )
 
-    assert wheelhouse_name == "OpenSquilla-0.1.0-macos-arm64-py312-recommended-wheelhouse"
-    assert portable_name == "OpenSquilla-0.1.0-macos-arm64-py312-recommended-portable"
+    assert wheelhouse_name == "OpenStarry Code-0.1.0-macos-arm64-py312-recommended-wheelhouse"
+    assert portable_name == "OpenStarry Code-0.1.0-macos-arm64-py312-recommended-portable"
 
 
 def test_python_runtime_asset_name_uses_platform_triple() -> None:
@@ -219,7 +219,7 @@ def test_python_runtime_asset_name_uses_platform_triple() -> None:
 def test_cross_platform_wheelhouse_requires_target_host(tmp_path: Path) -> None:
     module = load_script()
     module.platform_tag = lambda: "linux-x64"
-    wheel_path = tmp_path / "opensquilla-0.1.0-py3-none-any.whl"
+    wheel_path = tmp_path / "openstarry_code-0.1.0-py3-none-any.whl"
     package_dir = tmp_path / "packages"
 
     with pytest.raises(SystemExit, match="must run on the target platform"):
@@ -236,7 +236,7 @@ def test_cross_platform_wheelhouse_requires_target_host(tmp_path: Path) -> None:
 def test_portable_recommended_wheelhouse_uses_recommended_extra_only(tmp_path: Path) -> None:
     module = load_script()
     module.platform_tag = lambda: "windows-x64"
-    wheel_path = tmp_path / "opensquilla-0.1.0-py3-none-any.whl"
+    wheel_path = tmp_path / "openstarry_code-0.1.0-py3-none-any.whl"
     package_dir = tmp_path / "packages"
 
     command = module.build_wheelhouse_command(
@@ -255,15 +255,15 @@ def test_release_wheel_allows_router_provenance_markdown() -> None:
     module = load_script()
     provenance = module.ROUTER_PROVENANCE_WHEEL_PATH
     tokenjuice_provenance = module.TOKENJUICE_PROVENANCE_WHEEL_PATH
-    pptx_reference = "opensquilla/skills/bundled/pptx/references/python_pptx.md"
+    pptx_reference = "openstarry_code/skills/bundled/pptx/references/python_pptx.md"
     unrelated_skill_reference = (
-        "opensquilla/skills/bundled/example/references/private-notes.md"
+        "openstarry_code/skills/bundled/example/references/private-notes.md"
     )
-    skill_readme = "opensquilla/skills/bundled/filesystem/README.md"
-    skill_license = "opensquilla/skills/bundled/filesystem/LICENSE.md"
-    skill_card = "opensquilla/skills/bundled/filesystem/skill-card.md"
+    skill_readme = "openstarry_code/skills/bundled/filesystem/README.md"
+    skill_license = "openstarry_code/skills/bundled/filesystem/LICENSE.md"
+    skill_card = "openstarry_code/skills/bundled/filesystem/skill-card.md"
     unrelated_router_doc = (
-        "opensquilla/squilla_router/models/v4.2_phase3_inference/README.md"
+        "openstarry_code/squilla_router/models/v4.2_phase3_inference/README.md"
     )
 
     violations = module.forbidden_release_wheel_entries(
@@ -271,7 +271,7 @@ def test_release_wheel_allows_router_provenance_markdown() -> None:
             provenance,
             tokenjuice_provenance,
             unrelated_router_doc,
-            "opensquilla/skills/bundled/example/SKILL.md",
+            "openstarry_code/skills/bundled/example/SKILL.md",
             pptx_reference,
             unrelated_skill_reference,
             skill_readme,
@@ -282,7 +282,7 @@ def test_release_wheel_allows_router_provenance_markdown() -> None:
 
     assert provenance not in violations
     assert tokenjuice_provenance not in violations
-    assert "opensquilla/skills/bundled/example/SKILL.md" not in violations
+    assert "openstarry_code/skills/bundled/example/SKILL.md" not in violations
     assert pptx_reference not in violations
     assert unrelated_router_doc in violations
     assert unrelated_skill_reference in violations
@@ -298,13 +298,13 @@ def test_pyproject_release_wheel_config_excludes_forbidden_skill_resources() -> 
     excludes = set(wheel_config.get("exclude", []))
     force_includes = wheel_config.get("force-include", {})
 
-    assert "src/opensquilla/skills/bundled/**/THIRD_PARTY_NOTICES.md" in excludes
-    assert "src/opensquilla/skills/bundled/**/README.md" in excludes
-    assert "src/opensquilla/skills/bundled/**/LICENSE.md" in excludes
-    assert "src/opensquilla/skills/bundled/**/skill-card.md" in excludes
-    assert "src/opensquilla/skills/bundled/**/references/*.md" in excludes
-    assert "src/opensquilla/skills/exp/**" in excludes
-    assert "src/opensquilla/skills/meta/META_SKILL_AUTHORING.md" in excludes
+    assert "src/openstarry_code/skills/bundled/**/THIRD_PARTY_NOTICES.md" in excludes
+    assert "src/openstarry_code/skills/bundled/**/README.md" in excludes
+    assert "src/openstarry_code/skills/bundled/**/LICENSE.md" in excludes
+    assert "src/openstarry_code/skills/bundled/**/skill-card.md" in excludes
+    assert "src/openstarry_code/skills/bundled/**/references/*.md" in excludes
+    assert "src/openstarry_code/skills/exp/**" in excludes
+    assert "src/openstarry_code/skills/meta/META_SKILL_AUTHORING.md" in excludes
     assert module.forbidden_release_wheel_entries(tuple(force_includes.values())) == []
 
 
@@ -331,12 +331,12 @@ def test_public_release_docs_avoid_private_kol_language() -> None:
 
 def test_release_wheel_content_scanner_flags_internal_markers(tmp_path: Path) -> None:
     module = load_script()
-    wheel_path = tmp_path / "opensquilla-0.1.0-py3-none-any.whl"
+    wheel_path = tmp_path / "openstarry_code-0.1.0-py3-none-any.whl"
 
     with ZipFile(wheel_path, "w") as archive:
-        archive.writestr("opensquilla/__init__.py", "__version__ = '0.1.0'\n")
+        archive.writestr("openstarry_code/__init__.py", "__version__ = '0.1.0'\n")
         archive.writestr(
-            "opensquilla-0.1.0.dist-info/METADATA",
+            "openstarry_code-0.1.0.dist-info/METADATA",
             "\n".join(
                 [
                     "Author: INTERNAL_ORG_NAME",
@@ -347,8 +347,8 @@ def test_release_wheel_content_scanner_flags_internal_markers(tmp_path: Path) ->
         )
 
     assert module.forbidden_release_text_hits(wheel_path) == [
-        "opensquilla-0.1.0.dist-info/METADATA: INTERNAL_ORG_NAME",
-        "opensquilla-0.1.0.dist-info/METADATA: github.com/internal-org/opensquilla",
+        "openstarry_code-0.1.0.dist-info/METADATA: INTERNAL_ORG_NAME",
+        "openstarry_code-0.1.0.dist-info/METADATA: github.com/internal-org/opensquilla",
     ]
 
 
@@ -356,13 +356,13 @@ def test_install_scripts_install_from_local_wheelhouse_and_run_onboarding() -> N
     module = load_script()
 
     sh_script = module.render_install_sh(
-        wheel_name="opensquilla-0.1.0-py3-none-any.whl",
+        wheel_name="openstarry_code-0.1.0-py3-none-any.whl",
         profile="recommended",
         python_major=3,
         python_minor=12,
     )
     ps_script = module.render_install_ps1(
-        wheel_name="opensquilla-0.1.0-py3-none-any.whl",
+        wheel_name="openstarry_code-0.1.0-py3-none-any.whl",
         profile="recommended",
         python_major=3,
         python_minor=12,
@@ -372,20 +372,20 @@ def test_install_scripts_install_from_local_wheelhouse_and_run_onboarding() -> N
     assert 'REQUIRED_PYTHON_MINOR=12' in sh_script
     assert "uv tool install" in sh_script
     assert '--find-links "${PACKAGE_DIR}"' in sh_script
-    assert '"${PACKAGE_DIR}/opensquilla-0.1.0-py3-none-any.whl[recommended]"' in sh_script
-    assert '"${OPENSQUILLA_BIN}" onboard' in sh_script
-    assert '"${OPENSQUILLA_BIN}" onboard --if-needed' in sh_script
-    assert "opensquilla gateway run" in sh_script
+    assert '"${PACKAGE_DIR}/openstarry_code-0.1.0-py3-none-any.whl[recommended]"' in sh_script
+    assert '"${OPENSTARRY_CODE_BIN}" onboard' in sh_script
+    assert '"${OPENSTARRY_CODE_BIN}" onboard --if-needed' in sh_script
+    assert "openstarry-code gateway run" in sh_script
 
     assert "$PackageDir = Join-Path $ScriptDir 'packages'" in ps_script
     assert "$RequiredPythonMinor = 12" in ps_script
     assert "uv tool install" in ps_script
     assert "--find-links" in ps_script
-    assert "opensquilla-0.1.0-py3-none-any.whl[recommended]" in ps_script
-    assert "& $OpenSquillaBin onboard --if-needed" in ps_script
-    assert 'throw "OpenSquilla installation failed with exit code $LASTEXITCODE."' in ps_script
-    assert 'throw "OpenSquilla onboarding failed with exit code $LASTEXITCODE."' in ps_script
-    assert "opensquilla gateway run" in ps_script
+    assert "openstarry_code-0.1.0-py3-none-any.whl[recommended]" in ps_script
+    assert "& $OpenStarryCodeBin onboard --if-needed" in ps_script
+    assert 'throw "OpenStarry Code installation failed with exit code $LASTEXITCODE."' in ps_script
+    assert 'throw "OpenStarry Code onboarding failed with exit code $LASTEXITCODE."' in ps_script
+    assert "openstarry-code gateway run" in ps_script
 
 
 def test_start_scripts_use_bundled_python_runtime() -> None:
@@ -398,7 +398,7 @@ def test_start_scripts_use_bundled_python_runtime() -> None:
     assert sh_script.startswith('#!/bin/sh\nif [ -z "${BASH_VERSION:-}" ]; then')
     assert 'exec /usr/bin/env bash "$0" "$@"' in sh_script
     assert 'PYTHON_BIN="${SCRIPT_DIR}/runtime/python/bin/python3"' in sh_script
-    assert "OPENSQUILLA_WHEEL=" in sh_script
+    assert "OPENSTARRY_CODE_WHEEL=" in sh_script
     assert "WHEEL_HASH=" in sh_script
     assert 'VENV_DIR="${SCRIPT_DIR}/.venv-${WHEEL_HASH}"' in sh_script
     assert "--without-pip" in sh_script
@@ -407,102 +407,102 @@ def test_start_scripts_use_bundled_python_runtime() -> None:
         in sh_script
     )
     assert (
-        'PORTABLE_DATA_DIR="${OPENSQUILLA_PORTABLE_HOME:-${DATA_BASE}/OpenSquilla/'
+        'PORTABLE_DATA_DIR="${OPENSTARRY_CODE_PORTABLE_HOME:-${DATA_BASE}/openstarry-code/'
         'portable/${RELEASE_ID}}"' in sh_script
     )
-    assert 'if [[ -z "${OPENSQUILLA_GATEWAY_CONFIG_PATH:-}" ]]; then' in sh_script
+    assert 'if [[ -z "${OPENSTARRY_CODE_GATEWAY_CONFIG_PATH:-}" ]]; then' in sh_script
     assert (
-        'export OPENSQUILLA_GATEWAY_CONFIG_PATH="${PORTABLE_DATA_DIR}/config.toml"'
+        'export OPENSTARRY_CODE_GATEWAY_CONFIG_PATH="${PORTABLE_DATA_DIR}/config.toml"'
         in sh_script
     )
     assert (
-        'if [[ -z "${OPENSQUILLA_LLM_API_KEY:-}" && -n "${OPENROUTER_API_KEY:-}" ]]; then'
+        'if [[ -z "${OPENSTARRY_CODE_LLM_API_KEY:-}" && -n "${OPENROUTER_API_KEY:-}" ]]; then'
         in sh_script
     )
-    assert 'export OPENSQUILLA_STATE_DIR="${PORTABLE_DATA_DIR}"' in sh_script
+    assert 'export OPENSTARRY_CODE_STATE_DIR="${PORTABLE_DATA_DIR}"' in sh_script
     assert (
-        'export OPENSQUILLA_GATEWAY_STATE_DIR="${OPENSQUILLA_STATE_DIR}/state"'
+        'export OPENSTARRY_CODE_GATEWAY_STATE_DIR="${OPENSTARRY_CODE_STATE_DIR}/state"'
         in sh_script
     )
     assert (
-        'export OPENSQUILLA_GATEWAY_WORKSPACE_DIR="${OPENSQUILLA_STATE_DIR}/workspace"'
+        'export OPENSTARRY_CODE_GATEWAY_WORKSPACE_DIR="${OPENSTARRY_CODE_STATE_DIR}/workspace"'
         in sh_script
     )
-    assert 'mkdir -p "${OPENSQUILLA_STATE_DIR}"' in sh_script
+    assert 'mkdir -p "${OPENSTARRY_CODE_STATE_DIR}"' in sh_script
     assert '"${PYTHON_BIN}" -m venv --without-pip "${VENV_DIR}"' in sh_script
     assert "-m pip install" not in sh_script
-    assert "Installing OpenSquilla from bundled wheels..." in sh_script
-    assert 'OPENSQUILLA_MODULE=( "-m" "opensquilla.cli.main" )' in sh_script
+    assert "Installing OpenStarry Code from bundled wheels..." in sh_script
+    assert 'OPENSTARRY_CODE_MODULE=( "-m" "openstarry_code.cli.main" )' in sh_script
     assert (
-        'if [[ ! -f "${OPENSQUILLA_GATEWAY_CONFIG_PATH}" && '
+        'if [[ ! -f "${OPENSTARRY_CODE_GATEWAY_CONFIG_PATH}" && '
         '-n "${OPENROUTER_API_KEY:-}" ]]; then' in sh_script
     )
     assert (
-        '"${OPENSQUILLA_BIN}" "${OPENSQUILLA_MODULE[@]}" onboard \\\n'
+        '"${OPENSTARRY_CODE_BIN}" "${OPENSTARRY_CODE_MODULE[@]}" onboard \\\n'
         "    --provider openrouter" in sh_script
     )
     assert "--api-key-env OPENROUTER_API_KEY" in sh_script
     assert "--minimal" in sh_script
-    assert '"${OPENSQUILLA_BIN}" "${OPENSQUILLA_MODULE[@]}" onboard' in sh_script
-    assert '"${OPENSQUILLA_BIN}" onboard --if-needed' not in sh_script
+    assert '"${OPENSTARRY_CODE_BIN}" "${OPENSTARRY_CODE_MODULE[@]}" onboard' in sh_script
+    assert '"${OPENSTARRY_CODE_BIN}" onboard --if-needed' not in sh_script
     assert "if [[ -t 1 ]]; then" in sh_script
-    assert 'exec "${OPENSQUILLA_BIN}" "${OPENSQUILLA_MODULE[@]}" gateway run' in sh_script
+    assert 'exec "${OPENSTARRY_CODE_BIN}" "${OPENSTARRY_CODE_MODULE[@]}" gateway run' in sh_script
     assert "else" in sh_script
-    assert 'CONSOLE_LOG="${OPENSQUILLA_STATE_DIR}/logs/gateway-console.log"' in sh_script
+    assert 'CONSOLE_LOG="${OPENSTARRY_CODE_STATE_DIR}/logs/gateway-console.log"' in sh_script
     assert 'tee -a "${CONSOLE_LOG}"' in sh_script
     assert sh_script.index("if [[ -t 1 ]]; then") < sh_script.index(
         'tee -a "${CONSOLE_LOG}"'
     )
     assert sh_script.index(
-        'export OPENSQUILLA_GATEWAY_CONFIG_PATH="${PORTABLE_DATA_DIR}/config.toml"'
-    ) < sh_script.index('"${OPENSQUILLA_BIN}" "${OPENSQUILLA_MODULE[@]}" onboard')
+        'export OPENSTARRY_CODE_GATEWAY_CONFIG_PATH="${PORTABLE_DATA_DIR}/config.toml"'
+    ) < sh_script.index('"${OPENSTARRY_CODE_BIN}" "${OPENSTARRY_CODE_MODULE[@]}" onboard')
 
     assert "$PythonBin = Join-Path $ScriptDir 'runtime\\python\\python.exe'" in ps_script
-    assert "$OpenSquillaWheel = Get-ChildItem -Path $PackageDir" in ps_script
+    assert "$OpenStarryCodeWheel = Get-ChildItem -Path $PackageDir" in ps_script
     assert "$WheelHashFull = -join" in ps_script
     assert "$WheelHash = $WheelHashFull.Substring(0, 12).ToLowerInvariant()" in ps_script
     assert "Get-FileHash" not in ps_script
-    assert "[System.IO.File]::OpenRead($OpenSquillaWheel.FullName)" in ps_script
+    assert "[System.IO.File]::OpenRead($OpenStarryCodeWheel.FullName)" in ps_script
     assert "$Sha256.ComputeHash($WheelStream)" in ps_script
     assert "$VenvDir = Join-Path $VenvRoot $ReleaseId" in ps_script
     assert '$env:PATH = "$VenvDir\\Scripts;$env:PATH"' in ps_script
-    assert 'Join-Path $VenvBase "OpenSquilla\\portable\\$ReleaseId"' in ps_script
+    assert 'Join-Path $VenvBase "OpenStarry Code\\portable\\$ReleaseId"' in ps_script
     assert (
-        "$env:OPENSQUILLA_GATEWAY_CONFIG_PATH = Join-Path $PortableDataDir 'config.toml'"
+        "$env:OPENSTARRY_CODE_GATEWAY_CONFIG_PATH = Join-Path $PortableDataDir 'config.toml'"
         in ps_script
     )
-    assert "$env:OPENSQUILLA_LLM_API_KEY = $env:OPENROUTER_API_KEY" in ps_script
-    assert "$env:OPENSQUILLA_STATE_DIR = $PortableDataDir" in ps_script
+    assert "$env:OPENSTARRY_CODE_LLM_API_KEY = $env:OPENROUTER_API_KEY" in ps_script
+    assert "$env:OPENSTARRY_CODE_STATE_DIR = $PortableDataDir" in ps_script
     assert (
-        "$env:OPENSQUILLA_GATEWAY_STATE_DIR = Join-Path "
-        "$env:OPENSQUILLA_STATE_DIR 'state'" in ps_script
+        "$env:OPENSTARRY_CODE_GATEWAY_STATE_DIR = Join-Path "
+        "$env:OPENSTARRY_CODE_STATE_DIR 'state'" in ps_script
     )
     assert (
-        "$env:OPENSQUILLA_GATEWAY_WORKSPACE_DIR = Join-Path "
-        "$env:OPENSQUILLA_STATE_DIR 'workspace'" in ps_script
+            "$env:OPENSTARRY_CODE_GATEWAY_WORKSPACE_DIR = Join-Path `\n"
+            "        $env:OPENSTARRY_CODE_STATE_DIR 'workspace'" in ps_script
     )
-    assert "New-Item -ItemType Directory -Path $env:OPENSQUILLA_STATE_DIR -Force" in ps_script
+    assert "New-Item -ItemType Directory -Path $env:OPENSTARRY_CODE_STATE_DIR -Force" in ps_script
     assert "& $PythonBin -m venv --without-pip $VenvDir" in ps_script
     assert "-m pip install" not in ps_script
     assert "-c $WheelInstallScript" not in ps_script
     assert "$WheelInstallScript | & $PythonBin - $PackageDir $SitePackages" in ps_script
-    assert "Installing OpenSquilla from bundled wheels..." in ps_script
-    assert '$OpenSquillaArgs = @("-m", "opensquilla.cli.main")' in ps_script
+    assert "Installing OpenStarry Code from bundled wheels..." in ps_script
+    assert '$OpenStarryCodeArgs = @("-m", "openstarry_code.cli.main")' in ps_script
     assert (
-        "if ((-not (Test-Path $env:OPENSQUILLA_GATEWAY_CONFIG_PATH)) "
+        "if ((-not (Test-Path $env:OPENSTARRY_CODE_GATEWAY_CONFIG_PATH)) "
         "-and $env:OPENROUTER_API_KEY) {" in ps_script
     )
-    assert "& $VenvPython @OpenSquillaArgs onboard `" in ps_script
+    assert "& $VenvPython @OpenStarryCodeArgs onboard `" in ps_script
     assert "--provider openrouter `" in ps_script
     assert "--api-key-env OPENROUTER_API_KEY `" in ps_script
-    assert "& $VenvPython @OpenSquillaArgs onboard" in ps_script
-    assert "& $OpenSquillaBin onboard --if-needed" not in ps_script
-    assert "OpenSquilla environment creation failed" in ps_script
-    assert "OpenSquilla installation failed" not in ps_script
-    assert 'throw "OpenSquilla onboarding failed with exit code $LASTEXITCODE."' in ps_script
+    assert "& $VenvPython @OpenStarryCodeArgs onboard" in ps_script
+    assert "& $OpenStarryCodeBin onboard --if-needed" not in ps_script
+    assert "OpenStarry Code environment creation failed" in ps_script
+    assert "OpenStarry Code installation failed" not in ps_script
+    assert 'throw "OpenStarry Code onboarding failed with exit code $LASTEXITCODE."' in ps_script
     assert "$OutputRedirected = [Console]::IsOutputRedirected" in ps_script
     assert "if (-not $OutputRedirected) {" in ps_script
-    assert "& $VenvPython @OpenSquillaArgs gateway run" in ps_script
+    assert "& $VenvPython @OpenStarryCodeArgs gateway run" in ps_script
     assert "$ConsoleLog = Join-Path $LogDir 'gateway-console.log'" in ps_script
     assert "$PreviousErrorActionPreference = $ErrorActionPreference" in ps_script
     assert "$ErrorActionPreference = \"Continue\"" in ps_script
@@ -512,16 +512,16 @@ def test_start_scripts_use_bundled_python_runtime() -> None:
         "Tee-Object -FilePath $ConsoleLog -Append"
     )
     assert ps_script.index(
-        "$env:OPENSQUILLA_GATEWAY_CONFIG_PATH = Join-Path $PortableDataDir 'config.toml'"
-    ) < ps_script.index("& $VenvPython @OpenSquillaArgs onboard")
+        "$env:OPENSTARRY_CODE_GATEWAY_CONFIG_PATH = Join-Path $PortableDataDir 'config.toml'"
+    ) < ps_script.index("& $VenvPython @OpenStarryCodeArgs onboard")
     assert ps_script.index(
-        "$env:OPENSQUILLA_GATEWAY_STATE_DIR = Join-Path "
-        "$env:OPENSQUILLA_STATE_DIR 'state'"
-    ) < ps_script.index("& $VenvPython @OpenSquillaArgs onboard")
+        "$env:OPENSTARRY_CODE_GATEWAY_STATE_DIR = Join-Path "
+        "$env:OPENSTARRY_CODE_STATE_DIR 'state'"
+    ) < ps_script.index("& $VenvPython @OpenStarryCodeArgs onboard")
 
     assert cmd_script == (
         "@echo off\r\n"
-        "title OpenSquilla Gateway\r\n"
+        "title OpenStarry Code Gateway\r\n"
         'cd /d "%~dp0"\r\n'
         'set "OSQ_POWERSHELL=powershell.exe"\r\n'
         'where pwsh.exe >nul 2>nul && set "OSQ_POWERSHELL=pwsh.exe"\r\n'
@@ -534,7 +534,7 @@ def test_install_script_reexecs_under_bash_before_pipefail() -> None:
     module = load_script()
 
     script = module.render_install_sh(
-        wheel_name="opensquilla-0.1.0-py3-none-any.whl",
+        wheel_name="openstarry_code-0.1.0-py3-none-any.whl",
         profile="recommended",
         python_major=3,
         python_minor=12,
@@ -560,9 +560,9 @@ def test_render_readme_is_platform_specific_for_windows_portable() -> None:
     )
 
     assert "## Windows" in readme
-    assert "# OpenSquilla 0.1.0 Portable Release" in readme
+    assert "# OpenStarry Code 0.1.0 Portable Release" in readme
     assert "Wheelhouse Release" not in readme
-    assert "Right-click `Start OpenSquilla.cmd`" in readme
+    assert "Right-click `Start OpenStarry Code.cmd`" in readme
     assert "Run as administrator" in readme
     assert "Smart App Control" in readme
     assert ".\\start.ps1" in readme
@@ -577,10 +577,10 @@ def test_render_readme_is_platform_specific_for_windows_portable() -> None:
     assert "supported portable launch\n  path is administrator launch" in readme
     assert "Microsoft documents that SmartScreen checks downloaded apps" in readme
     assert "skip setup when it is complete" not in readme
-    assert "does not install a global `opensquilla` command" in readme
+    assert "does not install a global `openstarry-code` command" in readme
     assert (
         "Config, workspace, logs, memory, and runtime state use the normal "
-        "user-level OpenSquilla directory." in readme
+        "user-level OpenStarry Code directory." in readme
     )
 
 
@@ -597,7 +597,7 @@ def test_render_readme_is_platform_specific_for_macos_portable() -> None:
     )
 
     assert "## macOS / Linux" in readme
-    assert "# OpenSquilla 0.1.0 Portable Release" in readme
+    assert "# OpenStarry Code 0.1.0 Portable Release" in readme
     assert "Wheelhouse Release" not in readme
     assert "bash start.sh" in readme
     assert "## Windows PowerShell" not in readme
@@ -607,18 +607,18 @@ def test_render_readme_is_platform_specific_for_macos_portable() -> None:
     assert "Feishu" not in readme
     assert "later starts let you review or change the config" in readme
     assert "skip setup when it is complete" not in readme
-    assert "does not install a global `opensquilla` command" not in readme
+    assert "does not install a global `openstarry-code` command" not in readme
     assert (
         "Config, workspace, logs, memory, and runtime state use the normal "
-        "user-level OpenSquilla directory." in readme
+        "user-level OpenStarry Code directory." in readme
     )
-    assert ".opensquilla/config.toml" not in readme
+    assert ".openstarry-code/config.toml" not in readme
 
 
 def test_prepare_release_tree_writes_user_surface_and_manifest(tmp_path: Path) -> None:
     module = load_script()
-    release_root = tmp_path / "OpenSquilla-0.1.0-macos-arm64-py312-recommended-wheelhouse"
-    wheel_path = tmp_path / "opensquilla-0.1.0-py3-none-any.whl"
+    release_root = tmp_path / "OpenStarry Code-0.1.0-macos-arm64-py312-recommended-wheelhouse"
+    wheel_path = tmp_path / "openstarry_code-0.1.0-py3-none-any.whl"
     wheel_path.write_bytes(b"wheel")
 
     bundled_wheel = module.prepare_release_tree(
@@ -662,8 +662,8 @@ def test_prepare_release_tree_writes_user_surface_and_manifest(tmp_path: Path) -
 
 def test_prepare_portable_release_tree_includes_runtime_and_start_scripts(tmp_path: Path) -> None:
     module = load_script()
-    release_root = tmp_path / "OpenSquilla-0.1.0-macos-arm64-py312-recommended-portable"
-    wheel_path = tmp_path / "opensquilla-0.1.0-py3-none-any.whl"
+    release_root = tmp_path / "OpenStarry Code-0.1.0-macos-arm64-py312-recommended-portable"
+    wheel_path = tmp_path / "openstarry_code-0.1.0-py3-none-any.whl"
     runtime_root = tmp_path / "runtime"
     (runtime_root / "bin").mkdir(parents=True)
     (runtime_root / "bin" / "python3").write_text("python", encoding="utf-8")
@@ -692,11 +692,11 @@ def test_prepare_portable_release_tree_includes_runtime_and_start_scripts(tmp_pa
     assert not (release_root / "runtime" / "python" / "Lib" / "__pycache__").exists()
     assert (release_root / "start.sh").is_file()
     assert (release_root / "start.ps1").is_file()
-    assert "opensquilla.cli.main" in (release_root / "start.sh").read_text(encoding="utf-8")
-    assert "opensquilla.cli.main" in (release_root / "start.ps1").read_text(
+    assert "openstarry_code.cli.main" in (release_root / "start.sh").read_text(encoding="utf-8")
+    assert "openstarry_code.cli.main" in (release_root / "start.ps1").read_text(
         encoding="utf-8"
     )
-    assert not (release_root / "Start OpenSquilla.cmd").exists()
+    assert not (release_root / "Start OpenStarry Code.cmd").exists()
     assert (release_root / "LICENSE").is_file()
     assert (release_root / "THIRD_PARTY_NOTICES.md").is_file()
     assert not (release_root / "install.sh").exists()
@@ -760,8 +760,8 @@ def test_prepare_windows_portable_release_tree_includes_double_click_launcher(
     tmp_path: Path,
 ) -> None:
     module = load_script()
-    release_root = tmp_path / "OpenSquilla-0.1.0-windows-x64-py312-recommended-portable"
-    wheel_path = tmp_path / "opensquilla-0.1.0-py3-none-any.whl"
+    release_root = tmp_path / "OpenStarry Code-0.1.0-windows-x64-py312-recommended-portable"
+    wheel_path = tmp_path / "openstarry_code-0.1.0-py3-none-any.whl"
     runtime_root = tmp_path / "runtime"
     runtime_root.mkdir()
     (runtime_root / "python.exe").write_text("python", encoding="utf-8")
@@ -782,24 +782,24 @@ def test_prepare_windows_portable_release_tree_includes_double_click_launcher(
         runtime_root=runtime_root,
     )
 
-    launcher = release_root / "Start OpenSquilla.cmd"
+    launcher = release_root / "Start OpenStarry Code.cmd"
     assert launcher.is_file()
     assert launcher.read_bytes() == module.render_start_cmd().encode("utf-8")
-    cli = release_root / "opensquilla.cmd"
+    cli = release_root / "openstarry-code.cmd"
     assert cli.is_file()
     cli_text = cli.read_text(encoding="utf-8")
     assert "start.ps1\" -Cli %*" in cli_text
-    shell = release_root / "OpenSquilla Shell.cmd"
+    shell = release_root / "OpenStarry Code Shell.cmd"
     assert shell.is_file()
     shell_text = shell.read_text(encoding="utf-8")
-    assert "function global:opensquilla" in shell_text
-    assert "opensquilla.cmd" in shell_text
+    assert "function global:openstarry-code" in shell_text
+    assert "openstarry-code.cmd" in shell_text
     readme = (release_root / "README.md").read_text(encoding="utf-8")
-    assert "Right-click `Start OpenSquilla.cmd`" in readme
+    assert "Right-click `Start OpenStarry Code.cmd`" in readme
     assert "Run as administrator" in readme
     assert "Smart App Control" in readme
-    assert "run\n`OpenSquilla Shell.cmd`" in readme
-    assert ".\\opensquilla.cmd onboard" in readme
+    assert "run\n`OpenStarry Code Shell.cmd`" in readme
+    assert ".\\openstarry-code.cmd onboard" in readme
     assert "Closing it stops the gateway." in readme
     assert "Advanced portable usage" in readme
     start_ps1 = (release_root / "start.ps1").read_text(encoding="utf-8")
@@ -807,12 +807,12 @@ def test_prepare_windows_portable_release_tree_includes_double_click_launcher(
     assert "RuntimeInformation]::IsOSPlatform" in start_ps1
     assert "$RequiresRouterRuntime = $true" in start_ps1
     assert '"opensquilla[recommended,feishu]" -notmatch' not in start_ps1
-    assert "OPENSQUILLA_SKIP_VC_REDIST" in start_ps1
+    assert "OPENSTARRY_CODE_SKIP_VC_REDIST" in start_ps1
     assert "Microsoft.VCRedist.2015+.x64" in start_ps1
     assert "https://aka.ms/vs/17/release/vc_redist.x64.exe" in start_ps1
     assert "safe router fallback" in start_ps1
     assert "If automatic installation fails, install it manually" in start_ps1
-    assert "After installing, reopen PowerShell and restart OpenSquilla" in start_ps1
+    assert "After installing, reopen PowerShell and restart OpenStarry Code" in start_ps1
     assert "$env:PYTHONUTF8 = '1'" in start_ps1
     assert "$env:PYTHONIOENCODING = 'utf-8:replace'" in start_ps1
 
@@ -844,10 +844,10 @@ def test_install_portable_wheelhouse_preinstalls_into_bundled_python(
 
 def test_create_zip_contains_release_directory_and_preserves_install_mode(tmp_path: Path) -> None:
     module = load_script()
-    release_root = tmp_path / "OpenSquilla-0.1.0-macos-arm64-py312-recommended-wheelhouse"
+    release_root = tmp_path / "OpenStarry Code-0.1.0-macos-arm64-py312-recommended-wheelhouse"
     packages = release_root / "packages"
     packages.mkdir(parents=True)
-    (packages / "opensquilla-0.1.0-py3-none-any.whl").write_bytes(b"wheel")
+    (packages / "openstarry_code-0.1.0-py3-none-any.whl").write_bytes(b"wheel")
     install_script = release_root / "install.sh"
     install_script.write_text("#!/usr/bin/env bash\n", encoding="utf-8")
     install_script.chmod(0o755)
@@ -861,22 +861,22 @@ def test_create_zip_contains_release_directory_and_preserves_install_mode(tmp_pa
     with ZipFile(zip_path) as archive:
         names = set(archive.namelist())
         install_info = archive.getinfo(
-            "OpenSquilla-0.1.0-macos-arm64-py312-recommended-wheelhouse/install.sh"
+            "OpenStarry Code-0.1.0-macos-arm64-py312-recommended-wheelhouse/install.sh"
         )
 
     assert names == {
-        "OpenSquilla-0.1.0-macos-arm64-py312-recommended-wheelhouse/README.md",
-        "OpenSquilla-0.1.0-macos-arm64-py312-recommended-wheelhouse/install.ps1",
-        "OpenSquilla-0.1.0-macos-arm64-py312-recommended-wheelhouse/install.sh",
-        "OpenSquilla-0.1.0-macos-arm64-py312-recommended-wheelhouse/manifest.json",
-        "OpenSquilla-0.1.0-macos-arm64-py312-recommended-wheelhouse/packages/opensquilla-0.1.0-py3-none-any.whl",
+        "OpenStarry Code-0.1.0-macos-arm64-py312-recommended-wheelhouse/README.md",
+        "OpenStarry Code-0.1.0-macos-arm64-py312-recommended-wheelhouse/install.ps1",
+        "OpenStarry Code-0.1.0-macos-arm64-py312-recommended-wheelhouse/install.sh",
+        "OpenStarry Code-0.1.0-macos-arm64-py312-recommended-wheelhouse/manifest.json",
+        "OpenStarry Code-0.1.0-macos-arm64-py312-recommended-wheelhouse/packages/openstarry_code-0.1.0-py3-none-any.whl",
     }
     assert stat.S_IMODE(install_info.external_attr >> 16) & stat.S_IXUSR
 
 
 def test_create_zip_preserves_runtime_executable_mode(tmp_path: Path) -> None:
     module = load_script()
-    release_root = tmp_path / "OpenSquilla-0.1.0-macos-arm64-py312-recommended-portable"
+    release_root = tmp_path / "OpenStarry Code-0.1.0-macos-arm64-py312-recommended-portable"
     python_bin = release_root / "runtime" / "python" / "bin" / "python3"
     python_bin.parent.mkdir(parents=True)
     python_bin.write_bytes(b"python")
@@ -889,7 +889,7 @@ def test_create_zip_preserves_runtime_executable_mode(tmp_path: Path) -> None:
 
     with ZipFile(zip_path) as archive:
         python_info = archive.getinfo(
-            "OpenSquilla-0.1.0-macos-arm64-py312-recommended-portable/"
+            "OpenStarry Code-0.1.0-macos-arm64-py312-recommended-portable/"
             "runtime/python/bin/python3"
         )
 
@@ -898,21 +898,21 @@ def test_create_zip_preserves_runtime_executable_mode(tmp_path: Path) -> None:
 
 def test_create_zip_can_use_short_archive_root(tmp_path: Path) -> None:
     module = load_script()
-    release_root = tmp_path / "OpenSquilla-0.1.0-windows-x64-py312-recommended-portable"
+    release_root = tmp_path / "OpenStarry Code-0.1.0-windows-x64-py312-recommended-portable"
     (release_root / "runtime" / "python").mkdir(parents=True)
     (release_root / "runtime" / "python" / "python.exe").write_bytes(b"python")
     zip_path = tmp_path / "release.zip"
 
-    module.create_zip(release_root, zip_path, archive_root="OpenSquilla-0.1.0")
+    module.create_zip(release_root, zip_path, archive_root="OpenStarry Code-0.1.0")
 
     with ZipFile(zip_path) as archive:
-        assert archive.namelist() == ["OpenSquilla-0.1.0/runtime/python/python.exe"]
+        assert archive.namelist() == ["OpenStarry Code-0.1.0/runtime/python/python.exe"]
 
 
 def test_write_sha256s_records_all_release_zips(tmp_path: Path) -> None:
     module = load_script()
-    first = tmp_path / "OpenSquilla-0.1.0-linux-x64-py312-recommended-portable.zip"
-    second = tmp_path / "OpenSquilla-0.1.0-linux-x64-py312-recommended-wheelhouse.zip"
+    first = tmp_path / "OpenStarry Code-0.1.0-linux-x64-py312-recommended-portable.zip"
+    second = tmp_path / "OpenStarry Code-0.1.0-linux-x64-py312-recommended-wheelhouse.zip"
     first.write_bytes(b"portable")
     second.write_bytes(b"wheelhouse")
 
@@ -957,10 +957,10 @@ def test_release_workflow_publishes_wheel_and_electron_assets_without_portable()
     assert "GH_REPO: ${{ github.repository }}" in workflow
     assert "0.5+ release assets must not include Windows portable zips" in workflow
     assert "if not is_prerelease:" not in workflow
-    assert "OpenSquilla-windows-x64-portable.zip" not in workflow
+    assert "OpenStarry Code-windows-x64-portable.zip" not in workflow
     assert "desktop_asset_version" in workflow
-    assert "OpenSquilla-{desktop_version}-mac-arm64.dmg" in workflow
-    assert "OpenSquilla-{desktop_version}-win-x64.exe" in workflow
+    assert "OpenStarry-Code-{desktop_version}-mac-arm64.dmg" in workflow
+    assert "OpenStarry-Code-{desktop_version}-win-x64.exe" in workflow
     assert "opensquilla-latest-py3-none-any.whl" not in workflow
     assert "gh release upload \"${TAG}\" dist/* --clobber" in workflow
     assert "dist/*.zip dist/*.zip.sha256 dist/SHA256SUMS" not in workflow

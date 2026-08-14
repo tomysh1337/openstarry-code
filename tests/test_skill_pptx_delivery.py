@@ -4,10 +4,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from opensquilla.skills.loader import SkillLoader
+from openstarry_code.skills.loader import SkillLoader
 
 ROOT = Path(__file__).resolve().parents[1]
-BUNDLED = ROOT / "src" / "opensquilla" / "skills" / "bundled"
+BUNDLED = ROOT / "src" / "openstarry_code" / "skills" / "bundled"
 PPTXGENJS_REFERENCE = BUNDLED / "pptx" / "references" / "pptxgenjs.md"
 
 

@@ -11,12 +11,12 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.tools.builtin.filesystem import (
+from openstarry_code.tools.builtin.filesystem import (
     _apply_edit_replacements,
     _edit_file_closest_lines_hint,
     _EditReplacement,
 )
-from opensquilla.tools.types import (
+from openstarry_code.tools.types import (
     RetryableToolInputError,
     ToolContext,
     current_tool_context,

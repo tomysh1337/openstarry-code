@@ -9,15 +9,15 @@ from typing import Any
 
 import pytest
 
-from opensquilla.channels.types import (
+from openstarry_code.channels.types import (
     AuthenticatedPrincipal,
     IncomingMessage,
     IngressProvenance,
     IngressVerification,
 )
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.engine.types import AgentConfig, DoneEvent
-from opensquilla.gateway.boot import (
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.engine.types import AgentConfig, DoneEvent
+from openstarry_code.gateway.boot import (
     _configured_agent_ids,
     _gateway_home,
     _register_dream_crons,
@@ -32,44 +32,44 @@ from opensquilla.gateway.boot import (
     emit_skill_filter_banner,
     validate_squilla_router_runtime,
 )
-from opensquilla.gateway.channel_dispatch import _stamp_channel_admin_principal
-from opensquilla.gateway.config import (
+from openstarry_code.gateway.channel_dispatch import _stamp_channel_admin_principal
+from openstarry_code.gateway.config import (
     AgentEntryConfig,
     GatewayConfig,
     effective_agent_stream_idle_timeout_seconds,
     effective_webui_stream_idle_grace_seconds,
 )
-from opensquilla.gateway.diagnostics import DiagnosticsState
-from opensquilla.gateway.model_routing import (
+from openstarry_code.gateway.diagnostics import DiagnosticsState
+from openstarry_code.gateway.model_routing import (
     capture_model_routing_config,
     model_routing_snapshot,
 )
-from opensquilla.gateway.routing import (
+from openstarry_code.gateway.routing import (
     build_channel_route_envelope,
     build_cli_route_envelope,
     build_cron_route_envelope,
     tool_context_from_envelope,
 )
-from opensquilla.onboarding.mutations import upsert_channel
-from opensquilla.project_workspaces import (
+from openstarry_code.onboarding.mutations import upsert_channel
+from openstarry_code.project_workspaces import (
     ProjectWorkspaceStateError,
     project_path_key,
 )
-from opensquilla.provider import Message, ProviderRequestCorrelation
-from opensquilla.sandbox.config import SandboxSettings
-from opensquilla.sandbox.run_context import RUN_CONTEXT_ORIGIN_KEY
-from opensquilla.sandbox.run_mode import RunMode
-from opensquilla.scheduler.types import CronJob, JobStatus
-from opensquilla.session.compaction import CompactionConfig
-from opensquilla.session.manager import SessionManager
-from opensquilla.session.models import SessionIntent
-from opensquilla.session.storage import SessionStorage
-from opensquilla.tools.registry import ToolRegistry
-from opensquilla.tools.types import CallerKind, ToolContext, ToolSpec
+from openstarry_code.provider import Message, ProviderRequestCorrelation
+from openstarry_code.sandbox.config import SandboxSettings
+from openstarry_code.sandbox.run_context import RUN_CONTEXT_ORIGIN_KEY
+from openstarry_code.sandbox.run_mode import RunMode
+from openstarry_code.scheduler.types import CronJob, JobStatus
+from openstarry_code.session.compaction import CompactionConfig
+from openstarry_code.session.manager import SessionManager
+from openstarry_code.session.models import SessionIntent
+from openstarry_code.session.storage import SessionStorage
+from openstarry_code.tools.registry import ToolRegistry
+from openstarry_code.tools.types import CallerKind, ToolContext, ToolSpec
 
 
 def test_gateway_boot_bridges_compaction_notifications_to_session_stream() -> None:
-    source = Path("src/opensquilla/gateway/boot.py").read_text(encoding="utf-8")
+    source = Path("src/openstarry_code/gateway/boot.py").read_text(encoding="utf-8")
 
     assert "add_compaction_listener" in source
     assert '"session.event.compaction"' in source
@@ -77,7 +77,7 @@ def test_gateway_boot_bridges_compaction_notifications_to_session_stream() -> No
 
 
 def test_shared_service_boot_prewarms_tokenrhythm_install_id_after_config_load() -> None:
-    source = Path("src/opensquilla/gateway/boot.py").read_text(encoding="utf-8")
+    source = Path("src/openstarry_code/gateway/boot.py").read_text(encoding="utf-8")
     build_start = source.index("async def build_services(")
     config_load = source.index("GatewayConfig.load(", build_start)
     prewarm = source.index("_prewarm_tokenrhythm_install_id(config)", build_start)
@@ -91,8 +91,8 @@ def test_shared_service_boot_prewarms_tokenrhythm_install_id_after_config_load()
 def test_tokenrhythm_install_id_prewarm_never_breaks_boot(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.gateway import boot
-    from opensquilla.provider import tokenrhythm_correlation
+    from openstarry_code.gateway import boot
+    from openstarry_code.provider import tokenrhythm_correlation
 
     def fail_prewarm(**_kwargs: Any) -> None:
         raise RuntimeError("synthetic resolver failure")
@@ -109,7 +109,7 @@ def test_tokenrhythm_install_id_prewarm_never_breaks_boot(
 def test_gateway_startup_phase_log_uses_bounded_fields(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.gateway import boot
+    from openstarry_code.gateway import boot
 
     events: list[tuple[str, dict[str, Any]]] = []
 
@@ -213,7 +213,7 @@ def test_task_runtime_hard_deadline_honors_explicit_config() -> None:
 
 
 def test_gateway_server_close_releases_pid_lock_when_shutdown_step_fails() -> None:
-    from opensquilla.gateway import boot
+    from openstarry_code.gateway import boot
 
     released: list[str] = []
 
@@ -246,7 +246,7 @@ def test_start_gateway_server_releases_pid_lock_when_build_services_fails(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.gateway import boot
+    from openstarry_code.gateway import boot
 
     events: list[str] = []
 
@@ -263,11 +263,11 @@ def test_start_gateway_server_releases_pid_lock_when_build_services_fails(
     monkeypatch.setattr(boot, "_setup_file_logging", lambda config: None)
     monkeypatch.setattr(boot, "emit_skill_filter_banner", lambda config: None)
     monkeypatch.setattr(
-        "opensquilla.gateway.pidlock.GatewayPidLock.acquire",
+        "openstarry_code.gateway.pidlock.GatewayPidLock.acquire",
         lambda self: events.append("acquire"),
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.pidlock.GatewayPidLock.release",
+        "openstarry_code.gateway.pidlock.GatewayPidLock.release",
         lambda self: events.append("release"),
     )
     config = GatewayConfig(
@@ -290,8 +290,8 @@ def test_failed_second_start_does_not_reset_active_stream_generation(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.gateway import boot
-    from opensquilla.gateway.session_streams import (
+    from openstarry_code.gateway import boot
+    from openstarry_code.gateway.session_streams import (
         get_session_streams,
         reset_session_streams,
     )
@@ -309,7 +309,7 @@ def test_failed_second_start_does_not_reset_active_stream_generation(
         raise RuntimeError("gateway already owns pid lock")
 
     monkeypatch.setattr(
-        "opensquilla.gateway.pidlock.GatewayPidLock.acquire",
+        "openstarry_code.gateway.pidlock.GatewayPidLock.acquire",
         reject_second_owner,
     )
     config = GatewayConfig(
@@ -337,8 +337,8 @@ def test_failed_desktop_ownership_does_not_reset_active_stream_generation(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.gateway import boot
-    from opensquilla.gateway.session_streams import (
+    from openstarry_code.gateway import boot
+    from openstarry_code.gateway.session_streams import (
         get_session_streams,
         reset_session_streams,
     )
@@ -353,11 +353,11 @@ def test_failed_desktop_ownership_does_not_reset_active_stream_generation(
     monkeypatch.setattr(boot, "_setup_file_logging", lambda config: None)
     monkeypatch.setattr(boot, "emit_skill_filter_banner", lambda config: None)
     monkeypatch.setattr(
-        "opensquilla.gateway.pidlock.GatewayPidLock.acquire",
+        "openstarry_code.gateway.pidlock.GatewayPidLock.acquire",
         lambda self: events.append("acquire"),
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.pidlock.GatewayPidLock.release",
+        "openstarry_code.gateway.pidlock.GatewayPidLock.release",
         lambda self: events.append("release"),
     )
 
@@ -365,7 +365,7 @@ def test_failed_desktop_ownership_does_not_reset_active_stream_generation(
         raise RuntimeError("desktop lifecycle already owned")
 
     monkeypatch.setattr(
-        "opensquilla.gateway.desktop_ownership.activate_desktop_gateway_ownership",
+        "openstarry_code.gateway.desktop_ownership.activate_desktop_gateway_ownership",
         reject_desktop_owner,
     )
     config = GatewayConfig(
@@ -394,7 +394,7 @@ def test_start_gateway_server_starts_telemetry_after_listener_and_runtime_are_re
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.gateway import boot
+    from openstarry_code.gateway import boot
 
     debug_logs: list[tuple[str, dict[str, Any]]] = []
     call_order: list[str] = []
@@ -495,7 +495,7 @@ def test_start_gateway_server_starts_telemetry_after_listener_and_runtime_are_re
         return app
 
     monkeypatch.setattr(boot, "log", FakeLog())
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
     monkeypatch.setattr(boot, "build_services", fake_build_services)
     monkeypatch.setattr(boot, "create_gateway_app", capture_gateway_app)
     monkeypatch.setattr(boot, "get_session_storage", lambda manager: object())
@@ -504,19 +504,19 @@ def test_start_gateway_server_starts_telemetry_after_listener_and_runtime_are_re
     monkeypatch.setattr(boot, "_setup_file_logging", lambda config: None)
     monkeypatch.setattr(boot, "emit_skill_filter_banner", lambda config: None)
     monkeypatch.setattr(
-        "opensquilla.observability.install_telemetry.start_background_install_telemetry",
+        "openstarry_code.observability.install_telemetry.start_background_install_telemetry",
         fake_start_background_install_telemetry,
     )
     monkeypatch.setattr(
-        "opensquilla.observability.usage_telemetry.run_daily_usage_upload_loop",
+        "openstarry_code.observability.usage_telemetry.run_daily_usage_upload_loop",
         fake_daily_usage_loop,
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.pidlock.GatewayPidLock.acquire",
+        "openstarry_code.gateway.pidlock.GatewayPidLock.acquire",
         lambda self: None,
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.pidlock.GatewayPidLock.release",
+        "openstarry_code.gateway.pidlock.GatewayPidLock.release",
         lambda self: None,
     )
     config = GatewayConfig(
@@ -914,8 +914,8 @@ def test_gateway_home_falls_back_to_config_path_parent(tmp_path: Path) -> None:
 async def test_boot_sandbox_setup_prewarms_an_existing_ready_setup(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.gateway import boot
-    from opensquilla.sandbox.setup_state import SandboxSetupState, SetupResult
+    from openstarry_code.gateway import boot
+    from openstarry_code.sandbox.setup_state import SandboxSetupState, SetupResult
 
     calls: list[str] = []
     config = GatewayConfig(
@@ -944,11 +944,11 @@ async def test_boot_sandbox_setup_prewarms_an_existing_ready_setup(
         return object()
 
     monkeypatch.setattr(
-        "opensquilla.sandbox.setup_runtime.current_sandbox_setup_runtime_status",
+        "openstarry_code.sandbox.setup_runtime.current_sandbox_setup_runtime_status",
         fake_status,
     )
     monkeypatch.setattr(
-        "opensquilla.sandbox.setup_runtime.current_sandbox_capability_report",
+        "openstarry_code.sandbox.setup_runtime.current_sandbox_capability_report",
         fake_capability,
     )
 
@@ -963,13 +963,13 @@ async def test_boot_sandbox_setup_prewarms_an_existing_ready_setup(
 async def test_boot_sandbox_setup_can_be_disabled(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.gateway import boot
+    from openstarry_code.gateway import boot
 
     async def fail_if_called(config: GatewayConfig) -> object:
         raise AssertionError("sandbox.auto_setup=false must not inspect setup")
 
     monkeypatch.setattr(
-        "opensquilla.sandbox.setup_runtime.current_sandbox_setup_runtime_status",
+        "openstarry_code.sandbox.setup_runtime.current_sandbox_setup_runtime_status",
         fail_if_called,
     )
 
@@ -991,8 +991,8 @@ async def test_boot_sandbox_setup_can_be_disabled(
 async def test_boot_sandbox_setup_defers_incomplete_setup_for_full_host_access(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.gateway import boot
-    from opensquilla.sandbox.setup_state import SandboxSetupState, SetupResult
+    from openstarry_code.gateway import boot
+    from openstarry_code.sandbox.setup_state import SandboxSetupState, SetupResult
 
     calls: list[str] = []
     config = GatewayConfig(
@@ -1019,11 +1019,11 @@ async def test_boot_sandbox_setup_defers_incomplete_setup_for_full_host_access(
         return object()
 
     monkeypatch.setattr(
-        "opensquilla.sandbox.setup_runtime.current_sandbox_setup_runtime_status",
+        "openstarry_code.sandbox.setup_runtime.current_sandbox_setup_runtime_status",
         fake_status,
     )
     monkeypatch.setattr(
-        "opensquilla.sandbox.setup_runtime.current_sandbox_capability_report",
+        "openstarry_code.sandbox.setup_runtime.current_sandbox_capability_report",
         fake_capability,
     )
 
@@ -1039,7 +1039,7 @@ async def test_build_services_schedules_sandbox_setup_after_runtime(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    from opensquilla.gateway import boot
+    from openstarry_code.gateway import boot
 
     events: list[str] = []
     scheduled: list[Any] = []
@@ -1064,8 +1064,8 @@ async def test_build_services_schedules_sandbox_setup_after_runtime(
 
     monkeypatch.setattr(boot, "_ensure_sandbox_setup_on_boot", fake_setup)
     monkeypatch.setattr(boot, "create_background_task", fake_create_background_task)
-    monkeypatch.setattr("opensquilla.sandbox.integration.configure_runtime", fake_configure_runtime)
-    monkeypatch.setattr("opensquilla.sandbox.integration.reset_runtime", fake_reset_runtime)
+    monkeypatch.setattr("openstarry_code.sandbox.integration.configure_runtime", fake_configure_runtime)
+    monkeypatch.setattr("openstarry_code.sandbox.integration.reset_runtime", fake_reset_runtime)
 
     config = GatewayConfig(
         state_dir=str(tmp_path / "state"),
@@ -1098,7 +1098,7 @@ async def test_build_services_schedules_sandbox_setup_after_runtime(
 
 @pytest.mark.asyncio
 async def test_service_container_close_cancels_owned_sandbox_setup_task() -> None:
-    from opensquilla.gateway import boot
+    from openstarry_code.gateway import boot
 
     entered = asyncio.Event()
 
@@ -1121,7 +1121,7 @@ async def test_service_container_close_cancels_owned_sandbox_setup_task() -> Non
 
 @pytest.mark.asyncio
 async def test_service_container_close_cancels_profile_import_maintenance() -> None:
-    from opensquilla.gateway import boot
+    from openstarry_code.gateway import boot
 
     entered = asyncio.Event()
 
@@ -1147,7 +1147,7 @@ async def test_bare_full_default_boots_full_capability(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    from opensquilla.gateway import boot
+    from openstarry_code.gateway import boot
 
     captured: list[tuple[SandboxSettings, RunMode]] = []
 
@@ -1160,7 +1160,7 @@ async def test_bare_full_default_boots_full_capability(
             )
         )
 
-    monkeypatch.setattr("opensquilla.sandbox.integration.configure_runtime", fake_configure_runtime)
+    monkeypatch.setattr("openstarry_code.sandbox.integration.configure_runtime", fake_configure_runtime)
 
     config = GatewayConfig(
         state_dir=str(tmp_path / "state"),
@@ -1216,9 +1216,9 @@ def test_build_turn_runner_from_services_wires_memory_services(
         def __init__(self, **kwargs: Any) -> None:
             captured.update(kwargs)
 
-    from opensquilla.gateway import boot
+    from openstarry_code.gateway import boot
 
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
     services = SimpleNamespace(
         provider_selector=object(),
         tool_registry=object(),
@@ -1252,7 +1252,7 @@ def test_build_turn_runner_from_services_wires_diagnostics_state(
         def __init__(self, **kwargs: Any) -> None:
             captured.update(kwargs)
 
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
     services = SimpleNamespace(
         provider_selector=object(),
         tool_registry=object(),
@@ -1263,7 +1263,7 @@ def test_build_turn_runner_from_services_wires_diagnostics_state(
     )
     state = DiagnosticsState.from_config(GatewayConfig())
 
-    from opensquilla.gateway import boot
+    from openstarry_code.gateway import boot
 
     runner = boot.build_turn_runner_from_services(services, diagnostics_state=state)
 
@@ -1312,18 +1312,18 @@ async def test_start_gateway_server_shares_diagnostics_state_between_app_and_tur
             close=close,
         )
 
-    from opensquilla.gateway import boot
+    from openstarry_code.gateway import boot
 
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
     monkeypatch.setattr(boot, "build_services", fake_build_services)
     monkeypatch.setattr(boot, "_setup_file_logging", lambda config: None)
     monkeypatch.setattr(boot, "emit_skill_filter_banner", lambda config: None)
     monkeypatch.setattr(
-        "opensquilla.gateway.pidlock.GatewayPidLock.acquire",
+        "openstarry_code.gateway.pidlock.GatewayPidLock.acquire",
         lambda self: None,
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.pidlock.GatewayPidLock.release",
+        "openstarry_code.gateway.pidlock.GatewayPidLock.release",
         lambda self: None,
     )
     config = GatewayConfig(
@@ -1395,20 +1395,20 @@ async def test_start_gateway_server_creates_default_subscription_manager(
             close=close,
         )
 
-    from opensquilla.gateway import boot
-    from opensquilla.gateway.websocket import SubscriptionManager
+    from openstarry_code.gateway import boot
+    from openstarry_code.gateway.websocket import SubscriptionManager
 
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
-    monkeypatch.setattr("opensquilla.gateway.event_bridge.EventBridge", FakeEventBridge)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.gateway.event_bridge.EventBridge", FakeEventBridge)
     monkeypatch.setattr(boot, "build_services", fake_build_services)
     monkeypatch.setattr(boot, "_setup_file_logging", lambda config: None)
     monkeypatch.setattr(boot, "emit_skill_filter_banner", lambda config: None)
     monkeypatch.setattr(
-        "opensquilla.gateway.pidlock.GatewayPidLock.acquire",
+        "openstarry_code.gateway.pidlock.GatewayPidLock.acquire",
         lambda self: None,
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.pidlock.GatewayPidLock.release",
+        "openstarry_code.gateway.pidlock.GatewayPidLock.release",
         lambda self: None,
     )
     config = GatewayConfig(
@@ -1497,16 +1497,16 @@ async def test_start_gateway_server_schedules_router_preload_after_channels(
             close()
         return __import__("asyncio").create_task(__import__("asyncio").sleep(0))
 
-    from opensquilla.gateway import boot
+    from openstarry_code.gateway import boot
 
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
     monkeypatch.setattr(boot, "build_services", fake_build_services)
     monkeypatch.setattr(boot, "_setup_file_logging", lambda config: None)
     monkeypatch.setattr(boot, "emit_skill_filter_banner", lambda config: None)
     monkeypatch.setattr(boot, "create_background_task", fake_create_background_task)
     monkeypatch.setattr(boot.uvicorn, "Server", FakeServer)
     monkeypatch.setattr(
-        "opensquilla.gateway.pidlock.GatewayPidLock.acquire",
+        "openstarry_code.gateway.pidlock.GatewayPidLock.acquire",
         lambda self: None,
     )
 
@@ -1587,9 +1587,9 @@ def test_start_gateway_server_passes_tls_files_to_uvicorn(
             close()
         return asyncio.create_task(asyncio.sleep(0))
 
-    from opensquilla.gateway import boot
+    from openstarry_code.gateway import boot
 
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
     monkeypatch.setattr(boot, "build_services", fake_build_services)
     monkeypatch.setattr(boot, "_setup_file_logging", lambda config: None)
     monkeypatch.setattr(boot, "emit_skill_filter_banner", lambda config: None)
@@ -1597,11 +1597,11 @@ def test_start_gateway_server_passes_tls_files_to_uvicorn(
     monkeypatch.setattr(boot.uvicorn, "Config", FakeUvicornConfig)
     monkeypatch.setattr(boot.uvicorn, "Server", FakeServer)
     monkeypatch.setattr(
-        "opensquilla.gateway.pidlock.GatewayPidLock.acquire",
+        "openstarry_code.gateway.pidlock.GatewayPidLock.acquire",
         lambda self: None,
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.pidlock.GatewayPidLock.release",
+        "openstarry_code.gateway.pidlock.GatewayPidLock.release",
         lambda self: None,
     )
 
@@ -1697,19 +1697,19 @@ async def test_start_gateway_server_wires_cron_failure_dispatcher(
             close=close,
         )
 
-    from opensquilla.gateway import boot
-    from opensquilla.scheduler import jobs as scheduler_jobs
+    from openstarry_code.gateway import boot
+    from openstarry_code.scheduler import jobs as scheduler_jobs
 
     def _record_dispatcher(fn: Any) -> None:
         captured["dispatcher"] = fn
 
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
     monkeypatch.setattr(boot, "build_services", fake_build_services)
     monkeypatch.setattr(boot, "_setup_file_logging", lambda config: None)
     monkeypatch.setattr(boot, "emit_skill_filter_banner", lambda config: None)
     monkeypatch.setattr(scheduler_jobs, "set_failure_dispatcher", _record_dispatcher)
-    monkeypatch.setattr("opensquilla.gateway.pidlock.GatewayPidLock.acquire", lambda self: None)
-    monkeypatch.setattr("opensquilla.gateway.pidlock.GatewayPidLock.release", lambda self: None)
+    monkeypatch.setattr("openstarry_code.gateway.pidlock.GatewayPidLock.acquire", lambda self: None)
+    monkeypatch.setattr("openstarry_code.gateway.pidlock.GatewayPidLock.release", lambda self: None)
 
     config = GatewayConfig(
         state_dir=str(tmp_path / "state"),
@@ -1750,12 +1750,12 @@ async def test_start_gateway_server_wires_meta_skill_auto_propose_routes(
     isolated unit coverage. This guards the production integration point where
     the previous implementation left those pieces unreachable.
     """
-    from opensquilla.gateway import boot
-    from opensquilla.gateway.auto_propose_bridge import get_runtime, reset_runtime_for_test
-    from opensquilla.scheduler import auto_propose_handler as auto_handler_mod
-    from opensquilla.scheduler import dream_handler as dream_handler_mod
-    from opensquilla.skills.creator import proposer as proposer_mod
-    from opensquilla.skills.creator import runtime_e2e as runtime_e2e_mod
+    from openstarry_code.gateway import boot
+    from openstarry_code.gateway.auto_propose_bridge import get_runtime, reset_runtime_for_test
+    from openstarry_code.scheduler import auto_propose_handler as auto_handler_mod
+    from openstarry_code.scheduler import dream_handler as dream_handler_mod
+    from openstarry_code.skills.creator import proposer as proposer_mod
+    from openstarry_code.skills.creator import runtime_e2e as runtime_e2e_mod
 
     reset_runtime_for_test()
     captured: dict[str, Any] = {}
@@ -1867,7 +1867,7 @@ async def test_start_gateway_server_wires_meta_skill_auto_propose_routes(
     def fake_reset_smoke_fixture_context(token: str) -> None:
         smoke_reset_tokens.append(token)
 
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
     monkeypatch.setattr(boot, "build_services", fake_build_services)
     monkeypatch.setattr(boot, "_setup_file_logging", lambda config: None)
     monkeypatch.setattr(boot, "emit_skill_filter_banner", lambda config: None)
@@ -1888,8 +1888,8 @@ async def test_start_gateway_server_wires_meta_skill_auto_propose_routes(
     monkeypatch.setattr(
         proposer_mod, "reset_smoke_fixture_context", fake_reset_smoke_fixture_context
     )
-    monkeypatch.setattr("opensquilla.gateway.pidlock.GatewayPidLock.acquire", lambda self: None)
-    monkeypatch.setattr("opensquilla.gateway.pidlock.GatewayPidLock.release", lambda self: None)
+    monkeypatch.setattr("openstarry_code.gateway.pidlock.GatewayPidLock.acquire", lambda self: None)
+    monkeypatch.setattr("openstarry_code.gateway.pidlock.GatewayPidLock.release", lambda self: None)
 
     config = GatewayConfig(
         state_dir=str(tmp_path / "state"),
@@ -2075,7 +2075,7 @@ async def test_build_flush_service_skips_receipt_after_session_rotation(
     archive_started = Event()
     allow_archive = Event()
 
-    from opensquilla.memory import session_flush as session_flush_module
+    from openstarry_code.memory import session_flush as session_flush_module
 
     real_archive_writer = session_flush_module.write_raw_fallback_archive
 
@@ -2135,7 +2135,7 @@ async def test_build_flush_service_skips_receipt_after_session_delete(
     archive_started = Event()
     allow_archive = Event()
 
-    from opensquilla.memory import session_flush as session_flush_module
+    from openstarry_code.memory import session_flush as session_flush_module
 
     real_archive_writer = session_flush_module.write_raw_fallback_archive
 
@@ -2299,11 +2299,11 @@ async def test_build_services_registers_session_search_tool(
         raise AssertionError("unit tests must not schedule real sandbox setup")
 
     monkeypatch.setattr(
-        "opensquilla.gateway.boot.create_background_task",
+        "openstarry_code.gateway.boot.create_background_task",
         fail_background_sandbox_setup,
     )
     monkeypatch.setattr(
-        "opensquilla.sandbox.integration.configure_runtime",
+        "openstarry_code.sandbox.integration.configure_runtime",
         lambda *args, **kwargs: SimpleNamespace(effective=SimpleNamespace(as_dict=lambda: {})),
     )
 
@@ -2314,7 +2314,7 @@ async def test_build_services_registers_session_search_tool(
         return {}
 
     monkeypatch.setattr(
-        "opensquilla.memory.manager.build_memory_managers",
+        "openstarry_code.memory.manager.build_memory_managers",
         fake_build_memory_managers,
     )
     registry = ToolRegistry()
@@ -2388,7 +2388,7 @@ def test_router_boot_validation_does_not_load_heavy_runtime(
     real_import = builtins.__import__
 
     def guarded_import(name: str, *args: Any, **kwargs: Any) -> Any:
-        if name == "opensquilla.squilla_router.v4_phase3":
+        if name == "openstarry_code.squilla_router.v4_phase3":
             raise AssertionError("boot validation must not load V4Phase3Strategy")
         return real_import(name, *args, **kwargs)
 
@@ -2411,7 +2411,7 @@ def test_skill_filter_banner_accepts_tokenizers_without_transformers(
     tmp_path: Path,
     caplog: pytest.LogCaptureFixture,
 ) -> None:
-    from opensquilla.memory.embedding import LocalEmbeddingProvider
+    from openstarry_code.memory.embedding import LocalEmbeddingProvider
 
     def fake_find_spec(name: str):
         if name in {"onnxruntime", "tokenizers"}:
@@ -2440,7 +2440,7 @@ async def test_build_services_fails_fast_for_explicit_remote_memory_without_key(
     tmp_path: Path,
 ) -> None:
     monkeypatch.setattr(
-        "opensquilla.sandbox.integration.configure_runtime",
+        "openstarry_code.sandbox.integration.configure_runtime",
         lambda *args, **kwargs: SimpleNamespace(effective=SimpleNamespace(as_dict=lambda: {})),
     )
     config = GatewayConfig(
@@ -2479,13 +2479,13 @@ def test_workspace_state_mismatch_emits_warning(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     warnings: list[dict[str, Any]] = []
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "gateway-3"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "gateway-3"))
     monkeypatch.setenv(
-        "OPENSQUILLA_GATEWAY_CONFIG_PATH",
+        "OPENSTARRY_CODE_GATEWAY_CONFIG_PATH",
         str(tmp_path / "gateway-3" / "config.toml"),
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.boot.log.warning",
+        "openstarry_code.gateway.boot.log.warning",
         lambda event, **kwargs: warnings.append({"event": event, **kwargs}),
     )
     config = GatewayConfig(
@@ -2498,7 +2498,7 @@ def test_workspace_state_mismatch_emits_warning(
 
     assert warnings
     assert warnings[0]["event"] == "build_services.workspace_state_mismatch"
-    assert "OPENSQUILLA_STATE_DIR" in warnings[0]["expected_roots"]
+    assert "OPENSTARRY_CODE_STATE_DIR" in warnings[0]["expected_roots"]
 
 
 def test_dream_defaults_are_fail_closed() -> None:
@@ -2553,7 +2553,7 @@ async def test_dream_boot_pauses_existing_jobs_when_auto_schedule_is_off() -> No
 async def test_dream_boot_pauses_existing_jobs_when_disabled(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_MEMORY_DREAM_DISABLED", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_MEMORY_DREAM_DISABLED", "1")
     existing = CronJob(id="dream-main", name="memory_dream:main", status=JobStatus.PENDING)
     scheduler = _FakeDreamScheduler([existing])
     config = GatewayConfig(

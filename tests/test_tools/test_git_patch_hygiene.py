@@ -6,9 +6,9 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.tools.builtin import git as git_tool
-from opensquilla.tools.builtin import shell
-from opensquilla.tools.types import ToolContext, current_tool_context
+from openstarry_code.tools.builtin import git as git_tool
+from openstarry_code.tools.builtin import shell
+from openstarry_code.tools.types import ToolContext, current_tool_context
 
 
 def _original_async(fn: Callable[..., Awaitable[str]]) -> Callable[..., Awaitable[str]]:

@@ -6,9 +6,9 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.skills.loader import SkillLoader
+from openstarry_code.skills.loader import SkillLoader
 
-BUNDLED = Path(__file__).resolve().parents[1].parent / "src" / "opensquilla" / "skills" / "bundled"
+BUNDLED = Path(__file__).resolve().parents[1].parent / "src" / "openstarry_code" / "skills" / "bundled"
 
 
 @pytest.fixture

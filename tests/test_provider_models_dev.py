@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.provider import models_dev
-from opensquilla.provider.models_dev import (
+from openstarry_code.provider import models_dev
+from openstarry_code.provider.models_dev import (
     _snapshot_providers,
     lookup_limits,
     lookup_model,

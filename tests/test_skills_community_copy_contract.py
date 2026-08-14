@@ -4,17 +4,17 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SURFACES = [
-    ROOT / "src" / "opensquilla" / "cli" / "skills_cmd.py",
-    ROOT / "opensquilla-webui" / "src" / "locales" / "en.json",
+    ROOT / "src" / "openstarry_code" / "cli" / "skills_cmd.py",
+    ROOT / "openstarry-code-webui" / "src" / "locales" / "en.json",
     ROOT
-    / "opensquilla-webui"
+    / "openstarry-code-webui"
     / "src"
     / "components"
     / "skills"
     / "SkillsAddDrawer.vue",
-    ROOT / "src" / "opensquilla" / "skills" / "hub" / "__init__.py",
-    ROOT / "src" / "opensquilla" / "skills" / "hub" / "clawhub.py",
-    ROOT / "src" / "opensquilla" / "skills" / "hub" / "source.py",
+    ROOT / "src" / "openstarry_code" / "skills" / "hub" / "__init__.py",
+    ROOT / "src" / "openstarry_code" / "skills" / "hub" / "clawhub.py",
+    ROOT / "src" / "openstarry_code" / "skills" / "hub" / "source.py",
 ]
 
 
@@ -23,7 +23,7 @@ def test_clawhub_copy_uses_community_source_language() -> None:
     lower = combined.lower()
 
     assert "official marketplace" not in lower
-    assert "opensquilla marketplace" not in lower
+    assert "openstarry-code marketplace" not in lower
     assert "marketplace" not in lower
     assert "community" in lower
     assert "clawhub community source" in lower

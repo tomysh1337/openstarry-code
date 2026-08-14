@@ -24,13 +24,13 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from opensquilla.gateway.routing import RouteEnvelope, SourceKind
-from opensquilla.gateway.task_runtime import (
+from openstarry_code.gateway.routing import RouteEnvelope, SourceKind
+from openstarry_code.gateway.task_runtime import (
     PendingOverflowPolicy,
     TaskQueueFullError,
     TaskRuntime,
 )
-from opensquilla.session.models import AgentTaskRecord, AgentTaskStatus
+from openstarry_code.session.models import AgentTaskRecord, AgentTaskStatus
 
 
 def _make_envelope(session_key: str = "agent-1::sess-overflow") -> RouteEnvelope:

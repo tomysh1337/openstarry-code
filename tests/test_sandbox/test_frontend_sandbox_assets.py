@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-WEBUI_SOURCE = ROOT / "opensquilla-webui" / "src"
+WEBUI_SOURCE = ROOT / "openstarry-code-webui" / "src"
 WEBUI_LOCALES = WEBUI_SOURCE / "locales"
 SHARED_ROUTES = WEBUI_SOURCE / "router" / "sharedRoutes.ts"
 CHAT_VIEW = WEBUI_SOURCE / "views" / "ChatView.vue"

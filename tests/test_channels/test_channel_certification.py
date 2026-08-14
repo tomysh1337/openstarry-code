@@ -6,9 +6,9 @@ from typing import Any
 import pytest
 from typer.testing import CliRunner
 
-import opensquilla.onboarding.channel_certification as certification
-from opensquilla.cli.main import app
-from opensquilla.onboarding.channel_certification import (
+import openstarry_code.onboarding.channel_certification as certification
+from openstarry_code.cli.main import app
+from openstarry_code.onboarding.channel_certification import (
     CertificationUsageError,
     _delivery_message,
     certification_env_name,
@@ -93,7 +93,7 @@ async def test_missing_credentials_are_reported_without_building_adapter(monkeyp
     row = evidence["providers"][0]
     assert row["status"] == "missing_credentials"
     assert row["missingEnvironment"] == [
-        "OPENSQUILLA_CHANNEL_CERT_TELEGRAM_TOKEN"
+        "OPENSTARRY_CODE_CHANNEL_CERT_TELEGRAM_TOKEN"
     ]
     assert "token" not in row
 

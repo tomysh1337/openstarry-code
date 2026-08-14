@@ -4,9 +4,9 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.gateway.config import GatewayConfig, LlmProviderConfig
-from opensquilla.onboarding.mutations import upsert_channel
-from opensquilla.onboarding.status import get_onboarding_status
+from openstarry_code.gateway.config import GatewayConfig, LlmProviderConfig
+from openstarry_code.onboarding.mutations import upsert_channel
+from openstarry_code.onboarding.status import get_onboarding_status
 
 
 def test_default_provider_with_no_key_needs_onboarding():
@@ -74,7 +74,7 @@ def test_provider_with_default_env_var_is_configured(monkeypatch):
 
 def test_runtime_secret_marker_keeps_env_source_after_resolution(monkeypatch):
     monkeypatch.setenv("OPENROUTER_API_KEY", "sk-from-env")
-    from opensquilla.gateway.llm_runtime import resolve_llm_runtime_config
+    from openstarry_code.gateway.llm_runtime import resolve_llm_runtime_config
 
     cfg = GatewayConfig()
     cfg.llm = LlmProviderConfig(
@@ -508,7 +508,7 @@ def test_ensemble_credential_status_reports_unsupported_provider():
     """The per-provider credential rows must use the same "unsupported"
     enumerant as llm_source for a registered but runtime-unsupported
     provider — never a satisfied-looking "not_required"."""
-    from opensquilla.onboarding.status import _llm_provider_credential_status
+    from openstarry_code.onboarding.status import _llm_provider_credential_status
 
     cfg = GatewayConfig()
     row = _llm_provider_credential_status(cfg, "github_copilot")

@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 from pydantic import ValidationError
 
-from opensquilla.gateway.config import GatewayConfig
+from openstarry_code.gateway.config import GatewayConfig
 
 
 def test_memory_core_defaults_keep_single_stable_path() -> None:

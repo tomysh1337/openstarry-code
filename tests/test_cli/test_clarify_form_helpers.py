@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.cli.repl.clarify_form import (
+from openstarry_code.cli.repl.clarify_form import (
     ClarifyFormResult,
     coerce_field_input,
     fields_to_chat_send_message,

@@ -7,8 +7,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.channels.matrix import MatrixChannel, MatrixChannelConfig
-from opensquilla.channels.types import IncomingMessage, IngressVerification
+from openstarry_code.channels.matrix import MatrixChannel, MatrixChannelConfig
+from openstarry_code.channels.types import IncomingMessage, IngressVerification
 
 
 def _channel(tmp_path, **overrides) -> MatrixChannel:

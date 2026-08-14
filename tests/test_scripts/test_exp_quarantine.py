@@ -127,7 +127,7 @@ def _ledger_with_runs(tmp_path: Path) -> Path:
 
 def test_register_creates_registry_and_stamps_runs(tmp_path, monkeypatch, capsys):
     ledger = _ledger_with_runs(tmp_path)
-    monkeypatch.setenv("OPENSQUILLA_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
+    monkeypatch.setenv("OPENSTARRY_CODE_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
     quarantine = _load_script("exp_quarantine")
     names_file = tmp_path / "names.json"
     _write_json(names_file, ["batch-a", "/data/artifacts/batch-b/", "batch-a"])
@@ -191,7 +191,7 @@ def test_register_uses_exact_match_not_substring(tmp_path, monkeypatch):
         {"artifacts": ["/data/artifacts/batch-a-extended-run"]},
     )
     _write_json(unrelated_run / "manifest.json", {"exp_id": "exp-unrelated"})
-    monkeypatch.setenv("OPENSQUILLA_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
+    monkeypatch.setenv("OPENSTARRY_CODE_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
     quarantine = _load_script("exp_quarantine")
     names_file = tmp_path / "names.json"
     _write_json(names_file, ["batch-a"])
@@ -213,7 +213,7 @@ def test_register_uses_exact_match_not_substring(tmp_path, monkeypatch):
 
 def test_register_rejects_names_that_normalize_to_empty(tmp_path, monkeypatch, capsys):
     ledger = tmp_path / "ledger"
-    monkeypatch.setenv("OPENSQUILLA_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
+    monkeypatch.setenv("OPENSTARRY_CODE_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
     quarantine = _load_script("exp_quarantine")
     names_file = tmp_path / "names.json"
     # "/" is non-empty pre-normalization but collapses to "" via
@@ -237,7 +237,7 @@ def test_register_rejects_names_that_normalize_to_empty(tmp_path, monkeypatch, c
 
 def test_register_is_idempotent_and_merges_new_names(tmp_path, monkeypatch, capsys):
     ledger = _ledger_with_runs(tmp_path)
-    monkeypatch.setenv("OPENSQUILLA_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
+    monkeypatch.setenv("OPENSTARRY_CODE_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
     quarantine = _load_script("exp_quarantine")
     names_file = tmp_path / "names.json"
     _write_json(names_file, ["batch-a"])
@@ -269,7 +269,7 @@ def test_check_reports_quarantined_and_clean(tmp_path, monkeypatch, capsys):
         ledger / "contaminations.json",
         {"version": 1, "classes": {"leak_class": {"artifact_names": ["batch-a"]}}},
     )
-    monkeypatch.setenv("OPENSQUILLA_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
+    monkeypatch.setenv("OPENSTARRY_CODE_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
     quarantine = _load_script("exp_quarantine")
 
     assert quarantine.main(["check", "/data/artifacts/batch-a"]) == 1
@@ -280,7 +280,7 @@ def test_check_reports_quarantined_and_clean(tmp_path, monkeypatch, capsys):
 
 def test_register_rejects_bad_names_file(tmp_path, monkeypatch, capsys):
     ledger = tmp_path / "ledger"
-    monkeypatch.setenv("OPENSQUILLA_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
+    monkeypatch.setenv("OPENSTARRY_CODE_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
     quarantine = _load_script("exp_quarantine")
     names_file = tmp_path / "names.json"
     _write_json(names_file, {"not": "a list"})
@@ -314,7 +314,7 @@ def test_list_summarizes_classes(tmp_path, monkeypatch, capsys):
             },
         },
     )
-    monkeypatch.setenv("OPENSQUILLA_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
+    monkeypatch.setenv("OPENSTARRY_CODE_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
     quarantine = _load_script("exp_quarantine")
     assert quarantine.main(["list"]) == 0
     out = capsys.readouterr().out
@@ -370,7 +370,7 @@ def test_status_warns_when_baseline_artifact_quarantined(tmp_path, monkeypatch):
             },
         },
     )
-    monkeypatch.setenv("OPENSQUILLA_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
+    monkeypatch.setenv("OPENSTARRY_CODE_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
     source = tmp_path / "source"
     handoff = tmp_path / "handoff"
     _git_repo(source)
@@ -406,7 +406,7 @@ def test_status_no_quarantine_warning_for_clean_baselines(tmp_path, monkeypatch)
             }
         },
     )
-    monkeypatch.setenv("OPENSQUILLA_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
+    monkeypatch.setenv("OPENSTARRY_CODE_SWE_EXPERIMENT_LEDGER_ROOT", str(ledger))
     source = tmp_path / "source"
     handoff = tmp_path / "handoff"
     _git_repo(source)

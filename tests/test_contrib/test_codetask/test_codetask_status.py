@@ -4,11 +4,11 @@ from __future__ import annotations
 
 import json
 
-from opensquilla.contrib.codetask import config, runner
+from openstarry_code.contrib.codetask import config, runner
 
 
 def test_write_status_writes_run_dir_heartbeat(tmp_path, monkeypatch):
-    monkeypatch.setenv("OPENSQUILLA_CODETASK_RUNS_DIR", str(tmp_path / "runs"))
+    monkeypatch.setenv("OPENSTARRY_CODE_CODETASK_RUNS_DIR", str(tmp_path / "runs"))
     runner._write_status("run-x", "agent_running", repo="/tmp/foo")
 
     status = config.run_dir("run-x") / "status.json"
@@ -21,7 +21,7 @@ def test_write_status_writes_run_dir_heartbeat(tmp_path, monkeypatch):
 
 
 def test_write_status_overwrites_with_latest_phase(tmp_path, monkeypatch):
-    monkeypatch.setenv("OPENSQUILLA_CODETASK_RUNS_DIR", str(tmp_path / "runs"))
+    monkeypatch.setenv("OPENSTARRY_CODE_CODETASK_RUNS_DIR", str(tmp_path / "runs"))
     runner._write_status("run-y", "preparing")
     runner._write_status("run-y", "verifying")
 
@@ -33,14 +33,14 @@ def test_write_status_never_raises_on_bad_dir(tmp_path, monkeypatch):
     # Point the runs root at a file so mkdir fails — must be swallowed.
     bad = tmp_path / "afile"
     bad.write_text("x")
-    monkeypatch.setenv("OPENSQUILLA_CODETASK_RUNS_DIR", str(bad))
+    monkeypatch.setenv("OPENSTARRY_CODE_CODETASK_RUNS_DIR", str(bad))
     runner._write_status("run-z", "preparing")  # should not raise
 
 
 def test_scaffold_build_app_copies_template_and_writes_status(tmp_path, monkeypatch):
-    from opensquilla.contrib.codetask import build_verify
+    from openstarry_code.contrib.codetask import build_verify
 
-    monkeypatch.setenv("OPENSQUILLA_CODETASK_RUNS_DIR", str(tmp_path / "runs"))
+    monkeypatch.setenv("OPENSTARRY_CODE_CODETASK_RUNS_DIR", str(tmp_path / "runs"))
     monkeypatch.setattr(build_verify, "_resolve_cli", lambda name: name)
     monkeypatch.setattr(build_verify, "_build_env", lambda: {})
     phases = []
@@ -79,9 +79,9 @@ def test_scaffold_build_app_copies_template_and_writes_status(tmp_path, monkeypa
 
 
 def test_scaffold_build_app_records_failure_status(tmp_path, monkeypatch):
-    from opensquilla.contrib.codetask import build_verify
+    from openstarry_code.contrib.codetask import build_verify
 
-    monkeypatch.setenv("OPENSQUILLA_CODETASK_RUNS_DIR", str(tmp_path / "runs"))
+    monkeypatch.setenv("OPENSTARRY_CODE_CODETASK_RUNS_DIR", str(tmp_path / "runs"))
     monkeypatch.setattr(build_verify, "_resolve_cli", lambda name: name)
     monkeypatch.setattr(build_verify, "_build_env", lambda: {})
 

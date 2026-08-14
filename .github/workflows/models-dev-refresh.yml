@@ -56,12 +56,12 @@ jobs:
         with:
           branch: data/models-dev-snapshot-refresh
           delete-branch: true
-          add-paths: src/opensquilla/provider/models_dev_snapshot.json
+          add-paths: src/openstarry_code/provider/models_dev_snapshot.json
           commit-message: Refresh vendored models.dev snapshot
           title: Refresh vendored models.dev snapshot (scheduled data refresh)
           body: |
             Scheduled data-only refresh of the vendored models.dev snapshot
-            (`src/opensquilla/provider/models_dev_snapshot.json`), produced by
+            (`src/openstarry_code/provider/models_dev_snapshot.json`), produced by
             `uv run python scripts/refresh_models_dev_snapshot.py`.
 
             - Scope: vendored model-metadata snapshot only; no runtime code

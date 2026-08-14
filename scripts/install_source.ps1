@@ -1,21 +1,21 @@
-# install_source.ps1 - user-local OpenSquilla installer (no admin).
+# install_source.ps1 - user-local OpenStarry Code installer (no admin).
 #
 # Installer contract:
 #   - installs into a user-owned prefix (never Program Files or system32)
 #   - prefers uv tool install; falls back to pip --user; errors clearly if neither exists
-#   - requires the Node.js version pinned by opensquilla-webui/.node-version,
+#   - requires the Node.js version pinned by openstarry-code-webui/.node-version,
 #     runs npm ci + npm run build, and packages that exact Web UI
 #   - defaults to the "recommended" runtime profile (memory + bundled v4 router)
-#     and allows `$env:OPENSQUILLA_INSTALL_PROFILE="core"` to opt back down
+#     and allows `$env:OPENSTARRY_CODE_INSTALL_PROFILE="core"` to opt back down
 #   - on Windows, best-effort installs Microsoft Visual C++ Redistributable
 #     before the recommended router profile because onnxruntime requires it
 #   - prints a post-install banner documenting the default bind
 #     (127.0.0.1:18791) and the explicit opt-in required to expose the gateway
-#     on the network (-Listen 0.0.0.0 or $env:OPENSQUILLA_LISTEN="0.0.0.0")
+#     on the network (-Listen 0.0.0.0 or $env:OPENSTARRY_CODE_LISTEN="0.0.0.0")
 #   - adds an extra WARNING when the operator requested network exposure at
-#     install time via $env:OPENSQUILLA_LISTEN="0.0.0.0"
+#     install time via $env:OPENSTARRY_CODE_LISTEN="0.0.0.0"
 #
-# Dry-run: set $env:OPENSQUILLA_INSTALL_DRY_RUN="1" to print the install plan +
+# Dry-run: set $env:OPENSTARRY_CODE_INSTALL_DRY_RUN="1" to print the install plan +
 # banner without touching the system.
 
 param(
@@ -35,16 +35,16 @@ if ($null -ne (Get-Variable -Name PSNativeCommandUseErrorActionPreference -Error
 
 # --- prefix resolution ------------------------------------------------------
 
-if ($env:OPENSQUILLA_PREFIX) {
-    $prefix = $env:OPENSQUILLA_PREFIX
+if ($env:OPENSTARRY_CODE_PREFIX) {
+    $prefix = $env:OPENSTARRY_CODE_PREFIX
 } elseif ($env:LOCALAPPDATA) {
-    $prefix = Join-Path $env:LOCALAPPDATA 'opensquilla'
+    $prefix = Join-Path $env:LOCALAPPDATA 'openstarry-code'
 } else {
     $prefix = Join-Path $HOME '.local'
 }
 
-$dryRun = $env:OPENSQUILLA_INSTALL_DRY_RUN -eq '1'
-$webuiDir = Join-Path (Split-Path -Parent $PSScriptRoot) 'opensquilla-webui'
+$dryRun = $env:OPENSTARRY_CODE_INSTALL_DRY_RUN -eq '1'
+$webuiDir = Join-Path (Split-Path -Parent $PSScriptRoot) 'openstarry-code-webui'
 $nodeVersionFile = Join-Path $webuiDir '.node-version'
 if (-not (Test-Path $nodeVersionFile -PathType Leaf)) {
     Write-Error "install_source.ps1: required Node.js version file is missing: $nodeVersionFile"
@@ -63,8 +63,8 @@ $script:isWindowsHost = if (Get-Variable IsWindows -ErrorAction SilentlyContinue
 }
 $profile = if ($Profile) {
     $Profile
-} elseif ($env:OPENSQUILLA_INSTALL_PROFILE) {
-    $env:OPENSQUILLA_INSTALL_PROFILE
+} elseif ($env:OPENSTARRY_CODE_INSTALL_PROFILE) {
+    $env:OPENSTARRY_CODE_INSTALL_PROFILE
 } else {
     'recommended'
 }
@@ -94,8 +94,8 @@ function Split-InstallExtras {
 }
 
 $extraInputs = @()
-if ($env:OPENSQUILLA_INSTALL_EXTRAS) {
-    $extraInputs += $env:OPENSQUILLA_INSTALL_EXTRAS
+if ($env:OPENSTARRY_CODE_INSTALL_EXTRAS) {
+    $extraInputs += $env:OPENSTARRY_CODE_INSTALL_EXTRAS
 }
 $extraInputs += $Extras
 $installExtras = @(Split-InstallExtras $extraInputs)
@@ -111,7 +111,7 @@ switch ($profile) {
     'minimal' { $profile = 'core'; $targetExtras = @() }
     'recommended' { $targetExtras = @('recommended') }
     default {
-        Write-Error "install_source.ps1: unsupported OPENSQUILLA_INSTALL_PROFILE='$profile'. Supported profiles: core, recommended."
+        Write-Error "install_source.ps1: unsupported OPENSTARRY_CODE_INSTALL_PROFILE='$profile'. Supported profiles: core, recommended."
         exit 1
     }
 }
@@ -132,7 +132,7 @@ function Test-SquillaRouterAssets {
         return
     }
 
-    $modelRoot = 'src/opensquilla/squilla_router/models'
+    $modelRoot = 'src/openstarry_code/squilla_router/models'
     $required = @(
         "$modelRoot/v4.2_phase3_inference/lgbm_main.bin",
         "$modelRoot/v4.2_phase3_inference/router.runtime.yaml",
@@ -170,8 +170,8 @@ function Test-SquillaRouterAssets {
             $message = "install_source.ps1: Git LFS pointer files detected: $($pointers -join ', ')"
             if ($WarnOnly) { Write-Host $message } else { Write-Error $message }
         }
-        $lfsMessage = 'install_source.ps1: run `git lfs install` once, then `git lfs pull --include="src/opensquilla/squilla_router/models/**"`.'
-        $coreMessage = 'install_source.ps1: or retry with `$env:OPENSQUILLA_INSTALL_PROFILE="core"` for the minimal runtime.'
+        $lfsMessage = 'install_source.ps1: run `git lfs install` once, then `git lfs pull --include="src/openstarry_code/squilla_router/models/**"`.'
+        $coreMessage = 'install_source.ps1: or retry with `$env:OPENSTARRY_CODE_INSTALL_PROFILE="core"` for the minimal runtime.'
         if ($WarnOnly) {
             Write-Host $lfsMessage
             Write-Host $coreMessage
@@ -264,8 +264,8 @@ function Install-WindowsVCRedistIfNeeded {
     if (-not $script:isWindowsHost -or $profile -ne 'recommended') {
         return
     }
-    if ($env:OPENSQUILLA_SKIP_VC_REDIST -eq '1') {
-        Write-Host 'install_source.ps1: skipping Microsoft Visual C++ Redistributable check because OPENSQUILLA_SKIP_VC_REDIST=1.'
+    if ($env:OPENSTARRY_CODE_SKIP_VC_REDIST -eq '1') {
+        Write-Host 'install_source.ps1: skipping Microsoft Visual C++ Redistributable check because OPENSTARRY_CODE_SKIP_VC_REDIST=1.'
         return
     }
     if (Test-WindowsVCRedistInstalled) {
@@ -294,10 +294,10 @@ function Install-WindowsVCRedistIfNeeded {
         Write-Warning "install_source.ps1: winget could not install Microsoft Visual C++ Redistributable (exit $LASTEXITCODE)."
     }
 
-    Write-Warning 'OpenSquilla: Microsoft Visual C++ Redistributable 2015-2022 x64 is required for the bundled ONNX router.'
-    Write-Warning 'OpenSquilla can still start with safe router fallback, but bundled ONNX model routing is disabled until this runtime is installed.'
+    Write-Warning 'OpenStarry Code: Microsoft Visual C++ Redistributable 2015-2022 x64 is required for the bundled ONNX router.'
+    Write-Warning 'OpenStarry Code can still start with safe router fallback, but bundled ONNX model routing is disabled until this runtime is installed.'
     Write-Warning "If automatic installation fails, install it manually: $redistUrl"
-    Write-Warning 'After installing, reopen PowerShell and restart OpenSquilla.'
+    Write-Warning 'After installing, reopen PowerShell and restart OpenStarry Code.'
 }
 
 # --- installer selection ----------------------------------------------------
@@ -315,16 +315,16 @@ if ($pythonCmd) {
 
 if (Get-Command uv -ErrorAction SilentlyContinue) {
     $installer = 'uv'
-    $installArgs = @('tool', 'install', '--python', '3.12', '--force', '--reinstall-package', 'opensquilla', $installTarget)
+    $installArgs = @('tool', 'install', '--python', '3.12', '--force', '--reinstall-package', 'openstarry-code', $installTarget)
 } elseif ($pythonOk) {
     $installer = 'pip'
     $installArgs = @('-m', 'pip', 'install', '--user', $installTarget)
 } else {
     # No uv, and the ambient python is missing or older than 3.12. Do NOT
     # silently pip-install onto an unsupported interpreter: a broken
-    # opensquilla makes coding mode fall back to manual edits. Fail loud.
+    # openstarry-code makes coding mode fall back to manual edits. Fail loud.
     $pyver = if ($pythonCmd) { (& python -V 2>&1) } else { 'none' }
-    Write-Error "install_source.ps1: cannot install - uv not found and python ($pyver) is older than 3.12. OpenSquilla requires Python >= 3.12. Install uv (it brings its own 3.12): 'irm https://astral.sh/uv/install.ps1 | iex', then re-run scripts/install_source.ps1."
+    Write-Error "install_source.ps1: cannot install - uv not found and python ($pyver) is older than 3.12. OpenStarry Code requires Python >= 3.12. Install uv (it brings its own 3.12): 'irm https://astral.sh/uv/install.ps1 | iex', then re-run scripts/install_source.ps1."
     exit 1
 }
 
@@ -339,14 +339,14 @@ $installCmd = if ($installer -eq 'uv') {
 function Write-Banner {
     @"
 ----------------------------------------------------------------------------
-OpenSquilla installed via $installer -> $prefix (profile: $profile)
+OpenStarry Code installed via $installer -> $prefix (profile: $profile)
 Extras: $(if ($installExtras.Count -gt 0) { $installExtras -join ', ' } else { 'none' })
 
 Default gateway bind: 127.0.0.1:18791 (loopback only)
 Network exposure is opt-in only. To expose the gateway on the network you
 must use one of:
-  - CLI flag:  opensquilla gateway run --listen 0.0.0.0
-  - Env var:   `$env:OPENSQUILLA_LISTEN="0.0.0.0"; opensquilla gateway run
+  - CLI flag:  openstarry-code gateway run --listen 0.0.0.0
+  - Env var:   `$env:OPENSTARRY_CODE_LISTEN="0.0.0.0"; openstarry-code gateway run
 
 Reminder: only expose 0.0.0.0 behind a trusted reverse proxy or VPN. The
 gateway's first-class auth assumes loopback-scope by default.
@@ -365,11 +365,11 @@ WARNING: you have selected network-exposed default - ensure you
 # --- post-install PATH sanity (parity with install_source.sh) --------------
 
 function Resolve-EntrypointDir {
-    # Determine where the just-installed `opensquilla`/`gateway` entry points
+    # Determine where the just-installed `openstarry-code`/`gateway` entry points
     # landed, so we can warn when that directory is not on PATH. uv tool
     # install drops entry points in `uv tool dir --bin`; pip --user puts them
     # in the interpreter's Scripts dir. Both live outside the default PATH on
-    # a clean Windows host - the exact failure mode `opensquilla onboard`
+    # a clean Windows host - the exact failure mode `openstarry-code onboard`
     # hits right after a "successful" install. Parity with install_source.sh,
     # which does the same absolute-path lookup on POSIX.
     if ($installer -eq 'uv') {
@@ -378,11 +378,11 @@ function Resolve-EntrypointDir {
             $line = (& uv tool dir --bin 2>$null | Select-Object -First 1)
             if ($line) { $uvBin = $line.Trim() }
         } catch { }
-        if ($uvBin -and (Test-Path (Join-Path $uvBin 'opensquilla.exe') -PathType Leaf)) {
+        if ($uvBin -and (Test-Path (Join-Path $uvBin 'openstarry-code.exe') -PathType Leaf)) {
             return $uvBin
         }
         $fallback = Join-Path $HOME '.local\bin'
-        if (Test-Path (Join-Path $fallback 'opensquilla.exe') -PathType Leaf) {
+        if (Test-Path (Join-Path $fallback 'openstarry-code.exe') -PathType Leaf) {
             return $fallback
         }
         return $null
@@ -392,7 +392,7 @@ function Resolve-EntrypointDir {
             $line = (& python -c "import sysconfig; print(sysconfig.get_path('scripts'))" 2>$null | Select-Object -First 1)
             if ($line) { $scriptsDir = $line.Trim() }
         } catch { }
-        if ($scriptsDir -and (Test-Path (Join-Path $scriptsDir 'opensquilla.exe') -PathType Leaf)) {
+        if ($scriptsDir -and (Test-Path (Join-Path $scriptsDir 'openstarry-code.exe') -PathType Leaf)) {
             return $scriptsDir
         }
         return $null
@@ -418,11 +418,11 @@ function Write-PathHint {
     # Verify the just-installed entry point is reachable from a fresh shell.
     # install_source.sh runs the same smoke check on POSIX; this brings the
     # PowerShell installer to parity so a "successful" install does not leave
-    # the user with an unresolvable `opensquilla` command (see issue #500).
+    # the user with an unresolvable `openstarry-code` command (see issue #500).
     $entryDir = Resolve-EntrypointDir
     if (-not $entryDir) {
-        Write-Warning 'install_source.ps1: could not locate the installed `opensquilla` entry point to verify PATH.'
-        Write-Warning "install_source.ps1: if `opensquilla` is not recognized, run 'uv tool update-shell' and open a new terminal."
+        Write-Warning 'install_source.ps1: could not locate the installed `openstarry-code` entry point to verify PATH.'
+        Write-Warning "install_source.ps1: if `openstarry-code` is not recognized, run 'uv tool update-shell' and open a new terminal."
         return
     }
     if (Test-DirOnUserPath -Dir $entryDir) {
@@ -430,12 +430,12 @@ function Write-PathHint {
         return
     }
     Write-Warning "install_source.ps1: entry points are NOT on PATH: $entryDir"
-    Write-Warning 'install_source.ps1: `opensquilla` will not be found in a new terminal until this is fixed.'
+    Write-Warning 'install_source.ps1: `openstarry-code` will not be found in a new terminal until this is fixed.'
     Write-Warning 'install_source.ps1: fix it with one of:'
     Write-Warning '    uv tool update-shell               # uv official PATH configurator (recommended)'
     $oneLiner = '[Environment]::SetEnvironmentVariable(''Path'', [Environment]::GetEnvironmentVariable(''Path'',''User'') + '';{0}'', ''User'')' -f $entryDir
     Write-Warning "    $oneLiner   # or add this dir to user PATH manually"
-    Write-Warning "install_source.ps1: then open a new terminal and run 'opensquilla onboard'."
+    Write-Warning "install_source.ps1: then open a new terminal and run 'openstarry-code onboard'."
 }
 
 if ($dryRun) {
@@ -446,7 +446,7 @@ if ($dryRun) {
     Write-Host "install_source.ps1: dry-run — prefix: $prefix"
     Test-SquillaRouterAssets -WarnOnly
     Write-Banner
-    if ($env:OPENSQUILLA_LISTEN -eq '0.0.0.0') {
+    if ($env:OPENSTARRY_CODE_LISTEN -eq '0.0.0.0') {
         Write-ListenWarning
     }
     exit 0
@@ -468,13 +468,13 @@ if ($installer -eq 'uv') {
 $installExitCode = $LASTEXITCODE
 if ($installExitCode -ne 0) {
     [Console]::Error.WriteLine("install_source.ps1: install command failed with exit code $installExitCode.")
-    [Console]::Error.WriteLine('install_source.ps1: Close any running OpenSquilla gateway or shell using the existing tool environment, then retry.')
+    [Console]::Error.WriteLine('install_source.ps1: Close any running OpenStarry Code gateway or shell using the existing tool environment, then retry.')
     exit $installExitCode
 }
 
-# Write an install receipt to aid `opensquilla uninstall`. Best-effort.
+# Write an install receipt to aid `openstarry-code uninstall`. Best-effort.
 try {
-    $receiptHome = if ($env:OPENSQUILLA_STATE_DIR) { $env:OPENSQUILLA_STATE_DIR } else { Join-Path $HOME '.opensquilla' }
+    $receiptHome = if ($env:OPENSTARRY_CODE_STATE_DIR) { $env:OPENSTARRY_CODE_STATE_DIR } else { Join-Path $HOME '.openstarry-code' }
     $receiptMethod = if ($installer -eq 'uv') { 'uv-tool' } else { 'pip' }
     New-Item -ItemType Directory -Force -Path $receiptHome | Out-Null
     $receipt = [ordered]@{
@@ -495,6 +495,6 @@ try {
 Write-PathHint
 
 Write-Banner
-if ($env:OPENSQUILLA_LISTEN -eq '0.0.0.0') {
+if ($env:OPENSTARRY_CODE_LISTEN -eq '0.0.0.0') {
     Write-ListenWarning
 }

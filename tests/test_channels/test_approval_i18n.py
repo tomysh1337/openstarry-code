@@ -7,18 +7,18 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.channels.approval_prompt import (
+from openstarry_code.channels.approval_prompt import (
     ApprovalPromptRequest,
     bind_short_code,
     render_approval_prompt,
     reset_short_codes,
 )
-from opensquilla.channels.contract import ChannelCapabilityProfile
-from opensquilla.channels.system_messages import _MESSAGES, render_channel_message
-from opensquilla.channels.types import IncomingMessage
-from opensquilla.gateway.approval_notify import _deliver_channel_prompt
-from opensquilla.gateway.approval_queue import get_approval_queue, reset_approval_queue
-from opensquilla.gateway.channel_dispatch import _maybe_resolve_channel_approval
+from openstarry_code.channels.contract import ChannelCapabilityProfile
+from openstarry_code.channels.system_messages import _MESSAGES, render_channel_message
+from openstarry_code.channels.types import IncomingMessage
+from openstarry_code.gateway.approval_notify import _deliver_channel_prompt
+from openstarry_code.gateway.approval_queue import get_approval_queue, reset_approval_queue
+from openstarry_code.gateway.channel_dispatch import _maybe_resolve_channel_approval
 
 
 def _config(locale: str) -> SimpleNamespace:

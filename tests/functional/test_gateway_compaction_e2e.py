@@ -16,7 +16,7 @@ from typing import Any
 import httpx
 import pytest
 
-from opensquilla.cli.gateway_client import GatewayClient
+from openstarry_code.cli.gateway_client import GatewayClient
 
 
 def _free_port() -> int:
@@ -92,12 +92,12 @@ def _write_slow_compaction_server(
             import asyncio
             import os
 
-            from opensquilla.gateway.boot import start_gateway_server
-            from opensquilla.gateway.config import AuthConfig, GatewayConfig
-            from opensquilla.gateway.websocket import SubscriptionManager
-            from opensquilla.session.compaction import CompactionConfig
-            from opensquilla.session.manager import SessionManager
-            from opensquilla.session.storage import SessionStorage
+            from openstarry_code.gateway.boot import start_gateway_server
+            from openstarry_code.gateway.config import AuthConfig, GatewayConfig
+            from openstarry_code.gateway.websocket import SubscriptionManager
+            from openstarry_code.session.compaction import CompactionConfig
+            from openstarry_code.session.manager import SessionManager
+            from openstarry_code.session.storage import SessionStorage
 
             SESSION_KEY = {session_key!r}
 
@@ -146,7 +146,7 @@ def _write_slow_compaction_server(
 
 
             async def main():
-                os.makedirs(os.environ["OPENSQUILLA_STATE_DIR"], exist_ok=True)
+                os.makedirs(os.environ["OPENSTARRY_CODE_STATE_DIR"], exist_ok=True)
                 storage = SessionStorage({str(db_path)!r})
                 await storage.connect()
                 manager = SlowCompactionSessionManager(storage, inject_time_prefix=False)
@@ -156,7 +156,7 @@ def _write_slow_compaction_server(
                     port={port},
                     auth=AuthConfig(mode="none"),
                 )
-                config.state_dir = os.environ["OPENSQUILLA_STATE_DIR"]
+                config.state_dir = os.environ["OPENSTARRY_CODE_STATE_DIR"]
                 await start_gateway_server(
                     config=config,
                     session_manager=manager,
@@ -322,8 +322,8 @@ def _start_slow_compaction_gateway(
 async def test_gateway_websocket_slow_manual_compaction_rewrites_db(
     tmp_path: Path,
 ) -> None:
-    if os.environ.get("OPENSQUILLA_GATEWAY_COMPACTION_E2E") != "1":
-        pytest.skip("set OPENSQUILLA_GATEWAY_COMPACTION_E2E=1 to run compaction e2e")
+    if os.environ.get("OPENSTARRY_CODE_GATEWAY_COMPACTION_E2E") != "1":
+        pytest.skip("set OPENSTARRY_CODE_GATEWAY_COMPACTION_E2E=1 to run compaction e2e")
 
     port = _free_port()
     session_key = "agent:main:webchat:slowcompact"
@@ -334,8 +334,8 @@ async def test_gateway_websocket_slow_manual_compaction_rewrites_db(
     db_path = tmp_path / "injected-sessions.db"
 
     env = os.environ.copy()
-    env["OPENSQUILLA_STATE_DIR"] = str(state_dir)
-    env["OPENSQUILLA_LOG_DIR"] = str(log_dir)
+    env["OPENSTARRY_CODE_STATE_DIR"] = str(state_dir)
+    env["OPENSTARRY_CODE_LOG_DIR"] = str(log_dir)
     server = _start_slow_compaction_gateway(
         tmp_path,
         port=port,
@@ -368,8 +368,8 @@ async def test_gateway_websocket_slow_manual_compaction_rewrites_db(
 async def test_gateway_restart_during_slow_manual_compaction_leaves_db_recoverable(
     tmp_path: Path,
 ) -> None:
-    if os.environ.get("OPENSQUILLA_GATEWAY_COMPACTION_E2E") != "1":
-        pytest.skip("set OPENSQUILLA_GATEWAY_COMPACTION_E2E=1 to run compaction e2e")
+    if os.environ.get("OPENSTARRY_CODE_GATEWAY_COMPACTION_E2E") != "1":
+        pytest.skip("set OPENSTARRY_CODE_GATEWAY_COMPACTION_E2E=1 to run compaction e2e")
 
     port = _free_port()
     session_key = "agent:main:webchat:slowcompact"
@@ -379,8 +379,8 @@ async def test_gateway_restart_during_slow_manual_compaction_leaves_db_recoverab
     # the Gateway-owned state/sessions.db that boot migrates before opening.
     db_path = tmp_path / "injected-sessions.db"
     env = os.environ.copy()
-    env["OPENSQUILLA_STATE_DIR"] = str(state_dir)
-    env["OPENSQUILLA_LOG_DIR"] = str(log_dir)
+    env["OPENSTARRY_CODE_STATE_DIR"] = str(state_dir)
+    env["OPENSTARRY_CODE_LOG_DIR"] = str(log_dir)
 
     server = _start_slow_compaction_gateway(
         tmp_path,

@@ -7,11 +7,11 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.tools import ssrf
-from opensquilla.tools.types import SSRFBlockedError
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.tools import ssrf
+from openstarry_code.tools.types import SSRFBlockedError
 
-web_fetch_module = import_module("opensquilla.tools.builtin.web_fetch")
+web_fetch_module = import_module("openstarry_code.tools.builtin.web_fetch")
 
 
 def _fake_getaddrinfo(ip: str):
@@ -32,7 +32,7 @@ def test_rfc2544_fake_ip_is_blocked_by_default(monkeypatch):
     monkeypatch.setattr(ssrf.socket, "getaddrinfo", _fake_getaddrinfo("198.18.0.2"))
 
     with pytest.raises(SSRFBlockedError) as excinfo:
-        ssrf.validate_http_url_for_fetch("https://github.com/OpenSquilla/opensquilla")
+        ssrf.validate_http_url_for_fetch("https://github.com/OpenStarry Code/opensquilla")
 
     assert "198.18.0.2" in str(excinfo.value)
     assert "198.18.0.0/15" in str(excinfo.value)
@@ -44,7 +44,7 @@ def test_rfc6598_cgnat_ip_is_blocked_by_default(monkeypatch, cgnat_ip):
     monkeypatch.setattr(ssrf.socket, "getaddrinfo", _fake_getaddrinfo(cgnat_ip))
 
     with pytest.raises(SSRFBlockedError) as excinfo:
-        ssrf.validate_http_url_for_fetch("https://github.com/OpenSquilla/opensquilla")
+        ssrf.validate_http_url_for_fetch("https://github.com/OpenStarry Code/opensquilla")
 
     assert cgnat_ip in str(excinfo.value)
     assert ssrf._hard_block_reason(ipaddress.ip_address(cgnat_ip)) is not None
@@ -54,7 +54,7 @@ def test_private_dns_hijack_message_names_public_domain_scenario(monkeypatch):
     monkeypatch.setattr(ssrf.socket, "getaddrinfo", _fake_getaddrinfo("10.0.0.8"))
 
     with pytest.raises(SSRFBlockedError) as excinfo:
-        ssrf.validate_http_url_for_fetch("https://github.com/OpenSquilla/opensquilla")
+        ssrf.validate_http_url_for_fetch("https://github.com/OpenStarry Code/opensquilla")
 
     message = str(excinfo.value)
     assert "github.com" in message
@@ -66,7 +66,7 @@ def test_rfc2544_fake_ip_can_be_explicitly_trusted(monkeypatch):
     monkeypatch.setattr(ssrf.socket, "getaddrinfo", _fake_getaddrinfo("198.18.0.2"))
 
     ssrf.validate_http_url_for_fetch(
-        "https://github.com/OpenSquilla/opensquilla",
+        "https://github.com/OpenStarry Code/opensquilla",
         trusted_fake_ip_cidrs=["198.18.0.0/15"],
     )
 
@@ -75,7 +75,7 @@ def test_runtime_config_applies_to_web_fetch_guard(monkeypatch):
     monkeypatch.setattr(ssrf.socket, "getaddrinfo", _fake_getaddrinfo("198.18.0.2"))
     ssrf.configure_trusted_fake_ip_cidrs(["198.18.0.0/15"])
 
-    web_fetch_module._check_ssrf("https://github.com/OpenSquilla/opensquilla")
+    web_fetch_module._check_ssrf("https://github.com/OpenStarry Code/opensquilla")
 
 
 def test_trusted_fake_ip_never_allows_loopback(monkeypatch):

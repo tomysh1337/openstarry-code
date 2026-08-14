@@ -3,7 +3,7 @@ from __future__ import annotations
 import sys
 from io import BytesIO, TextIOWrapper
 
-from opensquilla.ui import _DynamicStream
+from openstarry_code.ui import _DynamicStream
 
 
 def test_dynamic_stream_write_returns_length_when_wrapped_stream_returns_none(

@@ -7,9 +7,9 @@ from typing import Any
 
 import pytest
 
-from opensquilla.cli.repl.session_state import ChatSessionState
-from opensquilla.cli.repl.stream import TurnResult
-from opensquilla.cli.tui.contracts import TuiOutputHandle
+from openstarry_code.cli.repl.session_state import ChatSessionState
+from openstarry_code.cli.repl.stream import TurnResult
+from openstarry_code.cli.tui.contracts import TuiOutputHandle
 
 
 class _FakeGatewayClient:
@@ -114,7 +114,7 @@ class _RecordingOutputHandle:
 
 
 def test_gateway_slash_adapter_exposes_typed_context() -> None:
-    from opensquilla.cli.repl.slash_adapter import GatewaySlashContext
+    from openstarry_code.cli.repl.slash_adapter import GatewaySlashContext
 
     tui_output = _RecordingOutputHandle()
     context = GatewaySlashContext(
@@ -129,7 +129,7 @@ def test_gateway_slash_adapter_exposes_typed_context() -> None:
 
 @pytest.mark.asyncio
 async def test_gateway_slash_adapter_handles_clear_without_chat_command_state() -> None:
-    from opensquilla.cli.repl.slash_adapter import (
+    from openstarry_code.cli.repl.slash_adapter import (
         GatewaySlashContext,
         handle_gateway_slash_command,
     )
@@ -156,8 +156,8 @@ async def test_gateway_slash_adapter_handles_clear_without_chat_command_state() 
 async def test_gateway_slash_adapter_threads_tui_output_to_streaming_slash_command(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.repl import slash_adapter
-    from opensquilla.cli.repl.slash_adapter import (
+    from openstarry_code.cli.repl import slash_adapter
+    from openstarry_code.cli.repl.slash_adapter import (
         GatewaySlashContext,
         handle_gateway_slash_command,
     )

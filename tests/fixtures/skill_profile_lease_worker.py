@@ -9,11 +9,11 @@ import sys
 import time
 from pathlib import Path
 
-from opensquilla.profile_operation_lock import ProfileOperationLock
-from opensquilla.recovery.errors import ProfileLockBusyError
-from opensquilla.skills.hub.management import SkillManagementService
-from opensquilla.skills.hub.router import SourceRouter
-from opensquilla.skills.hub.source import (
+from openstarry_code.profile_operation_lock import ProfileOperationLock
+from openstarry_code.recovery.errors import ProfileLockBusyError
+from openstarry_code.skills.hub.management import SkillManagementService
+from openstarry_code.skills.hub.router import SourceRouter
+from openstarry_code.skills.hub.source import (
     SkillBundle,
     SkillMeta,
     SkillSource,
@@ -132,10 +132,10 @@ def _probe_unleased_build_services(
 ) -> None:
     """Exercise the public standalone builder while another process owns H."""
 
-    from opensquilla.gateway.boot import build_services
-    from opensquilla.gateway.config import GatewayConfig
+    from openstarry_code.gateway.boot import build_services
+    from openstarry_code.gateway.config import GatewayConfig
 
-    os.environ["OPENSQUILLA_STATE_DIR"] = str(profile_home)
+    os.environ["OPENSTARRY_CODE_STATE_DIR"] = str(profile_home)
     config = GatewayConfig(
         state_dir=str(profile_home / "state"),
         workspace_dir=str(profile_home / "workspace"),

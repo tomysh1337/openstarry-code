@@ -14,14 +14,14 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.turn_runner.input_stage import (
+from openstarry_code.engine.turn_runner.input_stage import (
     ExtraContextResolver,
     InputStage,
     InputStageInput,
     InputStageOutput,
     SessionAppendPort,
 )
-from opensquilla.tools.types import CallerKind, ToolContext
+from openstarry_code.tools.types import CallerKind, ToolContext
 
 # ---------------------------------------------------------------------------
 # Helpers

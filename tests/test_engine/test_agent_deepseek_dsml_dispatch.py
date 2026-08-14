@@ -7,10 +7,10 @@ from typing import Any
 import httpx
 import pytest
 
-from opensquilla.engine import Agent, AgentConfig, ToolResult
-from opensquilla.engine.types import ToolCall
-from opensquilla.provider import ToolDefinition, ToolInputSchema
-from opensquilla.provider.openai import OpenAIProvider
+from openstarry_code.engine import Agent, AgentConfig, ToolResult
+from openstarry_code.engine.types import ToolCall
+from openstarry_code.provider import ToolDefinition, ToolInputSchema
+from openstarry_code.provider.openai import OpenAIProvider
 
 _REAL_ASYNC_CLIENT = httpx.AsyncClient
 _DSML_CALL = (
@@ -64,7 +64,7 @@ def _patch_deepseek_transport(
         return _REAL_ASYNC_CLIENT(*args, **kwargs)
 
     monkeypatch.setattr(
-        "opensquilla.provider.openai.httpx.AsyncClient",
+        "openstarry_code.provider.openai.httpx.AsyncClient",
         patched_async_client,
     )
     return requests

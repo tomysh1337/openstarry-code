@@ -2,11 +2,11 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.compat import aiosqlite
-from opensquilla.memory.embedding import NullEmbeddingProvider
-from opensquilla.memory.retrieval import MemoryRetriever
-from opensquilla.memory.store import LongTermMemoryStore, _build_fts_query
-from opensquilla.memory.types import (
+from openstarry_code.compat import aiosqlite
+from openstarry_code.memory.embedding import NullEmbeddingProvider
+from openstarry_code.memory.retrieval import MemoryRetriever
+from openstarry_code.memory.store import LongTermMemoryStore, _build_fts_query
+from openstarry_code.memory.types import (
     LEXICAL_GUARANTEE_METADATA_KEY,
     LEXICAL_GUARANTEE_METADATA_VALUE,
     RELAXED_KEYWORD_MATCH_METADATA_KEY,

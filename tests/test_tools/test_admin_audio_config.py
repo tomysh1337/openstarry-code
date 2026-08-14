@@ -14,13 +14,13 @@ import tomllib
 
 import pytest
 
-import opensquilla.tools.builtin.admin as admin_mod
-import opensquilla.tools.builtin.media as media_mod
-from opensquilla.onboarding.audio_specs import get_audio_provider_setup_spec
-from opensquilla.onboarding.config_store import load_config
-from opensquilla.onboarding.mutations import upsert_audio_provider
-from opensquilla.tools.builtin.admin import audio_config as audio_config_tool
-from opensquilla.tools.types import ToolError
+import openstarry_code.tools.builtin.admin as admin_mod
+import openstarry_code.tools.builtin.media as media_mod
+from openstarry_code.onboarding.audio_specs import get_audio_provider_setup_spec
+from openstarry_code.onboarding.config_store import load_config
+from openstarry_code.onboarding.mutations import upsert_audio_provider
+from openstarry_code.tools.builtin.admin import audio_config as audio_config_tool
+from openstarry_code.tools.types import ToolError
 
 SECRET = "elevenlabs-key-1a2b3c4d5e6f"
 
@@ -28,7 +28,7 @@ SECRET = "elevenlabs-key-1a2b3c4d5e6f"
 @pytest.fixture()
 def live_config(tmp_path, monkeypatch):
     target = tmp_path / "config.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     monkeypatch.delenv("ELEVENLABS_API_KEY", raising=False)
     cfg = load_config(path=target)
     admin_mod.set_gateway_config(cfg)

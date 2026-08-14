@@ -6,7 +6,7 @@ from typing import Any
 
 import httpx
 
-from opensquilla.memory.embedding import OllamaEmbeddingProvider
+from openstarry_code.memory.embedding import OllamaEmbeddingProvider
 
 
 def _patch(monkeypatch: Any, captured: dict[str, Any], embeddings: list[list[float]]) -> None:
@@ -25,7 +25,7 @@ def _patch(monkeypatch: Any, captured: dict[str, Any], embeddings: list[list[flo
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.memory.embedding.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.memory.embedding.httpx.AsyncClient", patched_async_client)
 
 
 def test_embed_query_uses_api_embed_endpoint(monkeypatch: Any) -> None:

@@ -24,7 +24,7 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.gateway.transcripts import (
+from openstarry_code.gateway.transcripts import (
     build_transcript_attachment_envelope,
     rebuild_attachments_for_replay,
 )

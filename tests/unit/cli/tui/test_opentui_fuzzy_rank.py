@@ -7,11 +7,11 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.cli.tui.opentui.completion import fuzzy_filter, fuzzy_rank
+from openstarry_code.cli.tui.opentui.completion import fuzzy_filter, fuzzy_rank
 
 _COMPOSER_MJS = (
     Path(__file__).resolve().parents[4]
-    / "src/opensquilla/cli/tui/opentui/package/src/composer.mjs"
+    / "src/openstarry_code/cli/tui/opentui/package/src/composer.mjs"
 )
 
 # Shared query/candidate fixtures fed to BOTH the Python scorer and the JS

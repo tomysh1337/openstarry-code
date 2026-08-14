@@ -1,7 +1,7 @@
 """Secret ``.env`` files written by migrators must be owner-only from birth.
 
 Both the Hermes and OpenClaw migrators can land provider keys and channel
-tokens in ``~/.opensquilla/.env`` when ``migrate_secrets=True``. These tests
+tokens in ``~/.openstarry_code/.env`` when ``migrate_secrets=True``. These tests
 pin the secure-write contract:
 
 - the resulting file is mode 0600 (POSIX; mode bits are meaningless on
@@ -20,8 +20,8 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.migration.hermes import HermesMigrationOptions, HermesMigrator
-from opensquilla.migration.openclaw import MigrationOptions, OpenClawMigrator
+from openstarry_code.migration.hermes import HermesMigrationOptions, HermesMigrator
+from openstarry_code.migration.openclaw import MigrationOptions, OpenClawMigrator
 
 
 @pytest.fixture()
@@ -73,8 +73,8 @@ def test_hermes_secret_env_written_with_owner_only_mode(
 ) -> None:
     source = _make_hermes_source(tmp_path)
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
-    monkeypatch.delenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", raising=False)
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
+    monkeypatch.delenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", raising=False)
 
     HermesMigrator(
         HermesMigrationOptions(
@@ -97,8 +97,8 @@ def test_hermes_secret_merge_tightens_preexisting_env_perms(
     source = _make_hermes_source(tmp_path)
     home = tmp_path / "opensquilla-home"
     home.mkdir()
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
-    monkeypatch.delenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", raising=False)
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
+    monkeypatch.delenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", raising=False)
     env_path = home / ".env"
     env_path.write_text("EXISTING_KEY=keep-me\n", encoding="utf-8")
     if os.name != "nt":
@@ -125,8 +125,8 @@ def test_openclaw_secret_env_written_with_owner_only_mode(
 ) -> None:
     source = _make_openclaw_source(tmp_path)
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
-    monkeypatch.delenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", raising=False)
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
+    monkeypatch.delenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", raising=False)
 
     OpenClawMigrator(
         MigrationOptions(
@@ -153,8 +153,8 @@ def test_openclaw_secret_env_secure_even_when_chmod_is_unavailable(
     # on chmod at all.
     source = _make_openclaw_source(tmp_path)
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
-    monkeypatch.delenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", raising=False)
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
+    monkeypatch.delenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", raising=False)
 
     real_chmod = os.chmod
 
@@ -186,8 +186,8 @@ def test_openclaw_secret_env_write_failure_surfaces(
     # silently swallowed, and no temp file holding the secret may remain.
     source = _make_openclaw_source(tmp_path)
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
-    monkeypatch.delenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", raising=False)
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
+    monkeypatch.delenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", raising=False)
 
     real_replace = os.replace
 
@@ -253,8 +253,8 @@ def test_openclaw_secret_env_write_failure_rolls_back_other_targets(
     )
     config_path.write_text(original_config, encoding="utf-8")
 
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
-    monkeypatch.delenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", raising=False)
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
+    monkeypatch.delenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", raising=False)
     real_replace = os.replace
 
     def replace_denied_for_env(src: object, dst: object, *args: object, **kwargs: object) -> None:
@@ -300,8 +300,8 @@ def test_openclaw_late_failure_restores_secret_env_symlink(
     external_env.write_text("EXISTING_KEY=keep-me\n", encoding="utf-8")
     env_path = home / ".env"
     env_path.symlink_to(external_env)
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
-    monkeypatch.delenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", raising=False)
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
+    monkeypatch.delenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", raising=False)
 
     def report_write_failed(_migrator: OpenClawMigrator) -> None:
         raise OSError(5, "report write failed")
@@ -329,8 +329,8 @@ def test_hermes_secret_env_write_failure_surfaces(
 ) -> None:
     source = _make_hermes_source(tmp_path)
     home = tmp_path / "opensquilla-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
-    monkeypatch.delenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", raising=False)
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
+    monkeypatch.delenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", raising=False)
 
     real_replace = os.replace
 

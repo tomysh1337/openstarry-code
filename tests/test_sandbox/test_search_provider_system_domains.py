@@ -9,21 +9,21 @@ from urllib.parse import urlparse
 
 import pytest
 
-import opensquilla.search.providers as providers_pkg
-from opensquilla.sandbox.default_allowlist import DEFAULT_ALLOWLIST
-from opensquilla.sandbox.integration import (
+import openstarry_code.search.providers as providers_pkg
+from openstarry_code.sandbox.default_allowlist import DEFAULT_ALLOWLIST
+from openstarry_code.sandbox.integration import (
     _SEARCH_PROVIDER_SYSTEM_DOMAINS,
     _system_domain_grants_for_request,
 )
-from opensquilla.search.registry import get_provider_spec
+from openstarry_code.search.registry import get_provider_spec
 
 _PROVIDER_API_URL_ATTRS = {
-    "bocha": ("opensquilla.search.providers.bocha", "_API_URL"),
-    "brave": ("opensquilla.search.providers.brave", "_API_URL"),
-    "duckduckgo": ("opensquilla.search.providers.duckduckgo", "_DDHTML_URL"),
-    "exa": ("opensquilla.search.providers.exa", "_API_URL"),
-    "iqs": ("opensquilla.search.providers.iqs", "_API_URL"),
-    "tavily": ("opensquilla.search.providers.tavily", "_API_URL"),
+    "bocha": ("openstarry_code.search.providers.bocha", "_API_URL"),
+    "brave": ("openstarry_code.search.providers.brave", "_API_URL"),
+    "duckduckgo": ("openstarry_code.search.providers.duckduckgo", "_DDHTML_URL"),
+    "exa": ("openstarry_code.search.providers.exa", "_API_URL"),
+    "iqs": ("openstarry_code.search.providers.iqs", "_API_URL"),
+    "tavily": ("openstarry_code.search.providers.tavily", "_API_URL"),
 }
 
 
@@ -37,7 +37,7 @@ def _builtin_provider_ids() -> list[str]:
 def test_every_builtin_search_provider_has_sandbox_domain_grants() -> None:
     """A runtime provider without sandbox domains fails under managed network."""
     for provider_id in _builtin_provider_ids():
-        importlib.import_module(f"opensquilla.search.providers.{provider_id}")
+        importlib.import_module(f"openstarry_code.search.providers.{provider_id}")
         spec = get_provider_spec(provider_id)
         if not spec.runtime_supported:
             continue
@@ -81,7 +81,7 @@ def test_system_domain_grants_cover_active_keyed_provider(
     fallback_policy: str,
     expected: tuple[str, ...],
 ) -> None:
-    from opensquilla.tools.builtin import web
+    from openstarry_code.tools.builtin import web
 
     web.configure_search(
         provider_id,
@@ -123,7 +123,7 @@ def test_system_domain_grants_follow_bounded_search_execution_plan(
 
 
 def test_web_search_sandbox_argv_uses_runtime_execution_plan(monkeypatch) -> None:
-    from opensquilla.tools.builtin import web
+    from openstarry_code.tools.builtin import web
 
     for key in (
         "BOCHA_SEARCH_API_KEY",
@@ -150,7 +150,7 @@ def test_web_search_sandbox_argv_uses_runtime_execution_plan(monkeypatch) -> Non
 
 
 def test_discover_plan_token_honors_explicit_provider_override(monkeypatch) -> None:
-    from opensquilla.tools.builtin import web
+    from openstarry_code.tools.builtin import web
 
     monkeypatch.setenv("EXA_API_KEY", "exa-key")
     web.configure_search("duckduckgo", fallback_policy="network")

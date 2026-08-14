@@ -5,17 +5,17 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from opensquilla.gateway.config import (
+from openstarry_code.gateway.config import (
     GatewayConfig,
     RouterSelfLearningConfig,
 )
-from opensquilla.gateway.rpc import RpcContext, get_dispatcher
-from opensquilla.gateway.rpc_router import _handle_selflearning_status
-from opensquilla.gateway.scopes import METHOD_SCOPES, READ_SCOPE
-from opensquilla.squilla_router.self_learning import encode_features, write_sample
-from opensquilla.squilla_router.self_learning.promotion import write_active_atomic
-from opensquilla.squilla_router.self_learning.schema import RouterTrainSample
-from opensquilla.squilla_router.self_learning.state import TrainState, save_train_state
+from openstarry_code.gateway.rpc import RpcContext, get_dispatcher
+from openstarry_code.gateway.rpc_router import _handle_selflearning_status
+from openstarry_code.gateway.scopes import METHOD_SCOPES, READ_SCOPE
+from openstarry_code.squilla_router.self_learning import encode_features, write_sample
+from openstarry_code.squilla_router.self_learning.promotion import write_active_atomic
+from openstarry_code.squilla_router.self_learning.schema import RouterTrainSample
+from openstarry_code.squilla_router.self_learning.state import TrainState, save_train_state
 
 
 def _config(
@@ -57,7 +57,7 @@ async def test_status_disabled_is_minimal() -> None:
 async def test_status_flags_unreachable_training_when_dream_off(
     tmp_path, monkeypatch
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path))
     payload = await _handle_selflearning_status(
         {},
         RpcContext(conn_id="t", config=_config(sl_enabled=True, dream_enabled=False)),
@@ -74,7 +74,7 @@ async def test_status_flags_unreachable_training_when_dream_off(
 async def test_status_reports_samples_gate_and_active_model(
     tmp_path, monkeypatch
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path))
     for i in range(5):
         write_sample(_sample(i, complaint=(i < 2)), "main", home=tmp_path)
     save_train_state(
@@ -121,7 +121,7 @@ def test_status_scope_is_read() -> None:
 
 async def test_status_never_errors_on_broken_state(tmp_path, monkeypatch) -> None:
     """A corrupt state file degrades to a partial payload, not an RPC error."""
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path))
     state_dir = tmp_path / "router" / "data" / "main"
     state_dir.mkdir(parents=True)
     (state_dir / ".train_state.json").write_text("{not json", encoding="utf-8")
@@ -142,8 +142,8 @@ if __name__ == "__main__":  # pragma: no cover
 
 
 async def test_status_includes_feedback_block(tmp_path, monkeypatch) -> None:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path))
-    from opensquilla.squilla_router.self_learning.feedback import write_feedback
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path))
+    from openstarry_code.squilla_router.self_learning.feedback import write_feedback
 
     for i in range(5):
         write_sample(_sample(i), "main", home=tmp_path)

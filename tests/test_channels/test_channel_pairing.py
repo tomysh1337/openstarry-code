@@ -9,21 +9,21 @@ from typing import Any
 
 import pytest
 
-import opensquilla.gateway.rpc_channels  # noqa: F401
-from opensquilla.channels._util import ChannelAccessPolicy, ChannelDmAccess
-from opensquilla.channels.admission import decide_channel_admission, is_authenticated_channel_admin
-from opensquilla.channels.delivery_store import ChannelDeliveryStore
-from opensquilla.channels.manager import ChannelManager
-from opensquilla.channels.types import (
+import openstarry_code.gateway.rpc_channels  # noqa: F401
+from openstarry_code.channels._util import ChannelAccessPolicy, ChannelDmAccess
+from openstarry_code.channels.admission import decide_channel_admission, is_authenticated_channel_admin
+from openstarry_code.channels.delivery_store import ChannelDeliveryStore
+from openstarry_code.channels.manager import ChannelManager
+from openstarry_code.channels.types import (
     AuthenticatedPrincipal,
     IncomingMessage,
     IngressProvenance,
     IngressVerification,
     OutgoingMessage,
 )
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.channel_dispatch import run_channel_dispatch
-from opensquilla.gateway.config import (
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.channel_dispatch import run_channel_dispatch
+from openstarry_code.gateway.config import (
     ControlUiConfig,
     DingTalkChannelEntry,
     DiscordChannelEntry,
@@ -31,7 +31,7 @@ from opensquilla.gateway.config import (
     MatrixChannelEntry,
     QQChannelEntry,
 )
-from opensquilla.gateway.rpc import RpcContext, get_dispatcher
+from openstarry_code.gateway.rpc import RpcContext, get_dispatcher
 
 
 def _message(*, event_id: str = "event-1", content: str = "private input") -> IncomingMessage:

@@ -4,18 +4,18 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.memory.retrieval import MemoryRetriever
-from opensquilla.memory.session_source import (
+from openstarry_code.memory.retrieval import MemoryRetriever
+from openstarry_code.memory.session_source import (
     SessionSourceIndexer,
     build_session_source_document,
 )
-from opensquilla.memory.store import LongTermMemoryStore
-from opensquilla.memory.sync_manager import MemorySyncManager
-from opensquilla.memory.types import MemorySearchOpts, MemorySearchResult, MemorySource
-from opensquilla.session.models import SessionNode, TranscriptEntry
-from opensquilla.session.storage import SessionStorage
-from opensquilla.tools.builtin.memory_tools import create_memory_tools
-from opensquilla.tools.registry import ToolRegistry
+from openstarry_code.memory.store import LongTermMemoryStore
+from openstarry_code.memory.sync_manager import MemorySyncManager
+from openstarry_code.memory.types import MemorySearchOpts, MemorySearchResult, MemorySource
+from openstarry_code.session.models import SessionNode, TranscriptEntry
+from openstarry_code.session.storage import SessionStorage
+from openstarry_code.tools.builtin.memory_tools import create_memory_tools
+from openstarry_code.tools.registry import ToolRegistry
 
 
 @pytest.mark.asyncio

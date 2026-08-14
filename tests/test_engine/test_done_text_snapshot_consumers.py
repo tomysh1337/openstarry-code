@@ -5,12 +5,12 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.engine.subagent import SubagentManager, SubagentSpec
-from opensquilla.engine.types import AgentEvent, DoneEvent, TextDeltaEvent
-from opensquilla.skills.meta.events import _StepDone
-from opensquilla.skills.meta.executors.agent import run_step_with_skill_stream
-from opensquilla.skills.meta.executors.llm_classify import _drain_agent_runner
-from opensquilla.skills.meta.types import MetaStep
+from openstarry_code.engine.subagent import SubagentManager, SubagentSpec
+from openstarry_code.engine.types import AgentEvent, DoneEvent, TextDeltaEvent
+from openstarry_code.skills.meta.events import _StepDone
+from openstarry_code.skills.meta.executors.agent import run_step_with_skill_stream
+from openstarry_code.skills.meta.executors.llm_classify import _drain_agent_runner
+from openstarry_code.skills.meta.types import MetaStep
 
 
 class _ScriptedChildAgent:
@@ -51,7 +51,7 @@ async def test_meta_agent_step_prefers_authoritative_done_over_stale_deltas(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(
-        "opensquilla.skills.eligibility.is_skill_available_live",
+        "openstarry_code.skills.eligibility.is_skill_available_live",
         lambda _name: True,
     )
 

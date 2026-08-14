@@ -6,18 +6,18 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.tools.envelope import (
+from openstarry_code.tools.envelope import (
     _policy_deny_max_chars,
     build_tool_failure_envelope,
 )
-from opensquilla.tools.types import SafeToolError, ToolContext, current_tool_context
-from opensquilla.tools.write_policy import (
+from openstarry_code.tools.types import SafeToolError, ToolContext, current_tool_context
+from openstarry_code.tools.write_policy import (
     gate_workspace_scratch_artifact,
     gate_workspace_write_deny,
 )
 
-_LEVER_ENV = "OPENSQUILLA_TOOL_ENVELOPE_POLICY_DENY_MAX_CHARS"
-_GUIDANCE_ENV = "OPENSQUILLA_WORKSPACE_WRITE_DENY_GUIDANCE"
+_LEVER_ENV = "OPENSTARRY_CODE_TOOL_ENVELOPE_POLICY_DENY_MAX_CHARS"
+_GUIDANCE_ENV = "OPENSTARRY_CODE_WORKSPACE_WRITE_DENY_GUIDANCE"
 _TRUNCATION_MARKER = "...[truncated]"
 
 _DENY_MESSAGE_BASE = (

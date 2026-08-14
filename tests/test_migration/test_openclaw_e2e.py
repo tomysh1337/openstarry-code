@@ -6,8 +6,8 @@ from pathlib import Path
 
 from typer.testing import CliRunner
 
-from opensquilla.cli.main import app
-from opensquilla.gateway.config import (
+from openstarry_code.cli.main import app
+from openstarry_code.gateway.config import (
     AgentEntryConfig,
     AuthConfig,
     GatewayConfig,
@@ -15,7 +15,7 @@ from opensquilla.gateway.config import (
     SafetyConfig,
     TaskRuntimeConfig,
 )
-from opensquilla.onboarding.config_store import persist_config
+from openstarry_code.onboarding.config_store import persist_config
 
 runner = CliRunner()
 
@@ -232,7 +232,7 @@ def test_realistic_cli_apply_is_isolated_and_preserves_unrelated_config(
     source = _write_realistic_openclaw_home(tmp_path)
     home = tmp_path / "isolated-opensquilla-home"
     config_path = tmp_path / "opensquilla.toml"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
     _write_existing_opensquilla_config(config_path, home)
 
     existing_skill = home / "skills" / "openclaw-imports" / "triage" / "SKILL.md"
@@ -302,7 +302,7 @@ def test_realistic_cli_apply_is_isolated_and_preserves_unrelated_config(
 
     env_text = (home / ".env").read_text(encoding="utf-8")
     assert "ANTHROPIC_API_KEY=sk-ant-realistic" in env_text
-    assert "OPENSQUILLA_SAFE_BIN_ALLOW=^git status$,^uv run pytest " in env_text
+    assert "OPENSTARRY_CODE_SAFE_BIN_ALLOW=^git status$,^uv run pytest " in env_text
     assert existing_skill.read_text(encoding="utf-8") == "existing skill stays\n"
     renamed_skill = home / "skills" / "openclaw-imports" / "triage-imported-1" / "SKILL.md"
     assert "Triage production incidents" in renamed_skill.read_text(encoding="utf-8")
@@ -378,7 +378,7 @@ def test_realistic_cli_dry_run_does_not_write_isolated_targets(
     source = _write_realistic_openclaw_home(tmp_path)
     home = tmp_path / "isolated-opensquilla-home"
     config_path = tmp_path / "opensquilla.toml"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
 
     result = runner.invoke(
         app,

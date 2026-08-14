@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from opensquilla.sandbox.network_guard import decide_network_access
-from opensquilla.sandbox.policy_models import SandboxPolicy
-from opensquilla.sandbox.run_context import RunContext
-from opensquilla.sandbox.run_mode import RunMode
+from openstarry_code.sandbox.network_guard import decide_network_access
+from openstarry_code.sandbox.policy_models import SandboxPolicy
+from openstarry_code.sandbox.run_context import RunContext
+from openstarry_code.sandbox.run_mode import RunMode
 
 
 def _safe_context() -> RunContext:

@@ -3,16 +3,16 @@ from __future__ import annotations
 import pytest
 import structlog.testing
 
-from opensquilla.tools.builtin import shell_policy
+from openstarry_code.tools.builtin import shell_policy
 
 
 @pytest.fixture(autouse=True)
 def _windows_policy_env(monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setattr(shell_policy.os, "name", "nt")
-    monkeypatch.delenv("OPENSQUILLA_SAFE_BIN_DENY", raising=False)
-    monkeypatch.delenv("OPENSQUILLA_SAFE_BIN_ALLOW", raising=False)
-    monkeypatch.delenv("OPENSQUILLA_SAFE_BIN_WARN", raising=False)
-    monkeypatch.delenv("OPENSQUILLA_SHELL_DENYLIST", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_SAFE_BIN_DENY", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_SAFE_BIN_ALLOW", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_SAFE_BIN_WARN", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_SHELL_DENYLIST", raising=False)
     monkeypatch.setattr(shell_policy, "_LEGACY_ENV_WARNED", False)
 
 
@@ -57,7 +57,7 @@ def test_windows_rmdir_warns() -> None:
 
 
 def test_windows_deny_env_overrides_platform_default(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("OPENSQUILLA_SAFE_BIN_DENY", r"\bcustom-block\b")
+    monkeypatch.setenv("OPENSTARRY_CODE_SAFE_BIN_DENY", r"\bcustom-block\b")
 
     policy = shell_policy.SafeBinPolicy.from_env()
 
@@ -71,7 +71,7 @@ def test_windows_deny_env_overrides_platform_default(monkeypatch: pytest.MonkeyP
 def test_windows_empty_warn_env_clears_platform_default_warnlist(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_SAFE_BIN_WARN", "")
+    monkeypatch.setenv("OPENSTARRY_CODE_SAFE_BIN_WARN", "")
 
     result = shell_policy.SafeBinPolicy.from_env().check(r"Remove-Item C:\tmp\stale.txt")
 
@@ -82,7 +82,7 @@ def test_windows_empty_warn_env_clears_platform_default_warnlist(
 def test_windows_empty_warn_env_preserves_default_denylist(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_SAFE_BIN_WARN", "")
+    monkeypatch.setenv("OPENSTARRY_CODE_SAFE_BIN_WARN", "")
 
     result = shell_policy.SafeBinPolicy.from_env().check(r"Format-Volume -DriveLetter D")
 
@@ -99,7 +99,7 @@ def test_windows_disk_wipe_commands_stay_denied() -> None:
 
 
 def test_legacy_shell_denylist_warns_once(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("OPENSQUILLA_SHELL_DENYLIST", r"\blegacy-block\b")
+    monkeypatch.setenv("OPENSTARRY_CODE_SHELL_DENYLIST", r"\blegacy-block\b")
 
     with structlog.testing.capture_logs() as captured:
         first = shell_policy.SafeBinPolicy.from_env()

@@ -24,8 +24,8 @@ requires_api_key("vllm") — fails loudly.
 
 from __future__ import annotations
 
-from opensquilla.provider.model_catalog import DEFAULT_CONTEXT_WINDOW, ModelCatalog
-from opensquilla.provider.registry import (
+from openstarry_code.provider.model_catalog import DEFAULT_CONTEXT_WINDOW, ModelCatalog
+from openstarry_code.provider.registry import (
     KEYLESS_PROVIDERS,
     LOCAL_RUNTIME_PROVIDERS,
     get_provider_spec,
@@ -1037,7 +1037,7 @@ def test_named_provider_sets_stay_distinct() -> None:
 
 
 def test_local_runtime_window_matches_membership() -> None:
-    from opensquilla.provider.model_catalog import _LOCAL_CONTEXT_WINDOW
+    from openstarry_code.provider.model_catalog import _LOCAL_CONTEXT_WINDOW
 
     catalog = ModelCatalog()
     for provider in LOCAL_RUNTIME_PROVIDERS:
@@ -1059,8 +1059,8 @@ def test_local_runtime_window_matches_membership() -> None:
 
 
 def test_anthropic_ollama_flag_defaults_off_and_returns_empty() -> None:
-    from opensquilla.provider import model_catalog as model_catalog_module
-    from opensquilla.provider.types import ModelCapabilities
+    from openstarry_code.provider import model_catalog as model_catalog_module
+    from openstarry_code.provider.types import ModelCapabilities
 
     assert model_catalog_module.CATALOG_CAPABILITIES_FOR_ANTHROPIC_OLLAMA is False
     catalog = ModelCatalog()
@@ -1069,7 +1069,7 @@ def test_anthropic_ollama_flag_defaults_off_and_returns_empty() -> None:
 
 
 def test_anthropic_ollama_flag_on_resolves_through_catalog(monkeypatch) -> None:
-    from opensquilla.provider import model_catalog as model_catalog_module
+    from openstarry_code.provider import model_catalog as model_catalog_module
 
     monkeypatch.setattr(
         model_catalog_module, "CATALOG_CAPABILITIES_FOR_ANTHROPIC_OLLAMA", True

@@ -67,11 +67,11 @@ def test_sgr_wheel_holds_streaming_view_and_end_restores_follow(
         target.env,
         require_capabilities=bool(pytestconfig.getoption("--tui-require-capabilities")),
     )
-    target.env["OPENSQUILLA_TUI_REPAINT_WATCHDOG_MS"] = "0"
+    target.env["OPENSTARRY_CODE_TUI_REPAINT_WATCHDOG_MS"] = "0"
     # Keep a deterministic live window after token 055 even when the complete
     # real-terminal suite is contending for CPU. This gate must exercise wheel
     # handling during an active stream, not accidentally after finalization.
-    target.env["OPENSQUILLA_TUI_FAKE_STREAM_DELAY_S"] = "0.08"
+    target.env["OPENSTARRY_CODE_TUI_FAKE_STREAM_DELAY_S"] = "0.08"
 
     session = open_real_terminal_session(
         command=target.command,
@@ -114,7 +114,7 @@ def test_sgr_wheel_holds_streaming_view_and_end_restores_follow(
             held_framebuffer,
             cursor=session.cursor_position(),
         )
-        assert held.text.count("OpenSquilla · Session") == 1
+        assert held.text.count("OpenStarry Code · Session") == 1
         assert held.text.count("steer current turn · Tab queues") == 1
 
         session.send_key("End")

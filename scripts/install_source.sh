@@ -1,20 +1,20 @@
 #!/usr/bin/env bash
-# install_source.sh - user-local OpenSquilla installer (no sudo).
+# install_source.sh - user-local OpenStarry Code installer (no sudo).
 #
 # Installer contract:
 #   - installs into a user-owned prefix (never /usr/local, /opt, or admin paths)
 #   - prefers uv tool install; falls back to pip --user; errors clearly if neither exists
-#   - requires the Node.js version pinned by opensquilla-webui/.node-version,
+#   - requires the Node.js version pinned by openstarry-code-webui/.node-version,
 #     runs npm ci + npm run build, and packages that exact Web UI
 #   - defaults to the "recommended" runtime profile (memory + bundled v4 router)
-#     and allows `OPENSQUILLA_INSTALL_PROFILE=core` to opt back down
+#     and allows `OPENSTARRY_CODE_INSTALL_PROFILE=core` to opt back down
 #   - prints a post-install banner documenting the default bind
 #     (127.0.0.1:18791) and the explicit opt-in required to expose the gateway
-#     on the network (--listen 0.0.0.0 or OPENSQUILLA_LISTEN=0.0.0.0)
+#     on the network (--listen 0.0.0.0 or OPENSTARRY_CODE_LISTEN=0.0.0.0)
 #   - adds an extra WARNING when the operator requested network exposure at
-#     install time via OPENSQUILLA_LISTEN=0.0.0.0
+#     install time via OPENSTARRY_CODE_LISTEN=0.0.0.0
 #
-# Dry-run: export OPENSQUILLA_INSTALL_DRY_RUN=1 to print the install plan + banner
+# Dry-run: export OPENSTARRY_CODE_INSTALL_DRY_RUN=1 to print the install plan + banner
 # without touching the system.
 
 set -euo pipefail
@@ -44,9 +44,9 @@ while [[ $# -gt 0 ]]; do
 Usage: bash scripts/install_source.sh [--profile recommended|core] [--extras name[,name]]
 
 Environment equivalents:
-  OPENSQUILLA_INSTALL_PROFILE=recommended|core
-  OPENSQUILLA_INSTALL_EXTRAS=matrix
-  OPENSQUILLA_INSTALL_DRY_RUN=1
+  OPENSTARRY_CODE_INSTALL_PROFILE=recommended|core
+  OPENSTARRY_CODE_INSTALL_EXTRAS=matrix
+  OPENSTARRY_CODE_INSTALL_DRY_RUN=1
 HELP
             exit 0
             ;;
@@ -60,17 +60,17 @@ done
 
 # --- prefix resolution ------------------------------------------------------
 
-if [[ -n "${OPENSQUILLA_PREFIX:-}" ]]; then
-    prefix="${OPENSQUILLA_PREFIX}"
+if [[ -n "${OPENSTARRY_CODE_PREFIX:-}" ]]; then
+    prefix="${OPENSTARRY_CODE_PREFIX}"
 elif [[ -n "${XDG_DATA_HOME:-}" ]]; then
-    prefix="${XDG_DATA_HOME}/opensquilla"
+    prefix="${XDG_DATA_HOME}/openstarry-code"
 else
     prefix="${HOME}/.local"
 fi
 
-dry_run="${OPENSQUILLA_INSTALL_DRY_RUN:-0}"
-profile="${cli_profile:-${OPENSQUILLA_INSTALL_PROFILE:-recommended}}"
-webui_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)/opensquilla-webui"
+dry_run="${OPENSTARRY_CODE_INSTALL_DRY_RUN:-0}"
+profile="${cli_profile:-${OPENSTARRY_CODE_INSTALL_PROFILE:-recommended}}"
+webui_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)/openstarry-code-webui"
 node_version_file="${webui_dir}/.node-version"
 if [[ ! -f "${node_version_file}" ]]; then
     echo "install_source.sh: required Node.js version file is missing: ${node_version_file}" >&2
@@ -83,7 +83,7 @@ if [[ -z "${minimum_node_version}" ]]; then
 fi
 
 valid_extras=" matrix matrix-e2e document-extras "
-extras_csv="${OPENSQUILLA_INSTALL_EXTRAS:-}"
+extras_csv="${OPENSTARRY_CODE_INSTALL_EXTRAS:-}"
 if [[ -n "${cli_extras}" ]]; then
     extras_csv="${extras_csv}${extras_csv:+,}${cli_extras}"
 fi
@@ -125,7 +125,7 @@ case "${profile}" in
         target_extras=(recommended)
         ;;
     *)
-        echo "install_source.sh: unsupported OPENSQUILLA_INSTALL_PROFILE='${profile}'." >&2
+        echo "install_source.sh: unsupported OPENSTARRY_CODE_INSTALL_PROFILE='${profile}'." >&2
         echo "install_source.sh: supported profiles: core, recommended" >&2
         exit 1
         ;;
@@ -146,7 +146,7 @@ check_squilla_router_assets() {
         return 0
     fi
 
-    local model_root="src/opensquilla/squilla_router/models"
+    local model_root="src/openstarry_code/squilla_router/models"
     local pointer_line="version https://git-lfs.github.com/spec/v1"
     local required=(
         "${model_root}/v4.2_phase3_inference/lgbm_main.bin"
@@ -180,8 +180,8 @@ check_squilla_router_assets() {
             echo "install_source.sh: Git LFS pointer files detected: ${pointers[*]}" >&2
         fi
         echo 'install_source.sh: run `git lfs install` once, then:' >&2
-        echo 'install_source.sh:   git lfs pull --include="src/opensquilla/squilla_router/models/**"' >&2
-        echo 'install_source.sh: or retry with OPENSQUILLA_INSTALL_PROFILE=core for the minimal runtime.' >&2
+        echo 'install_source.sh:   git lfs pull --include="src/openstarry_code/squilla_router/models/**"' >&2
+        echo 'install_source.sh: or retry with OPENSTARRY_CODE_INSTALL_PROFILE=core for the minimal runtime.' >&2
         if [[ "${mode}" == "warn" ]]; then
             return 0
         fi
@@ -233,7 +233,7 @@ installer=""
 install_args=()
 if command -v uv >/dev/null 2>&1; then
     installer="uv"
-    install_args=(uv tool install --python 3.12 --force --reinstall-package opensquilla "${install_target}")
+    install_args=(uv tool install --python 3.12 --force --reinstall-package openstarry-code "${install_target}")
 elif command -v python3 >/dev/null 2>&1 \
     && python3 -c 'import sys; raise SystemExit(0 if sys.version_info >= (3, 12) else 1)'; then
     installer="pip"
@@ -241,7 +241,7 @@ elif command -v python3 >/dev/null 2>&1 \
 else
     # No uv, and the ambient python3 is missing or older than 3.12. Do NOT
     # silently pip-install onto an unsupported interpreter: that leaves a
-    # broken `opensquilla` on PATH and makes coding mode fall back to manual
+    # broken `openstarry-code` on PATH and makes coding mode fall back to manual
     # edits. Fail loud and point at uv, which provisions its own 3.12.
     if command -v python3 >/dev/null 2>&1; then
         _ambient_py="$(python3 -V 2>&1)"
@@ -249,7 +249,7 @@ else
         _ambient_py="none"
     fi
     echo "install_source.sh: cannot install - uv not found and python3 (${_ambient_py}) is older than 3.12." >&2
-    echo "install_source.sh: OpenSquilla requires Python >= 3.12 (pyproject 'requires-python')." >&2
+    echo "install_source.sh: OpenStarry Code requires Python >= 3.12 (pyproject 'requires-python')." >&2
     echo "install_source.sh: easiest fix - install uv; it brings its own 3.12, no system Python needed:" >&2
     echo "install_source.sh:   curl -LsSf https://astral.sh/uv/install.sh | sh" >&2
     echo "install_source.sh: then re-run: bash scripts/install_source.sh" >&2
@@ -262,14 +262,14 @@ install_cmd="${install_args[*]}"
 print_banner() {
     cat <<BANNER
 ----------------------------------------------------------------------------
-OpenSquilla installed via ${installer} -> ${prefix} (profile: ${profile})
+OpenStarry Code installed via ${installer} -> ${prefix} (profile: ${profile})
 Extras: $(if (( ${#install_extras[@]} > 0 )); then IFS=,; echo "${install_extras[*]}"; else echo "none"; fi)
 
 Default gateway bind: 127.0.0.1:18791 (loopback only)
 Network exposure is opt-in only. To expose the gateway on the network you
 must use one of:
-  - CLI flag:  opensquilla gateway run --listen 0.0.0.0
-  - Env var:   OPENSQUILLA_LISTEN=0.0.0.0 opensquilla gateway run
+  - CLI flag:  openstarry-code gateway run --listen 0.0.0.0
+  - Env var:   OPENSTARRY_CODE_LISTEN=0.0.0.0 openstarry-code gateway run
 
 Reminder: only expose 0.0.0.0 behind a trusted reverse proxy or VPN. The
 gateway's first-class auth assumes loopback-scope by default.
@@ -288,26 +288,26 @@ WARNING
 verify_install() {
     # Catch a broken/partial install now, not mid-task. A non-runnable
     # code-task is exactly what makes coding mode silently degrade.
-    # Prefer the JUST-installed binary over any stale `opensquilla` earlier
+    # Prefer the JUST-installed binary over any stale `openstarry-code` earlier
     # on PATH (uv tool / pip --user land outside the default PATH).
     local bin=""
     if [[ "${installer}" == "uv" ]]; then
         local uv_bin
         uv_bin="$(uv tool dir --bin 2>/dev/null || true)"
-        [[ -n "${uv_bin}" && -x "${uv_bin}/opensquilla" ]] && bin="${uv_bin}/opensquilla"
+        [[ -n "${uv_bin}" && -x "${uv_bin}/openstarry-code" ]] && bin="${uv_bin}/openstarry-code"
     fi
-    if [[ -z "${bin}" && -x "${HOME}/.local/bin/opensquilla" ]]; then
-        bin="${HOME}/.local/bin/opensquilla"
+    if [[ -z "${bin}" && -x "${HOME}/.local/bin/openstarry-code" ]]; then
+        bin="${HOME}/.local/bin/openstarry-code"
     fi
-    if [[ -z "${bin}" ]] && command -v opensquilla >/dev/null 2>&1; then
-        bin="opensquilla"
+    if [[ -z "${bin}" ]] && command -v openstarry-code >/dev/null 2>&1; then
+        bin="openstarry-code"
     fi
-    # Coding mode requires `opensquilla code-task`, so verify THAT, not just --version.
+    # Coding mode requires `openstarry-code code-task`, so verify THAT, not just --version.
     if [[ -n "${bin}" ]] && "${bin}" code-task --help >/dev/null 2>&1; then
-        echo "install_source.sh: verified - 'opensquilla code-task' is runnable"
+        echo "install_source.sh: verified - 'openstarry-code code-task' is runnable"
     else
-        echo "install_source.sh: WARNING - 'opensquilla code-task' is not runnable yet." >&2
-        echo "install_source.sh: run 'uv tool update-shell' (or open a new shell), then: opensquilla code-task --help" >&2
+        echo "install_source.sh: WARNING - 'openstarry-code code-task' is not runnable yet." >&2
+        echo "install_source.sh: run 'uv tool update-shell' (or open a new shell), then: openstarry-code code-task --help" >&2
     fi
     command -v git  >/dev/null 2>&1 || echo "install_source.sh: WARNING - 'git' not found; code-task cannot clone repositories without it." >&2
     command -v node >/dev/null 2>&1 || echo "install_source.sh: WARNING - 'node' is no longer available; future source installs, Web UI rebuilds, and code-task build-mode apps require it." >&2
@@ -321,7 +321,7 @@ if [[ "${dry_run}" = "1" ]]; then
     echo "install_source.sh: dry-run — prefix: ${prefix}"
     check_squilla_router_assets warn
     print_banner
-    if [[ "${OPENSQUILLA_LISTEN:-}" = "0.0.0.0" ]]; then
+    if [[ "${OPENSTARRY_CODE_LISTEN:-}" = "0.0.0.0" ]]; then
         print_listen_warning
     fi
     exit 0
@@ -338,9 +338,9 @@ echo "install_source.sh: running: ${install_cmd}"
 
 verify_install
 
-# Write an install receipt to aid `opensquilla uninstall`. Best-effort.
+# Write an install receipt to aid `openstarry-code uninstall`. Best-effort.
 write_install_receipt() {
-    home="${OPENSQUILLA_STATE_DIR:-${HOME}/.opensquilla}"
+    home="${OPENSTARRY_CODE_STATE_DIR:-${HOME}/.openstarry-code}"
     receipt="${home}/install-receipt.json"
     installed_at="$(date -u +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || echo "")"
     if [[ "${installer}" == "uv" ]]; then
@@ -364,6 +364,6 @@ RECEIPT
 write_install_receipt || true
 
 print_banner
-if [[ "${OPENSQUILLA_LISTEN:-}" = "0.0.0.0" ]]; then
+if [[ "${OPENSTARRY_CODE_LISTEN:-}" = "0.0.0.0" ]]; then
     print_listen_warning
 fi

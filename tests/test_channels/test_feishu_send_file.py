@@ -6,9 +6,9 @@ from pathlib import Path
 import httpx
 import pytest
 
-from opensquilla.channels.feishu import FeishuChannel, FeishuChannelConfig, _TokenState
-from opensquilla.channels.stream_policy import resolve_channel_stream_policy
-from opensquilla.contracts.attachments import OPAQUE_ATTACHMENT_BYTES
+from openstarry_code.channels.feishu import FeishuChannel, FeishuChannelConfig, _TokenState
+from openstarry_code.channels.stream_policy import resolve_channel_stream_policy
+from openstarry_code.contracts.attachments import OPAQUE_ATTACHMENT_BYTES
 
 
 @pytest.mark.asyncio

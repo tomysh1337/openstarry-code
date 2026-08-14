@@ -6,7 +6,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.engine.runtime import TurnRunner
+from openstarry_code.engine.runtime import TurnRunner
 
 
 class _RecordingSessionManager:

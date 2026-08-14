@@ -5,9 +5,9 @@ from io import BytesIO, TextIOWrapper
 
 import typer
 
-from opensquilla.cli.agent_event_stream import StderrAgentEventSink
-from opensquilla.cli.stdio import configure_stdio_for_unicode
-from opensquilla.engine.types import ErrorEvent
+from openstarry_code.cli.agent_event_stream import StderrAgentEventSink
+from openstarry_code.cli.stdio import configure_stdio_for_unicode
+from openstarry_code.engine.types import ErrorEvent
 
 
 def test_configure_stdio_for_unicode_allows_typer_echo_on_gbk_stream(

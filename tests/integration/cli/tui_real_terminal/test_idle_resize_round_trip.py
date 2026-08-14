@@ -348,11 +348,11 @@ def test_idle_resize_narrow_large_narrow_repaints_complete_framebuffer(
     )
     target.env.update(
         {
-            "OPENSQUILLA_TUI_THEME": "opensquilla-dark",
-            "OPENSQUILLA_TUI_COLOR": "truecolor",
+            "OPENSTARRY_CODE_TUI_THEME": "opensquilla-dark",
+            "OPENSTARRY_CODE_TUI_COLOR": "truecolor",
             # Prove the resize path itself; a periodic full repaint must not
             # hide stale geometry left by the resize handler.
-            "OPENSQUILLA_TUI_REPAINT_WATCHDOG_MS": "0",
+            "OPENSTARRY_CODE_TUI_REPAINT_WATCHDOG_MS": "0",
         }
     )
 
@@ -470,9 +470,9 @@ def test_collapsed_stream_resize_round_trip_recovers_without_stale_geometry(
     )
     target.env.update(
         {
-            "OPENSQUILLA_TUI_THEME": "opensquilla-dark",
-            "OPENSQUILLA_TUI_COLOR": "truecolor",
-            "OPENSQUILLA_TUI_REPAINT_WATCHDOG_MS": "0",
+            "OPENSTARRY_CODE_TUI_THEME": "opensquilla-dark",
+            "OPENSTARRY_CODE_TUI_COLOR": "truecolor",
+            "OPENSTARRY_CODE_TUI_REPAINT_WATCHDOG_MS": "0",
         }
     )
 
@@ -591,10 +591,10 @@ def test_empty_welcome_resize_remount_recovers_without_duplicate_frames(
     )
     target.env.update(
         {
-            "OPENSQUILLA_TUI_THEME": "opensquilla-dark",
-            "OPENSQUILLA_TUI_COLOR": "truecolor",
+            "OPENSTARRY_CODE_TUI_THEME": "opensquilla-dark",
+            "OPENSTARRY_CODE_TUI_COLOR": "truecolor",
             # Only the resize/final recovery path may repair the physical grid.
-            "OPENSQUILLA_TUI_REPAINT_WATCHDOG_MS": "0",
+            "OPENSTARRY_CODE_TUI_REPAINT_WATCHDOG_MS": "0",
         }
     )
 
@@ -655,7 +655,7 @@ def test_empty_welcome_resize_remount_recovers_without_duplicate_frames(
         scrollback = session.capture_scrollback_text("welcome-remount-scrollback")
         evidence.write_scrollback(scrollback)
         assert scrollback.text.count("Build with your agent. Stay in the flow.") == 1
-        assert scrollback.text.count("OpenSquilla · Session") == 1
+        assert scrollback.text.count("OpenStarry Code · Session") == 1
 
         evidence.write_result(
             ScenarioResult(

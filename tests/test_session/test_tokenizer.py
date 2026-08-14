@@ -8,8 +8,8 @@ from typing import Any
 
 import pytest
 
-from opensquilla import token_estimation
-from opensquilla.session import tokenizer
+from openstarry_code import token_estimation
+from openstarry_code.session import tokenizer
 
 
 class _SizedTokens:

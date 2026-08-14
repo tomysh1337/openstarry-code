@@ -1,15 +1,15 @@
 import pytest
 
-from opensquilla.provider.app_attribution import (
-    OPENSQUILLA_APP_REFERER,
-    OPENSQUILLA_APP_TITLE,
+from openstarry_code.provider.app_attribution import (
+    OPENSTARRY_CODE_APP_REFERER,
+    OPENSTARRY_CODE_APP_TITLE,
     is_provider_app_host,
     provider_app_headers,
 )
 
 EXPECTED_HEADERS = {
     "HTTP-Referer": "https://opensquilla.ai",
-    "X-Title": "OpenSquilla",
+    "X-Title": "OpenStarry Code",
 }
 
 
@@ -56,8 +56,8 @@ def test_provider_app_headers_reject_untrusted_or_malformed_urls(
 
 
 def test_provider_app_identity_constants_are_fixed() -> None:
-    assert OPENSQUILLA_APP_REFERER == "https://opensquilla.ai"
-    assert OPENSQUILLA_APP_TITLE == "OpenSquilla"
+    assert OPENSTARRY_CODE_APP_REFERER == "https://opensquilla.ai"
+    assert OPENSTARRY_CODE_APP_TITLE == "OpenStarry Code"
 
 
 def test_is_provider_app_host_rejects_non_allowlisted_root() -> None:

@@ -73,34 +73,34 @@ async def _run(args: argparse.Namespace) -> dict[str, Any]:
     else:
         history_path = None
 
-    os.environ["OPENSQUILLA_STATE_DIR"] = str(home)
-    os.environ["OPENSQUILLA_LOG_DIR"] = str(log_dir)
-    os.environ["OPENSQUILLA_LLM_PROVIDER"] = args.provider
-    os.environ["OPENSQUILLA_LLM_MODEL"] = args.model
+    os.environ["OPENSTARRY_CODE_STATE_DIR"] = str(home)
+    os.environ["OPENSTARRY_CODE_LOG_DIR"] = str(log_dir)
+    os.environ["OPENSTARRY_CODE_LLM_PROVIDER"] = args.provider
+    os.environ["OPENSTARRY_CODE_LLM_MODEL"] = args.model
 
     # Imports happen after env setup so default_opensquilla_home() users resolve
     # to this isolated state root.
-    from opensquilla.engine.agent import Agent
-    from opensquilla.engine.types import AgentConfig
-    from opensquilla.gateway.boot import _make_auto_propose_tool_context, build_services
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.scheduler.auto_propose_handler import make_auto_propose_handler
-    from opensquilla.scheduler.types import CronJob, SessionTarget
-    from opensquilla.skills.creator.auto_propose import auto_propose
-    from opensquilla.skills.creator.proposer import (
+    from openstarry_code.engine.agent import Agent
+    from openstarry_code.engine.types import AgentConfig
+    from openstarry_code.gateway.boot import _make_auto_propose_tool_context, build_services
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.scheduler.auto_propose_handler import make_auto_propose_handler
+    from openstarry_code.scheduler.types import CronJob, SessionTarget
+    from openstarry_code.skills.creator.auto_propose import auto_propose
+    from openstarry_code.skills.creator.proposer import (
         reset_runtime_e2e_context,
         reset_smoke_fixture_context,
         set_runtime_e2e_context,
         set_smoke_fixture_context,
     )
-    from opensquilla.skills.creator.runtime_e2e import make_runtime_e2e_context
-    from opensquilla.skills.meta.orchestrator import (
+    from openstarry_code.skills.creator.runtime_e2e import make_runtime_e2e_context
+    from openstarry_code.skills.meta.orchestrator import (
         MetaOrchestrator,
         make_agent_runner_from_parent,
         make_llm_chat_from_provider,
         make_tool_invoker_from_handler,
     )
-    from opensquilla.tools.dispatch import build_tool_handler
+    from openstarry_code.tools.dispatch import build_tool_handler
 
     text_tiers = {
         "c0": {"provider": args.provider, "model": args.model, "thinking_level": "off"},
@@ -148,7 +148,7 @@ async def _run(args: argparse.Namespace) -> dict[str, Any]:
     )
     server_handle = None
     if args.actual_scheduler:
-        from opensquilla.gateway.boot import start_gateway_server
+        from openstarry_code.gateway.boot import start_gateway_server
 
         server_handle = await start_gateway_server(config=config, run=False)
         svc = getattr(server_handle, "_services", None)

@@ -3,15 +3,15 @@ from __future__ import annotations
 import httpx
 import pytest
 
-from opensquilla.provider.failures import ProviderFailureKind
-from opensquilla.provider.selector import (
+from openstarry_code.provider.failures import ProviderFailureKind
+from openstarry_code.provider.selector import (
     ModelSelector,
     ProviderBuildError,
     ProviderConfig,
     ProviderNotConfiguredError,
     SelectorConfig,
 )
-from opensquilla.provider.types import ModelInfo
+from openstarry_code.provider.types import ModelInfo
 
 HIGH_TIER_MODEL = "openrouter/high-tier-region-locked"
 MID_TIER_MODEL = "openrouter/mid-tier-available"
@@ -63,7 +63,7 @@ def test_turn_clone_disables_replay_for_plugin_fallback_without_mutating_shared_
         built.append(cfg)
         return cfg
 
-    monkeypatch.setattr("opensquilla.provider.selector._build_provider", fake_build_provider)
+    monkeypatch.setattr("openstarry_code.provider.selector._build_provider", fake_build_provider)
     shared = ModelSelector(
         SelectorConfig(
             primary=ProviderConfig(
@@ -92,7 +92,7 @@ def test_override_model_keeps_original_primary_as_first_fallback(monkeypatch) ->
         built.append(cfg)
         return cfg
 
-    monkeypatch.setattr("opensquilla.provider.selector._build_provider", fake_build_provider)
+    monkeypatch.setattr("openstarry_code.provider.selector._build_provider", fake_build_provider)
     selector = ModelSelector(
         SelectorConfig(
             primary=ProviderConfig(
@@ -126,7 +126,7 @@ def test_override_model_with_router_fallback_chain_prefers_lower_tiers(monkeypat
         built.append(cfg)
         return cfg
 
-    monkeypatch.setattr("opensquilla.provider.selector._build_provider", fake_build_provider)
+    monkeypatch.setattr("openstarry_code.provider.selector._build_provider", fake_build_provider)
     selector = ModelSelector(
         SelectorConfig(
             primary=ProviderConfig(
@@ -191,7 +191,7 @@ def _selector_with_failing_primary(monkeypatch) -> ModelSelector:
             return _AuthRejectingProvider()
         return _HealthyProvider()
 
-    monkeypatch.setattr("opensquilla.provider.selector._build_provider", fake_build_provider)
+    monkeypatch.setattr("openstarry_code.provider.selector._build_provider", fake_build_provider)
     return ModelSelector(
         SelectorConfig(
             primary=ProviderConfig(
@@ -237,7 +237,7 @@ async def test_list_models_detailed_reports_every_failed_chain_link(monkeypatch)
     def fake_build_provider(cfg: ProviderConfig):
         return _AuthRejectingProvider()
 
-    monkeypatch.setattr("opensquilla.provider.selector._build_provider", fake_build_provider)
+    monkeypatch.setattr("openstarry_code.provider.selector._build_provider", fake_build_provider)
     selector = ModelSelector(
         SelectorConfig(
             primary=ProviderConfig(provider="openrouter", model="openrouter/auth-locked-a"),
@@ -265,7 +265,7 @@ async def test_list_models_detailed_resolves_snapshots_per_chain_link(monkeypatc
             return _AuthRejectingProvider()
         return _HealthyProvider()
 
-    monkeypatch.setattr("opensquilla.provider.selector._build_provider", fake_build_provider)
+    monkeypatch.setattr("openstarry_code.provider.selector._build_provider", fake_build_provider)
     selector = ModelSelector(
         SelectorConfig(
             primary=ProviderConfig(
@@ -308,7 +308,7 @@ async def test_list_models_detailed_resolves_snapshots_per_chain_link(monkeypatc
 
 async def test_detailed_listing_enables_adapter_strict_mode(monkeypatch) -> None:
     monkeypatch.setattr(
-        "opensquilla.provider.selector._build_provider",
+        "openstarry_code.provider.selector._build_provider",
         lambda _cfg: _CompatibilityProviderThatSwallowsByDefault(),
     )
     selector = ModelSelector(

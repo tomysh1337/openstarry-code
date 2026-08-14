@@ -9,7 +9,7 @@ import httpx
 import pytest
 from PIL import Image
 
-from opensquilla.provider.image_generation import (
+from openstarry_code.provider.image_generation import (
     ImageGenerationRequest,
     ImageGenerationResult,
     OpenAIImageGenerationProvider,
@@ -18,7 +18,7 @@ from opensquilla.provider.image_generation import (
     TokenRhythmImageGenerationProvider,
     get_image_generation_provider,
 )
-from opensquilla.provider.qwen_token_plan import (
+from openstarry_code.provider.qwen_token_plan import (
     QWEN_TOKEN_PLAN_IMAGE_BASE_URL,
     QWEN_TOKEN_PLAN_OPENAI_BASE_URL,
 )
@@ -32,9 +32,9 @@ def _test_png_bytes() -> bytes:
 
 
 def test_image_generation_reuses_and_pins_a_profile_key_pool(monkeypatch) -> None:
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.gateway.llm_runtime import reset_profile_credential_pools
-    from opensquilla.provider.image_generation_credentials import (
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.gateway.llm_runtime import reset_profile_credential_pools
+    from openstarry_code.provider.image_generation_credentials import (
         resolve_image_generation_credential,
     )
 
@@ -83,13 +83,13 @@ def test_image_generation_reuses_and_pins_a_profile_key_pool(monkeypatch) -> Non
 
 
 def test_image_generation_reports_an_exhausted_profile_key_pool(monkeypatch) -> None:
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.gateway.llm_runtime import (
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.gateway.llm_runtime import (
         profile_credential_pools,
         reset_profile_credential_pools,
     )
-    from opensquilla.provider.failures import ProviderFailureKind
-    from opensquilla.provider.image_generation_credentials import (
+    from openstarry_code.provider.failures import ProviderFailureKind
+    from openstarry_code.provider.image_generation_credentials import (
         resolve_image_generation_credential,
     )
 
@@ -149,9 +149,9 @@ def test_image_generation_reports_an_exhausted_profile_key_pool(monkeypatch) -> 
 def test_image_generation_reports_pool_failure_through_gateway_capability(
     monkeypatch,
 ) -> None:
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.gateway.llm_runtime import reset_profile_credential_pools
-    from opensquilla.provider.image_generation_credentials import (
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.gateway.llm_runtime import reset_profile_credential_pools
+    from openstarry_code.provider.image_generation_credentials import (
         report_image_generation_pool_failure,
         resolve_image_generation_credential,
     )
@@ -203,11 +203,11 @@ def test_image_generation_reports_pool_failure_through_gateway_capability(
 
 def _clear_vision_provider_env(monkeypatch) -> None:
     for name in (
-        "OPENSQUILLA_VISION_PROVIDER",
-        "OPENSQUILLA_VISION_MODEL",
-        "OPENSQUILLA_LLM_PROVIDER",
-        "OPENSQUILLA_LLM_MODEL",
-        "OPENSQUILLA_LLM_PROXY",
+        "OPENSTARRY_CODE_VISION_PROVIDER",
+        "OPENSTARRY_CODE_VISION_MODEL",
+        "OPENSTARRY_CODE_LLM_PROVIDER",
+        "OPENSTARRY_CODE_LLM_MODEL",
+        "OPENSTARRY_CODE_LLM_PROXY",
         "OPENROUTER_API_KEY",
         "OPENROUTER_BASE_URL",
         "OPENAI_API_KEY",
@@ -253,7 +253,7 @@ async def test_openai_image_provider_keeps_output_format_in_images_payload(
             return FakeResponse()
 
     monkeypatch.setattr(
-        "opensquilla.provider.image_generation.httpx.AsyncClient",
+        "openstarry_code.provider.image_generation.httpx.AsyncClient",
         lambda **_kwargs: FakeClient(),
     )
 
@@ -314,7 +314,7 @@ async def test_openrouter_image_provider_adds_app_attribution_headers(monkeypatc
             return FakeResponse()
 
     monkeypatch.setattr(
-        "opensquilla.provider.image_generation.httpx.AsyncClient",
+        "openstarry_code.provider.image_generation.httpx.AsyncClient",
         lambda **kwargs: FakeClient(),
     )
 
@@ -334,7 +334,7 @@ async def test_openrouter_image_provider_adds_app_attribution_headers(monkeypatc
         "Authorization": "Bearer or-test",
         "Content-Type": "application/json",
         "HTTP-Referer": "https://opensquilla.ai",
-        "X-Title": "OpenSquilla",
+        "X-Title": "OpenStarry Code",
     }
     assert result.image_bytes == b"opensquilla"
 
@@ -388,11 +388,11 @@ async def test_qwen_token_plan_image_provider_uses_native_contract(monkeypatch) 
         return "image/png", _test_png_bytes()
 
     monkeypatch.setattr(
-        "opensquilla.provider.image_generation.httpx.AsyncClient",
+        "openstarry_code.provider.image_generation.httpx.AsyncClient",
         lambda **kwargs: FakeClient(),
     )
     monkeypatch.setattr(
-        "opensquilla.provider.image_generation._download_qwen_token_plan_image",
+        "openstarry_code.provider.image_generation._download_qwen_token_plan_image",
         fake_download,
     )
 
@@ -440,7 +440,7 @@ async def test_qwen_token_plan_image_provider_uses_native_contract(monkeypatch) 
 
 @pytest.mark.asyncio
 async def test_qwen_token_plan_generated_url_rejection_redacts_signature() -> None:
-    from opensquilla.provider.image_generation import (
+    from openstarry_code.provider.image_generation import (
         _download_qwen_token_plan_image,
     )
 
@@ -459,8 +459,8 @@ async def test_qwen_token_plan_generated_url_rejection_redacts_signature() -> No
 
 @pytest.mark.asyncio
 async def test_qwen_token_plan_generated_image_download_is_bounded(monkeypatch) -> None:
-    from opensquilla.provider import image_generation
-    from opensquilla.tools import ssrf
+    from openstarry_code.provider import image_generation
+    from openstarry_code.tools import ssrf
 
     captured: dict[str, object] = {}
 
@@ -539,7 +539,7 @@ async def test_openrouter_model_ref_keeps_provider_for_routing_but_not_wire_mode
     candidate,
     wire_model,
 ) -> None:
-    from opensquilla.provider import image_generation
+    from openstarry_code.provider import image_generation
 
     captured: dict[str, object] = {}
     encoded_image = base64.b64encode(_test_png_bytes()).decode("ascii")
@@ -617,7 +617,7 @@ async def test_image_provider_rejects_foreign_official_endpoint_before_http(
         raise AssertionError("HTTP client must not be constructed")
 
     monkeypatch.setattr(
-        "opensquilla.provider.image_generation.httpx.AsyncClient",
+        "openstarry_code.provider.image_generation.httpx.AsyncClient",
         fail_if_http_client_is_constructed,
     )
     provider = OpenRouterImageGenerationProvider(
@@ -658,7 +658,7 @@ async def test_image_provider_rejects_invalid_endpoint_before_http(
         raise AssertionError("HTTP client must not be constructed")
 
     monkeypatch.setattr(
-        "opensquilla.provider.image_generation.httpx.AsyncClient",
+        "openstarry_code.provider.image_generation.httpx.AsyncClient",
         fail_if_http_client_is_constructed,
     )
     provider = OpenRouterImageGenerationProvider(
@@ -679,8 +679,8 @@ async def test_image_provider_rejects_invalid_endpoint_before_http(
 
 
 def test_image_generation_availability_rejects_foreign_official_endpoint() -> None:
-    from opensquilla.gateway.config import ImageGenerationConfig
-    from opensquilla.tools.builtin.media import (
+    from openstarry_code.gateway.config import ImageGenerationConfig
+    from openstarry_code.tools.builtin.media import (
         configure_image_generation,
         image_generation_available,
     )
@@ -699,9 +699,9 @@ def test_image_generation_availability_rejects_foreign_official_endpoint() -> No
 
 
 def test_image_generation_availability_allows_endpointless_registered_provider() -> None:
-    from opensquilla.gateway.config import ImageGenerationConfig
-    from opensquilla.provider import image_generation
-    from opensquilla.tools.builtin.media import (
+    from openstarry_code.gateway.config import ImageGenerationConfig
+    from openstarry_code.provider import image_generation
+    from openstarry_code.tools.builtin.media import (
         configure_image_generation,
         image_generation_available,
     )
@@ -733,13 +733,13 @@ def test_image_generation_availability_allows_endpointless_registered_provider()
 async def test_image_provider_sends_correlation_only_for_explicit_tokenrhythm_origin(
     monkeypatch,
 ) -> None:
-    from opensquilla.provider.tokenrhythm_correlation import (
+    from openstarry_code.provider.tokenrhythm_correlation import (
         TOKENRHYTHM_CALL_KIND_HEADER,
         TOKENRHYTHM_EXECUTION_ID_HEADER,
         TOKENRHYTHM_SESSION_ID_HEADER,
         TOKENRHYTHM_TURN_ID_HEADER,
     )
-    from opensquilla.provider.types import ProviderRequestCorrelation
+    from openstarry_code.provider.types import ProviderRequestCorrelation
 
     captured_headers: list[dict[str, str]] = []
 
@@ -778,7 +778,7 @@ async def test_image_provider_sends_correlation_only_for_explicit_tokenrhythm_or
             return FakeResponse()
 
     monkeypatch.setattr(
-        "opensquilla.provider.image_generation.httpx.AsyncClient",
+        "openstarry_code.provider.image_generation.httpx.AsyncClient",
         lambda **kwargs: FakeClient(),
     )
     correlation = ProviderRequestCorrelation(
@@ -825,11 +825,11 @@ async def test_image_provider_sends_correlation_only_for_explicit_tokenrhythm_or
 
 @pytest.mark.asyncio
 async def test_image_generation_fallback_operation_derives_one_correlation() -> None:
-    from opensquilla.provider import image_generation
-    from opensquilla.provider.correlation_context import (
+    from openstarry_code.provider import image_generation
+    from openstarry_code.provider.correlation_context import (
         current_provider_request_correlation,
     )
-    from opensquilla.provider.types import ProviderRequestCorrelation
+    from openstarry_code.provider.types import ProviderRequestCorrelation
 
     root = ProviderRequestCorrelation(
         session_id="session-1",
@@ -893,7 +893,7 @@ async def test_image_generation_fallback_operation_derives_one_correlation() -> 
 
 @pytest.mark.asyncio
 async def test_invalid_provider_image_triggers_fallback_and_requested_format_conversion() -> None:
-    from opensquilla.provider import image_generation
+    from openstarry_code.provider import image_generation
 
     generated_models: list[str] = []
 
@@ -941,7 +941,7 @@ async def test_invalid_provider_image_triggers_fallback_and_requested_format_con
 async def test_image_generation_fallback_redacts_install_id_from_attempts_and_error(
     monkeypatch,
 ) -> None:
-    from opensquilla.provider import image_generation
+    from openstarry_code.provider import image_generation
 
     install_id = "i7"
 
@@ -1011,10 +1011,10 @@ async def test_image_generation_fallback_redacts_install_id_from_attempts_and_er
 def test_image_generation_recognizes_existing_operation_call_kinds(
     call_kind: str,
 ) -> None:
-    from opensquilla.provider.image_generation import (
+    from openstarry_code.provider.image_generation import (
         _is_image_generation_correlation,
     )
-    from opensquilla.provider.types import ProviderRequestCorrelation
+    from openstarry_code.provider.types import ProviderRequestCorrelation
 
     assert _is_image_generation_correlation(
         ProviderRequestCorrelation(
@@ -1031,9 +1031,9 @@ def test_image_generation_recognizes_existing_operation_call_kinds(
 async def test_image_generate_auto_publishes_generated_image_artifact_for_surfaces(
     monkeypatch, tmp_path, caller_kind
 ) -> None:
-    from opensquilla.gateway.config import ImageGenerationConfig
-    from opensquilla.tools.builtin import media
-    from opensquilla.tools.types import CallerKind, ToolContext, current_tool_context
+    from openstarry_code.gateway.config import ImageGenerationConfig
+    from openstarry_code.tools.builtin import media
+    from openstarry_code.tools.types import CallerKind, ToolContext, current_tool_context
 
     async def fake_generate_with_fallbacks(**_kwargs):
         return ImageGenerationResult(
@@ -1089,9 +1089,9 @@ async def test_image_generate_auto_publishes_generated_image_artifact_for_surfac
 async def test_image_generate_does_not_auto_publish_artifact_for_subagent(
     monkeypatch, tmp_path
 ) -> None:
-    from opensquilla.gateway.config import ImageGenerationConfig
-    from opensquilla.tools.builtin import media
-    from opensquilla.tools.types import CallerKind, ToolContext, current_tool_context
+    from openstarry_code.gateway.config import ImageGenerationConfig
+    from openstarry_code.tools.builtin import media
+    from openstarry_code.tools.types import CallerKind, ToolContext, current_tool_context
 
     async def fake_generate_with_fallbacks(**_kwargs):
         return ImageGenerationResult(
@@ -1136,10 +1136,10 @@ async def test_image_generate_does_not_auto_publish_artifact_for_subagent(
 async def test_image_generate_uses_configured_size_and_matching_output_suffix(
     tmp_path,
 ) -> None:
-    from opensquilla.gateway.config import ImageGenerationConfig
-    from opensquilla.provider import image_generation
-    from opensquilla.tools.builtin import media
-    from opensquilla.tools.types import ToolContext, current_tool_context
+    from openstarry_code.gateway.config import ImageGenerationConfig
+    from openstarry_code.provider import image_generation
+    from openstarry_code.tools.builtin import media
+    from openstarry_code.tools.types import ToolContext, current_tool_context
 
     captured_requests: list[ImageGenerationRequest] = []
 
@@ -1194,9 +1194,9 @@ async def test_image_generate_rejects_foreign_posix_filename_on_windows(
     monkeypatch,
     tmp_path,
 ) -> None:
-    from opensquilla.gateway.config import ImageGenerationConfig
-    from opensquilla.tools.builtin import media
-    from opensquilla.tools.types import CallerKind, ToolContext, ToolError, current_tool_context
+    from openstarry_code.gateway.config import ImageGenerationConfig
+    from openstarry_code.tools.builtin import media
+    from openstarry_code.tools.types import CallerKind, ToolContext, ToolError, current_tool_context
 
     monkeypatch.setattr(media.os, "name", "nt")
     config = ImageGenerationConfig(
@@ -1229,8 +1229,8 @@ def test_image_generation_reuses_llm_key_only_after_capability_is_enabled(monkey
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
 
-    from opensquilla.gateway.config import ImageGenerationConfig, LlmProviderConfig
-    from opensquilla.tools.builtin.media import (
+    from openstarry_code.gateway.config import ImageGenerationConfig, LlmProviderConfig
+    from openstarry_code.tools.builtin.media import (
         _resolve_image_generation_candidates,
         configure_image_generation,
         image_generation_available,
@@ -1262,8 +1262,8 @@ def test_image_generation_reuses_same_origin_llm_env_reference(monkeypatch) -> N
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     monkeypatch.setenv("CUSTOM_OPENROUTER_KEY", "sk-or-from-custom-env")
 
-    from opensquilla.gateway.config import ImageGenerationConfig, LlmProviderConfig
-    from opensquilla.tools.builtin.media import configure_image_generation
+    from openstarry_code.gateway.config import ImageGenerationConfig, LlmProviderConfig
+    from openstarry_code.tools.builtin.media import configure_image_generation
 
     image_config = ImageGenerationConfig(
         enabled=True,
@@ -1288,8 +1288,8 @@ def test_image_generation_reuses_same_origin_llm_env_reference(monkeypatch) -> N
 def test_image_generation_keeps_using_tokenrhythm_after_primary_switch(monkeypatch) -> None:
     monkeypatch.delenv("TOKENRHYTHM_API_KEY", raising=False)
 
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.tools.builtin import media
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.tools.builtin import media
 
     config = GatewayConfig(
         llm={
@@ -1332,9 +1332,9 @@ async def test_follow_llm_image_generation_is_dormant_for_another_active_provide
 ) -> None:
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
 
-    from opensquilla.gateway.config import ImageGenerationConfig, LlmProviderConfig
-    from opensquilla.tools.builtin import media
-    from opensquilla.tools.types import ToolError
+    from openstarry_code.gateway.config import ImageGenerationConfig, LlmProviderConfig
+    from openstarry_code.tools.builtin import media
+    from openstarry_code.tools.types import ToolError
 
     image_config = ImageGenerationConfig(
         enabled=True,
@@ -1363,9 +1363,9 @@ async def test_follow_llm_image_generation_is_dormant_for_custom_same_provider_e
 ) -> None:
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
 
-    from opensquilla.gateway.config import ImageGenerationConfig, LlmProviderConfig
-    from opensquilla.tools.builtin import media
-    from opensquilla.tools.types import ToolError
+    from openstarry_code.gateway.config import ImageGenerationConfig, LlmProviderConfig
+    from openstarry_code.tools.builtin import media
+    from openstarry_code.tools.types import ToolError
 
     image_config = ImageGenerationConfig(
         enabled=True,
@@ -1395,13 +1395,13 @@ def test_image_generation_llm_key_does_not_cross_endpoint_origin(monkeypatch) ->
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
 
-    from opensquilla.gateway.config import (
+    from openstarry_code.gateway.config import (
         ImageGenerationConfig,
         ImageGenerationOpenAIProviderConfig,
         ImageGenerationProvidersConfig,
         LlmProviderConfig,
     )
-    from opensquilla.tools.builtin.media import configure_image_generation
+    from openstarry_code.tools.builtin.media import configure_image_generation
 
     llm_config = LlmProviderConfig(
         provider="openai",
@@ -1429,12 +1429,12 @@ def test_image_generation_llm_key_does_not_cross_endpoint_origin(monkeypatch) ->
 def test_image_generation_default_env_does_not_cross_endpoint_origin(monkeypatch) -> None:
     monkeypatch.setenv("OPENAI_API_KEY", "sk-default-origin-key")
 
-    from opensquilla.gateway.config import (
+    from openstarry_code.gateway.config import (
         ImageGenerationConfig,
         ImageGenerationOpenAIProviderConfig,
         ImageGenerationProvidersConfig,
     )
-    from opensquilla.tools.builtin.media import configure_image_generation
+    from openstarry_code.tools.builtin.media import configure_image_generation
 
     image_config = ImageGenerationConfig(
         enabled=True,
@@ -1459,12 +1459,12 @@ def test_image_generation_explicit_env_is_allowed_for_custom_origin(monkeypatch)
     monkeypatch.setenv("CUSTOM_IMAGE_KEY", "sk-custom-origin-key")
     monkeypatch.setenv("OPENAI_API_KEY", "sk-default-origin-key")
 
-    from opensquilla.gateway.config import (
+    from openstarry_code.gateway.config import (
         ImageGenerationConfig,
         ImageGenerationOpenAIProviderConfig,
         ImageGenerationProvidersConfig,
     )
-    from opensquilla.tools.builtin.media import configure_image_generation
+    from openstarry_code.tools.builtin.media import configure_image_generation
 
     image_config = ImageGenerationConfig(
         enabled=True,
@@ -1488,13 +1488,13 @@ def test_image_generation_llm_key_reused_on_same_endpoint_origin(monkeypatch) ->
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
 
-    from opensquilla.gateway.config import (
+    from openstarry_code.gateway.config import (
         ImageGenerationConfig,
         ImageGenerationOpenAIProviderConfig,
         ImageGenerationProvidersConfig,
         LlmProviderConfig,
     )
-    from opensquilla.tools.builtin.media import configure_image_generation
+    from openstarry_code.tools.builtin.media import configure_image_generation
 
     llm_config = LlmProviderConfig(
         provider="openai",
@@ -1523,8 +1523,8 @@ def test_qwen_token_plan_image_provider_reuses_key_but_not_chat_path(
 ) -> None:
     monkeypatch.delenv("QWEN_TOKEN_PLAN_API_KEY", raising=False)
 
-    from opensquilla.gateway.config import ImageGenerationConfig, LlmProviderConfig
-    from opensquilla.tools.builtin.media import configure_image_generation
+    from openstarry_code.gateway.config import ImageGenerationConfig, LlmProviderConfig
+    from openstarry_code.tools.builtin.media import configure_image_generation
 
     llm_config = LlmProviderConfig(
         provider="qwen_token_plan",
@@ -1546,12 +1546,12 @@ def test_qwen_token_plan_image_provider_reuses_key_but_not_chat_path(
 def test_vision_provider_uses_configured_router_image_tier(monkeypatch) -> None:
     _clear_vision_provider_env(monkeypatch)
 
-    from opensquilla.gateway.config import (
+    from openstarry_code.gateway.config import (
         ImageGenerationConfig,
         LlmProviderConfig,
         SquillaRouterConfig,
     )
-    from opensquilla.tools.builtin import media
+    from openstarry_code.tools.builtin import media
 
     llm_config = LlmProviderConfig(
         provider="openrouter",
@@ -1597,17 +1597,17 @@ def test_vision_provider_uses_configured_router_image_tier(monkeypatch) -> None:
 
 def test_vision_provider_env_override_wins_over_router_image_tier(monkeypatch) -> None:
     _clear_vision_provider_env(monkeypatch)
-    monkeypatch.setenv("OPENSQUILLA_VISION_PROVIDER", "anthropic")
-    monkeypatch.setenv("OPENSQUILLA_VISION_MODEL", "claude-3-5-sonnet-latest")
+    monkeypatch.setenv("OPENSTARRY_CODE_VISION_PROVIDER", "anthropic")
+    monkeypatch.setenv("OPENSTARRY_CODE_VISION_MODEL", "claude-3-5-sonnet-latest")
     monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-configured")
     monkeypatch.setenv("ANTHROPIC_BASE_URL", "https://anthropic.example")
 
-    from opensquilla.gateway.config import (
+    from openstarry_code.gateway.config import (
         ImageGenerationConfig,
         LlmProviderConfig,
         SquillaRouterConfig,
     )
-    from opensquilla.tools.builtin import media
+    from openstarry_code.tools.builtin import media
 
     media.configure_image_generation(
         ImageGenerationConfig(),
@@ -1628,8 +1628,8 @@ def test_vision_provider_env_override_wins_over_router_image_tier(monkeypatch) -
 def test_vision_provider_resolves_demoted_primary_from_profile(monkeypatch) -> None:
     _clear_vision_provider_env(monkeypatch)
 
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.tools.builtin import media
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.tools.builtin import media
 
     config = GatewayConfig(
         llm={
@@ -1681,8 +1681,8 @@ def test_vision_provider_resolves_demoted_primary_from_profile(monkeypatch) -> N
 
 
 def test_image_analysis_tool_timeout_exceeds_provider_request_timeout() -> None:
-    from opensquilla.provider.types import ChatConfig
-    from opensquilla.tools.registry import get_default_registry
+    from openstarry_code.provider.types import ChatConfig
+    from openstarry_code.tools.registry import get_default_registry
 
     registered = get_default_registry().get("image")
 
@@ -1698,13 +1698,13 @@ async def test_image_tool_uses_configured_router_vision_provider_for_local_file(
 ) -> None:
     _clear_vision_provider_env(monkeypatch)
 
-    from opensquilla.gateway.config import (
+    from openstarry_code.gateway.config import (
         ImageGenerationConfig,
         LlmProviderConfig,
         SquillaRouterConfig,
     )
-    from opensquilla.provider.types import ContentBlockImage, ContentBlockText, Message
-    from opensquilla.tools.builtin import media
+    from openstarry_code.provider.types import ContentBlockImage, ContentBlockText, Message
+    from openstarry_code.tools.builtin import media
 
     llm_config = LlmProviderConfig(
         provider="openrouter",
@@ -1746,7 +1746,7 @@ async def test_image_tool_uses_configured_router_vision_provider_for_local_file(
         def resolve(self):
             return FakeProvider()
 
-    monkeypatch.setattr("opensquilla.provider.selector.ModelSelector", FakeSelector)
+    monkeypatch.setattr("openstarry_code.provider.selector.ModelSelector", FakeSelector)
 
     try:
         result = await media.image(str(png_path), prompt="Describe this image")
@@ -1771,14 +1771,14 @@ async def test_image_tool_uses_configured_router_vision_provider_for_local_file(
 async def test_vision_provider_sends_provider_native_multimodal_message(monkeypatch) -> None:
     _clear_vision_provider_env(monkeypatch)
 
-    from opensquilla.provider.correlation_context import bind_provider_request_correlation
-    from opensquilla.provider.types import (
+    from openstarry_code.provider.correlation_context import bind_provider_request_correlation
+    from openstarry_code.provider.types import (
         ContentBlockImage,
         ContentBlockText,
         Message,
         ProviderRequestCorrelation,
     )
-    from opensquilla.tools.builtin import media
+    from openstarry_code.tools.builtin import media
 
     media.configure_image_generation(None)
     captured: dict[str, object] = {}
@@ -1796,7 +1796,7 @@ async def test_vision_provider_sends_provider_native_multimodal_message(monkeypa
         def resolve(self):
             return FakeProvider()
 
-    monkeypatch.setattr("opensquilla.provider.selector.ModelSelector", FakeSelector)
+    monkeypatch.setattr("openstarry_code.provider.selector.ModelSelector", FakeSelector)
 
     root = ProviderRequestCorrelation(
         session_id="session-1",
@@ -1834,8 +1834,8 @@ async def test_vision_provider_sends_provider_native_multimodal_message(monkeypa
 async def test_vision_provider_error_event_is_not_empty_success(monkeypatch) -> None:
     _clear_vision_provider_env(monkeypatch)
 
-    from opensquilla.provider.types import ErrorEvent
-    from opensquilla.tools.builtin import media
+    from openstarry_code.provider.types import ErrorEvent
+    from openstarry_code.tools.builtin import media
 
     media.configure_image_generation(None)
 
@@ -1850,7 +1850,7 @@ async def test_vision_provider_error_event_is_not_empty_success(monkeypatch) -> 
         def resolve(self):
             return FakeProvider()
 
-    monkeypatch.setattr("opensquilla.provider.selector.ModelSelector", FakeSelector)
+    monkeypatch.setattr("openstarry_code.provider.selector.ModelSelector", FakeSelector)
 
     with pytest.raises(RuntimeError, match="Provider stream error.*timeout"):
         await media._call_vision_provider(
@@ -1864,8 +1864,8 @@ async def test_vision_provider_error_event_is_not_empty_success(monkeypatch) -> 
 async def test_text_media_llm_uses_provider_native_message(monkeypatch) -> None:
     _clear_vision_provider_env(monkeypatch)
 
-    from opensquilla.provider.types import Message
-    from opensquilla.tools.builtin import media
+    from openstarry_code.provider.types import Message
+    from openstarry_code.tools.builtin import media
 
     captured: dict[str, object] = {}
 
@@ -1882,7 +1882,7 @@ async def test_text_media_llm_uses_provider_native_message(monkeypatch) -> None:
         def resolve(self):
             return FakeProvider()
 
-    monkeypatch.setattr("opensquilla.provider.selector.ModelSelector", FakeSelector)
+    monkeypatch.setattr("openstarry_code.provider.selector.ModelSelector", FakeSelector)
 
     result = await media._call_llm_with_text("Extracted text", "Analyze this")
 
@@ -1900,12 +1900,12 @@ def test_image_generation_uses_provider_specific_api_key(monkeypatch) -> None:
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
 
-    from opensquilla.gateway.config import (
+    from openstarry_code.gateway.config import (
         ImageGenerationConfig,
         ImageGenerationOpenAIProviderConfig,
         ImageGenerationProvidersConfig,
     )
-    from opensquilla.tools.builtin.media import (
+    from openstarry_code.tools.builtin.media import (
         configure_image_generation,
         image_generation_available,
     )
@@ -1930,8 +1930,8 @@ def test_image_generation_nondefault_primary_does_not_auto_add_llm_provider(monk
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
 
-    from opensquilla.gateway.config import ImageGenerationConfig, LlmProviderConfig
-    from opensquilla.tools.builtin.media import (
+    from openstarry_code.gateway.config import ImageGenerationConfig, LlmProviderConfig
+    from openstarry_code.tools.builtin.media import (
         _resolve_image_generation_candidates,
         configure_image_generation,
     )
@@ -1951,8 +1951,8 @@ def test_image_generation_persisted_default_primary_still_adds_llm_provider(
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
 
-    from opensquilla.gateway.config import GatewayConfig, LlmProviderConfig
-    from opensquilla.tools.builtin.media import (
+    from openstarry_code.gateway.config import GatewayConfig, LlmProviderConfig
+    from openstarry_code.tools.builtin.media import (
         _resolve_image_generation_candidates,
         configure_image_generation,
     )
@@ -1970,11 +1970,11 @@ def test_image_generation_capability_exposes_agent_tool_when_configured(monkeypa
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
 
-    from opensquilla.engine.runtime import TurnRunner
-    from opensquilla.gateway.config import ImageGenerationConfig, LlmProviderConfig
-    from opensquilla.tools.builtin.media import configure_image_generation
-    from opensquilla.tools.registry import get_default_registry
-    from opensquilla.tools.types import CallerKind, ToolContext
+    from openstarry_code.engine.runtime import TurnRunner
+    from openstarry_code.gateway.config import ImageGenerationConfig, LlmProviderConfig
+    from openstarry_code.tools.builtin.media import configure_image_generation
+    from openstarry_code.tools.registry import get_default_registry
+    from openstarry_code.tools.types import CallerKind, ToolContext
 
     configure_image_generation(
         ImageGenerationConfig(enabled=True),
@@ -1998,11 +1998,11 @@ def test_image_generation_capability_does_not_expose_agent_tool_when_disabled(
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
 
-    from opensquilla.engine.runtime import TurnRunner
-    from opensquilla.gateway.config import ImageGenerationConfig, LlmProviderConfig
-    from opensquilla.tools.builtin.media import configure_image_generation
-    from opensquilla.tools.registry import get_default_registry
-    from opensquilla.tools.types import CallerKind, ToolContext
+    from openstarry_code.engine.runtime import TurnRunner
+    from openstarry_code.gateway.config import ImageGenerationConfig, LlmProviderConfig
+    from openstarry_code.tools.builtin.media import configure_image_generation
+    from openstarry_code.tools.registry import get_default_registry
+    from openstarry_code.tools.types import CallerKind, ToolContext
 
     configure_image_generation(
         ImageGenerationConfig(),
@@ -2021,7 +2021,7 @@ def test_image_generation_capability_does_not_expose_agent_tool_when_disabled(
 
 
 def _tokenrhythm_image_request() -> ImageGenerationRequest:
-    from opensquilla.provider.types import ProviderRequestCorrelation
+    from openstarry_code.provider.types import ProviderRequestCorrelation
 
     return ImageGenerationRequest(
         prompt="draw a friendly squid",
@@ -2042,7 +2042,7 @@ def _tokenrhythm_image_request() -> ImageGenerationRequest:
 async def test_tokenrhythm_image_provider_uses_images_api_and_b64_response(
     monkeypatch,
 ) -> None:
-    from opensquilla.provider.tokenrhythm_correlation import (
+    from openstarry_code.provider.tokenrhythm_correlation import (
         TOKENRHYTHM_CALL_KIND_HEADER,
         TOKENRHYTHM_EXECUTION_ID_HEADER,
         TOKENRHYTHM_SESSION_ID_HEADER,
@@ -2080,13 +2080,13 @@ async def test_tokenrhythm_image_provider_uses_images_api_and_b64_response(
             return FakeResponse()
 
     monkeypatch.setattr(
-        "opensquilla.provider.image_generation.httpx.AsyncClient",
+        "openstarry_code.provider.image_generation.httpx.AsyncClient",
         lambda **_kwargs: FakeClient(),
     )
     monkeypatch.setattr(
-        "opensquilla.provider.image_generation.tokenrhythm_install_id_headers",
+        "openstarry_code.provider.image_generation.tokenrhythm_install_id_headers",
         lambda _provider_kind, _base_url: {
-            "X-OpenSquilla-Install-Id": "synthetic-install-id"
+            "X-OpenStarry Code-Install-Id": "synthetic-install-id"
         },
     )
 
@@ -2105,12 +2105,12 @@ async def test_tokenrhythm_image_provider_uses_images_api_and_b64_response(
     assert isinstance(headers, dict)
     assert headers["Authorization"] == "Bearer synthetic-tokenrhythm-key"
     assert headers["HTTP-Referer"] == "https://opensquilla.ai"
-    assert headers["X-Title"] == "OpenSquilla"
+    assert headers["X-Title"] == "OpenStarry Code"
     assert headers[TOKENRHYTHM_SESSION_ID_HEADER] == "session-1"
     assert headers[TOKENRHYTHM_TURN_ID_HEADER] == "turn-1"
     assert headers[TOKENRHYTHM_EXECUTION_ID_HEADER] == "image-execution-1"
     assert headers[TOKENRHYTHM_CALL_KIND_HEADER] == "auxiliary.image_generation"
-    assert headers["X-OpenSquilla-Install-Id"] == "synthetic-install-id"
+    assert headers["X-OpenStarry Code-Install-Id"] == "synthetic-install-id"
     assert "synthetic-install-id" not in str(captured["json"])
     assert result.provider == "tokenrhythm"
     assert result.model == "qwen-image-2.0"
@@ -2142,11 +2142,11 @@ async def test_direct_image_provider_redacts_only_errors_that_echo_install_id(
             raise self.error
 
     monkeypatch.setattr(
-        "opensquilla.provider.image_generation.httpx.AsyncClient",
+        "openstarry_code.provider.image_generation.httpx.AsyncClient",
         lambda **_kwargs: FailingClient(next(errors)),
     )
     monkeypatch.setattr(
-        "opensquilla.provider.image_generation.redact_tokenrhythm_install_ids",
+        "openstarry_code.provider.image_generation.redact_tokenrhythm_install_ids",
         lambda text: text.replace(install_id, "***"),
     )
     provider = TokenRhythmImageGenerationProvider(
@@ -2194,17 +2194,17 @@ async def test_tokenrhythm_image_http_error_drops_retained_install_id(
             raise error
 
     monkeypatch.setattr(
-        "opensquilla.provider.image_generation.httpx.AsyncClient",
+        "openstarry_code.provider.image_generation.httpx.AsyncClient",
         lambda **_kwargs: FailingClient(),
     )
     monkeypatch.setattr(
-        "opensquilla.provider.image_generation.tokenrhythm_install_id_headers",
+        "openstarry_code.provider.image_generation.tokenrhythm_install_id_headers",
         lambda *_args, **_kwargs: {
-            "X-OpenSquilla-Install-Id": install_id
+            "X-OpenStarry Code-Install-Id": install_id
         },
     )
     monkeypatch.setattr(
-        "opensquilla.provider.error_redaction.redact_tokenrhythm_install_ids",
+        "openstarry_code.provider.error_redaction.redact_tokenrhythm_install_ids",
         lambda text: text.replace(install_id, "***"),
     )
 
@@ -2215,7 +2215,7 @@ async def test_tokenrhythm_image_http_error_drops_retained_install_id(
         await provider.generate(_tokenrhythm_image_request())
 
     assert raised.value.__context__ is None
-    assert raised.value.request.headers["X-OpenSquilla-Install-Id"] == "[PRESENT]"
+    assert raised.value.request.headers["X-OpenStarry Code-Install-Id"] == "[PRESENT]"
     assert raised.value.response.request is raised.value.request
     retained = " ".join(
         (
@@ -2233,7 +2233,7 @@ async def test_tokenrhythm_image_http_error_drops_retained_install_id(
 async def test_tokenrhythm_image_invalid_json_drops_retained_install_id(
     monkeypatch,
 ) -> None:
-    from opensquilla.provider import image_generation
+    from openstarry_code.provider import image_generation
 
     install_id = "i7"
 
@@ -2253,17 +2253,17 @@ async def test_tokenrhythm_image_invalid_json_drops_retained_install_id(
             )
 
     monkeypatch.setattr(
-        "opensquilla.provider.image_generation.httpx.AsyncClient",
+        "openstarry_code.provider.image_generation.httpx.AsyncClient",
         lambda **_kwargs: InvalidJsonClient(),
     )
     monkeypatch.setattr(
-        "opensquilla.provider.image_generation.tokenrhythm_install_id_headers",
+        "openstarry_code.provider.image_generation.tokenrhythm_install_id_headers",
         lambda *_args, **_kwargs: {
-            "X-OpenSquilla-Install-Id": install_id
+            "X-OpenStarry Code-Install-Id": install_id
         },
     )
     monkeypatch.setattr(
-        "opensquilla.provider.image_generation.redact_tokenrhythm_install_ids",
+        "openstarry_code.provider.image_generation.redact_tokenrhythm_install_ids",
         lambda text: text.replace(install_id, "***"),
     )
     image_generation.register_image_generation_provider(
@@ -2315,11 +2315,11 @@ async def test_tokenrhythm_image_provider_downloads_url_through_secure_helper(
         return "image/png", _test_png_bytes()
 
     monkeypatch.setattr(
-        "opensquilla.provider.image_generation.httpx.AsyncClient",
+        "openstarry_code.provider.image_generation.httpx.AsyncClient",
         lambda **_kwargs: FakeClient(),
     )
     monkeypatch.setattr(
-        "opensquilla.provider.image_generation._download_tokenrhythm_image",
+        "openstarry_code.provider.image_generation._download_tokenrhythm_image",
         fake_download,
     )
 
@@ -2366,7 +2366,7 @@ async def test_tokenrhythm_image_provider_omits_metadata_on_custom_host(
             return FakeResponse()
 
     monkeypatch.setattr(
-        "opensquilla.provider.image_generation.httpx.AsyncClient",
+        "openstarry_code.provider.image_generation.httpx.AsyncClient",
         lambda **_kwargs: FakeClient(),
     )
 
@@ -2384,8 +2384,8 @@ async def test_tokenrhythm_image_provider_omits_metadata_on_custom_host(
 def test_tokenrhythm_image_provider_registers_with_configured_identity(monkeypatch) -> None:
     monkeypatch.delenv("TOKENRHYTHM_API_KEY", raising=False)
 
-    from opensquilla.gateway.config import ImageGenerationConfig, LlmProviderConfig
-    from opensquilla.tools.builtin.media import configure_image_generation
+    from openstarry_code.gateway.config import ImageGenerationConfig, LlmProviderConfig
+    from openstarry_code.tools.builtin.media import configure_image_generation
 
     llm = LlmProviderConfig(
         provider="tokenrhythm",

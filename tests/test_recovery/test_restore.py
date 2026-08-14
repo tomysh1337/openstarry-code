@@ -13,18 +13,18 @@ from pathlib import Path
 import pytest
 from typer.testing import CliRunner
 
-from opensquilla.cli.recovery_cmd import recovery_app
-from opensquilla.recovery import (
+from openstarry_code.cli.recovery_cmd import recovery_app
+from openstarry_code.recovery import (
     AtomicStateUnknownError,
     DestinationExistsError,
     RestoreValidationError,
     inspect_profile,
 )
-from opensquilla.recovery.atomic import PathIdentity, no_follow_manifest
-from opensquilla.recovery.errors import ProfileLockBusyError
-from opensquilla.recovery.locking import ProfileOperationLock
-from opensquilla.recovery.restore import _identity_payload, restore_profile
-from opensquilla.recovery.transaction import (
+from openstarry_code.recovery.atomic import PathIdentity, no_follow_manifest
+from openstarry_code.recovery.errors import ProfileLockBusyError
+from openstarry_code.recovery.locking import ProfileOperationLock
+from openstarry_code.recovery.restore import _identity_payload, restore_profile
+from openstarry_code.recovery.transaction import (
     finalize_committed_profile_transaction,
     recover_profile_transaction,
 )
@@ -37,7 +37,7 @@ def _normalized_path(path: Path) -> str:
 
 
 def _contend_for_restored_gateway(state_dir: str, queue: multiprocessing.Queue) -> None:
-    from opensquilla.gateway.pidlock import GatewayPidLock
+    from openstarry_code.gateway.pidlock import GatewayPidLock
 
     lock = GatewayPidLock(state_dir)
     try:
@@ -154,8 +154,8 @@ def test_restore_profile_swaps_recorded_backup_and_indexes_previous_target(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "user-state"))
-    target = tmp_path / "opensquilla"
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "user-state"))
+    target = tmp_path / "openstarry-code"
     transaction_id = str(uuid.uuid4())
     backup = target.with_name(f"{target.name}.backup.{transaction_id}")
     _profile(target, "current")
@@ -167,7 +167,7 @@ def test_restore_profile_swaps_recorded_backup_and_indexes_previous_target(
     assert report.outcome == "ready"
     assert (target / "workspace" / "SOUL.md").read_text(encoding="utf-8") == ("recorded backup\n")
     assert not backup.exists()
-    parked = [path for path in tmp_path.glob("opensquilla.backup.*") if path != backup]
+    parked = [path for path in tmp_path.glob("openstarry-code.backup.*") if path != backup]
     assert len(parked) == 1
     assert (parked[0] / "workspace" / "SOUL.md").read_text(encoding="utf-8") == "current\n"
     history = json.loads(history_path.read_text(encoding="utf-8"))
@@ -177,15 +177,15 @@ def test_restore_profile_swaps_recorded_backup_and_indexes_previous_target(
     ]
     assert history["backups"][0]["restored_to"] == _normalized_path(target)
     assert history["backups"][0]["consumed_by_transaction_id"]
-    assert not (tmp_path / ".opensquilla.profile-replace.json").exists()
+    assert not (tmp_path / ".openstarry-code.profile-replace.json").exists()
 
 
 def test_restore_profile_preserves_workspace_links_and_opaque_code_task(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "user-state"))
-    target = tmp_path / "opensquilla"
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "user-state"))
+    target = tmp_path / "openstarry-code"
     transaction_id = str(uuid.uuid4())
     backup = target.with_name(f"{target.name}.backup.{transaction_id}")
     _profile(target, "current")
@@ -219,7 +219,7 @@ def test_restore_profile_preserves_workspace_links_and_opaque_code_task(
     assert os.readlink(
         target / "code-task" / "run" / "repo" / ".venv" / "bin" / "python"
     ) == "../../../../missing-python"
-    parked = [path for path in tmp_path.glob("opensquilla.backup.*") if path != backup]
+    parked = [path for path in tmp_path.glob("openstarry-code.backup.*") if path != backup]
     assert len(parked) == 1
     assert os.readlink(parked[0] / "workspace" / "SOUL.alias.md") == "SOUL.md"
     assert os.readlink(parked[0] / "state" / "workspace" / "LICENSE") == "COPYING"
@@ -232,8 +232,8 @@ def test_restore_cli_uses_history_target_and_primary_profile_kind(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "user-state"))
-    monkeypatch.setenv("OPENSQUILLA_PROFILE_KIND", "desktop-recovery")
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "user-state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_PROFILE_KIND", "desktop-recovery")
     target = tmp_path / "custom-primary-name"
     transaction_id = str(uuid.uuid4())
     backup = target.with_name(f"{target.name}.backup.{transaction_id}")
@@ -256,7 +256,7 @@ def test_restore_cli_uses_history_target_and_primary_profile_kind(
 
 
 def test_restore_contends_with_desktop_global_cleanup_lock(tmp_path: Path) -> None:
-    target = tmp_path / "opensquilla"
+    target = tmp_path / "openstarry-code"
     transaction_id = str(uuid.uuid4())
     backup = target.with_name(f"{target.name}.backup.{transaction_id}")
     _profile(target, "current")
@@ -286,25 +286,25 @@ def test_restore_contends_with_desktop_global_cleanup_lock(tmp_path: Path) -> No
         "recorded backup\n"
     )
     assert history.read_bytes() == history_before
-    assert not (tmp_path / ".opensquilla.profile-replace.json").exists()
+    assert not (tmp_path / ".openstarry-code.profile-replace.json").exists()
 
 
 def test_committed_restore_journal_finalize_never_overwrites_collision(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "user-state"))
-    target = tmp_path / "opensquilla"
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "user-state"))
+    target = tmp_path / "openstarry-code"
     transaction_id = str(uuid.uuid4())
     selected_backup = target.with_name(f"{target.name}.backup.{transaction_id}")
     _profile(target, "current")
     _profile(selected_backup, "recorded backup", with_legacy_lock=True)
     _record_backup(target, selected_backup, transaction_id)
-    journal = tmp_path / ".opensquilla.profile-replace.json"
+    journal = tmp_path / ".openstarry-code.profile-replace.json"
     restore_id = "00000000-0000-0000-0000-000000000001"
     original_uuid4 = uuid.uuid4
     monkeypatch.setattr(uuid, "uuid4", lambda: uuid.UUID(restore_id))
-    committed_journal = tmp_path / f".opensquilla.profile-replace.{restore_id}.committed.json"
+    committed_journal = tmp_path / f".openstarry-code.profile-replace.{restore_id}.committed.json"
     collision = b"existing recovery authority\n"
     committed_journal.write_bytes(collision)
 
@@ -329,8 +329,8 @@ def test_restore_missing_backup_lock_authority_fails_without_mutating_backup(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "user-state"))
-    target = tmp_path / "opensquilla"
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "user-state"))
+    target = tmp_path / "openstarry-code"
     transaction_id = str(uuid.uuid4())
     backup = target.with_name(f"{target.name}.backup.{transaction_id}")
     _profile(target, "current")
@@ -351,17 +351,17 @@ def test_restore_missing_backup_lock_authority_fails_without_mutating_backup(
     _assert_profile_snapshot_unchanged(backup, backup_before, backup_file_bytes)
     assert not (backup / "state" / "gateway.pid.lock").exists()
     assert (target / "workspace" / "SOUL.md").read_text(encoding="utf-8") == "current\n"
-    assert not (tmp_path / ".opensquilla.profile-replace.json").exists()
+    assert not (tmp_path / ".openstarry-code.profile-replace.json").exists()
 
 
 def test_restore_holds_candidate_legacy_lock_before_publication(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    import opensquilla.recovery.restore as restore_module
+    import openstarry_code.recovery.restore as restore_module
 
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "user-state"))
-    target = tmp_path / "opensquilla"
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "user-state"))
+    target = tmp_path / "openstarry-code"
     transaction_id = str(uuid.uuid4())
     backup = target.with_name(f"{target.name}.backup.{transaction_id}")
     _profile(target, "current")
@@ -406,10 +406,10 @@ def test_restore_validation_failure_rolls_back_both_profiles(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    import opensquilla.recovery.restore as restore_module
+    import openstarry_code.recovery.restore as restore_module
 
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "user-state"))
-    target = tmp_path / "opensquilla"
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "user-state"))
+    target = tmp_path / "openstarry-code"
     transaction_id = str(uuid.uuid4())
     backup = target.with_name(f"{target.name}.backup.{transaction_id}")
     _profile(target, "current")
@@ -431,7 +431,7 @@ def test_restore_validation_failure_rolls_back_both_profiles(
     assert (backup / "workspace" / "SOUL.md").read_text(encoding="utf-8") == ("recorded backup\n")
     _assert_profile_snapshot_unchanged(backup, backup_before, backup_file_bytes)
     assert history_path.read_bytes() == history_before
-    assert not (tmp_path / ".opensquilla.profile-replace.json").exists()
+    assert not (tmp_path / ".openstarry-code.profile-replace.json").exists()
 
 
 @pytest.mark.parametrize("failure_phase", ["target_parking", "backup_publication"])
@@ -440,10 +440,10 @@ def test_restore_post_move_unknown_state_preserves_journal_and_observed_paths(
     tmp_path: Path,
     failure_phase: str,
 ) -> None:
-    import opensquilla.recovery.restore as restore_module
+    import openstarry_code.recovery.restore as restore_module
 
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "user-state"))
-    target = tmp_path / "opensquilla"
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "user-state"))
+    target = tmp_path / "openstarry-code"
     transaction_id = str(uuid.uuid4())
     selected_backup = target.with_name(f"{target.name}.backup.{transaction_id}")
     _profile(target, "current")
@@ -477,7 +477,7 @@ def test_restore_post_move_unknown_state_preserves_journal_and_observed_paths(
     with pytest.raises(AtomicStateUnknownError):
         restore_profile(selected_backup)
 
-    journal = tmp_path / ".opensquilla.profile-replace.json"
+    journal = tmp_path / ".openstarry-code.profile-replace.json"
     assert journal.is_file()
     payload = json.loads(journal.read_text(encoding="utf-8"))
     current_backup = Path(payload["backup"])
@@ -505,8 +505,8 @@ def test_restore_rejects_unrecorded_or_renamed_backup_without_mutation(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "user-state"))
-    target = tmp_path / "opensquilla"
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "user-state"))
+    target = tmp_path / "openstarry-code"
     transaction_id = str(uuid.uuid4())
     recorded = target.with_name(f"{target.name}.backup.{transaction_id}")
     unrecorded = target.with_name(f"{target.name}.backup.{uuid.uuid4()}")
@@ -526,10 +526,10 @@ def test_restore_history_write_failure_rolls_back_profiles_and_history(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    import opensquilla.recovery.restore as restore_module
+    import openstarry_code.recovery.restore as restore_module
 
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "user-state"))
-    target = tmp_path / "opensquilla"
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "user-state"))
+    target = tmp_path / "openstarry-code"
     transaction_id = str(uuid.uuid4())
     backup = target.with_name(f"{target.name}.backup.{transaction_id}")
     _profile(target, "current")
@@ -551,17 +551,17 @@ def test_restore_history_write_failure_rolls_back_profiles_and_history(
     assert (target / "workspace" / "SOUL.md").read_text(encoding="utf-8") == "current\n"
     assert (backup / "workspace" / "SOUL.md").read_text(encoding="utf-8") == ("recorded backup\n")
     assert history_path.read_bytes() == history_before
-    assert not (tmp_path / ".opensquilla.profile-replace.json").exists()
+    assert not (tmp_path / ".openstarry-code.profile-replace.json").exists()
 
 
 def test_restore_history_post_publish_sync_failure_rolls_back_history(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    import opensquilla.recovery.restore as restore_module
+    import openstarry_code.recovery.restore as restore_module
 
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "user-state"))
-    target = tmp_path / "opensquilla"
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "user-state"))
+    target = tmp_path / "openstarry-code"
     transaction_id = str(uuid.uuid4())
     backup = target.with_name(f"{target.name}.backup.{transaction_id}")
     _profile(target, "current")
@@ -597,16 +597,16 @@ def test_restore_history_post_publish_sync_failure_rolls_back_history(
         "recorded backup\n"
     )
     assert history_path.read_bytes() == history_before
-    assert not (tmp_path / ".opensquilla.profile-replace.json").exists()
+    assert not (tmp_path / ".openstarry-code.profile-replace.json").exists()
 
 
 def test_restore_journal_post_publish_sync_failure_is_atomic_unknown(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.recovery.restore as restore_module
+    import openstarry_code.recovery.restore as restore_module
 
-    journal = tmp_path / ".opensquilla.profile-replace.json"
+    journal = tmp_path / ".openstarry-code.profile-replace.json"
     journal.write_text('{"phase":"prepared"}\n', encoding="utf-8")
     payload = {"phase": "validated", "transaction_id": str(uuid.uuid4())}
 
@@ -625,10 +625,10 @@ def test_restore_commit_write_failure_rolls_back_published_history(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    import opensquilla.recovery.restore as restore_module
+    import openstarry_code.recovery.restore as restore_module
 
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "user-state"))
-    target = tmp_path / "opensquilla"
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "user-state"))
+    target = tmp_path / "openstarry-code"
     transaction_id = str(uuid.uuid4())
     backup = target.with_name(f"{target.name}.backup.{transaction_id}")
     _profile(target, "current")
@@ -638,7 +638,10 @@ def test_restore_commit_write_failure_rolls_back_published_history(
     original_replace_json = restore_module._replace_json
 
     def fail_commit(path: Path, payload: dict, *, mode: int = 0o600) -> None:
-        if path.name == ".opensquilla.profile-replace.json" and payload.get("phase") == "committed":
+        if (
+            path.name == ".openstarry-code.profile-replace.json"
+            and payload.get("phase") == "committed"
+        ):
             raise OSError("synthetic journal commit failure")
         original_replace_json(path, payload, mode=mode)
 
@@ -650,7 +653,7 @@ def test_restore_commit_write_failure_rolls_back_published_history(
     assert (target / "workspace" / "SOUL.md").read_text(encoding="utf-8") == "current\n"
     assert (backup / "workspace" / "SOUL.md").read_text(encoding="utf-8") == ("recorded backup\n")
     assert history_path.read_bytes() == history_before
-    assert not (tmp_path / ".opensquilla.profile-replace.json").exists()
+    assert not (tmp_path / ".openstarry-code.profile-replace.json").exists()
 
 
 @pytest.mark.parametrize("history_published", [False, True])
@@ -659,10 +662,10 @@ def test_validated_restore_crash_recovers_by_rolling_back_history_and_paths(
     tmp_path: Path,
     history_published: bool,
 ) -> None:
-    import opensquilla.recovery.restore as restore_module
+    import openstarry_code.recovery.restore as restore_module
 
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "user-state"))
-    target = tmp_path / "opensquilla"
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "user-state"))
+    target = tmp_path / "openstarry-code"
     transaction_id = str(uuid.uuid4())
     selected = target.with_name(f"{target.name}.backup.{transaction_id}")
     _profile(target, "current")
@@ -688,7 +691,7 @@ def test_validated_restore_crash_recovers_by_rolling_back_history_and_paths(
     with pytest.raises(AtomicStateUnknownError):
         restore_profile(selected)
 
-    journal = tmp_path / ".opensquilla.profile-replace.json"
+    journal = tmp_path / ".openstarry-code.profile-replace.json"
     payload = json.loads(journal.read_text(encoding="utf-8"))
     assert payload["phase"] == "validated"
     before = inspect_profile(target, profile_kind="desktop-primary")

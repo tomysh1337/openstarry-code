@@ -5,13 +5,13 @@ from datetime import datetime
 
 import pytest
 
-from opensquilla.gateway.boot import (
+from openstarry_code.gateway.boot import (
     _task_runtime_envelope_host_execute,
     _task_runtime_envelope_owner,
 )
-from opensquilla.gateway.routing import build_cron_route_envelope, tool_context_from_envelope
-from opensquilla.scheduler.persistence import JobStore
-from opensquilla.scheduler.types import CronJob, JobReservation, ScheduleKind
+from openstarry_code.gateway.routing import build_cron_route_envelope, tool_context_from_envelope
+from openstarry_code.scheduler.persistence import JobStore
+from openstarry_code.scheduler.types import CronJob, JobReservation, ScheduleKind
 
 
 @pytest.mark.asyncio

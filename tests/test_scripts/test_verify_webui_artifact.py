@@ -19,7 +19,7 @@ from scripts.verify_webui_artifact import (
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-NODE_VERIFIER = REPO_ROOT / "opensquilla-webui" / "scripts" / "verify-dist.mjs"
+NODE_VERIFIER = REPO_ROOT / "openstarry-code-webui" / "scripts" / "verify-dist.mjs"
 
 
 def _utf8_key(value: str) -> bytes:
@@ -63,7 +63,7 @@ def _artifact(
     personal_audio_name: str = "local.mp3",
     tracked_playlist: dict[str, object] | None = None,
 ) -> tuple[Path, Path]:
-    webui = tmp_path / "opensquilla-webui"
+    webui = tmp_path / "openstarry-code-webui"
     dist = tmp_path / "dist"
     (webui / "src").mkdir(parents=True)
     (webui / ".node-version").write_text("22.12.0\n", encoding="utf-8")
@@ -275,7 +275,7 @@ def test_verify_wheel_requires_byte_identical_artifact(tmp_path: Path) -> None:
 def test_node_and_python_source_fingerprints_share_order_and_line_endings(
     tmp_path: Path,
 ) -> None:
-    webui = tmp_path / "opensquilla-webui"
+    webui = tmp_path / "openstarry-code-webui"
     source = webui / "src"
     public = webui / "public"
     source.mkdir(parents=True)
@@ -283,12 +283,12 @@ def test_node_and_python_source_fingerprints_share_order_and_line_endings(
     (webui / ".node-version").write_text("22.12.0\n", encoding="utf-8")
     (source / "😀.vue").write_text("<template>emoji</template>\n", encoding="utf-8")
     (source / "Ａ.vue").write_text("<template>full width</template>\n", encoding="utf-8")
-    (public / "site.webmanifest").write_text('{"name":"OpenSquilla"}\n', encoding="utf-8")
+    (public / "site.webmanifest").write_text('{"name":"OpenStarry Code"}\n', encoding="utf-8")
     baseline = source_fingerprint(webui)
 
     (webui / ".node-version").write_bytes(b"22.12.0\r\n")
     (source / "😀.vue").write_bytes(b"<template>emoji</template>\r\n")
-    (public / "site.webmanifest").write_bytes(b'{"name":"OpenSquilla"}\r\n')
+    (public / "site.webmanifest").write_bytes(b'{"name":"OpenStarry Code"}\r\n')
     (source / ".DS_Store").write_bytes(b"ignored metadata")
 
     script = (
@@ -345,7 +345,7 @@ def test_node_verifier_rejects_sensitive_artifact_files(tmp_path: Path) -> None:
 
     result = subprocess.run(
         ["node", str(NODE_VERIFIER), "--write", str(dist)],
-        cwd=REPO_ROOT / "opensquilla-webui",
+        cwd=REPO_ROOT / "openstarry-code-webui",
         check=False,
         capture_output=True,
         text=True,
@@ -372,14 +372,14 @@ def test_python_accepts_node_manifest_with_unicode_artifact_names(tmp_path: Path
 
     subprocess.run(
         ["node", str(NODE_VERIFIER), "--write", str(dist)],
-        cwd=REPO_ROOT / "opensquilla-webui",
+        cwd=REPO_ROOT / "openstarry-code-webui",
         check=True,
         capture_output=True,
         text=True,
         timeout=30,
     )
 
-    files = verify_dist(dist, webui_root=REPO_ROOT / "opensquilla-webui")
+    files = verify_dist(dist, webui_root=REPO_ROOT / "openstarry-code-webui")
     assert "assets/😀.js" in files
     assert "assets/Ａ.css" in files
 
@@ -404,7 +404,7 @@ def test_node_official_guard_rejects_tracks_in_the_tracked_playlist(
     )
     subprocess.run(
         ["node", str(NODE_VERIFIER), "--write", str(dist)],
-        cwd=REPO_ROOT / "opensquilla-webui",
+        cwd=REPO_ROOT / "openstarry-code-webui",
         check=True,
         capture_output=True,
         text=True,
@@ -413,7 +413,7 @@ def test_node_official_guard_rejects_tracks_in_the_tracked_playlist(
 
     result = subprocess.run(
         ["node", str(NODE_VERIFIER), "--forbid-personal-bgm", str(dist)],
-        cwd=REPO_ROOT / "opensquilla-webui",
+        cwd=REPO_ROOT / "openstarry-code-webui",
         check=False,
         capture_output=True,
         text=True,

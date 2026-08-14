@@ -1,17 +1,17 @@
 from __future__ import annotations
 
-from opensquilla.provider import ContentBlockCompaction
-from opensquilla.session.compaction_state import (
+from openstarry_code.provider import ContentBlockCompaction
+from openstarry_code.session.compaction_state import (
     StructuredCompactionSummary,
     render_structured_summary,
 )
-from opensquilla.session.context_view import (
+from openstarry_code.session.context_view import (
     build_compaction_context_items,
     build_compaction_context_records,
     build_provider_compaction_context,
     format_compaction_summary_context,
 )
-from opensquilla.session.models import SessionContextState, SessionSummary
+from openstarry_code.session.models import SessionContextState, SessionSummary
 
 
 def test_compaction_summary_formatter_is_deterministic_and_deduplicates() -> None:

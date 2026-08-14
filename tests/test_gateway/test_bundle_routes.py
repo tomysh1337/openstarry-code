@@ -18,8 +18,8 @@ from pathlib import Path
 import pytest
 from starlette.testclient import TestClient
 
-from opensquilla.gateway.app import create_gateway_app
-from opensquilla.gateway.config import GatewayConfig
+from openstarry_code.gateway.app import create_gateway_app
+from openstarry_code.gateway.config import GatewayConfig
 
 # A loopback peer on a loopback-bound, no-auth gateway is the proven owner;
 # a non-loopback peer is not (see gateway.auth.OpenScopeResolver).
@@ -31,7 +31,7 @@ _REMOTE_PEER = ("203.0.113.7", 51000)
 def _hermetic_config(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     config_path = tmp_path / "synthetic-config.toml"
     config_path.write_text("# synthetic bundle-route-test config\n", encoding="utf-8")
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(config_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(config_path))
 
 
 def _client(
@@ -43,8 +43,8 @@ def _client(
     home = tmp_path / "home"
     (home / "logs").mkdir(parents=True)
     (home / "logs" / "debug.log").write_text("2026-07-07 [INFO] opensquilla: ok\n")
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
-    monkeypatch.setenv("OPENSQUILLA_LOG_DIR", str(home / "logs"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_LOG_DIR", str(home / "logs"))
     return TestClient(
         create_gateway_app(GatewayConfig()),
         base_url="http://127.0.0.1:18791",
@@ -190,7 +190,7 @@ def test_bundle_route_allows_same_origin_request(monkeypatch, tmp_path) -> None:
 
 
 def test_bundle_route_rejects_non_owner(monkeypatch, tmp_path) -> None:
-    import opensquilla.gateway.bundle_routes as bundle_routes
+    import openstarry_code.gateway.bundle_routes as bundle_routes
 
     monkeypatch.setattr(
         bundle_routes, "_request_principal_is_owner", lambda config, request: False
@@ -227,10 +227,10 @@ def test_bundle_route_cleans_temp_after_serve(monkeypatch, tmp_path) -> None:
 def test_bundle_route_generation_failure_returns_500_and_cleans_temp(
     monkeypatch, tmp_path
 ) -> None:
-    import opensquilla.observability.bundle as bundle_mod
+    import openstarry_code.observability.bundle as bundle_mod
 
     def _boom(*args: object, **kwargs: object) -> None:
-        raise RuntimeError("secret /srv/fake-opensquilla/state detail")
+        raise RuntimeError("secret /srv/fake-openstarry_code/state detail")
 
     monkeypatch.setattr(bundle_mod, "collect_bundle", _boom)
     created = _track_mkdtemp(monkeypatch)

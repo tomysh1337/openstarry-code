@@ -18,9 +18,9 @@ import threading
 import tomllib
 from concurrent.futures import ThreadPoolExecutor
 
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.onboarding.config_store import load_config, persist_config
-from opensquilla.onboarding.mutations import upsert_llm_provider
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.onboarding.config_store import load_config, persist_config
+from openstarry_code.onboarding.mutations import upsert_llm_provider
 
 
 def _write_small_config(target) -> None:
@@ -42,7 +42,7 @@ def _write_small_config(target) -> None:
 
 
 def test_persist_does_not_bake_env_auth_token(tmp_path, monkeypatch):
-    monkeypatch.setenv("OPENSQUILLA_AUTH_TOKEN", "tok-synthetic-123")
+    monkeypatch.setenv("OPENSTARRY_CODE_AUTH_TOKEN", "tok-synthetic-123")
     target = tmp_path / "config.toml"
     _write_small_config(target)
 
@@ -60,7 +60,7 @@ def test_persist_does_not_bake_env_auth_token(tmp_path, monkeypatch):
 
 
 def test_persist_missing_file_does_not_bake_env_secret(tmp_path, monkeypatch):
-    monkeypatch.setenv("OPENSQUILLA_AUTH_TOKEN", "tok-synthetic-456")
+    monkeypatch.setenv("OPENSTARRY_CODE_AUTH_TOKEN", "tok-synthetic-456")
     target = tmp_path / "config.toml"
 
     cfg = load_config(target)  # first run: no config on disk yet
@@ -76,7 +76,7 @@ def test_persist_missing_file_does_not_bake_env_secret(tmp_path, monkeypatch):
 
 def test_persist_fresh_model_does_not_bake_env_secret(tmp_path, monkeypatch):
     """Even a config never routed through load_config must not leak env."""
-    monkeypatch.setenv("OPENSQUILLA_AUTH_TOKEN", "tok-synthetic-789")
+    monkeypatch.setenv("OPENSTARRY_CODE_AUTH_TOKEN", "tok-synthetic-789")
     target = tmp_path / "config.toml"
 
     cfg = GatewayConfig()
@@ -91,7 +91,7 @@ def test_persist_fresh_model_does_not_bake_env_secret(tmp_path, monkeypatch):
 
 
 def test_persist_does_not_freeze_env_override(tmp_path, monkeypatch):
-    monkeypatch.setenv("OPENSQUILLA_MEMORY_FLUSH_ENABLED", "true")
+    monkeypatch.setenv("OPENSTARRY_CODE_MEMORY_FLUSH_ENABLED", "true")
     target = tmp_path / "config.toml"
     target.write_text("port = 18791\n")
 
@@ -104,7 +104,7 @@ def test_persist_does_not_freeze_env_override(tmp_path, monkeypatch):
 
     # Removing the env override must restore the built-in default: the save
     # above must not have frozen the env value into the file.
-    monkeypatch.delenv("OPENSQUILLA_MEMORY_FLUSH_ENABLED")
+    monkeypatch.delenv("OPENSTARRY_CODE_MEMORY_FLUSH_ENABLED")
     assert load_config(target).memory.flush_enabled is False
 
 
@@ -313,7 +313,7 @@ def test_persist_merges_concurrent_disk_edits(tmp_path):
 
 
 def test_persist_serializes_overlapping_nonconflicting_writers(tmp_path, monkeypatch):
-    import opensquilla.onboarding.config_store as config_store
+    import openstarry_code.onboarding.config_store as config_store
 
     target = tmp_path / "config.toml"
     target.write_text("port = 18791\n")
@@ -486,9 +486,9 @@ def test_save_as_to_different_path_carries_loaded_values(tmp_path):
 
 
 def test_explicit_search_key_persists_when_equal_to_env_value(tmp_path, monkeypatch):
-    from opensquilla.onboarding.mutations import upsert_search_provider
+    from openstarry_code.onboarding.mutations import upsert_search_provider
 
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_SEARCH_API_KEY", "tvly-synthetic-abc")
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_SEARCH_API_KEY", "tvly-synthetic-abc")
     target = tmp_path / "config.toml"
     target.write_text("port = 18791\n")
 
@@ -505,12 +505,12 @@ def test_explicit_search_key_persists_when_equal_to_env_value(tmp_path, monkeypa
     # keeps working after the env var disappears.
     assert data["search_api_key"] == "tvly-synthetic-abc"
 
-    monkeypatch.delenv("OPENSQUILLA_GATEWAY_SEARCH_API_KEY")
+    monkeypatch.delenv("OPENSTARRY_CODE_GATEWAY_SEARCH_API_KEY")
     assert load_config(target).search_api_key == "tvly-synthetic-abc"
 
 
 def test_env_only_search_key_still_never_persisted(tmp_path, monkeypatch):
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_SEARCH_API_KEY", "tvly-synthetic-env")
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_SEARCH_API_KEY", "tvly-synthetic-env")
     target = tmp_path / "config.toml"
     target.write_text("port = 18791\n")
 
@@ -526,10 +526,10 @@ def test_explicit_audio_key_persists_when_equal_to_env_value(tmp_path, monkeypat
     section is pydantic-settings-bound, so an explicit entry equal to the
     env-absorbed value used to diff as unchanged and vanish from the file —
     leaving audio enabled with no stored credential."""
-    from opensquilla.onboarding.mutations import upsert_audio_provider
+    from openstarry_code.onboarding.mutations import upsert_audio_provider
 
     monkeypatch.setenv(
-        "OPENSQUILLA_AUDIO_PROVIDERS__ELEVENLABS__API_KEY", "el-synthetic-abc"
+        "OPENSTARRY_CODE_AUDIO_PROVIDERS__ELEVENLABS__API_KEY", "el-synthetic-abc"
     )
     target = tmp_path / "config.toml"
     target.write_text("port = 18791\n")
@@ -545,13 +545,13 @@ def test_explicit_audio_key_persists_when_equal_to_env_value(tmp_path, monkeypat
     assert data["audio"]["enabled"] is True
     assert data["audio"]["providers"]["elevenlabs"]["api_key"] == "el-synthetic-abc"
 
-    monkeypatch.delenv("OPENSQUILLA_AUDIO_PROVIDERS__ELEVENLABS__API_KEY")
+    monkeypatch.delenv("OPENSTARRY_CODE_AUDIO_PROVIDERS__ELEVENLABS__API_KEY")
     assert load_config(target).audio.providers.elevenlabs.api_key == "el-synthetic-abc"
 
 
 def test_env_only_audio_key_still_never_persisted(tmp_path, monkeypatch):
     monkeypatch.setenv(
-        "OPENSQUILLA_AUDIO_PROVIDERS__ELEVENLABS__API_KEY", "el-synthetic-env"
+        "OPENSTARRY_CODE_AUDIO_PROVIDERS__ELEVENLABS__API_KEY", "el-synthetic-env"
     )
     target = tmp_path / "config.toml"
     target.write_text("port = 18791\n")
@@ -564,10 +564,10 @@ def test_env_only_audio_key_still_never_persisted(tmp_path, monkeypatch):
 
 
 def test_explicit_image_key_persists_when_equal_to_env_value(tmp_path, monkeypatch):
-    from opensquilla.onboarding.mutations import upsert_image_generation_provider
+    from openstarry_code.onboarding.mutations import upsert_image_generation_provider
 
     monkeypatch.setenv(
-        "OPENSQUILLA_IMAGE_GENERATION_PROVIDERS__OPENAI__API_KEY", "sk-img-synthetic"
+        "OPENSTARRY_CODE_IMAGE_GENERATION_PROVIDERS__OPENAI__API_KEY", "sk-img-synthetic"
     )
     target = tmp_path / "config.toml"
     target.write_text("port = 18791\n")
@@ -587,7 +587,7 @@ def test_explicit_image_key_persists_when_equal_to_env_value(tmp_path, monkeypat
         data["image_generation"]["providers"]["openai"]["api_key"] == "sk-img-synthetic"
     )
 
-    monkeypatch.delenv("OPENSQUILLA_IMAGE_GENERATION_PROVIDERS__OPENAI__API_KEY")
+    monkeypatch.delenv("OPENSTARRY_CODE_IMAGE_GENERATION_PROVIDERS__OPENAI__API_KEY")
     reloaded = load_config(target)
     assert reloaded.image_generation.providers.openai.api_key == "sk-img-synthetic"
 
@@ -601,10 +601,10 @@ def test_explicit_image_key_persists_when_equal_to_env_value(tmp_path, monkeypat
 def test_gateway_persist_does_not_bake_env_resolved_base_url_and_proxy(
     tmp_path, monkeypatch
 ):
-    from opensquilla.gateway.llm_runtime import resolve_llm_runtime_config
+    from openstarry_code.gateway.llm_runtime import resolve_llm_runtime_config
 
     monkeypatch.setenv("OPENAI_BASE_URL", "http://intranet-proxy.local:8080/v1")
-    monkeypatch.setenv("OPENSQUILLA_LLM_PROXY", "http://127.0.0.1:7890")
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_PROXY", "http://127.0.0.1:7890")
     target = tmp_path / "config.toml"
     target.write_text('[llm]\nprovider = "openai"\nmodel = "gpt-5"\n')
 
@@ -626,7 +626,7 @@ def test_gateway_persist_does_not_bake_env_resolved_base_url_and_proxy(
 
 def test_gateway_persist_keeps_operator_edit_over_env_override(tmp_path, monkeypatch):
     """An operator change made after boot beats the env-override restore."""
-    from opensquilla.gateway.llm_runtime import resolve_llm_runtime_config
+    from openstarry_code.gateway.llm_runtime import resolve_llm_runtime_config
 
     monkeypatch.setenv("OPENAI_BASE_URL", "http://intranet-proxy.local:8080/v1")
     target = tmp_path / "config.toml"
@@ -696,7 +696,7 @@ def test_persist_recreates_loaded_sections_for_mutation_clone(tmp_path):
     """Same vanish scenario through the RPC-shaped path: the mutation clone
     (model_copy(deep=True) inside the mutation) carries the load-time raw
     contents, so persisting the clone recreates the full file too."""
-    from opensquilla.onboarding.mutations import upsert_search_provider
+    from openstarry_code.onboarding.mutations import upsert_search_provider
 
     target = tmp_path / "config.toml"
     _write_provider_config(target)
@@ -737,7 +737,7 @@ def test_persist_after_vanish_uses_last_written_contents(tmp_path):
 def test_persist_vanished_file_does_not_bake_env_values(tmp_path, monkeypatch):
     """The recreated file is rebuilt from the load-time DISK contents, so
     env-derived values still never leak into it."""
-    monkeypatch.setenv("OPENSQUILLA_AUTH_TOKEN", "tok-synthetic-vanish")
+    monkeypatch.setenv("OPENSTARRY_CODE_AUTH_TOKEN", "tok-synthetic-vanish")
     target = tmp_path / "config.toml"
     _write_provider_config(target)
 

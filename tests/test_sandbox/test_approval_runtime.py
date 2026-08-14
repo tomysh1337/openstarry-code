@@ -4,26 +4,26 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.application.approval_queue import ApprovalQueue
-from opensquilla.engine.types import ToolCall
-from opensquilla.sandbox.approval_runtime import (
+from openstarry_code.application.approval_queue import ApprovalQueue
+from openstarry_code.engine.types import ToolCall
+from openstarry_code.sandbox.approval_runtime import (
     ApprovalAction,
     SandboxOverride,
     SuspendedToolRequest,
     select_sandbox_override,
 )
-from opensquilla.sandbox.config import SandboxSettings
-from opensquilla.sandbox.elevation import (
+from openstarry_code.sandbox.config import SandboxSettings
+from openstarry_code.sandbox.elevation import (
     ElevationAction,
     gate_elevated_action,
     request_elevation,
 )
-from opensquilla.sandbox.integration import configure_runtime, reset_runtime
-from opensquilla.sandbox.permissions import FileSystemPermissionProfile
-from opensquilla.tool_boundary import ToolContinuation
-from opensquilla.tools.dispatch import build_tool_handler
-from opensquilla.tools.registry import ToolRegistry
-from opensquilla.tools.types import (
+from openstarry_code.sandbox.integration import configure_runtime, reset_runtime
+from openstarry_code.sandbox.permissions import FileSystemPermissionProfile
+from openstarry_code.tool_boundary import ToolContinuation
+from openstarry_code.tools.dispatch import build_tool_handler
+from openstarry_code.tools.registry import ToolRegistry
+from openstarry_code.tools.types import (
     CallerKind,
     ToolContext,
     ToolSpec,

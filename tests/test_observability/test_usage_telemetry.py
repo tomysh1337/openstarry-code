@@ -8,9 +8,9 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.types import DoneEvent
-from opensquilla.observability import install_telemetry, network_policy, usage_telemetry
-from opensquilla.session.storage import SessionStorage
+from openstarry_code.engine.types import DoneEvent
+from openstarry_code.observability import install_telemetry, network_policy, usage_telemetry
+from openstarry_code.session.storage import SessionStorage
 
 
 def _config(tmp_path, *, disabled: bool = False):
@@ -538,7 +538,7 @@ def test_usage_endpoint_is_independent_from_install_endpoint(monkeypatch):
     )
     monkeypatch.delenv(usage_telemetry.USAGE_TELEMETRY_ENDPOINT_ENV, raising=False)
 
-    assert usage_telemetry._endpoint() == "https://telemetry.opensquilla.ai/v1/usage"
+    assert usage_telemetry._endpoint() == "https://telemetry.openstarry-code.ai/v1/usage"
 
     monkeypatch.setenv(
         usage_telemetry.USAGE_TELEMETRY_ENDPOINT_ENV,
@@ -573,12 +573,12 @@ async def test_post_uses_event_id_as_idempotency_key(monkeypatch):
     payload = {"event_id": "stable-event-id", "event": "daily_usage"}
 
     assert await usage_telemetry._post_payload(
-        "https://telemetry.opensquilla.ai/v1/usage",
+        "https://telemetry.openstarry-code.ai/v1/usage",
         payload,
     ) == (True, None)
     assert calls == [
         {
-            "endpoint": "https://telemetry.opensquilla.ai/v1/usage",
+            "endpoint": "https://telemetry.openstarry-code.ai/v1/usage",
             "json": payload,
             "headers": {"Idempotency-Key": "stable-event-id"},
         }

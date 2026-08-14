@@ -6,23 +6,23 @@ from typing import Any
 
 import pytest
 
-from opensquilla.sandbox.backend import (
+from openstarry_code.sandbox.backend import (
     bubblewrap,
     linux_payload,
     noop,
     seatbelt,
     windows_default,
 )
-from opensquilla.sandbox.types import (
+from openstarry_code.sandbox.types import (
     NetworkMode,
     ResourceLimits,
     SandboxPolicy,
     SandboxRequest,
     SecurityLevel,
 )
-from opensquilla.skills.runtime_env import MEDIA_FONTS_DIR_ENV, PAPER_FONTS_ENV
-from opensquilla.tools.builtin import shell
-from opensquilla.tools.types import CallerKind, ToolContext, current_tool_context
+from openstarry_code.skills.runtime_env import MEDIA_FONTS_DIR_ENV, PAPER_FONTS_ENV
+from openstarry_code.tools.builtin import shell
+from openstarry_code.tools.types import CallerKind, ToolContext, current_tool_context
 
 
 @pytest.fixture(autouse=True)

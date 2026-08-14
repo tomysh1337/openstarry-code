@@ -12,7 +12,7 @@ from __future__ import annotations
 import json
 from urllib.parse import parse_qs, urlparse
 
-from opensquilla.onboarding.channel_specs import (
+from openstarry_code.onboarding.channel_specs import (
     FEISHU_TENANT_SCOPES,
     channel_catalog_payload,
     get_channel_setup_spec,

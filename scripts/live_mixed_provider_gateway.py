@@ -45,8 +45,8 @@ if str(REPO_ROOT) not in sys.path:
 if str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))
 
-from opensquilla.gateway_client import GatewayRPCClient, GatewayRPCError  # noqa: E402
-from opensquilla.provider.registry import get_provider_spec  # noqa: E402
+from openstarry_code.gateway_client import GatewayRPCClient, GatewayRPCError  # noqa: E402
+from openstarry_code.provider.registry import get_provider_spec  # noqa: E402
 from scripts.live_harness_security import (  # noqa: E402
     classify_failure,
     is_premium_model,
@@ -78,7 +78,7 @@ DEFAULT_ROUTER_MAX_TOKENS = 48
 DEFAULT_ENSEMBLE_MAX_TOKENS = 192
 MIN_ROUTER_PROVIDERS = 4
 BAD_MODEL_ID = "opensquilla-live/nonexistent-model"
-MISSING_ENV_SENTINEL = "OPENSQUILLA_LIVE_INTENTIONALLY_MISSING_PROVIDER_KEY"
+MISSING_ENV_SENTINEL = "OPENSTARRY_CODE_LIVE_INTENTIONALLY_MISSING_PROVIDER_KEY"
 # RFC 2606 reserves ``.invalid`` for names that never resolve.  The negative
 # credential cases pair this cross-origin endpoint with an empty profile so
 # the resolver cannot silently reacquire the provider's registry env key.  No
@@ -429,7 +429,7 @@ def build_gateway_environment(
         secret = str(secrets.get(target.env_key, "") or "")
         if secret:
             env[target.env_key] = secret
-    env["OPENSQUILLA_LIVE_DISABLE_DOTENV"] = "1"
+    env["OPENSTARRY_CODE_LIVE_DISABLE_DOTENV"] = "1"
     return env
 
 
@@ -1585,13 +1585,13 @@ async def _run_isolated_gateway_in_temp(
         base_environment=os.environ if base_environment is None else base_environment,
     )
     env["PYTHONPATH"] = str(SRC_DIR)
-    env["OPENSQUILLA_GATEWAY_CONFIG_PATH"] = str(config_path)
-    env["OPENSQUILLA_STATE_DIR"] = str(state_dir)
-    env["OPENSQUILLA_USER_STATE_DIR"] = str(user_state_dir)
-    env["OPENSQUILLA_TEST_PROFILE_LOCK_ROOT"] = "1"
-    env["OPENSQUILLA_MEMORY_DREAM_DISABLED"] = "1"
-    env["OPENSQUILLA_TURN_CALL_LOG"] = "1"
-    env["OPENSQUILLA_TURN_CALL_LOG_DIR"] = str(turn_log_dir)
+    env["OPENSTARRY_CODE_GATEWAY_CONFIG_PATH"] = str(config_path)
+    env["OPENSTARRY_CODE_STATE_DIR"] = str(state_dir)
+    env["OPENSTARRY_CODE_USER_STATE_DIR"] = str(user_state_dir)
+    env["OPENSTARRY_CODE_TEST_PROFILE_LOCK_ROOT"] = "1"
+    env["OPENSTARRY_CODE_MEMORY_DREAM_DISABLED"] = "1"
+    env["OPENSTARRY_CODE_TURN_CALL_LOG"] = "1"
+    env["OPENSTARRY_CODE_TURN_CALL_LOG_DIR"] = str(turn_log_dir)
 
     stdout_path = temp_root / "gateway.stdout.log"
     stderr_path = temp_root / "gateway.stderr.log"
@@ -1604,7 +1604,7 @@ async def _run_isolated_gateway_in_temp(
             [
                 sys.executable,
                 "-m",
-                "opensquilla.cli.main",
+                "openstarry_code.cli.main",
                 "gateway",
                 "run",
                 "--port",

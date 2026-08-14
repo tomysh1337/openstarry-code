@@ -7,8 +7,8 @@ from starlette.responses import JSONResponse, Response
 from starlette.routing import Route
 from starlette.testclient import TestClient
 
-from opensquilla.gateway.config import AuthConfig, ControlUiConfig, GatewayConfig
-from opensquilla.gateway.middleware import (
+from openstarry_code.gateway.config import AuthConfig, ControlUiConfig, GatewayConfig
+from openstarry_code.gateway.middleware import (
     AuthMiddleware,
     ErrorHandlingMiddleware,
     RateLimitMiddleware,

@@ -10,8 +10,8 @@ from __future__ import annotations
 import sqlite3
 from pathlib import Path
 
-from opensquilla.persistence.migrator import apply_pending
-from opensquilla.persistence.turn_error_writer import (
+from openstarry_code.persistence.migrator import apply_pending
+from openstarry_code.persistence.turn_error_writer import (
     TurnErrorWriter,
     new_error_id,
     open_turn_error_writer,

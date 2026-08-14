@@ -14,13 +14,13 @@ from typing import Any
 
 import pytest
 
-from opensquilla.onboarding import flow
-from opensquilla.onboarding.channel_specs import ChannelSetupField
-from opensquilla.onboarding.errors import UserCancelledError
-from opensquilla.onboarding.flow import OnboardOptions
-from opensquilla.onboarding.provider_specs import get_provider_setup_spec
-from opensquilla.onboarding.search_specs import get_search_provider_setup_spec
-from opensquilla.search.types import DEFAULT_SEARCH_MAX_RESULTS
+from openstarry_code.onboarding import flow
+from openstarry_code.onboarding.channel_specs import ChannelSetupField
+from openstarry_code.onboarding.errors import UserCancelledError
+from openstarry_code.onboarding.flow import OnboardOptions
+from openstarry_code.onboarding.provider_specs import get_provider_setup_spec
+from openstarry_code.onboarding.search_specs import get_search_provider_setup_spec
+from openstarry_code.search.types import DEFAULT_SEARCH_MAX_RESULTS
 
 
 class _ValidatedPrompt:
@@ -364,7 +364,7 @@ def test_channel_edit_blank_secrets_keep_stored_values(tmp_path, monkeypatch):
     stored credentials through the mutation layer's keep-current merge."""
 
     target = tmp_path / "c.toml"
-    from opensquilla.onboarding.setup_engine import SetupEngine
+    from openstarry_code.onboarding.setup_engine import SetupEngine
 
     engine = SetupEngine(path=target)
     engine.apply(
@@ -484,7 +484,7 @@ def test_channel_int_field_agrees_with_headless_coercion_semantics():
     """The wizard validator and the headless --field parser must accept and
     reject exactly the same spellings for the same spec field."""
 
-    from opensquilla.cli.channel_fields import coerce_channel_field_value
+    from openstarry_code.cli.channel_fields import coerce_channel_field_value
 
     field = ChannelSetupField(
         name="intents",
@@ -538,7 +538,7 @@ def test_channel_int_field_error_names_the_label_not_the_flag():
 def test_channel_float_field_agrees_with_headless_coercion_semantics():
     import typer
 
-    from opensquilla.cli.channel_fields import coerce_channel_field_value
+    from openstarry_code.cli.channel_fields import coerce_channel_field_value
 
     field = ChannelSetupField(
         name="poll_idle_sleep_s",

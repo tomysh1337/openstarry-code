@@ -13,19 +13,19 @@ from typing import Any, cast
 
 import pytest
 
-from opensquilla.engine import Agent, AgentConfig, ToolResult
-from opensquilla.engine.types import ToolCall
-from opensquilla.provider import ToolDefinition, ToolInputSchema
-from opensquilla.provider.openai import OpenAIProvider
-from opensquilla.search.canonical import run_canonical_web_search
-from opensquilla.search.types import SearchOptions
+from openstarry_code.engine import Agent, AgentConfig, ToolResult
+from openstarry_code.engine.types import ToolCall
+from openstarry_code.provider import ToolDefinition, ToolInputSchema
+from openstarry_code.provider.openai import OpenAIProvider
+from openstarry_code.search.canonical import run_canonical_web_search
+from openstarry_code.search.types import SearchOptions
 
 pytestmark = [pytest.mark.live_search, pytest.mark.llm, pytest.mark.llm_tools]
 
 
 def _require_live_agent_search() -> None:
-    if os.environ.get("OPENSQUILLA_LIVE_SEARCH") != "1":
-        pytest.skip("set OPENSQUILLA_LIVE_SEARCH=1 to run live search tests")
+    if os.environ.get("OPENSTARRY_CODE_LIVE_SEARCH") != "1":
+        pytest.skip("set OPENSTARRY_CODE_LIVE_SEARCH=1 to run live search tests")
     if not os.environ.get("OPENROUTER_API_KEY"):
         pytest.skip("OPENROUTER_API_KEY not set")
     if not os.environ.get("TAVILY_API_KEY"):

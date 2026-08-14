@@ -5,7 +5,7 @@ import importlib
 import pytest
 import structlog.testing
 
-import opensquilla.tools.builtin as builtin
+import openstarry_code.tools.builtin as builtin
 
 _REAL_IMPORT_MODULE = importlib.import_module
 
@@ -15,7 +15,7 @@ def _reload_builtin_with_failure(
     failing_module: str,
 ) -> None:
     def _fake_import(name: str, package: str | None = None):
-        if name == f"opensquilla.tools.builtin.{failing_module}":
+        if name == f"openstarry_code.tools.builtin.{failing_module}":
             raise RuntimeError(f"{failing_module} import failed")
         return _REAL_IMPORT_MODULE(name, package)
 

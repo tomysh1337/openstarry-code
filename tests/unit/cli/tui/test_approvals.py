@@ -6,14 +6,14 @@ from typing import Any
 
 import pytest
 
-from opensquilla.cli.tui.adapters.approvals import (
+from openstarry_code.cli.tui.adapters.approvals import (
     ApprovalChoice,
     decide_from_response,
     deny_decision,
     parse_approval_envelope,
     tui_approval_handler,
 )
-from opensquilla.engine.commands import Surface
+from openstarry_code.engine.commands import Surface
 
 
 class _RecordingRenderer:
@@ -605,16 +605,16 @@ async def test_renderer_with_none_output_handle_gets_notice() -> None:
 
 
 def test_default_turn_stream_dependencies_wires_interactive_handler() -> None:
-    from opensquilla.cli.tui.adapters import turn_stream_defaults
+    from openstarry_code.cli.tui.adapters import turn_stream_defaults
 
     deps = turn_stream_defaults.default_turn_stream_dependencies()
 
     assert deps.approval_handler is not turn_stream_defaults._noop_approval_handler
-    assert deps.approval_handler.__module__ == "opensquilla.cli.tui.adapters.approvals"
+    assert deps.approval_handler.__module__ == "openstarry_code.cli.tui.adapters.approvals"
 
 
 def test_default_turn_stream_dependencies_keeps_explicit_handler() -> None:
-    from opensquilla.cli.tui.adapters import turn_stream_defaults
+    from openstarry_code.cli.tui.adapters import turn_stream_defaults
 
     async def explicit_handler(*_args: Any, **_kwargs: Any) -> None:
         return None
@@ -627,7 +627,7 @@ def test_default_turn_stream_dependencies_keeps_explicit_handler() -> None:
 async def test_default_handler_resolves_through_host_capable_renderer() -> None:
     """End-to-end over the default wiring: an approval envelope reaching the
     handler via a host-capable renderer is presented and resolved."""
-    from opensquilla.cli.tui.adapters import turn_stream_defaults
+    from openstarry_code.cli.tui.adapters import turn_stream_defaults
 
     deps = turn_stream_defaults.default_turn_stream_dependencies()
     resolver = _Resolver()

@@ -25,17 +25,17 @@ from typing import Any
 import pytest
 import tomli_w
 
-import opensquilla.gateway.config_migration as config_migration_module
-import opensquilla.migration.opensquilla_home as migration_module
-import opensquilla.recovery as recovery_module
-from opensquilla.artifacts import ArtifactStore
-from opensquilla.attachment_refs import (
+import openstarry_code.gateway.config_migration as config_migration_module
+import openstarry_code.migration.opensquilla_home as migration_module
+import openstarry_code.recovery as recovery_module
+from openstarry_code.artifacts import ArtifactStore
+from openstarry_code.attachment_refs import (
     make_attachment_ref,
     read_attachment_ref_bytes,
     write_transcript_material,
 )
-from opensquilla.migration import orchestrator
-from opensquilla.migration.opensquilla_home import (
+from openstarry_code.migration import orchestrator
+from openstarry_code.migration.opensquilla_home import (
     IMPORT_MARKER_FILENAME,
     OpenSquillaHomeMigrator,
     OpenSquillaMigrationOptions,
@@ -44,13 +44,13 @@ from opensquilla.migration.opensquilla_home import (
     inspect_opensquilla_home_candidate,
     is_valid_opensquilla_home,
 )
-from opensquilla.persistence.migrator import apply_pending
-from opensquilla.recovery.locking import ProfileOperationLock
-from opensquilla.recovery.restore import restore_profile
-from opensquilla.recovery.transaction import recover_profile_transaction
-from opensquilla.session.manager import SessionManager
-from opensquilla.session.models import TranscriptEntry
-from opensquilla.session.storage import SessionStorage
+from openstarry_code.persistence.migrator import apply_pending
+from openstarry_code.recovery.locking import ProfileOperationLock
+from openstarry_code.recovery.restore import restore_profile
+from openstarry_code.recovery.transaction import recover_profile_transaction
+from openstarry_code.session.manager import SessionManager
+from openstarry_code.session.models import TranscriptEntry
+from openstarry_code.session.storage import SessionStorage
 
 FIXTURE_CONFIG = Path(__file__).parent / "fixtures" / "homes" / "cli-0.1" / "config.toml"
 MIGRATIONS_DIR = Path(__file__).resolve().parents[2] / "migrations"
@@ -94,12 +94,12 @@ def _isolate_profile_operation_locks(
 ) -> None:
     """Never leave migration test locks in the runner's real user-state tree."""
 
-    monkeypatch.setenv("OPENSQUILLA_TEST", "1")
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "user-state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_TEST", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "user-state"))
 
 
 def _probe_gateway_lock(state_dir: str, queue: multiprocessing.Queue) -> None:
-    from opensquilla.gateway.pidlock import GatewayPidLock
+    from openstarry_code.gateway.pidlock import GatewayPidLock
 
     lock = GatewayPidLock(state_dir)
     try:
@@ -305,6 +305,30 @@ def _assert_imported_identity_chat_and_config(target: Path) -> None:
 # ---------------------------------------------------------------------------
 # 1. Dry-run
 # ---------------------------------------------------------------------------
+
+
+def test_target_profile_kind_prefers_current_names_and_accepts_legacy_aliases(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("OPENSQUILLA_PROFILE_KIND", "desktop-recovery")
+    assert migration_module._target_profile_kind() == "desktop-recovery"
+
+    monkeypatch.setenv("OPENSTARRY_CODE_PROFILE_KIND", "desktop-primary")
+    assert migration_module._target_profile_kind() == "desktop-primary"
+
+    monkeypatch.setenv("OPENSTARRY_CODE_DESKTOP_PROFILE_KIND", "recovery")
+    assert migration_module._target_profile_kind() == "recovery"
+
+
+def test_target_environment_prefers_current_name_and_accepts_legacy_alias(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    legacy_key = "OPENSQUILLA_GATEWAY_WORKSPACE_DIR"
+    monkeypatch.setenv(legacy_key, "legacy-workspace")
+    assert migration_module._target_environment_value(legacy_key) == "legacy-workspace"
+
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_WORKSPACE_DIR", "current-workspace")
+    assert migration_module._target_environment_value(legacy_key) == "current-workspace"
 
 
 def test_dry_run_produces_full_report_and_writes_nothing(tmp_path: Path) -> None:
@@ -605,7 +629,7 @@ def test_desktop_import_finalizes_rc3_layout_marker_only_after_commit(
 ) -> None:
     source = _build_source_home(tmp_path)
     target = tmp_path / "desktop-home"
-    monkeypatch.setenv("OPENSQUILLA_PROFILE_KIND", "desktop-primary")
+    monkeypatch.setenv("OPENSTARRY_CODE_PROFILE_KIND", "desktop-primary")
 
     report = _run(source, target, apply=True)
 
@@ -960,7 +984,7 @@ def test_existing_empty_target_is_parked_and_published_transactionally(
 def test_committed_replacement_history_can_restore_complete_previous_profile(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_USER_STATE_DIR", str(tmp_path / "user-state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_USER_STATE_DIR", str(tmp_path / "user-state"))
     source = _build_source_home(tmp_path / "source-root")
     target = tmp_path / "target-home"
     (target / "workspace").mkdir(parents=True)
@@ -1987,7 +2011,7 @@ def test_internal_dotenv_home_selectors_are_removed_before_cli_target_boot(
         + f"OPENSQUILLA_GATEWAY_CONFIG_PATH={source / 'config.toml'}\n",
         encoding="utf-8",
     )
-    target = fake_home / ".opensquilla"
+    target = fake_home / ".openstarry-code"
 
     report = _run(source, target, apply=True)
 
@@ -1998,6 +2022,10 @@ def test_internal_dotenv_home_selectors_are_removed_before_cli_target_boot(
     environment = os.environ.copy()
     environment["HOME"] = str(fake_home)
     for key in (
+        "OPENSTARRY_CODE_STATE_DIR",
+        "OPENSTARRY_CODE_HOME",
+        "OPENSTARRY_CODE_PROFILE",
+        "OPENSTARRY_CODE_GATEWAY_CONFIG_PATH",
         "OPENSQUILLA_STATE_DIR",
         "OPENSQUILLA_HOME",
         "OPENSQUILLA_PROFILE",
@@ -2009,8 +2037,8 @@ def test_internal_dotenv_home_selectors_are_removed_before_cli_target_boot(
             sys.executable,
             "-c",
             (
-                "from opensquilla.env import load_env; "
-                "from opensquilla.paths import default_opensquilla_home; "
+                "from openstarry_code.env import load_env; "
+                "from openstarry_code.paths import default_opensquilla_home; "
                 "home=default_opensquilla_home(); "
                 "load_env(cwd=home.parent, home=home); "
                 "print(default_opensquilla_home())"
@@ -2996,7 +3024,7 @@ def test_empty_target_import_rejects_ambient_external_workspace_override(
     external.mkdir()
     (external / "SOUL.md").write_text("unrelated live identity\n", encoding="utf-8")
     target = tmp_path / "target-home"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_WORKSPACE_DIR", str(external))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_WORKSPACE_DIR", str(external))
 
     report = _run(source, target, apply=True)
 
@@ -3150,7 +3178,7 @@ def test_lock_handoff_failure_after_publish_rolls_back_complete_original_target(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.recovery.locking as locking_module
+    import openstarry_code.recovery.locking as locking_module
 
     source = _build_source_home(tmp_path)
     source_before = _file_bytes(source)
@@ -3192,7 +3220,7 @@ def test_windows_lock_reacquire_failure_preserves_profile_transaction(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.recovery.locking as locking_module
+    import openstarry_code.recovery.locking as locking_module
 
     source = _build_source_home(tmp_path)
     source_before = _file_bytes(source)
@@ -3359,7 +3387,7 @@ def test_import_journal_post_publish_sync_failure_is_atomic_unknown(
     monkeypatch: pytest.MonkeyPatch,
     existing: bool,
 ) -> None:
-    from opensquilla.recovery.config_patch import ConfigSnapshot
+    from openstarry_code.recovery.config_patch import ConfigSnapshot
 
     journal = tmp_path / ".target.profile-replace.json"
     if existing:
@@ -3679,7 +3707,7 @@ def test_desktop_marker_after_hardened_journal_finalize_keeps_transaction_comple
     source = _build_source_home(tmp_path)
     target = tmp_path / "target-home"
 
-    monkeypatch.setenv("OPENSQUILLA_PROFILE_KIND", "desktop-primary")
+    monkeypatch.setenv("OPENSTARRY_CODE_PROFILE_KIND", "desktop-primary")
 
     report = _run(source, target, apply=True)
 
@@ -4666,7 +4694,7 @@ def test_orchestrator_accepts_wizard_defaults_for_opensquilla() -> None:
 def test_orchestrator_runs_opensquilla_source(tmp_path: Path, monkeypatch) -> None:
     source = _build_source_home(tmp_path)
     target = tmp_path / "target-home"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(target))
 
     report = orchestrator.run_one_migration(
         "opensquilla", source, orchestrator.MigrationBatchOptions(apply=False)

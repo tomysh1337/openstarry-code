@@ -4,14 +4,14 @@ from __future__ import annotations
 
 import json
 
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.onboarding.probe_history import (
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.onboarding.probe_history import (
     last_probe_payload,
     load_probe_history,
     record_probe,
     saved_deployment_fingerprint,
 )
-from opensquilla.onboarding.status import get_onboarding_status
+from openstarry_code.onboarding.status import get_onboarding_status
 
 
 def _config(tmp_path, **overrides) -> GatewayConfig:

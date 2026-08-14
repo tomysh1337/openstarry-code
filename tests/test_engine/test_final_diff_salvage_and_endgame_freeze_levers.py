@@ -1,7 +1,7 @@
 """Opt-in levers: final-diff salvage and endgame git freeze.
 
-Covers OPENSQUILLA_FINAL_DIFF_SALVAGE and
-OPENSQUILLA_ENDGAME_GIT_FREEZE_MARGIN_SECONDS (both off by default).
+Covers OPENSTARRY_CODE_FINAL_DIFF_SALVAGE and
+OPENSTARRY_CODE_ENDGAME_GIT_FREEZE_MARGIN_SECONDS (both off by default).
 Motivation: a run that reverts or loses its own source edits shortly before
 the deadline ends with an empty collected patch even though a working diff
 existed earlier — salvage re-applies the newest captured per-path diff
@@ -22,18 +22,18 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine import Agent, AgentConfig, ToolResult
-from opensquilla.provider import (
+from openstarry_code.engine import Agent, AgentConfig, ToolResult
+from openstarry_code.provider import (
     ChatConfig,
     Message,
     ToolDefinition,
     ToolInputSchema,
 )
-from opensquilla.provider import DoneEvent as ProviderDone
-from opensquilla.provider import TextDeltaEvent as ProviderText
-from opensquilla.provider import ToolUseEndEvent as ProviderToolUseEnd
-from opensquilla.provider import ToolUseStartEvent as ProviderToolUseStart
-from opensquilla.tools.types import CallerKind, ToolContext
+from openstarry_code.provider import DoneEvent as ProviderDone
+from openstarry_code.provider import TextDeltaEvent as ProviderText
+from openstarry_code.provider import ToolUseEndEvent as ProviderToolUseEnd
+from openstarry_code.provider import ToolUseStartEvent as ProviderToolUseStart
+from openstarry_code.tools.types import CallerKind, ToolContext
 
 
 class _SequenceProvider:
@@ -749,23 +749,23 @@ async def test_endgame_git_freeze_resets_stale_flag_at_turn_start() -> None:
 def test_env_plumbing_for_both_levers(monkeypatch: pytest.MonkeyPatch) -> None:
     # Helper-level check only; the full env -> bootstrap-stage -> AgentConfig
     # threading is covered in turn_runner/test_agent_bootstrap_stage_unit.py.
-    from opensquilla.engine.turn_runner.agent_bootstrap_stage import (
+    from openstarry_code.engine.turn_runner.agent_bootstrap_stage import (
         _bool_from_env,
         _nonnegative_int_from_env,
     )
 
-    monkeypatch.delenv("OPENSQUILLA_FINAL_DIFF_SALVAGE", raising=False)
-    monkeypatch.delenv("OPENSQUILLA_ENDGAME_GIT_FREEZE_MARGIN_SECONDS", raising=False)
-    assert _bool_from_env("OPENSQUILLA_FINAL_DIFF_SALVAGE", False) is False
+    monkeypatch.delenv("OPENSTARRY_CODE_FINAL_DIFF_SALVAGE", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_ENDGAME_GIT_FREEZE_MARGIN_SECONDS", raising=False)
+    assert _bool_from_env("OPENSTARRY_CODE_FINAL_DIFF_SALVAGE", False) is False
     assert (
-        _nonnegative_int_from_env("OPENSQUILLA_ENDGAME_GIT_FREEZE_MARGIN_SECONDS", 0)
+        _nonnegative_int_from_env("OPENSTARRY_CODE_ENDGAME_GIT_FREEZE_MARGIN_SECONDS", 0)
         == 0
     )
-    monkeypatch.setenv("OPENSQUILLA_FINAL_DIFF_SALVAGE", "1")
-    monkeypatch.setenv("OPENSQUILLA_ENDGAME_GIT_FREEZE_MARGIN_SECONDS", "300")
-    assert _bool_from_env("OPENSQUILLA_FINAL_DIFF_SALVAGE", False) is True
+    monkeypatch.setenv("OPENSTARRY_CODE_FINAL_DIFF_SALVAGE", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_ENDGAME_GIT_FREEZE_MARGIN_SECONDS", "300")
+    assert _bool_from_env("OPENSTARRY_CODE_FINAL_DIFF_SALVAGE", False) is True
     assert (
-        _nonnegative_int_from_env("OPENSQUILLA_ENDGAME_GIT_FREEZE_MARGIN_SECONDS", 0)
+        _nonnegative_int_from_env("OPENSTARRY_CODE_ENDGAME_GIT_FREEZE_MARGIN_SECONDS", 0)
         == 300
     )
 

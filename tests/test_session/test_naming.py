@@ -16,14 +16,14 @@ from types import SimpleNamespace
 import pytest
 import pytest_asyncio
 
-from opensquilla.compat import aiosqlite
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.provider.auxiliary_budget import AuxiliaryRequestBudget
-from opensquilla.provider.protocol import ProviderConnectionConfig
-from opensquilla.provider.types import ProviderRequestCorrelation
-from opensquilla.session.manager import SessionManager
-from opensquilla.session.models import SessionNode
-from opensquilla.session.naming import (
+from openstarry_code.compat import aiosqlite
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.provider.auxiliary_budget import AuxiliaryRequestBudget
+from openstarry_code.provider.protocol import ProviderConnectionConfig
+from openstarry_code.provider.types import ProviderRequestCorrelation
+from openstarry_code.session.manager import SessionManager
+from openstarry_code.session.models import SessionNode
+from openstarry_code.session.naming import (
     NamingTarget,
     _sanitize_title,
     _tier_model,
@@ -33,7 +33,7 @@ from opensquilla.session.naming import (
     resolve_naming_target,
     title_slot_is_empty,
 )
-from opensquilla.session.storage import _CREATE_SESSIONS, SessionStorage
+from openstarry_code.session.storage import _CREATE_SESSIONS, SessionStorage
 
 # ── fixtures ────────────────────────────────────────────────────────────────
 
@@ -340,7 +340,7 @@ def _fake_client(captured: dict, content: str = '"Reset my password"'):
 async def test_call_naming_llm_payload_and_sanitization(monkeypatch):
     captured: dict = {}
     monkeypatch.setattr(
-        "opensquilla.session.naming.httpx.AsyncClient",
+        "openstarry_code.session.naming.httpx.AsyncClient",
         lambda **kwargs: _fake_client(captured),
     )
 
@@ -366,18 +366,18 @@ async def test_call_naming_llm_payload_and_sanitization(monkeypatch):
     # OpenRouter attribution headers are present (mirrors compaction path).
     assert captured["headers"]["Authorization"] == "Bearer test-key"
     assert captured["headers"]["HTTP-Referer"] == "https://opensquilla.ai"
-    assert captured["headers"]["X-Title"] == "OpenSquilla"
+    assert captured["headers"]["X-Title"] == "OpenStarry Code"
 
 
 @pytest.mark.asyncio
 async def test_call_naming_llm_truncates_to_resolved_token_budget(monkeypatch):
     captured: dict = {}
     monkeypatch.setattr(
-        "opensquilla.session.naming.httpx.AsyncClient",
+        "openstarry_code.session.naming.httpx.AsyncClient",
         lambda **kwargs: _fake_client(captured),
     )
     monkeypatch.setattr(
-        "opensquilla.session.naming.resolve_auxiliary_request_budget",
+        "openstarry_code.session.naming.resolve_auxiliary_request_budget",
         lambda *args, **kwargs: AuxiliaryRequestBudget(
             provider_id="test",
             model="tiny",
@@ -412,9 +412,9 @@ async def test_call_naming_llm_skips_when_request_framing_cannot_fit(monkeypatch
         called = True
         return _fake_client({})
 
-    monkeypatch.setattr("opensquilla.session.naming.httpx.AsyncClient", fake_client)
+    monkeypatch.setattr("openstarry_code.session.naming.httpx.AsyncClient", fake_client)
     monkeypatch.setattr(
-        "opensquilla.session.naming.resolve_auxiliary_request_budget",
+        "openstarry_code.session.naming.resolve_auxiliary_request_budget",
         lambda *args, **kwargs: AuxiliaryRequestBudget(
             provider_id="test",
             model="tiny",
@@ -435,17 +435,17 @@ async def test_call_naming_llm_adds_tokenrhythm_app_attribution(monkeypatch):
     captured: dict = {}
     install_id = "synthetic-install-id"
     monkeypatch.setattr(
-        "opensquilla.session.naming.httpx.AsyncClient",
+        "openstarry_code.session.naming.httpx.AsyncClient",
         lambda **kwargs: _fake_client(captured, content=f'"Echo {install_id}"'),
     )
     monkeypatch.setattr(
-        "opensquilla.session.naming.tokenrhythm_install_id_headers",
+        "openstarry_code.session.naming.tokenrhythm_install_id_headers",
         lambda _provider_kind, _base_url: {
-            "X-OpenSquilla-Install-Id": install_id
+            "X-OpenStarry Code-Install-Id": install_id
         },
     )
     monkeypatch.setattr(
-        "opensquilla.session.naming.redact_tokenrhythm_install_ids",
+        "openstarry_code.session.naming.redact_tokenrhythm_install_ids",
         lambda text: text.replace(install_id, "***"),
     )
 
@@ -465,12 +465,12 @@ async def test_call_naming_llm_adds_tokenrhythm_app_attribution(monkeypatch):
 
     assert captured["url"] == "https://tokenrhythm.studio/v1/chat/completions"
     assert captured["headers"]["HTTP-Referer"] == "https://opensquilla.ai"
-    assert captured["headers"]["X-Title"] == "OpenSquilla"
-    assert captured["headers"]["X-OpenSquilla-Session-Id"] == "session-1"
-    assert captured["headers"]["X-OpenSquilla-Turn-Id"] == "turn-1"
-    assert captured["headers"]["X-OpenSquilla-Execution-Id"] == "naming-1"
-    assert captured["headers"]["X-OpenSquilla-Call-Kind"] == "auxiliary.naming"
-    assert captured["headers"]["X-OpenSquilla-Install-Id"] == install_id
+    assert captured["headers"]["X-Title"] == "OpenStarry Code"
+    assert captured["headers"]["X-OpenStarry Code-Session-Id"] == "session-1"
+    assert captured["headers"]["X-OpenStarry Code-Turn-Id"] == "turn-1"
+    assert captured["headers"]["X-OpenStarry Code-Execution-Id"] == "naming-1"
+    assert captured["headers"]["X-OpenStarry Code-Call-Kind"] == "auxiliary.naming"
+    assert captured["headers"]["X-OpenStarry Code-Install-Id"] == install_id
     assert install_id not in str(captured["json"])
     # Title sanitization removes the trailing redaction marker as punctuation.
     assert title == "Echo"
@@ -529,17 +529,17 @@ async def test_call_naming_llm_cancellation_does_not_retain_install_id(monkeypat
         return CancellingUsage()
 
     monkeypatch.setattr(
-        "opensquilla.session.naming.httpx.AsyncClient",
+        "openstarry_code.session.naming.httpx.AsyncClient",
         lambda **_kwargs: RetainingClient(),
     )
     monkeypatch.setattr(
-        "opensquilla.session.naming.tokenrhythm_install_id_headers",
+        "openstarry_code.session.naming.tokenrhythm_install_id_headers",
         lambda _provider_kind, _base_url: {
-            "X-OpenSquilla-Install-Id": install_id
+            "X-OpenStarry Code-Install-Id": install_id
         },
     )
     monkeypatch.setattr(
-        "opensquilla.engine.usage_http.reserve_direct_usage_call",
+        "openstarry_code.engine.usage_http.reserve_direct_usage_call",
         reserve_direct_usage_call,
     )
 
@@ -557,7 +557,7 @@ async def test_call_naming_llm_cancellation_does_not_retain_install_id(monkeypat
 
     assert task.cancelled()
     assert usage_reasons == ["cancelled"]
-    assert sent_headers["X-OpenSquilla-Install-Id"] == install_id
+    assert sent_headers["X-OpenStarry Code-Install-Id"] == install_id
     assert caught.value.__cause__ is None
     assert caught.value.__context__ is None
 
@@ -566,7 +566,7 @@ async def test_call_naming_llm_cancellation_does_not_retain_install_id(monkeypat
     while traceback is not None:
         frame = traceback.tb_frame
         if (
-            frame.f_globals.get("__name__") == "opensquilla.session.naming"
+            frame.f_globals.get("__name__") == "openstarry_code.session.naming"
             and frame.f_code.co_name == "call_naming_llm"
         ):
             production_locals.append(repr(frame.f_locals))
@@ -595,12 +595,12 @@ async def test_call_naming_llm_redacts_install_id_from_failure_log(monkeypatch):
             warnings.append((event, kwargs))
 
     monkeypatch.setattr(
-        "opensquilla.session.naming.httpx.AsyncClient",
+        "openstarry_code.session.naming.httpx.AsyncClient",
         lambda **_kwargs: FailingClient(),
     )
-    monkeypatch.setattr("opensquilla.session.naming.log", CapturingLog())
+    monkeypatch.setattr("openstarry_code.session.naming.log", CapturingLog())
     monkeypatch.setattr(
-        "opensquilla.session.naming.redact_tokenrhythm_install_ids",
+        "openstarry_code.session.naming.redact_tokenrhythm_install_ids",
         lambda text: text.replace(install_id, "***"),
     )
 
@@ -627,7 +627,7 @@ async def test_call_naming_llm_disables_openrouter_reasoning_for_reasoning_model
 ):
     captured: dict = {}
     monkeypatch.setattr(
-        "opensquilla.session.naming.httpx.AsyncClient",
+        "openstarry_code.session.naming.httpx.AsyncClient",
         lambda **kwargs: _fake_client(captured),
     )
 
@@ -646,7 +646,7 @@ async def test_call_naming_llm_disables_openrouter_reasoning_for_reasoning_model
 async def test_call_naming_llm_injection_guard_in_system_prompt(monkeypatch):
     captured: dict = {}
     monkeypatch.setattr(
-        "opensquilla.session.naming.httpx.AsyncClient",
+        "openstarry_code.session.naming.httpx.AsyncClient",
         lambda **kwargs: _fake_client(captured),
     )
     await call_naming_llm(
@@ -686,7 +686,7 @@ async def test_call_naming_llm_failure_returns_none(monkeypatch):
             raise TimeoutError("naming timed out")
 
     monkeypatch.setattr(
-        "opensquilla.session.naming.httpx.AsyncClient",
+        "openstarry_code.session.naming.httpx.AsyncClient",
         lambda **kwargs: _BoomClient(),
     )
     assert await call_naming_llm("hello", model="m", api_key="k", timeout=0.01) is None
@@ -754,9 +754,9 @@ async def test_old_db_without_derived_title_migrates():
 
 def _patch_provider_and_emit(monkeypatch, *, title: str | None):
     """Patch provider resolution, the LLM call, and the broadcast; capture emits."""
-    import opensquilla.gateway.rpc_chat as rpc_chat_mod
-    import opensquilla.gateway.rpc_sessions as rpc_sessions_mod
-    import opensquilla.session.naming as naming_mod
+    import openstarry_code.gateway.rpc_chat as rpc_chat_mod
+    import openstarry_code.gateway.rpc_sessions as rpc_sessions_mod
+    import openstarry_code.session.naming as naming_mod
 
     monkeypatch.setattr(
         rpc_chat_mod,
@@ -827,7 +827,7 @@ async def test_auto_title_schedule_explicitly_captures_turn_correlation(
     disabled: bool,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.gateway.rpc_sessions as rpc_sessions_mod
+    import openstarry_code.gateway.rpc_sessions as rpc_sessions_mod
 
     observed: list[ProviderRequestCorrelation | None] = []
     done = asyncio.Event()
@@ -844,7 +844,7 @@ async def test_auto_title_schedule_explicitly_captures_turn_correlation(
 
     monkeypatch.setattr(rpc_sessions_mod, "generate_session_title", _generate)
     monkeypatch.delenv(
-        "OPENSQUILLA_PRIVACY_DISABLE_NETWORK_OBSERVABILITY",
+        "OPENSTARRY_CODE_PRIVACY_DISABLE_NETWORK_OBSERVABILITY",
         raising=False,
     )
     config = GatewayConfig()
@@ -928,7 +928,7 @@ async def test_generate_session_title_disabled(storage, mgr, monkeypatch):
 
 @pytest.mark.asyncio
 async def test_should_auto_title_first_message_only(storage, mgr):
-    from opensquilla.gateway.rpc_sessions import _should_auto_title
+    from openstarry_code.gateway.rpc_sessions import _should_auto_title
 
     key = "agent:main:webchat:gate"
     node = SessionNode(session_key=key, session_id="sid-gate", display_name="WebChat")
@@ -945,7 +945,7 @@ async def test_should_auto_title_first_message_only(storage, mgr):
 
 @pytest.mark.asyncio
 async def test_should_auto_title_rejects_ineligible_surface(storage, mgr):
-    from opensquilla.gateway.rpc_sessions import _should_auto_title
+    from openstarry_code.gateway.rpc_sessions import _should_auto_title
 
     # A cron session key classifies as cron -> never eligible.
     key = "cron:nightly:run1"
@@ -957,7 +957,7 @@ async def test_should_auto_title_rejects_ineligible_surface(storage, mgr):
 
 @pytest.mark.asyncio
 async def test_should_auto_title_custom_named_channel_matches_type_named(storage, mgr):
-    from opensquilla.gateway.rpc_sessions import _should_auto_title
+    from openstarry_code.gateway.rpc_sessions import _should_auto_title
 
     # A channel named after its type is naming-eligible; a custom-named
     # channel must classify identically through the configured name->type

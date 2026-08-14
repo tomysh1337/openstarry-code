@@ -1,4 +1,4 @@
-"""Compare OpenSquilla meta-skills against an OpenClaw gateway.
+"""Compare OpenStarry Code meta-skills against an OpenClaw gateway.
 
 The script defines seven fixed benchmark cases for the high-value meta-skill
 scenarios and can run them end-to-end through both gateways.
@@ -21,7 +21,7 @@ from pathlib import Path
 from typing import Any
 
 REPORT_DIR = Path(
-    os.environ.get("OPENSQUILLA_COMPARE_REPORT_DIR", ".reports/meta-skill-comparison")
+    os.environ.get("OPENSTARRY_CODE_COMPARE_REPORT_DIR", ".reports/meta-skill-comparison")
 )
 JUDGE_SUBSCORE_RANGES: dict[str, tuple[int, int]] = {
     "final_artifact_quality": (0, 40),
@@ -300,7 +300,7 @@ COMPARISON_CASES: list[ComparisonCase] = [
             "explain how the full version would reach 10+ pages."
         ),
         expected_advantage=(
-            "OpenSquilla should preserve paper structure, citation planning, length "
+            "OpenStarry Code should preserve paper structure, citation planning, length "
             "gate, citation integrity gate, and LaTeX sanitization."
         ),
         optimization_if_not_better=(
@@ -320,7 +320,7 @@ COMPARISON_CASES: list[ComparisonCase] = [
             "and a reusable memory index."
         ),
         expected_advantage=(
-            "OpenSquilla should classify the PDF task, preserve document/page "
+            "OpenStarry Code should classify the PDF task, preserve document/page "
             "references, synthesize traceably, and create a memory index."
         ),
         optimization_if_not_better=(
@@ -343,7 +343,7 @@ COMPARISON_CASES: list[ComparisonCase] = [
             "and exact verification commands I can run next."
         ),
         expected_advantage=(
-            "OpenSquilla should classify the runtime, parse frames, search repo "
+            "OpenStarry Code should classify the runtime, parse frames, search repo "
             "symbols, inspect history/issues, and synthesize verification commands."
         ),
         optimization_if_not_better=(
@@ -362,7 +362,7 @@ COMPARISON_CASES: list[ComparisonCase] = [
             "schedule, weather-aware risks, a few variants, and budget notes."
         ),
         expected_advantage=(
-            "OpenSquilla should infer trip preferences, check weather/search results, "
+            "OpenStarry Code should infer trip preferences, check weather/search results, "
             "extract constraints, and append variants plus bad-weather backup."
         ),
         optimization_if_not_better=(
@@ -381,7 +381,7 @@ COMPARISON_CASES: list[ComparisonCase] = [
             "SKILL.md."
         ),
         expected_advantage=(
-            "OpenSquilla should distinguish meta-skill vs normal skill, harvest "
+            "OpenStarry Code should distinguish meta-skill vs normal skill, harvest "
             "patterns, assemble a candidate, run collision/risk/lint/smoke gates, "
             "and show a proposal preview."
         ),
@@ -401,7 +401,7 @@ COMPARISON_CASES: list[ComparisonCase] = [
             "for the current repo, but don't make up files you cannot verify."
         ),
         expected_advantage=(
-            "OpenSquilla should classify the migration kind, route to an "
+            "OpenStarry Code should classify the migration kind, route to an "
             "authoritative guide source, optionally inspect current repo diff "
             "context, and produce a concrete validation checklist."
         ),
@@ -428,7 +428,7 @@ COMPARISON_CASES.extend(
                 "paper."
             ),
             expected_advantage=(
-                "OpenSquilla should keep manuscript structure while enforcing "
+                "OpenStarry Code should keep manuscript structure while enforcing "
                 "citation integrity rather than inventing references."
             ),
             optimization_if_not_better=(
@@ -452,7 +452,7 @@ COMPARISON_CASES.extend(
                 "must be collected before writing."
             ),
             expected_advantage=(
-                "OpenSquilla should respect the user's scope and produce a planning "
+                "OpenStarry Code should respect the user's scope and produce a planning "
                 "artifact instead of a long manuscript."
             ),
             optimization_if_not_better=(
@@ -476,7 +476,7 @@ COMPARISON_CASES.extend(
                 "must not claim until the file is available."
             ),
             expected_advantage=(
-                "OpenSquilla should fail gracefully without hallucinating document "
+                "OpenStarry Code should fail gracefully without hallucinating document "
                 "content and should prepare a traceable extraction workflow."
             ),
             optimization_if_not_better=(
@@ -501,7 +501,7 @@ COMPARISON_CASES.extend(
                 "and a memory index."
             ),
             expected_advantage=(
-                "OpenSquilla should compare page-grounded evidence across documents "
+                "OpenStarry Code should compare page-grounded evidence across documents "
                 "and preserve provenance in the output."
             ),
             optimization_if_not_better=(
@@ -524,7 +524,7 @@ COMPARISON_CASES.extend(
                 "to narrow it down without pretending you know the exact root cause."
             ),
             expected_advantage=(
-                "OpenSquilla should avoid false certainty and produce a targeted "
+                "OpenStarry Code should avoid false certainty and produce a targeted "
                 "diagnostic collection plan."
             ),
             optimization_if_not_better=(
@@ -550,7 +550,7 @@ COMPARISON_CASES.extend(
                 "and verification commands."
             ),
             expected_advantage=(
-                "OpenSquilla should adapt the stack-trace workflow to TypeScript "
+                "OpenStarry Code should adapt the stack-trace workflow to TypeScript "
                 "and produce concrete reproduction and verification targets."
             ),
             optimization_if_not_better=(
@@ -575,7 +575,7 @@ COMPARISON_CASES.extend(
                 "budget notes, and variants."
             ),
             expected_advantage=(
-                "OpenSquilla should preserve mobility, dietary, fixed-booking, "
+                "OpenStarry Code should preserve mobility, dietary, fixed-booking, "
                 "weather, budget, and transit constraints."
             ),
             optimization_if_not_better=(
@@ -599,7 +599,7 @@ COMPARISON_CASES.extend(
                 "placeholder itinerary clearly marked as tentative."
             ),
             expected_advantage=(
-                "OpenSquilla should ask for missing constraints and mark any sample "
+                "OpenStarry Code should ask for missing constraints and mark any sample "
                 "itinerary as provisional."
             ),
             optimization_if_not_better=(
@@ -624,7 +624,7 @@ COMPARISON_CASES.extend(
                 "is still justified."
             ),
             expected_advantage=(
-                "OpenSquilla should check whether composition is justified before "
+                "OpenStarry Code should check whether composition is justified before "
                 "drafting a new meta-skill."
             ),
             optimization_if_not_better=(
@@ -647,7 +647,7 @@ COMPARISON_CASES.extend(
                 "graph, permission gates, failure modes, and a SKILL.md preview."
             ),
             expected_advantage=(
-                "OpenSquilla should encode safety and permission gates as first-class "
+                "OpenStarry Code should encode safety and permission gates as first-class "
                 "workflow requirements."
             ),
             optimization_if_not_better=(
@@ -671,7 +671,7 @@ COMPARISON_CASES.extend(
                 "would block migration."
             ),
             expected_advantage=(
-                "OpenSquilla should distinguish actual repo evidence from a generic "
+                "OpenStarry Code should distinguish actual repo evidence from a generic "
                 "migration guide."
             ),
             optimization_if_not_better=(
@@ -694,7 +694,7 @@ COMPARISON_CASES.extend(
                 "and release sequencing."
             ),
             expected_advantage=(
-                "OpenSquilla should produce a practical migration plan with rollout "
+                "OpenStarry Code should produce a practical migration plan with rollout "
                 "risk controls instead of only syntax changes."
             ),
             optimization_if_not_better=(
@@ -830,7 +830,7 @@ def response_excerpt(text: str, *, max_chars: int = 12000) -> str:
 
 def blind_product_names(text: str) -> str:
     return (
-        text.replace("OpenSquilla", "the specialized meta-skill system")
+        text.replace("OpenStarry Code", "the specialized meta-skill system")
         .replace("opensquilla", "the specialized meta-skill system")
         .replace("OpenClaw", "the baseline agent system")
         .replace("openclaw", "the baseline agent system")
@@ -1227,7 +1227,7 @@ class OpenSquillaRunner:
         ) as ws:
             first = json.loads(await ws.recv())
             if first.get("event") != "connect.challenge":
-                raise RuntimeError(f"unexpected OpenSquilla handshake: {first}")
+                raise RuntimeError(f"unexpected OpenStarry Code handshake: {first}")
             auth_params = {"auth": {"token": self.token}} if self.token else {}
             await self._call(
                 ws,
@@ -1606,7 +1606,7 @@ class LLMJudge:
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json",
             "HTTP-Referer": "http://localhost/opensquilla-meta-skill-comparison",
-            "X-Title": "OpenSquilla Meta Skill Comparison",
+            "X-Title": "OpenStarry Code Meta Skill Comparison",
         }
         async with httpx.AsyncClient(timeout=self.timeout_s) as client:
             response = await client.post(
@@ -1680,7 +1680,7 @@ def _latest_opensquilla_transcript_text(session_key: str) -> str:
 
     if not session_key:
         return ""
-    state_db = Path(os.environ.get("OPENSQUILLA_STATE_DB", "/root/.opensquilla/state/sessions.db"))
+    state_db = Path(os.environ.get("OPENSTARRY_CODE_STATE_DB", "/root/.opensquilla/state/sessions.db"))
     if not state_db.exists():
         return ""
     try:
@@ -1702,7 +1702,7 @@ def _latest_opensquilla_transcript_text(session_key: str) -> str:
 def _latest_opensquilla_meta_final_text(session_key: str) -> str:
     if not session_key:
         return ""
-    state_db = Path(os.environ.get("OPENSQUILLA_STATE_DB", "/root/.opensquilla/state/sessions.db"))
+    state_db = Path(os.environ.get("OPENSTARRY_CODE_STATE_DB", "/root/.opensquilla/state/sessions.db"))
     if not state_db.exists():
         return ""
     try:
@@ -1924,11 +1924,11 @@ def read_openclaw_token(config_path: Path) -> str:
 
 
 def read_opensquilla_token() -> str | None:
-    for env_name in ("OPENSQUILLA_GATEWAY_TOKEN", "OPENSQUILLA_TOKEN"):
+    for env_name in ("OPENSTARRY_CODE_GATEWAY_TOKEN", "OPENSTARRY_CODE_TOKEN"):
         value = os.environ.get(env_name)
         if value:
             return value
-    token_file = os.environ.get("OPENSQUILLA_GATEWAY_TOKEN_FILE")
+    token_file = os.environ.get("OPENSTARRY_CODE_GATEWAY_TOKEN_FILE")
     if token_file:
         path = Path(token_file)
         match = re.search(r'^TOKEN\s*=\s*"([^"]+)"', path.read_text(encoding="utf-8"), re.M)
@@ -1938,7 +1938,7 @@ def read_opensquilla_token() -> str | None:
 
 
 def read_judge_api_key() -> str | None:
-    for env_name in ("OPENSQUILLA_JUDGE_API_KEY", "OPENROUTER_API_KEY"):
+    for env_name in ("OPENSTARRY_CODE_JUDGE_API_KEY", "OPENROUTER_API_KEY"):
         value = os.environ.get(env_name)
         if value:
             return value
@@ -1964,7 +1964,7 @@ async def run_live(args: argparse.Namespace) -> list[dict[str, Any]]:
     judge = None
     if args.judge_llm:
         if not args.judge_model:
-            raise SystemExit("Pass --judge-model or set OPENSQUILLA_JUDGE_MODEL.")
+            raise SystemExit("Pass --judge-model or set OPENSTARRY_CODE_JUDGE_MODEL.")
         judge = LLMJudge(
             model=args.judge_model,
             api_key=args.judge_api_key,
@@ -2002,7 +2002,7 @@ async def judge_existing(args: argparse.Namespace) -> list[dict[str, Any]]:
     if not args.judge_jsonl:
         raise SystemExit("Pass --judge-jsonl.")
     if not args.judge_model:
-        raise SystemExit("Pass --judge-model or set OPENSQUILLA_JUDGE_MODEL.")
+        raise SystemExit("Pass --judge-model or set OPENSTARRY_CODE_JUDGE_MODEL.")
     judge = LLMJudge(
         model=args.judge_model,
         api_key=args.judge_api_key,
@@ -2238,14 +2238,14 @@ def render_markdown(rows: list[dict[str, Any]], jsonl_path: Path) -> str:
         if not row["opensquilla"]["ok"] or not row["openclaw"]["ok"]
     ]
     lines = [
-        "# OpenClaw vs OpenSquilla Meta-Skill Comparison",
+        "# OpenClaw vs OpenStarry Code Meta-Skill Comparison",
         "",
         f"Raw JSONL: `{jsonl_path}`",
         "",
         "## Conclusion",
         "",
         (
-            f"OpenSquilla won {sq_wins}/{total} cases; OpenClaw won "
+            f"OpenStarry Code won {sq_wins}/{total} cases; OpenClaw won "
             f"{claw_wins}/{total}; ties: {ties}."
         ),
     ]
@@ -2260,15 +2260,15 @@ def render_markdown(rows: list[dict[str, Any]], jsonl_path: Path) -> str:
     else:
         lines.append("No endpoint errors or timeouts were recorded.")
     if claw_wins or ties or failed:
-        lines.append("Rows that do not show an OpenSquilla win include an optimization note.")
+        lines.append("Rows that do not show an OpenStarry Code win include an optimization note.")
     else:
-        lines.append("All completed cases favored OpenSquilla under this rubric.")
+        lines.append("All completed cases favored OpenStarry Code under this rubric.")
     lines.extend(
         [
             "",
             "## Score Table",
             "",
-            "| Case | OpenSquilla | OpenClaw | Baseline | Judge | Winner | Optimization |",
+            "| Case | OpenStarry Code | OpenClaw | Baseline | Judge | Winner | Optimization |",
             "| --- | ---: | ---: | --- | --- | --- | --- |",
         ]
     )
@@ -2360,7 +2360,7 @@ def render_markdown(rows: list[dict[str, Any]], jsonl_path: Path) -> str:
 
 def render_prompts_markdown(rows: list[dict[str, Any]], jsonl_path: Path) -> str:
     lines = [
-        "# OpenClaw vs OpenSquilla Meta-Skill Benchmark Prompts",
+        "# OpenClaw vs OpenStarry Code Meta-Skill Benchmark Prompts",
         "",
         f"Raw JSONL: `{jsonl_path}`",
         "",
@@ -2422,7 +2422,7 @@ def parse_args() -> argparse.Namespace:
         "--opensquilla-elevated",
         default="bypass",
         choices=["off", "on", "bypass", "full"],
-        help="Gateway elevated mode for OpenSquilla tool calls.",
+        help="Gateway elevated mode for OpenStarry Code tool calls.",
     )
     parser.add_argument("--openclaw-url", default="ws://127.0.0.1:18789/ws")
     parser.add_argument("--openclaw-config", default=os.environ.get("OPENCLAW_CONFIG"))
@@ -2434,13 +2434,13 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--judge-model",
-        default=os.environ.get("OPENSQUILLA_JUDGE_MODEL"),
+        default=os.environ.get("OPENSTARRY_CODE_JUDGE_MODEL"),
         help="OpenRouter model id for --judge-llm.",
     )
     parser.add_argument("--judge-api-key", default=read_judge_api_key())
     parser.add_argument(
         "--judge-base-url",
-        default=os.environ.get("OPENSQUILLA_JUDGE_BASE_URL", "https://openrouter.ai/api/v1"),
+        default=os.environ.get("OPENSTARRY_CODE_JUDGE_BASE_URL", "https://openrouter.ai/api/v1"),
     )
     parser.add_argument("--judge-timeout", type=float, default=120.0)
     return parser.parse_args()

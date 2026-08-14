@@ -11,16 +11,16 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.engine.types import AgentEvent, DoneEvent, TextDeltaEvent
-from opensquilla.skills.loader import SkillLoader
-from opensquilla.skills.meta.orchestrator import MetaOrchestrator
-from opensquilla.skills.meta.parser import parse_meta_plan
-from opensquilla.skills.meta.types import MetaMatch
+from openstarry_code.engine.types import AgentEvent, DoneEvent, TextDeltaEvent
+from openstarry_code.skills.loader import SkillLoader
+from openstarry_code.skills.meta.orchestrator import MetaOrchestrator
+from openstarry_code.skills.meta.parser import parse_meta_plan
+from openstarry_code.skills.meta.types import MetaMatch
 
 _BUNDLED = (
-    Path(__file__).resolve().parents[2] / "src" / "opensquilla" / "skills" / "bundled"
+    Path(__file__).resolve().parents[2] / "src" / "openstarry_code" / "skills" / "bundled"
 )
-_EXP = Path(__file__).resolve().parents[2] / "src" / "opensquilla" / "skills" / "exp"
+_EXP = Path(__file__).resolve().parents[2] / "src" / "openstarry_code" / "skills" / "exp"
 
 
 def _bundle_loader(tmp_path: Path) -> SkillLoader:
@@ -224,7 +224,7 @@ async def test_happy_path_synthesizes_root_cause(tmp_path: Path) -> None:
     canned_parse = (
         '{"exception_class":"AttributeError",'
         '"exception_message":"NoneType has no attribute foo",'
-        '"primary_file":"src/opensquilla/engine/agent.py",'
+        '"primary_file":"src/openstarry_code/engine/agent.py",'
         '"primary_line":1234,'
         '"symbols":["_run_one_streaming","handle_tool"]}'
     )
@@ -240,7 +240,7 @@ async def test_happy_path_synthesizes_root_cause(tmp_path: Path) -> None:
                     "TRACE_PRESENT: yes\n"
                     "PRIMARY_EXCEPTION: AttributeError\n"
                     "PRIMARY_FILES:\n"
-                    "  - src/opensquilla/engine/agent.py:1234"
+                    "  - src/openstarry_code/engine/agent.py:1234"
                 )
             )
         elif which == "classify_language":
@@ -251,7 +251,7 @@ async def test_happy_path_synthesizes_root_cause(tmp_path: Path) -> None:
             yield TextDeltaEvent(text=canned_parse)
         elif which == "grep_repo":
             yield TextDeltaEvent(
-                text="src/opensquilla/engine/agent.py:1230: def _run_one_streaming(...)",
+                text="src/openstarry_code/engine/agent.py:1230: def _run_one_streaming(...)",
             )
         elif which == "search_issues":
             yield TextDeltaEvent(text="#42 AttributeError in agent loop (closed)")
@@ -280,7 +280,7 @@ async def test_happy_path_synthesizes_root_cause(tmp_path: Path) -> None:
                 text=(
                     "CONFIDENCE: high\n"
                     "VERIFY:\n  - python -m pytest tests/test_agent.py -k tool\n"
-                    "FIX_FIRST:\n  - src/opensquilla/engine/agent.py: guard None return"
+                    "FIX_FIRST:\n  - src/openstarry_code/engine/agent.py: guard None return"
                 )
             )
         elif which == "degraded_summary":
@@ -303,7 +303,7 @@ async def test_happy_path_synthesizes_root_cause(tmp_path: Path) -> None:
                 "user_message": (
                     "investigate stack trace:\n"
                     "Traceback (most recent call last):\n"
-                    "  File \"src/opensquilla/engine/agent.py\", line 1234, in foo\n"
+                    "  File \"src/openstarry_code/engine/agent.py\", line 1234, in foo\n"
                     "AttributeError: 'NoneType' object has no attribute 'foo'"
                 ),
             },

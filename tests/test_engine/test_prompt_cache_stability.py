@@ -8,19 +8,19 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from opensquilla.engine import Agent, AgentConfig
-from opensquilla.engine import runtime as runtime_module
-from opensquilla.engine.runtime import TurnRunner, _prepend_request_context_prompt
-from opensquilla.provider import (
+from openstarry_code.engine import Agent, AgentConfig
+from openstarry_code.engine import runtime as runtime_module
+from openstarry_code.engine.runtime import TurnRunner, _prepend_request_context_prompt
+from openstarry_code.provider import (
     ChatConfig,
     ContentBlockCompaction,
     DoneEvent,
     Message,
     TextDeltaEvent,
 )
-from opensquilla.session.manager import SessionManager
-from opensquilla.session.models import SessionContextState, SessionSummary
-from opensquilla.session.storage import SessionStorage
+from openstarry_code.session.manager import SessionManager
+from openstarry_code.session.models import SessionContextState, SessionSummary
+from openstarry_code.session.storage import SessionStorage
 
 
 class _CapturingProvider:
@@ -187,7 +187,7 @@ async def test_load_history_prefers_valid_structured_context_state(
                 "schema_version": 1,
                 "user_goal": "continue structured replay",
                 "current_status": "structured portable state",
-                "critical_carry_forward": ["keep src/opensquilla/session/context_view.py"],
+                "critical_carry_forward": ["keep src/openstarry_code/session/context_view.py"],
             },
             covered_through_id=7,
             portable=True,
@@ -203,7 +203,7 @@ async def test_load_history_prefers_valid_structured_context_state(
     assert summary_context is not None
     assert "[Structured Compaction Summary]" in summary_context
     assert "structured portable state" in summary_context
-    assert "keep src/opensquilla/session/context_view.py" in summary_context
+    assert "keep src/openstarry_code/session/context_view.py" in summary_context
     assert "plain summary fallback" not in summary_context
     assert '"schema_version"' not in summary_context
     assert [message.content for message in agent._history] == ["old question", "old answer"]

@@ -5,7 +5,7 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
-from opensquilla.mcp_server.server import create_mcp_server
+from openstarry_code.mcp_server.server import create_mcp_server
 
 
 class FakeFastMCP:

@@ -31,7 +31,7 @@ def build_long_stream_events() -> list[ReplayEvent]:
     events: list[ReplayEvent] = [
         ReplayEvent(
             "user_input",
-            {"text": "Explain the OpenSquilla routing decision stream."},
+            {"text": "Explain the OpenStarry Code routing decision stream."},
             0,
         ),
         ReplayEvent("router_decision", _router_decision_payload(0, tier="standard"), 1),

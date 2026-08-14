@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 
-from opensquilla.session.compaction_lifecycle import (
+from openstarry_code.session.compaction_lifecycle import (
     compaction_memory_status,
     compaction_safety_allows_destructive_compaction,
     durable_receipt_allows_destructive_compaction,

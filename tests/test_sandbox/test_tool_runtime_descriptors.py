@@ -5,15 +5,15 @@ from types import SimpleNamespace
 
 import pytest
 
-import opensquilla.tools.dispatch as dispatch_mod
-from opensquilla.sandbox.operation_runtime import (
+import openstarry_code.tools.dispatch as dispatch_mod
+from openstarry_code.sandbox.operation_runtime import (
     CustomOperationRequest,
     ProcessOperationRequest,
     SandboxToolDescriptor,
 )
-from opensquilla.tool_boundary import ToolCall
-from opensquilla.tools.registry import ToolRegistry
-from opensquilla.tools.types import CallerKind, ToolContext, ToolSpec
+from openstarry_code.tool_boundary import ToolCall
+from openstarry_code.tools.registry import ToolRegistry
+from openstarry_code.tools.types import CallerKind, ToolContext, ToolSpec
 
 
 def test_tool_spec_always_has_sandbox_descriptor(tmp_path: Path) -> None:
@@ -104,7 +104,7 @@ async def test_dispatch_uses_sandbox_descriptor_guard(monkeypatch, tmp_path: Pat
 
 
 def test_builtin_tools_no_longer_use_sandboxed_decorator() -> None:
-    builtin_root = Path("src/opensquilla/tools/builtin")
+    builtin_root = Path("src/openstarry_code/tools/builtin")
     offenders = []
     for path in builtin_root.glob("*.py"):
         text = path.read_text(encoding="utf-8")
@@ -115,8 +115,8 @@ def test_builtin_tools_no_longer_use_sandboxed_decorator() -> None:
 
 
 def test_builtin_local_artifact_and_media_tools_have_explicit_descriptors() -> None:
-    import opensquilla.tools.builtin  # noqa: F401
-    from opensquilla.tools.registry import get_default_registry
+    import openstarry_code.tools.builtin  # noqa: F401
+    from openstarry_code.tools.registry import get_default_registry
 
     expected = {
         "publish_artifact": ("artifact", "artifact.publish"),

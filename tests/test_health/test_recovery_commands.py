@@ -5,8 +5,8 @@ from collections.abc import Iterable
 
 from typer.testing import CliRunner
 
-from opensquilla.cli.main import app
-from opensquilla.health.evaluator import (
+from openstarry_code.cli.main import app
+from openstarry_code.health.evaluator import (
     evaluate_channels,
     evaluate_image_generation,
     evaluate_llm_ensemble,
@@ -18,7 +18,7 @@ from opensquilla.health.evaluator import (
     evaluate_sandbox,
     evaluate_search,
 )
-from opensquilla.health.model import HealthFinding
+from openstarry_code.health.model import HealthFinding
 
 runner = CliRunner()
 
@@ -383,7 +383,7 @@ def test_recovery_steps_that_restart_gateway_mark_restart_required() -> None:
         finding.id
         for finding in _sample_findings()
         if any(
-            step.command == "opensquilla gateway restart"
+            step.command == "openstarry-code gateway restart"
             for step in finding.fix_steps
             if step.command
         )
@@ -504,13 +504,13 @@ def test_health_recovery_commands_from_evaluator_samples_resolve_to_cli_help() -
 
 
 def test_doctor_collection_failure_recovery_commands_resolve_to_cli_help() -> None:
-    from opensquilla.gateway.rpc_doctor import _COLLECTION_INSPECT_COMMANDS
+    from openstarry_code.gateway.rpc_doctor import _COLLECTION_INSPECT_COMMANDS
 
     commands = sorted(
         {
             *_COLLECTION_INSPECT_COMMANDS.values(),
-            "opensquilla diagnostics status",
-            "opensquilla gateway restart",
+            "openstarry-code diagnostics status",
+            "openstarry-code gateway restart",
         }
     )
     assert commands
@@ -523,7 +523,7 @@ def test_doctor_collection_failure_recovery_commands_resolve_to_cli_help() -> No
 
 
 def test_doctor_offline_recovery_commands_resolve_to_cli_help() -> None:
-    from opensquilla.cli.doctor_cmd import _offline_report
+    from openstarry_code.cli.doctor_cmd import _offline_report
 
     commands = [
         step["command"]

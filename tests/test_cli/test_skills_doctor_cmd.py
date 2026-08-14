@@ -6,10 +6,10 @@ from types import SimpleNamespace
 
 from typer.testing import CliRunner
 
-from opensquilla.cli.gateway_client import GatewayRPCError
-from opensquilla.cli.main import app
-from opensquilla.skills.hub.lockfile import LockEntry, Lockfile, compute_tree_sha256
-from opensquilla.skills.loader import SkillLoader
+from openstarry_code.cli.gateway_client import GatewayRPCError
+from openstarry_code.cli.main import app
+from openstarry_code.skills.hub.lockfile import LockEntry, Lockfile, compute_tree_sha256
+from openstarry_code.skills.loader import SkillLoader
 
 
 class _OfflineGatewayClient:
@@ -47,11 +47,11 @@ def test_reachable_legacy_gateway_requires_upgrade_without_offline_fallback(monk
         raise AssertionError("a reachable Gateway must not trigger offline Doctor")
 
     monkeypatch.setattr(
-        "opensquilla.cli.gateway_client.GatewayClient",
+        "openstarry_code.cli.gateway_client.GatewayClient",
         _LegacyGatewayClient,
     )
     monkeypatch.setattr(
-        "opensquilla.cli.skills_cmd._build_offline_skill_loader",
+        "openstarry_code.cli.skills_cmd._build_offline_skill_loader",
         _offline_loader_must_not_be_built,
     )
 
@@ -65,7 +65,7 @@ def test_reachable_legacy_gateway_requires_upgrade_without_offline_fallback(monk
         "method": "skills.doctor",
         "gatewayCode": "METHOD_NOT_FOUND",
         "hint": (
-            "Restart the Gateway from the same upgraded OpenSquilla installation, "
+            "Restart the Gateway from the same upgraded OpenStarry Code installation, "
             "then run skills doctor again."
         ),
     }
@@ -107,13 +107,13 @@ def test_offline_skills_doctor_honors_name_based_disabled_config(
     config = SimpleNamespace(
         skills=SimpleNamespace(disabled=["demo"], coding_mode=False),
     )
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path))
     monkeypatch.setattr(
-        "opensquilla.cli.gateway_client.GatewayClient",
+        "openstarry_code.cli.gateway_client.GatewayClient",
         _OfflineGatewayClient,
     )
     monkeypatch.setattr(
-        "opensquilla.cli.skills_cmd._build_offline_skill_loader",
+        "openstarry_code.cli.skills_cmd._build_offline_skill_loader",
         lambda: (config, loader),
     )
 
@@ -166,13 +166,13 @@ def test_offline_skills_doctor_human_output_shows_degraded_compatibility(
     config = SimpleNamespace(
         skills=SimpleNamespace(disabled=[], coding_mode=False),
     )
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path))
     monkeypatch.setattr(
-        "opensquilla.cli.gateway_client.GatewayClient",
+        "openstarry_code.cli.gateway_client.GatewayClient",
         _OfflineGatewayClient,
     )
     monkeypatch.setattr(
-        "opensquilla.cli.skills_cmd._build_offline_skill_loader",
+        "openstarry_code.cli.skills_cmd._build_offline_skill_loader",
         lambda: (config, loader),
     )
 

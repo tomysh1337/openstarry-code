@@ -1,8 +1,8 @@
 """Effect-based workspace write deny enforcement (post-execution).
 
-Covers OPENSQUILLA_WORKSPACE_WRITE_DENY_EFFECT (off/warn/revert),
-OPENSQUILLA_WORKSPACE_WRITE_DENY_TRACKED_ONLY,
-OPENSQUILLA_WORKSPACE_WRITE_DENY_SYMLINK_GUARD, the ln/interpreter
+Covers OPENSTARRY_CODE_WORKSPACE_WRITE_DENY_EFFECT (off/warn/revert),
+OPENSTARRY_CODE_WORKSPACE_WRITE_DENY_TRACKED_ONLY,
+OPENSTARRY_CODE_WORKSPACE_WRITE_DENY_SYMLINK_GUARD, the ln/interpreter
 argv-table extensions, and the sh -c wrapper unwrap. Motivation: pre-execution
 screens only see paths named in tool arguments; a command can still mutate a
 protected path through a helper program it wrote and ran (observed escape
@@ -17,22 +17,22 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.sandbox.config import SandboxSettings
-from opensquilla.sandbox.integration import configure_runtime, reset_runtime
-from opensquilla.tools import write_policy
-from opensquilla.tools.builtin import shell
-from opensquilla.tools.builtin.code_exec import execute_code
-from opensquilla.tools.builtin.shell import exec_command
-from opensquilla.tools.types import CallerKind, ToolContext, current_tool_context
+from openstarry_code.sandbox.config import SandboxSettings
+from openstarry_code.sandbox.integration import configure_runtime, reset_runtime
+from openstarry_code.tools import write_policy
+from openstarry_code.tools.builtin import shell
+from openstarry_code.tools.builtin.code_exec import execute_code
+from openstarry_code.tools.builtin.shell import exec_command
+from openstarry_code.tools.types import CallerKind, ToolContext, current_tool_context
 
-_EFFECT_ENV = "OPENSQUILLA_WORKSPACE_WRITE_DENY_EFFECT"
-_TRACKED_ONLY_ENV = "OPENSQUILLA_WORKSPACE_WRITE_DENY_TRACKED_ONLY"
-_SYMLINK_GUARD_ENV = "OPENSQUILLA_WORKSPACE_WRITE_DENY_SYMLINK_GUARD"
-_GUIDANCE_ENV = "OPENSQUILLA_WORKSPACE_WRITE_DENY_GUIDANCE"
-_HOST_SHELL_ENV = "OPENSQUILLA_WORKSPACE_WRITE_DENY_HOST_SHELL"
-_COMMAND_TARGETS_ENV = "OPENSQUILLA_WORKSPACE_WRITE_DENY_COMMAND_TARGETS"
-_INTERPRETER_TARGETS_ENV = "OPENSQUILLA_WORKSPACE_WRITE_DENY_INTERPRETER_TARGETS"
-_SANDBOX_FULL_HOST_ENV = "OPENSQUILLA_SANDBOX_DISABLED_FULL_HOST"
+_EFFECT_ENV = "OPENSTARRY_CODE_WORKSPACE_WRITE_DENY_EFFECT"
+_TRACKED_ONLY_ENV = "OPENSTARRY_CODE_WORKSPACE_WRITE_DENY_TRACKED_ONLY"
+_SYMLINK_GUARD_ENV = "OPENSTARRY_CODE_WORKSPACE_WRITE_DENY_SYMLINK_GUARD"
+_GUIDANCE_ENV = "OPENSTARRY_CODE_WORKSPACE_WRITE_DENY_GUIDANCE"
+_HOST_SHELL_ENV = "OPENSTARRY_CODE_WORKSPACE_WRITE_DENY_HOST_SHELL"
+_COMMAND_TARGETS_ENV = "OPENSTARRY_CODE_WORKSPACE_WRITE_DENY_COMMAND_TARGETS"
+_INTERPRETER_TARGETS_ENV = "OPENSTARRY_CODE_WORKSPACE_WRITE_DENY_INTERPRETER_TARGETS"
+_SANDBOX_FULL_HOST_ENV = "OPENSTARRY_CODE_SANDBOX_DISABLED_FULL_HOST"
 _ALL_ENVS = (
     _EFFECT_ENV,
     _TRACKED_ONLY_ENV,

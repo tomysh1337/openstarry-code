@@ -162,7 +162,7 @@ def test_architecture_prompt_renders_tools_and_chinese_output(
     assert "╭ main" in rendered_output
     assert "│ you  帮我分析这个代码长的架构" in rendered_output
     assert "╭─ prompt" not in rendered_output
-    assert "✓ list_dir /workspace/opensquilla · 0.0s" in rendered_output
+    assert "✓ list_dir /workspace/openstarry-code · 0.0s" in rendered_output
     assert "✓ read_file" in rendered_output
     assert rendered_output.count("args · 3 lines hidden · expand details") >= 2
     assert "├ top-level repository layout" in rendered_output

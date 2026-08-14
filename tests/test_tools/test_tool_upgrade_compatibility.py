@@ -3,8 +3,8 @@ from __future__ import annotations
 import inspect
 from dataclasses import fields
 
-from opensquilla.tools import ToolContext, ToolRegistry, tool
-from opensquilla.tools.builtin.shell import background_process, exec_command
+from openstarry_code.tools import ToolContext, ToolRegistry, tool
+from openstarry_code.tools.builtin.shell import background_process, exec_command
 
 
 def test_tool_decorator_preserves_legacy_owner_only_position() -> None:

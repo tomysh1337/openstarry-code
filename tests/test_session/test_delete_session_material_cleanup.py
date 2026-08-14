@@ -7,20 +7,20 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.artifacts import ArtifactStore
-from opensquilla.attachment_refs import (
+from openstarry_code.artifacts import ArtifactStore
+from openstarry_code.attachment_refs import (
     transcript_material_dir,
     write_pending_chat_input_material,
     write_transcript_material,
 )
-from opensquilla.attachment_workspace import _safe_path_segment
-from opensquilla.gateway.boot import build_session_material_cleanup
-from opensquilla.session.material_cleanup import (
+from openstarry_code.attachment_workspace import _safe_path_segment
+from openstarry_code.gateway.boot import build_session_material_cleanup
+from openstarry_code.session.material_cleanup import (
     reset_session_material_cleanup,
     set_session_material_cleanup,
 )
-from opensquilla.session.models import SessionNode
-from opensquilla.session.storage import SessionStorage
+from openstarry_code.session.models import SessionNode
+from openstarry_code.session.storage import SessionStorage
 
 
 def _config(media_root: Path, workspace: Path) -> SimpleNamespace:
@@ -35,7 +35,7 @@ def _config(media_root: Path, workspace: Path) -> SimpleNamespace:
 
 def _workspace_attachment_dir(workspace: Path, session_id: str) -> Path:
     segment = _safe_path_segment(session_id, fallback="session")
-    return workspace / ".opensquilla" / "attachments" / segment
+    return workspace / ".openstarry-code" / "attachments" / segment
 
 
 async def _seed_material(media_root: Path, workspace: Path, session_id: str) -> None:

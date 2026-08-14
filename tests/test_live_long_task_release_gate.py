@@ -603,7 +603,7 @@ assert secret
 assert secret not in case_text
 assert all(secret not in value for value in [str(args.case_file), str(args.output)])
 for name in ("BASELINE", "CANDIDATE", "RESILIENCE"):
-    report_path = os.environ.get(f"OPENSQUILLA_LONG_TASK_PERF_{name}_PATH", "")
+    report_path = os.environ.get(f"OPENSTARRY_CODE_LONG_TASK_PERF_{name}_PATH", "")
     assert report_path
     assert report_path not in case_text
 args.output.write_text(json.dumps({

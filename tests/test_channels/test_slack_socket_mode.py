@@ -7,9 +7,9 @@ from typing import Any
 
 import pytest
 
-from opensquilla.channels.manager import ChannelManager
-from opensquilla.channels.slack import SlackAuthError, SlackChannel
-from opensquilla.channels.types import IncomingMessage, OutgoingMessage
+from openstarry_code.channels.manager import ChannelManager
+from openstarry_code.channels.slack import SlackAuthError, SlackChannel
+from openstarry_code.channels.types import IncomingMessage, OutgoingMessage
 
 
 def _mk(**kwargs: Any) -> SlackChannel:

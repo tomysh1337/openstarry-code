@@ -4,12 +4,12 @@ import json
 
 import pytest
 
-from opensquilla.gateway.config import SquillaRouterConfig, _router_tier_profile_defaults
-from opensquilla.router_control import RouterControlHoldStore
-from opensquilla.tool_boundary import ToolCall
-from opensquilla.tools import get_default_registry
-from opensquilla.tools.dispatch import build_tool_handler
-from opensquilla.tools.types import CallerKind, ToolContext
+from openstarry_code.gateway.config import SquillaRouterConfig, _router_tier_profile_defaults
+from openstarry_code.router_control import RouterControlHoldStore
+from openstarry_code.tool_boundary import ToolCall
+from openstarry_code.tools import get_default_registry
+from openstarry_code.tools.dispatch import build_tool_handler
+from openstarry_code.tools.types import CallerKind, ToolContext
 
 
 def _ctx(*, replay_depth: int = 0, hold_applied: bool = False) -> ToolContext:

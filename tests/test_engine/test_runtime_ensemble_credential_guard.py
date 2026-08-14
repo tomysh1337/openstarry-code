@@ -5,10 +5,10 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.gateway.config import GatewayConfig, SquillaRouterConfig
-from opensquilla.provider import ChatConfig, EnsembleProvider, Message
-from opensquilla.provider.selector import ProviderConfig
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.gateway.config import GatewayConfig, SquillaRouterConfig
+from openstarry_code.provider import ChatConfig, EnsembleProvider, Message
+from openstarry_code.provider.selector import ProviderConfig
 
 
 class _Provider:

@@ -8,8 +8,8 @@ from pathlib import Path
 
 from typer.testing import CliRunner
 
-from opensquilla.cli.main import _is_offline_import_verification
-from opensquilla.cli.migrate_cmd import migrate_app
+from openstarry_code.cli.main import _is_offline_import_verification
+from openstarry_code.cli.migrate_cmd import migrate_app
 
 EXPECTED_FIELDS = {
     "schema_version",
@@ -76,7 +76,7 @@ def test_internal_import_verifier_routes_before_dotenv_bootstrap(tmp_path: Path)
             (
                 "import os, sys\n"
                 "sys.argv = ['opensquilla', *sys.argv[1:]]\n"
-                "from opensquilla.cli.main import app\n"
+                "from openstarry_code.cli.main import app\n"
                 "assert 'OPENSQUILLA_IMPORT_VERIFY_DOTENV_SENTINEL' not in os.environ\n"
                 "app()\n"
             ),

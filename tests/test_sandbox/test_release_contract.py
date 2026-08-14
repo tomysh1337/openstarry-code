@@ -11,7 +11,7 @@ def _text(path: str) -> str:
 
 
 def test_public_ui_exposes_only_safe_and_full_modes() -> None:
-    source = _text("opensquilla-webui/src/components/chat/ChatComposerRunMode.vue")
+    source = _text("openstarry-code-webui/src/components/chat/ChatComposerRunMode.vue")
     assert "value: 'safe'" in source
     assert "value: 'full'" in source
     for legacy in ("standard", "trusted", "managed", "bypass"):
@@ -20,18 +20,18 @@ def test_public_ui_exposes_only_safe_and_full_modes() -> None:
 
 def test_saved_safe_policy_is_pinned_at_every_gateway_turn_boundary() -> None:
     for path in (
-        "src/opensquilla/gateway/boot.py",
-        "src/opensquilla/gateway/channel_dispatch.py",
-        "src/opensquilla/gateway/rpc_sessions.py",
-        "src/opensquilla/cli/agent_cmd.py",
+        "src/openstarry_code/gateway/boot.py",
+        "src/openstarry_code/gateway/channel_dispatch.py",
+        "src/openstarry_code/gateway/rpc_sessions.py",
+        "src/openstarry_code/cli/agent_cmd.py",
     ):
         assert "pin_sandbox_policy" in _text(path), path
-    assert "sandbox_policy" in _text("src/opensquilla/tools/types.py")
+    assert "sandbox_policy" in _text("src/openstarry_code/tools/types.py")
 
 
 def test_capability_status_requires_live_canaries() -> None:
-    capability = _text("src/opensquilla/sandbox/capability_service.py")
-    runtime = _text("src/opensquilla/sandbox/setup_runtime.py")
+    capability = _text("src/openstarry_code/sandbox/capability_service.py")
+    runtime = _text("src/openstarry_code/sandbox/setup_runtime.py")
     assert 'SandboxSetupState.READY: "probe_required"' in capability
     assert "_probe_runtime_capabilities" in runtime
     for capability_name in (
@@ -44,7 +44,7 @@ def test_capability_status_requires_live_canaries() -> None:
 
 
 def test_recursive_delete_reaches_backup_broker_and_double_confirmation() -> None:
-    shell = _text("src/opensquilla/tools/builtin/shell.py")
+    shell = _text("src/openstarry_code/tools/builtin/shell.py")
     assert "_gate_recursive_delete" in shell
     assert "FileMutationBroker" in shell
     assert "BackupTooLarge" in shell
@@ -53,8 +53,8 @@ def test_recursive_delete_reaches_backup_broker_and_double_confirmation() -> Non
 
 
 def test_lan_ingress_is_private_and_user_narrowable() -> None:
-    auth = _text("src/opensquilla/gateway/auth.py")
-    config = _text("src/opensquilla/gateway/config.py")
+    auth = _text("src/openstarry_code/gateway/auth.py")
+    config = _text("src/openstarry_code/gateway/config.py")
     assert "Public peers are not accepted" in auth
     assert "allowed_client_cidrs" in auth
     assert "allowed_client_cidrs" in config
@@ -63,7 +63,7 @@ def test_lan_ingress_is_private_and_user_narrowable() -> None:
 
 def test_settings_exposes_all_sandbox_sections() -> None:
     panel = _text(
-        "opensquilla-webui/src/components/settings/SandboxSettingsPanel.vue"
+        "openstarry-code-webui/src/components/settings/SandboxSettingsPanel.vue"
     )
     for marker in (
         "sandbox-default-mode",

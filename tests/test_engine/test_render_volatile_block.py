@@ -3,7 +3,7 @@ from __future__ import annotations
 from types import SimpleNamespace
 from unittest.mock import MagicMock
 
-from opensquilla.engine.runtime import TurnRunner
+from openstarry_code.engine.runtime import TurnRunner
 
 
 def test_bootstrap_md_renders_under_named_heading() -> None:

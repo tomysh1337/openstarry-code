@@ -12,21 +12,21 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.routing import RouteEnvelope, SourceKind
-from opensquilla.gateway.rpc import RpcContext, RpcHandlerError
-from opensquilla.gateway.rpc_sessions import (
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.routing import RouteEnvelope, SourceKind
+from openstarry_code.gateway.rpc import RpcContext, RpcHandlerError
+from openstarry_code.gateway.rpc_sessions import (
     _handle_plans_cancel_run,
     _handle_plans_implement,
     _handle_plans_revise,
 )
-from opensquilla.gateway.task_runtime import TaskRun, TaskRuntime
-from opensquilla.session.manager import SessionManager
-from opensquilla.session.models import AgentTaskStatus, PlanRevisionRecord
-from opensquilla.session.plans import new_plan_revision
-from opensquilla.session.storage import SessionStorage, StorageBusyError
+from openstarry_code.gateway.task_runtime import TaskRun, TaskRuntime
+from openstarry_code.session.manager import SessionManager
+from openstarry_code.session.models import AgentTaskStatus, PlanRevisionRecord
+from openstarry_code.session.plans import new_plan_revision
+from openstarry_code.session.storage import SessionStorage, StorageBusyError
 
 SOURCE_KEY = "agent:main:webchat:plan-rpc-source"
 
@@ -142,7 +142,7 @@ async def test_implement_binds_exact_run_injects_full_plan_and_rejects_duplicate
         await release.wait()
 
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_sessions._emit_to_subscribers",
+        "openstarry_code.gateway.rpc_sessions._emit_to_subscribers",
         _ignore_subscriber_event,
     )
     async with _open_plan_rpc_stack(
@@ -261,7 +261,7 @@ async def test_question_answer_submit_implement_and_first_checkpoint_chain(
         checkpointed.append(str(advanced.current_step_id))
 
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_sessions._emit_to_subscribers",
+        "openstarry_code.gateway.rpc_sessions._emit_to_subscribers",
         _ignore_subscriber_event,
     )
     async with _open_plan_rpc_stack(
@@ -382,7 +382,7 @@ async def test_current_session_implement_rejects_pending_input_with_exact_identi
         return None
 
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_sessions._emit_to_subscribers",
+        "openstarry_code.gateway.rpc_sessions._emit_to_subscribers",
         _ignore_subscriber_event,
     )
     async with _open_plan_rpc_stack(
@@ -449,7 +449,7 @@ async def test_current_session_implement_requires_idle_task_ledger(
             await release.wait()
 
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_sessions._emit_to_subscribers",
+        "openstarry_code.gateway.rpc_sessions._emit_to_subscribers",
         _ignore_subscriber_event,
     )
     async with _open_plan_rpc_stack(
@@ -500,7 +500,7 @@ async def test_concurrent_plan_implement_returns_typed_conflict_and_one_run(
         await release.wait()
 
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_sessions._emit_to_subscribers",
+        "openstarry_code.gateway.rpc_sessions._emit_to_subscribers",
         _ignore_subscriber_event,
     )
     async with _open_plan_rpc_stack(
@@ -553,7 +553,7 @@ async def test_implement_collaboration_cas_prevents_concurrent_mode_overwrite(
         return None
 
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_sessions._emit_to_subscribers",
+        "openstarry_code.gateway.rpc_sessions._emit_to_subscribers",
         _ignore_subscriber_event,
     )
     async with _open_plan_rpc_stack(
@@ -608,7 +608,7 @@ async def test_replan_acceptance_failure_does_not_leave_session_in_plan_mode(
         return None
 
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_sessions._emit_to_subscribers",
+        "openstarry_code.gateway.rpc_sessions._emit_to_subscribers",
         _ignore_subscriber_event,
     )
     async with _open_plan_rpc_stack(
@@ -653,7 +653,7 @@ async def test_implement_keeps_explicit_message_visible(
         captured.append(run)
 
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_sessions._emit_to_subscribers",
+        "openstarry_code.gateway.rpc_sessions._emit_to_subscribers",
         _ignore_subscriber_event,
     )
     async with _open_plan_rpc_stack(
@@ -694,7 +694,7 @@ async def test_new_task_copies_independent_plan_lineages(
         captured.append(run)
 
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_sessions._emit_to_subscribers",
+        "openstarry_code.gateway.rpc_sessions._emit_to_subscribers",
         _ignore_subscriber_event,
     )
     async with _open_plan_rpc_stack(
@@ -832,7 +832,7 @@ async def test_explicit_implement_mode_is_pinned_at_queued_execution_boundary(
         implementation_entered.set()
 
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_sessions._emit_to_subscribers",
+        "openstarry_code.gateway.rpc_sessions._emit_to_subscribers",
         _ignore_subscriber_event,
     )
     async with _open_plan_rpc_stack(
@@ -883,7 +883,7 @@ async def test_replan_mode_and_revision_are_pinned_together(
         captured.append(run)
 
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_sessions._emit_to_subscribers",
+        "openstarry_code.gateway.rpc_sessions._emit_to_subscribers",
         _ignore_subscriber_event,
     )
     async with _open_plan_rpc_stack(
@@ -924,7 +924,7 @@ async def test_cancel_stops_a_queued_implementation_before_handler_entry(
             implementation_entered.set()
 
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_sessions._emit_to_subscribers",
+        "openstarry_code.gateway.rpc_sessions._emit_to_subscribers",
         _ignore_subscriber_event,
     )
     async with _open_plan_rpc_stack(

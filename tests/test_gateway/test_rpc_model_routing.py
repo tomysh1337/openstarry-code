@@ -8,10 +8,10 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from opensquilla.gateway import websocket as gateway_websocket
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.model_routing import (
+from openstarry_code.gateway import websocket as gateway_websocket
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.model_routing import (
     apply_model_routing_mode,
     capture_model_routing_config,
     ensemble_activation_preview,
@@ -19,28 +19,28 @@ from opensquilla.gateway.model_routing import (
     model_routing_patches,
     model_routing_snapshot,
 )
-from opensquilla.gateway.routing import RouteEnvelope, SourceKind
-from opensquilla.gateway.rpc import RpcContext, get_dispatcher
-from opensquilla.gateway.rpc_config import (
+from openstarry_code.gateway.routing import RouteEnvelope, SourceKind
+from openstarry_code.gateway.rpc import RpcContext, get_dispatcher
+from openstarry_code.gateway.rpc_config import (
     _handle_config_apply,
     _handle_config_patch,
     _handle_config_patch_safe,
     _handle_config_set,
 )
-from opensquilla.gateway.rpc_models import (
+from openstarry_code.gateway.rpc_models import (
     _handle_models_routing_get,
     _handle_models_routing_set,
 )
-from opensquilla.gateway.rpc_onboarding import (
+from openstarry_code.gateway.rpc_onboarding import (
     _ensemble_configure,
     _router_configure,
 )
-from opensquilla.gateway.scopes import ADMIN_SCOPE, METHOD_SCOPES, READ_SCOPE, WRITE_SCOPE
-from opensquilla.gateway.task_runtime import TaskRuntime
-from opensquilla.onboarding.mutations import upsert_llm_ensemble
-from opensquilla.session.models import AgentTaskRecord
-from opensquilla.tools.policy import apply_tool_policy_from_config
-from opensquilla.tools.types import ToolContext
+from openstarry_code.gateway.scopes import ADMIN_SCOPE, METHOD_SCOPES, READ_SCOPE, WRITE_SCOPE
+from openstarry_code.gateway.task_runtime import TaskRuntime
+from openstarry_code.onboarding.mutations import upsert_llm_ensemble
+from openstarry_code.session.models import AgentTaskRecord
+from openstarry_code.tools.policy import apply_tool_policy_from_config
+from openstarry_code.tools.types import ToolContext
 
 
 def test_fresh_tokenrhythm_ensemble_activation_materializes_custom_lineup() -> None:
@@ -1000,7 +1000,7 @@ async def test_task_runtime_freezes_strategy_but_uses_live_tool_policy() -> None
     blocker_started = asyncio.Event()
     release_blocker = asyncio.Event()
 
-    from opensquilla.engine.runtime import TurnRunner, accepted_turn_config_scope
+    from openstarry_code.engine.runtime import TurnRunner, accepted_turn_config_scope
 
     runner = TurnRunner.__new__(TurnRunner)
     runner._config = config

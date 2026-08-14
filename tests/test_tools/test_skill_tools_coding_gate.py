@@ -11,8 +11,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.skills import eligibility
-from opensquilla.tools.builtin import skill_tools
+from openstarry_code.skills import eligibility
+from openstarry_code.tools.builtin import skill_tools
 
 
 @pytest.fixture(autouse=True)
@@ -68,7 +68,7 @@ def _spec(name):
 
 
 def _skill_view_handler():
-    from opensquilla.tools.registry import get_default_registry
+    from openstarry_code.tools.registry import get_default_registry
 
     return get_default_registry().get("skill_view").handler
 
@@ -112,7 +112,7 @@ def test_create_skill_tools_wires_shared_gate():
 def test_find_install_spec_refuses_gated_codetask():
     # install_skill_deps resolves the skill via _find_install_spec; a gated
     # code-task must report not-found before any install metadata is touched.
-    from opensquilla.tools.types import ToolError
+    from openstarry_code.tools.types import ToolError
 
     skill_tools._loader = _FakeLoader([_spec("code-task")])
     eligibility.set_live_skills_config_getter(

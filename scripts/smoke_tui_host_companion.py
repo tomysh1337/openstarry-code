@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import asyncio
 
-from opensquilla.cli.tui.opentui.bridge import OpenTuiBridge
+from openstarry_code.cli.tui.opentui.bridge import OpenTuiBridge
 
 
 async def _run() -> None:

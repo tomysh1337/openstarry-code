@@ -6,9 +6,9 @@ import {
 } from '../dist/desktop-deep-link.js'
 
 for (const url of [
-  'opensquilla://open',
-  'opensquilla://open/',
-  'OPENSQUILLA://OPEN',
+  'openstarry-code://open',
+  'openstarry-code://open/',
+  'OPENSTARRY-CODE://OPEN',
 ]) {
   assert.equal(parseDesktopDeepLink(url), 'open', url)
 }
@@ -18,13 +18,13 @@ for (const url of [
   'not a URL',
   'https://open',
   'tokenrhythm://open',
-  'opensquilla://unknown',
-  'opensquilla://open/anything',
-  'opensquilla://open?command=anything',
-  'opensquilla://open#anything',
-  'opensquilla://user@open',
-  'opensquilla://open:1234',
-  'opensquilla:open',
+  'openstarry-code://unknown',
+  'openstarry-code://open/anything',
+  'openstarry-code://open?command=anything',
+  'openstarry-code://open#anything',
+  'openstarry-code://user@open',
+  'openstarry-code://open:1234',
+  'openstarry-code:open',
 ]) {
   assert.equal(parseDesktopDeepLink(url), null, url)
 }
@@ -34,16 +34,16 @@ assert.equal(parseDesktopDeepLink({}), null)
 
 assert.deepEqual(
   desktopDeepLinkArguments([
-    'OpenSquilla.exe',
+    'OpenStarry Code.exe',
     '--flag',
-    'opensquilla://open',
+    'openstarry-code://open',
     'https://example.com',
-    'opensquilla://unknown',
+    'openstarry-code://unknown',
   ]),
-  ['opensquilla://open', 'opensquilla://unknown'],
+  ['openstarry-code://open', 'openstarry-code://unknown'],
 )
 assert.deepEqual(
-  desktopDeepLinkArguments(['OpenSquilla.exe', '--flag']),
+  desktopDeepLinkArguments(['OpenStarry Code.exe', '--flag']),
   [],
 )
 

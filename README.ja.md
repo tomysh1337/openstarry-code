@@ -4,7 +4,7 @@
 # OpenSquilla — Token を効率的に使う AI Agent
 
 <p align="center">
-  <img src="assets/opensquilla-long-logo.png" alt="OpenSquilla logo" width="500">
+  <img src="assets/openstarry-code-long-logo.png" alt="OpenStarry Code logo" width="500">
 </p>
 
 <p align="center">
@@ -98,7 +98,7 @@ macOS のターミナルインストールでは、SquillaRouter の LightGBM �
 
 これらの固定リンクは、より新しい対象リリースがミラー検証に合格した場合にのみ更新されます。特定のリリースが必要な場合は、上記のバージョン付き GitHub Release リンクを使用してください。
 
-アップグレードの前に、実行中の OpenSquilla デスクトップアプリをすべて終了してください。プラットフォームのアプリデータディレクトリにある既存の Desktop プロファイルが引き続き使用されます。ターミナル版の `~/.opensquilla` は別のプロファイルです。必要な場合は設定から明示的に転送してください。
+アップグレードの前に、実行中の OpenStarry Code デスクトップアプリをすべて終了してください。プラットフォームのアプリデータディレクトリにある既存の Desktop プロファイルが引き続き使用されます。ターミナル版の `~/.openstarry-code` は別のプロファイルです。必要な場合は設定から明示的に転送してください。
 
 Windows Desktop を RC3 から RC4 以降へ更新するときは、新しいインストーラーを既存のインストールへ直接上書き実行してください。RC3 を先にアンインストールしないでください。RC3 のアンインストーラーはデスクトップのユーザーデータを削除する可能性があります。更新前に `%APPDATA%\OpenSquilla` をバックアップしてください。RC4 以降のインストーラーは通常のアンインストールでプロファイルデータを保持します。
 
@@ -135,12 +135,12 @@ uv tool install --python 3.12 "opensquilla[recommended] @ https://github.com/ope
 **3. 設定して実行する。**
 
 ```sh
-opensquilla onboard
-opensquilla gateway run
+openstarry-code onboard
+openstarry-code gateway run
 ```
 
 > [!NOTE]
-> 新規の `uv` インストール直後に `opensquilla` が見つからない場合は、新しいターミナルを開くか、ステップ 1 の PATH 設定の行を再実行してください。
+> 新規の `uv` インストール直後に `openstarry-code` が見つからない場合は、新しいターミナルを開くか、ステップ 1 の PATH 設定の行を再実行してください。
 
 完全にバージョンを固定したインストールには、バージョン付きの wheel URL を使ってください:
 `https://github.com/opensquilla/opensquilla/releases/download/v0.5.3/opensquilla-0.5.3-py3-none-any.whl`。
@@ -149,15 +149,15 @@ opensquilla gateway run
 
 ### ソースからのインストール
 
-この経路は、OpenSquilla をチェックアウトから編集せずに実行する場合に使います。このクローンはインストーラーにとってのパッケージソースにすぎません。インストール後は `opensquilla` コマンドを使ってください——`uv run` は実行しないでください。コードを変更するつもりなら、代わりに[ソースからの開発](#develop-from-source)を選んでください。
+この経路は、OpenSquilla をチェックアウトから編集せずに実行する場合に使います。このクローンはインストーラーにとってのパッケージソースにすぎません。インストール後は `openstarry-code` コマンドを使ってください——`uv run` は実行しないでください。コードを変更するつもりなら、代わりに[ソースからの開発](#develop-from-source)を選んでください。
 
 1. **LFS アセット込みでクローンする**
 
    ```sh
    git lfs install
    git clone https://github.com/opensquilla/opensquilla.git
-   cd opensquilla
-   git lfs pull --include="src/opensquilla/squilla_router/models/**"
+   cd openstarry-code
+   git lfs pull --include="src/openstarry_code/squilla_router/models/**"
    ```
 
 2. **インストーラーを実行する**
@@ -174,13 +174,13 @@ opensquilla gateway run
    powershell -ExecutionPolicy Bypass -File ./scripts/install_source.ps1
    ```
 
-   このスクリプトは最初に `opensquilla-webui` で `npm ci` と
+   このスクリプトは最初に `openstarry-code-webui` で `npm ci` と
    `npm run build` を実行し、その後 `uv tool install` で `.[recommended]`（SquillaRouter + メモリ +
    ローカルモデル）を専用のユーザー環境にインストールし、`uv` が使えない場合は
    `python -m pip install --user` にフォールバックします。ソースから再インストールするたびに
    `npm ci` が `node_modules` を作り直し、コンソールを再ビルドします。初回は通常ダウンロード量が
    最大で、以後は npm キャッシュで通信量を減らせますが、ビルド時間とディスク書き込みは残ります。インストール後に
-   `opensquilla` が `PATH` に乗っていない場合は、新しいターミナルを開いてください。
+   `openstarry-code` が `PATH` に乗っていない場合は、新しいターミナルを開いてください。
 
    `pip install .`、`uv tool install .`、VCS URL からの直接インストールは低レベルの
    ソースビルドであり、このスクリプトの代わりにはなりません。ローカルのチェックアウトでは
@@ -248,7 +248,7 @@ OPENSQUILLA_INSTALL_PROFILE=core   bash scripts/install_source.sh   # 最小ラ�
 OPENSQUILLA_INSTALL_DRY_RUN=1      bash scripts/install_source.sh   # 計画を表示するだけ
 ```
 
-シェルが実際にどの `opensquilla` を実行するかは、`command -v opensquilla`（macOS/Linux）または `where.exe opensquilla`（Windows）で確認してください。`PATH` に乗っていない場合は `uv tool update-shell` を実行します。ローカルのチェックアウトから再インストールした後は、更新されたパッケージを読み込むためにゲートウェイを再起動してください。
+シェルが実際にどの `openstarry-code` を実行するかは、`command -v openstarry-code`（macOS/Linux）または `where.exe openstarry-code`（Windows）で確認してください。`PATH` に乗っていない場合は `uv tool update-shell` を実行します。ローカルのチェックアウトから再インストールした後は、更新されたパッケージを読み込むためにゲートウェイを再起動してください。
 
 </details>
 
@@ -259,12 +259,12 @@ OPENSQUILLA_INSTALL_DRY_RUN=1      bash scripts/install_source.sh   # 計画を�
 この経路は、OpenSquilla のソースコードに手を入れているとき——変更を加える、テストを走らせる、このチェックアウトに対して挙動をデバッグする——に使います。通常のインストール経路ではありません。[ソースからのインストール](#install-from-source)とは異なり、この経路には `uv` が必要です。`uv sync` はリポジトリローカルの `.venv` を作成し、`uv run` はこのチェックアウト内のファイルに対してコマンドを実行します。
 
 ```sh
-cd opensquilla-webui
+cd openstarry-code-webui
 npm ci
 npm run build
 cd ..
 uv sync --extra recommended --extra dev
-uv run opensquilla --help
+uv run openstarry-code --help
 ```
 
 Web UI のソースを変更した後は `npm run build` を再実行してください。通常の wheel
@@ -275,26 +275,26 @@ editable `uv sync` は引き続き利用できます。
 
 ```sh
 uv sync --extra recommended --extra dev --extra matrix
-uv run opensquilla channels status matrix --json
+uv run openstarry-code channels status matrix --json
 ```
 
-このモードでは、[設定](#configuration)に出てくるすべての `opensquilla` コマンドに `uv run` を前置してください。ユーザーローカルの `opensquilla` コマンドで開発用チェックアウトをデバッグしてはいけません——そのコマンドは別の Python 環境で動いています。
+このモードでは、[設定](#configuration)に出てくるすべての `openstarry-code` コマンドに `uv run` を前置してください。ユーザーローカルの `openstarry-code` コマンドで開発用チェックアウトをデバッグしてはいけません——そのコマンドは別の Python 環境で動いています。
 
 ### アンインストール
 
-`opensquilla uninstall` で OpenSquilla をアンインストールします。デフォルトではデータを残し、プログラム本体だけを削除します:
+`openstarry-code uninstall` で OpenSquilla をアンインストールします。デフォルトではデータを残し、プログラム本体だけを削除します:
 
 ```sh
-opensquilla uninstall --dry-run   # 削除されるものと残されるものをプレビュー
-opensquilla uninstall             # プログラムを削除し、データは残す
+openstarry-code uninstall --dry-run   # 削除されるものと残されるものをプレビュー
+openstarry-code uninstall             # プログラムを削除し、データは残す
 ```
 
 データも削除したい場合は、明示的にオプトインしてください:
 
 ```sh
-opensquilla uninstall --purge-state    # セッション、ログ、キャッシュ、スケジューラ、メモリ
-opensquilla uninstall --purge-config   # config.toml とシークレット（.env）
-opensquilla uninstall --purge-all      # すべて（確認の入力を求められます）
+openstarry-code uninstall --purge-state    # セッション、ログ、キャッシュ、スケジューラ、メモリ
+openstarry-code uninstall --purge-config   # config.toml とシークレット（.env）
+openstarry-code uninstall --purge-all      # すべて（確認の入力を求められます）
 ```
 
 まず実行中のゲートウェイがドレインされて停止し、削除は OpenSquilla のホーム内にとどまります。Docker やデスクトップでのインストールの場合は、代わりにガイド付きの削除手順が提示されます。完全なリファレンスは [`docs/cli.md`](docs/cli.md#uninstall) を参照してください。
@@ -358,13 +358,13 @@ OPENSQUILLA_TELEMETRY_ENDPOINT=https://example.com/v1/install
 
 ### 初回セットアップ
 
-`opensquilla onboard` は、対話式の初回セットアップウィザードです。これはアクティブな設定ファイルを書き込み、`--api-key-env` を渡すとプロバイダのシークレットを環境変数に残します。ルーターはデフォルトで `recommended`（サポートされているプロバイダでは SquillaRouter）です。単一モデルへの直接ルーティングが必要な場合は `--router disabled` を渡してください。
+`openstarry-code onboard` は、対話式の初回セットアップウィザードです。これはアクティブな設定ファイルを書き込み、`--api-key-env` を渡すとプロバイダのシークレットを環境変数に残します。ルーターはデフォルトで `recommended`（サポートされているプロバイダでは SquillaRouter）です。単一モデルへの直接ルーティングが必要な場合は `--router disabled` を渡してください。
 
 ```sh
-opensquilla onboard                # 完全な対話式ウィザード
-opensquilla onboard --if-needed    # 冪等: スクリプトや再インストールでも安全
-opensquilla onboard --minimal      # プロバイダのみ; チャネルと検索はスキップ
-opensquilla onboard status         # 書き込まずに各セットアップ項目を確認
+openstarry-code onboard                # 完全な対話式ウィザード
+openstarry-code onboard --if-needed    # 冪等: スクリプトや再インストールでも安全
+openstarry-code onboard --minimal      # プロバイダのみ; チャネルと検索はスキップ
+openstarry-code onboard status         # 書き込まずに各セットアップ項目を確認
 ```
 
 SSH、CI、または TTY のないあらゆる環境では、非対話形式を使ってください——シークレットは環境に残し、その値ではなく**名前**を渡します:
@@ -373,14 +373,14 @@ SSH、CI、または TTY のないあらゆる環境では、非対話形式を�
 
 ```sh
 export OPENROUTER_API_KEY="sk-..."
-opensquilla onboard --provider openrouter --api-key-env OPENROUTER_API_KEY
+openstarry-code onboard --provider openrouter --api-key-env OPENROUTER_API_KEY
 ```
 
 **Windows PowerShell**
 
 ```powershell
 $env:OPENROUTER_API_KEY="sk-..."
-opensquilla onboard --provider openrouter --api-key-env OPENROUTER_API_KEY
+openstarry-code onboard --provider openrouter --api-key-env OPENROUTER_API_KEY
 ```
 
 OpenRouter はあくまで一例です——サポートされている任意のプロバイダと、その API キー変数に置き換えてください。
@@ -388,52 +388,52 @@ OpenRouter はあくまで一例です——サポートされている任意の
 後からウィザード全体をやり直さずに、特定の項目だけを設定し直せます（以下の例は、該当する API キーがすでに環境にあることを前提とします）:
 
 ```sh
-opensquilla configure provider --provider openai --model gpt-4o --api-key-env OPENAI_API_KEY
-opensquilla configure router --router recommended
-opensquilla configure search   --search-provider duckduckgo
-opensquilla configure search   --search-provider exa --api-key-env EXA_API_KEY
-opensquilla configure channels
+openstarry-code configure provider --provider openai --model gpt-4o --api-key-env OPENAI_API_KEY
+openstarry-code configure router --router recommended
+openstarry-code configure search   --search-provider duckduckgo
+openstarry-code configure search   --search-provider exa --api-key-env EXA_API_KEY
+openstarry-code configure channels
 ```
 
 各項目: `provider`、`router`、`channels`、`search`、`image-generation`、`memory-embedding`。Web UI は `/control/setup` で同じカタログとステータスモデルを公開しています。Provider と Router が速い経路で、Channels、Search、Image generation、Memory embedding は Capability Center に置かれ、後から設定できます。チャネルが空のままでも、セットアップの失敗ではなくオプトアウトとして扱われます。
 
 **設定の読み込み順:** `OPENSQUILLA_GATEWAY_CONFIG_PATH` →
-`./opensquilla.toml` → `~/.opensquilla/config.toml` → 組み込みのデフォルト。個々のシークレットについては、環境変数の値が常にファイルの値より優先されます。
+`./openstarry-code.toml` → `~/.openstarry-code/config.toml` → 組み込みのデフォルト。個々のシークレットについては、環境変数の値が常にファイルの値より優先されます。
 
 ### OpenClaw や Hermes Agent からの移行
 
 `~/.openclaw` や `~/.hermes` の下にすでに状態がある場合は、まずドライランを実行して移行レポートを確認し、その後で明示的に適用してください:
 
 ```sh
-opensquilla migrate openclaw --json
-opensquilla migrate openclaw --apply
+openstarry-code migrate openclaw --json
+openstarry-code migrate openclaw --apply
 
-opensquilla migrate hermes --json
-opensquilla migrate hermes --apply
+openstarry-code migrate hermes --json
+openstarry-code migrate hermes --apply
 ```
 
-`opensquilla migrate --source openclaw,hermes --apply` を使うと、両方のデフォルトホームを取り込めます。`--migrate-secrets` は、ドライランのレポートを確認してから初めて追加してください。カスタムパスと競合の処理については [`MIGRATION.md`](MIGRATION.md) を参照してください。
+`openstarry-code migrate --source openclaw,hermes --apply` を使うと、両方のデフォルトホームを取り込めます。`--migrate-secrets` は、ドライランのレポートを確認してから初めて追加してください。カスタムパスと競合の処理については [`MIGRATION.md`](MIGRATION.md) を参照してください。
 
 ### 実行
 
 ```sh
-opensquilla gateway run                # フォアグラウンド、127.0.0.1:18791
-opensquilla gateway start --json       # バックグラウンド + ヘルスチェック待ち
-opensquilla chat                       # 対話式 REPL
-opensquilla agent -m "あなたのプロンプト" # 単発実行、自動化向き
+openstarry-code gateway run                # フォアグラウンド、127.0.0.1:18791
+openstarry-code gateway start --json       # バックグラウンド + ヘルスチェック待ち
+openstarry-code chat                       # 対話式 REPL
+openstarry-code agent -m "あなたのプロンプト" # 単発実行、自動化向き
 ```
 
 <http://127.0.0.1:18791/control/> で Web UI を開きます。**Health** ビューには、OpenSquilla が準備できているか、準備できていない項目は何か、そして次の復旧手順が表示されます。CLI からは次を実行します:
 
 ```sh
-opensquilla doctor
-opensquilla doctor --json
-opensquilla doctor --config ./opensquilla.toml --json
+openstarry-code doctor
+openstarry-code doctor --json
+openstarry-code doctor --config ./openstarry-code.toml --json
 ```
 
-`/health` と `/healthz` は、プロセス確認のための軽量な稼働確認エンドポイントです。`opensquilla doctor` と Web UI の Health ビューは、プロバイダ設定、メモリ、ログ、検索、チャネル、サンドボックスの状態、ルーター、画像生成、復旧ガイダンスについての準備状況を見る場所です。フォアグラウンドのゲートウェイは `Ctrl+C` で停止します。
+`/health` と `/healthz` は、プロセス確認のための軽量な稼働確認エンドポイントです。`openstarry-code doctor` と Web UI の Health ビューは、プロバイダ設定、メモリ、ログ、検索、チャネル、サンドボックスの状態、ルーター、画像生成、復旧ガイダンスについての準備状況を見る場所です。フォアグラウンドのゲートウェイは `Ctrl+C` で停止します。
 
-その他のコマンドグループには `sessions`、`skills`、`memory`、`migrate`、`cron`、`channels`、`providers`、`models`、`cost` があります。詳細は `opensquilla --help` または `opensquilla <グループ> --help` を実行してください。
+その他のコマンドグループには `sessions`、`skills`、`memory`、`migrate`、`cron`、`channels`、`providers`、`models`、`cost` があります。詳細は `openstarry-code --help` または `openstarry-code <グループ> --help` を実行してください。
 
 <details>
 <summary>高度な設定——チャネルの検証、パブリックネットワークへのバインド、Docker</summary>
@@ -443,8 +443,8 @@ opensquilla doctor --config ./opensquilla.toml --json
 チャネルの保存は設定の変更であって、実行時の接続性の証明ではありません。チャネルを編集した後はゲートウェイを再起動し、それから実際のチャネルを検証してください:
 
 ```sh
-opensquilla gateway restart
-opensquilla channels status <name> --json
+openstarry-code gateway restart
+openstarry-code channels status <name> --json
 ```
 
 ステータスのペイロードが `enabled=true`、`configured=true`、`connected=true` を報告したときに限り、チャネルが接続済みだと見なしてください。Feishu はデフォルトで websocket モード、Telegram はポーリング、Slack は Socket Mode を使えます——これらのモードはいずれもパブリック URL を必要としません。Feishu の webhook モード、Telegram の webhook モード、Slack の webhook モード、そして WeCom は、パブリックでプロバイダから到達可能な URL を必要とします。
@@ -454,7 +454,7 @@ opensquilla channels status <name> --json
 別のマシンから Web UI に到達するには、ゲートウェイをすべてのインターフェースにバインドし、ホストのパブリック IP を使ってください:
 
 ```sh
-opensquilla gateway run --listen 0.0.0.0 --port 18791
+openstarry-code gateway run --listen 0.0.0.0 --port 18791
 ```
 
 パブリックアクセスにはさらに、そのポートへの受信 TCP をホストのファイアウォールやクラウドのセキュリティグループが許可している必要があります。`[auth] mode = "none"` のままゲートウェイを公開してはいけません——`0.0.0.0` にバインドする前にトークン認証を設定してください。
@@ -467,17 +467,17 @@ opensquilla gateway run --listen 0.0.0.0 --port 18791
 OPENSQUILLA_GATEWAY_IMAGE=ghcr.io/opensquilla/opensquilla:latest docker compose up -d
 ```
 
-`OPENSQUILLA_GATEWAY_IMAGE` を設定しない場合、compose 経路は自分でビルドした `opensquilla:local` イメージを実行します。Git LFS のルーターアセットを取得済みのソースチェックアウトからビルドしてください（クローンと `git lfs pull` については[ソースからのインストール](#install-from-source)を参照）:
+`OPENSQUILLA_GATEWAY_IMAGE` を設定しない場合、compose 経路は自分でビルドした `openstarry-code:local` イメージを実行します。Git LFS のルーターアセットを取得済みのソースチェックアウトからビルドしてください（クローンと `git lfs pull` については[ソースからのインストール](#install-from-source)を参照）:
 
 ```sh
-docker build -t opensquilla:local .
+docker build -t openstarry-code:local .
 ```
 
 その後 `./start.sh`（Windows では `start.ps1`）が `docker compose up -d` を実行し、ゲートウェイのログを追尾します。Docker が省くのはホストの Python ツールチェーンであって、ローカルイメージのビルドではありません。
 
 </details>
 
-プロバイダの階層、サンドボックスのチューニング、画像生成、並行処理の設定は `opensquilla.toml.example` にあります。
+プロバイダの階層、サンドボックスのチューニング、画像生成、並行処理の設定は `openstarry-code.toml.example` にあります。
 
 ---
 
@@ -514,8 +514,8 @@ OpenSquilla 0.2.1 は、リリースパッケージの起動と、長時間稼�
 
 このリリースは、移行、CLI チャット、チャネル、スケジューリング、長時間稼働するツール作業の各方面で OpenSquilla を拡張します:
 
-- **既存の Agent ホームからの移行経路** —— `opensquilla migrate` は、既存の OpenClaw/Hermes ホームからのインポートをプレビューして適用します。メモリ、ペルソナファイル、スキル、MCP/チャネル設定、競合処理、移行レポートを含みます。
-- **実用的なチャット CLI** —— `opensquilla chat` は、安定したターミナル UI、ストリーミング出力、入力のキューイング、スラッシュモードの発見、ツール/ステータスのストリップ、そしてより決定的なライブプロンプトの挙動を備えています。
+- **既存の Agent ホームからの移行経路** —— `openstarry-code migrate` は、既存の OpenClaw/Hermes ホームからのインポートをプレビューして適用します。メモリ、ペルソナファイル、スキル、MCP/チャネル設定、競合処理、移行レポートを含みます。
+- **実用的なチャット CLI** —— `openstarry-code chat` は、安定したターミナル UI、ストリーミング出力、入力のキューイング、スラッシュモードの発見、ツール/ステータスのストリップ、そしてより決定的なライブプロンプトの挙動を備えています。
 - **画面横断的な cron 自動化** —— cron ジョブは、構造化されたスケジュール、タイムゾーンを考慮した exact/every/cron の実行、チャネルや webhook への配信、失敗時の送り先、手動実行、そして WebUI/CLI/RPC の同等性をカバーするようになりました。
 - **より良い Feishu と Discord のチャネル** —— チャネルアダプターは、より明確な機能メタデータ、より安全な DM/グループの扱い、ネイティブのファイルと成果物の経路、改善された添付/スレッドの挙動を公開する一方、特権操作はスコープが限定されたままです。
 - **より頑丈な長時間稼働ターン** —— 失敗したターンはプロバイダの再生から除かれ、不正な形式のツール呼び出しはより安全に扱われ、承認ゲート付きのリトライはオペレーターの判断を待ちます。
@@ -534,13 +534,13 @@ OpenSquilla 0.2.1 は、リリースパッケージの起動と、長時間稼�
 | **Token を効率化するルーティング** | `SquillaRouter`——`recommended` extra に含まれるローカルの LightGBM + ONNX 分類器——が、各ターンを長さ、言語、コード、キーワード、セマンティック埋め込みで採点し、4 つの階層（C0〜C3。旧来の T0〜T3 という名前はエイリアス）にわたって、対応できる最も安価なモデルへ振り分けます。分類はデバイス上で実行されます。その判断を下すために、あなたのプロンプトがマシンを離れることはありません。 |
 | **適応的な推論とプロンプト** | OpenSquilla は、ルーターが複雑だと採点したターンに対してのみ拡張推論を要求し、システムプロンプトもタスクの複雑さに応じて伸縮します——ささいなターンには軽量に、複雑なターンには完全な指示を。 |
 | **20 以上の LLM プロバイダ** | プロバイダレジストリは 20 以上の LLM バックエンドを対象とします——TokenRhythm、OpenRouter、OpenAI、Anthropic、Ollama、DeepSeek、Gemini、DashScope/Qwen、Moonshot、Mistral、Groq、Zhipu、SiliconFlow、vLLM、LM Studio など。プライマリ + フォールバックの選択にも対応し、初回オンボーディングでは検証済みのサブセットが提示されます。 |
-| **オンデマンドなスキルと MCP** | 15 個の同梱スキル（coding、GitHub、cron、pptx/docx/xlsx/pdf、要約、tmux、天気など）は、タスクが必要とするときだけ読み込まれます。OpenSquilla は MCP クライアントであり、MCP サーバーとしても動作できます——`opensquilla mcp-server run` には `mcp` extra が必要です（`opensquilla[recommended,mcp]` をインストール）。スキルは CLI から作成、インストール、公開できます。 |
+| **オンデマンドなスキルと MCP** | 15 個の同梱スキル（coding、GitHub、cron、pptx/docx/xlsx/pdf、要約、tmux、天気など）は、タスクが必要とするときだけ読み込まれます。OpenSquilla は MCP クライアントであり、MCP サーバーとしても動作できます——`openstarry-code mcp-server run` には `mcp` extra が必要です（`openstarry-code[recommended,mcp]` をインストール）。スキルは CLI から作成、インストール、公開できます。 |
 | **永続的なローカルメモリ** | 厳選された `MEMORY.md` に、日付付きの Markdown ノートを加えたもので、SQLite の全文キーワード検索と `sqlite-vec` のセマンティック想起で検索します。埋め込みは同梱の ONNX でデバイス上で実行されますが、OpenAI/Ollama に切り替えることもできます。任意の指数減衰と、オプトインの「dream」整合（コンソリデーション）も利用できます。 |
 | **階層化されたセキュリティサンドボックス** | 権限マトリクス上の 3 つのポリシー階層（Standard / Strict / Locked）。Linux では Bubblewrap がコード実行を隔離します。macOS の Seatbelt バックエンドは現在プロファイルを生成するだけで（実行は未対応）、Windows にはまだサンドボックスバックエンドがありません。拒否台帳（denial ledger）は、拒否が繰り返されると自律実行を自動的に一時停止し、拒否された出力は破棄されます。スキルのメタデータとツール結果は、プロンプトインジェクション対策として XML エスケープされます。 |
 | **組み込みツール** | ファイルの読み取り/書き込み/編集、シェルとバックグラウンドプロセス、git、SSRF ガードの背後にあるウェブ検索（DuckDuckGo、Bocha、Brave、Tavily、Exa）と取得、スプレッドシート/PPTX/PDF の作成、画像生成、テキスト読み上げ。 |
 | **統一ゲートウェイ** | `127.0.0.1:18791` で動作する Starlette ASGI サーバーで、WebSocket RPC と組み込みのコントロールコンソール（`/control/`）を備えます。Web UI、CLI、そして Terminal、WebSocket、Slack、Telegram、Discord、Feishu、DingTalk、WeCom、Matrix、QQ のチャネルが、すべて 1 つの `TurnRunner` を共有します。 |
-| **耐久性のあるセッション、サブエージェント、スケジューリング** | SQLite を基盤としたセッション、トランスクリプト、再生のストレージに、Agent ごとのワークスペースを備えます。Agent は深さの制限されたサブエージェントを生成でき、ツリー内蔵の cron パーサーを持つ `SchedulerEngine` が `opensquilla cron` 経由で定期ジョブを実行します。 |
-| **オペレーター制御** | ヒューマンインザループの承認により、機微なツール呼び出しを判断のために一時停止できます。ターンごと・セッションごとの Token とコストの集計（`opensquilla cost`）と診断は、CLI と Web UI から利用できます。 |
+| **耐久性のあるセッション、サブエージェント、スケジューリング** | SQLite を基盤としたセッション、トランスクリプト、再生のストレージに、Agent ごとのワークスペースを備えます。Agent は深さの制限されたサブエージェントを生成でき、ツリー内蔵の cron パーサーを持つ `SchedulerEngine` が `openstarry-code cron` 経由で定期ジョブを実行します。 |
+| **オペレーター制御** | ヒューマンインザループの承認により、機微なツール呼び出しを判断のために一時停止できます。ターンごと・セッションごとの Token とコストの集計（`openstarry-code cost`）と診断は、CLI と Web UI から利用できます。 |
 
 MetaSkill ドキュメント: [`docs/features/meta-skills.md`](docs/features/meta-skills.md)、
 [`docs/features/meta-skill-user-guide.md`](docs/features/meta-skill-user-guide.md)、
@@ -574,7 +574,7 @@ PinchBench 1.2.1 の 25 タスクにわたる平均結果:
 
 ```sh
 brew install libomp
-opensquilla gateway restart
+openstarry-code gateway restart
 ```
 
 </details>
@@ -587,8 +587,8 @@ opensquilla gateway restart
 ソースからの PowerShell インストーラーは、`winget` 経由でこの redistributable のインストールを試みます。ターミナルからのクイックインストールを使った場合、または `winget` が利用できない場合は、手動でインストールしてから PowerShell を再起動してください: <https://aka.ms/vs/17/release/vc_redist.x64.exe>。その後、推奨のルーターを復元します:
 
 ```powershell
-opensquilla onboard --provider openrouter --api-key-env OPENROUTER_API_KEY --router recommended
-opensquilla gateway restart
+openstarry-code onboard --provider openrouter --api-key-env OPENROUTER_API_KEY --router recommended
+openstarry-code gateway restart
 ```
 
 </details>

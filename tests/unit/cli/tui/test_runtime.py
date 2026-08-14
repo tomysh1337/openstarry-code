@@ -7,17 +7,17 @@ from typing import Any
 
 import pytest
 
-from opensquilla.cli.tui.adapters.runtime_helpers import classify_chat_input
-from opensquilla.cli.tui.backend.contracts import (
+from openstarry_code.cli.tui.adapters.runtime_helpers import classify_chat_input
+from openstarry_code.cli.tui.backend.contracts import (
     TuiInputKind,
     TuiRuntimeConfig,
     TuiRuntimeHooks,
     TuiSubmittedInput,
 )
-from opensquilla.cli.tui.backend.runtime import run_tui_runtime
-from opensquilla.cli.tui.backend.state import TuiRuntimeState
-from opensquilla.engine.agent_injection import PendingInputProvider
-from opensquilla.engine.commands import Surface
+from openstarry_code.cli.tui.backend.runtime import run_tui_runtime
+from openstarry_code.cli.tui.backend.state import TuiRuntimeState
+from openstarry_code.engine.agent_injection import PendingInputProvider
+from openstarry_code.engine.commands import Surface
 
 
 class _FakeSurface:
@@ -683,7 +683,7 @@ async def test_runtime_notifies_when_input_is_queued_mid_turn() -> None:
 
 @pytest.mark.asyncio
 async def test_runtime_steers_enter_without_adding_fifo_item() -> None:
-    from opensquilla.cli.tui.backend.input_identity import current_tui_client_message_id
+    from openstarry_code.cli.tui.backend.input_identity import current_tui_client_message_id
 
     inputs: asyncio.Queue[Any] = asyncio.Queue()
     surface = _FakeSurface(inputs)
@@ -858,7 +858,7 @@ async def test_runtime_ambiguous_steer_retries_with_same_identity() -> None:
         return True
 
     async def _ambiguous(_text: str) -> bool:
-        from opensquilla.cli.tui.backend.input_identity import (
+        from openstarry_code.cli.tui.backend.input_identity import (
             current_tui_client_message_id,
         )
 

@@ -4,8 +4,8 @@ from pathlib import Path
 
 from starlette.testclient import TestClient
 
-from opensquilla.gateway.app import create_gateway_app
-from opensquilla.gateway.config import AuthConfig, ControlUiConfig, GatewayConfig
+from openstarry_code.gateway.app import create_gateway_app
+from openstarry_code.gateway.config import AuthConfig, ControlUiConfig, GatewayConfig
 
 
 def _config(tmp_path: Path) -> GatewayConfig:

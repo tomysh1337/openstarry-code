@@ -58,7 +58,7 @@ already built and do not require Node.js. Install the locked frontend and
 Python development dependencies:
 
 ```powershell
-cd opensquilla-webui
+cd openstarry-code-webui
 npm ci
 npm run build
 cd ..
@@ -70,13 +70,13 @@ Run the public quality gate before opening a pull request:
 ```powershell
 uv run ruff check src tests
 uv run pytest -q
-npm --prefix opensquilla-webui run build
+npm --prefix openstarry-code-webui run build
 uv build --wheel
 ```
 
 The Web UI build writes an ignored package artifact that `uv build --wheel`
 validates and embeds. Rebuild it after frontend changes; do not commit the
-generated `src/opensquilla/gateway/static/dist/` tree.
+generated `src/openstarry_code/gateway/static/dist/` tree.
 
 Default tests must be offline, deterministic, credential-free, and safe for forks. Do not add network, provider, browser, or channel requirements to the default pull request path.
 

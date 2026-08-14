@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Build a platform-local OpenSquilla wheelhouse release zip.
+"""Build a platform-local OpenStarry Code wheelhouse release zip.
 
 The output is intentionally not a source checkout and not a macOS DMG. It is a
-zip containing the OpenSquilla wheel, its freshly built Web UI, dependency
+zip containing the OpenStarry Code wheel, its freshly built Web UI, dependency
 wheels for the current platform/Python, install scripts, a manifest, and an
 operator-facing README.
 """
@@ -33,22 +33,22 @@ DEFAULT_RUNTIME_PYTHON_VERSION = "3.12.13"
 PYTHON_BUILD_STANDALONE_REPO = "astral-sh/python-build-standalone"
 LFS_POINTER_LINE = "version https://git-lfs.github.com/spec/v1"
 RELEASE_NOTICE_RELS = ("LICENSE", "THIRD_PARTY_NOTICES.md")
-WHEEL_ROUTER_PREFIX = "opensquilla/squilla_router/models"
+WHEEL_ROUTER_PREFIX = "openstarry_code/squilla_router/models"
 ROUTER_PROVENANCE_WHEEL_PATH = (
     f"{WHEEL_ROUTER_PREFIX}/v4.2_phase3_inference/PROVENANCE.md"
 )
-TOKENJUICE_PROVENANCE_WHEEL_PATH = "opensquilla/plugins/tokenjuice/PROVENANCE.md"
+TOKENJUICE_PROVENANCE_WHEEL_PATH = "openstarry_code/plugins/tokenjuice/PROVENANCE.md"
 ALLOWED_SKILL_REFERENCE_WHEEL_PATHS = frozenset(
     {
-        "opensquilla/skills/bundled/html-coder/references/add-css-style.md",
-        "opensquilla/skills/bundled/html-coder/references/add-javascript.md",
-        "opensquilla/skills/bundled/html-coder/references/attributes.md",
-        "opensquilla/skills/bundled/html-coder/references/essentials.md",
-        "opensquilla/skills/bundled/html-coder/references/global-attributes.md",
-        "opensquilla/skills/bundled/html-coder/references/glossary.md",
-        "opensquilla/skills/bundled/html-coder/references/standards.md",
-        "opensquilla/skills/bundled/pptx/references/pptxgenjs.md",
-        "opensquilla/skills/bundled/pptx/references/python_pptx.md",
+        "openstarry_code/skills/bundled/html-coder/references/add-css-style.md",
+        "openstarry_code/skills/bundled/html-coder/references/add-javascript.md",
+        "openstarry_code/skills/bundled/html-coder/references/attributes.md",
+        "openstarry_code/skills/bundled/html-coder/references/essentials.md",
+        "openstarry_code/skills/bundled/html-coder/references/global-attributes.md",
+        "openstarry_code/skills/bundled/html-coder/references/glossary.md",
+        "openstarry_code/skills/bundled/html-coder/references/standards.md",
+        "openstarry_code/skills/bundled/pptx/references/pptxgenjs.md",
+        "openstarry_code/skills/bundled/pptx/references/python_pptx.md",
     }
 )
 ROUTER_ASSET_RELS = (
@@ -61,10 +61,10 @@ ROUTER_ASSET_RELS = (
     "v4.2_phase3_inference/bge_onnx/model.onnx",
 )
 REQUIRED_RUNTIME_MODULE_RELS = (
-    "opensquilla/cli/main.py",
-    "opensquilla/cli/dist_cmd.py",
-    "opensquilla/dist/__init__.py",
-    "opensquilla/dist/workspace_state.py",
+    "openstarry_code/cli/main.py",
+    "openstarry_code/cli/dist_cmd.py",
+    "openstarry_code/dist/__init__.py",
+    "openstarry_code/dist/workspace_state.py",
 )
 FORBIDDEN_RELEASE_SEGMENTS = {".git", ".github", ".omx"}
 FORBIDDEN_RELEASE_ROOTS = {"docs", "tests", "scripts"}
@@ -88,7 +88,7 @@ TEXT_RELEASE_SUFFIXES = {
     ".yaml",
     ".yml",
 }
-WEBUI_DIRECTORY = "opensquilla-webui"
+WEBUI_DIRECTORY = "openstarry-code-webui"
 
 
 @dataclass(frozen=True)
@@ -223,7 +223,7 @@ def release_name(
 ) -> str:
     kind = "portable" if portable else "wheelhouse"
     return (
-        f"OpenSquilla-{app_version}-{platform_tag}-"
+        f"OpenStarry Code-{app_version}-{platform_tag}-"
         f"py{python_major}{python_minor}-{profile}-{kind}"
     )
 
@@ -294,9 +294,9 @@ def _is_allowed_runtime_markdown(path: str) -> bool:
         return True
     if name in ALLOWED_SKILL_REFERENCE_WHEEL_PATHS:
         return True
-    if name.startswith("opensquilla/skills/bundled/") and name.endswith("/SKILL.md"):
+    if name.startswith("openstarry_code/skills/bundled/") and name.endswith("/SKILL.md"):
         return True
-    return name.startswith("opensquilla/identity/templates/bootstrap/") and name.endswith(".md")
+    return name.startswith("openstarry_code/identity/templates/bootstrap/") and name.endswith(".md")
 
 
 def forbidden_release_wheel_entries(names: list[str] | tuple[str, ...]) -> list[str]:
@@ -352,9 +352,9 @@ def missing_required_runtime_modules_in_wheel(wheel_path: Path) -> list[str]:
 
 
 def find_built_wheel(wheel_dir: Path) -> Path:
-    wheels = sorted(wheel_dir.glob("opensquilla-*.whl"))
+    wheels = sorted(wheel_dir.glob("openstarry_code-*.whl"))
     if len(wheels) != 1:
-        raise SystemExit(f"Expected one OpenSquilla wheel in {wheel_dir}, found {len(wheels)}")
+        raise SystemExit(f"Expected one OpenStarry Code wheel in {wheel_dir}, found {len(wheels)}")
     return wheels[0]
 
 
@@ -621,17 +621,17 @@ PY
   return 1
 }}
 
-resolve_opensquilla_bin() {{
-  if command -v opensquilla >/dev/null 2>&1; then
-    command -v opensquilla
+resolve_openstarry_code_bin() {{
+  if command -v openstarry-code >/dev/null 2>&1; then
+    command -v openstarry-code
     return 0
   fi
-  if [[ -x "${{HOME}}/.local/bin/opensquilla" ]]; then
-    printf '%s\\n' "${{HOME}}/.local/bin/opensquilla"
+  if [[ -x "${{HOME}}/.local/bin/openstarry-code" ]]; then
+    printf '%s\\n' "${{HOME}}/.local/bin/openstarry-code"
     return 0
   fi
   local user_python_bin
-  user_python_bin="${{HOME}}/Library/Python/${{REQUIRED_PYTHON_MAJOR}}.${{REQUIRED_PYTHON_MINOR}}/bin/opensquilla"
+  user_python_bin="${{HOME}}/Library/Python/${{REQUIRED_PYTHON_MAJOR}}.${{REQUIRED_PYTHON_MINOR}}/bin/openstarry-code"
   if [[ -x "${{user_python_bin}}" ]]; then
     printf '%s\\n' "${{user_python_bin}}"
     return 0
@@ -640,7 +640,7 @@ resolve_opensquilla_bin() {{
 }}
 
 if [[ ! -d "${{PACKAGE_DIR}}" ]]; then
-  echo "OpenSquilla package directory not found: ${{PACKAGE_DIR}}" >&2
+  echo "OpenStarry Code package directory not found: ${{PACKAGE_DIR}}" >&2
   exit 1
 fi
 
@@ -651,7 +651,7 @@ if [[ -z "${{PYTHON_BIN}}" ]]; then
   exit 1
 fi
 
-echo "Installing OpenSquilla from local wheelhouse..."
+echo "Installing OpenStarry Code from local wheelhouse..."
 if command -v uv >/dev/null 2>&1; then
   uv tool install \\
     --python "${{PYTHON_BIN}}" \\
@@ -667,19 +667,19 @@ else
     "{wheel_target}"
 fi
 
-OPENSQUILLA_BIN="$(resolve_opensquilla_bin || true)"
-if [[ -z "${{OPENSQUILLA_BIN}}" ]]; then
-  echo "OpenSquilla installed, but the executable was not found on PATH." >&2
-  echo "Add ~/.local/bin or your Python user scripts directory to PATH, then run opensquilla." >&2
+OPENSTARRY_CODE_BIN="$(resolve_openstarry_code_bin || true)"
+if [[ -z "${{OPENSTARRY_CODE_BIN}}" ]]; then
+  echo "OpenStarry Code installed, but the executable was not found on PATH." >&2
+  echo "Add your Python user scripts directory to PATH, then run openstarry-code." >&2
   exit 1
 fi
 
-"${{OPENSQUILLA_BIN}}" onboard --if-needed
+"${{OPENSTARRY_CODE_BIN}}" onboard --if-needed
 
 echo
-echo "OpenSquilla is installed."
+echo "OpenStarry Code is installed."
 echo "Start it with:"
-echo "  opensquilla gateway run"
+echo "  openstarry-code gateway run"
 echo
 echo "Then open:"
 echo "  http://127.0.0.1:18791/control/"
@@ -720,17 +720,17 @@ function Find-Python {{
     return $null
 }}
 
-function Resolve-OpenSquilla {{
-    $cmd = Get-Command opensquilla -ErrorAction SilentlyContinue
+function Resolve-OpenStarryCode {{
+    $cmd = Get-Command openstarry-code -ErrorAction SilentlyContinue
     if ($cmd) {{ return $cmd.Source }}
     $scriptDir = Join-Path $env:APPDATA "Python\\Python{python_major}{python_minor}\\Scripts"
-    $script = Join-Path $scriptDir "opensquilla.exe"
+    $script = Join-Path $scriptDir "openstarry-code.exe"
     if (Test-Path $script) {{ return $script }}
     return $null
 }}
 
 if (-not (Test-Path $PackageDir)) {{
-    throw "OpenSquilla package directory not found: $PackageDir"
+    throw "OpenStarry Code package directory not found: $PackageDir"
 }}
 
 $Python = Find-Python
@@ -738,7 +738,7 @@ if (-not $Python) {{
     throw "Python {python_version} is required. Install it, then rerun .\\install.ps1."
 }}
 
-Write-Host "Installing OpenSquilla from local wheelhouse..."
+Write-Host "Installing OpenStarry Code from local wheelhouse..."
 if (Get-Command uv -ErrorAction SilentlyContinue) {{
     & uv tool install `
         --python "{python_version}" `
@@ -759,23 +759,23 @@ if (Get-Command uv -ErrorAction SilentlyContinue) {{
         "{wheel_target}"
 }}
 if ($LASTEXITCODE -ne 0) {{
-    throw "OpenSquilla installation failed with exit code $LASTEXITCODE."
+    throw "OpenStarry Code installation failed with exit code $LASTEXITCODE."
 }}
 
-$OpenSquillaBin = Resolve-OpenSquilla
-if (-not $OpenSquillaBin) {{
-    throw "OpenSquilla installed, but the executable was not found on PATH."
+$OpenStarryCodeBin = Resolve-OpenStarryCode
+if (-not $OpenStarryCodeBin) {{
+    throw "OpenStarry Code installed, but the executable was not found on PATH."
 }}
 
-& $OpenSquillaBin onboard --if-needed
+& $OpenStarryCodeBin onboard --if-needed
 if ($LASTEXITCODE -ne 0) {{
-    throw "OpenSquilla onboarding failed with exit code $LASTEXITCODE."
+    throw "OpenStarry Code onboarding failed with exit code $LASTEXITCODE."
 }}
 
 Write-Host ""
-Write-Host "OpenSquilla is installed."
+Write-Host "OpenStarry Code is installed."
 Write-Host "Start it with:"
-Write-Host "  opensquilla gateway run"
+Write-Host "  openstarry-code gateway run"
 Write-Host ""
 Write-Host "Then open:"
 Write-Host "  http://127.0.0.1:18791/control/"
@@ -788,7 +788,7 @@ def _install_target(base: str, profile: str) -> str:
 
 
 def render_start_sh(profile: str = "recommended") -> str:
-    target = _install_target("opensquilla", profile)
+    target = _install_target("openstarry-code", profile)
     script = """#!/bin/sh
 if [ -z "${BASH_VERSION:-}" ]; then
   exec /usr/bin/env bash "$0" "$@"
@@ -804,8 +804,8 @@ fi
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PACKAGE_DIR="${SCRIPT_DIR}/packages"
 PYTHON_BIN="${SCRIPT_DIR}/runtime/python/bin/python3"
-if [[ -z "${OPENSQUILLA_LLM_API_KEY:-}" && -n "${OPENROUTER_API_KEY:-}" ]]; then
-  export OPENSQUILLA_LLM_API_KEY="${OPENROUTER_API_KEY}"
+if [[ -z "${OPENSTARRY_CODE_LLM_API_KEY:-}" && -n "${OPENROUTER_API_KEY:-}" ]]; then
+  export OPENSTARRY_CODE_LLM_API_KEY="${OPENROUTER_API_KEY}"
 fi
 
 if [[ ! -x "${PYTHON_BIN}" ]]; then
@@ -813,27 +813,27 @@ if [[ ! -x "${PYTHON_BIN}" ]]; then
   exit 1
 fi
 if [[ ! -d "${PACKAGE_DIR}" ]]; then
-  echo "OpenSquilla package directory not found: ${PACKAGE_DIR}" >&2
+  echo "OpenStarry Code package directory not found: ${PACKAGE_DIR}" >&2
   exit 1
 fi
-OPENSQUILLA_WHEEL="$(
-  find "${PACKAGE_DIR}" -maxdepth 1 -type f -name 'opensquilla-*.whl' |
+OPENSTARRY_CODE_WHEEL="$(
+  find "${PACKAGE_DIR}" -maxdepth 1 -type f -name 'openstarry_code-*.whl' |
     sort |
     head -n 1
 )"
-if [[ -z "${OPENSQUILLA_WHEEL}" ]]; then
-  echo "OpenSquilla wheel not found in ${PACKAGE_DIR}" >&2
+if [[ -z "${OPENSTARRY_CODE_WHEEL}" ]]; then
+  echo "OpenStarry Code wheel not found in ${PACKAGE_DIR}" >&2
   exit 1
 fi
 WHEEL_HASH="$(
   "${PYTHON_BIN}" -c '
 import hashlib, pathlib, sys
 print(hashlib.sha256(pathlib.Path(sys.argv[1]).read_bytes()).hexdigest()[:12])
-' "${OPENSQUILLA_WHEEL}"
+' "${OPENSTARRY_CODE_WHEEL}"
 )"
 VENV_DIR="${SCRIPT_DIR}/.venv-${WHEEL_HASH}"
 VENV_PYTHON="${VENV_DIR}/bin/python"
-INSTALL_MARKER="${VENV_DIR}/.opensquilla-wheelhouse-${WHEEL_HASH}"
+INSTALL_MARKER="${VENV_DIR}/.openstarry-code-wheelhouse-${WHEEL_HASH}"
 export PATH="${SCRIPT_DIR}:${VENV_DIR}/bin:${SCRIPT_DIR}/runtime/python/bin:${PATH}"
 RELEASE_ID="$(
   "${PYTHON_BIN}" -c '
@@ -842,28 +842,28 @@ print(hashlib.sha256(f"{sys.argv[1]}|{sys.argv[2]}".encode("utf-8")).hexdigest()
 ' "${SCRIPT_DIR}" "${WHEEL_HASH}"
 )"
 DATA_BASE="${XDG_DATA_HOME:-${HOME}/.local/share}"
-PORTABLE_DATA_DIR="${OPENSQUILLA_PORTABLE_HOME:-${DATA_BASE}/OpenSquilla/portable/${RELEASE_ID}}"
-if [[ -z "${OPENSQUILLA_GATEWAY_CONFIG_PATH:-}" ]]; then
-  export OPENSQUILLA_GATEWAY_CONFIG_PATH="${PORTABLE_DATA_DIR}/config.toml"
+PORTABLE_DATA_DIR="${OPENSTARRY_CODE_PORTABLE_HOME:-${DATA_BASE}/openstarry-code/portable/${RELEASE_ID}}"
+if [[ -z "${OPENSTARRY_CODE_GATEWAY_CONFIG_PATH:-}" ]]; then
+  export OPENSTARRY_CODE_GATEWAY_CONFIG_PATH="${PORTABLE_DATA_DIR}/config.toml"
 fi
-if [[ -z "${OPENSQUILLA_STATE_DIR:-}" ]]; then
-  export OPENSQUILLA_STATE_DIR="${PORTABLE_DATA_DIR}"
+if [[ -z "${OPENSTARRY_CODE_STATE_DIR:-}" ]]; then
+  export OPENSTARRY_CODE_STATE_DIR="${PORTABLE_DATA_DIR}"
 fi
-if [[ -z "${OPENSQUILLA_GATEWAY_STATE_DIR:-}" ]]; then
-  export OPENSQUILLA_GATEWAY_STATE_DIR="${OPENSQUILLA_STATE_DIR}/state"
+if [[ -z "${OPENSTARRY_CODE_GATEWAY_STATE_DIR:-}" ]]; then
+  export OPENSTARRY_CODE_GATEWAY_STATE_DIR="${OPENSTARRY_CODE_STATE_DIR}/state"
 fi
-if [[ -z "${OPENSQUILLA_GATEWAY_WORKSPACE_DIR:-}" ]]; then
-  export OPENSQUILLA_GATEWAY_WORKSPACE_DIR="${OPENSQUILLA_STATE_DIR}/workspace"
+if [[ -z "${OPENSTARRY_CODE_GATEWAY_WORKSPACE_DIR:-}" ]]; then
+  export OPENSTARRY_CODE_GATEWAY_WORKSPACE_DIR="${OPENSTARRY_CODE_STATE_DIR}/workspace"
 fi
-mkdir -p "${OPENSQUILLA_STATE_DIR}"
+mkdir -p "${OPENSTARRY_CODE_STATE_DIR}"
 
 if [[ ! -x "${VENV_PYTHON}" ]]; then
-  echo "Creating local OpenSquilla environment..."
+  echo "Creating local OpenStarry Code environment..."
   "${PYTHON_BIN}" -m venv --without-pip "${VENV_DIR}"
 fi
 
 if [[ ! -f "${INSTALL_MARKER}" ]]; then
-  echo "Installing OpenSquilla from bundled wheels..."
+  echo "Installing OpenStarry Code from bundled wheels..."
   SITE_PACKAGES="$("${VENV_PYTHON}" -c 'import site; print(site.getsitepackages()[0])')"
   "${PYTHON_BIN}" - "${PACKAGE_DIR}" "${SITE_PACKAGES}" <<'PY'
 import pathlib
@@ -896,33 +896,33 @@ PY
   touch "${INSTALL_MARKER}"
 fi
 
-OPENSQUILLA_BIN="${VENV_PYTHON}"
-OPENSQUILLA_MODULE=( "-m" "opensquilla.cli.main" )
+OPENSTARRY_CODE_BIN="${VENV_PYTHON}"
+OPENSTARRY_CODE_MODULE=( "-m" "openstarry_code.cli.main" )
 if [[ "${CLI_MODE}" == "1" ]]; then
-  exec "${OPENSQUILLA_BIN}" "${OPENSQUILLA_MODULE[@]}" "$@"
+  exec "${OPENSTARRY_CODE_BIN}" "${OPENSTARRY_CODE_MODULE[@]}" "$@"
 fi
 
-if [[ ! -f "${OPENSQUILLA_GATEWAY_CONFIG_PATH}" && -n "${OPENROUTER_API_KEY:-}" ]]; then
-  "${OPENSQUILLA_BIN}" "${OPENSQUILLA_MODULE[@]}" onboard \\
+if [[ ! -f "${OPENSTARRY_CODE_GATEWAY_CONFIG_PATH}" && -n "${OPENROUTER_API_KEY:-}" ]]; then
+  "${OPENSTARRY_CODE_BIN}" "${OPENSTARRY_CODE_MODULE[@]}" onboard \\
     --provider openrouter \\
     --api-key-env OPENROUTER_API_KEY \\
     --minimal
 else
-  "${OPENSQUILLA_BIN}" "${OPENSQUILLA_MODULE[@]}" onboard
+  "${OPENSTARRY_CODE_BIN}" "${OPENSTARRY_CODE_MODULE[@]}" onboard
 fi
 
 echo
-echo "Starting OpenSquilla gateway."
+echo "Starting OpenStarry Code gateway."
 echo "Web UI: http://127.0.0.1:18791/control/"
 echo "Press Ctrl+C in this terminal to stop the gateway."
 if [[ -t 1 ]]; then
-  exec "${OPENSQUILLA_BIN}" "${OPENSQUILLA_MODULE[@]}" gateway run
+  exec "${OPENSTARRY_CODE_BIN}" "${OPENSTARRY_CODE_MODULE[@]}" gateway run
 else
-  LOG_DIR="${OPENSQUILLA_STATE_DIR}/logs"
+  LOG_DIR="${OPENSTARRY_CODE_STATE_DIR}/logs"
   mkdir -p "${LOG_DIR}"
-  CONSOLE_LOG="${OPENSQUILLA_STATE_DIR}/logs/gateway-console.log"
+  CONSOLE_LOG="${OPENSTARRY_CODE_STATE_DIR}/logs/gateway-console.log"
   echo "Console log: ${CONSOLE_LOG}"
-  "${OPENSQUILLA_BIN}" "${OPENSQUILLA_MODULE[@]}" gateway run 2>&1 | tee -a "${CONSOLE_LOG}"
+  "${OPENSTARRY_CODE_BIN}" "${OPENSTARRY_CODE_MODULE[@]}" gateway run 2>&1 | tee -a "${CONSOLE_LOG}"
   exit "${PIPESTATUS[0]}"
 fi
 """
@@ -930,7 +930,7 @@ fi
 
 
 def render_start_ps1(profile: str = "recommended") -> str:
-    target = _install_target("opensquilla", profile)
+    target = _install_target("openstarry-code", profile)
     requires_router_runtime = "$true" if profile == "recommended" else "$false"
     script = """param(
     [switch]$Cli,
@@ -946,17 +946,17 @@ $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $PackageDir = Join-Path $ScriptDir 'packages'
 $PythonBin = Join-Path $ScriptDir 'runtime\\python\\python.exe'
 $VenvBase = if ($env:LOCALAPPDATA) { $env:LOCALAPPDATA } else { $env:TEMP }
-$VenvRoot = Join-Path $VenvBase 'OpenSquilla\\venvs'
+$VenvRoot = Join-Path $VenvBase 'OpenStarry Code\\venvs'
 $RequiresRouterRuntime = __REQUIRES_ROUTER_RUNTIME__
-if ((-not $env:OPENSQUILLA_LLM_API_KEY) -and $env:OPENROUTER_API_KEY) {
-    $env:OPENSQUILLA_LLM_API_KEY = $env:OPENROUTER_API_KEY
+if ((-not $env:OPENSTARRY_CODE_LLM_API_KEY) -and $env:OPENROUTER_API_KEY) {
+    $env:OPENSTARRY_CODE_LLM_API_KEY = $env:OPENROUTER_API_KEY
 }
 
 if (-not (Test-Path $PythonBin)) {
     throw "Bundled Python runtime not found: $PythonBin"
 }
 if (-not (Test-Path $PackageDir)) {
-    throw "OpenSquilla package directory not found: $PackageDir"
+    throw "OpenStarry Code package directory not found: $PackageDir"
 }
 
 function Test-WindowsVCRedistInstalled {
@@ -1006,11 +1006,11 @@ function Get-WindowsVCRedistInstaller {
         return $installerPath
     }
 
-    $downloadDir = Join-Path ([System.IO.Path]::GetTempPath()) 'OpenSquilla'
+    $downloadDir = Join-Path ([System.IO.Path]::GetTempPath()) 'OpenStarry Code'
     $installerPath = Join-Path $downloadDir 'vc_redist.x64.exe'
     New-Item -ItemType Directory -Path $downloadDir -Force | Out-Null
     Write-Host (
-        'OpenSquilla: downloading Microsoft Visual C++ Redistributable ' +
+        'OpenStarry Code: downloading Microsoft Visual C++ Redistributable ' +
         '2015-2022 x64 from Microsoft.'
     )
     try {
@@ -1018,7 +1018,7 @@ function Get-WindowsVCRedistInstaller {
         return $installerPath
     } catch {
         Write-Warning (
-            'OpenSquilla: could not download Microsoft Visual C++ ' +
+            'OpenStarry Code: could not download Microsoft Visual C++ ' +
             "Redistributable from $redistUrl. Error: $($_.Exception.Message)"
         )
         return $null
@@ -1037,7 +1037,7 @@ function Install-WindowsVCRedistWithInstaller {
 
     $action = if ($Repair) { 'repairing' } else { 'installing' }
     Write-Host (
-        "OpenSquilla: $action Microsoft Visual C++ Redistributable 2015-2022 x64..."
+        "OpenStarry Code: $action Microsoft Visual C++ Redistributable 2015-2022 x64..."
     )
     $redistArgs = if ($Repair) {
         @('/repair', '/quiet', '/norestart')
@@ -1052,7 +1052,7 @@ function Install-WindowsVCRedistWithInstaller {
                 -PassThru
         } else {
             Write-Host (
-                'OpenSquilla: administrator approval may be requested to ' +
+                'OpenStarry Code: administrator approval may be requested to ' +
                 'install or repair Microsoft Visual C++ Redistributable.'
             )
             $process = Start-Process -FilePath $installerPath `
@@ -1063,17 +1063,17 @@ function Install-WindowsVCRedistWithInstaller {
         }
     } catch {
         Write-Warning (
-            'OpenSquilla: Visual C++ Redistributable installer could not be ' +
+            'OpenStarry Code: Visual C++ Redistributable installer could not be ' +
             "started. Error: $($_.Exception.Message)"
         )
         return $false
     }
 
     if ($process.ExitCode -in @(0, 1638, 3010)) {
-        Write-Host 'OpenSquilla: Microsoft Visual C++ Redistributable is ready.'
+        Write-Host 'OpenStarry Code: Microsoft Visual C++ Redistributable is ready.'
         if ($process.ExitCode -eq 3010) {
             Write-Warning (
-                'OpenSquilla: the Visual C++ installer requested a reboot; ' +
+                'OpenStarry Code: the Visual C++ installer requested a reboot; ' +
                 'restart Windows if ONNX Runtime still fails to load.'
             )
         }
@@ -1081,7 +1081,7 @@ function Install-WindowsVCRedistWithInstaller {
     }
 
     Write-Warning (
-        'OpenSquilla: Microsoft Visual C++ Redistributable installer exited ' +
+        'OpenStarry Code: Microsoft Visual C++ Redistributable installer exited ' +
         "with code $($process.ExitCode)."
     )
     return $false
@@ -1095,10 +1095,10 @@ function Install-WindowsVCRedistIfNeeded {
     if (-not $RequiresRouterRuntime) {
         return $true
     }
-    if ($env:OPENSQUILLA_SKIP_VC_REDIST -eq '1') {
+    if ($env:OPENSTARRY_CODE_SKIP_VC_REDIST -eq '1') {
         Write-Host (
-            'OpenSquilla: skipping Microsoft Visual C++ Redistributable check ' +
-            'because OPENSQUILLA_SKIP_VC_REDIST=1.'
+            'OpenStarry Code: skipping Microsoft Visual C++ Redistributable check ' +
+            'because OPENSTARRY_CODE_SKIP_VC_REDIST=1.'
         )
         return $true
     }
@@ -1118,7 +1118,7 @@ function Install-WindowsVCRedistIfNeeded {
     $winget = if ($Repair) { $null } else { Get-Command winget -ErrorAction SilentlyContinue }
     if ($winget) {
         Write-Host (
-            'OpenSquilla: Microsoft Visual C++ Redistributable not detected; ' +
+            'OpenStarry Code: Microsoft Visual C++ Redistributable not detected; ' +
             'installing with winget.'
         )
         $wingetArgs = @(
@@ -1132,28 +1132,31 @@ function Install-WindowsVCRedistIfNeeded {
         )
         & winget @wingetArgs
         if ($LASTEXITCODE -eq 0) {
-            Write-Host 'OpenSquilla: Microsoft Visual C++ Redistributable installation completed.'
+            Write-Host (
+                'OpenStarry Code: Microsoft Visual C++ Redistributable ' +
+                'installation completed.'
+            )
             return $true
         }
         Write-Warning (
-            'OpenSquilla: winget could not install Microsoft Visual C++ ' +
+            'OpenStarry Code: winget could not install Microsoft Visual C++ ' +
             "Redistributable (exit $LASTEXITCODE)."
         )
     }
 
     Write-Warning (
-        'OpenSquilla: Microsoft Visual C++ Redistributable 2015-2022 x64 is ' +
+        'OpenStarry Code: Microsoft Visual C++ Redistributable 2015-2022 x64 is ' +
         'required for the bundled ONNX router.'
     )
     Write-Warning (
-        'OpenSquilla can still start with safe router fallback, but bundled ' +
+        'OpenStarry Code can still start with safe router fallback, but bundled ' +
         'ONNX model routing is disabled until this runtime is installed.'
     )
     Write-Warning (
         "If automatic installation fails, install it manually: $redistUrl"
     )
     Write-Warning (
-        'After installing, reopen PowerShell and restart OpenSquilla.'
+        'After installing, reopen PowerShell and restart OpenStarry Code.'
     )
     return $false
 }
@@ -1170,7 +1173,7 @@ function Repair-WindowsVCRedistForOnnxIfNeeded {
     if (-not $RequiresRouterRuntime) {
         return
     }
-    if ($env:OPENSQUILLA_SKIP_VC_REDIST -eq '1') {
+    if ($env:OPENSTARRY_CODE_SKIP_VC_REDIST -eq '1') {
         return
     }
     if (Test-OnnxRuntimeImport) {
@@ -1178,7 +1181,7 @@ function Repair-WindowsVCRedistForOnnxIfNeeded {
     }
 
     Write-Warning (
-        'OpenSquilla: ONNX Runtime failed to import after setup. Attempting ' +
+        'OpenStarry Code: ONNX Runtime failed to import after setup. Attempting ' +
         'Visual C++ Redistributable repair before starting the gateway.'
     )
     Install-WindowsVCRedistIfNeeded -Repair | Out-Null
@@ -1187,7 +1190,7 @@ function Repair-WindowsVCRedistForOnnxIfNeeded {
     }
 
     Write-Warning (
-        'OpenSquilla: ONNX Runtime still failed after Visual C++ repair. If ' +
+        'OpenStarry Code: ONNX Runtime still failed after Visual C++ repair. If ' +
         'the router warning remains, check CPU/VM AVX compatibility or install ' +
         'the Microsoft Visual C++ Redistributable manually: ' +
         'https://aka.ms/vs/17/release/vc_redist.x64.exe'
@@ -1197,14 +1200,14 @@ function Repair-WindowsVCRedistForOnnxIfNeeded {
 if (-not (Test-Path $VenvRoot)) {
     New-Item -ItemType Directory -Path $VenvRoot -Force | Out-Null
 }
-$OpenSquillaWheel = Get-ChildItem -Path $PackageDir -Filter 'opensquilla-*.whl' |
+$OpenStarryCodeWheel = Get-ChildItem -Path $PackageDir -Filter 'openstarry_code-*.whl' |
     Sort-Object Name |
     Select-Object -First 1
-if (-not $OpenSquillaWheel) {
-    throw "OpenSquilla wheel not found in $PackageDir"
+if (-not $OpenStarryCodeWheel) {
+    throw "OpenStarry Code wheel not found in $PackageDir"
 }
 $Sha256 = [System.Security.Cryptography.SHA256]::Create()
-$WheelStream = [System.IO.File]::OpenRead($OpenSquillaWheel.FullName)
+$WheelStream = [System.IO.File]::OpenRead($OpenStarryCodeWheel.FullName)
 try {
     $WheelHashFull = -join ($Sha256.ComputeHash($WheelStream) | ForEach-Object {
         $_.ToString('x2')
@@ -1220,42 +1223,43 @@ $Hash = [System.Security.Cryptography.SHA256]::Create().ComputeHash(
 $ReleaseId = -join ($Hash[0..5] | ForEach-Object { $_.ToString('x2') })
 $VenvDir = Join-Path $VenvRoot $ReleaseId
 $VenvPython = Join-Path $VenvDir 'Scripts\\python.exe'
-$InstallMarker = Join-Path $VenvDir ".opensquilla-wheelhouse-$WheelHash"
+$InstallMarker = Join-Path $VenvDir ".openstarry-code-wheelhouse-$WheelHash"
 $env:PATH = "$ScriptDir;$ScriptDir\\runtime\\python;$env:PATH"
 $env:PATH = "$VenvDir\\Scripts;$env:PATH"
-$PortableDataDir = if ($env:OPENSQUILLA_PORTABLE_HOME) {
-    $env:OPENSQUILLA_PORTABLE_HOME
+$PortableDataDir = if ($env:OPENSTARRY_CODE_PORTABLE_HOME) {
+    $env:OPENSTARRY_CODE_PORTABLE_HOME
 } else {
-    Join-Path $VenvBase "OpenSquilla\\portable\\$ReleaseId"
+    Join-Path $VenvBase "OpenStarry Code\\portable\\$ReleaseId"
 }
-if (-not $env:OPENSQUILLA_GATEWAY_CONFIG_PATH) {
-    $env:OPENSQUILLA_GATEWAY_CONFIG_PATH = Join-Path $PortableDataDir 'config.toml'
+if (-not $env:OPENSTARRY_CODE_GATEWAY_CONFIG_PATH) {
+    $env:OPENSTARRY_CODE_GATEWAY_CONFIG_PATH = Join-Path $PortableDataDir 'config.toml'
 }
-if (-not $env:OPENSQUILLA_STATE_DIR) {
-    $env:OPENSQUILLA_STATE_DIR = $PortableDataDir
+if (-not $env:OPENSTARRY_CODE_STATE_DIR) {
+    $env:OPENSTARRY_CODE_STATE_DIR = $PortableDataDir
 }
-if (-not $env:OPENSQUILLA_GATEWAY_STATE_DIR) {
-    $env:OPENSQUILLA_GATEWAY_STATE_DIR = Join-Path $env:OPENSQUILLA_STATE_DIR 'state'
+if (-not $env:OPENSTARRY_CODE_GATEWAY_STATE_DIR) {
+    $env:OPENSTARRY_CODE_GATEWAY_STATE_DIR = Join-Path $env:OPENSTARRY_CODE_STATE_DIR 'state'
 }
-if (-not $env:OPENSQUILLA_GATEWAY_WORKSPACE_DIR) {
-    $env:OPENSQUILLA_GATEWAY_WORKSPACE_DIR = Join-Path $env:OPENSQUILLA_STATE_DIR 'workspace'
+if (-not $env:OPENSTARRY_CODE_GATEWAY_WORKSPACE_DIR) {
+    $env:OPENSTARRY_CODE_GATEWAY_WORKSPACE_DIR = Join-Path `
+        $env:OPENSTARRY_CODE_STATE_DIR 'workspace'
 }
-New-Item -ItemType Directory -Path $env:OPENSQUILLA_STATE_DIR -Force | Out-Null
+New-Item -ItemType Directory -Path $env:OPENSTARRY_CODE_STATE_DIR -Force | Out-Null
 Install-WindowsVCRedistIfNeeded | Out-Null
 
 if (-not (Test-Path $VenvPython)) {
-    Write-Host "Creating local OpenSquilla environment..."
+    Write-Host "Creating local OpenStarry Code environment..."
     & $PythonBin -m venv --without-pip $VenvDir
     if ($LASTEXITCODE -ne 0) {
-        throw "OpenSquilla environment creation failed with exit code $LASTEXITCODE."
+        throw "OpenStarry Code environment creation failed with exit code $LASTEXITCODE."
     }
 }
 
 if (-not (Test-Path $InstallMarker)) {
-    Write-Host "Installing OpenSquilla from bundled wheels..."
+    Write-Host "Installing OpenStarry Code from bundled wheels..."
     $SitePackages = & $VenvPython -c "import site; print(site.getsitepackages()[0])"
     if ($LASTEXITCODE -ne 0) {
-        throw "OpenSquilla site-packages lookup failed with exit code $LASTEXITCODE."
+        throw "OpenStarry Code site-packages lookup failed with exit code $LASTEXITCODE."
     }
     $WheelInstallScript = @'
 import pathlib
@@ -1287,48 +1291,48 @@ for wheel_path in sorted(package_dir.glob("*.whl")):
 '@
     $WheelInstallScript | & $PythonBin - $PackageDir $SitePackages
     if ($LASTEXITCODE -ne 0) {
-        throw "OpenSquilla bundled wheel installation failed with exit code $LASTEXITCODE."
+        throw "OpenStarry Code bundled wheel installation failed with exit code $LASTEXITCODE."
     }
     New-Item -ItemType File -Path $InstallMarker -Force | Out-Null
 }
 Repair-WindowsVCRedistForOnnxIfNeeded
 
-$OpenSquillaArgs = @("-m", "opensquilla.cli.main")
+$OpenStarryCodeArgs = @("-m", "openstarry_code.cli.main")
 
 if ($Cli) {
-    & $VenvPython @OpenSquillaArgs @CliArgs
+    & $VenvPython @OpenStarryCodeArgs @CliArgs
     exit $LASTEXITCODE
 }
 
-if ((-not (Test-Path $env:OPENSQUILLA_GATEWAY_CONFIG_PATH)) -and $env:OPENROUTER_API_KEY) {
-    & $VenvPython @OpenSquillaArgs onboard `
+if ((-not (Test-Path $env:OPENSTARRY_CODE_GATEWAY_CONFIG_PATH)) -and $env:OPENROUTER_API_KEY) {
+    & $VenvPython @OpenStarryCodeArgs onboard `
         --provider openrouter `
         --api-key-env OPENROUTER_API_KEY `
         --minimal
 } else {
-    & $VenvPython @OpenSquillaArgs onboard
+    & $VenvPython @OpenStarryCodeArgs onboard
 }
 if ($LASTEXITCODE -ne 0) {
-    throw "OpenSquilla onboarding failed with exit code $LASTEXITCODE."
+    throw "OpenStarry Code onboarding failed with exit code $LASTEXITCODE."
 }
 
 Write-Host ""
-Write-Host "Starting OpenSquilla gateway."
+Write-Host "Starting OpenStarry Code gateway."
 Write-Host "Web UI: http://127.0.0.1:18791/control/"
 Write-Host "Press Ctrl+C in this terminal to stop the gateway."
 $OutputRedirected = [Console]::IsOutputRedirected
 if (-not $OutputRedirected) {
-    & $VenvPython @OpenSquillaArgs gateway run
+    & $VenvPython @OpenStarryCodeArgs gateway run
     $GatewayExitCode = $LASTEXITCODE
 } else {
-    $LogDir = Join-Path $env:OPENSQUILLA_STATE_DIR 'logs'
+    $LogDir = Join-Path $env:OPENSTARRY_CODE_STATE_DIR 'logs'
     New-Item -ItemType Directory -Path $LogDir -Force | Out-Null
     $ConsoleLog = Join-Path $LogDir 'gateway-console.log'
     Write-Host "Console log: $ConsoleLog"
     $PreviousErrorActionPreference = $ErrorActionPreference
     $ErrorActionPreference = "Continue"
     try {
-        & $VenvPython @OpenSquillaArgs gateway run 2>&1 |
+        & $VenvPython @OpenStarryCodeArgs gateway run 2>&1 |
             ForEach-Object {
                 if ($_ -is [System.Management.Automation.ErrorRecord]) {
                     $_.ToString()
@@ -1371,24 +1375,25 @@ def render_cli_cmd() -> str:
 def render_shell_cmd() -> str:
     return (
         "@echo off\r\n"
-        "title OpenSquilla Shell\r\n"
+        "title OpenStarry Code Shell\r\n"
         'cd /d "%~dp0"\r\n'
         'set "OSQ_POWERSHELL=powershell.exe"\r\n'
         'where pwsh.exe >nul 2>nul && set "OSQ_POWERSHELL=pwsh.exe"\r\n'
         '"%OSQ_POWERSHELL%" -NoLogo -NoExit -NoProfile -ExecutionPolicy Bypass -Command '
         "\"Set-Location -LiteralPath '%~dp0'; "
-        "function global:opensquilla { & (Join-Path (Get-Location) 'opensquilla.cmd') @args }; "
-        "Write-Host 'OpenSquilla portable shell'; "
+        "function global:openstarry-code { & (Join-Path (Get-Location) "
+        "'openstarry-code.cmd') @args }; "
+        "Write-Host 'OpenStarry Code portable shell'; "
         "Write-Host 'Run commands like:'; "
-        "Write-Host '  opensquilla onboard --provider openrouter'; "
-        "Write-Host '  opensquilla gateway run'\"\r\n"
+        "Write-Host '  openstarry-code onboard --provider openrouter'; "
+        "Write-Host '  openstarry-code gateway run'\"\r\n"
     )
 
 
 def render_start_cmd() -> str:
     return (
         "@echo off\r\n"
-        "title OpenSquilla Gateway\r\n"
+        "title OpenStarry Code Gateway\r\n"
         'cd /d "%~dp0"\r\n'
         'set "OSQ_POWERSHELL=powershell.exe"\r\n'
         'where pwsh.exe >nul 2>nul && set "OSQ_POWERSHELL=pwsh.exe"\r\n'
@@ -1414,29 +1419,29 @@ def render_readme(
         python_note = "Python is bundled in this zip."
         setup_note = (
             "Config, workspace, logs, memory, and runtime state use the normal "
-            "user-level OpenSquilla directory."
+            "user-level OpenStarry Code directory."
         )
     else:
         release_kind = "Wheelhouse Release"
-        unix_commands = "bash install.sh\nopensquilla gateway run"
-        windows_command = ".\\install.ps1\nopensquilla gateway run"
+        unix_commands = "bash install.sh\nopenstarry-code gateway run"
+        windows_command = ".\\install.ps1\nopenstarry-code gateway run"
         python_note = f"Requires Python {python_major}.{python_minor}."
         setup_note = (
             "The installer runs idempotent onboarding after installation. To "
-            "reconfigure later, run `opensquilla onboard` for the full wizard or "
-            "`opensquilla configure <section>` for one area."
+            "reconfigure later, run `openstarry-code onboard` for the full wizard or "
+            "`openstarry-code configure <section>` for one area."
         )
     if windows_target:
         if portable:
             command_section = f"""## Windows
 
-1. Right-click `Start OpenSquilla.cmd` -> **Run as administrator**.
+1. Right-click `Start OpenStarry Code.cmd` -> **Run as administrator**.
 2. Complete onboarding.
 3. Open `http://127.0.0.1:18791/control/`.
 
 Notes:
 - Keep the terminal open. Closing it stops the gateway.
-- OpenSquilla 0.1.0 preview builds are unsigned. The supported portable launch
+- OpenStarry Code 0.1.0 preview builds are unsigned. The supported portable launch
   path is administrator launch.
 - If SmartScreen appears, choose **More info** -> **Run anyway**.
 - If Smart App Control or enterprise policy blocks the unsigned app, use the
@@ -1460,12 +1465,12 @@ If `OPENROUTER_API_KEY` is present and no local config exists, the launcher
 writes an OpenRouter env-reference config and starts the gateway without asking
 you to paste the key.
 
-The portable package does not install a global `opensquilla` command. For a
-terminal where `opensquilla ...` commands work, run
-`OpenSquilla Shell.cmd`, or run commands from this folder:
+The portable package does not install a global `openstarry-code` command. For a
+terminal where `openstarry-code ...` commands work, run
+`OpenStarry Code Shell.cmd`, or run commands from this folder:
 
 ```powershell
-.\\opensquilla.cmd onboard
+.\\openstarry-code.cmd onboard
 ```
 
 </details>
@@ -1507,7 +1512,7 @@ Set-ExecutionPolicy -Scope Process Bypass
         else "Open `http://127.0.0.1:18791/control/`.\n\n"
     )
 
-    return f"""# OpenSquilla {app_version} {release_kind}
+    return f"""# OpenStarry Code {app_version} {release_kind}
 
 Build target:
 
@@ -1539,7 +1544,7 @@ def write_manifest(
     runtime_asset: str,
 ) -> None:
     payload = {
-        "name": "OpenSquilla wheelhouse zip",
+        "name": "OpenStarry Code wheelhouse zip",
         "version": app_version,
         "profile": profile,
         "platform_tag": platform_tag,
@@ -1586,22 +1591,22 @@ def prepare_release_tree(
         start_sh = release_root / "start.sh"
         start_sh.write_text(render_start_sh(profile), encoding="utf-8")
         start_sh.chmod(start_sh.stat().st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
-        cli_sh = release_root / "opensquilla"
+        cli_sh = release_root / "openstarry-code"
         cli_sh.write_text(render_cli_sh(), encoding="utf-8")
         cli_sh.chmod(cli_sh.stat().st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
         (release_root / "start.ps1").write_text(render_start_ps1(profile), encoding="utf-8")
         if platform_tag.startswith("windows-"):
-            (release_root / "Start OpenSquilla.cmd").write_text(
+            (release_root / "Start OpenStarry Code.cmd").write_text(
                 render_start_cmd(),
                 encoding="utf-8",
                 newline="",
             )
-            (release_root / "opensquilla.cmd").write_text(
+            (release_root / "openstarry-code.cmd").write_text(
                 render_cli_cmd(),
                 encoding="utf-8",
                 newline="",
             )
-            (release_root / "OpenSquilla Shell.cmd").write_text(
+            (release_root / "OpenStarry Code Shell.cmd").write_text(
                 render_shell_cmd(),
                 encoding="utf-8",
                 newline="",
@@ -1743,7 +1748,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--skip-wheelhouse",
         action="store_true",
-        help="Only place the OpenSquilla wheel in packages/ for script debugging.",
+        help="Only place the OpenStarry Code wheel in packages/ for script debugging.",
     )
     parser.add_argument(
         "--skip-zip",
@@ -1760,7 +1765,7 @@ def main(argv: list[str] | None = None) -> int:
     include_router_assets = args.profile == "recommended"
 
     if include_router_assets:
-        model_root = repo_root / "src" / "opensquilla" / "squilla_router" / "models"
+        model_root = repo_root / "src" / "openstarry_code" / "squilla_router" / "models"
         asset_check = check_router_assets(model_root)
         if not asset_check.ok:
             for path in asset_check.missing_files:
@@ -1768,7 +1773,7 @@ def main(argv: list[str] | None = None) -> int:
             for path in asset_check.pointer_files:
                 print(f"Git LFS pointer file is not hydrated: {path}", file=sys.stderr)
             print(
-                'Run: git lfs pull --include="src/opensquilla/squilla_router/models/**"',
+                'Run: git lfs pull --include="src/openstarry_code/squilla_router/models/**"',
                 file=sys.stderr,
             )
             return 1
@@ -1887,7 +1892,7 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     zip_path = (repo_root / args.output_dir / f"{name}.zip").resolve()
-    archive_root = f"OpenSquilla-{app_version}" if args.bundle_python_runtime else None
+    archive_root = f"OpenStarry Code-{app_version}" if args.bundle_python_runtime else None
     create_zip(release_root, zip_path, archive_root=archive_root)
     checksum_path = write_sha256(zip_path)
     checksums_path = write_sha256s(

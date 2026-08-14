@@ -1,7 +1,7 @@
 """Preset registry: packaged data parity, synthesized coverage, and API shape.
 
 The golden fixture (``golden/router_tier_profiles.json``) was captured from
-``git show staging/provider-overhaul:src/opensquilla/gateway/config.py``
+``git show staging/provider-overhaul:src/openstarry_code/gateway/config.py``
 (``_router_tier_profile_defaults`` at f884d4c9) and pins the packaged preset
 data byte-identically to the historical hardcoded dict literals.
 """
@@ -11,7 +11,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from opensquilla.provider.preset_registry import (
+from openstarry_code.provider.preset_registry import (
     CURATED_INLINE_PRESET_IDS,
     LEGACY_PROVIDER_PRESET_IDS,
     ProviderPreset,
@@ -19,7 +19,7 @@ from opensquilla.provider.preset_registry import (
     legacy_profile_ids,
     list_presets,
 )
-from opensquilla.provider.registry import list_provider_specs
+from openstarry_code.provider.registry import list_provider_specs
 
 GOLDEN_PATH = Path(__file__).parent / "golden" / "router_tier_profiles.json"
 LEGACY_NINE = frozenset(

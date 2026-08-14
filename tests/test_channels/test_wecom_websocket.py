@@ -8,16 +8,16 @@ from typing import Any
 
 import pytest
 
-import opensquilla.channels.wecom as wecom_module
-from opensquilla.channels.contract import (
+import openstarry_code.channels.wecom as wecom_module
+from openstarry_code.channels.contract import (
     ChannelCapabilities,
     ChannelPlatformCapabilityStatus,
     ChannelPlatformCategories,
 )
-from opensquilla.channels.registry import parse_channel_entry
-from opensquilla.channels.types import IncomingMessage, OutgoingMessage
-from opensquilla.channels.wecom import WeComApiError, WeComChannel, WeComChannelConfig
-from opensquilla.gateway.config import WeComChannelEntry
+from openstarry_code.channels.registry import parse_channel_entry
+from openstarry_code.channels.types import IncomingMessage, OutgoingMessage
+from openstarry_code.channels.wecom import WeComApiError, WeComChannel, WeComChannelConfig
+from openstarry_code.gateway.config import WeComChannelEntry
 
 
 class _FakeWebSocket:

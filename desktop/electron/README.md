@@ -10,7 +10,7 @@ desktop credential, starts a local gateway, and loads the backend-served
 From the repository root:
 
 ```bash
-cd opensquilla-webui
+cd openstarry-code-webui
 npm ci
 npm run build
 
@@ -20,7 +20,7 @@ npm run dev
 ```
 
 Use Node.js 22.12 or newer. The Vue build under
-`src/opensquilla/gateway/static/dist/` is generated and ignored by Git; local
+`src/openstarry_code/gateway/static/dist/` is generated and ignored by Git; local
 Desktop packaging verifies it against the current frontend source before
 PyInstaller runs.
 
@@ -32,7 +32,7 @@ The shell looks for the checkout root automatically. To point it at a different
 checkout:
 
 ```bash
-OPENSQUILLA_DESKTOP_REPO_ROOT=/path/to/opensquilla npm run dev
+OPENSQUILLA_DESKTOP_REPO_ROOT=/path/to/openstarry-code npm run dev
 ```
 
 During development, the shell starts a gateway from the selected checkout by
@@ -82,10 +82,10 @@ current policy.
 
 ## Current Scope
 
-- Reuses `opensquilla-webui` and the Python gateway exactly as they run in the
+- Reuses `openstarry-code-webui` and the Python gateway exactly as they run in the
   browser.
 - Starts a bundled `runtime/gateway/opensquilla-gateway` in packaged builds.
-- Falls back to `uv run opensquilla gateway run --listen 127.0.0.1 --port <port>`
+- Falls back to `uv run openstarry-code gateway run --listen 127.0.0.1 --port <port>`
   during development when no bundled runtime exists.
 - Uses `contextIsolation: true`, `nodeIntegration: false`, and a minimal preload
   bridge.

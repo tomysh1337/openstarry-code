@@ -8,9 +8,9 @@ import tomllib
 
 import pytest
 
-import opensquilla.gateway.rpc_onboarding  # noqa: F401  ensures registration
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.rpc import RpcContext, get_dispatcher
+import openstarry_code.gateway.rpc_onboarding  # noqa: F401  ensures registration
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.rpc import RpcContext, get_dispatcher
 
 
 def _env_command(env_key: str) -> str:
@@ -51,7 +51,7 @@ def test_audio_onboarding_catalog_configure_and_status(
 ) -> None:
     monkeypatch.setattr(platform, "system", lambda: system_name)
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     monkeypatch.delenv("ELEVENLABS_API_KEY", raising=False)
 
     async def run_case() -> None:
@@ -123,7 +123,7 @@ def test_audio_onboarding_catalog_configure_and_status(
 
 def test_audio_onboarding_redacts_pasted_api_key(tmp_path, monkeypatch) -> None:
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     async def run_case() -> None:
         res = await get_dispatcher().dispatch(

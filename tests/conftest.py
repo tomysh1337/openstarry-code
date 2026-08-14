@@ -12,14 +12,14 @@ _REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
-_PYTEST_STATE_ROOT = Path(tempfile.gettempdir()) / f"opensquilla-pytest-{os.getpid()}"
+_PYTEST_STATE_ROOT = Path(tempfile.gettempdir()) / f"openstarry-code-pytest-{os.getpid()}"
 
-os.environ.setdefault("OPENSQUILLA_STATE_DIR", str(_PYTEST_STATE_ROOT / "state"))
-os.environ.setdefault("OPENSQUILLA_LOG_DIR", str(_PYTEST_STATE_ROOT / "logs"))
-os.environ.setdefault("OPENSQUILLA_TURN_CALL_LOG", "0")
-os.environ.setdefault("OPENSQUILLA_TEST_PROFILE_LOCK_ROOT", "1")
+os.environ.setdefault("OPENSTARRY_CODE_STATE_DIR", str(_PYTEST_STATE_ROOT / "state"))
+os.environ.setdefault("OPENSTARRY_CODE_LOG_DIR", str(_PYTEST_STATE_ROOT / "logs"))
+os.environ.setdefault("OPENSTARRY_CODE_TURN_CALL_LOG", "0")
+os.environ.setdefault("OPENSTARRY_CODE_TEST_PROFILE_LOCK_ROOT", "1")
 os.environ.setdefault(
-    "OPENSQUILLA_USER_STATE_DIR",
+    "OPENSTARRY_CODE_USER_STATE_DIR",
     str(_PYTEST_STATE_ROOT / "profile-lock-state"),
 )
 
@@ -102,7 +102,7 @@ def _reset_channels_reconciler_singleton():
     without this reset, a boot-running test leaks its closure into later
     channel CRUD tests, which then reconcile against a foreign gateway.
     """
-    from opensquilla.gateway.channels_bridge import reset_channels_reconciler
+    from openstarry_code.gateway.channels_bridge import reset_channels_reconciler
 
     reset_channels_reconciler()
     yield
@@ -122,7 +122,7 @@ def _undo_leaked_cli_structlog_default():
     """
     import structlog
 
-    from opensquilla.observability.cli_logging import is_cli_default_active
+    from openstarry_code.observability.cli_logging import is_cli_default_active
 
     was_configured = structlog.is_configured()
     old_config = structlog.get_config()
@@ -148,7 +148,7 @@ def _migrated_db_template(
     import hashlib
     import sqlite3
 
-    from opensquilla.persistence.migrator import apply_pending
+    from openstarry_code.persistence.migrator import apply_pending
 
     template = tmp_path_factory.mktemp("migrated-db-template") / "template.db"
     applied = apply_pending(str(template), _REPO_ROOT / "migrations")
@@ -227,13 +227,13 @@ def isolated_core_wheel(tmp_path_factory: pytest.TempPathFactory) -> Path:
             if name in {"node_modules", "coverage", "test-results", "__pycache__"}
             or name.endswith(".pyc")
         }
-        if source_path == (_REPO_ROOT / "src/opensquilla/gateway/static").resolve():
+        if source_path == (_REPO_ROOT / "src/openstarry_code/gateway/static").resolve():
             generated.add("dist")
-        if source_path == (_REPO_ROOT / "opensquilla-webui").resolve():
+        if source_path == (_REPO_ROOT / "openstarry-code-webui").resolve():
             generated.add("dist")
         return generated
 
-    for directory in ("src", "migrations", "opensquilla-webui", "scripts"):
+    for directory in ("src", "migrations", "openstarry-code-webui", "scripts"):
         shutil.copytree(_REPO_ROOT / directory, build_root / directory, ignore=ignored)
     for filename in (
         ".gitignore",
@@ -244,7 +244,7 @@ def isolated_core_wheel(tmp_path_factory: pytest.TempPathFactory) -> Path:
     ):
         shutil.copy2(_REPO_ROOT / filename, build_root / filename)
 
-    dist = build_root / "src" / "opensquilla" / "gateway" / "static" / "dist"
+    dist = build_root / "src" / "openstarry_code" / "gateway" / "static" / "dist"
     assets = dist / "assets"
     assets.mkdir(parents=True)
     (assets / "packaging-probe.js").write_bytes(b"window.__opensquillaPackagingProbe = true;\n")
@@ -271,7 +271,7 @@ def isolated_core_wheel(tmp_path_factory: pytest.TempPathFactory) -> Path:
         )
     manifest = {
         "schemaVersion": 1,
-        "sourceFingerprint": source_fingerprint(build_root / "opensquilla-webui"),
+        "sourceFingerprint": source_fingerprint(build_root / "openstarry-code-webui"),
         "files": records,
     }
     (dist / MANIFEST_NAME).write_text(
@@ -288,6 +288,6 @@ def isolated_core_wheel(tmp_path_factory: pytest.TempPathFactory) -> Path:
         timeout=300,
     )
     assert result.returncode == 0, f"uv build failed: {result.stderr}"
-    wheels = list(wheel_dir.glob("opensquilla-*.whl"))
+    wheels = list(wheel_dir.glob("openstarry_code-*.whl"))
     assert len(wheels) == 1, f"Expected 1 wheel, got {wheels}"
     return wheels[0]

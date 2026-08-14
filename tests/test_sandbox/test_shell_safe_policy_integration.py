@@ -7,26 +7,26 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.sandbox.config import SandboxSettings
-from opensquilla.sandbox.integration import (
+from openstarry_code.sandbox.config import SandboxSettings
+from openstarry_code.sandbox.integration import (
     active_file_system_profile,
     active_sandbox_policy,
     configure_runtime,
     reset_runtime,
 )
-from opensquilla.sandbox.operation_profile import OperationProfile
-from opensquilla.sandbox.operation_runtime import SandboxOperationResult
-from opensquilla.sandbox.path_validation import decide_path_access
-from opensquilla.sandbox.permissions import (
+from openstarry_code.sandbox.operation_profile import OperationProfile
+from openstarry_code.sandbox.operation_runtime import SandboxOperationResult
+from openstarry_code.sandbox.path_validation import decide_path_access
+from openstarry_code.sandbox.permissions import (
     FileSystemAccess,
     FileSystemPermissionEntry,
     FileSystemPermissionProfile,
 )
-from opensquilla.sandbox.policy_models import FilePolicySettings, SandboxPolicy
-from opensquilla.sandbox.run_context import MountGrant, RunContext
-from opensquilla.sandbox.run_mode import RunMode
-from opensquilla.tools.builtin import code_exec, filesystem, git, shell
-from opensquilla.tools.types import ToolContext, current_tool_context
+from openstarry_code.sandbox.policy_models import FilePolicySettings, SandboxPolicy
+from openstarry_code.sandbox.run_context import MountGrant, RunContext
+from openstarry_code.sandbox.run_mode import RunMode
+from openstarry_code.tools.builtin import code_exec, filesystem, git, shell
+from openstarry_code.tools.types import ToolContext, current_tool_context
 
 
 class _AllowedGate:
@@ -61,7 +61,7 @@ class _DeniedGate:
         "powershell -Command \"Remove-Item -Force 'discard.txt'\"",
         'cmd /c "del /F discard.txt"',
         "command rm discard.txt",
-        "env OPENSQUILLA_TEST=1 rm discard.txt",
+        "env OPENSTARRY_CODE_TEST=1 rm discard.txt",
         "sudo rm discard.txt",
         "ri -Force discard.txt",
     ),
@@ -324,7 +324,7 @@ async def test_escaped_delete_inside_command_substitution_fails_closed(
 @pytest.mark.parametrize(
     "command",
     (
-        "r${OPENSQUILLA_REVIEW_UNSET_91F3}m important.txt",
+        "r${OPENSTARRY_CODE_REVIEW_UNSET_91F3}m important.txt",
         "$DELETE_CMD important.txt",
         '"$DELETE_CMD" important.txt',
     ),
@@ -762,7 +762,7 @@ def test_intermediate_symlink_is_resolved_while_final_target_is_preserved(
         lambda workspace: shell.exec_command(
             "Write-Output must-not-run",
             workdir=str(workspace),
-            env={"OPENSQUILLA_GUEST_SAFE": "0"},
+            env={"OPENSTARRY_CODE_GUEST_SAFE": "0"},
         ),
         lambda workspace: shell.background_process(
             "Write-Output must-not-run",
@@ -804,7 +804,7 @@ async def test_windows_guest_process_tools_fail_before_runtime_enrichment(
             guest_safe=True,
             run_mode="safe",
             workspace_dir=str(tmp_path),
-            environment={"PATH": "", "OPENSQUILLA_GUEST_SAFE": "1"},
+            environment={"PATH": "", "OPENSTARRY_CODE_GUEST_SAFE": "1"},
         )
     )
     try:
@@ -957,7 +957,7 @@ def test_saved_file_policy_cannot_widen_runtime_sandbox_writes(
     protected = workspace / "protected"
     snapshot = SandboxPolicy()
 
-    from opensquilla.sandbox import file_policy
+    from openstarry_code.sandbox import file_policy
 
     monkeypatch.setattr(
         file_policy,

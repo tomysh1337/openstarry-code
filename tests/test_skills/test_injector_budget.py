@@ -9,13 +9,13 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from opensquilla.skills.filter import build_skills_prompt
-from opensquilla.skills.injector import (
+from openstarry_code.skills.filter import build_skills_prompt
+from openstarry_code.skills.injector import (
     DEFAULT_DESCRIPTION_LIMIT,
     SkillInjector,
     _truncate_text,
 )
-from opensquilla.skills.types import SkillLayer, SkillSpec
+from openstarry_code.skills.types import SkillLayer, SkillSpec
 
 
 def _skill(

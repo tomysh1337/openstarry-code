@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.engine.context_budget import coordinate_provider_context_budget
-from opensquilla.provider.request_proof import RESPONSES_REQUEST_ENVELOPE
+from openstarry_code.engine.context_budget import coordinate_provider_context_budget
+from openstarry_code.provider.request_proof import RESPONSES_REQUEST_ENVELOPE
 
 
 def test_context_budget_sends_payload_when_proof_is_disabled() -> None:

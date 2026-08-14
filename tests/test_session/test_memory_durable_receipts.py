@@ -5,15 +5,15 @@ from typing import Any
 
 import pytest
 
-from opensquilla.memory.checkpoint import checkpoint_coverage_hash, checkpoint_turn_id
-from opensquilla.memory.session_flush import FlushReceipt, SessionFlushService
-from opensquilla.provider import Message
-from opensquilla.session.compaction import CompactionConfig, compaction_remaining_seconds
-from opensquilla.session.compaction_lifecycle import CompactionTimeoutError
-from opensquilla.session.manager import SessionManager
-from opensquilla.session.models import MemoryDurableReceipt, SessionNode
-from opensquilla.session.storage import SessionStorage
-from opensquilla.tool_boundary import ToolCall, ToolResult
+from openstarry_code.memory.checkpoint import checkpoint_coverage_hash, checkpoint_turn_id
+from openstarry_code.memory.session_flush import FlushReceipt, SessionFlushService
+from openstarry_code.provider import Message
+from openstarry_code.session.compaction import CompactionConfig, compaction_remaining_seconds
+from openstarry_code.session.compaction_lifecycle import CompactionTimeoutError
+from openstarry_code.session.manager import SessionManager
+from openstarry_code.session.models import MemoryDurableReceipt, SessionNode
+from openstarry_code.session.storage import SessionStorage
+from openstarry_code.tool_boundary import ToolCall, ToolResult
 
 
 async def test_memory_durable_receipt_upsert_is_idempotent(tmp_path):
@@ -420,7 +420,7 @@ async def test_memory_durable_receipt_coverage_lookup_is_targeted(tmp_path):
 async def test_record_memory_checkpoint_preserves_distinct_failure_receipts(
     tmp_path, monkeypatch
 ):
-    import opensquilla.memory.checkpoint as checkpoint
+    import openstarry_code.memory.checkpoint as checkpoint
 
     storage = await SessionStorage.open(tmp_path / "sessions.db")
     manager = SessionManager(storage, checkpoint_workspace_dir=tmp_path / "workspace")
@@ -478,7 +478,7 @@ async def test_record_memory_checkpoint_requires_explicit_checkpoint_workspace(t
 async def test_record_memory_checkpoint_writes_checkpoint_off_event_loop(
     tmp_path, monkeypatch
 ):
-    import opensquilla.memory.checkpoint as checkpoint
+    import openstarry_code.memory.checkpoint as checkpoint
 
     storage = await SessionStorage.open(tmp_path / "sessions.db")
     manager = SessionManager(storage, checkpoint_workspace_dir=tmp_path / "workspace")
@@ -507,7 +507,7 @@ async def test_record_memory_checkpoint_writes_checkpoint_off_event_loop(
 async def test_record_memory_checkpoint_thread_write_respects_shared_deadline(
     tmp_path, monkeypatch
 ):
-    import opensquilla.memory.checkpoint as checkpoint
+    import openstarry_code.memory.checkpoint as checkpoint
 
     storage = await SessionStorage.open(tmp_path / "sessions.db")
     manager = SessionManager(storage, checkpoint_workspace_dir=tmp_path / "workspace")
@@ -554,7 +554,7 @@ async def test_record_memory_checkpoint_thread_write_respects_shared_deadline(
 async def test_record_memory_checkpoint_receipt_db_uses_remaining_deadline(
     tmp_path, monkeypatch
 ):
-    import opensquilla.memory.checkpoint as checkpoint
+    import openstarry_code.memory.checkpoint as checkpoint
 
     class Clock:
         now = 100.0
@@ -563,7 +563,7 @@ async def test_record_memory_checkpoint_receipt_db_uses_remaining_deadline(
             return self.now
 
     clock = Clock()
-    monkeypatch.setattr("opensquilla.session.compaction.time", clock)
+    monkeypatch.setattr("openstarry_code.session.compaction.time", clock)
     storage = await SessionStorage.open(tmp_path / "sessions.db")
     manager = SessionManager(storage, checkpoint_workspace_dir=tmp_path / "workspace")
     original_append = checkpoint.append_checkpoint_events

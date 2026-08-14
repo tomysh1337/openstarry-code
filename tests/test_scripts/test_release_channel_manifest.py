@@ -25,9 +25,9 @@ def _release(tag: str, *, prerelease: bool) -> dict[str, object]:
 
 def _assets(version: str) -> set[str]:
     return {
-        f"OpenSquilla-{version}-mac-arm64.dmg",
-        f"OpenSquilla-{version}-mac-arm64.zip",
-        f"OpenSquilla-{version}-win-x64.exe",
+        f"OpenStarry Code-{version}-mac-arm64.dmg",
+        f"OpenStarry Code-{version}-mac-arm64.zip",
+        f"OpenStarry Code-{version}-win-x64.exe",
         "latest-mac.yml",
         "latest.yml",
         "SHA256SUMS",
@@ -53,12 +53,12 @@ def test_builds_prerelease_manifest_and_scoped_targets() -> None:
     assert manifest["platforms"] == {
         "darwin-arm64": {
             "feed": "latest-mac.yml",
-            "archive": "OpenSquilla-0.5.0-rc4-mac-arm64.zip",
-            "installer": "OpenSquilla-0.5.0-rc4-mac-arm64.dmg",
+            "archive": "OpenStarry Code-0.5.0-rc4-mac-arm64.zip",
+            "installer": "OpenStarry Code-0.5.0-rc4-mac-arm64.dmg",
         },
         "win32-x64": {
             "feed": "latest.yml",
-            "installer": "OpenSquilla-0.5.0-rc4-win-x64.exe",
+            "installer": "OpenStarry Code-0.5.0-rc4-win-x64.exe",
         },
     }
     assert targets == ("latest.json", "preview/0.5.0.json")
@@ -88,7 +88,7 @@ def test_manifest_requires_release_flag_and_assets_to_match_tag() -> None:
 
 @pytest.mark.parametrize("tag", ["V0.5.0rc4", "v0.5.0RC4", "v0.5.0-rc4"])
 def test_manifest_rejects_noncanonical_release_tag_spelling(tag: str) -> None:
-    with pytest.raises(ManifestError, match="unsupported OpenSquilla release tag"):
+    with pytest.raises(ManifestError, match="unsupported OpenStarry Code release tag"):
         build_manifest(_release(tag, prerelease=True), _assets("0.5.0-rc4"))
 
 
@@ -107,7 +107,7 @@ def test_manifest_requires_canonical_release_metadata() -> None:
 def test_manifest_rejects_unsafe_asset_paths() -> None:
     manifest = _manifest("v0.5.0rc4", "0.5.0-rc4", prerelease=True)
     broken = copy.deepcopy(manifest)
-    broken["platforms"]["win32-x64"]["installer"] = "../OpenSquilla.exe"  # type: ignore[index]
+    broken["platforms"]["win32-x64"]["installer"] = "../OpenStarry Code.exe"  # type: ignore[index]
 
     with pytest.raises(ManifestError, match="safe filename"):
         validate_manifest(broken)
@@ -116,7 +116,7 @@ def test_manifest_rejects_unsafe_asset_paths() -> None:
 def test_manifest_rejects_safe_but_wrong_versioned_asset_names() -> None:
     manifest = _manifest("v0.5.0rc4", "0.5.0-rc4", prerelease=True)
     broken = copy.deepcopy(manifest)
-    broken["platforms"]["win32-x64"]["installer"] = "OpenSquilla.exe"  # type: ignore[index]
+    broken["platforms"]["win32-x64"]["installer"] = "OpenStarry Code.exe"  # type: ignore[index]
 
     with pytest.raises(ManifestError, match="platform assets disagree"):
         validate_manifest(broken)

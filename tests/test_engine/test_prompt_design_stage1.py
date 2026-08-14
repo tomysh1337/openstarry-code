@@ -4,12 +4,12 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.engine.pipeline import TurnContext
-from opensquilla.engine.reasoning_hint import model_family, reasoning_tag_hint
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.engine.steps.inject_platform_hint import inject_platform_hint
-from opensquilla.engine.steps.prompt_cache import apply_prompt_cache
-from opensquilla.engine.steps.reasoning_hint_observer import observe_reasoning_hint
+from openstarry_code.engine.pipeline import TurnContext
+from openstarry_code.engine.reasoning_hint import model_family, reasoning_tag_hint
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.engine.steps.inject_platform_hint import inject_platform_hint
+from openstarry_code.engine.steps.prompt_cache import apply_prompt_cache
+from openstarry_code.engine.steps.reasoning_hint_observer import observe_reasoning_hint
 
 
 @pytest.mark.asyncio

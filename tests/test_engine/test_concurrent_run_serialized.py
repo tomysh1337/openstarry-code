@@ -19,10 +19,10 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-import opensquilla.engine.runtime as runtime_module
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.engine.types import DoneEvent
-from opensquilla.skills.toolchains.manager import toolchains_root
+import openstarry_code.engine.runtime as runtime_module
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.engine.types import DoneEvent
+from openstarry_code.skills.toolchains.manager import toolchains_root
 
 
 def _make_runner_with_lock(
@@ -77,7 +77,7 @@ async def test_two_concurrent_runs_serialize() -> None:
     shared_lock = asyncio.Lock()
     runner = _make_runner_with_lock(shared_lock)
 
-    from opensquilla.tools.types import ToolContext
+    from openstarry_code.tools.types import ToolContext
 
     tool_ctx = ToolContext(session_key=session_key)
 
@@ -135,7 +135,7 @@ async def test_turn_runner_binds_and_restores_configured_toolchain_state(
     )
     observed: list[Path] = []
 
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_STATE_DIR", str(fallback_state))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_STATE_DIR", str(fallback_state))
 
     async def _capture_root(*args: Any, **kwargs: Any) -> AsyncIterator[Any]:
         observed.append(toolchains_root())
@@ -145,7 +145,7 @@ async def test_turn_runner_binds_and_restores_configured_toolchain_state(
 
     runner._run_turn = _capture_root  # type: ignore[method-assign]
 
-    from opensquilla.tools.types import ToolContext
+    from openstarry_code.tools.types import ToolContext
 
     owner_token = None
     if caller_holds_lock:

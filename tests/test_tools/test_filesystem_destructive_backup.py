@@ -5,11 +5,11 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.gateway.approval_queue import get_approval_queue, reset_approval_queue
-from opensquilla.sandbox.file_policy import FileDecision
-from opensquilla.sandbox.policy_models import SandboxPolicy
-from opensquilla.tools.builtin import filesystem
-from opensquilla.tools.types import ToolContext, current_tool_context
+from openstarry_code.gateway.approval_queue import get_approval_queue, reset_approval_queue
+from openstarry_code.sandbox.file_policy import FileDecision
+from openstarry_code.sandbox.policy_models import SandboxPolicy
+from openstarry_code.tools.builtin import filesystem
+from openstarry_code.tools.types import ToolContext, current_tool_context
 
 
 @pytest.mark.asyncio

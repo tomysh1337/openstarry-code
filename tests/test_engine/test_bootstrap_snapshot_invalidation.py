@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 
-from opensquilla.bootstrap_types import BootstrapFileReport
-from opensquilla.engine.runtime import BootstrapSnapshot, MemorySnapshot, TurnRunner
-from opensquilla.identity.workspace import filter_workspace_filenames_for_session
-from opensquilla.tools.types import ToolContext
+from openstarry_code.bootstrap_types import BootstrapFileReport
+from openstarry_code.engine.runtime import BootstrapSnapshot, MemorySnapshot, TurnRunner
+from openstarry_code.identity.workspace import filter_workspace_filenames_for_session
+from openstarry_code.tools.types import ToolContext
 
 
 def test_bootstrap_write_evicts_only_matching_agent_snapshots() -> None:

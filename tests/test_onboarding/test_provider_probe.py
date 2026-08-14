@@ -9,9 +9,9 @@ from typing import Any
 import httpx
 import pytest
 
-from opensquilla.onboarding.probe import probe_llm_provider
-from opensquilla.provider.failures import ProviderFailureKind
-from opensquilla.provider.types import (
+from openstarry_code.onboarding.probe import probe_llm_provider
+from openstarry_code.provider.failures import ProviderFailureKind
+from openstarry_code.provider.types import (
     DoneEvent,
     ErrorEvent,
     ReasoningDeltaEvent,
@@ -39,7 +39,7 @@ def _patch_response(monkeypatch: Any, response: httpx.Response) -> None:
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client)
 
 
 def _patch_transport_error(monkeypatch: Any, exc: Exception) -> None:
@@ -55,7 +55,7 @@ def _patch_transport_error(monkeypatch: Any, exc: Exception) -> None:
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client)
 
 
 def _probe(**kwargs: Any):
@@ -116,7 +116,7 @@ def test_probe_always_uses_one_token_completion_budget(
         observed_models.append(selected_model)
         return _CapturingProvider()
 
-    monkeypatch.setattr("opensquilla.onboarding.probe.build_provider", _build_provider)
+    monkeypatch.setattr("openstarry_code.onboarding.probe.build_provider", _build_provider)
 
     result = _probe(provider_id=provider_id, model=model, api_key="synthetic-key")
 
@@ -205,7 +205,7 @@ def test_probe_classifies_raised_stream_exception_as_transport_transient(
             return []
 
     monkeypatch.setattr(
-        "opensquilla.onboarding.probe.build_provider",
+        "openstarry_code.onboarding.probe.build_provider",
         lambda *args, **kwargs: _ExplodingProvider(),
     )
     result = _probe(provider_id="openai", model="gpt-4o", api_key="sk-test")
@@ -230,7 +230,7 @@ def test_probe_classifies_truncated_stream_as_malformed_response(monkeypatch: An
             return []
 
     monkeypatch.setattr(
-        "opensquilla.onboarding.probe.build_provider",
+        "openstarry_code.onboarding.probe.build_provider",
         lambda *args, **kwargs: _TruncatedProvider(),
     )
     result = _probe(provider_id="openai", model="gpt-4o", api_key="sk-test")
@@ -288,7 +288,7 @@ def _delayed_provider(events: list[Any], delay_s: float = 0.02) -> Any:
 
 def test_probe_reports_latency_on_ok_path(monkeypatch: Any) -> None:
     monkeypatch.setattr(
-        "opensquilla.onboarding.probe.build_provider",
+        "openstarry_code.onboarding.probe.build_provider",
         lambda *args, **kwargs: _delayed_provider([DoneEvent()], delay_s=0.02),
     )
     result = _probe(provider_id="openai", model="gpt-4o", api_key="sk-test")
@@ -301,7 +301,7 @@ def test_probe_reports_latency_on_ok_path(monkeypatch: Any) -> None:
 
 def test_probe_reports_latency_on_classified_error_path(monkeypatch: Any) -> None:
     monkeypatch.setattr(
-        "opensquilla.onboarding.probe.build_provider",
+        "openstarry_code.onboarding.probe.build_provider",
         lambda *args, **kwargs: _delayed_provider(
             [ErrorEvent(message="Incorrect API key provided", code="401")], delay_s=0.02
         ),
@@ -335,7 +335,7 @@ def test_probe_records_first_non_empty_model_response_before_done(monkeypatch: A
             return []
 
     monkeypatch.setattr(
-        "opensquilla.onboarding.probe.build_provider",
+        "openstarry_code.onboarding.probe.build_provider",
         lambda *args, **kwargs: _StreamingProvider(),
     )
 
@@ -365,7 +365,7 @@ def test_probe_preserves_first_response_when_stream_later_raises(monkeypatch: An
             return []
 
     monkeypatch.setattr(
-        "opensquilla.onboarding.probe.build_provider",
+        "openstarry_code.onboarding.probe.build_provider",
         lambda *args, **kwargs: _FailingAfterResponseProvider(),
     )
 
@@ -383,7 +383,7 @@ def test_probe_preserves_first_response_when_stream_later_raises(monkeypatch: An
 
 def test_probe_preserves_first_response_when_error_event_follows(monkeypatch: Any) -> None:
     monkeypatch.setattr(
-        "opensquilla.onboarding.probe.build_provider",
+        "openstarry_code.onboarding.probe.build_provider",
         lambda *args, **kwargs: _delayed_provider(
             [
                 ReasoningDeltaEvent(text="partial reasoning"),
@@ -406,7 +406,7 @@ def test_probe_redacts_exact_resolved_key_from_error_event_fields(monkeypatch: A
     """Exact-key masking also covers short keys with no recognizable prefix."""
     secret = "synthKey42"
     monkeypatch.setattr(
-        "opensquilla.onboarding.probe.build_provider",
+        "openstarry_code.onboarding.probe.build_provider",
         lambda *args, **kwargs: _delayed_provider(
             [
                 ErrorEvent(
@@ -444,7 +444,7 @@ def test_probe_redacts_exact_resolved_key_from_stream_exception(monkeypatch: Any
             return []
 
     monkeypatch.setattr(
-        "opensquilla.onboarding.probe.build_provider",
+        "openstarry_code.onboarding.probe.build_provider",
         lambda *args, **kwargs: _LeakingProvider(),
     )
 
@@ -457,14 +457,14 @@ def test_probe_redacts_exact_resolved_key_from_stream_exception(monkeypatch: Any
 
 
 def test_probe_redacts_exact_resolved_key_from_provider_build_error(monkeypatch: Any) -> None:
-    from opensquilla.provider.selector import ProviderBuildError
+    from openstarry_code.provider.selector import ProviderBuildError
 
     secret = "synthKey44"
 
     def fail_build(*args: Any, **kwargs: Any) -> Any:
         raise ProviderBuildError(f"cannot configure credential {secret}")
 
-    monkeypatch.setattr("opensquilla.onboarding.probe.build_provider", fail_build)
+    monkeypatch.setattr("openstarry_code.onboarding.probe.build_provider", fail_build)
 
     result = _probe(provider_id="openai", model="gpt-4o", api_key=secret)
 

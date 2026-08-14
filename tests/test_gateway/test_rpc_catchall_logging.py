@@ -14,11 +14,11 @@ from starlette.middleware import Middleware
 from starlette.routing import Route
 from starlette.testclient import TestClient
 
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.middleware import ErrorHandlingMiddleware
-from opensquilla.gateway.rpc import RpcContext
-from opensquilla.gateway.rpc.registry import RpcRegistry
-from opensquilla.skills.toolchains.manager import toolchains_root
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.middleware import ErrorHandlingMiddleware
+from openstarry_code.gateway.rpc import RpcContext
+from openstarry_code.gateway.rpc.registry import RpcRegistry
+from openstarry_code.skills.toolchains.manager import toolchains_root
 
 
 @pytest.fixture(autouse=True)
@@ -77,7 +77,7 @@ async def test_dispatch_binds_configured_toolchain_state_per_task(
     both_started = asyncio.Event()
     started = 0
 
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_STATE_DIR", str(fallback_state))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_STATE_DIR", str(fallback_state))
 
     async def _capture_root(params, ctx):
         nonlocal started

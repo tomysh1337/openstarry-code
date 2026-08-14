@@ -73,7 +73,7 @@ def _version_from_match(match: re.Match[str]) -> ReleaseVersion:
 def parse_release_tag(tag: str) -> ReleaseVersion:
     match = _TAG_RE.fullmatch(str(tag).strip())
     if match is None:
-        raise ManifestError(f"unsupported OpenSquilla release tag: {tag!r}")
+        raise ManifestError(f"unsupported OpenStarry Code release tag: {tag!r}")
     return _version_from_match(match)
 
 
@@ -124,12 +124,12 @@ def _expected_platforms(version: ReleaseVersion) -> dict[str, dict[str, str]]:
     return {
         "darwin-arm64": {
             "feed": "latest-mac.yml",
-            "archive": f"OpenSquilla-{app_version}-mac-arm64.zip",
-            "installer": f"OpenSquilla-{app_version}-mac-arm64.dmg",
+            "archive": f"OpenStarry Code-{app_version}-mac-arm64.zip",
+            "installer": f"OpenStarry Code-{app_version}-mac-arm64.dmg",
         },
         "win32-x64": {
             "feed": "latest.yml",
-            "installer": f"OpenSquilla-{app_version}-win-x64.exe",
+            "installer": f"OpenStarry Code-{app_version}-win-x64.exe",
         },
     }
 

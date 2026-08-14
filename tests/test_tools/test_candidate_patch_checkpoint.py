@@ -3,7 +3,7 @@ from __future__ import annotations
 import subprocess
 from pathlib import Path
 
-from opensquilla.tools.candidate_patch_checkpoint import (
+from openstarry_code.tools.candidate_patch_checkpoint import (
     _git_show_head_path,
     create_candidate_patch_checkpoint,
     restore_candidate_patch_checkpoint,

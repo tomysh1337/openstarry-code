@@ -10,8 +10,8 @@ from dataclasses import dataclass
 
 import pytest
 
-from opensquilla.engine.turn_runner.outcome import StageOutcome
-from opensquilla.engine.types import ErrorEvent
+from openstarry_code.engine.turn_runner.outcome import StageOutcome
+from openstarry_code.engine.types import ErrorEvent
 
 
 @dataclass(frozen=True)

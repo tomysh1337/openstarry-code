@@ -4,7 +4,7 @@ import pytest
 
 
 def test_offline_identity_requires_username_and_protected_password() -> None:
-    from opensquilla.sandbox.backend.windows_default_identity import (
+    from openstarry_code.sandbox.backend.windows_default_identity import (
         offline_identity_from_boundary,
     )
 
@@ -13,7 +13,7 @@ def test_offline_identity_requires_username_and_protected_password() -> None:
 
 
 def test_offline_identity_parses_boundary_payload() -> None:
-    from opensquilla.sandbox.backend.windows_default_identity import (
+    from openstarry_code.sandbox.backend.windows_default_identity import (
         offline_identity_from_boundary,
     )
 
@@ -31,7 +31,7 @@ def test_offline_identity_parses_boundary_payload() -> None:
 
 
 def test_protect_and_unprotect_password_round_trip(monkeypatch) -> None:
-    from opensquilla.sandbox.backend import windows_default_identity as mod
+    from openstarry_code.sandbox.backend import windows_default_identity as mod
 
     monkeypatch.setattr(
         mod,
@@ -51,7 +51,7 @@ def test_protect_and_unprotect_password_round_trip(monkeypatch) -> None:
 
 
 def test_logon_offline_identity_unprotects_password_before_logon(monkeypatch) -> None:
-    from opensquilla.sandbox.backend import windows_default_identity as mod
+    from openstarry_code.sandbox.backend import windows_default_identity as mod
 
     identity = mod.OfflineSandboxIdentity(
         sid="S-1-5-21-100-200-300-400",

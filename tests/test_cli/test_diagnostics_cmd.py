@@ -5,7 +5,7 @@ from typing import Any
 
 from typer.testing import CliRunner
 
-from opensquilla.cli.main import app
+from openstarry_code.cli.main import app
 
 runner = CliRunner()
 
@@ -41,7 +41,7 @@ def _install_fake_gateway(monkeypatch) -> type[_FakeGatewayClient]:
             "applies_to": "next_turn",
         },
     }
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _FakeGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _FakeGatewayClient)
     return _FakeGatewayClient
 
 

@@ -4,8 +4,8 @@ import json
 from html.parser import HTMLParser
 from types import SimpleNamespace
 
-from opensquilla.gateway import control_ui
-from opensquilla.gateway.config import ControlUiConfig, GatewayConfig
+from openstarry_code.gateway import control_ui
+from openstarry_code.gateway.config import ControlUiConfig, GatewayConfig
 
 
 def _req(accept_language: str | None = None) -> SimpleNamespace:
@@ -143,7 +143,7 @@ def test_template_bootstraps_link_token_before_frontend_loads():
     assert "localStorage.removeItem('opensquilla.wsUrl')" in html
     assert "sessionStorage.removeItem('opensquilla.wsToken')" in html
     assert "sessionStorage.removeItem('opensquilla.cachedAuth')" in html
-    assert "key.indexOf('opensquilla.chat.draft:') === 0" in html
+    assert "key.indexOf('openstarry_code.chat.draft:') === 0" in html
     assert "sessionStorage.setItem('opensquilla.wsToken'" in html
     assert "localStorage.setItem('opensquilla.wsUrl'" in html
     assert "ws://host/ws" in html

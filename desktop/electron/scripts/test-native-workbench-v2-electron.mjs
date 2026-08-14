@@ -21,7 +21,7 @@ const [fixtureFont, gsapSource, lottieSource] = await Promise.all([
     '..',
     '..',
     '..',
-    'opensquilla-webui',
+    'openstarry-code-webui',
     'src',
     'assets',
     'fonts',

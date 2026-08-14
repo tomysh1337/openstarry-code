@@ -5,15 +5,15 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.engine.tool_result_store import (
+from openstarry_code.engine.tool_result_store import (
     TOOL_RESULT_COMPRESSED_CONTENT_NAME,
     ToolResultStore,
 )
-from opensquilla.engine.types import ToolCall
-from opensquilla.tools import get_default_registry
-from opensquilla.tools.builtin import tool_results
-from opensquilla.tools.dispatch import build_tool_handler
-from opensquilla.tools.types import CallerKind, SafeToolError, ToolContext, current_tool_context
+from openstarry_code.engine.types import ToolCall
+from openstarry_code.tools import get_default_registry
+from openstarry_code.tools.builtin import tool_results
+from openstarry_code.tools.dispatch import build_tool_handler
+from openstarry_code.tools.types import CallerKind, SafeToolError, ToolContext, current_tool_context
 
 
 def _write_record(root: Path, *, session_id: str = "session-a") -> str:

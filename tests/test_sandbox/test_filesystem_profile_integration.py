@@ -7,23 +7,23 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.application.approval_queue import ApprovalQueue
-from opensquilla.sandbox.backend.bubblewrap import BubblewrapBackend
-from opensquilla.sandbox.backend.seatbelt import SeatbeltBackend
-from opensquilla.sandbox.config import SandboxSettings
-from opensquilla.sandbox.integration import configure_runtime, reset_runtime
-from opensquilla.sandbox.operation_runtime import SandboxOperation
-from opensquilla.sandbox.path_validation import decide_path_access
-from opensquilla.sandbox.permissions import FileSystemPermissionProfile
-from opensquilla.sandbox.policy import build_policy
-from opensquilla.sandbox.types import (
+from openstarry_code.application.approval_queue import ApprovalQueue
+from openstarry_code.sandbox.backend.bubblewrap import BubblewrapBackend
+from openstarry_code.sandbox.backend.seatbelt import SeatbeltBackend
+from openstarry_code.sandbox.config import SandboxSettings
+from openstarry_code.sandbox.integration import configure_runtime, reset_runtime
+from openstarry_code.sandbox.operation_runtime import SandboxOperation
+from openstarry_code.sandbox.path_validation import decide_path_access
+from openstarry_code.sandbox.permissions import FileSystemPermissionProfile
+from openstarry_code.sandbox.policy import build_policy
+from openstarry_code.sandbox.types import (
     SandboxBackendError,
     SandboxPolicy,
     SandboxRequest,
     SecurityLevel,
 )
-from opensquilla.tools.builtin import filesystem as fs
-from opensquilla.tools.types import CallerKind, ToolContext, current_tool_context
+from openstarry_code.tools.builtin import filesystem as fs
+from openstarry_code.tools.types import CallerKind, ToolContext, current_tool_context
 
 
 async def _direct_write_preflight(
@@ -293,7 +293,7 @@ async def test_bubblewrap_external_write_requires_elevation_and_raw_backends_den
         pytest.skip("bubblewrap is unavailable")
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    target = Path.home() / f".opensquilla-bwrap-external-{uuid.uuid4().hex}.txt"
+    target = Path.home() / f".openstarry-code-bwrap-external-{uuid.uuid4().hex}.txt"
 
     await _assert_posix_external_write_denied(
         backend,
@@ -407,7 +407,7 @@ async def test_seatbelt_external_write_requires_elevation_and_raw_backends_deny(
         pytest.skip("Seatbelt is unavailable")
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    target = Path.home() / f".opensquilla-seatbelt-external-{uuid.uuid4().hex}.txt"
+    target = Path.home() / f".openstarry-code-seatbelt-external-{uuid.uuid4().hex}.txt"
 
     await _assert_posix_external_write_denied(
         backend,

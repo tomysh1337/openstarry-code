@@ -263,13 +263,13 @@ def test_child_environment_contains_only_selected_registry_credential() -> None:
             "ALL_PROXY": "socks5://proxy.invalid",
             "NO_PROXY": "*",
             "GITHUB_TOKEN": "unrelated-token",
-            "OPENSQUILLA_UNRELATED_OVERRIDE": "must-not-pass",
+            "OPENSTARRY_CODE_UNRELATED_OVERRIDE": "must-not-pass",
             "OPENAI_API_KEY": "ambient-openai-secret",
             "DEEPSEEK_API_KEY": "ambient-deepseek-secret",
             "OPENAI_MODEL": "ambient-model",
             "OPENAI_BASE_URL": "https://attacker.invalid/v1",
-            "OPENSQUILLA_LLM_API_KEY": "ambient-generic-secret",
-            "OPENSQUILLA_LLM_BASE_URL": "https://attacker.invalid/v1",
+            "OPENSTARRY_CODE_LLM_API_KEY": "ambient-generic-secret",
+            "OPENSTARRY_CODE_LLM_BASE_URL": "https://attacker.invalid/v1",
         },
     )
 
@@ -277,16 +277,16 @@ def test_child_environment_contains_only_selected_registry_credential() -> None:
     assert "DEEPSEEK_API_KEY" not in env
     assert "OPENAI_MODEL" not in env
     assert "OPENAI_BASE_URL" not in env
-    assert "OPENSQUILLA_LLM_API_KEY" not in env
-    assert "OPENSQUILLA_LLM_BASE_URL" not in env
+    assert "OPENSTARRY_CODE_LLM_API_KEY" not in env
+    assert "OPENSTARRY_CODE_LLM_BASE_URL" not in env
     assert "HOME" not in env
     assert "HTTP_PROXY" not in env
     assert "HTTPS_PROXY" not in env
     assert "ALL_PROXY" not in env
     assert "NO_PROXY" not in env
     assert "GITHUB_TOKEN" not in env
-    assert "OPENSQUILLA_UNRELATED_OVERRIDE" not in env
-    assert env["OPENSQUILLA_LIVE_DISABLE_DOTENV"] == "1"
+    assert "OPENSTARRY_CODE_UNRELATED_OVERRIDE" not in env
+    assert env["OPENSTARRY_CODE_LIVE_DISABLE_DOTENV"] == "1"
 
 
 def test_minimal_child_environment_handles_windows_key_casing() -> None:
@@ -297,7 +297,7 @@ def test_minimal_child_environment_handles_windows_key_casing() -> None:
             "ComSpec": r"C:\Windows\System32\cmd.exe",
             "USERPROFILE": r"C:\SyntheticHome",
             "http_proxy": "http://proxy.invalid",
-            "OPENSQUILLA_LLM_MODEL": "ambient-override",
+            "OPENSTARRY_CODE_LLM_MODEL": "ambient-override",
         }
     )
 
@@ -307,7 +307,7 @@ def test_minimal_child_environment_handles_windows_key_casing() -> None:
     assert "PATH" not in env  # no duplicate fallback when Path already exists
     assert "USERPROFILE" not in env
     assert "http_proxy" not in env
-    assert "OPENSQUILLA_LLM_MODEL" not in env
+    assert "OPENSTARRY_CODE_LLM_MODEL" not in env
 
 
 def test_safe_report_writer_redacts_scans_and_uses_private_mode(tmp_path: Path) -> None:
@@ -905,8 +905,8 @@ def test_synthetic_vision_fixture_is_generated_png_not_external_media() -> None:
 def test_special_child_uses_adapter_thinking_toggle_and_generated_vision_only(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.provider import selector
-    from opensquilla.provider.types import (
+    from openstarry_code.provider import selector
+    from openstarry_code.provider.types import (
         ContentBlockImage,
         DoneEvent,
         ReasoningDeltaEvent,
@@ -919,9 +919,9 @@ def test_special_child_uses_adapter_thinking_toggle_and_generated_vision_only(
         async def chat(self, messages: Any, *, config: Any):
             calls.append((messages, config))
             marker = (
-                "OPENSQUILLA_VISION_SYNTHETIC_COLOR_BLOCK_OK"
+                "OPENSTARRY_CODE_VISION_SYNTHETIC_COLOR_BLOCK_OK"
                 if isinstance(messages[0].content, list)
-                else "OPENSQUILLA_THINKING_ON_OK"
+                else "OPENSTARRY_CODE_THINKING_ON_OK"
             )
             if config.thinking:
                 yield ReasoningDeltaEvent(text="synthetic reasoning evidence")

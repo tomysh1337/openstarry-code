@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from opensquilla.onboarding.search_specs import (
+from openstarry_code.onboarding.search_specs import (
     get_search_provider_setup_spec,
     list_search_provider_setup_specs,
     search_provider_catalog_payload,

@@ -8,8 +8,8 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from opensquilla.gateway.boot import GatewayServer, ServiceContainer
-from opensquilla.gateway.config import GatewayConfig
+from openstarry_code.gateway.boot import GatewayServer, ServiceContainer
+from openstarry_code.gateway.config import GatewayConfig
 
 
 @pytest.mark.asyncio
@@ -47,7 +47,7 @@ async def test_runtime_drained_before_channel_stop() -> None:
     mock_registry.broadcast = AsyncMock()
     mock_registry.all = MagicMock(return_value=[])
 
-    with patch("opensquilla.gateway.boot.get_registry", return_value=mock_registry):
+    with patch("openstarry_code.gateway.boot.get_registry", return_value=mock_registry):
         await server.close(reason="test")
 
     assert call_order[0] == "task_runtime.shutdown", (
@@ -97,7 +97,7 @@ async def test_close_stops_server_even_if_teardown_raises() -> None:
     mock_registry.broadcast = AsyncMock()
     mock_registry.all = MagicMock(return_value=[])
 
-    with patch("opensquilla.gateway.boot.get_registry", return_value=mock_registry):
+    with patch("openstarry_code.gateway.boot.get_registry", return_value=mock_registry):
         with pytest.raises(RuntimeError, match="boom"):
             await server.close(reason="test")
 

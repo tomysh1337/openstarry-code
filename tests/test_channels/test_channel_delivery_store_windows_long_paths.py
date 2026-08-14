@@ -5,9 +5,9 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.channels.contract import ChannelCapabilities, ChannelSendResult
-from opensquilla.channels.delivery_store import ChannelDeliveryStore
-from opensquilla.channels.types import (
+from openstarry_code.channels.contract import ChannelCapabilities, ChannelSendResult
+from openstarry_code.channels.delivery_store import ChannelDeliveryStore
+from openstarry_code.channels.types import (
     AuthenticatedPrincipal,
     IncomingMessage,
     IngressProvenance,

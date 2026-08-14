@@ -10,12 +10,12 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.pipeline import TurnContext
-from opensquilla.engine.router_decision import build_router_decision_event
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.engine.types import RouterDecisionEvent
-from opensquilla.provider import DoneEvent, Message, ModelInfo, TextDeltaEvent
-from opensquilla.tools.types import CallerKind, ToolContext
+from openstarry_code.engine.pipeline import TurnContext
+from openstarry_code.engine.router_decision import build_router_decision_event
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.engine.types import RouterDecisionEvent
+from openstarry_code.provider import DoneEvent, Message, ModelInfo, TextDeltaEvent
+from openstarry_code.tools.types import CallerKind, ToolContext
 
 
 def _ctx(metadata: dict, model: str = "") -> TurnContext:

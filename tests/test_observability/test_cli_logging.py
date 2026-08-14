@@ -7,7 +7,7 @@ from collections.abc import Iterator
 
 import structlog
 
-from opensquilla.observability.cli_logging import (
+from openstarry_code.observability.cli_logging import (
     configure_cli_structlog,
     is_cli_default_active,
 )

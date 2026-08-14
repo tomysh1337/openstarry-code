@@ -165,7 +165,7 @@ def test_focus_in_restores_same_size_cleared_framebuffer(
     # This test proves the focus seam specifically. Keep the eventless fallback
     # disabled so its low-frequency repaint cannot race the deliberately blank
     # intermediate framebuffer asserted below.
-    target.env["OPENSQUILLA_TUI_REPAINT_WATCHDOG_MS"] = "0"
+    target.env["OPENSTARRY_CODE_TUI_REPAINT_WATCHDOG_MS"] = "0"
 
     session = open_real_terminal_session(
         command=target.command,
@@ -248,7 +248,7 @@ def test_focus_in_restores_same_size_cleared_framebuffer(
         # be reconstructed from OpenTUI's retained render tree in one full pass.
         assert _normalized_frame(restored.text) == _normalized_frame(initial.text)
         assert restored_framebuffer.cells == initial_framebuffer.cells
-        assert "OpenSquilla · Session" in restored.text
+        assert "OpenStarry Code · Session" in restored.text
         assert "send a message" in restored.text
 
         evidence.write_scrollback(session.capture_scrollback_text("scrollback"))
@@ -316,7 +316,7 @@ def test_watchdog_restores_same_size_framebuffer_without_terminal_event(
     # Periodic full repaint is deliberately not a production default: it can
     # flash a healthy retained surface. Keep the otherwise-undetectable,
     # eventless path as an explicit diagnostic/recovery capability.
-    target.env["OPENSQUILLA_TUI_REPAINT_WATCHDOG_MS"] = "400"
+    target.env["OPENSTARRY_CODE_TUI_REPAINT_WATCHDOG_MS"] = "400"
 
     session = open_real_terminal_session(
         command=target.command,
@@ -370,7 +370,7 @@ def test_watchdog_restores_same_size_framebuffer_without_terminal_event(
         assert session.is_alive() is True
         assert _normalized_frame(restored.text) == _normalized_frame(initial.text)
         assert restored_framebuffer.cells == initial_framebuffer.cells
-        assert "OpenSquilla · Session" in restored.text
+        assert "OpenStarry Code · Session" in restored.text
         assert "send a message" in restored.text
 
         evidence.write_scrollback(session.capture_scrollback_text("scrollback"))
@@ -432,7 +432,7 @@ def test_watchdog_reenters_alternate_screen_without_polluting_scrollback_or_curs
     )
     # Leave a deterministic observation window after fault injection, then let
     # at least two independent recovery ticks prove they do not append frames.
-    target.env["OPENSQUILLA_TUI_REPAINT_WATCHDOG_MS"] = "2000"
+    target.env["OPENSTARRY_CODE_TUI_REPAINT_WATCHDOG_MS"] = "2000"
 
     session = open_real_terminal_session(
         command=target.command,
@@ -499,7 +499,7 @@ def test_watchdog_reenters_alternate_screen_without_polluting_scrollback_or_curs
         scrollback = session.capture_scrollback_text("mode-loss-scrollback")
         evidence.write_scrollback(scrollback)
         assert scrollback.text.count("Build with your agent. Stay in the flow.") == 1
-        assert scrollback.text.count("OpenSquilla · Session") == 1
+        assert scrollback.text.count("OpenStarry Code · Session") == 1
         assert session.cursor_position() == expected_cursor
 
         evidence.write_result(
@@ -564,10 +564,10 @@ def test_restores_same_size_framebuffer_during_live_stream(
         require_capabilities=bool(pytestconfig.getoption("--tui-require-capabilities")),
     )
     if recovery_mode == "focus":
-        target.env["OPENSQUILLA_TUI_REPAINT_WATCHDOG_MS"] = "0"
+        target.env["OPENSTARRY_CODE_TUI_REPAINT_WATCHDOG_MS"] = "0"
     else:
-        target.env["OPENSQUILLA_TUI_REPAINT_WATCHDOG_MS"] = "400"
-        target.env["OPENSQUILLA_TUI_FAKE_STREAM_DELAY_S"] = "0.04"
+        target.env["OPENSTARRY_CODE_TUI_REPAINT_WATCHDOG_MS"] = "400"
+        target.env["OPENSTARRY_CODE_TUI_FAKE_STREAM_DELAY_S"] = "0.04"
 
     session = open_real_terminal_session(
         command=target.command,

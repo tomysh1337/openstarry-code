@@ -4,9 +4,9 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.skills.hub.installer import SkillInstaller
-from opensquilla.skills.hub.lockfile import LockEntry, Lockfile
-from opensquilla.skills.hub.source import SkillBundle, SkillMeta
+from openstarry_code.skills.hub.installer import SkillInstaller
+from openstarry_code.skills.hub.lockfile import LockEntry, Lockfile
+from openstarry_code.skills.hub.source import SkillBundle, SkillMeta
 
 
 class FakeRouter:

@@ -4,14 +4,14 @@ Each parametrized case drives one provider adapter offline (MockTransport)
 and byte-compares the captured request against a checked-in golden under
 ``tests/test_provider/golden/requests/``. Any refactor that changes a request
 payload byte must fail here; deliberate changes are regenerated with
-``OPENSQUILLA_REGEN_GOLDENS=1`` and reviewed as behavior changes.
+``OPENSTARRY_CODE_REGEN_GOLDENS=1`` and reviewed as behavior changes.
 """
 
 from __future__ import annotations
 
 import pytest
 
-from opensquilla.provider.compat_policy import known_policy_kinds
+from openstarry_code.provider.compat_policy import known_policy_kinds
 from tests.test_provider.golden import _harness as harness
 
 _CASES = harness.build_cases()

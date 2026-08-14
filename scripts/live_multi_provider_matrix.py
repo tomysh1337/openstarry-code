@@ -32,8 +32,8 @@ if str(REPO_ROOT) not in sys.path:
 if str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))
 
-from opensquilla.provider.preset_registry import get_preset  # noqa: E402
-from opensquilla.provider.registry import get_provider_spec  # noqa: E402
+from openstarry_code.provider.preset_registry import get_preset  # noqa: E402
+from openstarry_code.provider.registry import get_provider_spec  # noqa: E402
 from scripts.live_harness_security import (  # noqa: E402
     child_environment,
     classify_failure,
@@ -231,7 +231,7 @@ def _model_capabilities(provider: str, model: str) -> Any:
     # Local import keeps baseline inventory/help usage light and avoids
     # initializing the catalog in the credential-owning parent unless a deep
     # case is actually being planned.
-    from opensquilla.provider.model_catalog import ModelCatalog  # noqa: PLC0415
+    from openstarry_code.provider.model_catalog import ModelCatalog  # noqa: PLC0415
 
     return ModelCatalog().get_capabilities(
         model,
@@ -1129,15 +1129,15 @@ async def _special_child_report(
 ) -> tuple[dict[str, Any], dict[str, str]]:
     """Run one synthetic thinking or vision adapter case in an isolated child."""
 
-    from opensquilla.engine.pricing import (  # noqa: PLC0415
+    from openstarry_code.engine.pricing import (  # noqa: PLC0415
         estimate_cost,
         resolve_model_price,
     )
-    from opensquilla.provider.selector import (  # noqa: PLC0415
+    from openstarry_code.provider.selector import (  # noqa: PLC0415
         ProviderConfig,
         _build_provider,
     )
-    from opensquilla.provider.types import (  # noqa: PLC0415
+    from openstarry_code.provider.types import (  # noqa: PLC0415
         ChatConfig,
         ContentBlockImage,
         ContentBlockText,
@@ -1160,7 +1160,7 @@ async def _special_child_report(
         row = _skipped_stage(stage, provider, model, "missing-credential")
         return {"ok": False, "results": [row]}, secrets
 
-    marker = f"OPENSQUILLA_{stage.upper()}_OK"
+    marker = f"OPENSTARRY_CODE_{stage.upper()}_OK"
     caps = _model_capabilities(provider, model)
     if stage == "vision_synthetic_color_block":
         content: Any = [

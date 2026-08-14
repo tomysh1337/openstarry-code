@@ -17,10 +17,10 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.sandbox.config import SandboxSettings
-from opensquilla.sandbox.integration import configure_runtime, reset_runtime
-from opensquilla.tools.builtin import filesystem
-from opensquilla.tools.types import CallerKind, ToolContext, current_tool_context
+from openstarry_code.sandbox.config import SandboxSettings
+from openstarry_code.sandbox.integration import configure_runtime, reset_runtime
+from openstarry_code.tools.builtin import filesystem
+from openstarry_code.tools.types import CallerKind, ToolContext, current_tool_context
 
 
 @pytest.mark.asyncio

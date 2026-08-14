@@ -20,9 +20,9 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.skills.meta.executors.skill_exec import run_skill_exec_step
-from opensquilla.skills.meta.types import MetaStep
-from opensquilla.skills.types import SkillLayer, SkillSpec
+from openstarry_code.skills.meta.executors.skill_exec import run_skill_exec_step
+from openstarry_code.skills.meta.types import MetaStep
+from openstarry_code.skills.types import SkillLayer, SkillSpec
 
 
 def _spec(base_dir: Path, command: str) -> SkillSpec:

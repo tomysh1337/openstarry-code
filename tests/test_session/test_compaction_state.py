@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from opensquilla.session.compaction_state import (
+from openstarry_code.session.compaction_state import (
     StructuredCompactionSummary,
     build_structured_summary_from_text,
     extract_compaction_obligations,
@@ -17,7 +17,7 @@ def test_render_structured_summary_uses_stable_sections_not_raw_json() -> None:
         open_steps=["Persist structured payload."],
         files_and_artifacts=[
             {
-                "path": "src/opensquilla/session/models.py",
+                "path": "src/openstarry_code/session/models.py",
                 "status": "changed",
                 "why": "stores summary metadata",
             }
@@ -45,7 +45,7 @@ def test_render_structured_summary_uses_stable_sections_not_raw_json() -> None:
     assert rendered.startswith("[Structured Compaction Summary]")
     assert "Goal:\nImprove compaction continuity." in rendered
     assert "Files and Artifacts:" in rendered
-    assert "- path: src/opensquilla/session/models.py" in rendered
+    assert "- path: src/openstarry_code/session/models.py" in rendered
     assert "Known Failures:" in rendered
     assert "Executed Commands and Tests:" in rendered
     assert "Pending Tool and Approval IDs:" in rendered
@@ -79,7 +79,7 @@ def test_extract_compaction_obligations_keeps_high_signal_facts_bounded() -> Non
             "content": (
                 "Command failed: uv run pytest tests/test_session/test_manager.py\n"
                 "Exit code 1\n"
-                "File src/opensquilla/session/models.py\n"
+                "File src/openstarry_code/session/models.py\n"
                 "Error: missing summary_payload column"
             ),
         },
@@ -98,7 +98,7 @@ def test_extract_compaction_obligations_keeps_high_signal_facts_bounded() -> Non
         "preserve changed file paths in the final report.",
     ) in by_kind
     assert ("file_path", "docs/Long Task Report.md") in by_kind
-    assert ("file_path", "src/opensquilla/session/models.py") in by_kind
+    assert ("file_path", "src/openstarry_code/session/models.py") in by_kind
     assert ("artifact_path_or_name", "final continuity report.pdf") in by_kind
     assert (
         "decision_or_rationale",
@@ -169,7 +169,7 @@ def test_canonical_nested_tool_results_populate_failure_and_pending_workset() ->
                     "tool_use_id": "call_failed",
                     "result": (
                         "uv run pytest tests/test_session failed\n"
-                        "Error: assertion failed in src/opensquilla/session/manager.py"
+                        "Error: assertion failed in src/openstarry_code/session/manager.py"
                     ),
                     "is_error": True,
                     "execution_status": {
@@ -337,7 +337,7 @@ def test_structured_summary_backfills_missing_obligations_without_blocking() -> 
             {
                 "role": "user",
                 "content": (
-                    "Goal: finish compaction continuity. Keep src/opensquilla/session/models.py."
+                    "Goal: finish compaction continuity. Keep src/openstarry_code/session/models.py."
                 ),
             },
             {
@@ -359,14 +359,14 @@ def test_structured_summary_backfills_missing_obligations_without_blocking() -> 
     assert coverage.blocked is False
     assert coverage.missing_obligations
     assert any(
-        "src/opensquilla/session/models.py" in item for item in coverage.critical_carry_forward
+        "src/openstarry_code/session/models.py" in item for item in coverage.critical_carry_forward
     )
     assert any("call_exec_2" in item for item in coverage.critical_carry_forward)
     assert summary.critical_carry_forward == coverage.critical_carry_forward
 
     rendered = render_structured_summary(summary)
     assert "Critical Carry Forward:" in rendered
-    assert "src/opensquilla/session/models.py" in rendered
+    assert "src/openstarry_code/session/models.py" in rendered
     assert "call_exec_2" in rendered
 
 
@@ -401,7 +401,7 @@ def test_structured_summary_coverage_checks_the_replayed_backfill() -> None:
             {
                 "role": "user",
                 "content": (
-                    "Goal: finish compaction continuity. Keep src/opensquilla/session/models.py."
+                    "Goal: finish compaction continuity. Keep src/openstarry_code/session/models.py."
                 ),
             }
         ]
@@ -417,7 +417,7 @@ def test_structured_summary_coverage_checks_the_replayed_backfill() -> None:
     assert coverage.blocked is False
     assert coverage.missing_obligations == []
     assert summary.source_coverage["status"] == "pass"
-    assert "src/opensquilla/session/models.py" in render_structured_summary(summary)
+    assert "src/openstarry_code/session/models.py" in render_structured_summary(summary)
 
 
 def test_structured_summary_blocks_when_bounded_replay_still_misses_critical_facts() -> None:

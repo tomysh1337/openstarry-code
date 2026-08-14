@@ -12,10 +12,10 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.gateway import rpc_skills
-from opensquilla.gateway.rpc import RpcContext
-from opensquilla.skills import eligibility
-from opensquilla.skills.loader import SkillLoader
+from openstarry_code.gateway import rpc_skills
+from openstarry_code.gateway.rpc import RpcContext
+from openstarry_code.skills import eligibility
+from openstarry_code.skills.loader import SkillLoader
 
 
 @pytest.fixture(autouse=True)
@@ -70,7 +70,7 @@ async def test_lifecycle_list_and_doctor_keep_managed_disabled_skill_gated(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path))
     managed = tmp_path / "managed"
     _write_skill(managed, "git-diff")
     loader = SkillLoader(
@@ -142,8 +142,8 @@ def test_skill_to_dict_drops_gated_sub_skills() -> None:
     # A visible meta-skill that composes code-task must not surface it through
     # the sub-skill rollup while the toggle is OFF. A real SkillSpec with
     # path=None makes the dependency scan a no-op.
-    from opensquilla.skills.eligibility import EligibilityContext, EligibilityReport
-    from opensquilla.skills.types import SkillLayer, SkillSpec
+    from openstarry_code.skills.eligibility import EligibilityContext, EligibilityReport
+    from openstarry_code.skills.types import SkillLayer, SkillSpec
 
     _gate(coding_mode=False)
     spec = SkillSpec(

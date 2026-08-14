@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 
-from opensquilla.gateway.config import CompactionLlmConfig
+from openstarry_code.gateway.config import CompactionLlmConfig
 
 
 def test_compaction_explicit_deployment_preserves_provider_model_pair() -> None:

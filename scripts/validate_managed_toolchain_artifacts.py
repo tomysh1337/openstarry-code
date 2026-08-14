@@ -17,7 +17,7 @@ import tempfile
 from collections.abc import Sequence
 from pathlib import Path
 
-from opensquilla.skills.toolchains import (
+from openstarry_code.skills.toolchains import (
     component_ids,
     describe_component,
     install_component,
@@ -25,7 +25,7 @@ from opensquilla.skills.toolchains import (
     probe_component,
 )
 
-_VALIDATION_ROOT_ENV = "OPENSQUILLA_TOOLCHAIN_VALIDATION_ROOT"
+_VALIDATION_ROOT_ENV = "OPENSTARRY_CODE_TOOLCHAIN_VALIDATION_ROOT"
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -114,7 +114,7 @@ def _is_beneath(path: Path, root: Path) -> bool:
 def _check_runtime_hot_path(component_id: str, *, root: Path) -> bool:
     """Exercise the real activation twice and reject unbounded warm work."""
 
-    from opensquilla.skills.toolchains import runtime
+    from openstarry_code.skills.toolchains import runtime
 
     descriptor = describe_component(component_id)
     active_path = root / "active" / f"{component_id}.json"

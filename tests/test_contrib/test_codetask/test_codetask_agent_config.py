@@ -1,11 +1,11 @@
-"""Unit tests for opensquilla.contrib.codetask.agent_config (pure assembly)."""
+"""Unit tests for openstarry_code.contrib.codetask.agent_config (pure assembly)."""
 
 import tomllib
 
 import pytest
 
-from opensquilla.contrib.codetask import agent_config as agent_config_mod
-from opensquilla.contrib.codetask.agent_config import (
+from openstarry_code.contrib.codetask import agent_config as agent_config_mod
+from openstarry_code.contrib.codetask.agent_config import (
     OPERATOR_SECTIONS,
     AgentConfigError,
     build_per_run_agent_config,
@@ -51,7 +51,7 @@ def test_primary_api_key_moves_to_child_env():
     user = {"llm": {"provider": "deepseek", "model": "deepseek-chat", "api_key": "sk-secret"}}
     bundle = build_per_run_agent_config(dict(_TEMPLATE), user)
     assert "api_key" not in bundle.payload["llm"]
-    assert bundle.child_env == {"OPENSQUILLA_LLM_API_KEY": "sk-secret"}
+    assert bundle.child_env == {"OPENSTARRY_CODE_LLM_API_KEY": "sk-secret"}
     # The source payload is not mutated.
     assert user["llm"]["api_key"] == "sk-secret"
 
@@ -59,7 +59,7 @@ def test_primary_api_key_moves_to_child_env():
 def test_empty_api_key_is_not_stripped():
     # An explicitly empty api_key must stay in the written [llm] (the operator
     # resolves via api_key_env); dropping it would let a stale inherited
-    # OPENSQUILLA_LLM_API_KEY fill the field in the child.
+    # OPENSTARRY_CODE_LLM_API_KEY fill the field in the child.
     user = {"llm": {"provider": "deepseek", "model": "m", "api_key": "", "api_key_env": "DS_KEY"}}
     bundle = build_per_run_agent_config(dict(_TEMPLATE), user)
     assert bundle.payload["llm"]["api_key"] == ""
@@ -105,7 +105,7 @@ def test_mismatched_tier_profile_heals_in_merged_config():
 def test_user_config_payload_explicit_env_path(monkeypatch, tmp_path):
     cfg = tmp_path / "operator.toml"
     cfg.write_text('[llm]\nprovider = "deepseek"\nmodel = "m"\n', encoding="utf-8")
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(cfg))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(cfg))
     payload, source = user_config_payload()
     assert payload["llm"]["provider"] == "deepseek"
     assert source == str(cfg)
@@ -118,35 +118,35 @@ def test_user_config_payload_explicit_env_path_missing_is_sole_candidate(
     # cwd/home chain.
     (tmp_path / "state").mkdir()
     (tmp_path / "state" / "config.toml").write_text('[llm]\nprovider = "moonshot"\n', "utf-8")
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "state"))
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(tmp_path / "missing.toml"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(tmp_path / "missing.toml"))
     payload, source = user_config_payload()
     assert payload == {}
     assert source is None
 
 
 def test_user_config_payload_falls_back_to_home_config(monkeypatch, tmp_path):
-    monkeypatch.delenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", raising=False)
-    monkeypatch.chdir(tmp_path)  # no ./opensquilla.toml here
+    monkeypatch.delenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", raising=False)
+    monkeypatch.chdir(tmp_path)  # no ./openstarry-code.toml here
     home = tmp_path / "state"
     home.mkdir()
     (home / "config.toml").write_text('[llm]\nprovider = "deepseek"\nmodel = "m"\n', "utf-8")
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
     payload, source = user_config_payload()
     assert payload["llm"]["provider"] == "deepseek"
     assert source == str(home / "config.toml")
 
 
 def test_user_config_payload_cwd_toml_wins_over_home(monkeypatch, tmp_path):
-    monkeypatch.delenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", raising=False)
     monkeypatch.chdir(tmp_path)
-    (tmp_path / "opensquilla.toml").write_text(
+    (tmp_path / "openstarry-code.toml").write_text(
         '[llm]\nprovider = "deepseek"\nmodel = "m"\n', "utf-8"
     )
     home = tmp_path / "state"
     home.mkdir()
     (home / "config.toml").write_text('[llm]\nprovider = "moonshot"\nmodel = "k"\n', "utf-8")
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
     payload, _source = user_config_payload()
     assert payload["llm"]["provider"] == "deepseek"
 
@@ -154,7 +154,7 @@ def test_user_config_payload_cwd_toml_wins_over_home(monkeypatch, tmp_path):
 def test_unparseable_operator_config_raises_actionably(monkeypatch, tmp_path):
     cfg = tmp_path / "broken.toml"
     cfg.write_text("[llm\nprovider=", encoding="utf-8")
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(cfg))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(cfg))
     with pytest.raises(AgentConfigError) as exc:
         user_config_payload()
     assert str(cfg) in str(exc.value)
@@ -176,8 +176,8 @@ def test_override_preserves_provider_authority_and_inherits_operator_privacy(
         "[privacy]\ndisable_network_observability = true\n",
         "utf-8",
     )
-    monkeypatch.setenv("OPENSQUILLA_CODETASK_AGENT_CONFIG", str(override))
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(operator))
+    monkeypatch.setenv("OPENSTARRY_CODE_CODETASK_AGENT_CONFIG", str(override))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(operator))
     bundle = load_agent_config_bundle()
     assert bundle.payload["llm"]["provider"] == "deepseek"
     assert bundle.payload["llm"]["api_key"] == "sk-keep"  # full authority, untouched
@@ -196,8 +196,8 @@ def test_override_survives_broken_operator_config_with_privacy_disabled(
     )
     operator = tmp_path / "broken.toml"
     operator.write_text("[privacy\ndisable_network_observability =", encoding="utf-8")
-    monkeypatch.setenv("OPENSQUILLA_CODETASK_AGENT_CONFIG", str(override))
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(operator))
+    monkeypatch.setenv("OPENSTARRY_CODE_CODETASK_AGENT_CONFIG", str(override))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(operator))
 
     bundle = load_agent_config_bundle()
 
@@ -219,8 +219,8 @@ def test_override_fails_privacy_closed_when_operator_value_is_invalid(
         '[privacy]\ndisable_network_observability = "not-a-boolean"\n',
         encoding="utf-8",
     )
-    monkeypatch.setenv("OPENSQUILLA_CODETASK_AGENT_CONFIG", str(override))
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(operator))
+    monkeypatch.setenv("OPENSTARRY_CODE_CODETASK_AGENT_CONFIG", str(override))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(operator))
 
     bundle = load_agent_config_bundle()
 
@@ -228,13 +228,13 @@ def test_override_fails_privacy_closed_when_operator_value_is_invalid(
 
 
 def test_blank_override_env_is_treated_as_unset(monkeypatch, tmp_path):
-    # A quoted-empty OPENSQUILLA_CODETASK_AGENT_CONFIG must not be taken as a
+    # A quoted-empty OPENSTARRY_CODE_CODETASK_AGENT_CONFIG must not be taken as a
     # path (which would hard-fail every run reading a whitespace filename);
     # inheritance proceeds normally.
     operator = tmp_path / "operator.toml"
     operator.write_text('[llm]\nprovider = "deepseek"\nmodel = "m"\n', encoding="utf-8")
-    monkeypatch.setenv("OPENSQUILLA_CODETASK_AGENT_CONFIG", "   ")
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(operator))
+    monkeypatch.setenv("OPENSTARRY_CODE_CODETASK_AGENT_CONFIG", "   ")
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(operator))
     bundle = load_agent_config_bundle()
     assert bundle.payload["llm"]["provider"] == "deepseek"
 
@@ -242,7 +242,7 @@ def test_blank_override_env_is_treated_as_unset(monkeypatch, tmp_path):
 def test_bundled_template_pins_no_provider_sections():
     # The shipped template is a run-policy file; pinning [llm]/[squilla_router]
     # there would shadow the operator's provider (issue #541 regression guard).
-    from opensquilla.contrib.codetask.config import _DATA_DIR
+    from openstarry_code.contrib.codetask.config import _DATA_DIR
 
     template = tomllib.loads(
         (_DATA_DIR / "agent_config" / "config.toml").read_text(encoding="utf-8")
@@ -260,11 +260,11 @@ def test_merged_payload_round_trips_through_gateway_config(monkeypatch, tmp_path
     operator.write_text(
         '[llm]\nprovider = "deepseek"\nmodel = "deepseek-chat"\n', encoding="utf-8"
     )
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(operator))
-    monkeypatch.delenv("OPENSQUILLA_CODETASK_AGENT_CONFIG", raising=False)
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(operator))
+    monkeypatch.delenv("OPENSTARRY_CODE_CODETASK_AGENT_CONFIG", raising=False)
     bundle = load_agent_config_bundle()
 
-    from opensquilla.gateway.config import GatewayConfig
+    from openstarry_code.gateway.config import GatewayConfig
 
     conf = GatewayConfig(**bundle.payload)
     assert conf.llm.provider == "deepseek"
@@ -275,5 +275,5 @@ def test_merged_payload_round_trips_through_gateway_config(monkeypatch, tmp_path
 def test_agent_config_path_still_honors_override(monkeypatch, tmp_path):
     # Regression guard for the existing escape-hatch contract.
     custom = tmp_path / "custom.toml"
-    monkeypatch.setenv("OPENSQUILLA_CODETASK_AGENT_CONFIG", str(custom))
+    monkeypatch.setenv("OPENSTARRY_CODE_CODETASK_AGENT_CONFIG", str(custom))
     assert agent_config_mod.agent_config_path() == custom

@@ -5,24 +5,24 @@ import json
 from collections.abc import AsyncIterator
 from typing import Any
 
-from opensquilla.engine import Agent, AgentConfig, ToolResult
-from opensquilla.engine.types import ToolCall
-from opensquilla.provider import (
+from openstarry_code.engine import Agent, AgentConfig, ToolResult
+from openstarry_code.engine.types import ToolCall
+from openstarry_code.provider import (
     ChatConfig,
     Message,
     ToolDefinition,
     ToolInputSchema,
 )
-from opensquilla.provider import (
+from openstarry_code.provider import (
     DoneEvent as ProviderDone,
 )
-from opensquilla.provider import (
+from openstarry_code.provider import (
     TextDeltaEvent as ProviderText,
 )
-from opensquilla.provider import (
+from openstarry_code.provider import (
     ToolUseEndEvent as ProviderToolUseEnd,
 )
-from opensquilla.provider import (
+from openstarry_code.provider import (
     ToolUseStartEvent as ProviderToolUseStart,
 )
 
@@ -48,7 +48,7 @@ class _ComplexTaskProvider:
             yield ProviderToolUseEnd(
                 tool_use_id="search-1",
                 tool_name="web_search",
-                arguments={"query": "opensquilla regression"},
+                arguments={"query": "openstarry-code regression"},
             )
             yield ProviderToolUseStart(tool_use_id="read-1", tool_name="read_file")
             yield ProviderToolUseEnd(

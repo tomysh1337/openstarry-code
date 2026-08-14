@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.rpc import RpcContext
-from opensquilla.gateway.rpc.registry import RpcRegistry
-from opensquilla.session.storage import StorageBusyError
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.rpc import RpcContext
+from openstarry_code.gateway.rpc.registry import RpcRegistry
+from openstarry_code.session.storage import StorageBusyError
 
 
 @pytest.mark.asyncio

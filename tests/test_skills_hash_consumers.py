@@ -4,23 +4,23 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.skills import tree as skill_tree
-from opensquilla.skills.hub import doctor as hub_doctor_module
-from opensquilla.skills.hub import management as hub_management
-from opensquilla.skills.hub import transaction as hub_transaction
-from opensquilla.skills.hub.contracts import SkillInstallState
-from opensquilla.skills.hub.doctor import doctor
-from opensquilla.skills.hub.lockfile import LockEntry, Lockfile, compute_tree_sha256
-from opensquilla.skills.hub.transaction import (
+from openstarry_code.skills import tree as skill_tree
+from openstarry_code.skills.hub import doctor as hub_doctor_module
+from openstarry_code.skills.hub import management as hub_management
+from openstarry_code.skills.hub import transaction as hub_transaction
+from openstarry_code.skills.hub.contracts import SkillInstallState
+from openstarry_code.skills.hub.doctor import doctor
+from openstarry_code.skills.hub.lockfile import LockEntry, Lockfile, compute_tree_sha256
+from openstarry_code.skills.hub.transaction import (
     SkillTransactionJournal,
     recover_pending_skill_transaction,
     rollback_root,
     staging_root,
 )
-from opensquilla.skills.loader import SkillLoader
-from opensquilla.tools.builtin import skill_tools as skill_tools_module
-from opensquilla.tools.registry import get_default_registry
-from opensquilla.tools.types import ToolContext, current_tool_context
+from openstarry_code.skills.loader import SkillLoader
+from openstarry_code.tools.builtin import skill_tools as skill_tools_module
+from openstarry_code.tools.registry import get_default_registry
+from openstarry_code.tools.types import ToolContext, current_tool_context
 from tests.test_skills.test_hub_management_service import FakeImmutableSource, _service
 
 

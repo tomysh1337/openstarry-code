@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from opensquilla.gateway.config import MetaSkillConfig
+from openstarry_code.gateway.config import MetaSkillConfig
 
 
 def test_auto_trigger_defaults_false() -> None:

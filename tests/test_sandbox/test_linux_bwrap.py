@@ -5,28 +5,28 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.sandbox.backend import bubblewrap as bubblewrap_mod
-from opensquilla.sandbox.backend.bubblewrap import BubblewrapBackend
-from opensquilla.sandbox.backend.linux_bwrap import (
+from openstarry_code.sandbox.backend import bubblewrap as bubblewrap_mod
+from openstarry_code.sandbox.backend.bubblewrap import BubblewrapBackend
+from openstarry_code.sandbox.backend.linux_bwrap import (
     HOST_RUNTIME_READONLY_PATHS,
     BwrapOptions,
     build_bwrap_argv,
     build_bwrap_plan,
 )
-from opensquilla.sandbox.backend.linux_permissions import (
+from openstarry_code.sandbox.backend.linux_permissions import (
     LinuxPermissions,
     LinuxRoot,
     compile_linux_permissions,
 )
-from opensquilla.sandbox.config import SandboxSettings
-from opensquilla.sandbox.operation_runtime import SandboxOperation
-from opensquilla.sandbox.permissions import (
+from openstarry_code.sandbox.config import SandboxSettings
+from openstarry_code.sandbox.operation_runtime import SandboxOperation
+from openstarry_code.sandbox.permissions import (
     FileSystemAccess,
     FileSystemPermissionEntry,
     FileSystemPermissionProfile,
 )
-from opensquilla.sandbox.policy import build_policy
-from opensquilla.sandbox.types import (
+from openstarry_code.sandbox.policy import build_policy
+from openstarry_code.sandbox.types import (
     NetworkMode,
     ResourceLimits,
     SandboxBackendError,

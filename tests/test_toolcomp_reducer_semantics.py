@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.plugins.tokenjuice.reducer import reduce_with_rule
-from opensquilla.plugins.tokenjuice.rules import load_rules
-from opensquilla.plugins.tokenjuice.types import Rule
+from openstarry_code.plugins.tokenjuice.reducer import reduce_with_rule
+from openstarry_code.plugins.tokenjuice.rules import load_rules
+from openstarry_code.plugins.tokenjuice.types import Rule
 
 
 def _rule(rule_id: str) -> Rule:

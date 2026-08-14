@@ -11,14 +11,14 @@ from pathlib import Path
 import pytest
 from yoyo import get_backend, read_migrations
 
-from opensquilla.persistence.meta_run_writer import MetaRunWriter
-from opensquilla.skills.loader import SkillLoader
-from opensquilla.skills.meta.events import _StepDone
-from opensquilla.skills.meta.orchestrator import MetaOrchestrator
-from opensquilla.skills.meta.parser import parse_meta_plan
-from opensquilla.skills.meta.plan_serde import to_jsonable
-from opensquilla.skills.meta.templating import render_with_args
-from opensquilla.skills.meta.types import (
+from openstarry_code.persistence.meta_run_writer import MetaRunWriter
+from openstarry_code.skills.loader import SkillLoader
+from openstarry_code.skills.meta.events import _StepDone
+from openstarry_code.skills.meta.orchestrator import MetaOrchestrator
+from openstarry_code.skills.meta.parser import parse_meta_plan
+from openstarry_code.skills.meta.plan_serde import to_jsonable
+from openstarry_code.skills.meta.templating import render_with_args
+from openstarry_code.skills.meta.types import (
     ClarifyField,
     ClarifyStepConfig,
     MetaMatch,
@@ -1104,8 +1104,8 @@ async def test_resume_writes_clarify_summary_into_outputs(writer):
 
 @pytest.mark.asyncio
 async def test_resume_persists_followup_step_lifecycle_and_usage(writer):
-    from opensquilla.engine.usage import UsageTracker
-    from opensquilla.persistence.meta_run_writer import summarize_run_record
+    from openstarry_code.engine.usage import UsageTracker
+    from openstarry_code.persistence.meta_run_writer import summarize_run_record
 
     plan = _plan_with_collect_then_summary()
     inputs = _seed_running_run(writer, plan)

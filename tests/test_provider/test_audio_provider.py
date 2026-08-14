@@ -5,7 +5,7 @@ import json
 import httpx
 import pytest
 
-from opensquilla.provider.audio import (
+from openstarry_code.provider.audio import (
     ElevenLabsAudioProductionProvider,
     ElevenLabsSharedVoicesRequest,
     ElevenLabsSpeechToTextRequest,

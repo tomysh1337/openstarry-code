@@ -1,6 +1,6 @@
 """Migration-directory resolution: unusable env overrides must be loud.
 
-``OPENSQUILLA_MIGRATIONS_DIR`` pointing at a missing directory (or one with
+``OPENSTARRY_CODE_MIGRATIONS_DIR`` pointing at a missing directory (or one with
 no ``V*.py`` files) used to fall through silently to a different migration
 set — the operator believes a pinned set is in effect while another one
 runs. The fallback behavior stays (boot should not die on a typo), but it
@@ -14,7 +14,7 @@ from pathlib import Path
 import pytest
 import structlog
 
-from opensquilla.gateway.boot import _resolve_migrations_dir
+from openstarry_code.gateway.boot import _resolve_migrations_dir
 
 
 def _env_ignored_events(captured: list[dict]) -> list[dict]:
@@ -29,7 +29,7 @@ def test_missing_env_dir_warns_and_falls_through(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
     missing = tmp_path / "does-not-exist"
-    monkeypatch.setenv("OPENSQUILLA_MIGRATIONS_DIR", str(missing))
+    monkeypatch.setenv("OPENSTARRY_CODE_MIGRATIONS_DIR", str(missing))
     with structlog.testing.capture_logs() as captured:
         resolved = _resolve_migrations_dir()
     assert resolved != missing
@@ -46,7 +46,7 @@ def test_empty_env_dir_warns_with_no_migrations_reason(
 ) -> None:
     empty = tmp_path / "empty-migrations"
     empty.mkdir()
-    monkeypatch.setenv("OPENSQUILLA_MIGRATIONS_DIR", str(empty))
+    monkeypatch.setenv("OPENSTARRY_CODE_MIGRATIONS_DIR", str(empty))
     with structlog.testing.capture_logs() as captured:
         resolved = _resolve_migrations_dir()
     assert resolved != empty
@@ -62,7 +62,7 @@ def test_usable_env_dir_wins_without_warning(
     pinned = tmp_path / "pinned-migrations"
     pinned.mkdir()
     (pinned / "V001__synthetic.py").write_text("steps = []\n")
-    monkeypatch.setenv("OPENSQUILLA_MIGRATIONS_DIR", str(pinned))
+    monkeypatch.setenv("OPENSTARRY_CODE_MIGRATIONS_DIR", str(pinned))
     with structlog.testing.capture_logs() as captured:
         resolved = _resolve_migrations_dir()
     assert resolved == pinned

@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.engine.steps.meta_command import (
+from openstarry_code.engine.steps.meta_command import (
     format_meta_replay_sentinel,
     meta_command_launch,
     pending_meta_launch_clear_session,
@@ -26,7 +26,7 @@ from opensquilla.engine.steps.meta_command import (
     pending_meta_replay_pop,
     pending_meta_replay_put,
 )
-from opensquilla.session.turn_context import turn_context_scope
+from openstarry_code.session.turn_context import turn_context_scope
 
 
 def test_pending_meta_launch_clear_session_removes_only_the_target_session() -> None:
@@ -251,7 +251,7 @@ async def test_request_bound_launch_replay_cannot_recreate_consumed_marker() -> 
 async def test_accepted_request_bound_launch_survives_long_queue_wait(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.engine.steps.meta_command as meta_command
+    import openstarry_code.engine.steps.meta_command as meta_command
 
     session_key = "request-bound-long-queue"
     request_id = "meta-provider-handoff-long-queue"
@@ -424,7 +424,7 @@ def test_pending_request_capacity_never_evicts_an_accepted_marker() -> None:
 def test_abandoned_staged_launches_expire_and_free_capacity(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.engine.steps.meta_command as meta_command
+    import openstarry_code.engine.steps.meta_command as meta_command
 
     session_key = "request-bound-abandoned-capacity"
     now = 100.0
@@ -467,7 +467,7 @@ def test_abandoned_staged_launches_expire_and_free_capacity(
 def test_request_bound_consumed_tombstones_expire_and_stay_bounded(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.engine.steps.meta_command as meta_command
+    import openstarry_code.engine.steps.meta_command as meta_command
 
     session_key = "request-bound-retention"
     now = 100.0

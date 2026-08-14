@@ -15,12 +15,12 @@ from typing import Any
 
 import pytest
 
-from opensquilla.attachment_refs import (
+from openstarry_code.attachment_refs import (
     PENDING_CHAT_INPUT_MATERIAL_STORE,
     pending_chat_input_material_path,
     transcript_material_path,
 )
-from opensquilla.engine.steps.meta_command import (
+from openstarry_code.engine.steps.meta_command import (
     format_meta_replay_sentinel,
     meta_command_launch,
     pending_meta_launch_peek,
@@ -28,18 +28,18 @@ from opensquilla.engine.steps.meta_command import (
     pending_meta_launch_put,
     pending_meta_launch_state,
 )
-from opensquilla.gateway.agent_tasks import get_agent_task_registry
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.routing import RouteEnvelope, SourceKind
-from opensquilla.gateway.rpc import RpcContext, get_dispatcher
-from opensquilla.gateway.task_runtime import TaskRuntime
-from opensquilla.gateway.uploads import UploadStore, get_upload_store, set_upload_store
-from opensquilla.session.goals import GoalCommandRequest, StartGoalMutation, new_goal
-from opensquilla.session.manager import SessionManager
-from opensquilla.session.models import AgentTaskRecord, AgentTaskStatus, TranscriptEntry
-from opensquilla.session.storage import SessionStorage
-from opensquilla.session.turn_context import current_turn_context, turn_context_scope
+from openstarry_code.gateway.agent_tasks import get_agent_task_registry
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.routing import RouteEnvelope, SourceKind
+from openstarry_code.gateway.rpc import RpcContext, get_dispatcher
+from openstarry_code.gateway.task_runtime import TaskRuntime
+from openstarry_code.gateway.uploads import UploadStore, get_upload_store, set_upload_store
+from openstarry_code.session.goals import GoalCommandRequest, StartGoalMutation, new_goal
+from openstarry_code.session.manager import SessionManager
+from openstarry_code.session.models import AgentTaskRecord, AgentTaskStatus, TranscriptEntry
+from openstarry_code.session.storage import SessionStorage
+from openstarry_code.session.turn_context import current_turn_context, turn_context_scope
 
 SESSION_KEY = "agent:main:webchat:atomic-ingress"
 CLIENT_REQUEST_ID = "client-request-atomic-1"
@@ -1117,7 +1117,7 @@ async def test_durable_manual_meta_control_survives_memory_loss_and_long_queue(
         # also proves the old 15-minute monotonic staging TTL is irrelevant.
         assert pending_meta_launch_peek(SESSION_KEY, client_request_id=request_id) is None
         monkeypatch.setattr(
-            "opensquilla.engine.steps.meta_command.time.monotonic",
+            "openstarry_code.engine.steps.meta_command.time.monotonic",
             lambda: 10**12,
         )
 

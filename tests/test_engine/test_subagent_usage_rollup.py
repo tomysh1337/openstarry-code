@@ -26,24 +26,24 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine import Agent, AgentConfig, ToolResult
-from opensquilla.engine.subagent import SubagentManager, SubagentSpec
-from opensquilla.engine.turn_runner.turn_finalizer_stage import _turn_usage_payload
-from opensquilla.engine.types import AgentEvent, ToolCall
-from opensquilla.engine.types import DoneEvent as EngineDoneEvent
-from opensquilla.engine.types import ErrorEvent as EngineErrorEvent
-from opensquilla.engine.types import TextDeltaEvent as EngineTextDeltaEvent
-from opensquilla.engine.usage import UsageTracker
-from opensquilla.provider import (
+from openstarry_code.engine import Agent, AgentConfig, ToolResult
+from openstarry_code.engine.subagent import SubagentManager, SubagentSpec
+from openstarry_code.engine.turn_runner.turn_finalizer_stage import _turn_usage_payload
+from openstarry_code.engine.types import AgentEvent, ToolCall
+from openstarry_code.engine.types import DoneEvent as EngineDoneEvent
+from openstarry_code.engine.types import ErrorEvent as EngineErrorEvent
+from openstarry_code.engine.types import TextDeltaEvent as EngineTextDeltaEvent
+from openstarry_code.engine.usage import UsageTracker
+from openstarry_code.provider import (
     ChatConfig,
     Message,
     ToolDefinition,
     ToolInputSchema,
 )
-from opensquilla.provider import DoneEvent as ProviderDoneEvent
-from opensquilla.provider import TextDeltaEvent as ProviderTextDeltaEvent
-from opensquilla.provider import ToolUseEndEvent as ProviderToolUseEndEvent
-from opensquilla.provider import ToolUseStartEvent as ProviderToolUseStartEvent
+from openstarry_code.provider import DoneEvent as ProviderDoneEvent
+from openstarry_code.provider import TextDeltaEvent as ProviderTextDeltaEvent
+from openstarry_code.provider import ToolUseEndEvent as ProviderToolUseEndEvent
+from openstarry_code.provider import ToolUseStartEvent as ProviderToolUseStartEvent
 
 
 class _ScriptedChildAgent:

@@ -26,7 +26,7 @@ def test_current_user_docs_keep_opentui_source_only() -> None:
 
     combined = _squash("\n".join(current_docs.values())).lower()
     assert "opensquilla_tui_dev_source_host=1" in combined
-    assert "opensquilla chat --ui tui" in combined
+    assert "openstarry-code chat --ui tui" in combined
     assert "current releases do not publish" in combined
     assert "not currently wired into the formal `v*` release workflow" in combined
 

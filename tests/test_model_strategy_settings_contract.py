@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from opensquilla.gateway.config import GatewayConfig, _router_tier_profile_defaults
-from opensquilla.onboarding.mutations import upsert_llm_provider, upsert_router
+from openstarry_code.gateway.config import GatewayConfig, _router_tier_profile_defaults
+from openstarry_code.onboarding.mutations import upsert_llm_provider, upsert_router
 
 
 def test_fresh_config_uses_model_router_not_ensemble() -> None:

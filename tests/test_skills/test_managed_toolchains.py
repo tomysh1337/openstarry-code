@@ -19,15 +19,15 @@ from typing import Any
 
 import pytest
 
-import opensquilla.skills.toolchains.runtime as toolchain_runtime
-from opensquilla.skills.toolchains import manager, registry
-from opensquilla.skills.toolchains.manager import (
+import openstarry_code.skills.toolchains.runtime as toolchain_runtime
+from openstarry_code.skills.toolchains import manager, registry
+from openstarry_code.skills.toolchains.manager import (
     DownloadVerificationError,
     ToolchainProbeError,
     UnsafeArchiveError,
 )
-from opensquilla.skills.toolchains.registry import ToolchainDescriptor, UnknownComponentError
-from opensquilla.skills.toolchains.runtime import (
+from openstarry_code.skills.toolchains.registry import ToolchainDescriptor, UnknownComponentError
+from openstarry_code.skills.toolchains.runtime import (
     managed_env,
     resolve_managed_binary,
     resolve_managed_resource,
@@ -135,7 +135,7 @@ def _write_runtime_activation(
         resource = package.joinpath(*Path(asset.destination).parts)
         resource.parent.mkdir(parents=True, exist_ok=True)
         resource.write_bytes(resource_payloads.get(asset.asset_id, b"font"))
-    (package / ".opensquilla-toolchain.json").write_text(
+    (package / ".openstarry-code-toolchain.json").write_text(
         json.dumps(manager._package_marker(descriptor, package)),
         encoding="utf-8",
     )
@@ -699,7 +699,7 @@ def test_archive_payload_manifest_covers_runtime_tree_and_excludes_own_marker(
     runtime_data = package / "Bundle/texmf-dist/tex/latex/example/example.sty"
     runtime_data.parent.mkdir(parents=True)
     runtime_data.write_bytes(b"verified runtime package")
-    marker_path = package / ".opensquilla-toolchain.json"
+    marker_path = package / ".openstarry-code-toolchain.json"
     marker_path.write_text("pre-existing marker must be excluded", encoding="utf-8")
 
     marker = manager._package_marker(descriptor, package)
@@ -707,7 +707,7 @@ def test_archive_payload_manifest_covers_runtime_tree_and_excludes_own_marker(
 
     assert "Bundle/bin/paperbin" in manifest
     assert "Bundle/texmf-dist/tex/latex/example/example.sty" in manifest
-    assert ".opensquilla-toolchain.json" not in manifest
+    assert ".openstarry-code-toolchain.json" not in manifest
     marker_path.write_text(json.dumps(marker), encoding="utf-8")
     assert manager.package_payload_matches(package, descriptor) is True
 
@@ -1212,17 +1212,17 @@ def test_historical_archive_keeps_install_time_layout_and_rollback_is_atomic(
     receipt_v1 = manager.install_component("paper-tex", root=state_root)
     package_v1 = state_root / str(receipt_v1.package_relpath)
     marker_v1 = json.loads(
-        (package_v1 / ".opensquilla-toolchain.json").read_text(encoding="utf-8")
+        (package_v1 / ".openstarry-code-toolchain.json").read_text(encoding="utf-8")
     )
     assert marker_v1["bin_relpaths"] == [bin_v1]
     assert marker_v1["resources"] == {
         "test-font": "resources-v1/test-font.ttc"
     }
 
-    # Simulate a package installed by an earlier OpenSquilla build, before
-    # package markers recorded the archive layout, then upgrade OpenSquilla
+    # Simulate a package installed by an earlier OpenStarry Code build, before
+    # package markers recorded the archive layout, then upgrade OpenStarry Code
     # directly to a catalog whose archive root and resource paths have changed.
-    marker_path_v1 = package_v1 / ".opensquilla-toolchain.json"
+    marker_path_v1 = package_v1 / ".openstarry-code-toolchain.json"
     for key in ("bin_relpaths", "resources", "auxiliary_asset_kinds"):
         marker_v1.pop(key)
     marker_path_v1.write_text(json.dumps(marker_v1), encoding="utf-8")
@@ -1327,7 +1327,7 @@ def test_historical_archive_keeps_install_time_layout_and_rollback_is_atomic(
     # fail before active state changes and must never report success.
     active_before = active_path.read_bytes()
     package_v2 = state_root / str(receipt_v2.package_relpath)
-    marker_v2_path = package_v2 / ".opensquilla-toolchain.json"
+    marker_v2_path = package_v2 / ".openstarry-code-toolchain.json"
     marker_v2 = json.loads(marker_v2_path.read_text(encoding="utf-8"))
     marker_v2["bin_relpaths"] = ["paper-build-v2/other-bin"]
     marker_v2_path.write_text(json.dumps(marker_v2), encoding="utf-8")
@@ -1437,7 +1437,7 @@ def test_rollback_serializes_with_install_per_root_and_component(
     )
     _make_executable(previous_binary)
     previous_descriptor = replace(descriptor, version="v1", sha256="1" * 64)
-    (previous_package / ".opensquilla-toolchain.json").write_text(
+    (previous_package / ".openstarry-code-toolchain.json").write_text(
         json.dumps(manager._package_marker(previous_descriptor, previous_package)),
         encoding="utf-8",
     )
@@ -1577,7 +1577,7 @@ def test_auxiliary_assets_are_pinned_receipted_and_runtime_resolvable(
     tmp_path: Path,
     monkeypatch: Any,
 ) -> None:
-    from opensquilla.skills.toolchains.registry import AuxiliaryAssetDescriptor
+    from openstarry_code.skills.toolchains.registry import AuxiliaryAssetDescriptor
 
     executable_name = "paperbin.exe" if os.name == "nt" else "paperbin"
     archive = tmp_path / "paper.tar.xz"
@@ -1659,7 +1659,7 @@ def test_auxiliary_archive_is_source_verified_manifested_and_reused(
     tmp_path: Path,
     monkeypatch: Any,
 ) -> None:
-    from opensquilla.skills.toolchains.registry import AuxiliaryAssetDescriptor
+    from openstarry_code.skills.toolchains.registry import AuxiliaryAssetDescriptor
 
     executable_name = "paperbin.exe" if os.name == "nt" else "paperbin"
     primary = tmp_path / "paper.tar.xz"
@@ -1727,7 +1727,7 @@ def test_auxiliary_archive_is_source_verified_manifested_and_reused(
     assert installed.read_bytes() == b"extracted executable"
     assert os.name == "nt" or os.access(installed, os.X_OK)
     marker = json.loads(
-        (state_root / first.package_relpath / ".opensquilla-toolchain.json").read_text(
+        (state_root / first.package_relpath / ".openstarry-code-toolchain.json").read_text(
             encoding="utf-8"
         )
     )
@@ -1786,7 +1786,7 @@ def test_managed_env_exposes_pinned_paper_font_to_xetex(
     _make_executable(bin_dir / ("paperbin.exe" if os.name == "nt" else "paperbin"))
     (package / "fonts").mkdir(parents=True)
     (package / "fonts/NotoSansCJK-Regular.ttc").write_bytes(b"font")
-    (package / ".opensquilla-toolchain.json").write_text(
+    (package / ".openstarry-code-toolchain.json").write_text(
         json.dumps(manager._package_marker(descriptor, package)),
         encoding="utf-8",
     )
@@ -1880,17 +1880,17 @@ def test_managed_env_uses_one_activation_snapshot_and_preserves_font_overrides(
 
     default_env = managed_env({"PATH": "/system/bin"}, root=state_root)
     operator_env = managed_env(
-        {"PATH": "/system/bin", "OPENSQUILLA_MEDIA_FONTS_DIR": "/operator/fonts"},
+        {"PATH": "/system/bin", "OPENSTARRY_CODE_MEDIA_FONTS_DIR": "/operator/fonts"},
         root=state_root,
     )
     empty_env = managed_env(
-        {"PATH": "/system/bin", "OPENSQUILLA_MEDIA_FONTS_DIR": ""},
+        {"PATH": "/system/bin", "OPENSTARRY_CODE_MEDIA_FONTS_DIR": ""},
         root=state_root,
     )
 
-    assert default_env["OPENSQUILLA_MEDIA_FONTS_DIR"] == str(media_font.parent)
-    assert operator_env["OPENSQUILLA_MEDIA_FONTS_DIR"] == "/operator/fonts"
-    assert empty_env["OPENSQUILLA_MEDIA_FONTS_DIR"] == ""
+    assert default_env["OPENSTARRY_CODE_MEDIA_FONTS_DIR"] == str(media_font.parent)
+    assert operator_env["OPENSTARRY_CODE_MEDIA_FONTS_DIR"] == "/operator/fonts"
+    assert empty_env["OPENSTARRY_CODE_MEDIA_FONTS_DIR"] == ""
     assert default_env["OSFONTDIR"] == str(paper_font.parent)
     assert validation_calls == ["paper-tex", "media-ffmpeg"] * 3
 
@@ -1946,7 +1946,7 @@ def test_brew_backend_requires_bottle_and_records_external_prefix(
     assert receipt.install_backend == "brew"
     assert receipt.external_root == str(prefix)
     assert receipt.package_relpath is not None
-    assert (state_root / receipt.package_relpath / ".opensquilla-toolchain.json").is_file()
+    assert (state_root / receipt.package_relpath / ".openstarry-code-toolchain.json").is_file()
     repeated = manager.install_component("media-ffmpeg", root=state_root)
     assert repeated == receipt
     assert commands == [[str(brew), "install", "--force-bottle", "ffmpeg-full"]]
@@ -2184,7 +2184,7 @@ def test_corrupt_package_retry_replaces_atomically_and_cleans_quarantine(
     receipt = manager.install_component("paper-tex", root=state_root)
     assert receipt.package_relpath is not None
     package = state_root / receipt.package_relpath
-    (package / ".opensquilla-toolchain.json").write_text("corrupt", encoding="utf-8")
+    (package / ".openstarry-code-toolchain.json").write_text("corrupt", encoding="utf-8")
     (package / f"Bundle/bin/{executable_name}").write_bytes(b"corrupt")
 
     repaired = manager.install_component("paper-tex", root=state_root)
@@ -2217,7 +2217,7 @@ def test_corrupt_package_activation_failure_restores_previous_bytes(
     receipt = manager.install_component("paper-tex", root=state_root)
     assert receipt.package_relpath is not None
     package = state_root / receipt.package_relpath
-    marker = package / ".opensquilla-toolchain.json"
+    marker = package / ".openstarry-code-toolchain.json"
     marker.write_text("corrupt-before-retry", encoding="utf-8")
     monkeypatch.setattr(
         manager,
@@ -2254,12 +2254,12 @@ def test_corrupt_package_marker_failure_restores_previous_bytes(
     receipt = manager.install_component("paper-tex", root=state_root)
     assert receipt.package_relpath is not None
     package = state_root / receipt.package_relpath
-    marker = package / ".opensquilla-toolchain.json"
+    marker = package / ".openstarry-code-toolchain.json"
     marker.write_text("corrupt-before-marker", encoding="utf-8")
     real_atomic_json = manager._atomic_json
 
     def fail_new_marker(path: Path, payload: dict[str, Any]) -> None:
-        if path.name == ".opensquilla-toolchain.json":
+        if path.name == ".openstarry-code-toolchain.json":
             raise OSError("marker write failed")
         real_atomic_json(path, payload)
 
@@ -2287,7 +2287,7 @@ def test_effective_capability_report_is_cached_and_invalidatable(
     fonts = tmp_path / "fonts"
     fonts.mkdir()
     (fonts / "NotoSansCJK-Regular.ttc").write_bytes(b"font")
-    from opensquilla.skills.toolchains import runtime as toolchain_runtime_module
+    from openstarry_code.skills.toolchains import runtime as toolchain_runtime_module
 
     monkeypatch.setattr(
         toolchain_runtime_module,
@@ -2345,7 +2345,7 @@ def test_media_capability_report_uses_active_managed_bins_and_font_env(
     tmp_path: Path,
     monkeypatch: Any,
 ) -> None:
-    from opensquilla.skills.toolchains.registry import AuxiliaryAssetDescriptor
+    from openstarry_code.skills.toolchains.registry import AuxiliaryAssetDescriptor
 
     font_asset = AuxiliaryAssetDescriptor(
         asset_id="noto-cjk-font",
@@ -2372,7 +2372,7 @@ def test_media_capability_report_uses_active_managed_bins_and_font_env(
         _make_executable(bin_dir / f"{name}{executable_suffix}")
     (package / "fonts").mkdir(parents=True)
     (package / "fonts/NotoSansCJK-Regular.ttc").write_bytes(b"font")
-    (package / ".opensquilla-toolchain.json").write_text(
+    (package / ".openstarry-code-toolchain.json").write_text(
         json.dumps(manager._package_marker(descriptor, package)), encoding="utf-8"
     )
     active = state_root / "active"
@@ -2452,7 +2452,7 @@ def test_runtime_rejects_tampered_managed_executable_with_intact_marker(
     executable_suffix = ".exe" if os.name == "nt" else ""
     executable = package / f"Bundle/bin/paperbin{executable_suffix}"
     _make_executable(executable, b"verified payload")
-    marker_path = package / ".opensquilla-toolchain.json"
+    marker_path = package / ".openstarry-code-toolchain.json"
     marker_path.write_text(
         json.dumps(manager._package_marker(descriptor, package)),
         encoding="utf-8",
@@ -3105,7 +3105,7 @@ def test_runtime_sentinel_changes_force_immediate_revalidation(
         receipt["bin_relpaths"] = ["Bundle/other-bin"]
         receipt_path.write_text(json.dumps(receipt), encoding="utf-8")
     elif sentinel == "marker":
-        marker_path = package / ".opensquilla-toolchain.json"
+        marker_path = package / ".openstarry-code-toolchain.json"
         marker = json.loads(marker_path.read_text(encoding="utf-8"))
         marker["sha256"] = "f" * 64
         marker_path.write_text(json.dumps(marker), encoding="utf-8")
@@ -3189,7 +3189,7 @@ def test_runtime_rejects_forged_external_root_and_symlink_escape(
         / descriptor.platform_key
     )
     package.mkdir(parents=True)
-    (package / ".opensquilla-toolchain.json").write_text(
+    (package / ".openstarry-code-toolchain.json").write_text(
         json.dumps(manager._package_marker(descriptor)), encoding="utf-8"
     )
     evil = tmp_path / "evil"
@@ -3233,10 +3233,10 @@ def test_runtime_rejects_forged_external_root_and_symlink_escape(
     fonts.rmdir()
     outside = tmp_path / "outside"
     outside.mkdir()
-    (package / ".opensquilla-toolchain.json").unlink()
+    (package / ".openstarry-code-toolchain.json").unlink()
     package.rmdir()
     package.symlink_to(outside, target_is_directory=True)
-    (outside / ".opensquilla-toolchain.json").write_text(
+    (outside / ".openstarry-code-toolchain.json").write_text(
         json.dumps(manager._package_marker(descriptor)), encoding="utf-8"
     )
     assert toolchain_runtime.managed_env({"PATH": ""}, root=state_root)["PATH"] == ""

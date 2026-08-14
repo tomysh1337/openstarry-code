@@ -13,22 +13,22 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.gateway.boot import (
+from openstarry_code.gateway.boot import (
     _task_runtime_envelope_host_execute,
     _task_runtime_envelope_owner,
 )
-from opensquilla.gateway.routing import (
+from openstarry_code.gateway.routing import (
     PRINCIPAL_HOST_EXECUTE_METADATA_KEY,
     build_cron_route_envelope,
     tool_context_from_envelope,
 )
-from opensquilla.scheduler.ops import SchedulerOps
-from opensquilla.scheduler.parser import CronParseError
-from opensquilla.scheduler.payloads import make_agent_turn_payload
-from opensquilla.scheduler.persistence import JobStore
-from opensquilla.scheduler.types import ScheduleKind, SessionTarget
-from opensquilla.tools.registry import ToolRegistry
-from opensquilla.tools.types import ToolSpec
+from openstarry_code.scheduler.ops import SchedulerOps
+from openstarry_code.scheduler.parser import CronParseError
+from openstarry_code.scheduler.payloads import make_agent_turn_payload
+from openstarry_code.scheduler.persistence import JobStore
+from openstarry_code.scheduler.types import ScheduleKind, SessionTarget
+from openstarry_code.tools.registry import ToolRegistry
+from openstarry_code.tools.types import ToolSpec
 
 
 async def _open_ops(tmp_path: Path) -> tuple[JobStore, SchedulerOps]:

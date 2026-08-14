@@ -1,4 +1,4 @@
-"""CLI tests for `opensquilla ensemble bench` (offline dry-run only).
+"""CLI tests for `openstarry-code ensemble bench` (offline dry-run only).
 
 The dry-run path drives synthetic providers through a scripted FailureInjector,
 so these tests never touch the network. The live path is exercised only under a
@@ -14,8 +14,8 @@ from pathlib import Path
 
 from typer.testing import CliRunner
 
-from opensquilla.cli import ensemble_cmd
-from opensquilla.cli.main import app
+from openstarry_code.cli import ensemble_cmd
+from openstarry_code.cli.main import app
 
 runner = CliRunner()
 

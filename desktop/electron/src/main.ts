@@ -362,8 +362,8 @@ interface MacInstallContext {
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const packageRoot = resolve(__dirname, '..')
 const defaultRepoRoot = resolve(packageRoot, '..', '..')
-const repoRoot = process.env.OPENSQUILLA_DESKTOP_REPO_ROOT
-  ? resolve(process.env.OPENSQUILLA_DESKTOP_REPO_ROOT)
+const repoRoot = process.env.OPENSTARRY_CODE_DESKTOP_REPO_ROOT
+  ? resolve(process.env.OPENSTARRY_CODE_DESKTOP_REPO_ROOT)
   : defaultRepoRoot
 const shouldUseNativeApplicationMenu = process.platform === 'darwin'
 
@@ -523,7 +523,7 @@ const artifactPreviewLeaseBroker = new ArtifactPreviewLeaseBroker({
 })
 
 const nativeWorkbenchSurfaces = new NativeWorkbenchSurfaceManager({
-  forceArtifactPreviewsOffline: process.env.OPENSQUILLA_PREVIEW_FORCE_OFFLINE === '1',
+  forceArtifactPreviewsOffline: process.env.OPENSTARRY_CODE_PREVIEW_FORCE_OFFLINE === '1',
   getPrivilegedGatewayUrl: () => (
     gatewayState.status === 'ready' && gatewayState.url
       ? gatewayState.url
@@ -610,12 +610,12 @@ function desktopChildEnvironment(
   return {
     ...environment,
     ...additions,
-    OPENSQUILLA_DESKTOP: '1',
-    OPENSQUILLA_INSTALL_METHOD: 'desktop',
-    OPENSQUILLA_PROFILE_KIND: 'desktop-primary',
-    OPENSQUILLA_GATEWAY_CONFIG_PATH: join(profile.home, 'config.toml'),
+    OPENSTARRY_CODE_DESKTOP: '1',
+    OPENSTARRY_CODE_INSTALL_METHOD: 'desktop',
+    OPENSTARRY_CODE_PROFILE_KIND: 'desktop-primary',
+    OPENSTARRY_CODE_GATEWAY_CONFIG_PATH: join(profile.home, 'config.toml'),
     // Historical name retained for compatibility: this is H, never H/state.
-    OPENSQUILLA_STATE_DIR: profile.home,
+    OPENSTARRY_CODE_STATE_DIR: profile.home,
   }
 }
 
@@ -1834,7 +1834,7 @@ function macCodeSignatureDiagnostic(): string {
 
 function configureChromiumKeychainPolicy(): void {
   if (shouldUseChromiumMockKeychainForPolicy({
-    envMode: process.env.OPENSQUILLA_DESKTOP_SECRET_STORAGE,
+    envMode: process.env.OPENSTARRY_CODE_DESKTOP_SECRET_STORAGE,
     platform: process.platform,
     appPackaged: app.isPackaged,
     codesignDiagnostic: macCodeSignatureDiagnostic(),
@@ -1845,7 +1845,7 @@ function configureChromiumKeychainPolicy(): void {
 
 function desktopSecretStoragePolicyBackend(): SecretEncryption {
   return secretStorageBackendForPolicy({
-    envMode: process.env.OPENSQUILLA_DESKTOP_SECRET_STORAGE,
+    envMode: process.env.OPENSTARRY_CODE_DESKTOP_SECRET_STORAGE,
     platform: process.platform,
     appPackaged: app.isPackaged,
     codesignDiagnostic: macCodeSignatureDiagnostic(),
@@ -2050,7 +2050,7 @@ function loadDesktopPreferencesRecord(): {
 
 function desktopPreferencesSnapshot(): DesktopPreferencesSnapshot {
   const preferences = loadDesktopPreferencesRecord().value
-  const previewForcedOffline = process.env.OPENSQUILLA_PREVIEW_FORCE_OFFLINE === '1'
+  const previewForcedOffline = process.env.OPENSTARRY_CODE_PREVIEW_FORCE_OFFLINE === '1'
   return {
     schemaVersion: 3,
     mainWindowCloseBehavior: preferences.main_window_close_behavior,
@@ -6314,13 +6314,13 @@ async function pathIsFile(path: string): Promise<boolean> {
 
 async function assertRepoRoot(): Promise<void> {
   const pyprojectPath = join(repoRoot, 'pyproject.toml')
-  const webuiPath = join(repoRoot, 'src', 'opensquilla', 'gateway', 'static', 'dist', 'index.html')
+  const webuiPath = join(repoRoot, 'src', 'openstarry_code', 'gateway', 'static', 'dist', 'index.html')
   if (!(await pathExists(pyprojectPath))) {
     throw new Error(`OpenSquilla checkout not found at ${repoRoot}`)
   }
   if (!(await pathExists(webuiPath))) {
     throw new Error(
-      `Built Control UI not found at ${webuiPath}. Run "cd opensquilla-webui && npm run build" first.`
+      `Built Control UI not found at ${webuiPath}. Run "cd openstarry-code-webui && npm run build" first.`
     )
   }
 }
@@ -6376,9 +6376,9 @@ function desktopChildPath(nodeBinCandidates = desktopNodeBinCandidates()): strin
 }
 
 async function resolveGatewayRuntime(): Promise<RuntimeLaunch> {
-  const binaryName = process.platform === 'win32' ? 'opensquilla-gateway.exe' : 'opensquilla-gateway'
+  const binaryName = process.platform === 'win32' ? 'openstarry-code-gateway.exe' : 'openstarry-code-gateway'
   const runtimeRoot = join(packagedRuntimeRoot(), 'gateway')
-  const onedirBinary = join(runtimeRoot, 'opensquilla-gateway', binaryName)
+  const onedirBinary = join(runtimeRoot, 'openstarry-code-gateway', binaryName)
   const flatBinary = join(runtimeRoot, binaryName)
   const bundledBinary = (await pathIsFile(onedirBinary)) ? onedirBinary : flatBinary
   if (await pathIsFile(bundledBinary)) {
@@ -6393,7 +6393,7 @@ async function resolveGatewayRuntime(): Promise<RuntimeLaunch> {
   await assertRepoRoot()
   return {
     command: 'uv',
-    args: ['run', 'opensquilla', 'gateway', 'run'],
+    args: ['run', 'openstarry-code', 'gateway', 'run'],
     cwd: repoRoot,
     mode: 'dev',
   }
@@ -6869,7 +6869,7 @@ async function runDesktopProfileConsolidationCli(
       windowsHide: true,
       stdio: ['ignore', 'pipe', 'pipe'],
       env: desktopChildEnvironment(profile, {
-        OPENSQUILLA_RECOVERY_OFFLINE: '1',
+        OPENSTARRY_CODE_RECOVERY_OFFLINE: '1',
         PYTHONUNBUFFERED: '1',
         PYTHONUTF8: '1',
         PYTHONIOENCODING: 'utf-8:replace',
@@ -7027,7 +7027,7 @@ async function runRecoveryCli(
         windowsHide: true,
         stdio: ['pipe', 'pipe', 'pipe'],
         env: desktopChildEnvironment(profile, {
-          OPENSQUILLA_RECOVERY_OFFLINE: '1',
+          OPENSTARRY_CODE_RECOVERY_OFFLINE: '1',
           PYTHONUNBUFFERED: '1',
           PYTHONUTF8: '1',
           PYTHONIOENCODING: 'utf-8:replace',
@@ -7541,7 +7541,7 @@ const GATEWAY_PORT_LAST = 18830
 let gatewayPortCursor = GATEWAY_PORT_FIRST
 
 function explicitGatewayPort(): number | null {
-  const envPort = Number(process.env.OPENSQUILLA_DESKTOP_GATEWAY_PORT || '')
+  const envPort = Number(process.env.OPENSTARRY_CODE_DESKTOP_GATEWAY_PORT || '')
   return Number.isInteger(envPort) && envPort > 0 ? envPort : null
 }
 
@@ -7624,19 +7624,19 @@ function gatewayExitLooksLikeNewerConfig(output: string): boolean {
 }
 
 function gatewayExitLooksLikePortInUse(output: string): boolean {
-  return /OPENSQUILLA_GATEWAY_PORT_IN_USE/i.test(output)
+  return /OPENSTARRY_CODE_GATEWAY_PORT_IN_USE/i.test(output)
     || /gateway could not start:.*is already in use/i.test(output)
     || /gateway port is already in use/i.test(output)
     || /:\d+\s+is already in use/i.test(output)
 }
 
 function gatewayExitLooksLikeProfileInUse(output: string): boolean {
-  return /OPENSQUILLA_PROFILE_IN_USE/i.test(output)
+  return /OPENSTARRY_CODE_PROFILE_IN_USE/i.test(output)
 }
 
 function desktopGatewayStillRunningMessage(): string {
   return (
-    'OPENSQUILLA_PROFILE_IN_USE: A previous Desktop Gateway has not exited. ' +
+    'OPENSTARRY_CODE_PROFILE_IN_USE: A previous Desktop Gateway has not exited. ' +
     'Wait for it to finish, or quit every OpenSquilla app or terminal using this profile, ' +
     'then try again. If it will not exit, restart the computer. ' +
     'Do not delete profile lock files.'
@@ -7740,7 +7740,7 @@ const desktopGatewayOwnershipVerification = new DesktopGatewayOwnershipVerificat
 
 function verifiedOrphanGatewayError(detail: string): Error {
   return new Error(
-    'OPENSQUILLA_PROFILE_IN_USE: ' + detail + ' ' +
+    'OPENSTARRY_CODE_PROFILE_IN_USE: ' + detail + ' ' +
     'The existing Gateway was left by an earlier Desktop process. ' +
     'Do not delete profile lock files; quit that Gateway and try again.',
   )
@@ -7858,7 +7858,7 @@ async function startGateway(): Promise<GatewayState> {
   }
 
   const activeProfile = activeDesktopProfile()
-  const overrideUrl = process.env.OPENSQUILLA_DESKTOP_GATEWAY_URL
+  const overrideUrl = process.env.OPENSTARRY_CODE_DESKTOP_GATEWAY_URL
   if (overrideUrl) {
     sendBootStatus('gateway-health')
     gatewayState.url = overrideUrl.replace(/\/$/, '')
@@ -7944,13 +7944,13 @@ async function startGateway(): Promise<GatewayState> {
     ...(process.platform === 'win32' ? { Path: childPath } : {}),
     ...(connection.apiKeyEnv && apiKey ? { [connection.apiKeyEnv]: apiKey } : {}),
     ...(connection.searchApiKeyEnv && searchApiKey ? { [connection.searchApiKeyEnv]: searchApiKey } : {}),
-    OPENSQUILLA_NODE_BIN_DIR: nodeBinCandidates.join(pathDelimiter()),
-    OPENSQUILLA_DESKTOP_GATEWAY_INSTANCE_NONCE: gatewayInstanceNonce,
-    OPENSQUILLA_DESKTOP_GATEWAY_OWNERSHIP_DIR: gatewayOwnershipDir,
-    // desktopChildEnvironment pins OPENSQUILLA_STATE_DIR to H. RC4's Python
+    OPENSTARRY_CODE_NODE_BIN_DIR: nodeBinCandidates.join(pathDelimiter()),
+    OPENSTARRY_CODE_DESKTOP_GATEWAY_INSTANCE_NONCE: gatewayInstanceNonce,
+    OPENSTARRY_CODE_DESKTOP_GATEWAY_OWNERSHIP_DIR: gatewayOwnershipDir,
+    // desktopChildEnvironment pins OPENSTARRY_CODE_STATE_DIR to H.
     // recovery engine has already validated/reconciled the historical nested
     // layout before this writer is admitted.
-    ...(connection.disableNetworkObservability ? { OPENSQUILLA_PRIVACY_DISABLE_NETWORK_OBSERVABILITY: '1' } : {}),
+    ...(connection.disableNetworkObservability ? { OPENSTARRY_CODE_PRIVACY_DISABLE_NETWORK_OBSERVABILITY: '1' } : {}),
     PYTHONUNBUFFERED: '1',
     PYTHONUTF8: '1',
     PYTHONIOENCODING: 'utf-8:replace',
@@ -7994,7 +7994,7 @@ async function startGateway(): Promise<GatewayState> {
   child.stderr.pipe(logStream, { end: false })
   // Classify startup failures only after stdio has closed. Node may emit
   // 'exit' before the final stdout/stderr chunks, which can otherwise drop the
-  // stable OPENSQUILLA_PROFILE_IN_USE marker printed immediately before exit.
+  // stable OPENSTARRY_CODE_PROFILE_IN_USE marker printed immediately before exit.
   child.once('close', (code, signal) => {
     const message = `gateway exited code=${code ?? 'null'} signal=${signal ?? 'null'}`
     const portConflictExit = gatewayExitLooksLikePortInUse(gatewayOutputTail)
@@ -8055,7 +8055,7 @@ async function startGateway(): Promise<GatewayState> {
   // port instead of silently attaching the window to the wrong profile.
   if (hasGatewayProcessExited(child) || gatewayProcess !== child) {
     throw new Error(childExitMessage
-      || 'OPENSQUILLA_GATEWAY_PORT_IN_USE: desktop gateway did not keep the port bind.')
+      || 'OPENSTARRY_CODE_GATEWAY_PORT_IN_USE: desktop gateway did not keep the port bind.')
   }
   sendBootStatus('control')
   gatewayState.status = 'ready'
@@ -8371,7 +8371,7 @@ async function inspectActiveProfileBeforeStartup(): Promise<boolean> {
   // before profile inspection; otherwise the inspector reports profile_lock_busy
   // and strands startup on the manual recovery screen before startGateway() can
   // run. Never apply this to a developer override or this process's own child.
-  const overrideUrl = process.env.OPENSQUILLA_DESKTOP_GATEWAY_URL
+  const overrideUrl = process.env.OPENSTARRY_CODE_DESKTOP_GATEWAY_URL
   if (!overrideUrl && liveLifecycleOwnedGatewayProcesses().length === 0) {
     await recoverVerifiedOrphanGatewayBeforeSpawn(active)
   }
@@ -8581,7 +8581,7 @@ async function openOrResumeDesktopApp(): Promise<void> {
 // in-flight agent turns and background completions on shutdown (up to two
 // graceful phases plus teardown — see gateway_shutdown_deadline()), so the
 // force-kill must exceed that worst case or the drain is cut off mid-write.
-// Keep in sync with the default OPENSQUILLA_GATEWAY_GRACEFUL_TIMEOUT (30s).
+// Keep in sync with the default OPENSTARRY_CODE_GATEWAY_GRACEFUL_TIMEOUT (30s).
 const GATEWAY_SHUTDOWN_KILL_AFTER_MS = 75_000
 // Short SIGKILL backstop after a hard terminate (TerminateProcess / SIGTERM)
 // when the graceful path was skipped or already overran its deadline.
@@ -8778,8 +8778,8 @@ function stopGateway(): void {
 // latest-mac.yml feed that Squirrel.Mac consumes, so in-place auto-update is
 // safe. Windows builds are currently unsigned, so the desktop shell discovers
 // the release but opens its exact versioned NSIS installer for an explicit
-// manual install. OPENSQUILLA_DESKTOP_ENABLE_WIN_UPDATE=1 opts in to native
-// Windows updating for local tests only; OPENSQUILLA_DESKTOP_DISABLE_AUTO_UPDATE
+// manual install. OPENSTARRY_CODE_DESKTOP_ENABLE_WIN_UPDATE=1 opts in to native
+// Windows updating for local tests only; OPENSTARRY_CODE_DESKTOP_DISABLE_AUTO_UPDATE
 // disables all shell-managed discovery.
 const { autoUpdater } = electronUpdater
 
@@ -8799,8 +8799,8 @@ let mockDownloadedUpdate = false
 let mockUpdatePromptActive = false
 let mockUpdateDialogResponses: number[] | null = null
 
-const MOCK_UPDATE_VERSION_ENV = 'OPENSQUILLA_DESKTOP_MOCK_UPDATE_VERSION'
-const MOCK_UPDATE_DIALOG_RESPONSES_ENV = 'OPENSQUILLA_DESKTOP_MOCK_UPDATE_DIALOG_RESPONSES'
+const MOCK_UPDATE_VERSION_ENV = 'OPENSTARRY_CODE_DESKTOP_MOCK_UPDATE_VERSION'
+const MOCK_UPDATE_DIALOG_RESPONSES_ENV = 'OPENSTARRY_CODE_DESKTOP_MOCK_UPDATE_DIALOG_RESPONSES'
 
 type DesktopUpdateStatus =
   | 'idle'
@@ -8882,9 +8882,9 @@ let desktopUpdatePersistenceLoaded = false
 let desktopUpdatePersistenceWrite: Promise<void> = Promise.resolve()
 
 const NETWORK_OBSERVABILITY_DISABLE_ENV_KEYS = [
-  'OPENSQUILLA_PRIVACY_DISABLE_NETWORK_OBSERVABILITY',
-  'OPENSQUILLA_TELEMETRY_DISABLED',
-  'OPENSQUILLA_UPDATE_CHECK_DISABLED',
+  'OPENSTARRY_CODE_PRIVACY_DISABLE_NETWORK_OBSERVABILITY',
+  'OPENSTARRY_CODE_TELEMETRY_DISABLED',
+  'OPENSTARRY_CODE_UPDATE_CHECK_DISABLED',
 ] as const
 
 // mtime-keyed caches so the update-state publish path (which runs on every
@@ -8968,7 +8968,7 @@ function desktopUpdateMenuEnabled(): boolean {
 function desktopUpdateManaged(): boolean {
   if (!app.isPackaged) return false
   if (desktopNetworkObservabilityDisabled()) return false
-  if (process.env.OPENSQUILLA_DESKTOP_DISABLE_AUTO_UPDATE === '1') return false
+  if (process.env.OPENSTARRY_CODE_DESKTOP_DISABLE_AUTO_UPDATE === '1') return false
   return process.platform === 'darwin' || process.platform === 'win32'
 }
 
@@ -8976,7 +8976,7 @@ function autoUpdateSupported(): boolean {
   if (desktopNetworkObservabilityDisabled()) return false
   if (!desktopUpdateManaged()) return false
   if (process.platform === 'darwin') return true
-  if (process.platform === 'win32' && process.env.OPENSQUILLA_DESKTOP_ENABLE_WIN_UPDATE === '1') {
+  if (process.platform === 'win32' && process.env.OPENSTARRY_CODE_DESKTOP_ENABLE_WIN_UPDATE === '1') {
     return true
   }
   return false
@@ -9579,7 +9579,7 @@ async function fetchDesktopUpdateChannel(): Promise<unknown> {
   if (!updateChannelPathForVersion(app.getVersion())) {
     throw new UpdateChannelError('manifest_invalid', 'The installed version has no supported update channel.')
   }
-  const rootOverride = (process.env.OPENSQUILLA_DESKTOP_UPDATE_CHANNEL_ROOT || '').trim()
+  const rootOverride = (process.env.OPENSTARRY_CODE_DESKTOP_UPDATE_CHANNEL_ROOT || '').trim()
   if (rootOverride) return await fetchDesktopUpdateChannelFromRoot(rootOverride)
   loadDesktopUpdatePersistence()
   // Discovery itself is dual-sourced: the mirrored channel manifest and the
@@ -9588,7 +9588,7 @@ async function fetchDesktopUpdateChannel(): Promise<unknown> {
   const order = orderedUpdateSources(
     desktopUpdateLocaleTags(),
     lastSuccessfulUpdateSource,
-    process.env.OPENSQUILLA_DESKTOP_UPDATE_SOURCE,
+    process.env.OPENSTARRY_CODE_DESKTOP_UPDATE_SOURCE,
   )
   let lastError: unknown = null
   for (const source of order) {
@@ -9641,7 +9641,7 @@ async function chooseDesktopUpdateSource(
   const order = orderedUpdateSources(
     desktopUpdateLocaleTags(),
     lastSuccessfulUpdateSource,
-    process.env.OPENSQUILLA_DESKTOP_UPDATE_SOURCE,
+    process.env.OPENSTARRY_CODE_DESKTOP_UPDATE_SOURCE,
   )
   let lastError: unknown = null
   for (let index = 0; index < order.length; index += 1) {
@@ -10399,7 +10399,7 @@ ipcMain.handle('desktop:workspace:choose-directory', async (event, payload: unkn
 })
 ipcMain.handle('desktop:workbench:capabilities', (event) => {
   if (!trustedControlUiIpc(event)) throw new Error('Untrusted native Workbench request.')
-  return process.env.OPENSQUILLA_PREVIEW_FORCE_OFFLINE === '1'
+    return process.env.OPENSTARRY_CODE_PREVIEW_FORCE_OFFLINE === '1'
     ? { ...NATIVE_WORKBENCH_CAPABILITIES, modes: ['offline'] as const }
     : NATIVE_WORKBENCH_CAPABILITIES
 })
@@ -10512,7 +10512,7 @@ async function runDesktopCleanupCli(
       windowsHide: true,
       stdio: ['ignore', 'pipe', 'pipe'],
       env: desktopChildEnvironment(profile, {
-        OPENSQUILLA_RECOVERY_OFFLINE: '1',
+        OPENSTARRY_CODE_RECOVERY_OFFLINE: '1',
         PYTHONUNBUFFERED: '1',
         PYTHONUTF8: '1',
         PYTHONIOENCODING: 'utf-8:replace',
@@ -10662,7 +10662,7 @@ async function spawnDeleteAllAfterElectronExit(
       detached: true,
       stdio: ['pipe', 'ignore', 'ignore'],
       env: desktopChildEnvironment(profile, {
-        OPENSQUILLA_RECOVERY_OFFLINE: '1',
+        OPENSTARRY_CODE_RECOVERY_OFFLINE: '1',
         PYTHONUNBUFFERED: '1',
         PYTHONUTF8: '1',
         PYTHONIOENCODING: 'utf-8:replace',
@@ -10934,7 +10934,7 @@ async function runMigrateCli(
         PYTHONUTF8: '1',
         PYTHONIOENCODING: 'utf-8:replace',
         ...(subcommand === 'verify-opensquilla-import'
-          ? { OPENSQUILLA_RECOVERY_OFFLINE: '1' }
+          ? { OPENSTARRY_CODE_RECOVERY_OFFLINE: '1' }
           : {}),
       }),
     })
@@ -12834,7 +12834,7 @@ if (!gotSingleInstanceLock) {
   })
 
   void app.whenReady().then(async () => {
-    app.name = 'OpenSquilla'
+    app.name = 'OpenStarry Code'
     desktopLocale = loadPersistedDesktopLocale() ?? resolveDesktopLocale()
     createApplicationMenu()
     createWindowsTray()

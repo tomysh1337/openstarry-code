@@ -5,15 +5,15 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.sandbox.escalation import request_sandbox_approval
-from opensquilla.sandbox.governance import (
+from openstarry_code.sandbox.escalation import request_sandbox_approval
+from openstarry_code.sandbox.governance import (
     ALLOW,
     ApprovalGate,
     action_fingerprint,
     gate_execution,
     on_successful_exec,
 )
-from opensquilla.sandbox.types import (
+from openstarry_code.sandbox.types import (
     ApprovedHostExecution,
     DenialResult,
     MountSpec,
@@ -23,7 +23,7 @@ from opensquilla.sandbox.types import (
     SandboxRequest,
     SecurityLevel,
 )
-from opensquilla.tools.types import ToolContext, current_tool_context
+from openstarry_code.tools.types import ToolContext, current_tool_context
 
 
 class _RecordingQueue:

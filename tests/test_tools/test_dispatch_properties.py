@@ -25,11 +25,11 @@ from typing import Any
 import pytest
 from test_tools.dispatch_corpus import ALL_CASES, CorpusCase
 
-from opensquilla.execution_status import normalize_execution_status
-from opensquilla.tool_boundary import ToolCall
-from opensquilla.tools.dispatch import build_tool_handler
-from opensquilla.tools.registry import ToolRegistry
-from opensquilla.tools.types import (
+from openstarry_code.execution_status import normalize_execution_status
+from openstarry_code.tool_boundary import ToolCall
+from openstarry_code.tools.dispatch import build_tool_handler
+from openstarry_code.tools.registry import ToolRegistry
+from openstarry_code.tools.types import (
     CallerKind,
     InteractionMode,
     ToolContext,

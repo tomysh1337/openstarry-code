@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from opensquilla.skills.loader import SkillLoader
+from openstarry_code.skills.loader import SkillLoader
 
 ROOT = Path(__file__).resolve().parents[1]
-BUNDLED_SKILLS = ROOT / "src" / "opensquilla" / "skills" / "bundled"
+BUNDLED_SKILLS = ROOT / "src" / "openstarry_code" / "skills" / "bundled"
 MEMORY_SKILL = BUNDLED_SKILLS / "memory" / "SKILL.md"
 
 
@@ -21,7 +21,7 @@ def test_memory_skill_is_parseable_and_gated_on_read_tools(tmp_path: Path) -> No
     assert skill.requires_tools == ["memory_search", "memory_get"]
     assert skill.disable_model_invocation is False
     assert skill.provenance.origin == "opensquilla-original"
-    assert skill.provenance.maintained_by == "OpenSquilla"
+    assert skill.provenance.maintained_by == "OpenStarry Code"
 
 
 def test_memory_skill_documents_usable_write_and_forget_paths() -> None:

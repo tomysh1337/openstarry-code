@@ -17,8 +17,8 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.pricing import ModelPrice, PriceEntry
-from opensquilla.eval.ensemble_benchmark import (
+from openstarry_code.engine.pricing import ModelPrice, PriceEntry
+from openstarry_code.eval.ensemble_benchmark import (
     ArmReport,
     BenchmarkPrompt,
     RunOutcome,
@@ -29,9 +29,9 @@ from opensquilla.eval.ensemble_benchmark import (
     run_arm,
     run_benchmark,
 )
-from opensquilla.eval.synthetic import SyntheticProvider
-from opensquilla.provider.failures import ProviderFailureKind
-from opensquilla.provider.types import ChatConfig, DoneEvent, FailureInjector
+from openstarry_code.eval.synthetic import SyntheticProvider
+from openstarry_code.provider.failures import ProviderFailureKind
+from openstarry_code.provider.types import ChatConfig, DoneEvent, FailureInjector
 
 
 class ScriptedClock:
@@ -307,7 +307,7 @@ def test_pricing_price_lookup_is_offline_for_unqualified_model() -> None:
 def test_live_pricing_estimate_sums_provider_aware_four_bucket_breakdown(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.eval.ensemble_benchmark as benchmark
+    import openstarry_code.eval.ensemble_benchmark as benchmark
 
     resolved: list[tuple[str, str]] = []
 

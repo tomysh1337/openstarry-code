@@ -9,14 +9,14 @@ from typing import Any
 import httpx
 import pytest
 
-from opensquilla.provider.candidate_artifact import (
+from openstarry_code.provider.candidate_artifact import (
     CandidateArtifactBuilder,
     InertCandidateTextNormalizer,
 )
-from opensquilla.provider.compat_policy import TEXT_TOOL_DIALECT_DEEPSEEK_DSML
-from opensquilla.provider.openai import OpenAIProvider
-from opensquilla.provider.text_tool_normalizer import LiteralTextSegment
-from opensquilla.provider.types import (
+from openstarry_code.provider.compat_policy import TEXT_TOOL_DIALECT_DEEPSEEK_DSML
+from openstarry_code.provider.openai import OpenAIProvider
+from openstarry_code.provider.text_tool_normalizer import LiteralTextSegment
+from openstarry_code.provider.types import (
     ChatConfig,
     DoneEvent,
     ErrorEvent,
@@ -85,7 +85,7 @@ def _patch_transport(
         return _REAL_ASYNC_CLIENT(*args, **kwargs)
 
     monkeypatch.setattr(
-        "opensquilla.provider.openai.httpx.AsyncClient",
+        "openstarry_code.provider.openai.httpx.AsyncClient",
         patched_async_client,
     )
 

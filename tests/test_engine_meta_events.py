@@ -1,6 +1,6 @@
 """MetaSkill 事件 dataclass 形状与默认值。"""
 
-from opensquilla.engine.types import (
+from openstarry_code.engine.types import (
     MetaRunAnnouncedEvent,
     MetaRunCompletedEvent,
     MetaStepStateEvent,
@@ -73,7 +73,7 @@ def test_meta_step_state_event_is_in_agent_event_union():
     typed iterators without an isinstance fallback."""
     from typing import get_args
 
-    from opensquilla.engine.types import AgentEvent
+    from openstarry_code.engine.types import AgentEvent
 
     members = get_args(AgentEvent)
     assert MetaRunAnnouncedEvent in members

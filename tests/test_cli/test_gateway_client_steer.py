@@ -4,8 +4,8 @@ from typing import Any
 
 import pytest
 
-from opensquilla.cli.gateway_client import GatewayClient, GatewayRPCError
-from opensquilla.cli.tui.backend.input_identity import tui_input_identity_scope
+from openstarry_code.cli.gateway_client import GatewayClient, GatewayRPCError
+from openstarry_code.cli.tui.backend.input_identity import tui_input_identity_scope
 
 
 @pytest.mark.asyncio

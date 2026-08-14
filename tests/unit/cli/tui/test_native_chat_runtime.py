@@ -8,20 +8,20 @@ from typing import Any
 
 import pytest
 
-from opensquilla.cli.tui.adapters import runtime_helpers
-from opensquilla.cli.tui.backend.domain_events import (
+from openstarry_code.cli.tui.adapters import runtime_helpers
+from openstarry_code.cli.tui.backend.domain_events import (
     KIND_ROUTER_DECISION,
     TuiDomainEvent,
     now_ms,
 )
-from opensquilla.cli.tui.native import runtime as native_runtime
-from opensquilla.cli.tui.native.renderer import status_markup
-from opensquilla.cli.tui.plugins.router_hud import (
+from openstarry_code.cli.tui.native import runtime as native_runtime
+from openstarry_code.cli.tui.native.renderer import status_markup
+from openstarry_code.cli.tui.plugins.router_hud import (
     ROUTER_HUD_SLOT,
     RouterHudSnapshot,
     build_router_hud_snapshot,
 )
-from opensquilla.engine.commands import Surface
+from openstarry_code.engine.commands import Surface
 
 
 class _FakeOutputHandle:
@@ -271,7 +271,7 @@ def test_status_markup_escapes_message_and_maps_styles() -> None:
 
 
 def test_tui_alias_surface_matches_disk_and_every_export_imports() -> None:
-    import opensquilla.cli.tui as tui
+    import openstarry_code.cli.tui as tui
 
     package_root = Path(tui.__file__).resolve().parent
     modules = {
@@ -287,4 +287,4 @@ def test_tui_alias_surface_matches_disk_and_every_export_imports() -> None:
     assert "events" not in tui.__all__
     assert "runtime" not in tui.__all__
     for name in tui.__all__:
-        assert importlib.import_module(f"opensquilla.cli.tui.{name}")
+        assert importlib.import_module(f"openstarry_code.cli.tui.{name}")

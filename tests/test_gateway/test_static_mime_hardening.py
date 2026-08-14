@@ -24,9 +24,9 @@ import starlette.responses as starlette_responses
 from starlette.applications import Starlette
 from starlette.testclient import TestClient
 
-from opensquilla.gateway import control_ui
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.control_ui import _PINNED_CONTENT_TYPES, create_control_ui_routes
+from openstarry_code.gateway import control_ui
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.control_ui import _PINNED_CONTENT_TYPES, create_control_ui_routes
 
 # One synthetic asset per extension in _PINNED_CONTENT_TYPES, with the
 # Content-Type the browser needs. A drift-guard test asserts this map covers
@@ -74,7 +74,7 @@ def client(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> TestClient:
     (dist_dir / "assets" / "control-ui.css").write_bytes(b"body{}\n")
     monkeypatch.setattr(control_ui, "_STATIC_DIR", static_dir)
     monkeypatch.setattr(control_ui, "_DIST_DIR", dist_dir)
-    monkeypatch.delenv("OPENSQUILLA_STATIC_NO_CACHE", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_STATIC_NO_CACHE", raising=False)
 
     config = GatewayConfig()
     config.control_ui.enabled = True
@@ -144,10 +144,10 @@ def test_unknown_extension_still_uses_environment_guess(
 def test_pin_survives_no_cache_debug_knob(
     monkeypatch: pytest.MonkeyPatch, client: TestClient
 ) -> None:
-    # OPENSQUILLA_STATIC_NO_CACHE=1 disables the Cache-Control header, and is
+    # OPENSTARRY_CODE_STATIC_NO_CACHE=1 disables the Cache-Control header, and is
     # exactly the knob an operator debugging a white screen would reach for —
     # the Content-Type pin must not be tied to it.
-    monkeypatch.setenv("OPENSQUILLA_STATIC_NO_CACHE", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_STATIC_NO_CACHE", "1")
     _pollute_mime_db(monkeypatch)
 
     response = client.get("/control/static/app.js")

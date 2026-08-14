@@ -7,7 +7,7 @@ additive: unset agents persist nothing new via ``to_toml_dict``.
 
 from __future__ import annotations
 
-from opensquilla.gateway.config import (
+from openstarry_code.gateway.config import (
     AgentEntryConfig,
     AgentRoutingConfig,
     GatewayConfig,

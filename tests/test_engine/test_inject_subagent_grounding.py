@@ -11,11 +11,11 @@ from dataclasses import dataclass, field
 
 import pytest
 
-from opensquilla.engine.steps.inject_subagent_grounding import (
+from openstarry_code.engine.steps.inject_subagent_grounding import (
     _SUBAGENT_GROUNDING,
     inject_subagent_grounding,
 )
-from opensquilla.tools.builtin.sessions import _SUBAGENT_SYSTEM_PROMPT
+from openstarry_code.tools.builtin.sessions import _SUBAGENT_SYSTEM_PROMPT
 
 
 @dataclass

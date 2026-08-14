@@ -8,38 +8,38 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine import Agent, AgentConfig, ToolResult
-from opensquilla.engine.agent import _review_pending_elevation_if_configured
-from opensquilla.engine.types import ToolCall, ToolResultEvent
-from opensquilla.gateway.approval_queue import get_approval_queue, reset_approval_queue
-from opensquilla.provider import ChatConfig, Message, ToolDefinition, ToolInputSchema
-from opensquilla.provider import DoneEvent as ProviderDone
-from opensquilla.provider import TextDeltaEvent as ProviderTextDelta
-from opensquilla.provider import ToolUseEndEvent as ProviderToolUseEnd
-from opensquilla.provider import ToolUseStartEvent as ProviderToolUseStart
-from opensquilla.sandbox.config import SandboxSettings
-from opensquilla.sandbox.elevation import ElevationAction, gate_elevated_action
-from opensquilla.sandbox.escalation import (
+from openstarry_code.engine import Agent, AgentConfig, ToolResult
+from openstarry_code.engine.agent import _review_pending_elevation_if_configured
+from openstarry_code.engine.types import ToolCall, ToolResultEvent
+from openstarry_code.gateway.approval_queue import get_approval_queue, reset_approval_queue
+from openstarry_code.provider import ChatConfig, Message, ToolDefinition, ToolInputSchema
+from openstarry_code.provider import DoneEvent as ProviderDone
+from openstarry_code.provider import TextDeltaEvent as ProviderTextDelta
+from openstarry_code.provider import ToolUseEndEvent as ProviderToolUseEnd
+from openstarry_code.provider import ToolUseStartEvent as ProviderToolUseStart
+from openstarry_code.sandbox.config import SandboxSettings
+from openstarry_code.sandbox.elevation import ElevationAction, gate_elevated_action
+from openstarry_code.sandbox.escalation import (
     build_network_approval_params,
     request_sandbox_approval,
     resolved_run_context_overlay,
 )
-from opensquilla.sandbox.network_guard import NetworkDecision
-from opensquilla.sandbox.network_runtime import (
+from openstarry_code.sandbox.network_guard import NetworkDecision
+from openstarry_code.sandbox.network_runtime import (
     NetworkApprovalService,
     NetworkPolicyRequest,
     NetworkProtocol,
 )
-from opensquilla.sandbox.run_context import RunContext
-from opensquilla.sandbox.run_mode import RunMode
-from opensquilla.sandbox.types import (
+from openstarry_code.sandbox.run_context import RunContext
+from openstarry_code.sandbox.run_mode import RunMode
+from openstarry_code.sandbox.types import (
     NetworkMode,
     ResourceLimits,
     SandboxPolicy,
     SandboxRequest,
     SecurityLevel,
 )
-from opensquilla.tools.types import ToolContext, current_tool_context
+from openstarry_code.tools.types import ToolContext, current_tool_context
 
 
 class _OneApprovalToolProvider:
@@ -697,7 +697,7 @@ async def test_agent_run_turn_clears_sandbox_approval_denials_for_session(
         cleared.append(session_key)
 
     monkeypatch.setattr(
-        "opensquilla.sandbox.escalation.clear_sandbox_approval_denials",
+        "openstarry_code.sandbox.escalation.clear_sandbox_approval_denials",
         _clear,
     )
     agent = Agent(
@@ -924,7 +924,7 @@ async def test_pending_approval_ignores_legacy_timeout_and_waits_for_decision(
     tmp_path: Any,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.application import approval_queue as approval_queue_mod
+    from openstarry_code.application import approval_queue as approval_queue_mod
 
     monkeypatch.setattr(
         approval_queue_mod,
@@ -1009,7 +1009,7 @@ async def test_denied_approval_ends_current_turn_without_another_model_call(
     tmp_path: Any,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.application import approval_queue as approval_queue_mod
+    from openstarry_code.application import approval_queue as approval_queue_mod
 
     monkeypatch.setattr(
         approval_queue_mod,
@@ -1094,7 +1094,7 @@ async def test_first_pending_destructive_approval_prevents_tail_tool_dispatch(
     tmp_path: Any,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.application import approval_queue as approval_queue_mod
+    from openstarry_code.application import approval_queue as approval_queue_mod
 
     monkeypatch.setattr(
         approval_queue_mod,
@@ -1156,7 +1156,7 @@ async def test_expired_approval_is_not_treated_as_explicit_user_denial(
     tmp_path: Any,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.application import approval_queue as approval_queue_mod
+    from openstarry_code.application import approval_queue as approval_queue_mod
 
     monkeypatch.setattr(
         approval_queue_mod,
@@ -1207,7 +1207,7 @@ async def test_automatic_rule_denial_is_not_treated_as_user_refusal(
     tmp_path: Any,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.application import approval_queue as approval_queue_mod
+    from openstarry_code.application import approval_queue as approval_queue_mod
 
     monkeypatch.setattr(
         approval_queue_mod,
@@ -1261,7 +1261,7 @@ async def test_undeliverable_channel_approval_is_not_treated_as_user_refusal(
     tmp_path: Any,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.application import approval_queue as approval_queue_mod
+    from openstarry_code.application import approval_queue as approval_queue_mod
 
     monkeypatch.setattr(
         approval_queue_mod,

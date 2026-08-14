@@ -14,9 +14,9 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from opensquilla.gateway.routing import RouteEnvelope, SourceKind
-from opensquilla.gateway.task_runtime import TaskRuntime
-from opensquilla.session.models import AgentTaskRecord
+from openstarry_code.gateway.routing import RouteEnvelope, SourceKind
+from openstarry_code.gateway.task_runtime import TaskRuntime
+from openstarry_code.session.models import AgentTaskRecord
 
 # ---------------------------------------------------------------------------
 # Helpers

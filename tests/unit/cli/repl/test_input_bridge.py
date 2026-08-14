@@ -8,7 +8,7 @@ import pytest
 def test_input_bridge_announces_image_attachment_with_supplied_console(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.repl import input_bridge
+    from openstarry_code.cli.repl import input_bridge
 
     captured: dict[str, str] = {}
     prints: list[str] = []
@@ -46,7 +46,7 @@ def test_input_bridge_announces_image_attachment_with_supplied_console(
 def test_input_bridge_announces_image_attachment_with_default_console(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.repl import input_bridge
+    from openstarry_code.cli.repl import input_bridge
 
     prints: list[str] = []
 
@@ -79,7 +79,7 @@ def test_input_bridge_announces_image_attachment_with_default_console(
 def test_input_bridge_does_not_announce_when_image_has_no_attachments(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.repl import input_bridge
+    from openstarry_code.cli.repl import input_bridge
 
     prints: list[str] = []
 
@@ -112,7 +112,7 @@ def test_input_bridge_does_not_announce_when_image_has_no_attachments(
 async def test_input_bridge_wraps_async_file_prompt_builder(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.repl import input_bridge
+    from openstarry_code.cli.repl import input_bridge
 
     captured: dict[str, Any] = {}
 

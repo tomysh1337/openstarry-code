@@ -4,9 +4,9 @@ import types
 
 import pytest
 
-from opensquilla.gateway.config import GatewayConfig, PermissionsConfig
-from opensquilla.sandbox.config import SandboxSettings
-from opensquilla.sandbox.run_mode import (
+from openstarry_code.gateway.config import GatewayConfig, PermissionsConfig
+from openstarry_code.sandbox.config import SandboxSettings
+from openstarry_code.sandbox.run_mode import (
     RunMode,
     approval_behavior,
     config_run_mode,
@@ -17,7 +17,7 @@ from opensquilla.sandbox.run_mode import (
     run_mode_config_patch,
     sandbox_runtime_capability_mode,
 )
-from opensquilla.sandbox.status import status_payload
+from openstarry_code.sandbox.status import status_payload
 
 
 def test_canonical_run_mode_values_are_safe_and_full() -> None:
@@ -191,7 +191,7 @@ def test_removed_windows_restricted_token_backend_config_is_rejected() -> None:
 
 
 def test_configured_default_elevated_only_returns_full() -> None:
-    from opensquilla.permissions import configured_default_elevated, configured_default_run_mode
+    from openstarry_code.permissions import configured_default_elevated, configured_default_run_mode
 
     config = types.SimpleNamespace(
         sandbox=types.SimpleNamespace(run_mode="safe", sandbox=True, security_grading=True),

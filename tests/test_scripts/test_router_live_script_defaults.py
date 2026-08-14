@@ -6,7 +6,7 @@ import sys
 import tomllib
 from pathlib import Path
 
-from opensquilla.tools.registry import ToolProfile
+from openstarry_code.tools.registry import ToolProfile
 
 EXPECTED_ROUTER_MODELS = {
     "c0": "deepseek/deepseek-v4-flash",
@@ -58,7 +58,7 @@ def test_live_scripts_use_valid_registry_tool_profile_values() -> None:
                 if not (
                     isinstance(target, ast.Subscript)
                     and isinstance(target.slice, ast.Constant)
-                    and target.slice.value == "OPENSQUILLA_TOOL_PROFILE"
+                    and target.slice.value == "OPENSTARRY_CODE_TOOL_PROFILE"
                 ):
                     continue
                 assert isinstance(node.value, ast.Constant), script_path

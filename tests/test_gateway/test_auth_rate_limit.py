@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from opensquilla.gateway.token_store import AuthFailureLimiter
+from openstarry_code.gateway.token_store import AuthFailureLimiter
 
 
 def test_failure_limiter_allows_five_then_applies_bounded_backoff() -> None:

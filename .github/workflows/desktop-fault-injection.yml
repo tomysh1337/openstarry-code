@@ -13,7 +13,7 @@ on:
   workflow_dispatch:
     inputs:
       source_run_id:
-        description: Completed Release Assets run holding opensquilla-electron-macos
+        description: Completed Release Assets run holding openstarry-code-electron-macos
         required: true
       scenarios:
         description: Space-separated scenario names (empty runs the whole catalogue)
@@ -34,7 +34,7 @@ on:
       windows_artifact_name:
         description: Windows artifact name to download
         required: false
-        default: opensquilla-electron-windows
+        default: openstarry-code-electron-windows
 
 permissions:
   actions: read
@@ -47,7 +47,7 @@ concurrency:
 jobs:
   macos-fault-injection:
     name: macOS packaged fault injection
-    if: github.repository == 'opensquilla/opensquilla' && github.actor == 'Open-Squilla'
+    if: github.repository == 'tomysh1337/openstarry-code' && github.actor == 'tomysh1337'
     runs-on: macos-latest
     timeout-minutes: 60
 
@@ -65,7 +65,7 @@ jobs:
       - name: Download signed macOS installer
         uses: actions/download-artifact@v4
         with:
-          name: opensquilla-electron-macos
+          name: openstarry-code-electron-macos
           path: packaged-macos
           github-token: ${{ github.token }}
           repository: ${{ github.repository }}
@@ -90,10 +90,10 @@ jobs:
           apps="${stage}/Applications"
           mkdir -p "${mount}" "${apps}"
           hdiutil attach -nobrowse -readonly -mountpoint "${mount}" "${dmgs[0]}"
-          ditto "${mount}/OpenSquilla.app" "${apps}/OpenSquilla.app"
+          ditto "${mount}/OpenStarry Code.app" "${apps}/OpenStarry Code.app"
           hdiutil detach "${mount}" -quiet
           printf 'stage=%s\n' "${stage}" >> "${GITHUB_OUTPUT}"
-          printf 'app=%s\n' "${apps}/OpenSquilla.app" >> "${GITHUB_OUTPUT}"
+          printf 'app=%s\n' "${apps}/OpenStarry Code.app" >> "${GITHUB_OUTPUT}"
 
       - name: Record the signature the scenarios actually run against
         shell: bash
@@ -150,7 +150,7 @@ jobs:
   macos-wedge-probe:
     name: macOS interrupted-consolidation probe (reported, not gating)
     if: >-
-      github.repository == 'opensquilla/opensquilla'
+      github.repository == 'tomysh1337/openstarry-code'
       && github.actor == 'Open-Squilla'
       && inputs.run_wedge_probe
     runs-on: macos-latest
@@ -174,7 +174,7 @@ jobs:
       - name: Download signed macOS installer
         uses: actions/download-artifact@v4
         with:
-          name: opensquilla-electron-macos
+          name: openstarry-code-electron-macos
           path: packaged-macos
           github-token: ${{ github.token }}
           repository: ${{ github.repository }}
@@ -196,10 +196,10 @@ jobs:
           apps="${stage}/Applications"
           mkdir -p "${mount}" "${apps}"
           hdiutil attach -nobrowse -readonly -mountpoint "${mount}" "${dmgs[0]}"
-          ditto "${mount}/OpenSquilla.app" "${apps}/OpenSquilla.app"
+          ditto "${mount}/OpenStarry Code.app" "${apps}/OpenStarry Code.app"
           hdiutil detach "${mount}" -quiet
           printf 'stage=%s\n' "${stage}" >> "${GITHUB_OUTPUT}"
-          printf 'app=%s\n' "${apps}/OpenSquilla.app" >> "${GITHUB_OUTPUT}"
+          printf 'app=%s\n' "${apps}/OpenStarry Code.app" >> "${GITHUB_OUTPUT}"
 
       - name: Probe interrupted consolidations
         shell: bash
@@ -247,7 +247,7 @@ jobs:
           path: |
             ${{ steps.stage.outputs.stage }}/wedge-report.json
             ${{ steps.stage.outputs.stage }}/probes/*/user-data/logs/desktop.log
-            ${{ steps.stage.outputs.stage }}/probes/*/user-data/.opensquilla-profile-consolidation.json
+            ${{ steps.stage.outputs.stage }}/probes/*/user-data/.openstarry-code-profile-consolidation.json
             ${{ steps.stage.outputs.stage }}/probes/*/launch-stdio.log
           if-no-files-found: warn
           retention-days: 14
@@ -255,7 +255,7 @@ jobs:
   windows-fault-injection:
     name: Windows packaged fault injection
     if: >-
-      github.repository == 'opensquilla/opensquilla'
+      github.repository == 'tomysh1337/openstarry-code'
       && github.actor == 'Open-Squilla'
       && inputs.windows_source_run_id != ''
     runs-on: windows-latest
@@ -308,11 +308,11 @@ jobs:
           New-Item -ItemType Directory -Force -Path $target | Out-Null
           # electron-builder NSIS honours /S for silent and /D for the target.
           Start-Process -FilePath $installer -ArgumentList '/S', "/D=$target" -Wait
-          $exe = Get-ChildItem $target -Filter 'OpenSquilla.exe' -Recurse |
+          $exe = Get-ChildItem $target -Filter 'OpenStarry Code.exe' -Recurse |
             Select-Object -First 1
           if (-not $exe) {
             Get-ChildItem $target -Recurse | Format-Table -AutoSize | Out-String | Write-Host
-            throw 'OpenSquilla.exe was not found after install'
+            throw 'OpenStarry Code.exe was not found after install'
           }
           "stage=$stage" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
           "app=$($exe.FullName)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append

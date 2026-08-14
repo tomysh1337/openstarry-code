@@ -6,8 +6,8 @@ import pytest
 from starlette.datastructures import URL, Headers
 from starlette.websockets import WebSocketDisconnect, WebSocketState
 
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.websocket import handle_ws_connection
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.websocket import handle_ws_connection
 
 
 class _DisconnectingChallengeWebSocket:

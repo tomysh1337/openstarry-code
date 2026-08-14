@@ -17,9 +17,9 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
-from opensquilla.skills.hub.lockfile import compute_sha256
-from opensquilla.skills.resources import SkillResources
-from opensquilla.skills.tree import compute_tree_sha256, compute_tree_state
+from openstarry_code.skills.hub.lockfile import compute_sha256
+from openstarry_code.skills.resources import SkillResources
+from openstarry_code.skills.tree import compute_tree_sha256, compute_tree_state
 
 _KIB = 1024
 _MIB = 1024 * 1024

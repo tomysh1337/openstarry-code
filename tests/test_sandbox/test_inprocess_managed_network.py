@@ -11,39 +11,39 @@ from urllib.parse import urlsplit
 
 import pytest
 
-from opensquilla.env import trust_env
-from opensquilla.gateway import rpc_tools
-from opensquilla.gateway.approval_queue import get_approval_queue, reset_approval_queue
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.rpc import RpcContext
-from opensquilla.sandbox import integration as integration_mod
-from opensquilla.sandbox.config import SandboxSettings
-from opensquilla.sandbox.integration import (
+from openstarry_code.env import trust_env
+from openstarry_code.gateway import rpc_tools
+from openstarry_code.gateway.approval_queue import get_approval_queue, reset_approval_queue
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.rpc import RpcContext
+from openstarry_code.sandbox import integration as integration_mod
+from openstarry_code.sandbox.config import SandboxSettings
+from openstarry_code.sandbox.integration import (
     configure_runtime,
     reset_runtime,
     sandbox_policy_scope,
     sandboxed,
 )
-from opensquilla.sandbox.network_guard import NetworkDecision
-from opensquilla.sandbox.network_proxy import SandboxProxyServer as RealSandboxProxyServer
-from opensquilla.sandbox.policy_models import SandboxPolicy as StoredSandboxPolicy
-from opensquilla.sandbox.run_context import (
+from openstarry_code.sandbox.network_guard import NetworkDecision
+from openstarry_code.sandbox.network_proxy import SandboxProxyServer as RealSandboxProxyServer
+from openstarry_code.sandbox.policy_models import SandboxPolicy as StoredSandboxPolicy
+from openstarry_code.sandbox.run_context import (
     DomainGrant,
     RunContext,
     TemporaryGrant,
     get_run_context,
 )
-from opensquilla.sandbox.run_mode import RunMode
-from opensquilla.sandbox.types import (
+from openstarry_code.sandbox.run_mode import RunMode
+from openstarry_code.sandbox.types import (
     DenialResult,
     NetworkMode,
     ResourceLimits,
     SandboxPolicy,
     SecurityLevel,
 )
-from opensquilla.tools.builtin import web as web_mod
-from opensquilla.tools.builtin import web_fetch as web_fetch_mod
-from opensquilla.tools.types import CallerKind, ToolContext, current_tool_context
+from openstarry_code.tools.builtin import web as web_mod
+from openstarry_code.tools.builtin import web_fetch as web_fetch_mod
+from openstarry_code.tools.types import CallerKind, ToolContext, current_tool_context
 
 
 @pytest.fixture(autouse=True)
@@ -107,7 +107,7 @@ def _install_trusted_session_handles(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ):
-    from opensquilla.tools.builtin import sessions as sessions_mod
+    from openstarry_code.tools.builtin import sessions as sessions_mod
 
     workspace = tmp_path / "workspace"
     workspace.mkdir(exist_ok=True)
@@ -239,7 +239,7 @@ async def test_url_shaped_inprocess_network_action_sets_context_proxy_without_en
     monkeypatch.delenv("all_proxy", raising=False)
     monkeypatch.setenv("NO_PROXY", "*")
     monkeypatch.delenv("no_proxy", raising=False)
-    monkeypatch.setenv("OPENSQUILLA_TRUST_ENV", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_TRUST_ENV", "0")
     expected_env = {
         key: os.environ.get(key)
         for key in (
@@ -251,7 +251,7 @@ async def test_url_shaped_inprocess_network_action_sets_context_proxy_without_en
             "all_proxy",
             "NO_PROXY",
             "no_proxy",
-            "OPENSQUILLA_TRUST_ENV",
+            "OPENSTARRY_CODE_TRUST_ENV",
         )
     }
 
@@ -538,8 +538,8 @@ def test_windows_unavailable_message_reports_outdated_network_marker(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_setup as setup_mod
-    from opensquilla.sandbox.backend.windows_default_network import (
+    from openstarry_code.sandbox.backend import windows_default_setup as setup_mod
+    from openstarry_code.sandbox.backend.windows_default_network import (
         WindowsNetworkSetup,
     )
 
@@ -933,7 +933,7 @@ async def test_trusted_explicit_target_auto_adds_chat_domain_grant_in_production
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    from opensquilla.tools.builtin import sessions as sessions_mod
+    from openstarry_code.tools.builtin import sessions as sessions_mod
 
     seen: dict[str, object] = {}
 
@@ -1031,7 +1031,7 @@ async def test_standard_explicit_target_does_not_auto_add_recognized_default_hos
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    from opensquilla.tools.builtin import sessions as sessions_mod
+    from openstarry_code.tools.builtin import sessions as sessions_mod
 
     class FakeProxy:
         host = "127.0.0.1"

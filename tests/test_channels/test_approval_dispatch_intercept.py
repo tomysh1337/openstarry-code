@@ -7,20 +7,20 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.channels.approval_prompt import bind_short_code, reset_short_codes
-from opensquilla.channels.types import (
+from openstarry_code.channels.approval_prompt import bind_short_code, reset_short_codes
+from openstarry_code.channels.types import (
     AuthenticatedPrincipal,
     IncomingMessage,
     IngressProvenance,
     IngressVerification,
 )
-from opensquilla.gateway.approval_queue import get_approval_queue, reset_approval_queue
-from opensquilla.gateway.channel_dispatch import (
+from openstarry_code.gateway.approval_queue import get_approval_queue, reset_approval_queue
+from openstarry_code.gateway.channel_dispatch import (
     _maybe_resolve_channel_approval,
     _reset_approval_probe_throttle,
     _stamp_channel_admin_principal,
 )
-from opensquilla.gateway.routing import build_channel_route_envelope
+from openstarry_code.gateway.routing import build_channel_route_envelope
 
 
 @pytest.fixture(autouse=True)
@@ -268,7 +268,7 @@ def test_always_from_admin_applies_sandbox_same_type_choice(monkeypatch) -> None
         applied.append({"params": params, "choice": choice, "approved": approved})
 
     monkeypatch.setattr(
-        "opensquilla.sandbox.escalation.apply_sandbox_approval_choice", _fake_apply
+        "openstarry_code.sandbox.escalation.apply_sandbox_approval_choice", _fake_apply
     )
 
     approval_id, code = _pending_approval(
@@ -325,7 +325,7 @@ def test_always_from_admin_applies_sandbox_same_type_choice(monkeypatch) -> None
 def test_sandbox_deny_remembers_and_fans_out(monkeypatch) -> None:
     remembered: list[str] = []
     monkeypatch.setattr(
-        "opensquilla.sandbox.escalation.remember_sandbox_approval_denial",
+        "openstarry_code.sandbox.escalation.remember_sandbox_approval_denial",
         lambda params, approval_id: remembered.append(approval_id),
     )
 
@@ -386,7 +386,7 @@ def test_plain_approve_applies_sandbox_allow_once(monkeypatch) -> None:
         applied.append({"choice": choice, "approved": approved})
 
     monkeypatch.setattr(
-        "opensquilla.sandbox.escalation.apply_sandbox_approval_choice", _fake_apply
+        "openstarry_code.sandbox.escalation.apply_sandbox_approval_choice", _fake_apply
     )
 
     approval_id, code = _pending_approval(
@@ -427,7 +427,7 @@ def test_sandbox_apply_failure_reopens_and_replies(monkeypatch) -> None:
     # A transient storage failure while applying the grant must produce a
     # reply (not an exception that burns the channel's restart budget) and
     # leave the approval pending for a retry.
-    from opensquilla.session.storage import StorageBusyError
+    from openstarry_code.session.storage import StorageBusyError
 
     async def _busy_apply(
         params,
@@ -441,7 +441,7 @@ def test_sandbox_apply_failure_reopens_and_replies(monkeypatch) -> None:
         raise StorageBusyError("database is locked")
 
     monkeypatch.setattr(
-        "opensquilla.sandbox.escalation.apply_sandbox_approval_choice", _busy_apply
+        "openstarry_code.sandbox.escalation.apply_sandbox_approval_choice", _busy_apply
     )
 
     approval_id, code = _pending_approval(
@@ -525,7 +525,7 @@ def test_sandbox_deny_fans_out_to_duplicate_pending_asks(monkeypatch) -> None:
     # chat must resolve the duplicate too, and both denials are remembered.
     remembered: list[str] = []
     monkeypatch.setattr(
-        "opensquilla.sandbox.escalation.remember_sandbox_approval_denial",
+        "openstarry_code.sandbox.escalation.remember_sandbox_approval_denial",
         lambda params, approval_id: remembered.append(approval_id),
     )
 
@@ -572,7 +572,7 @@ def test_finalize_failure_releases_claim_so_a_retry_succeeds(monkeypatch) -> Non
         return None
 
     monkeypatch.setattr(
-        "opensquilla.sandbox.escalation.apply_sandbox_approval_choice", _fake_apply
+        "openstarry_code.sandbox.escalation.apply_sandbox_approval_choice", _fake_apply
     )
 
     approval_id, code = _pending_approval(

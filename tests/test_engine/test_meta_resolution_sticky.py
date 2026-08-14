@@ -14,9 +14,9 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from opensquilla.skills.meta.types import MetaPlan, MetaStep
+from openstarry_code.skills.meta.types import MetaPlan, MetaStep
 
-mr = importlib.import_module("opensquilla.engine.steps.meta_resolution")
+mr = importlib.import_module("openstarry_code.engine.steps.meta_resolution")
 meta_resolution = mr.meta_resolution
 
 

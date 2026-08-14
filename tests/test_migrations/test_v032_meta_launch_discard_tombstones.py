@@ -7,8 +7,8 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.persistence.migrator import apply_pending
-from opensquilla.session.storage import SessionStorage
+from openstarry_code.persistence.migrator import apply_pending
+from openstarry_code.session.storage import SessionStorage
 
 MIGRATIONS_DIR = Path(__file__).resolve().parents[2] / "migrations"
 V032_ID = "V032__meta_launch_discard_tombstones"

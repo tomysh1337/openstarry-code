@@ -14,22 +14,22 @@ import pytest
 from rich.console import Console
 from typer.testing import CliRunner
 
-from opensquilla.cli import chat_cmd
-from opensquilla.cli.chat.turn_stream import turn_stream_error_message
-from opensquilla.cli.main import app
-from opensquilla.cli.repl import commands as repl_commands
-from opensquilla.cli.repl import slash_bridge
-from opensquilla.cli.repl.session_state import ChatSessionState
-from opensquilla.engine.commands import DEFAULT_REGISTRY, Surface
-from opensquilla.engine.types import (
+from openstarry_code.cli import chat_cmd
+from openstarry_code.cli.chat.turn_stream import turn_stream_error_message
+from openstarry_code.cli.main import app
+from openstarry_code.cli.repl import commands as repl_commands
+from openstarry_code.cli.repl import slash_bridge
+from openstarry_code.cli.repl.session_state import ChatSessionState
+from openstarry_code.engine.commands import DEFAULT_REGISTRY, Surface
+from openstarry_code.engine.types import (
     ArtifactEvent,
     DoneEvent,
     TextDeltaEvent,
     ToolResultEvent,
     ToolUseStartEvent,
 )
-from opensquilla.session.compaction import CompactionConfig
-from opensquilla.tools.types import CallerKind, ToolContext
+from openstarry_code.session.compaction import CompactionConfig
+from openstarry_code.tools.types import CallerKind, ToolContext
 
 runner = CliRunner()
 
@@ -107,11 +107,11 @@ def _install_fake_inputs(monkeypatch, inputs: Iterable[str]) -> None:
         yield _FakeSurface()
 
     monkeypatch.setattr(
-        "opensquilla.cli.tui.opentui.runtime.open_opentui_surface",
+        "openstarry_code.cli.tui.opentui.runtime.open_opentui_surface",
         _fake_session,
     )
     monkeypatch.setattr(
-        "opensquilla.cli.tui.adapters.native_bridge.open_native_terminal_surface",
+        "openstarry_code.cli.tui.adapters.native_bridge.open_native_terminal_surface",
         _fake_session,
     )
 
@@ -301,7 +301,7 @@ class TestChatCommand:
     def test_chat_invokes_run_chat(self) -> None:
         """Default chat calls run_chat with correct defaults."""
         mock_run = MagicMock()
-        with patch("opensquilla.cli.chat_cmd.run_chat", mock_run):
+        with patch("openstarry_code.cli.chat_cmd.run_chat", mock_run):
             result = runner.invoke(app, ["chat"])
         assert result.exit_code == 0
         mock_run.assert_called_once_with(
@@ -317,7 +317,7 @@ class TestChatCommand:
     def test_chat_model_option_forwarded(self) -> None:
         """--model option is forwarded to run_chat."""
         mock_run = MagicMock()
-        with patch("opensquilla.cli.chat_cmd.run_chat", mock_run):
+        with patch("openstarry_code.cli.chat_cmd.run_chat", mock_run):
             result = runner.invoke(app, ["chat", "--model", "ollama/llama3"])
         assert result.exit_code == 0
         mock_run.assert_called_once_with(
@@ -333,7 +333,7 @@ class TestChatCommand:
     def test_chat_session_option_forwarded(self) -> None:
         """--session option is forwarded to run_chat."""
         mock_run = MagicMock()
-        with patch("opensquilla.cli.chat_cmd.run_chat", mock_run):
+        with patch("openstarry_code.cli.chat_cmd.run_chat", mock_run):
             result = runner.invoke(app, ["chat", "--session", "abc123"])
         assert result.exit_code == 0
         mock_run.assert_called_once_with(
@@ -365,7 +365,7 @@ class TestChatCommand:
     def test_chat_timeout_option_forwarded(self) -> None:
         """--timeout option is forwarded to run_chat."""
         mock_run = MagicMock()
-        with patch("opensquilla.cli.chat_cmd.run_chat", mock_run):
+        with patch("openstarry_code.cli.chat_cmd.run_chat", mock_run):
             result = runner.invoke(app, ["chat", "--timeout", "12.5"])
         assert result.exit_code == 0
         mock_run.assert_called_once_with(
@@ -380,7 +380,7 @@ class TestChatCommand:
 
     def test_chat_workspace_options_forwarded(self) -> None:
         mock_run = MagicMock()
-        with patch("opensquilla.cli.chat_cmd.run_chat", mock_run):
+        with patch("openstarry_code.cli.chat_cmd.run_chat", mock_run):
             result = runner.invoke(
                 app,
                 ["chat", "--workspace", "repo", "--workspace-strict"],
@@ -398,7 +398,7 @@ class TestChatCommand:
 
     def test_chat_ui_option_forwarded(self) -> None:
         mock_run = MagicMock()
-        with patch("opensquilla.cli.chat_cmd.run_chat", mock_run):
+        with patch("openstarry_code.cli.chat_cmd.run_chat", mock_run):
             result = runner.invoke(app, ["chat", "--ui", "plain"])
         assert result.exit_code == 0
         mock_run.assert_called_once_with(
@@ -705,8 +705,8 @@ async def test_standalone_repl_forwards_timeout(monkeypatch) -> None:
     async def fake_build_services() -> _FakeServices:
         return _FakeServices()
 
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
-    monkeypatch.setattr("opensquilla.gateway.build_services", fake_build_services)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", fake_build_services)
     _install_fake_inputs(monkeypatch, inputs)
 
     await chat_cmd._standalone_repl(
@@ -745,8 +745,8 @@ async def test_standalone_chat_uses_workspace_in_tool_context(
     async def fake_build_services() -> _FakeServices:
         return _FakeServices()
 
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
-    monkeypatch.setattr("opensquilla.gateway.build_services", fake_build_services)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", fake_build_services)
     _install_fake_inputs(monkeypatch, inputs)
 
     await chat_cmd._standalone_repl(
@@ -786,8 +786,8 @@ async def test_standalone_path_command_runs_as_plain_message(
     async def fake_build_services() -> _FakeServices:
         return _FakeServices()
 
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
-    monkeypatch.setattr("opensquilla.gateway.build_services", fake_build_services)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", fake_build_services)
     _install_fake_inputs(monkeypatch, inputs)
 
     await chat_cmd._standalone_repl(
@@ -804,9 +804,9 @@ def test_chat_workspace_strict_resolution_matches_agent_precedence(
     monkeypatch,
     tmp_path,
 ) -> None:
-    from opensquilla.cli.agent_cmd import _resolve_workspace_strict
+    from openstarry_code.cli.agent_cmd import _resolve_workspace_strict
 
-    monkeypatch.setenv("OPENSQUILLA_WORKSPACE_STRICT", "false")
+    monkeypatch.setenv("OPENSTARRY_CODE_WORKSPACE_STRICT", "false")
     assert (
         _resolve_workspace_strict(
             cli_value=True,
@@ -823,7 +823,7 @@ def test_chat_workspace_strict_resolution_matches_agent_precedence(
         )
         is False
     )
-    monkeypatch.delenv("OPENSQUILLA_WORKSPACE_STRICT")
+    monkeypatch.delenv("OPENSTARRY_CODE_WORKSPACE_STRICT")
     assert (
         _resolve_workspace_strict(
             cli_value=None,
@@ -861,8 +861,8 @@ async def test_standalone_repl_wires_memory_services_into_turnrunner(monkeypatch
     async def fake_build_services() -> _FakeServices:
         return services
 
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
-    monkeypatch.setattr("opensquilla.gateway.build_services", fake_build_services)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", fake_build_services)
     _install_fake_inputs(monkeypatch, inputs)
 
     await chat_cmd._standalone_repl(
@@ -887,19 +887,19 @@ async def test_standalone_turnrunner_stream_uses_heartbeat_wrapper(monkeypatch) 
             yield DoneEvent()
 
     _RecordingRenderer.instances.clear()
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
     monkeypatch.setattr(
-        "opensquilla.cli.tui.opentui.renderer.OpenTuiStreamRenderer",
+        "openstarry_code.cli.tui.opentui.renderer.OpenTuiStreamRenderer",
         _RecordingRenderer,
     )
     monkeypatch.setattr(
-        "opensquilla.cli.tui.adapters.turn_stream_defaults.OpenTuiStreamRenderer",
+        "openstarry_code.cli.tui.adapters.turn_stream_defaults.OpenTuiStreamRenderer",
         _RecordingRenderer,
     )
     # Renderer choice is now backend-aware; pin the OpenTUI backend so the
     # recording renderer (patched above) is the one the bridge selects.
     monkeypatch.setattr(
-        "opensquilla.cli.tui.adapters.runtime_bridge.validate_tui_backend_selection",
+        "openstarry_code.cli.tui.adapters.runtime_bridge.validate_tui_backend_selection",
         lambda env=None: "opentui",
     )
     svc = SimpleNamespace(
@@ -948,19 +948,19 @@ async def test_standalone_turnrunner_stream_collects_artifacts(monkeypatch) -> N
             yield TextDeltaEvent(text="ok")
             yield DoneEvent()
 
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
     monkeypatch.setattr(
-        "opensquilla.cli.tui.opentui.renderer.OpenTuiStreamRenderer",
+        "openstarry_code.cli.tui.opentui.renderer.OpenTuiStreamRenderer",
         _RecordingRenderer,
     )
     monkeypatch.setattr(
-        "opensquilla.cli.tui.adapters.turn_stream_defaults.OpenTuiStreamRenderer",
+        "openstarry_code.cli.tui.adapters.turn_stream_defaults.OpenTuiStreamRenderer",
         _RecordingRenderer,
     )
     # Renderer choice is now backend-aware; pin the OpenTUI backend so the
     # recording renderer (patched above) is the one the bridge selects.
     monkeypatch.setattr(
-        "opensquilla.cli.tui.adapters.runtime_bridge.validate_tui_backend_selection",
+        "openstarry_code.cli.tui.adapters.runtime_bridge.validate_tui_backend_selection",
         lambda env=None: "opentui",
     )
     svc = SimpleNamespace(
@@ -1030,19 +1030,19 @@ async def test_standalone_turnrunner_wires_tool_strip(monkeypatch) -> None:
             yield DoneEvent()
 
     _RecordingRenderer.instances.clear()
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
     monkeypatch.setattr(
-        "opensquilla.cli.tui.opentui.renderer.OpenTuiStreamRenderer",
+        "openstarry_code.cli.tui.opentui.renderer.OpenTuiStreamRenderer",
         _RecordingRenderer,
     )
     monkeypatch.setattr(
-        "opensquilla.cli.tui.adapters.turn_stream_defaults.OpenTuiStreamRenderer",
+        "openstarry_code.cli.tui.adapters.turn_stream_defaults.OpenTuiStreamRenderer",
         _RecordingRenderer,
     )
     # Renderer choice is now backend-aware; pin the OpenTUI backend so the
     # recording renderer (patched above) is the one the bridge selects.
     monkeypatch.setattr(
-        "opensquilla.cli.tui.adapters.runtime_bridge.validate_tui_backend_selection",
+        "openstarry_code.cli.tui.adapters.runtime_bridge.validate_tui_backend_selection",
         lambda env=None: "opentui",
     )
     svc = SimpleNamespace(
@@ -1095,8 +1095,8 @@ async def test_standalone_repl_uses_exact_slash_tokens(monkeypatch) -> None:
     async def fake_build_services() -> _FakeServices:
         return services
 
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
-    monkeypatch.setattr("opensquilla.gateway.build_services", fake_build_services)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", fake_build_services)
     _install_fake_inputs(monkeypatch, inputs)
 
     await chat_cmd._standalone_repl(
@@ -1134,8 +1134,8 @@ async def test_standalone_slash_compact_uses_selected_physical_deployment(monkey
     async def fake_build_services() -> _FakeServices:
         return services
 
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
-    monkeypatch.setattr("opensquilla.gateway.build_services", fake_build_services)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", fake_build_services)
     _install_fake_inputs(monkeypatch, inputs)
 
     await chat_cmd._standalone_repl(
@@ -1180,8 +1180,8 @@ async def test_standalone_reset_refuses_non_empty_transcript_without_flush_servi
     async def fake_build_services() -> _FakeServices:
         return services
 
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
-    monkeypatch.setattr("opensquilla.gateway.build_services", fake_build_services)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", fake_build_services)
     _install_fake_inputs(monkeypatch, inputs)
 
     await chat_cmd._standalone_repl(model="openrouter/test", session_id=session_key)
@@ -1220,8 +1220,8 @@ async def test_standalone_compact_missing_flush_service_does_not_block_compactio
     async def fake_build_services() -> _FakeServices:
         return services
 
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
-    monkeypatch.setattr("opensquilla.gateway.build_services", fake_build_services)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", fake_build_services)
     _install_fake_inputs(monkeypatch, inputs)
 
     await chat_cmd._standalone_repl(model="openrouter/test", session_id=session_key)
@@ -1280,8 +1280,8 @@ async def test_standalone_compact_flushes_before_compacting(monkeypatch) -> None
     async def fake_build_services() -> _FakeServices:
         return services
 
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
-    monkeypatch.setattr("opensquilla.gateway.build_services", fake_build_services)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", fake_build_services)
     _install_fake_inputs(monkeypatch, inputs)
 
     await chat_cmd._standalone_repl(model="openrouter/test", session_id=session_key)
@@ -1323,8 +1323,8 @@ async def test_standalone_compact_continues_when_flush_fails(monkeypatch) -> Non
     async def fake_build_services() -> _FakeServices:
         return services
 
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
-    monkeypatch.setattr("opensquilla.gateway.build_services", fake_build_services)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", fake_build_services)
     _install_fake_inputs(monkeypatch, inputs)
 
     await chat_cmd._standalone_repl(model="openrouter/test", session_id=session_key)
@@ -1359,8 +1359,8 @@ async def test_standalone_slash_compact_keeps_legacy_compact_manager_compatible(
     async def fake_build_services() -> _FakeServices:
         return services
 
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
-    monkeypatch.setattr("opensquilla.gateway.build_services", fake_build_services)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", fake_build_services)
     _install_fake_inputs(monkeypatch, inputs)
 
     await chat_cmd._standalone_repl(
@@ -1540,9 +1540,9 @@ _FakeGatewayClient.instances = []
 
 @pytest.mark.asyncio
 async def test_gateway_chat_forwards_model_to_create_session(monkeypatch) -> None:
-    """`opensquilla chat --model X` (gateway mode) must reach create_session(model='X')."""
+    """`openstarry-code chat --model X` (gateway mode) must reach create_session(model='X')."""
     _FakeGatewayClient.instances.clear()
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _FakeGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _FakeGatewayClient)
     inputs = iter(["/quit"])
 
     async def fake_prompt_user(prefix: str = "[you] ", **kwargs):
@@ -1568,9 +1568,9 @@ async def test_gateway_chat_forwards_model_to_create_session(monkeypatch) -> Non
 
 @pytest.mark.asyncio
 async def test_gateway_chat_session_id_skips_create_session(monkeypatch) -> None:
-    """`opensquilla chat --session abc` (gateway mode) must reuse the key without create."""
+    """`openstarry-code chat --session abc` (gateway mode) must reuse the key without create."""
     _FakeGatewayClient.instances.clear()
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _FakeGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _FakeGatewayClient)
     inputs = iter(["hi", "/quit"])
 
     async def fake_prompt_user(prefix: str = "[you] ", **kwargs):
@@ -1590,7 +1590,7 @@ async def test_gateway_chat_session_id_skips_create_session(monkeypatch) -> None
 @pytest.mark.asyncio
 async def test_gateway_slash_new_passes_title_as_display_name(monkeypatch) -> None:
     _FakeGatewayClient.instances.clear()
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _FakeGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _FakeGatewayClient)
     fake = _FakeGatewayClient()
     state = ChatSessionState(session_key="agent:main:old", model="openai/test")
 
@@ -1615,7 +1615,7 @@ async def test_gateway_path_command_sends_prompt_without_attachments_or_upload(
     tmp_path,
 ) -> None:
     _FakeGatewayClient.instances.clear()
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _FakeGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _FakeGatewayClient)
     fake = _FakeGatewayClient()
     fake.is_local_gateway = True
 
@@ -1644,7 +1644,7 @@ async def test_gateway_path_command_remote_rejects_before_send(
     tmp_path,
 ) -> None:
     _FakeGatewayClient.instances.clear()
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _FakeGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _FakeGatewayClient)
     fake = _FakeGatewayClient()
     fake.is_local_gateway = False
     state = ChatSessionState(session_key="agent:main:abc123", model="openai/test")
@@ -1668,7 +1668,7 @@ async def test_gateway_path_command_remote_rejects_before_send(
 
 @pytest.mark.asyncio
 async def test_gateway_chat_does_not_forward_workspace_fields() -> None:
-    from opensquilla.cli.gateway_client import GatewayClient
+    from openstarry_code.cli.gateway_client import GatewayClient
 
     client = GatewayClient()
     calls: list[tuple[str, dict[str, object]]] = []
@@ -1699,7 +1699,7 @@ async def test_gateway_chat_does_not_forward_workspace_fields() -> None:
 
 @pytest.mark.asyncio
 async def test_gateway_client_resolve_approval_forwards_choice() -> None:
-    from opensquilla.cli.gateway_client import GatewayClient
+    from openstarry_code.cli.gateway_client import GatewayClient
 
     client = GatewayClient()
     calls: list[tuple[str, dict[str, object]]] = []
@@ -1731,7 +1731,7 @@ async def test_gateway_client_resolve_approval_forwards_choice() -> None:
 
 @pytest.mark.asyncio
 async def test_gateway_client_follows_background_task_group_until_terminal() -> None:
-    from opensquilla.cli.gateway_client import GatewayClient
+    from openstarry_code.cli.gateway_client import GatewayClient
 
     client = GatewayClient()
     calls: list[tuple[str, dict[str, object]]] = []
@@ -1782,7 +1782,7 @@ async def test_gateway_client_follows_background_task_group_until_terminal() -> 
 
 @pytest.mark.asyncio
 async def test_gateway_client_does_not_wait_for_late_task_group_after_done() -> None:
-    from opensquilla.cli.gateway_client import GatewayClient
+    from openstarry_code.cli.gateway_client import GatewayClient
 
     client = GatewayClient()
 
@@ -1812,7 +1812,7 @@ async def test_gateway_client_does_not_wait_for_late_task_group_after_done() -> 
 
 @pytest.mark.asyncio
 async def test_gateway_client_does_not_end_on_untracked_task_group_terminal() -> None:
-    from opensquilla.cli.gateway_client import GatewayClient
+    from openstarry_code.cli.gateway_client import GatewayClient
 
     client = GatewayClient()
 
@@ -1846,7 +1846,7 @@ async def test_gateway_client_does_not_end_on_untracked_task_group_terminal() ->
 @pytest.mark.asyncio
 async def test_gateway_slash_clear_resets_session_state(monkeypatch) -> None:
     _FakeGatewayClient.instances.clear()
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _FakeGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _FakeGatewayClient)
     fake = _FakeGatewayClient()
     state = ChatSessionState(session_key="agent:main:abc123", model="openai/test")
     state.transcript.add("user", "hello")
@@ -1861,7 +1861,7 @@ async def test_gateway_slash_clear_resets_session_state(monkeypatch) -> None:
 @pytest.mark.asyncio
 async def test_gateway_slash_compact_calls_session_rpc(monkeypatch) -> None:
     _FakeGatewayClient.instances.clear()
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _FakeGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _FakeGatewayClient)
     fake = _FakeGatewayClient()
     state = ChatSessionState(session_key="agent:main:abc123", model="openai/test")
 
@@ -1874,7 +1874,7 @@ async def test_gateway_slash_compact_calls_session_rpc(monkeypatch) -> None:
 @pytest.mark.asyncio
 async def test_gateway_slash_compact_skipped_uses_context_budget_wording(monkeypatch) -> None:
     _FakeGatewayClient.instances.clear()
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _FakeGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _FakeGatewayClient)
     fake = _FakeGatewayClient()
 
     async def compact_skipped(session_key: str) -> dict[str, object]:
@@ -1902,7 +1902,7 @@ async def test_gateway_slash_compact_skipped_uses_context_budget_wording(monkeyp
 @pytest.mark.asyncio
 async def test_gateway_slash_compact_reports_started_and_failure(monkeypatch) -> None:
     _FakeGatewayClient.instances.clear()
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _FakeGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _FakeGatewayClient)
     fake = _FakeGatewayClient()
 
     async def compact_failed(session_key: str) -> dict[str, object]:
@@ -1930,7 +1930,7 @@ async def test_gateway_slash_compact_reports_started_and_failure(monkeypatch) ->
 @pytest.mark.asyncio
 async def test_gateway_slash_delete_resolves_and_reports_errors(monkeypatch) -> None:
     _FakeGatewayClient.instances.clear()
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _FakeGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _FakeGatewayClient)
     fake = _FakeGatewayClient()
     fake.resolved_payload = {"session_key": "agent:main:abc123"}
     fake.delete_result = {"deleted": [], "errors": ["agent:main:abc123: locked"]}
@@ -1957,7 +1957,7 @@ async def test_gateway_slash_delete_resolves_and_reports_errors(monkeypatch) -> 
 @pytest.mark.asyncio
 async def test_gateway_slash_save_exports_persisted_history(monkeypatch, tmp_path) -> None:
     _FakeGatewayClient.instances.clear()
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _FakeGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _FakeGatewayClient)
     fake = _FakeGatewayClient()
     state = ChatSessionState(session_key="agent:main:abc123", model="openai/test")
     output = tmp_path / "saved.md"
@@ -1987,7 +1987,7 @@ async def test_gateway_slash_save_exports_persisted_history(monkeypatch, tmp_pat
 @pytest.mark.asyncio
 async def test_gateway_slash_models_does_not_hit_model_prefix(monkeypatch) -> None:
     _FakeGatewayClient.instances.clear()
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _FakeGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _FakeGatewayClient)
     fake = _FakeGatewayClient()
     state = ChatSessionState(session_key="agent:main:abc123", model="openai/test")
 
@@ -2001,7 +2001,7 @@ async def test_gateway_slash_models_does_not_hit_model_prefix(monkeypatch) -> No
 @pytest.mark.asyncio
 async def test_gateway_slash_usage_calls_usage_status(monkeypatch) -> None:
     _FakeGatewayClient.instances.clear()
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _FakeGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _FakeGatewayClient)
     fake = _FakeGatewayClient()
     state = ChatSessionState(session_key="agent:main:abc123", model="openai/test")
 
@@ -2014,7 +2014,7 @@ async def test_gateway_slash_usage_calls_usage_status(monkeypatch) -> None:
 @pytest.mark.asyncio
 async def test_gateway_slash_unknown_prefix_is_not_handled(monkeypatch) -> None:
     _FakeGatewayClient.instances.clear()
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _FakeGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _FakeGatewayClient)
     fake = _FakeGatewayClient()
     state = ChatSessionState(session_key="agent:main:abc123", model="openai/test")
 
@@ -2041,7 +2041,7 @@ async def test_gateway_stream_keyboard_interrupt_aborts_turn(monkeypatch) -> Non
             yield {}
 
     InterruptingGatewayClient.instances = []
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", InterruptingGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", InterruptingGatewayClient)
     fake = InterruptingGatewayClient()
 
     result = await chat_cmd._stream_response_gateway(
@@ -2072,7 +2072,7 @@ async def test_gateway_stream_cancelled_error_aborts_turn(monkeypatch) -> None:
             yield {}
 
     CancelledGatewayClient.instances = []
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", CancelledGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", CancelledGatewayClient)
     fake = CancelledGatewayClient()
 
     result = await chat_cmd._stream_response_gateway(
@@ -2146,15 +2146,15 @@ async def test_gateway_stream_renders_task_group_status_without_buffer_pollution
             self.finalized = True
 
     monkeypatch.setattr(
-        "opensquilla.cli.tui.opentui.renderer.OpenTuiStreamRenderer",
+        "openstarry_code.cli.tui.opentui.renderer.OpenTuiStreamRenderer",
         RecordingRenderer,
     )
     monkeypatch.setattr(
-        "opensquilla.cli.tui.adapters.turn_stream_defaults.OpenTuiStreamRenderer",
+        "openstarry_code.cli.tui.adapters.turn_stream_defaults.OpenTuiStreamRenderer",
         RecordingRenderer,
     )
     monkeypatch.setattr(
-        "opensquilla.cli.tui.adapters.runtime_bridge.validate_tui_backend_selection",
+        "openstarry_code.cli.tui.adapters.runtime_bridge.validate_tui_backend_selection",
         lambda env=None: "opentui",
     )
     fake = StatusGatewayClient()
@@ -2199,17 +2199,17 @@ async def test_gateway_stream_collects_artifact_events(monkeypatch) -> None:
             yield {"event": "session.event.done"}
 
     monkeypatch.setattr(
-        "opensquilla.cli.tui.opentui.renderer.OpenTuiStreamRenderer",
+        "openstarry_code.cli.tui.opentui.renderer.OpenTuiStreamRenderer",
         _RecordingRenderer,
     )
     monkeypatch.setattr(
-        "opensquilla.cli.tui.adapters.turn_stream_defaults.OpenTuiStreamRenderer",
+        "openstarry_code.cli.tui.adapters.turn_stream_defaults.OpenTuiStreamRenderer",
         _RecordingRenderer,
     )
     # Renderer choice is now backend-aware; pin the OpenTUI backend so the
     # recording renderer (patched above) is the one the bridge selects.
     monkeypatch.setattr(
-        "opensquilla.cli.tui.adapters.runtime_bridge.validate_tui_backend_selection",
+        "openstarry_code.cli.tui.adapters.runtime_bridge.validate_tui_backend_selection",
         lambda env=None: "opentui",
     )
     result = await chat_cmd._stream_response_gateway(
@@ -2228,7 +2228,7 @@ async def test_gateway_stream_collects_artifact_events(monkeypatch) -> None:
 @pytest.mark.asyncio
 async def test_gateway_elevated_unknown_prefix_is_not_handled(monkeypatch) -> None:
     _FakeGatewayClient.instances.clear()
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", _FakeGatewayClient)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", _FakeGatewayClient)
     fake = _FakeGatewayClient()
     state = ChatSessionState(session_key="agent:main:abc123", model="openai/test")
 

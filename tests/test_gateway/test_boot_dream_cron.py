@@ -14,9 +14,9 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.gateway.boot import _interval_h_to_schedule, _register_dream_crons
-from opensquilla.scheduler.parser import CronParseError
-from opensquilla.scheduler.types import CronJob, ScheduleKind, SessionTarget
+from openstarry_code.gateway.boot import _interval_h_to_schedule, _register_dream_crons
+from openstarry_code.scheduler.parser import CronParseError
+from openstarry_code.scheduler.types import CronJob, ScheduleKind, SessionTarget
 
 
 def test_interval_h_to_schedule_aligns_to_cron_when_24_divides_evenly() -> None:
@@ -166,7 +166,7 @@ async def test_register_does_not_raise_for_any_supported_interval_h() -> None:
 
 
 def _cfg_with(sl_enabled: bool, dream_enabled: bool, auto_schedule: bool):
-    from opensquilla.gateway.config import GatewayConfig, RouterSelfLearningConfig
+    from openstarry_code.gateway.config import GatewayConfig, RouterSelfLearningConfig
 
     cfg = GatewayConfig()
     cfg.squilla_router.self_learning = RouterSelfLearningConfig(enabled=sl_enabled)
@@ -178,7 +178,7 @@ def _cfg_with(sl_enabled: bool, dream_enabled: bool, auto_schedule: bool):
 def test_warns_when_self_learning_on_but_dream_off() -> None:
     import structlog
 
-    from opensquilla.gateway.boot import _warn_if_self_learning_unreachable
+    from openstarry_code.gateway.boot import _warn_if_self_learning_unreachable
 
     with structlog.testing.capture_logs() as captured:
         _warn_if_self_learning_unreachable(_cfg_with(True, False, False))
@@ -188,7 +188,7 @@ def test_warns_when_self_learning_on_but_dream_off() -> None:
 def test_warns_when_dream_on_but_not_scheduled() -> None:
     import structlog
 
-    from opensquilla.gateway.boot import _warn_if_self_learning_unreachable
+    from openstarry_code.gateway.boot import _warn_if_self_learning_unreachable
 
     with structlog.testing.capture_logs() as captured:
         _warn_if_self_learning_unreachable(_cfg_with(True, True, False))
@@ -198,7 +198,7 @@ def test_warns_when_dream_on_but_not_scheduled() -> None:
 def test_silent_when_chain_complete() -> None:
     import structlog
 
-    from opensquilla.gateway.boot import _warn_if_self_learning_unreachable
+    from openstarry_code.gateway.boot import _warn_if_self_learning_unreachable
 
     with structlog.testing.capture_logs() as captured:
         _warn_if_self_learning_unreachable(_cfg_with(True, True, True))
@@ -211,9 +211,9 @@ def test_silent_when_chain_complete() -> None:
 def test_warns_when_dream_kill_switch_set(monkeypatch) -> None:
     import structlog
 
-    from opensquilla.gateway.boot import _warn_if_self_learning_unreachable
+    from openstarry_code.gateway.boot import _warn_if_self_learning_unreachable
 
-    monkeypatch.setenv("OPENSQUILLA_MEMORY_DREAM_DISABLED", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_MEMORY_DREAM_DISABLED", "1")
     with structlog.testing.capture_logs() as captured:
         _warn_if_self_learning_unreachable(_cfg_with(True, True, True))
     assert any(e["event"] == "router_self_learning.trigger_unreachable" for e in captured)

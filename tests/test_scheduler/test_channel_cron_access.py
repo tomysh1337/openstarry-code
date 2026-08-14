@@ -23,20 +23,20 @@ from typing import Any
 
 import pytest
 
-import opensquilla.tools.builtin.admin as admin_mod
-from opensquilla.scheduler.types import (
+import openstarry_code.tools.builtin.admin as admin_mod
+from openstarry_code.scheduler.types import (
     CronJob,
     DeliveryConfig,
     ReplyTargetSnapshot,
     SessionTarget,
 )
-from opensquilla.tools.builtin.admin import cron as cron_tool
-from opensquilla.tools.registry import (
+from openstarry_code.tools.builtin.admin import cron as cron_tool
+from openstarry_code.tools.registry import (
     _CHANNEL_DEFAULT_ALLOW,
     ToolProfile,
     profile_allows_tool,
 )
-from opensquilla.tools.types import (
+from openstarry_code.tools.types import (
     CallerKind,
     InteractionMode,
     ToolContext,
@@ -65,7 +65,7 @@ def test_cron_visible_in_channel_default_profile() -> None:
 
 def test_cron_spec_is_not_owner_only() -> None:
     """Defense-in-depth dispatch must not block channel callers."""
-    from opensquilla.tools.registry import _default_registry
+    from openstarry_code.tools.registry import _default_registry
 
     rt = _default_registry.get("cron")
     assert rt is not None, "cron tool not registered"
@@ -163,9 +163,9 @@ def _owner_ctx(session_key: str = "agent:main:cli:owner") -> ToolContext:
 
 def _install_fake_infer(monkeypatch, snapshot: ReplyTargetSnapshot | None) -> None:
     """Patch infer_delivery so test calls do not hit real session storage."""
-    from opensquilla.scheduler import delivery as delivery_mod
-    from opensquilla.scheduler.types import DeliveryConfig as LocalDeliveryConfig
-    from opensquilla.scheduler.types import DeliveryMode as LocalDeliveryMode
+    from openstarry_code.scheduler import delivery as delivery_mod
+    from openstarry_code.scheduler.types import DeliveryConfig as LocalDeliveryConfig
+    from openstarry_code.scheduler.types import DeliveryMode as LocalDeliveryMode
 
     async def _stub(session_storage, session_key, user_overrides):
         if snapshot is None:
@@ -180,7 +180,7 @@ def _install_fake_infer(monkeypatch, snapshot: ReplyTargetSnapshot | None) -> No
         )
 
     monkeypatch.setattr(delivery_mod, "infer_delivery", _stub)
-    from opensquilla.tools.builtin import sessions as sessions_mod
+    from openstarry_code.tools.builtin import sessions as sessions_mod
 
     monkeypatch.setattr(
         sessions_mod, "_get_session_manager", lambda: object(), raising=False

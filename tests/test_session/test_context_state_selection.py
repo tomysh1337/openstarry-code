@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 
-from opensquilla.session.context_state_selection import latest_context_state
+from openstarry_code.session.context_state_selection import latest_context_state
 
 
 def _state(provider: str, created_at: int, state_id: int) -> SimpleNamespace:

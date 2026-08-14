@@ -2,8 +2,8 @@
 
 A search provider can be configured, buildable, and still refused before it is
 reached, because the sandbox resolves a network mode per action. Issue #1130 is
-that disagreement: Overview and ``opensquilla search status`` said DuckDuckGo was
-ready while ``opensquilla search query`` came back denied.
+that disagreement: Overview and ``openstarry-code search status`` said DuckDuckGo was
+ready while ``openstarry-code search query`` came back denied.
 
 The mode is resolved from the graded ``SecurityLevel``, not from the configured
 run mode, so these tests pin the property that matters — the precondition and the
@@ -17,17 +17,17 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.sandbox.config import SandboxSettings
-from opensquilla.sandbox.integration import (
+from openstarry_code.sandbox.config import SandboxSettings
+from openstarry_code.sandbox.integration import (
     configure_runtime,
     effective_network_mode,
     in_process_network_precondition,
     reset_runtime,
     run_in_process_network_action,
 )
-from opensquilla.sandbox.run_context import RunContext
-from opensquilla.sandbox.run_mode import RunMode
-from opensquilla.sandbox.types import NetworkMode
+from openstarry_code.sandbox.run_context import RunContext
+from openstarry_code.sandbox.run_mode import RunMode
+from openstarry_code.sandbox.types import NetworkMode
 
 _ARGV = ("web_search", "opensquilla", "5", "providers=duckduckgo")
 
@@ -106,7 +106,7 @@ async def test_a_disabled_network_without_run_context_reports_required_grant(
 async def test_an_established_run_context_clears_the_precondition_and_the_call_runs(
     posture: str, tmp_path: Path
 ) -> None:
-    from opensquilla.tools.types import ToolContext, current_tool_context
+    from openstarry_code.tools.types import ToolContext, current_tool_context
 
     configure_runtime(_POSTURES[posture], workspace=tmp_path)
     assert in_process_network_precondition() is not None
@@ -160,7 +160,7 @@ def test_a_probe_that_cannot_resolve_reports_no_answer_instead_of_raising(
     # Overview both reach. A posture probe that raises would turn a readiness
     # request into an error response — strictly worse than the wrong-but-quiet
     # readiness this change set out to fix.
-    from opensquilla.sandbox import integration
+    from openstarry_code.sandbox import integration
 
     configure_runtime(_POSTURES["recommended"], workspace=tmp_path)
 

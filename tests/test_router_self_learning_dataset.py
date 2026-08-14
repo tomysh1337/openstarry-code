@@ -4,20 +4,20 @@ from __future__ import annotations
 
 import numpy as np
 
-from opensquilla.squilla_router.self_learning import (
+from openstarry_code.squilla_router.self_learning import (
     build_training_dataset,
     encode_features,
     export_training_dataset,
     write_sample,
 )
-from opensquilla.squilla_router.self_learning.alignment import (
+from openstarry_code.squilla_router.self_learning.alignment import (
     REASON_CONFIDENCE_BACKOFF,
     REASON_IMMEDIATE_COMPLAINT,
     REASON_NORMAL,
     REASON_RETROSPECTIVE,
     align_session,
 )
-from opensquilla.squilla_router.self_learning.schema import RouterTrainSample
+from openstarry_code.squilla_router.self_learning.schema import RouterTrainSample
 
 
 def mk(

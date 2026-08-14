@@ -8,14 +8,14 @@ import httpx
 import pytest
 import websockets.exceptions
 
-from opensquilla.channels.discord import (
+from openstarry_code.channels.discord import (
     GATEWAY_INTENTS,
     DiscordChannel,
     DiscordChannelConfig,
 )
-from opensquilla.channels.types import IncomingMessage
-from opensquilla.gateway.config import DiscordChannelEntry
-from opensquilla.onboarding.channel_specs import get_channel_setup_spec
+from openstarry_code.channels.types import IncomingMessage
+from openstarry_code.gateway.config import DiscordChannelEntry
+from openstarry_code.onboarding.channel_specs import get_channel_setup_spec
 
 
 @pytest.fixture
@@ -46,8 +46,8 @@ async def test_first_gateway_heartbeat_uses_negotiated_jitter(
         delays.append(delay)
         channel._connected = False
 
-    monkeypatch.setattr("opensquilla.channels.discord.random.random", lambda: 0.25)
-    monkeypatch.setattr("opensquilla.channels.discord.asyncio.sleep", fake_sleep)
+    monkeypatch.setattr("openstarry_code.channels.discord.random.random", lambda: 0.25)
+    monkeypatch.setattr("openstarry_code.channels.discord.asyncio.sleep", fake_sleep)
 
     await channel._heartbeat_loop()
 
@@ -171,7 +171,7 @@ async def test_early_invalid_session_clears_resume_state(
         return None
 
     channel._ws_recv = fake_recv  # type: ignore[method-assign]
-    monkeypatch.setattr("opensquilla.channels.discord.asyncio.sleep", fake_sleep)
+    monkeypatch.setattr("openstarry_code.channels.discord.asyncio.sleep", fake_sleep)
 
     with pytest.raises(RuntimeError, match="invalidated"):
         await channel._await_ready_dispatch()

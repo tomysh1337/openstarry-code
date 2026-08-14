@@ -2,13 +2,13 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.sandbox.domain_validation import (
+from openstarry_code.sandbox.domain_validation import (
     DomainDecision,
     domain_matches,
     normalize_domain,
     validate_domain_pattern,
 )
-from opensquilla.sandbox.package_bundles import (
+from openstarry_code.sandbox.package_bundles import (
     DEFAULT_PACKAGE_BUNDLE_IDS,
     PACKAGE_BUNDLES,
     expand_package_bundle,

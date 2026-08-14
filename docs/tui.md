@@ -261,7 +261,7 @@ the same version and land separately.
 Maintainers can explicitly use the source host while developing:
 
 ```sh
-bun install --frozen-lockfile --cwd=src/opensquilla/cli/tui/opentui/package
+bun install --frozen-lockfile --cwd=src/openstarry_code/cli/tui/opentui/package
 OPENSQUILLA_TUI_DEV_SOURCE_HOST=1 uv run opensquilla chat --ui tui
 ```
 

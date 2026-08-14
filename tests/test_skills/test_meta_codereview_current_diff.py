@@ -12,16 +12,16 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.engine.types import AgentEvent, DoneEvent, TextDeltaEvent
-from opensquilla.skills.loader import SkillLoader
-from opensquilla.skills.meta.orchestrator import MetaOrchestrator
-from opensquilla.skills.meta.parser import parse_meta_plan
-from opensquilla.skills.meta.types import MetaMatch
+from openstarry_code.engine.types import AgentEvent, DoneEvent, TextDeltaEvent
+from openstarry_code.skills.loader import SkillLoader
+from openstarry_code.skills.meta.orchestrator import MetaOrchestrator
+from openstarry_code.skills.meta.parser import parse_meta_plan
+from openstarry_code.skills.meta.types import MetaMatch
 
 _BUNDLED = (
-    Path(__file__).resolve().parents[2] / "src" / "opensquilla" / "skills" / "bundled"
+    Path(__file__).resolve().parents[2] / "src" / "openstarry_code" / "skills" / "bundled"
 )
-_EXP = Path(__file__).resolve().parents[2] / "src" / "opensquilla" / "skills" / "exp"
+_EXP = Path(__file__).resolve().parents[2] / "src" / "openstarry_code" / "skills" / "exp"
 
 
 def _bundle_loader(tmp_path: Path) -> SkillLoader:

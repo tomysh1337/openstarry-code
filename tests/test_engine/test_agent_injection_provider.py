@@ -1,4 +1,4 @@
-from opensquilla.engine.agent_injection import (
+from openstarry_code.engine.agent_injection import (
     ListPendingInputProvider,
     PendingInputProvider,
 )

@@ -14,19 +14,19 @@ from collections.abc import AsyncIterator
 from types import SimpleNamespace
 from typing import Any
 
-from opensquilla.context_budget import ContextBudgetGovernor
-from opensquilla.engine import ToolResult
-from opensquilla.engine.agent import Agent
-from opensquilla.engine.agent_injection import ListPendingInputProvider
-from opensquilla.engine.pipeline import TurnContext
-from opensquilla.engine.runtime import TurnRunner, _SelectorFallbackProvider
-from opensquilla.engine.selector_override import apply_model_override
-from opensquilla.engine.types import (
+from openstarry_code.context_budget import ContextBudgetGovernor
+from openstarry_code.engine import ToolResult
+from openstarry_code.engine.agent import Agent
+from openstarry_code.engine.agent_injection import ListPendingInputProvider
+from openstarry_code.engine.pipeline import TurnContext
+from openstarry_code.engine.runtime import TurnRunner, _SelectorFallbackProvider
+from openstarry_code.engine.selector_override import apply_model_override
+from openstarry_code.engine.types import (
     AgentConfig,
     RouterDecisionEvent,
 )
-from opensquilla.engine.types import DoneEvent as EngineDoneEvent
-from opensquilla.provider import (
+from openstarry_code.engine.types import DoneEvent as EngineDoneEvent
+from openstarry_code.provider import (
     ChatConfig,
     DoneEvent,
     ErrorEvent,
@@ -39,8 +39,8 @@ from opensquilla.provider import (
     ToolUseEndEvent,
     ToolUseStartEvent,
 )
-from opensquilla.provider.openai import OpenAIProvider
-from opensquilla.tools.types import CallerKind, ToolContext
+from openstarry_code.provider.openai import OpenAIProvider
+from openstarry_code.tools.types import CallerKind, ToolContext
 
 
 class _StubSelector:
@@ -165,7 +165,7 @@ def test_fallback_leg_rebinds_request_budget_and_model_capabilities(
         ) -> int:
             return 8_192
 
-    monkeypatch.setattr("opensquilla.engine.runtime.shared_catalog", lambda: _Catalog())
+    monkeypatch.setattr("openstarry_code.engine.runtime.shared_catalog", lambda: _Catalog())
     wrapper = _SelectorFallbackProvider(
         object(),
         _StubSelector("fallback/model"),
@@ -216,7 +216,7 @@ def test_fallback_leg_replaces_a_cap_derived_for_the_previous_leg(
         ) -> ModelCapabilities:
             return ModelCapabilities()
 
-    monkeypatch.setattr("opensquilla.engine.runtime.shared_catalog", lambda: _Catalog())
+    monkeypatch.setattr("openstarry_code.engine.runtime.shared_catalog", lambda: _Catalog())
     wrapper = _SelectorFallbackProvider(
         object(),
         _StubSelector("fallback/model"),
@@ -258,7 +258,7 @@ def test_fallback_leg_preserves_global_context_window_override(
         ) -> ModelCapabilities:
             return ModelCapabilities()
 
-    monkeypatch.setattr("opensquilla.engine.runtime.shared_catalog", lambda: _Catalog())
+    monkeypatch.setattr("openstarry_code.engine.runtime.shared_catalog", lambda: _Catalog())
     wrapper = _SelectorFallbackProvider(
         object(),
         _StubSelector("fallback/model"),
@@ -316,9 +316,9 @@ def test_global_context_window_override_prevents_catalog_only_escalation(
             return global_override, "config"
         return (4_000, "catalog") if model == "small-model" else (32_000, "catalog")
 
-    monkeypatch.setattr("opensquilla.engine.runtime.shared_catalog", object)
+    monkeypatch.setattr("openstarry_code.engine.runtime.shared_catalog", object)
     monkeypatch.setattr(
-        "opensquilla.engine.runtime.resolve_effective_context_window",
+        "openstarry_code.engine.runtime.resolve_effective_context_window",
         _resolve_context_window,
     )
     wrapper = _SelectorFallbackProvider(object(), _Selector())
@@ -348,9 +348,9 @@ def test_fallback_leg_never_enlarges_an_explicit_request_cap(
         ) -> ModelCapabilities:
             return ModelCapabilities()
 
-    monkeypatch.setattr("opensquilla.engine.runtime.shared_catalog", lambda: _Catalog())
+    monkeypatch.setattr("openstarry_code.engine.runtime.shared_catalog", lambda: _Catalog())
     monkeypatch.setattr(
-        "opensquilla.engine.runtime.resolve_effective_context_window",
+        "openstarry_code.engine.runtime.resolve_effective_context_window",
         lambda *_args, **_kwargs: (32_000, "catalog"),
     )
     wrapper = _SelectorFallbackProvider(
@@ -967,7 +967,7 @@ async def test_local_admission_failure_escalates_to_larger_authorized_leg(
         return (4_000, "catalog") if model == "small-model" else (32_000, "catalog")
 
     monkeypatch.setattr(
-        "opensquilla.engine.runtime.resolve_effective_context_window",
+        "openstarry_code.engine.runtime.resolve_effective_context_window",
         _resolve_context_window,
     )
     selector = _AdmissionSelector()

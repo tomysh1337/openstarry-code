@@ -65,7 +65,7 @@ From a repository checkout, rebuild the artifact before starting the gateway or
 building a wheel:
 
 ```sh
-cd opensquilla-webui
+cd openstarry-code-webui
 npm ci
 npm run build
 ```
@@ -354,7 +354,7 @@ Git LFS pointer files into the image. Hydrate them before building
 
 ```sh
 sudo apt install -y git git-lfs
-git lfs pull --include="src/opensquilla/squilla_router/models/**"
+git lfs pull --include="src/openstarry_code/squilla_router/models/**"
 docker build -t opensquilla:local .
 ```
 

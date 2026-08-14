@@ -9,7 +9,7 @@ state/workspace, raw Gateway logs are removed, and the only durable output is
 the coordinator's bounded numeric result schema.
 
 The browser scenarios delegate page interaction to the checked-in Playwright
-helper in ``opensquilla-webui/scripts/live-long-task-browser.mjs``.  The Python
+helper in ``openstarry-code-webui/scripts/live-long-task-browser.mjs``.  The Python
 process remains the lifecycle owner so a browser can request a graceful or
 forced Gateway restart without receiving a process id or credentials.
 """
@@ -40,14 +40,14 @@ from typing import Any, Final, Literal, cast
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SRC_DIR = REPO_ROOT / "src"
-WEBUI_ROOT = REPO_ROOT / "opensquilla-webui"
+WEBUI_ROOT = REPO_ROOT / "openstarry-code-webui"
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 if str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))
 
-from opensquilla.gateway_client import GatewayRPCClient  # noqa: E402
-from opensquilla.provider.registry import get_provider_spec  # noqa: E402
+from openstarry_code.gateway_client import GatewayRPCClient  # noqa: E402
+from openstarry_code.provider.registry import get_provider_spec  # noqa: E402
 from scripts.live_harness_security import (  # noqa: E402
     classify_failure,
     is_temporary_report_path,
@@ -588,14 +588,14 @@ class GatewayProcess:
         env.update(
             {
                 "PYTHONPATH": os.pathsep.join((str(REPO_ROOT), str(SRC_DIR))),
-                "OPENSQUILLA_GATEWAY_CONFIG_PATH": str(self.config_path),
-                "OPENSQUILLA_STATE_DIR": str(self.state_dir),
-                "OPENSQUILLA_USER_STATE_DIR": str(self.user_state_dir),
-                "OPENSQUILLA_TEST_PROFILE_LOCK_ROOT": "1",
-                "OPENSQUILLA_MEMORY_DREAM_DISABLED": "1",
-                "OPENSQUILLA_TURN_CALL_LOG": "1",
-                "OPENSQUILLA_TURN_CALL_LOG_DIR": str(self.turn_log_dir),
-                "OPENSQUILLA_LIVE_DISABLE_DOTENV": "1",
+                "OPENSTARRY_CODE_GATEWAY_CONFIG_PATH": str(self.config_path),
+                "OPENSTARRY_CODE_STATE_DIR": str(self.state_dir),
+                "OPENSTARRY_CODE_USER_STATE_DIR": str(self.user_state_dir),
+                "OPENSTARRY_CODE_TEST_PROFILE_LOCK_ROOT": "1",
+                "OPENSTARRY_CODE_MEMORY_DREAM_DISABLED": "1",
+                "OPENSTARRY_CODE_TURN_CALL_LOG": "1",
+                "OPENSTARRY_CODE_TURN_CALL_LOG_DIR": str(self.turn_log_dir),
+                "OPENSTARRY_CODE_LIVE_DISABLE_DOTENV": "1",
             }
         )
         return env
@@ -609,7 +609,7 @@ class GatewayProcess:
             [
                 sys.executable,
                 "-m",
-                "opensquilla.cli.main",
+                "openstarry_code.cli.main",
                 "gateway",
                 "run",
                 "--port",
@@ -1430,7 +1430,7 @@ def _load_performance_gate_evidence() -> PerformanceGateEvidence:
 def _browser_child_environment() -> dict[str, str]:
     env = minimal_child_environment(os.environ)
     # Browser discovery is path based. No provider credential, config value,
-    # or arbitrary OPENSQUILLA_* variable crosses this boundary.
+    # or arbitrary OPENSTARRY_CODE_* variable crosses this boundary.
     env["CI"] = "1"
     return env
 

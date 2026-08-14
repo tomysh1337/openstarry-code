@@ -2,12 +2,12 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.engine.types import AgentConfig, DoneEvent
-from opensquilla.skills.creator.runtime_e2e import (
+from openstarry_code.engine.types import AgentConfig, DoneEvent
+from openstarry_code.skills.creator.runtime_e2e import (
     make_runtime_e2e_context,
     run_runtime_e2e_gate,
 )
-from opensquilla.tool_boundary import ToolCall
+from openstarry_code.tool_boundary import ToolCall
 
 SKILL_MD = """---
 name: synth-test-pipeline

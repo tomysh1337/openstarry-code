@@ -4,9 +4,9 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.skills.meta.parser import MetaPlanError, parse_meta_plan
-from opensquilla.skills.meta.types import ClarifyStepConfig
-from opensquilla.skills.types import SkillLayer, SkillSpec
+from openstarry_code.skills.meta.parser import MetaPlanError, parse_meta_plan
+from openstarry_code.skills.meta.types import ClarifyStepConfig
+from openstarry_code.skills.types import SkillLayer, SkillSpec
 
 
 def _spec(steps: list[dict]) -> SkillSpec:

@@ -5,10 +5,10 @@ from unittest.mock import Mock
 
 import pytest
 
-from opensquilla.application.approval_queue import ApprovalQueue
-from opensquilla.gateway import boot
-from opensquilla.session.models import AgentTaskRecord, AgentTaskStatus
-from opensquilla.session.storage import SessionStorage
+from openstarry_code.application.approval_queue import ApprovalQueue
+from openstarry_code.gateway import boot
+from openstarry_code.session.models import AgentTaskRecord, AgentTaskStatus
+from openstarry_code.session.storage import SessionStorage
 
 
 def test_restart_recovery_expires_every_pending_approval_once() -> None:

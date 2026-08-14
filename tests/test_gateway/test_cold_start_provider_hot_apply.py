@@ -16,16 +16,16 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.rpc.registry import RpcContext, _status
-from opensquilla.gateway.rpc_config import (
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.rpc.registry import RpcContext, _status
+from openstarry_code.gateway.rpc_config import (
     _sync_provider_selector as config_sync_provider_selector,
 )
-from opensquilla.gateway.rpc_onboarding import (
+from openstarry_code.gateway.rpc_onboarding import (
     _sync_provider_selector as onboarding_sync_provider_selector,
 )
-from opensquilla.provider.selector import (
+from openstarry_code.provider.selector import (
     ModelSelector,
     ProviderConfig,
     SelectorConfig,
@@ -122,11 +122,11 @@ async def test_build_services_constructs_unconfigured_selector_without_key(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     """A keyless boot must still yield a selector for hot-apply to mutate."""
-    from opensquilla.gateway.boot import build_services
-    from opensquilla.provider.model_catalog import set_shared_catalog
-    from opensquilla.sandbox.integration import reset_runtime
+    from openstarry_code.gateway.boot import build_services
+    from openstarry_code.provider.model_catalog import set_shared_catalog
+    from openstarry_code.sandbox.integration import reset_runtime
 
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "state"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "state"))
     # A developer checkout may carry a repo-local .env with real keys;
     # load_env would re-inject them mid-boot and make the selector
     # configured. Run from an empty cwd so the cold-boot state is real.
@@ -139,7 +139,7 @@ async def test_build_services_constructs_unconfigured_selector_without_key(
         raise AssertionError("unit tests must not schedule real sandbox setup")
 
     monkeypatch.setattr(
-        "opensquilla.gateway.boot.create_background_task",
+        "openstarry_code.gateway.boot.create_background_task",
         fail_background_sandbox_setup,
     )
 

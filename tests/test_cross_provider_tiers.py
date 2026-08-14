@@ -11,19 +11,19 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 
-from opensquilla.engine.selector_override import (
+from openstarry_code.engine.selector_override import (
     apply_model_override,
     cross_provider_tier_config,
     resolve_tier_provider_config,
 )
-from opensquilla.gateway.config import GatewayConfig, LlmProviderProfile
-from opensquilla.provider.anthropic import _build_message_payload
-from opensquilla.provider.compat_policy import compat_policy_for_kind
-from opensquilla.provider.deployment import resolve_provider_deployment
-from opensquilla.provider.environment import environment_value
-from opensquilla.provider.openai import _build_openai_messages, _build_openai_wire_messages
-from opensquilla.provider.selector import ModelSelector, ProviderConfig, SelectorConfig
-from opensquilla.provider.types import (
+from openstarry_code.gateway.config import GatewayConfig, LlmProviderProfile
+from openstarry_code.provider.anthropic import _build_message_payload
+from openstarry_code.provider.compat_policy import compat_policy_for_kind
+from openstarry_code.provider.deployment import resolve_provider_deployment
+from openstarry_code.provider.environment import environment_value
+from openstarry_code.provider.openai import _build_openai_messages, _build_openai_wire_messages
+from openstarry_code.provider.selector import ModelSelector, ProviderConfig, SelectorConfig
+from openstarry_code.provider.types import (
     ChatConfig,
     ContentBlockText,
     ContentBlockThinking,

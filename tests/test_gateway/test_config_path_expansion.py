@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.onboarding.config_store import resolve_config_path
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.onboarding.config_store import resolve_config_path
 
 
 def test_gateway_load_expands_tilde_in_explicit_config_path(monkeypatch, tmp_path) -> None:
@@ -16,7 +16,7 @@ def test_gateway_load_expands_tilde_in_explicit_config_path(monkeypatch, tmp_pat
     real_config.write_text("port = 4242\n", encoding="utf-8")
 
     literal = "~/myconfig.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", literal)
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", literal)
 
     # CLI (config_store) already expands the tilde; the gateway must agree.
     resolved, source = resolve_config_path()

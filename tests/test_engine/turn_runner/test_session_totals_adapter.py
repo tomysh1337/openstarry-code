@@ -5,8 +5,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.engine.turn_runner.harness import _TurnRunnerSessionTotalsAdapter
-from opensquilla.engine.types import DoneEvent
+from openstarry_code.engine.turn_runner.harness import _TurnRunnerSessionTotalsAdapter
+from openstarry_code.engine.types import DoneEvent
 
 
 class _Manager:

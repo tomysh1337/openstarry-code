@@ -11,7 +11,7 @@ SKILL.md schema declared ``default: en``.
 
 from __future__ import annotations
 
-from opensquilla.skills.meta.orchestrator import _merge_clarify_defaults
+from openstarry_code.skills.meta.orchestrator import _merge_clarify_defaults
 
 
 def _schema_dict() -> dict:

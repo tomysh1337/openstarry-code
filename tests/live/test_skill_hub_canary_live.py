@@ -13,26 +13,26 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.skills.hub.github import GitHubSource
-from opensquilla.skills.hub.management import SkillManagementService
-from opensquilla.skills.hub.router import SourceRouter
-from opensquilla.skills.loader import SkillLoader
-from opensquilla.tools.builtin import skill_tools as skill_tools_module
-from opensquilla.tools.registry import get_default_registry
+from openstarry_code.skills.hub.github import GitHubSource
+from openstarry_code.skills.hub.management import SkillManagementService
+from openstarry_code.skills.hub.router import SourceRouter
+from openstarry_code.skills.loader import SkillLoader
+from openstarry_code.tools.builtin import skill_tools as skill_tools_module
+from openstarry_code.tools.registry import get_default_registry
 
 pytestmark = pytest.mark.live_skill_hub
 
-_CANARY_NAME = "opensquilla-live-skill-hub-canary"
+_CANARY_NAME = "openstarry-code-live-skill-hub-canary"
 _BODY_MARKER = "synthetic, instruction-only Skill"
-_RESOURCE_MARKER = "opensquilla-live-skill-hub-canary-resource"
+_RESOURCE_MARKER = "openstarry-code-live-skill-hub-canary-resource"
 
 
 def _require_live_canary() -> str:
-    if os.environ.get("OPENSQUILLA_RUN_LIVE_SKILL_HUB") != "1":
-        pytest.skip("set OPENSQUILLA_RUN_LIVE_SKILL_HUB=1 to run the live Skill Hub canary")
-    identifier = os.environ.get("OPENSQUILLA_LIVE_SKILL_INSTALL_REFERENCE", "").strip()
+    if os.environ.get("OPENSTARRY_CODE_RUN_LIVE_SKILL_HUB") != "1":
+        pytest.skip("set OPENSTARRY_CODE_RUN_LIVE_SKILL_HUB=1 to run the live Skill Hub canary")
+    identifier = os.environ.get("OPENSTARRY_CODE_LIVE_SKILL_INSTALL_REFERENCE", "").strip()
     if not identifier:
-        pytest.skip("set OPENSQUILLA_LIVE_SKILL_INSTALL_REFERENCE to the exact canary fixture")
+        pytest.skip("set OPENSTARRY_CODE_LIVE_SKILL_INSTALL_REFERENCE to the exact canary fixture")
     return identifier
 
 

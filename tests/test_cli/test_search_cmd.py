@@ -1,10 +1,10 @@
-"""CLI tests for `opensquilla search`."""
+"""CLI tests for `openstarry-code search`."""
 
 from __future__ import annotations
 
 from typer.testing import CliRunner
 
-from opensquilla.cli.main import app
+from openstarry_code.cli.main import app
 
 runner = CliRunner()
 
@@ -18,7 +18,7 @@ def test_search_list_shows_runtime_providers():
 
 def test_search_configure_writes_config(tmp_path, monkeypatch):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     result = runner.invoke(
         app,
         [
@@ -40,7 +40,7 @@ def test_search_configure_writes_config(tmp_path, monkeypatch):
 
 def test_search_configure_warns_when_env_key_is_not_set(tmp_path, monkeypatch):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     monkeypatch.delenv("BRAVE_SEARCH_API_KEY", raising=False)
 
     result = runner.invoke(

@@ -212,7 +212,7 @@ def test_missing_certifi_bundle_fails_with_redacted_action(
         ca_hook.ensure_frozen_default_ca_trust()
 
     message = str(exc_info.value)
-    assert "Reinstall OpenSquilla Desktop" in message
+    assert "Reinstall OpenStarry Code Desktop" in message
     assert str(secret_path) not in message
 
 
@@ -361,16 +361,16 @@ def test_desktop_gateway_entry_routes_sandbox_helper_before_cli(
         nonlocal app_called
         app_called = True
 
-    helper_module = ModuleType("opensquilla.sandbox.backend.windows_default_setup")
+    helper_module = ModuleType("openstarry_code.sandbox.backend.windows_default_setup")
     helper_module.elevated_setup_helper_main = elevated_setup_helper_main
-    cli_module = ModuleType("opensquilla.cli.main")
+    cli_module = ModuleType("openstarry_code.cli.main")
     cli_module.app = app
     monkeypatch.setitem(
         sys.modules,
-        "opensquilla.sandbox.backend.windows_default_setup",
+        "openstarry_code.sandbox.backend.windows_default_setup",
         helper_module,
     )
-    monkeypatch.setitem(sys.modules, "opensquilla.cli.main", cli_module)
+    monkeypatch.setitem(sys.modules, "openstarry_code.cli.main", cli_module)
     monkeypatch.setattr(sys, "argv", [str(entry_path), "--elevated-helper", "payload"])
 
     with pytest.raises(SystemExit) as exc_info:

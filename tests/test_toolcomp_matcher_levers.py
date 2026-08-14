@@ -2,20 +2,20 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.plugins.tokenjuice.matcher import (
+from openstarry_code.plugins.tokenjuice.matcher import (
     command_argv,
     rule_matches,
     select_rule,
     strip_leading_cd_prefix,
 )
-from opensquilla.plugins.tokenjuice.plugin import reduce_tool_result
-from opensquilla.plugins.tokenjuice.reducer import _summarize_window, reduce_with_rule
-from opensquilla.plugins.tokenjuice.rules import load_rules
-from opensquilla.plugins.tokenjuice.types import Rule
+from openstarry_code.plugins.tokenjuice.plugin import reduce_tool_result
+from openstarry_code.plugins.tokenjuice.reducer import _summarize_window, reduce_with_rule
+from openstarry_code.plugins.tokenjuice.rules import load_rules
+from openstarry_code.plugins.tokenjuice.types import Rule
 
-STRICT_ENV = "OPENSQUILLA_TOOLCOMP_MATCHER_STRICT"
-CD_UNWRAP_ENV = "OPENSQUILLA_TOOLCOMP_CD_UNWRAP"
-FAILURE_PRESERVE_ENV = "OPENSQUILLA_TOOLCOMP_FAILURE_PRESERVE"
+STRICT_ENV = "OPENSTARRY_CODE_TOOLCOMP_MATCHER_STRICT"
+CD_UNWRAP_ENV = "OPENSTARRY_CODE_TOOLCOMP_CD_UNWRAP"
+FAILURE_PRESERVE_ENV = "OPENSTARRY_CODE_TOOLCOMP_FAILURE_PRESERVE"
 ALL_LEVER_ENVS = (STRICT_ENV, CD_UNWRAP_ENV, FAILURE_PRESERVE_ENV)
 
 TRUTHY_VALUES = ["1", "true", "TRUE", "yes", "on", "enabled", " 1 "]

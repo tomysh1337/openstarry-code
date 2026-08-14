@@ -17,7 +17,7 @@ import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 CORE_PYPROJECT = REPO_ROOT / "pyproject.toml"
-COMPANION = REPO_ROOT / "packages" / "opensquilla-tui-host"
+COMPANION = REPO_ROOT / "packages" / "openstarry-code-tui-host"
 BUILDER = REPO_ROOT / "scripts" / "build_tui_host_companion.py"
 
 
@@ -28,10 +28,10 @@ def _version(path: Path) -> str:
 def test_companion_version_and_bun_are_exactly_pinned() -> None:
     assert _version(COMPANION / "pyproject.toml") == _version(CORE_PYPROJECT)
     package = json.loads(
-        (REPO_ROOT / "src/opensquilla/cli/tui/opentui/package/package.json").read_text()
+        (REPO_ROOT / "src/openstarry_code/cli/tui/opentui/package/package.json").read_text()
     )
     pinned = (
-        (REPO_ROOT / "src/opensquilla/cli/tui/opentui/package/.bun-version").read_text().strip()
+        (REPO_ROOT / "src/openstarry_code/cli/tui/opentui/package/.bun-version").read_text().strip()
     )
     assert pinned == "1.3.14"
     assert package["engines"]["bun"] == pinned
@@ -40,7 +40,7 @@ def test_companion_version_and_bun_are_exactly_pinned() -> None:
     assert '"install", "--frozen-lockfile"' in source
     assert '"--options",' in source
     assert '"runtime",' in source
-    assert 'MACOS_SIGNING_IDENTIFIER = "ai.opensquilla.tui-host"' in source
+    assert 'MACOS_SIGNING_IDENTIFIER = "code.openstarry.tui-host"' in source
     assert '("linux", "x64"): "bun-linux-x64-baseline"' in source
     assert '("win32", "x64"): "bun-windows-x64-baseline"' in source
     assert 'build_env["OPENTUI_LIBC"] = "glibc"' in source
@@ -52,25 +52,25 @@ def test_companion_version_and_bun_are_exactly_pinned() -> None:
 
 def test_bun_native_tests_run_in_isolated_processes() -> None:
     package = json.loads(
-        (REPO_ROOT / "src/opensquilla/cli/tui/opentui/package/package.json").read_text()
+        (REPO_ROOT / "src/openstarry_code/cli/tui/opentui/package/package.json").read_text()
     )
     runner = (
         REPO_ROOT
-        / "src/opensquilla/cli/tui/opentui/package/scripts/run-bun-tests.mjs"
+        / "src/openstarry_code/cli/tui/opentui/package/scripts/run-bun-tests.mjs"
     ).read_text()
 
     assert package["scripts"]["test:bun"] == "node scripts/run-bun-tests.mjs"
     assert 'entry.name.endsWith(".bun.test.mjs")' in runner
     assert "for (const testFile of testFiles)" in runner
     assert '"--max-concurrency=1"' in runner
-    assert 'OPENSQUILLA_TUI_COLOR: "truecolor"' in runner
+    assert 'OPENSTARRY_CODE_TUI_COLOR: "truecolor"' in runner
     assert "spawnSync(" in runner
 
 
 def test_core_wheel_excludes_generated_tui_host_directories() -> None:
     data = tomllib.loads(CORE_PYPROJECT.read_text(encoding="utf-8"))
     excluded = set(data["tool"]["hatch"]["build"]["targets"]["wheel"]["exclude"])
-    package_root = "src/opensquilla/cli/tui/opentui/package"
+    package_root = "src/openstarry_code/cli/tui/opentui/package"
     assert {
         f"{package_root}/node_modules/**",
         f"{package_root}/bin/**",
@@ -166,7 +166,7 @@ def test_prebuilt_companion_wheel_has_platform_tag_and_public_api(tmp_path: Path
         timeout=180,
     )
     assert result.returncode == 0, result.stderr
-    wheels = list(out.glob("opensquilla_tui_host-*-py3-none-macosx_13_0_arm64.whl"))
+    wheels = list(out.glob("openstarry_code_tui_host-*-py3-none-macosx_13_0_arm64.whl"))
     assert len(wheels) == 1, list(out.iterdir())
     second_out = tmp_path / "dist-b"
     second = subprocess.run(
@@ -192,7 +192,7 @@ def test_prebuilt_companion_wheel_has_platform_tag_and_public_api(tmp_path: Path
         executable_member = next(
             name
             for name in archive.namelist()
-            if name.endswith("opensquilla_tui_host/bin/opensquilla-tui-host")
+            if name.endswith("openstarry_code_tui_host/bin/openstarry-code-tui-host")
         )
         executable_mode = archive.getinfo(executable_member).external_attr >> 16
         archive.extractall(install_dir)
@@ -205,7 +205,7 @@ def test_prebuilt_companion_wheel_has_platform_tag_and_public_api(tmp_path: Path
         extracted_executable.chmod(executable_mode)
     sys.path.insert(0, str(install_dir))
     try:
-        module = importlib.import_module("opensquilla_tui_host")
+        module = importlib.import_module("openstarry_code_tui_host")
         metadata = module.host_metadata()
         command = module.host_command()
         assert metadata.product_version == _version(CORE_PYPROJECT)
@@ -215,23 +215,25 @@ def test_prebuilt_companion_wheel_has_platform_tag_and_public_api(tmp_path: Path
         assert metadata.arch == "arm64"
         assert metadata.build_id == "test-build"
         assert metadata.bun_version == "1.3.14"
-        assert command == (str(install_dir / "opensquilla_tui_host/bin/opensquilla-tui-host"),)
+        assert command == (
+            str(install_dir / "openstarry_code_tui_host/bin/openstarry-code-tui-host"),
+        )
         assert Path(command[0]).read_bytes() == binary.read_bytes()
         assert metadata.sha256 == hashlib.sha256(binary.read_bytes()).hexdigest()
     finally:
         sys.path.remove(str(install_dir))
-        sys.modules.pop("opensquilla_tui_host.api", None)
-        sys.modules.pop("opensquilla_tui_host", None)
+        sys.modules.pop("openstarry_code_tui_host.api", None)
+        sys.modules.pop("openstarry_code_tui_host", None)
 
 
 @pytest.mark.skipif(shutil.which("uv") is None, reason="uv not on PATH")
 @pytest.mark.parametrize(
     ("target_platform", "target_arch", "wheel_tag", "executable_name"),
     [
-        ("linux", "x64", "manylinux_2_28_x86_64", "opensquilla-tui-host"),
-        ("linux", "arm64", "manylinux_2_28_aarch64", "opensquilla-tui-host"),
-        ("win32", "x64", "win_amd64", "opensquilla-tui-host.exe"),
-        ("win32", "arm64", "win_arm64", "opensquilla-tui-host.exe"),
+        ("linux", "x64", "manylinux_2_28_x86_64", "openstarry-code-tui-host"),
+        ("linux", "arm64", "manylinux_2_28_aarch64", "openstarry-code-tui-host"),
+        ("win32", "x64", "win_amd64", "openstarry-code-tui-host.exe"),
+        ("win32", "arm64", "win_arm64", "openstarry-code-tui-host.exe"),
     ],
 )
 def test_staged_companion_targets_keep_linux_and_windows_artifacts_isolated(
@@ -274,7 +276,9 @@ def test_staged_companion_targets_keep_linux_and_windows_artifacts_isolated(
 
     with zipfile.ZipFile(wheel) as archive:
         names = archive.namelist()
-        metadata = json.loads(archive.read("opensquilla_tui_host/_host_metadata.json").decode())
+        metadata = json.loads(
+            archive.read("openstarry_code_tui_host/_host_metadata.json").decode()
+        )
         wheel_metadata = next(name for name in names if name.endswith(".dist-info/WHEEL"))
         wheel_text = archive.read(wheel_metadata).decode()
 
@@ -293,7 +297,7 @@ def test_staged_companion_targets_keep_linux_and_windows_artifacts_isolated(
     else:
         assert "libc" not in metadata
     assert f"Tag: py3-none-{wheel_tag}" in wheel_text
-    assert f"opensquilla_tui_host/bin/{executable_name}" in names
+    assert f"openstarry_code_tui_host/bin/{executable_name}" in names
 
 
 @pytest.mark.skipif(shutil.which("uv") is None, reason="uv not on PATH")
@@ -308,12 +312,12 @@ def test_core_wheel_stays_universal_and_excludes_host_artifacts(
         wheel_text = archive.read(wheel_metadata).decode()
     assert "Root-Is-Purelib: true" in wheel_text
     assert "Tag: py3-none-any" in wheel_text
-    assert "opensquilla/dist/workspace_state.py" in names
+    assert "openstarry_code/dist/workspace_state.py" in names
     forbidden_parts = {"node_modules", "bin", "build", "dist"}
     leaked = [
         name
         for name in names
-        if name.startswith("opensquilla/cli/tui/opentui/package/")
+        if name.startswith("openstarry_code/cli/tui/opentui/package/")
         and forbidden_parts.intersection(Path(name).parts)
     ]
     assert leaked == []
@@ -321,7 +325,7 @@ def test_core_wheel_stays_universal_and_excludes_host_artifacts(
     assert not [
         name
         for name in names
-        if name.startswith("opensquilla/cli/tui/opentui/package/")
+        if name.startswith("openstarry_code/cli/tui/opentui/package/")
         and Path(name).suffix.lower() in host_native_suffixes
     ]
-    assert all(not name.startswith("opensquilla_tui_host/") for name in names)
+    assert all(not name.startswith("openstarry_code_tui_host/") for name in names)

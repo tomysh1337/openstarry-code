@@ -1,8 +1,8 @@
 """Opt-in workspace write deny levers: host shell, mutator targets, guidance.
 
-Covers OPENSQUILLA_WORKSPACE_WRITE_DENY_HOST_SHELL,
-OPENSQUILLA_WORKSPACE_WRITE_DENY_COMMAND_TARGETS and
-OPENSQUILLA_WORKSPACE_WRITE_DENY_GUIDANCE (all off by default). Motivation:
+Covers OPENSTARRY_CODE_WORKSPACE_WRITE_DENY_HOST_SHELL,
+OPENSTARRY_CODE_WORKSPACE_WRITE_DENY_COMMAND_TARGETS and
+OPENSTARRY_CODE_WORKSPACE_WRITE_DENY_GUIDANCE (all off by default). Motivation:
 deny globs are enforced for filesystem and patch tools, but shell-side
 enforcement only recognizes redirection/tee write targets and is skipped
 entirely under host execution, and the default block message suggests
@@ -18,11 +18,11 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.gateway.approval_queue import reset_approval_queue
-from opensquilla.sandbox.integration import reset_runtime
-from opensquilla.tools import write_policy
-from opensquilla.tools.builtin import shell
-from opensquilla.tools.types import (
+from openstarry_code.gateway.approval_queue import reset_approval_queue
+from openstarry_code.sandbox.integration import reset_runtime
+from openstarry_code.tools import write_policy
+from openstarry_code.tools.builtin import shell
+from openstarry_code.tools.types import (
     CallerKind,
     InteractionMode,
     SafeToolError,
@@ -30,10 +30,10 @@ from opensquilla.tools.types import (
     current_tool_context,
 )
 
-_HOST_SHELL_ENV = "OPENSQUILLA_WORKSPACE_WRITE_DENY_HOST_SHELL"
-_COMMAND_TARGETS_ENV = "OPENSQUILLA_WORKSPACE_WRITE_DENY_COMMAND_TARGETS"
-_INTERPRETER_TARGETS_ENV = "OPENSQUILLA_WORKSPACE_WRITE_DENY_INTERPRETER_TARGETS"
-_GUIDANCE_ENV = "OPENSQUILLA_WORKSPACE_WRITE_DENY_GUIDANCE"
+_HOST_SHELL_ENV = "OPENSTARRY_CODE_WORKSPACE_WRITE_DENY_HOST_SHELL"
+_COMMAND_TARGETS_ENV = "OPENSTARRY_CODE_WORKSPACE_WRITE_DENY_COMMAND_TARGETS"
+_INTERPRETER_TARGETS_ENV = "OPENSTARRY_CODE_WORKSPACE_WRITE_DENY_INTERPRETER_TARGETS"
+_GUIDANCE_ENV = "OPENSTARRY_CODE_WORKSPACE_WRITE_DENY_GUIDANCE"
 
 
 @pytest.fixture(autouse=True)

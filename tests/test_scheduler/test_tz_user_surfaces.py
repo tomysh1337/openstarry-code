@@ -10,10 +10,10 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from opensquilla.gateway.rpc import RpcContext
-from opensquilla.gateway.rpc_cron import _handle_cron_add, _handle_cron_update, _job_to_wire
-from opensquilla.scheduler.payloads import AGENT_TURN_KIND
-from opensquilla.scheduler.types import CronJob, DeliveryConfig, SessionTarget
+from openstarry_code.gateway.rpc import RpcContext
+from openstarry_code.gateway.rpc_cron import _handle_cron_add, _handle_cron_update, _job_to_wire
+from openstarry_code.scheduler.payloads import AGENT_TURN_KIND
+from openstarry_code.scheduler.types import CronJob, DeliveryConfig, SessionTarget
 
 
 class _FakeScheduler:
@@ -185,8 +185,8 @@ class _ToolFakeScheduler:
 
 async def test_cron_tool_accepts_tz_param() -> None:
     """The model-facing `cron` tool must let callers set tz at add time."""
-    import opensquilla.tools.builtin.admin as admin_mod
-    from opensquilla.tools.builtin.admin import cron as cron_tool
+    import openstarry_code.tools.builtin.admin as admin_mod
+    from openstarry_code.tools.builtin.admin import cron as cron_tool
 
     fake = _ToolFakeScheduler()
     admin_mod.set_scheduler(fake)
@@ -210,8 +210,8 @@ async def test_cron_tool_accepts_tz_param() -> None:
 
 
 async def test_cron_tool_defaults_tz_to_empty_string() -> None:
-    import opensquilla.tools.builtin.admin as admin_mod
-    from opensquilla.tools.builtin.admin import cron as cron_tool
+    import openstarry_code.tools.builtin.admin as admin_mod
+    from openstarry_code.tools.builtin.admin import cron as cron_tool
 
     fake = _ToolFakeScheduler()
     admin_mod.set_scheduler(fake)

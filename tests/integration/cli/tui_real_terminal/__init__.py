@@ -1,1 +1,1 @@
-"""Real-terminal TUI integration harness for OpenSquilla."""
+"""Real-terminal TUI integration harness for OpenStarry Code."""

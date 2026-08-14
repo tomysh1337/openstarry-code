@@ -11,23 +11,23 @@ from typing import Any
 import pytest
 from typer.testing import CliRunner
 
-from opensquilla.cli.agent_cmd import (
+from openstarry_code.cli.agent_cmd import (
     AgentRunResult,
     _to_benchmark_transcript,
     run_agent_command,
     run_agent_once,
 )
-from opensquilla.engine.types import ArtifactEvent, DoneEvent, ThinkingEvent
-from opensquilla.gateway.config import AgentEntryConfig, GatewayConfig, PermissionsConfig
-from opensquilla.project_workspaces import (
+from openstarry_code.engine.types import ArtifactEvent, DoneEvent, ThinkingEvent
+from openstarry_code.gateway.config import AgentEntryConfig, GatewayConfig, PermissionsConfig
+from openstarry_code.project_workspaces import (
     ProjectWorkspaceStateError,
     project_path_key,
 )
-from opensquilla.sandbox.config import SandboxSettings
-from opensquilla.sandbox.run_context import RUN_CONTEXT_ORIGIN_KEY
-from opensquilla.session.manager import SessionManager
-from opensquilla.session.storage import SessionStorage
-from opensquilla.tools.types import CallerKind, InteractionMode
+from openstarry_code.sandbox.config import SandboxSettings
+from openstarry_code.sandbox.run_context import RUN_CONTEXT_ORIGIN_KEY
+from openstarry_code.session.manager import SessionManager
+from openstarry_code.session.storage import SessionStorage
+from openstarry_code.tools.types import CallerKind, InteractionMode
 
 
 class _FakeSessionManager:
@@ -181,8 +181,8 @@ async def test_run_agent_once_uses_agent_registry_model_when_model_not_explicit(
         captured["service_config_model"] = config.llm.model
         return _FakeServices(config)
 
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
-    monkeypatch.setattr("opensquilla.gateway.build_services", fake_build_services)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", fake_build_services)
 
     root = tmp_path / "root"
     agent_workspace = tmp_path / "ops-workspace"
@@ -223,8 +223,8 @@ async def test_run_agent_once_uses_configured_full_host_run_mode(
     async def fake_build_services(*, config: GatewayConfig, **kwargs: Any) -> _FakeServices:
         return _FakeServices(config)
 
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
-    monkeypatch.setattr("opensquilla.gateway.build_services", fake_build_services)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", fake_build_services)
 
     cfg = GatewayConfig(
         workspace_dir=str(tmp_path),
@@ -268,8 +268,8 @@ async def test_run_agent_once_collects_artifact_events(
     async def fake_build_services(*, config: GatewayConfig, **kwargs: Any) -> _FakeServices:
         return _FakeServices(config)
 
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
-    monkeypatch.setattr("opensquilla.gateway.build_services", fake_build_services)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", fake_build_services)
 
     result = await run_agent_once(message="hello", config=GatewayConfig())
 
@@ -286,7 +286,7 @@ async def test_run_agent_once_collects_artifact_events(
 async def test_run_agent_once_continues_when_stderr_event_sink_fails(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.agent_event_stream import StderrAgentEventSink
+    from openstarry_code.cli.agent_event_stream import StderrAgentEventSink
 
     class FakeTurnRunner:
         async def run(self, message: str, session_key: str, **kwargs: Any):
@@ -309,9 +309,9 @@ async def test_run_agent_once_continues_when_stderr_event_sink_fails(
 
     stream = BrokenStream()
     sink = StderrAgentEventSink(stream=stream)  # type: ignore[arg-type]
-    monkeypatch.setattr("opensquilla.gateway.build_services", fake_build_services)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", fake_build_services)
     monkeypatch.setattr(
-        "opensquilla.gateway.build_turn_runner_from_services",
+        "openstarry_code.gateway.build_turn_runner_from_services",
         lambda _services: FakeTurnRunner(),
     )
 
@@ -357,7 +357,7 @@ def test_run_agent_command_json_includes_artifacts(
             artifacts=[artifact],
         )
 
-    monkeypatch.setattr("opensquilla.cli.agent_cmd.run_agent_once", fake_run_agent_once)
+    monkeypatch.setattr("openstarry_code.cli.agent_cmd.run_agent_once", fake_run_agent_once)
 
     run_agent_command(message="hello", json_output=True)
 
@@ -383,7 +383,7 @@ def test_run_agent_command_direct_call_normalizes_typer_defaults(
             errors=[],
         )
 
-    monkeypatch.setattr("opensquilla.cli.agent_cmd.run_agent_once", fake_run_agent_once)
+    monkeypatch.setattr("openstarry_code.cli.agent_cmd.run_agent_once", fake_run_agent_once)
 
     run_agent_command(message="hello")
 
@@ -418,7 +418,7 @@ def test_run_agent_command_direct_call_normalizes_typer_defaults(
 def test_run_agent_command_enables_stderr_event_sink(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.agent_event_stream import StderrAgentEventSink
+    from openstarry_code.cli.agent_event_stream import StderrAgentEventSink
 
     captured: dict[str, Any] = {}
 
@@ -433,7 +433,7 @@ def test_run_agent_command_enables_stderr_event_sink(
             errors=[],
         )
 
-    monkeypatch.setattr("opensquilla.cli.agent_cmd.run_agent_once", fake_run_agent_once)
+    monkeypatch.setattr("openstarry_code.cli.agent_cmd.run_agent_once", fake_run_agent_once)
 
     run_agent_command(message="hello", event_stream_stderr=True)
 
@@ -462,7 +462,7 @@ def test_run_agent_command_json_includes_routing(
         }
         return result
 
-    monkeypatch.setattr("opensquilla.cli.agent_cmd.run_agent_once", fake_run_agent_once)
+    monkeypatch.setattr("openstarry_code.cli.agent_cmd.run_agent_once", fake_run_agent_once)
 
     run_agent_command(message="hello", json_output=True)
 
@@ -497,8 +497,8 @@ async def test_run_agent_once_collects_done_routing(
     async def fake_build_services(*, config: GatewayConfig, **kwargs: Any) -> _FakeServices:
         return _FakeServices(config)
 
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
-    monkeypatch.setattr("opensquilla.gateway.build_services", fake_build_services)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", fake_build_services)
 
     result = await run_agent_once(message="hello", config=GatewayConfig())
 
@@ -529,8 +529,8 @@ async def test_run_agent_once_explicit_model_overrides_agent_registry_model(
         captured["service_config_model"] = config.llm.model
         return _FakeServices(config)
 
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
-    monkeypatch.setattr("opensquilla.gateway.build_services", fake_build_services)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", fake_build_services)
 
     cfg = GatewayConfig(agents=[AgentEntryConfig(id="ops", model="agent/default")])
     await run_agent_once(
@@ -563,8 +563,8 @@ async def test_run_agent_once_uses_configured_agent_workspace_without_global_wor
     async def fake_build_services(*, config: GatewayConfig, **kwargs: Any) -> _FakeServices:
         return _FakeServices(config)
 
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
-    monkeypatch.setattr("opensquilla.gateway.build_services", fake_build_services)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", fake_build_services)
 
     agent_workspace = tmp_path / "ops-workspace"
     cfg = GatewayConfig(
@@ -623,8 +623,8 @@ async def test_run_agent_once_uses_bound_project_workspace_over_tampered_origin(
     async def fake_build_services(*, config: GatewayConfig, **kwargs: Any) -> _FakeServices:
         return _FakeServices(config, manager)
 
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
-    monkeypatch.setattr("opensquilla.gateway.build_services", fake_build_services)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", fake_build_services)
     try:
         result = await run_agent_once(
             message="pwd",
@@ -690,8 +690,8 @@ async def test_run_agent_once_refreshes_unbound_saved_context_before_config_fall
     async def fake_build_services(*, config: GatewayConfig, **kwargs: Any) -> _FakeServices:
         return _FakeServices(config, manager)
 
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
-    monkeypatch.setattr("opensquilla.gateway.build_services", fake_build_services)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", fake_build_services)
     sandbox = (
         SandboxSettings()
         if requested_mode is None
@@ -776,8 +776,8 @@ async def test_run_agent_once_preserves_saved_mode_over_config_fallback_for_proj
     async def fake_build_services(*, config: GatewayConfig, **kwargs: Any) -> _FakeServices:
         return _FakeServices(config, manager)
 
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
-    monkeypatch.setattr("opensquilla.gateway.build_services", fake_build_services)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", fake_build_services)
     try:
         result = await run_agent_once(
             message="pwd",
@@ -855,8 +855,8 @@ async def test_run_agent_once_revalidates_bound_project_after_transcript_prepara
     async def fake_build_services(*, config: GatewayConfig, **kwargs: Any) -> _FakeServices:
         return _FakeServices(config, manager)
 
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
-    monkeypatch.setattr("opensquilla.gateway.build_services", fake_build_services)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", fake_build_services)
     try:
         with pytest.raises(ProjectWorkspaceStateError) as raised:
             await run_agent_once(
@@ -891,8 +891,8 @@ async def test_run_agent_once_wires_memory_services_into_turnrunner(
         services = _FakeServices(config)
         return services
 
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
-    monkeypatch.setattr("opensquilla.gateway.build_services", fake_build_services)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", fake_build_services)
 
     await run_agent_once(message="hello", agent_id="main", config=GatewayConfig())
 
@@ -921,8 +921,8 @@ async def test_run_agent_once_forwards_max_iterations(
     async def fake_build_services(*, config: GatewayConfig, **kwargs: Any) -> _FakeServices:
         return _FakeServices(config)
 
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
-    monkeypatch.setattr("opensquilla.gateway.build_services", fake_build_services)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", fake_build_services)
 
     await run_agent_once(
         message="hello",
@@ -951,8 +951,8 @@ async def test_run_agent_once_forwards_zero_max_iterations(
     async def fake_build_services(*, config: GatewayConfig, **kwargs: Any) -> _FakeServices:
         return _FakeServices(config)
 
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
-    monkeypatch.setattr("opensquilla.gateway.build_services", fake_build_services)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", fake_build_services)
 
     await run_agent_once(
         message="hello",
@@ -982,8 +982,8 @@ async def test_run_agent_once_defaults_to_unattended_interaction_contract(
     async def fake_build_services(*, config: GatewayConfig, **kwargs: Any) -> _FakeServices:
         return _FakeServices(config)
 
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
-    monkeypatch.setattr("opensquilla.gateway.build_services", fake_build_services)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", fake_build_services)
 
     await run_agent_once(message="hello", agent_id="main", config=GatewayConfig())
 
@@ -1012,8 +1012,8 @@ async def test_run_agent_once_passes_bypass_permissions_to_tool_context(
     async def fake_build_services(*, config: GatewayConfig, **kwargs: Any) -> _FakeServices:
         return _FakeServices(config)
 
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
-    monkeypatch.setattr("opensquilla.gateway.build_services", fake_build_services)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", fake_build_services)
 
     await run_agent_once(
         message="hello",
@@ -1045,9 +1045,9 @@ async def test_run_agent_once_uses_permissions_environment_default(
     async def fake_build_services(*, config: GatewayConfig, **kwargs: Any) -> _FakeServices:
         return _FakeServices(config)
 
-    monkeypatch.setenv("OPENSQUILLA_AGENT_PERMISSIONS", "full")
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
-    monkeypatch.setattr("opensquilla.gateway.build_services", fake_build_services)
+    monkeypatch.setenv("OPENSTARRY_CODE_AGENT_PERMISSIONS", "full")
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", fake_build_services)
 
     await run_agent_once(message="hello", agent_id="main", config=GatewayConfig())
 
@@ -1071,9 +1071,9 @@ async def test_run_agent_once_uses_default_full_host_run_mode(
     async def fake_build_services(*, config: GatewayConfig, **kwargs: Any) -> _FakeServices:
         return _FakeServices(config)
 
-    monkeypatch.delenv("OPENSQUILLA_AGENT_PERMISSIONS", raising=False)
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
-    monkeypatch.setattr("opensquilla.gateway.build_services", fake_build_services)
+    monkeypatch.delenv("OPENSTARRY_CODE_AGENT_PERMISSIONS", raising=False)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", fake_build_services)
 
     await run_agent_once(
         message="hello",
@@ -1122,9 +1122,9 @@ async def test_run_agent_once_resolves_persisted_safe_before_cli_fallback(
     async def fake_build_services(*, config: GatewayConfig, **kwargs: Any) -> _FakeServices:
         return _FakeServices(config, manager)
 
-    monkeypatch.delenv("OPENSQUILLA_AGENT_PERMISSIONS", raising=False)
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
-    monkeypatch.setattr("opensquilla.gateway.build_services", fake_build_services)
+    monkeypatch.delenv("OPENSTARRY_CODE_AGENT_PERMISSIONS", raising=False)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", fake_build_services)
 
     try:
         await run_agent_once(
@@ -1159,9 +1159,9 @@ async def test_run_agent_once_uses_configured_permissions_default(
     async def fake_build_services(*, config: GatewayConfig, **kwargs: Any) -> _FakeServices:
         return _FakeServices(config)
 
-    monkeypatch.delenv("OPENSQUILLA_AGENT_PERMISSIONS", raising=False)
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
-    monkeypatch.setattr("opensquilla.gateway.build_services", fake_build_services)
+    monkeypatch.delenv("OPENSTARRY_CODE_AGENT_PERMISSIONS", raising=False)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", fake_build_services)
 
     await run_agent_once(
         message="hello",
@@ -1202,8 +1202,8 @@ async def test_run_agent_once_can_opt_into_interactive_single_shot(
     async def fake_build_services(*, config: GatewayConfig, **kwargs: Any) -> _FakeServices:
         return _FakeServices(config)
 
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
-    monkeypatch.setattr("opensquilla.gateway.build_services", fake_build_services)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", fake_build_services)
 
     await run_agent_once(
         message="hello",
@@ -1233,8 +1233,8 @@ async def test_run_agent_once_can_opt_into_stateless_bootstrap(
     async def fake_build_services(*, config: GatewayConfig, **kwargs: Any) -> _FakeServices:
         return _FakeServices(config)
 
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
-    monkeypatch.setattr("opensquilla.gateway.build_services", fake_build_services)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", fake_build_services)
 
     await run_agent_once(message="hello", config=GatewayConfig(), stateless=True)
 
@@ -1258,8 +1258,8 @@ async def test_run_agent_once_can_keep_project_rules_in_stateless_bootstrap(
     async def fake_build_services(*, config: GatewayConfig, **kwargs: Any) -> _FakeServices:
         return _FakeServices(config)
 
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
-    monkeypatch.setattr("opensquilla.gateway.build_services", fake_build_services)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", fake_build_services)
 
     await run_agent_once(
         message="hello",
@@ -1299,8 +1299,8 @@ async def test_run_agent_once_disables_workspace_template_seeding_for_stateless(
         captured["config"] = config
         return _FakeServices(config)
 
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
-    monkeypatch.setattr("opensquilla.gateway.build_services", fake_build_services)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", fake_build_services)
 
     await run_agent_once(
         message="hello",
@@ -1334,8 +1334,8 @@ async def test_run_agent_once_keeps_workspace_template_seeding_for_normal_runs(
         captured["config"] = config
         return _FakeServices(config)
 
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
-    monkeypatch.setattr("opensquilla.gateway.build_services", fake_build_services)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", fake_build_services)
 
     await run_agent_once(
         message="hello",
@@ -1365,8 +1365,8 @@ async def test_run_agent_once_passes_scratch_and_lockdown_to_tool_context(
     async def fake_build_services(*, config: GatewayConfig, **kwargs: Any) -> _FakeServices:
         return _FakeServices(config)
 
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
-    monkeypatch.setattr("opensquilla.gateway.build_services", fake_build_services)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", fake_build_services)
 
     scratch_dir = tmp_path / "scratch"
     await run_agent_once(
@@ -1407,8 +1407,8 @@ async def test_run_agent_once_merges_config_workspace_write_deny_globs(
         services.tool_registry = FakeRegistry()
         return services
 
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
-    monkeypatch.setattr("opensquilla.gateway.build_services", fake_build_services)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", fake_build_services)
 
     scratch_dir = tmp_path / "scratch"
     result = await run_agent_once(
@@ -1457,7 +1457,7 @@ def test_run_agent_command_forwards_workspace_lockdown_deny_paths(
             errors=[],
         )
 
-    monkeypatch.setattr("opensquilla.cli.agent_cmd.run_agent_once", fake_run_agent_once)
+    monkeypatch.setattr("openstarry_code.cli.agent_cmd.run_agent_once", fake_run_agent_once)
 
     run_agent_command(
         message="hello",
@@ -1509,8 +1509,8 @@ async def test_run_agent_once_forwards_inline_attachments(
     async def fake_build_services(*, config: GatewayConfig, **kwargs: Any) -> _FakeServices:
         return _FakeServices(config)
 
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
-    monkeypatch.setattr("opensquilla.gateway.build_services", fake_build_services)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", fake_build_services)
 
     payload = base64.b64encode(b"hello").decode("ascii")
     await run_agent_once(
@@ -1541,8 +1541,8 @@ async def test_run_agent_once_builds_multiple_file_attachments(
     async def fake_build_services(*, config: GatewayConfig, **kwargs: Any) -> _FakeServices:
         return _FakeServices(config)
 
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", FakeTurnRunner)
-    monkeypatch.setattr("opensquilla.gateway.build_services", fake_build_services)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", FakeTurnRunner)
+    monkeypatch.setattr("openstarry_code.gateway.build_services", fake_build_services)
 
     note = tmp_path / "note.txt"
     note.write_bytes(b"hello")
@@ -1597,14 +1597,14 @@ async def test_run_agent_once_requires_staging_for_large_text_file(tmp_path) -> 
 def test_top_level_agent_command_accepts_repeated_file_options(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.main import app
+    from openstarry_code.cli.main import app
 
     captured: dict[str, Any] = {}
 
     def fake_run_agent_command(**kwargs: Any) -> None:
         captured.update(kwargs)
 
-    monkeypatch.setattr("opensquilla.cli.main.run_agent_command", fake_run_agent_command)
+    monkeypatch.setattr("openstarry_code.cli.main.run_agent_command", fake_run_agent_command)
 
     result = CliRunner().invoke(
         app,
@@ -1631,14 +1631,14 @@ def test_top_level_agent_command_accepts_repeated_file_options(
 def test_top_level_agent_command_accepts_interactive_option(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.main import app
+    from openstarry_code.cli.main import app
 
     captured: dict[str, Any] = {}
 
     def fake_run_agent_command(**kwargs: Any) -> None:
         captured.update(kwargs)
 
-    monkeypatch.setattr("opensquilla.cli.main.run_agent_command", fake_run_agent_command)
+    monkeypatch.setattr("openstarry_code.cli.main.run_agent_command", fake_run_agent_command)
 
     result = CliRunner().invoke(
         app,
@@ -1657,14 +1657,14 @@ def test_top_level_agent_command_accepts_interactive_option(
 def test_top_level_agent_command_accepts_permissions_option(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.main import app
+    from openstarry_code.cli.main import app
 
     captured: dict[str, Any] = {}
 
     def fake_run_agent_command(**kwargs: Any) -> None:
         captured.update(kwargs)
 
-    monkeypatch.setattr("opensquilla.cli.main.run_agent_command", fake_run_agent_command)
+    monkeypatch.setattr("openstarry_code.cli.main.run_agent_command", fake_run_agent_command)
 
     result = CliRunner().invoke(
         app,
@@ -1684,14 +1684,14 @@ def test_top_level_agent_command_accepts_permissions_option(
 def test_top_level_agent_command_accepts_automation_options(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.main import app
+    from openstarry_code.cli.main import app
 
     captured: dict[str, Any] = {}
 
     def fake_run_agent_command(**kwargs: Any) -> None:
         captured.update(kwargs)
 
-    monkeypatch.setattr("opensquilla.cli.main.run_agent_command", fake_run_agent_command)
+    monkeypatch.setattr("openstarry_code.cli.main.run_agent_command", fake_run_agent_command)
 
     result = CliRunner().invoke(
         app,
@@ -1725,14 +1725,14 @@ def test_top_level_agent_command_accepts_automation_options(
 def test_top_level_agent_command_accepts_event_stream_stderr(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.main import app
+    from openstarry_code.cli.main import app
 
     captured: dict[str, Any] = {}
 
     def fake_run_agent_command(**kwargs: Any) -> None:
         captured.update(kwargs)
 
-    monkeypatch.setattr("opensquilla.cli.main.run_agent_command", fake_run_agent_command)
+    monkeypatch.setattr("openstarry_code.cli.main.run_agent_command", fake_run_agent_command)
 
     result = CliRunner().invoke(
         app,
@@ -1746,14 +1746,14 @@ def test_top_level_agent_command_accepts_event_stream_stderr(
 def test_top_level_agent_command_accepts_length_capped_continuations(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.main import app
+    from openstarry_code.cli.main import app
 
     captured: dict[str, Any] = {}
 
     def fake_run_agent_command(**kwargs: Any) -> None:
         captured.update(kwargs)
 
-    monkeypatch.setattr("opensquilla.cli.main.run_agent_command", fake_run_agent_command)
+    monkeypatch.setattr("openstarry_code.cli.main.run_agent_command", fake_run_agent_command)
 
     result = CliRunner().invoke(
         app,
@@ -1771,7 +1771,7 @@ def test_top_level_agent_command_accepts_length_capped_continuations(
 
 
 def test_top_level_agent_command_rejects_invalid_length_capped_continuations() -> None:
-    from opensquilla.cli.main import app
+    from openstarry_code.cli.main import app
 
     result = CliRunner().invoke(
         app,

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from opensquilla.uninstall.inventory import (
+from openstarry_code.uninstall.inventory import (
     METHOD_DESKTOP,
     METHOD_DOCKER,
     METHOD_PIP,
@@ -14,7 +14,7 @@ from opensquilla.uninstall.inventory import (
     DataBucket,
     Inventory,
 )
-from opensquilla.uninstall.plan import PlanOptions, build_plan
+from openstarry_code.uninstall.plan import PlanOptions, build_plan
 
 
 def _inventory(
@@ -114,7 +114,7 @@ def test_purge_config_removes_secrets_keeps_state(tmp_path: Path) -> None:
 def test_purge_all_schedules_whole_home_removal(monkeypatch, tmp_path: Path) -> None:
     monkeypatch.setenv("HOME", str(tmp_path / "user"))
     (tmp_path / "user").mkdir()
-    home = tmp_path / "user" / ".opensquilla"
+    home = tmp_path / "user" / ".openstarry-code"
     inv = _inventory(home)
     plan = build_plan(inv, PlanOptions(purge_all=True))
     tree_paths = [p for a in plan.actions if a.kind == "remove-tree" for p in a.paths]
@@ -126,10 +126,10 @@ def test_purge_all_schedules_whole_home_removal(monkeypatch, tmp_path: Path) -> 
 def test_purge_all_unrecognized_home_falls_back_to_buckets(monkeypatch, tmp_path: Path) -> None:
     monkeypatch.setenv("HOME", str(tmp_path / "user"))
     (tmp_path / "user").mkdir()
-    home = tmp_path / "user" / ".opensquilla"
+    home = tmp_path / "user" / ".openstarry-code"
     inv = _inventory(home, home_recognized=False)
     plan = build_plan(inv, PlanOptions(purge_all=True))
-    # Not recognized as an OpenSquilla home → no blanket rmtree; per-bucket instead.
+    # Not recognized as an OpenStarry Code home → no blanket rmtree; per-bucket instead.
     tree_paths = [p for a in plan.actions if a.kind == "remove-tree" for p in a.paths]
     assert str(home) not in tree_paths
     assert "remove-path" in _action_kinds(plan)
@@ -140,7 +140,7 @@ def test_purge_all_refuses_protected_home(monkeypatch, tmp_path: Path) -> None:
     fake_home = tmp_path / "user"
     fake_home.mkdir()
     monkeypatch.setenv("HOME", str(fake_home))
-    # OPENSQUILLA_STATE_DIR misconfigured to $HOME itself.
+    # OPENSTARRY_CODE_STATE_DIR misconfigured to $HOME itself.
     inv = _inventory(fake_home)
     plan = build_plan(inv, PlanOptions(purge_all=True))
     # No blanket rmtree of the home; warned instead; falls back to per-file removal.
@@ -179,7 +179,7 @@ def test_outside_home_bucket_is_manual(tmp_path: Path) -> None:
     # Relocated-outside paths are never auto-deleted, only surfaced as manual.
     removed = [p for a in plan.actions if a.kind == "remove-path" for p in a.paths]
     assert str(outside) not in removed
-    assert any("outside the OpenSquilla home" in a.summary for a in plan.manual)
+    assert any("outside the OpenStarry Code home" in a.summary for a in plan.manual)
 
 
 def test_remove_source_dir_is_manual_only(tmp_path: Path) -> None:

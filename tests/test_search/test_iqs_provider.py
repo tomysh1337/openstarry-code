@@ -5,9 +5,9 @@ import json
 import httpx
 import pytest
 
-from opensquilla.search.providers.iqs import IqsSearchProvider
-from opensquilla.search.registry import get_provider_spec
-from opensquilla.search.types import SearchProviderError
+from openstarry_code.search.providers.iqs import IqsSearchProvider
+from openstarry_code.search.registry import get_provider_spec
+from openstarry_code.search.types import SearchProviderError
 
 _UNIFIED_URL = "https://cloud-iqs.aliyuncs.com/search/unified"
 
@@ -45,7 +45,7 @@ async def test_iqs_search_posts_unified_request_and_maps_results() -> None:
         transport=httpx.MockTransport(handler),
     )
 
-    results = await provider.search("OpenSquilla", max_results=3, recency="year")
+    results = await provider.search("OpenStarry Code", max_results=3, recency="year")
 
     assert len(requests) == 1
     assert requests[0].method == "POST"
@@ -54,7 +54,7 @@ async def test_iqs_search_posts_unified_request_and_maps_results() -> None:
     assert requests[0].headers["Content-Type"] == "application/json"
     body = json.loads(requests[0].content)
     assert body == {
-        "query": "OpenSquilla",
+        "query": "OpenStarry Code",
         "engineType": "LiteAdvanced",
         "contents": {"mainText": True, "rerankScore": True},
         "advancedParams": {"numResults": 3},
@@ -89,7 +89,7 @@ async def test_iqs_search_sends_domain_filters() -> None:
     )
 
     await provider.search(
-        "OpenSquilla",
+        "OpenStarry Code",
         max_results=5,
         include_domains=("example.com", "example.org"),
         exclude_domains=("spam.example",),
@@ -116,7 +116,7 @@ async def test_iqs_search_clamps_num_results_to_provider_limit() -> None:
         transport=httpx.MockTransport(handler),
     )
 
-    await provider.search("OpenSquilla", max_results=40)
+    await provider.search("OpenStarry Code", max_results=40)
 
     body = json.loads(requests[0].content)
     assert body["advancedParams"]["numResults"] == 20
@@ -149,7 +149,7 @@ async def test_iqs_missing_api_key_raises_auth_error(
     provider = IqsSearchProvider()
 
     with pytest.raises(SearchProviderError) as exc_info:
-        await provider.search("OpenSquilla")
+        await provider.search("OpenStarry Code")
 
     assert exc_info.value.provider == "iqs"
     assert exc_info.value.kind == "auth"
@@ -187,7 +187,7 @@ async def test_iqs_http_errors_are_classified(
     )
 
     with pytest.raises(SearchProviderError) as exc_info:
-        await provider.search("OpenSquilla")
+        await provider.search("OpenStarry Code")
 
     assert exc_info.value.provider == "iqs"
     assert exc_info.value.kind == kind
@@ -213,7 +213,7 @@ async def test_iqs_http_error_message_includes_error_detail() -> None:
     )
 
     with pytest.raises(SearchProviderError) as exc_info:
-        await provider.search("OpenSquilla")
+        await provider.search("OpenStarry Code")
 
     assert exc_info.value.kind == "auth"
     assert "Retrieval.InvalidAPIKey" in str(exc_info.value)
@@ -231,7 +231,7 @@ async def test_iqs_http_error_with_non_json_body_is_classified() -> None:
     )
 
     with pytest.raises(SearchProviderError) as exc_info:
-        await provider.search("OpenSquilla")
+        await provider.search("OpenStarry Code")
 
     assert exc_info.value.kind == "http"
     assert exc_info.value.retryable is False
@@ -260,7 +260,7 @@ async def test_iqs_transport_errors_are_retryable_once(
     )
 
     with pytest.raises(SearchProviderError) as exc_info:
-        await provider.search("OpenSquilla")
+        await provider.search("OpenStarry Code")
 
     assert exc_info.value.kind == kind
     assert exc_info.value.retryable is True
@@ -278,7 +278,7 @@ async def test_iqs_malformed_json_raises_parse_error() -> None:
     )
 
     with pytest.raises(SearchProviderError) as exc_info:
-        await provider.search("OpenSquilla")
+        await provider.search("OpenStarry Code")
 
     assert exc_info.value.kind == "parse"
     assert exc_info.value.retryable is False
@@ -294,13 +294,13 @@ async def test_iqs_missing_page_items_returns_empty_results() -> None:
         transport=httpx.MockTransport(handler),
     )
 
-    results = await provider.search("OpenSquilla")
+    results = await provider.search("OpenStarry Code")
 
     assert results == []
 
 
 def test_iqs_provider_spec_is_runtime_supported_after_import() -> None:
-    import opensquilla.search.providers.iqs  # noqa: F401
+    import openstarry_code.search.providers.iqs  # noqa: F401
 
     spec = get_provider_spec("iqs")
 

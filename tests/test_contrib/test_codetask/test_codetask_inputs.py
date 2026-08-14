@@ -1,9 +1,9 @@
-"""Unit tests for opensquilla.contrib.codetask.inputs."""
+"""Unit tests for openstarry_code.contrib.codetask.inputs."""
 
 import pytest
 
-from opensquilla.contrib.codetask import inputs
-from opensquilla.contrib.codetask.inputs import InputError, TaskSpec, resolve_task
+from openstarry_code.contrib.codetask import inputs
+from openstarry_code.contrib.codetask.inputs import InputError, TaskSpec, resolve_task
 
 
 class TestResolveMutualExclusion:
@@ -68,6 +68,6 @@ class TestRenderTaskMd:
 
 
 def render_task_md_helper(spec):
-    from opensquilla.contrib.codetask.inputs import render_task_md
+    from openstarry_code.contrib.codetask.inputs import render_task_md
 
     return render_task_md(spec, repo="org/proj", base_ref="main", commit="abc1234")

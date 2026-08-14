@@ -49,7 +49,7 @@ downloads, and deletion. Non-user-initiated network observability can be
 disabled before startup with:
 
 ```sh
-OPENSQUILLA_PRIVACY_DISABLE_NETWORK_OBSERVABILITY=true
+OPENSTARRY_CODE_PRIVACY_DISABLE_NETWORK_OBSERVABILITY=true
 ```
 
 or with:
@@ -62,8 +62,8 @@ disable_network_observability = true
 Legacy compatibility environment variables remain honored:
 
 ```sh
-OPENSQUILLA_TELEMETRY_DISABLED=true
-OPENSQUILLA_UPDATE_CHECK_DISABLED=true
+OPENSTARRY_CODE_TELEMETRY_DISABLED=true
+OPENSTARRY_CODE_UPDATE_CHECK_DISABLED=true
 ```
 
 ## Commercial Builds

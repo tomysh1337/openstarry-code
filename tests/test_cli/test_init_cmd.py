@@ -1,4 +1,4 @@
-from opensquilla.cli.init_cmd import _default_model_for_provider
+from openstarry_code.cli.init_cmd import _default_model_for_provider
 
 
 def test_init_uses_direct_deepseek_model_default() -> None:

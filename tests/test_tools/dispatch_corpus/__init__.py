@@ -13,10 +13,10 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any
 
-from opensquilla.sandbox.operation_runtime import SandboxToolDescriptor
-from opensquilla.tool_boundary import ToolCall
-from opensquilla.tools.registry import ToolRegistry
-from opensquilla.tools.types import (
+from openstarry_code.sandbox.operation_runtime import SandboxToolDescriptor
+from openstarry_code.tool_boundary import ToolCall
+from openstarry_code.tools.registry import ToolRegistry
+from openstarry_code.tools.types import (
     CallerKind,
     InteractionMode,
     ToolContext,
@@ -896,7 +896,7 @@ def _case_run_budget_exhausted_before_handler() -> CorpusCase:
     hooks against that payload.
     """
     def _ctx() -> ToolContext:
-        from opensquilla.result_budget import ToolRunBudgetPolicy
+        from openstarry_code.result_budget import ToolRunBudgetPolicy
 
         return ToolContext(
             is_owner=True,
@@ -936,7 +936,7 @@ def _case_run_budget_exhausted_after_handler() -> CorpusCase:
     controls future reservations.
     """
     def _ctx() -> ToolContext:
-        from opensquilla.result_budget import ToolRunBudgetPolicy
+        from openstarry_code.result_budget import ToolRunBudgetPolicy
 
         return ToolContext(
             is_owner=True,
@@ -1096,7 +1096,7 @@ def _case_result_truncated_marks_status() -> CorpusCase:
     to ensure execution_status is not None before truncation.
     """
     def _ctx() -> ToolContext:
-        from opensquilla.result_budget import ToolResultBudgetPolicy
+        from openstarry_code.result_budget import ToolResultBudgetPolicy
         return ToolContext(
             is_owner=True,
             caller_kind=CallerKind.AGENT,

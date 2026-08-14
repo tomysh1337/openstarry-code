@@ -5,16 +5,16 @@ from typing import Any
 
 import pytest
 
-from opensquilla.gateway import boot
-from opensquilla.gateway.task_runtime import TaskRuntime
-from opensquilla.session.models import (
+from openstarry_code.gateway import boot
+from openstarry_code.gateway.task_runtime import TaskRuntime
+from openstarry_code.session.models import (
     AgentTaskRecord,
     AgentTaskStatus,
     SessionNode,
     SessionStatus,
     TranscriptEntry,
 )
-from opensquilla.session.storage import SessionStorage
+from openstarry_code.session.storage import SessionStorage
 
 
 async def _seed_steering_input(

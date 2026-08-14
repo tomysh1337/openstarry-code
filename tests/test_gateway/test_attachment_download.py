@@ -5,7 +5,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.attachment_refs import write_transcript_material
+from openstarry_code.attachment_refs import write_transcript_material
 
 
 class _FakeSessionManager:
@@ -22,9 +22,9 @@ def _app(tmp_path: Path):
     pytest.importorskip("starlette.testclient")
     from starlette.applications import Starlette
 
-    from opensquilla.gateway.attachments import register_attachment_routes
-    from opensquilla.gateway.config import AttachmentsConfig, AuthConfig, GatewayConfig
-    from opensquilla.gateway.middleware import AuthMiddleware
+    from openstarry_code.gateway.attachments import register_attachment_routes
+    from openstarry_code.gateway.config import AttachmentsConfig, AuthConfig, GatewayConfig
+    from openstarry_code.gateway.middleware import AuthMiddleware
 
     config = GatewayConfig(
         auth=AuthConfig(mode="token", token="secret"),

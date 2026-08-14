@@ -10,10 +10,10 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.gateway.config import GatewayConfig, LlmProviderProfile
-from opensquilla.gateway.model_catalog_refresh import TokenRhythmCatalogCoordinator
-from opensquilla.provider.model_catalog import ModelCatalog
-from opensquilla.provider.tokenrhythm_catalog import (
+from openstarry_code.gateway.config import GatewayConfig, LlmProviderProfile
+from openstarry_code.gateway.model_catalog_refresh import TokenRhythmCatalogCoordinator
+from openstarry_code.provider.model_catalog import ModelCatalog
+from openstarry_code.provider.tokenrhythm_catalog import (
     parse_tokenrhythm_declared,
     parse_tokenrhythm_published,
 )
@@ -116,18 +116,18 @@ def _patch_fetches(monkeypatch: pytest.MonkeyPatch, calls: list[str]) -> None:
         return _declared()
 
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
         fetch_published,
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
         fetch_declared,
     )
 
 
 def _profile_request(config: GatewayConfig):
     module = __import__(
-        "opensquilla.gateway.model_catalog_refresh", fromlist=["_profile_requests"]
+        "openstarry_code.gateway.model_catalog_refresh", fromlist=["_profile_requests"]
     )
     requests = module._profile_requests(config, "tokenrhythm")
     assert len(requests) == 1
@@ -159,11 +159,11 @@ async def test_profile_identity_cleanup_is_local_and_preserves_published(
         raise AssertionError("profile cleanup must not access the network")
 
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
         unexpected_fetch,
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
         unexpected_fetch,
     )
     await coordinator.reconcile_profile_transition(
@@ -186,7 +186,7 @@ async def test_profile_identity_cleanup_is_local_and_preserves_published(
 async def test_active_provider_removal_cleans_all_historical_authorities(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    import opensquilla.gateway.model_catalog_refresh as refresh_module
+    import openstarry_code.gateway.model_catalog_refresh as refresh_module
 
     calls: list[str] = []
     _patch_fetches(monkeypatch, calls)
@@ -221,11 +221,11 @@ async def test_active_provider_removal_cleans_all_historical_authorities(
         raise AssertionError("authority cleanup must remain network-free")
 
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
         unexpected_fetch,
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
         unexpected_fetch,
     )
     await coordinator.reconcile_profile_transition(
@@ -246,7 +246,7 @@ async def test_active_provider_removal_cleans_all_historical_authorities(
 async def test_each_active_transition_prunes_unreachable_historical_authorities(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    import opensquilla.gateway.model_catalog_refresh as refresh_module
+    import openstarry_code.gateway.model_catalog_refresh as refresh_module
 
     calls: list[str] = []
     _patch_fetches(monkeypatch, calls)
@@ -290,7 +290,7 @@ async def test_restart_prunes_entitlement_when_credential_disappeared_offline(
     monkeypatch: pytest.MonkeyPatch,
     credential_source: str,
 ) -> None:
-    env_name = "OPENSQUILLA_TEST_TOKENRHYTHM_RESTART_KEY"
+    env_name = "OPENSTARRY_CODE_TEST_TOKENRHYTHM_RESTART_KEY"
     monkeypatch.delenv("TOKENRHYTHM_API_KEY", raising=False)
     config = _config(
         tmp_path,
@@ -316,11 +316,11 @@ async def test_restart_prunes_entitlement_when_credential_disappeared_offline(
         raise AssertionError("restart hydration after credential clear must be offline")
 
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
         unexpected_fetch,
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
         unexpected_fetch,
     )
     restarted = TokenRhythmCatalogCoordinator(ModelCatalog())
@@ -366,7 +366,7 @@ async def test_profile_proxy_change_keeps_lkg_and_fences_late_old_transport(
             return _declared(empty=True)
 
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
         late_declared,
     )
     refresh = asyncio.create_task(
@@ -413,11 +413,11 @@ async def test_profile_credential_clear_fences_late_declared_result(
             return _declared()
 
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
         fetch_published,
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
         late_declared,
     )
     refresh = asyncio.create_task(
@@ -446,7 +446,7 @@ async def test_profile_credential_clear_fences_late_declared_result(
 async def test_credential_clear_fences_refresh_queued_before_impl(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    import opensquilla.gateway.model_catalog_refresh as refresh_module
+    import openstarry_code.gateway.model_catalog_refresh as refresh_module
 
     calls: list[str] = []
     _patch_fetches(monkeypatch, calls)
@@ -580,11 +580,11 @@ async def test_auth_only_unknown_limits_fall_back_to_safe_catalog_corrections(
         return parse_tokenrhythm_declared({"data": [{"id": "qwen3.8-max"}]})
 
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
         fetch_published,
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
         fetch_declared,
     )
     coordinator = TokenRhythmCatalogCoordinator(ModelCatalog())
@@ -597,7 +597,7 @@ async def test_auth_only_unknown_limits_fall_back_to_safe_catalog_corrections(
     assert info.context_window == 1_000_000
     assert info.max_output_tokens == 131_072
     # Published/declared reasoning metadata may be true, but the legacy
-    # top-level flag only advertises a request dialect OpenSquilla can execute.
+    # top-level flag only advertises a request dialect OpenStarry Code can execute.
     assert info.supports_reasoning is False
     assert info.supports_tools is True
     assert info.supports_vision is True
@@ -625,11 +625,11 @@ async def test_force_failure_uses_independent_last_good_and_marks_stale(
         raise OSError("synthetic auth failure")
 
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
         fail_published,
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
         fail_declared,
     )
     clock.value += 10
@@ -638,7 +638,7 @@ async def test_force_failure_uses_independent_last_good_and_marks_stale(
     assert result == {"tokenrhythm": 1}
     assert [info.model_id for info in coordinator.cached(config)] == ["qwen3.8-max"]
     request = __import__(
-        "opensquilla.gateway.model_catalog_refresh", fromlist=["_request_from_config"]
+        "openstarry_code.gateway.model_catalog_refresh", fromlist=["_request_from_config"]
     )._request_from_config(config)
     assert request is not None
     view = await coordinator.discover(
@@ -693,18 +693,18 @@ async def test_public_failure_backoff_prevents_new_authority_alignment(
         return _declared()
 
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
         fail_published,
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
         fetch_declared,
     )
     clock.value += 10
     await coordinator.refresh_active(first, force=True)
     second = _config(tmp_path, key="synthetic-alignment-key-b")
     refresh_module = __import__(
-        "opensquilla.gateway.model_catalog_refresh",
+        "openstarry_code.gateway.model_catalog_refresh",
         fromlist=["_request_from_config"],
     )
     request = refresh_module._request_from_config(second)
@@ -732,7 +732,7 @@ async def test_switching_away_from_active_tokenrhythm_clears_its_authority(
     active = _config(tmp_path, key="synthetic-active-key-to-remove")
     await coordinator.refresh_active(active)
     refresh_module = __import__(
-        "opensquilla.gateway.model_catalog_refresh",
+        "openstarry_code.gateway.model_catalog_refresh",
         fromlist=["_request_from_config"],
     )
     request = refresh_module._request_from_config(active)
@@ -742,11 +742,11 @@ async def test_switching_away_from_active_tokenrhythm_clears_its_authority(
         raise AssertionError("provider switch cleanup must be local")
 
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
         unexpected_fetch,
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
         unexpected_fetch,
     )
     switched = active.model_copy(deep=True)
@@ -782,7 +782,7 @@ async def test_new_key_cannot_reuse_another_authoritys_entitlement(
         raise OSError("synthetic auth failure")
 
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
         fail_declared,
     )
     second = _config(tmp_path, key="dummy-tokenrhythm-key-two")
@@ -836,11 +836,11 @@ async def test_saved_nonactive_authority_is_immediately_available_and_isolated(
         )
 
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
         fetch_published,
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
         fetch_declared,
     )
     catalog = ModelCatalog()
@@ -849,7 +849,7 @@ async def test_saved_nonactive_authority_is_immediately_available_and_isolated(
     config_b = _config(tmp_path, key="synthetic-authority-b")
     await coordinator.refresh_active(config_a, force=True)
     refresh_module = __import__(
-        "opensquilla.gateway.model_catalog_refresh",
+        "openstarry_code.gateway.model_catalog_refresh",
         fromlist=["_request_from_config"],
     )
     request_b = refresh_module._request_from_config(config_b)
@@ -902,11 +902,11 @@ async def test_late_old_authority_result_cannot_overwrite_new_snapshot(
         return parse_tokenrhythm_declared({"data": [{"id": "new-only"}]})
 
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
         fetch_published,
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
         fetch_declared,
     )
     coordinator = TokenRhythmCatalogCoordinator(ModelCatalog())
@@ -927,7 +927,7 @@ async def test_late_old_authority_result_cannot_overwrite_new_snapshot(
 async def test_official_origin_and_v1_share_authority_and_cached_entitlement(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    import opensquilla.gateway.model_catalog_refresh as refresh_module
+    import openstarry_code.gateway.model_catalog_refresh as refresh_module
 
     calls: list[str] = []
     _patch_fetches(monkeypatch, calls)
@@ -1044,7 +1044,7 @@ async def test_legal_empty_auth_response_clears_entitlement(
         return _declared(empty=True)
 
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
         fetch_empty,
     )
     clock.value += 1
@@ -1073,11 +1073,11 @@ async def test_singleflight_only_coalesces_concurrent_identical_refreshes(
         return _declared()
 
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
         fetch_published,
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
         fetch_declared,
     )
     coordinator = TokenRhythmCatalogCoordinator(ModelCatalog(), clock=clock)
@@ -1113,11 +1113,11 @@ async def test_proxy_change_keeps_entitlement_lkg_but_forces_refresh(
         raise OSError("synthetic proxy failure")
 
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
         fail_published,
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
         fail_declared,
     )
     config.llm.proxy = "http://127.0.0.1:9999"
@@ -1183,7 +1183,7 @@ def stat_mode(path: Path) -> int:
 async def test_snapshot_uses_native_windows_long_path(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    from opensquilla.paths import native_io_path
+    from openstarry_code.paths import native_io_path
 
     calls: list[str] = []
     _patch_fetches(monkeypatch, calls)
@@ -1260,7 +1260,7 @@ async def test_future_timestamps_are_stale_and_corrupt_or_symlink_files_are_igno
 async def test_key_change_refreshes_declared_without_refetching_fresh_public_catalog(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    import opensquilla.gateway.model_catalog_refresh as refresh_module
+    import openstarry_code.gateway.model_catalog_refresh as refresh_module
 
     clock = FakeClock()
     calls: list[str] = []
@@ -1344,7 +1344,7 @@ async def test_semantically_corrupt_snapshot_is_ignored_atomically_and_refetched
 async def test_unsaved_discovery_does_not_persist_entitlement(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    import opensquilla.gateway.model_catalog_refresh as refresh_module
+    import openstarry_code.gateway.model_catalog_refresh as refresh_module
 
     clock = FakeClock()
     calls: list[str] = []
@@ -1382,7 +1382,7 @@ async def test_unsaved_discovery_does_not_persist_entitlement(
 async def test_saved_identity_promotes_matching_ephemeral_lkg_without_refetch(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    import opensquilla.gateway.model_catalog_refresh as refresh_module
+    import openstarry_code.gateway.model_catalog_refresh as refresh_module
 
     clock = FakeClock()
     calls: list[str] = []
@@ -1420,11 +1420,11 @@ async def test_close_cancels_and_awaits_inflight_refresh(
         return {}
 
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
         blocking_fetch,
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
         blocking_fetch,
     )
     coordinator = TokenRhythmCatalogCoordinator(ModelCatalog())
@@ -1459,7 +1459,7 @@ async def test_symlinked_snapshot_parent_is_never_followed(
 async def test_refresh_cancelled_before_registration_never_leaks_child_operation(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    import opensquilla.gateway.model_catalog_refresh as refresh_module
+    import openstarry_code.gateway.model_catalog_refresh as refresh_module
 
     calls: list[str] = []
     _patch_fetches(monkeypatch, calls)
@@ -1493,7 +1493,7 @@ async def test_refresh_cancelled_before_registration_never_leaks_child_operation
 async def test_last_cancelled_waiter_releases_declared_source_registration(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    import opensquilla.gateway.model_catalog_refresh as refresh_module
+    import openstarry_code.gateway.model_catalog_refresh as refresh_module
 
     started = asyncio.Event()
     cancelled = asyncio.Event()
@@ -1551,7 +1551,7 @@ async def test_last_cancelled_waiter_releases_declared_source_registration(
 async def test_close_drains_source_removed_by_identity_fence_after_caller_cancel(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    import opensquilla.gateway.model_catalog_refresh as refresh_module
+    import openstarry_code.gateway.model_catalog_refresh as refresh_module
 
     started = asyncio.Event()
     cancel_seen = asyncio.Event()
@@ -1572,11 +1572,11 @@ async def test_close_drains_source_removed_by_identity_fence_after_caller_cancel
             return _declared()
 
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
         fetch_published,
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
         cancellation_resistant_declared,
     )
     coordinator = TokenRhythmCatalogCoordinator(ModelCatalog())
@@ -1616,7 +1616,7 @@ async def test_close_drains_source_removed_by_identity_fence_after_caller_cancel
 async def test_total_deadline_does_not_wait_for_cancellation_resistant_transport(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    import opensquilla.gateway.model_catalog_refresh as refresh_module
+    import openstarry_code.gateway.model_catalog_refresh as refresh_module
 
     release = asyncio.Event()
     cancellation_seen = asyncio.Event()
@@ -1678,7 +1678,7 @@ async def test_total_deadline_does_not_wait_for_cancellation_resistant_transport
 async def test_ephemeral_promotion_persists_lkg_when_proxy_refresh_fails(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    import opensquilla.gateway.model_catalog_refresh as refresh_module
+    import openstarry_code.gateway.model_catalog_refresh as refresh_module
 
     clock = FakeClock()
     calls: list[str] = []
@@ -1702,11 +1702,11 @@ async def test_ephemeral_promotion_persists_lkg_when_proxy_refresh_fails(
         raise OSError("synthetic auth failure")
 
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
         fail_published,
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
         fail_declared,
     )
     config.llm.proxy = "http://127.0.0.1:9999"
@@ -1764,7 +1764,7 @@ async def test_close_waits_for_uncancellable_snapshot_worker(
         write_finished.set()
 
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh._write_snapshot_file",
+        "openstarry_code.gateway.model_catalog_refresh._write_snapshot_file",
         blocking_write,
     )
     coordinator = TokenRhythmCatalogCoordinator(ModelCatalog())
@@ -1866,11 +1866,11 @@ async def test_future_success_then_failure_honors_backoff(
         raise OSError("synthetic auth failure")
 
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
         fail_published,
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
         fail_declared,
     )
     coordinator = TokenRhythmCatalogCoordinator(ModelCatalog(), clock=clock)
@@ -1903,11 +1903,11 @@ async def test_clock_rollback_does_not_extend_in_memory_failure_backoff(
         raise OSError("synthetic auth failure")
 
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
         fail_published,
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
         fail_declared,
     )
     coordinator = TokenRhythmCatalogCoordinator(ModelCatalog(), clock=clock)
@@ -1923,7 +1923,7 @@ async def test_clock_rollback_does_not_extend_in_memory_failure_backoff(
 async def test_force_refresh_joins_running_auth_only_source_flight(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    import opensquilla.gateway.model_catalog_refresh as refresh_module
+    import openstarry_code.gateway.model_catalog_refresh as refresh_module
 
     clock = FakeClock()
     initial_calls: list[str] = []
@@ -1951,11 +1951,11 @@ async def test_force_refresh_joins_running_auth_only_source_flight(
         return _declared()
 
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_published",
         fetch_published,
     )
     monkeypatch.setattr(
-        "opensquilla.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
+        "openstarry_code.gateway.model_catalog_refresh.fetch_tokenrhythm_declared",
         fetch_declared,
     )
     ordinary = asyncio.create_task(

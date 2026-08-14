@@ -8,7 +8,7 @@ from types import SimpleNamespace
 import pytest
 from pptx import Presentation
 
-from opensquilla.artifacts import ArtifactStore
+from openstarry_code.artifacts import ArtifactStore
 
 
 class _FakeSessionManager:
@@ -25,9 +25,9 @@ def _app(tmp_path: Path, *, auth_mode: str = "token", host: str = "127.0.0.1"):
     pytest.importorskip("starlette.testclient")
     from starlette.applications import Starlette
 
-    from opensquilla.gateway.artifacts import register_artifact_routes
-    from opensquilla.gateway.config import AttachmentsConfig, AuthConfig, GatewayConfig
-    from opensquilla.gateway.middleware import AuthMiddleware
+    from openstarry_code.gateway.artifacts import register_artifact_routes
+    from openstarry_code.gateway.config import AttachmentsConfig, AuthConfig, GatewayConfig
+    from openstarry_code.gateway.middleware import AuthMiddleware
 
     config = GatewayConfig(
         host=host,
@@ -196,7 +196,7 @@ def test_artifact_native_open_owner_opens_html_copy(tmp_path: Path, monkeypatch)
     pytest.importorskip("starlette.testclient")
     from starlette.testclient import TestClient
 
-    from opensquilla.gateway import artifacts as artifact_routes
+    from openstarry_code.gateway import artifacts as artifact_routes
 
     ref = _publish(
         tmp_path,
@@ -232,7 +232,7 @@ def test_artifact_open_cache_dir_skips_posix_mode_bits_on_windows(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    from opensquilla.gateway import artifacts as artifact_routes
+    from openstarry_code.gateway import artifacts as artifact_routes
 
     temp_root = tmp_path / "tmp"
     cache_root = temp_root / "opensquilla-artifacts"
@@ -248,7 +248,7 @@ def test_artifact_native_open_requires_auth_and_owner(tmp_path: Path, monkeypatc
     pytest.importorskip("starlette.testclient")
     from starlette.testclient import TestClient
 
-    from opensquilla.gateway import artifacts as artifact_routes
+    from openstarry_code.gateway import artifacts as artifact_routes
 
     ref = _publish(tmp_path, payload=b"<html></html>", name="page.html", mime="text/html")
     opened: list[Path] = []
@@ -285,7 +285,7 @@ def test_artifact_native_open_requires_session_scope_and_integrity(
     pytest.importorskip("starlette.testclient")
     from starlette.testclient import TestClient
 
-    from opensquilla.gateway import artifacts as artifact_routes
+    from openstarry_code.gateway import artifacts as artifact_routes
 
     ref = _publish(tmp_path, payload=b"<html></html>", name="page.html", mime="text/html")
     monkeypatch.setattr(artifact_routes.tempfile, "gettempdir", lambda: str(tmp_path / "tmp"))
@@ -324,7 +324,7 @@ def test_artifact_native_open_rejects_non_html_artifacts(tmp_path: Path, monkeyp
     pytest.importorskip("starlette.testclient")
     from starlette.testclient import TestClient
 
-    from opensquilla.gateway import artifacts as artifact_routes
+    from openstarry_code.gateway import artifacts as artifact_routes
 
     ref = _publish(tmp_path, payload=b"plain", name="notes.txt", mime="text/plain")
     opened: list[Path] = []
@@ -355,7 +355,7 @@ def test_artifact_native_open_opener_failure_does_not_leak_path(
     pytest.importorskip("starlette.testclient")
     from starlette.testclient import TestClient
 
-    from opensquilla.gateway import artifacts as artifact_routes
+    from openstarry_code.gateway import artifacts as artifact_routes
 
     ref = _publish(tmp_path, payload=b"<html></html>", name="page.html", mime="text/html")
     opened: list[Path] = []

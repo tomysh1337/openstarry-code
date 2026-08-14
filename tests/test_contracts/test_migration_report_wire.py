@@ -1,4 +1,4 @@
-"""Wire-shape contract for the OpenSquilla self-migration report.
+"""Wire-shape contract for the OpenStarry Code self-migration report.
 
 Pins the top-level key set and value types of the report dict produced by
 ``OpenSquillaHomeMigrator.migrate()``: changes must be additive only, and
@@ -11,7 +11,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from opensquilla.migration.opensquilla_home import (
+from openstarry_code.migration.opensquilla_home import (
     OpenSquillaHomeMigrator,
     OpenSquillaMigrationOptions,
 )

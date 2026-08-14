@@ -9,18 +9,18 @@ def test_setup_marker_follows_active_profile_state_dir(
     monkeypatch,
     tmp_path: Path,
 ) -> None:
-    from opensquilla.sandbox.backend.windows_default_setup import (
+    from openstarry_code.sandbox.backend.windows_default_setup import (
         default_setup_marker_path,
     )
 
     profile_home = tmp_path / "desktop-profile"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(profile_home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(profile_home))
 
     assert default_setup_marker_path() == profile_home / "sandbox" / "setup_marker.json"
 
 
 def test_support_probe_reports_unavailable_off_windows(monkeypatch) -> None:
-    from opensquilla.sandbox.backend import windows_default_support as mod
+    from openstarry_code.sandbox.backend import windows_default_support as mod
 
     monkeypatch.setattr(mod.sys, "platform", "linux")
 
@@ -35,7 +35,7 @@ def test_support_probe_requires_setup_marker_on_windows(
     monkeypatch,
     tmp_path: Path,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_support as mod
+    from openstarry_code.sandbox.backend import windows_default_support as mod
 
     monkeypatch.setattr(mod.sys, "platform", "win32")
     monkeypatch.setattr(mod, "_ctypes_available", lambda: True)
@@ -60,8 +60,8 @@ def test_support_probe_accepts_current_setup_marker(
     monkeypatch,
     tmp_path: Path,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_support as mod
-    from opensquilla.sandbox.backend.windows_default_setup import write_setup_marker
+    from openstarry_code.sandbox.backend import windows_default_support as mod
+    from openstarry_code.sandbox.backend.windows_default_setup import write_setup_marker
 
     marker = tmp_path / "setup_marker.json"
     write_setup_marker(marker)
@@ -85,8 +85,8 @@ def test_support_probe_rejects_stale_offline_identity(
     monkeypatch,
     tmp_path: Path,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_support as mod
-    from opensquilla.sandbox.backend.windows_default_setup import write_setup_marker
+    from openstarry_code.sandbox.backend import windows_default_support as mod
+    from openstarry_code.sandbox.backend.windows_default_setup import write_setup_marker
 
     marker = tmp_path / "setup_marker.json"
     write_setup_marker(marker)
@@ -109,8 +109,8 @@ def test_support_probe_rejects_unwritable_persistent_storage(
     monkeypatch,
     tmp_path: Path,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_support as mod
-    from opensquilla.sandbox.backend.windows_default_setup import write_setup_marker
+    from openstarry_code.sandbox.backend import windows_default_support as mod
+    from openstarry_code.sandbox.backend.windows_default_setup import write_setup_marker
 
     marker = tmp_path / "setup_marker.json"
     write_setup_marker(marker)
@@ -132,7 +132,7 @@ def test_support_probe_rejects_unwritable_persistent_storage(
 def test_persistent_sandbox_dirs_remove_inheritance_and_limit_control(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_setup as mod
+    from openstarry_code.sandbox.backend import windows_default_setup as mod
 
     calls: list[list[str]] = []
     monkeypatch.setattr(mod, "_current_windows_user_sid", lambda: "S-1-real")
@@ -144,7 +144,7 @@ def test_persistent_sandbox_dirs_remove_inheritance_and_limit_control(
             or type("Result", (), {"returncode": 0, "stderr": "", "stdout": ""})()
         ),
     )
-    marker = tmp_path / ".opensquilla" / "sandbox" / "setup_marker.json"
+    marker = tmp_path / ".openstarry-code" / "sandbox" / "setup_marker.json"
 
     mod.lock_persistent_sandbox_dirs(marker, offline_sid="S-1-offline")
 
@@ -165,8 +165,8 @@ def test_support_probe_requires_network_marker_for_proxy_enforcement(
     monkeypatch,
     tmp_path: Path,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_support as mod
-    from opensquilla.sandbox.backend.windows_default_setup import write_setup_marker
+    from openstarry_code.sandbox.backend import windows_default_support as mod
+    from openstarry_code.sandbox.backend.windows_default_setup import write_setup_marker
 
     marker = tmp_path / "setup_marker.json"
     write_setup_marker(marker)
@@ -189,13 +189,13 @@ def test_support_probe_accepts_current_network_marker(
     monkeypatch,
     tmp_path: Path,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_support as mod
-    from opensquilla.sandbox.backend.windows_default_network import (
+    from openstarry_code.sandbox.backend import windows_default_support as mod
+    from openstarry_code.sandbox.backend.windows_default_network import (
         FIREWALL_RULE_VERSION,
         WFP_RULE_VERSION,
         WindowsNetworkSetup,
     )
-    from opensquilla.sandbox.backend.windows_default_setup import write_setup_marker
+    from openstarry_code.sandbox.backend.windows_default_setup import write_setup_marker
 
     marker = tmp_path / "setup_marker.json"
     write_setup_marker(
@@ -226,12 +226,12 @@ def test_support_probe_rejects_legacy_firewall_network_marker(
     monkeypatch,
     tmp_path: Path,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_support as mod
-    from opensquilla.sandbox.backend.windows_default_network import (
+    from openstarry_code.sandbox.backend import windows_default_support as mod
+    from openstarry_code.sandbox.backend.windows_default_network import (
         WFP_RULE_VERSION,
         WindowsNetworkSetup,
     )
-    from opensquilla.sandbox.backend.windows_default_setup import write_setup_marker
+    from openstarry_code.sandbox.backend.windows_default_setup import write_setup_marker
 
     marker = tmp_path / "setup_marker.json"
     write_setup_marker(

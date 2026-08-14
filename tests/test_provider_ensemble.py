@@ -10,9 +10,9 @@ from typing import Any, Literal
 
 import pytest
 
-from opensquilla.engine.usage_accounting import normalize_provider_usage
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.provider import (
+from openstarry_code.engine.usage_accounting import normalize_provider_usage
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.provider import (
     ChatConfig,
     ContentBlockDocument,
     ContentBlockText,
@@ -30,7 +30,7 @@ from opensquilla.provider import (
     ToolUseEndEvent,
     ToolUseStartEvent,
 )
-from opensquilla.provider.ensemble import (
+from openstarry_code.provider.ensemble import (
     EnsembleMemberConfig,
     EnsembleProvider,
     _member_chat_config,
@@ -41,9 +41,9 @@ from opensquilla.provider.ensemble import (
     build_ensemble_provider_from_config,
     ensemble_runtime_status,
 )
-from opensquilla.provider.request_proof import project_final_request_payload
-from opensquilla.provider.selector import ProviderConfig
-from opensquilla.provider.types import (
+from openstarry_code.provider.request_proof import project_final_request_payload
+from openstarry_code.provider.selector import ProviderConfig
+from openstarry_code.provider.types import (
     ContentBlockImage,
     EnsembleProgressEvent,
     ProviderBillingReceipt,
@@ -376,9 +376,9 @@ async def test_ensemble_emits_heartbeat_while_waiting_for_slow_proposers(
             "agg": _FakePlan([TextDeltaEvent(text="final"), DoneEvent(model="agg")]),
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
     monkeypatch.setattr(
-        "opensquilla.provider.ensemble._ENSEMBLE_HEARTBEAT_INTERVAL_SECONDS",
+        "openstarry_code.provider.ensemble._ENSEMBLE_HEARTBEAT_INTERVAL_SECONDS",
         0.01,
         raising=False,
     )
@@ -413,9 +413,9 @@ async def test_ensemble_emits_heartbeat_while_waiting_for_slow_aggregator(
             ),
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
     monkeypatch.setattr(
-        "opensquilla.provider.ensemble._ENSEMBLE_HEARTBEAT_INTERVAL_SECONDS",
+        "openstarry_code.provider.ensemble._ENSEMBLE_HEARTBEAT_INTERVAL_SECONDS",
         0.01,
         raising=False,
     )
@@ -444,7 +444,7 @@ async def test_heartbeat_wrapper_delivers_final_event_completed_before_deadline(
     """A final event finished during a heartbeat yield must not become a timeout."""
 
     monkeypatch.setattr(
-        "opensquilla.provider.ensemble._ENSEMBLE_HEARTBEAT_INTERVAL_SECONDS",
+        "openstarry_code.provider.ensemble._ENSEMBLE_HEARTBEAT_INTERVAL_SECONDS",
         0.01,
     )
 
@@ -480,11 +480,11 @@ async def test_heartbeat_wrapper_still_times_out_when_no_event_completed(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(
-        "opensquilla.provider.ensemble._ENSEMBLE_HEARTBEAT_INTERVAL_SECONDS",
+        "openstarry_code.provider.ensemble._ENSEMBLE_HEARTBEAT_INTERVAL_SECONDS",
         0.01,
     )
     monkeypatch.setattr(
-        "opensquilla.provider.ensemble._ENSEMBLE_CANCEL_CLEANUP_TIMEOUT_SECONDS",
+        "openstarry_code.provider.ensemble._ENSEMBLE_CANCEL_CLEANUP_TIMEOUT_SECONDS",
         0.01,
     )
     release = asyncio.Event()
@@ -606,7 +606,7 @@ async def test_tokenrhythm_b5_default_quorum_reconciles_five_physical_receipts(
             ),
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
     provider = EnsembleProvider(
         profile_name="static_tokenrhythm_b5",
         proposers=[_tokenrhythm_member(model) for model in proposer_models],
@@ -682,7 +682,7 @@ async def test_tokenrhythm_b5_strict_quorum_partial_failure_preserves_fallback_r
             ),
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
 
     class _TokenRhythmFallback:
         provider_name = "tokenrhythm"
@@ -850,7 +850,7 @@ async def test_ensemble_rejects_typed_images_before_starting_any_leg(
             "agg": _FakePlan([DoneEvent(model="agg")]),
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
     provider = _ensemble_for_validation()
 
     events = [event async for event in provider.chat(messages)]
@@ -942,7 +942,7 @@ async def test_ensemble_text_block_input_still_executes_normally(
             ),
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
     provider = _ensemble_for_validation()
     messages = [
         Message(
@@ -967,7 +967,7 @@ def test_ensemble_message_count_projection_includes_aggregator_bundle(
             "agg": _FakePlan([]),
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
     provider = EnsembleProvider(
         profile_name="count-projection",
         proposers=[_member("p1"), _member("p2")],
@@ -1026,7 +1026,7 @@ async def test_ensemble_forwards_uniform_proposer_message_limit_proof(
             "agg": _FakePlan([]),
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
     provider = EnsembleProvider(
         profile_name="proof-forwarding",
         proposers=[_member("p1"), _member("p2")],
@@ -1076,7 +1076,7 @@ async def test_ensemble_forwards_uniform_proposer_request_budget_error(
             "agg": _FakePlan([]),
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
     provider = EnsembleProvider(
         profile_name="request-budget-forwarding",
         proposers=[_member("p1"), _member("p2")],
@@ -1112,7 +1112,7 @@ async def test_ensemble_does_not_promote_mixed_proposer_errors_to_request_budget
             "agg": _FakePlan([]),
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
     provider = EnsembleProvider(
         profile_name="mixed-error-forwarding",
         proposers=[_member("p1"), _member("p2")],
@@ -1148,7 +1148,7 @@ async def test_ensemble_fallback_trace_preserves_uniform_request_budget_root_cau
             ),
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
     fallback = _FakeProvider(
         ProviderConfig(provider="fake", model="fallback"),
         registry,
@@ -1189,7 +1189,7 @@ async def test_no_fallback_error_preserves_completed_proposer_usage(
             "agg": _FakePlan([]),
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
     provider = EnsembleProvider(
         profile_name="usage-preservation",
         proposers=[_member("p1"), _member("p2")],
@@ -1245,7 +1245,7 @@ async def test_ensemble_runs_proposers_concurrently_and_tools_only_reach_aggrega
             ),
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
     provider = EnsembleProvider(
         profile_name="default",
         proposers=[_member("p1"), _member("p2")],
@@ -1417,7 +1417,7 @@ async def test_ensemble_proposer_tool_events_violate_inert_candidate_contract(
             "agg": _FakePlan([]),
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
     provider = EnsembleProvider(
         profile_name="inert-contract",
         proposers=[_member("p1")],
@@ -1464,7 +1464,7 @@ async def test_inert_action_only_candidate_counts_and_is_wrapped_as_untrusted(
             ),
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
     provider = EnsembleProvider(
         profile_name="action-only",
         proposers=[_member("p1")],
@@ -1517,7 +1517,7 @@ async def test_aggregator_native_tool_lifecycle_remains_executable(
             ),
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
     provider = EnsembleProvider(
         profile_name="aggregator-tool",
         proposers=[_member("p1")],
@@ -1567,7 +1567,7 @@ async def test_proposer_tools_only_expose_schemas_and_remain_inert(
             ),
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
     provider = EnsembleProvider(
         profile_name="schema-advisory",
         proposers=[_member("p1")],
@@ -1604,7 +1604,7 @@ async def test_ensemble_owns_candidate_mode_for_each_leg(
             ),
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
     provider = EnsembleProvider(
         profile_name="mode-ownership",
         proposers=[_member("p1")],
@@ -1645,7 +1645,7 @@ async def test_ensemble_fallback_forces_normal_candidate_mode(
             "agg": _FakePlan([]),
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
     captured: dict[str, ChatConfig | None] = {}
 
     class _CapturingFallback:
@@ -1739,7 +1739,7 @@ async def test_ensemble_resolves_max_tokens_per_openrouter_member(
             ),
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
     provider = EnsembleProvider(
         profile_name="static_openrouter_b5",
         proposers=[_openrouter_member(model, thinking=None) for model in models],
@@ -1793,7 +1793,7 @@ async def test_tokenrhythm_ensemble_rebinds_request_cap_per_member_context(
     outer_cap: int,
 ) -> None:
     registry = _tokenrhythm_budget_registry()
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
     provider = _build_tokenrhythm_budget_provider()
 
     events = [
@@ -1838,7 +1838,7 @@ async def test_ensemble_member_context_precedence_is_override_then_global_then_c
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     registry = _tokenrhythm_budget_registry()
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
     catalog = _BudgetCatalog(
         {
             "deepseek-v4-pro": (1_000_000, "catalog"),
@@ -2111,7 +2111,7 @@ async def test_cross_provider_proposer_without_reliable_cap_is_skipped_before_ch
             ),
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
     reliable = _MemberRequestBudgetBinding(
         context_window_tokens=128_000,
         context_window_source="catalog",
@@ -2187,7 +2187,7 @@ async def test_cross_provider_zero_cap_member_preserves_fallback_policy(
             ),
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
     reliable = _MemberRequestBudgetBinding(
         context_window_tokens=128_000,
         context_window_source="catalog",
@@ -2278,7 +2278,7 @@ async def test_static_proposer_quorum_failure_skips_all_proposer_spend(
             ),
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
     reliable = _MemberRequestBudgetBinding(
         context_window_tokens=128_000,
         context_window_source="catalog",
@@ -2429,7 +2429,7 @@ async def test_ensemble_request_cap_rebinding_preserves_explicit_zero_and_unboun
     source: str,
 ) -> None:
     registry = _tokenrhythm_budget_registry()
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
     provider = _build_tokenrhythm_budget_provider(
         explicit_cap=explicit_cap,
         enable_rebinding=enable_rebinding,
@@ -2469,7 +2469,7 @@ async def test_ensemble_request_cap_rebinding_requires_reliable_member_context(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     registry = _tokenrhythm_budget_registry()
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
     catalog = _BudgetCatalog(
         {
             "deepseek-v4-pro": (1_000_000, "catalog"),
@@ -2520,7 +2520,7 @@ async def test_rebinding_rebinds_fallback_chat_config(
             for model in models
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
 
     class _FallbackProvider:
         provider_name = "fallback"
@@ -2594,7 +2594,7 @@ async def test_aggregator_budget_failure_prevents_proposer_billing(
             "agg": _FakePlan([TextDeltaEvent(text="final"), DoneEvent(model="agg")]),
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
     provider = EnsembleProvider(
         profile_name="budget-preflight",
         proposers=[_member("p1")],
@@ -2656,7 +2656,7 @@ async def test_missing_exact_aggregator_projection_prevents_proposer_billing(
             return _ProjectionlessAggregator()
         return registry.provider_for(cfg)
 
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", build_provider)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", build_provider)
     provider = EnsembleProvider(
         profile_name="exact-admission",
         proposers=[_member("p1")],
@@ -2690,7 +2690,7 @@ async def test_actual_candidate_projection_failure_prevents_aggregator_send(
             "agg": _FakePlan([TextDeltaEvent(text="final"), DoneEvent(model="agg")]),
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
     projection_calls = 0
 
     def projection_then_unavailable(
@@ -2721,7 +2721,7 @@ async def test_actual_candidate_projection_failure_prevents_aggregator_send(
         )
 
     monkeypatch.setattr(
-        "opensquilla.provider.ensemble.project_provider_final_request",
+        "openstarry_code.provider.ensemble.project_provider_final_request",
         projection_then_unavailable,
     )
     provider = EnsembleProvider(
@@ -2758,7 +2758,7 @@ async def test_aggregator_applies_one_joint_budget_to_actual_candidates(
             "agg": _FakePlan([TextDeltaEvent(text="final"), DoneEvent(model="agg")]),
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
     provider = EnsembleProvider(
         profile_name="joint-budget",
         proposers=[_member("p1"), _member("p2")],
@@ -2828,7 +2828,7 @@ async def test_optional_candidates_cannot_crowd_out_an_admitted_quorum(
         }
         | {"agg": _FakePlan([TextDeltaEvent(text="final"), DoneEvent(model="agg")])}
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
 
     def quorum_only_projection(
         _provider: Any,
@@ -2856,7 +2856,7 @@ async def test_optional_candidates_cannot_crowd_out_an_admitted_quorum(
         )
 
     monkeypatch.setattr(
-        "opensquilla.provider.ensemble.project_provider_final_request",
+        "openstarry_code.provider.ensemble.project_provider_final_request",
         quorum_only_projection,
     )
     provider = EnsembleProvider(
@@ -2901,7 +2901,7 @@ async def test_ensemble_uses_fallback_when_too_few_proposers_succeed(
             "p2": _FakePlan([ErrorEvent(message="nope", code="boom")]),
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
 
     class _FallbackProvider:
         provider_name = "fallback"
@@ -2960,13 +2960,13 @@ async def test_fallback_timeout_is_idle_based_and_cleanup_is_bounded(
     registry = _FakeRegistry(
         {"p1": _FakePlan([ErrorEvent(message="nope", code="boom")])}
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
     monkeypatch.setattr(
-        "opensquilla.provider.ensemble._ENSEMBLE_HEARTBEAT_INTERVAL_SECONDS",
+        "openstarry_code.provider.ensemble._ENSEMBLE_HEARTBEAT_INTERVAL_SECONDS",
         0.005,
     )
     monkeypatch.setattr(
-        "opensquilla.provider.ensemble._ENSEMBLE_CANCEL_CLEANUP_TIMEOUT_SECONDS",
+        "openstarry_code.provider.ensemble._ENSEMBLE_CANCEL_CLEANUP_TIMEOUT_SECONDS",
         0.01,
     )
     release = asyncio.Event()
@@ -3046,7 +3046,7 @@ async def test_fallback_stream_survives_past_request_timeout_while_events_flow(
     registry = _FakeRegistry(
         {"p1": _FakePlan([ErrorEvent(message="nope", code="boom")])}
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
 
     class _SlowSteadyFallback:
         provider_name = "fallback"
@@ -3112,7 +3112,7 @@ async def test_fallback_stream_without_done_returns_incomplete_error(
             "p2": _FakePlan([ErrorEvent(message="nope", code="boom")]),
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
 
     class _PartialFallback:
         provider_name = "fallback"
@@ -3167,7 +3167,7 @@ async def test_ensemble_redacts_fallback_key_from_terminal_error(
             "p1": _FakePlan([ErrorEvent(message="failed", code="failed")]),
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
 
     class _FallbackProvider:
         provider_name = "fallback"
@@ -3232,7 +3232,7 @@ async def test_ensemble_aggregator_build_failure_returns_explicit_error(
             raise RuntimeError("synthetic constructor failure")
         return registry.provider_for(cfg)
 
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", build_provider)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", build_provider)
     provider = EnsembleProvider(
         profile_name="default",
         proposers=[_member("p1")],
@@ -3272,7 +3272,7 @@ async def test_unready_aggregator_errors_before_any_proposer_spend(
         assert cfg.model != "missing-aggregator"
         return registry.provider_for(cfg)
 
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", build_provider)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", build_provider)
     provider = EnsembleProvider(
         profile_name="default",
         proposers=[_member("p1")],
@@ -3314,7 +3314,7 @@ async def test_unready_aggregator_uses_fallback_without_burning_proposer_spend(
         assert cfg.model != "missing-aggregator"
         return registry.provider_for(cfg)
 
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", build_provider)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", build_provider)
 
     class _FallbackProvider:
         provider_name = "fallback"
@@ -3383,7 +3383,7 @@ async def test_aggregator_build_failure_uses_fallback_before_proposer_usage(
             raise RuntimeError("synthetic constructor failure")
         return registry.provider_for(cfg)
 
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", build_provider)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", build_provider)
 
     class _FallbackProvider:
         provider_name = "fallback"
@@ -3461,9 +3461,9 @@ def _flaky_aggregator_harness(
             return _FlakyAggregator()
         return registry.provider_for(cfg)
 
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", build_provider)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", build_provider)
     monkeypatch.setattr(
-        "opensquilla.provider.ensemble._ENSEMBLE_AGGREGATOR_RETRY_BACKOFF_SECONDS",
+        "openstarry_code.provider.ensemble._ENSEMBLE_AGGREGATOR_RETRY_BACKOFF_SECONDS",
         (0.0,),
     )
     return registry, call_count
@@ -3717,9 +3717,9 @@ async def test_aggregator_transient_exception_is_retried_in_place(
             return _FlakyTransportAggregator()
         return registry.provider_for(cfg)
 
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", build_provider)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", build_provider)
     monkeypatch.setattr(
-        "opensquilla.provider.ensemble._ENSEMBLE_AGGREGATOR_RETRY_BACKOFF_SECONDS",
+        "openstarry_code.provider.ensemble._ENSEMBLE_AGGREGATOR_RETRY_BACKOFF_SECONDS",
         (0.0,),
     )
 
@@ -3790,9 +3790,9 @@ async def test_aggregator_timeout_before_content_is_terminal_without_retry(
             return _TimeoutOnceAggregator()
         return registry.provider_for(cfg)
 
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", build_provider)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", build_provider)
     monkeypatch.setattr(
-        "opensquilla.provider.ensemble._ENSEMBLE_AGGREGATOR_RETRY_BACKOFF_SECONDS",
+        "openstarry_code.provider.ensemble._ENSEMBLE_AGGREGATOR_RETRY_BACKOFF_SECONDS",
         (0.0,),
     )
     provider = _retry_test_provider()
@@ -3887,7 +3887,7 @@ async def test_ensemble_redacts_member_key_from_proposer_error_progress_and_trac
             "agg": _FakePlan([TextDeltaEvent(text="final"), DoneEvent(model="agg")]),
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
     bad_member = replace(
         _member("bad"),
         provider_config=replace(_member("bad").provider_config, api_key=api_key),
@@ -3946,7 +3946,7 @@ async def test_ensemble_redacts_aggregator_key_from_terminal_error_and_progress(
             "agg": aggregator_plan,
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
     aggregator = replace(
         _member("agg"),
         provider_config=replace(_member("agg").provider_config, api_key=api_key),
@@ -3991,7 +3991,7 @@ async def test_unready_proposer_is_quorum_failure_without_provider_build(
         assert cfg.model != "missing-key"
         return registry.provider_for(cfg)
 
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", build_provider)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", build_provider)
     unavailable = replace(
         _member("missing-key"),
         ready=False,
@@ -4043,7 +4043,7 @@ async def test_openrouter_members_get_member_specific_reasoning_capabilities(
             ),
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
     provider = EnsembleProvider(
         profile_name="default",
         proposers=[_openrouter_member("z-ai/glm-5.2")],
@@ -4084,7 +4084,7 @@ async def test_ensemble_emits_proposer_progress_events(
             ),
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
     provider = EnsembleProvider(
         profile_name="default",
         proposers=[_member("p1"), _member("p2")],
@@ -4190,7 +4190,7 @@ def _aggregator_timeout_harness(
     _ScriptedProvider | None,
 ]:
     monkeypatch.setattr(
-        "opensquilla.provider.ensemble._ENSEMBLE_AGGREGATOR_RETRY_BACKOFF_SECONDS",
+        "openstarry_code.provider.ensemble._ENSEMBLE_AGGREGATOR_RETRY_BACKOFF_SECONDS",
         (0.0,),
     )
     registry = _FakeRegistry(
@@ -4215,7 +4215,7 @@ def _aggregator_timeout_harness(
             return aggregator
         return registry.provider_for(cfg)
 
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", build_provider)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", build_provider)
     provider = EnsembleProvider(
         profile_name="default",
         proposers=[_member("p1")],
@@ -4529,7 +4529,7 @@ async def test_aggregator_retries_then_timeout_preserves_request_counts_in_fallb
         yield DoneEvent(input_tokens=11, output_tokens=5, model="fallback")
 
     monkeypatch.setattr(
-        "opensquilla.provider.ensemble._ENSEMBLE_AGGREGATOR_RETRY_BACKOFF_SECONDS",
+        "openstarry_code.provider.ensemble._ENSEMBLE_AGGREGATOR_RETRY_BACKOFF_SECONDS",
         (0.0,),
     )
     provider, _, _, fallback = _aggregator_timeout_harness(
@@ -4643,11 +4643,11 @@ async def test_aggregator_timeout_cleanup_is_bounded_before_fallback(
         yield DoneEvent(model="fallback")
 
     monkeypatch.setattr(
-        "opensquilla.provider.ensemble._ENSEMBLE_HEARTBEAT_INTERVAL_SECONDS",
+        "openstarry_code.provider.ensemble._ENSEMBLE_HEARTBEAT_INTERVAL_SECONDS",
         0.005,
     )
     monkeypatch.setattr(
-        "opensquilla.provider.ensemble._ENSEMBLE_CANCEL_CLEANUP_TIMEOUT_SECONDS",
+        "openstarry_code.provider.ensemble._ENSEMBLE_CANCEL_CLEANUP_TIMEOUT_SECONDS",
         0.01,
     )
     provider, _, _, fallback = _aggregator_timeout_harness(
@@ -4705,7 +4705,7 @@ async def test_ensemble_emits_aggregator_finish_before_terminal_error(
             "agg": aggregator_plan,
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
     provider = EnsembleProvider(
         profile_name="default",
         proposers=[_member("p1")],
@@ -4753,7 +4753,7 @@ async def test_ensemble_streams_proposer_progress_live_not_buffered(
             ),
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
     provider = EnsembleProvider(
         profile_name="default",
         proposers=[_member("p1"), _member("p2")],
@@ -4808,7 +4808,7 @@ async def test_target_four_waits_past_floor_three_before_aggregation(
             ),
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
     provider = EnsembleProvider(
         profile_name="score-max",
         proposers=[_member("p1"), _member("p2"), _member("p3"), _member("p4")],
@@ -4862,9 +4862,9 @@ async def test_transient_partial_504_retries_then_degrades_to_floor_three(
             "agg": [_FakePlan([TextDeltaEvent(text="final"), DoneEvent(model="agg")])],
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
     monkeypatch.setattr(
-        "opensquilla.provider.ensemble._ENSEMBLE_PROPOSER_RETRY_BACKOFF_SECONDS",
+        "openstarry_code.provider.ensemble._ENSEMBLE_PROPOSER_RETRY_BACKOFF_SECONDS",
         (),
     )
     provider = EnsembleProvider(
@@ -4989,9 +4989,9 @@ async def test_empty_and_length_only_attempts_retry_without_losing_usage(
             ],
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
     monkeypatch.setattr(
-        "opensquilla.provider.ensemble._ENSEMBLE_PROPOSER_RETRY_BACKOFF_SECONDS",
+        "openstarry_code.provider.ensemble._ENSEMBLE_PROPOSER_RETRY_BACKOFF_SECONDS",
         (),
     )
     provider = EnsembleProvider(
@@ -5098,9 +5098,9 @@ async def test_visible_error_finish_retries_and_only_final_candidate_reaches_agg
             ],
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
     monkeypatch.setattr(
-        "opensquilla.provider.ensemble._ENSEMBLE_PROPOSER_RETRY_BACKOFF_SECONDS",
+        "openstarry_code.provider.ensemble._ENSEMBLE_PROPOSER_RETRY_BACKOFF_SECONDS",
         (),
     )
     provider = EnsembleProvider(
@@ -5213,9 +5213,9 @@ async def test_visible_error_finish_exhaustion_blocks_strict_floor_and_preserves
             "agg": [_FakePlan([TextDeltaEvent(text="unused"), DoneEvent(model="agg")])],
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
     monkeypatch.setattr(
-        "opensquilla.provider.ensemble._ENSEMBLE_PROPOSER_RETRY_BACKOFF_SECONDS",
+        "openstarry_code.provider.ensemble._ENSEMBLE_PROPOSER_RETRY_BACKOFF_SECONDS",
         (),
     )
     provider = EnsembleProvider(
@@ -5281,7 +5281,7 @@ async def test_floor_not_met_errors_without_single_model_fallback(
             "agg": [_FakePlan([TextDeltaEvent(text="unused"), DoneEvent(model="agg")])],
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
     provider = EnsembleProvider(
         profile_name="score-max",
         proposers=[_member("p1"), _member("p2"), _member("p3"), _member("p4")],
@@ -5331,7 +5331,7 @@ async def test_static_openrouter_b5_quorum_cancels_slow_proposer(
             ),
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
     provider = EnsembleProvider(
         profile_name="static_openrouter_b5",
         proposers=[_member("p1"), _member("p2"), _member("p3"), _member("p4")],
@@ -5423,9 +5423,9 @@ async def test_cancel_resistant_straggler_counts_as_missing_usage(
             return _CancellationResistantProposer()
         return registry.provider_for(cfg)
 
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", build_provider)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", build_provider)
     monkeypatch.setattr(
-        "opensquilla.provider.ensemble._ENSEMBLE_CANCEL_CLEANUP_TIMEOUT_SECONDS",
+        "openstarry_code.provider.ensemble._ENSEMBLE_CANCEL_CLEANUP_TIMEOUT_SECONDS",
         0.01,
     )
     provider = EnsembleProvider(
@@ -5488,8 +5488,8 @@ async def test_quorum_grace_keeps_a_final_proposer_that_finishes_in_window(
             "agg": _FakePlan([TextDeltaEvent(text="final"), DoneEvent(model="agg")]),
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
-    monkeypatch.setattr("opensquilla.provider.ensemble.asyncio.wait", observed_wait)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble.asyncio.wait", observed_wait)
     provider = EnsembleProvider(
         profile_name="static_openrouter_b5",
         proposers=[_member("p1"), _member("p2"), _member("p3"), _member("p4")],
@@ -5563,8 +5563,8 @@ async def test_failed_proposer_does_not_start_grace_before_success_quorum(
             "agg": _FakePlan([TextDeltaEvent(text="final"), DoneEvent(model="agg")]),
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
-    monkeypatch.setattr("opensquilla.provider.ensemble.asyncio.wait", observed_wait)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble.asyncio.wait", observed_wait)
     provider = EnsembleProvider(
         profile_name="static_openrouter_b5",
         proposers=[_member("p1"), _member("p2"), _member("p3"), _member("p4")],
@@ -5622,7 +5622,7 @@ async def test_unreachable_quorum_cancels_pending_and_uses_fallback(
             "agg": _FakePlan([TextDeltaEvent(text="unused"), DoneEvent(model="agg")]),
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
 
     class _FallbackProvider:
         provider_name = "fallback"
@@ -5696,7 +5696,7 @@ async def test_required_all_quorum_cancels_remaining_after_failure(
             "agg": _FakePlan([TextDeltaEvent(text="unused"), DoneEvent(model="agg")]),
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
 
     class _FallbackProvider:
         provider_name = "fallback"
@@ -5753,7 +5753,7 @@ async def test_default_ensemble_waits_for_all_proposers_without_quorum(
             "agg": _FakePlan([TextDeltaEvent(text="final"), DoneEvent(model="agg")]),
         }
     )
-    monkeypatch.setattr("opensquilla.provider.ensemble._build_provider", registry.provider_for)
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", registry.provider_for)
     provider = EnsembleProvider(
         profile_name="router_dynamic/c1",
         proposers=[_member("p1"), _member("p2")],
@@ -5782,7 +5782,7 @@ async def test_default_ensemble_waits_for_all_proposers_without_quorum(
 def test_runtime_wrap_is_after_selector_resolution() -> None:
     import inspect
 
-    from opensquilla.engine.runtime import TurnRunner
+    from openstarry_code.engine.runtime import TurnRunner
 
     source = inspect.getsource(TurnRunner._run_pipeline)
     resolve_index = source.index("provider = apply_model_override(")
@@ -5795,7 +5795,7 @@ def test_runtime_wrap_is_after_selector_resolution() -> None:
 
 @pytest.mark.asyncio
 async def test_selector_wrapper_preserves_provider_control_event_contract() -> None:
-    from opensquilla.engine.runtime import _SelectorFallbackProvider
+    from openstarry_code.engine.runtime import _SelectorFallbackProvider
 
     class _Provider:
         provider_name = "openrouter"
@@ -5863,7 +5863,7 @@ async def test_selector_wrapper_preserves_provider_control_event_contract() -> N
 
 @pytest.mark.asyncio
 async def test_selector_wrapper_yields_provider_heartbeat_before_stream_completion() -> None:
-    from opensquilla.engine.runtime import _SelectorFallbackProvider
+    from openstarry_code.engine.runtime import _SelectorFallbackProvider
 
     release = asyncio.Event()
 
@@ -5898,7 +5898,7 @@ async def test_selector_wrapper_yields_provider_heartbeat_before_stream_completi
 
 
 def _static_b5_gateway_config() -> Any:
-    from opensquilla.gateway.config import GatewayConfig
+    from openstarry_code.gateway.config import GatewayConfig
 
     return GatewayConfig(
         llm_ensemble={"enabled": True, "selection_mode": "static_openrouter_b5"},
@@ -5908,7 +5908,7 @@ def _static_b5_gateway_config() -> Any:
 def test_static_b5_credential_unavailable_for_keyless_non_openrouter_provider(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.provider.ensemble import static_b5_credential_available
+    from openstarry_code.provider.ensemble import static_b5_credential_available
 
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     inherited = ProviderConfig(provider="groq", model="m", api_key="sk-groq-synthetic")
@@ -5921,7 +5921,7 @@ def test_static_b5_credential_unavailable_for_keyless_non_openrouter_provider(
 def test_static_b5_credential_env_key_is_an_opt_in_for_other_providers(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.provider.ensemble import static_b5_credential_available
+    from openstarry_code.provider.ensemble import static_b5_credential_available
 
     monkeypatch.setenv("OPENROUTER_API_KEY", "sk-or-synthetic")
     inherited = ProviderConfig(provider="groq", model="m", api_key="sk-groq-synthetic")
@@ -5934,7 +5934,7 @@ def test_static_b5_credential_env_key_is_an_opt_in_for_other_providers(
 def test_static_b5_credential_resolves_from_inherited_openrouter_key(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.provider.ensemble import static_b5_credential_available
+    from openstarry_code.provider.ensemble import static_b5_credential_available
 
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     inherited = ProviderConfig(provider="openrouter", model="m", api_key="sk-or-synthetic")
@@ -5947,7 +5947,7 @@ def test_static_b5_credential_resolves_from_inherited_openrouter_key(
 def test_static_b5_credential_unavailable_for_keyless_openrouter_provider(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.provider.ensemble import static_b5_credential_available
+    from openstarry_code.provider.ensemble import static_b5_credential_available
 
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     inherited = ProviderConfig(provider="openrouter", model="m", api_key="")
@@ -5961,8 +5961,8 @@ def test_static_b5_credential_accepts_non_selector_provider_config_shapes(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """The gateway floor/doctor call sites pass ``config.llm`` (no org_id field)."""
-    from opensquilla.gateway.config import LlmProviderConfig
-    from opensquilla.provider.ensemble import static_b5_credential_available
+    from openstarry_code.gateway.config import LlmProviderConfig
+    from openstarry_code.provider.ensemble import static_b5_credential_available
 
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     config = _static_b5_gateway_config()
@@ -5977,8 +5977,8 @@ def test_static_b5_credential_accepts_non_selector_provider_config_shapes(
 def test_static_tokenrhythm_b5_credential_resolution(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.provider.ensemble import static_b5_credential_available
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.provider.ensemble import static_b5_credential_available
 
     config = GatewayConfig(
         llm_ensemble={"enabled": True, "selection_mode": "static_tokenrhythm_b5"},
@@ -6006,12 +6006,12 @@ def test_static_tokenrhythm_b5_credential_resolution(
 def test_static_b5_credential_gate_agrees_with_config_side_floor_gate(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.gateway.config import (
+    from openstarry_code.gateway.config import (
         GatewayConfig,
         static_b5_ensemble_active,
         static_b5_ensemble_enabled,
     )
-    from opensquilla.provider.ensemble import static_b5_credential_available
+    from openstarry_code.provider.ensemble import static_b5_credential_available
 
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     configs = [

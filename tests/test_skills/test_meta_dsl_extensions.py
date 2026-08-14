@@ -7,11 +7,11 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.engine.types import AgentEvent
-from opensquilla.skills.meta.orchestrator import MetaOrchestrator
-from opensquilla.skills.meta.parser import parse_meta_plan
-from opensquilla.skills.meta.types import MetaMatch, MetaResult
-from opensquilla.skills.types import SkillLayer, SkillSpec
+from openstarry_code.engine.types import AgentEvent
+from openstarry_code.skills.meta.orchestrator import MetaOrchestrator
+from openstarry_code.skills.meta.parser import parse_meta_plan
+from openstarry_code.skills.meta.types import MetaMatch, MetaResult
+from openstarry_code.skills.types import SkillLayer, SkillSpec
 
 
 def _meta_spec(steps: list[dict[str, object]]) -> SkillSpec:

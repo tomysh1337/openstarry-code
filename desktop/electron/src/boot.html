@@ -810,7 +810,7 @@
 
     function applyError(payload) {
       const rawMessage = payload && payload.message ? String(payload.message) : msg.errorDefault;
-      const message = rawMessage.includes('OPENSQUILLA_PROFILE_IN_USE')
+      const message = rawMessage.includes('OPENSTARRY_CODE_PROFILE_IN_USE')
         ? msg.profileInUse
         : rawMessage;
       phase.textContent = msg.startupPaused;

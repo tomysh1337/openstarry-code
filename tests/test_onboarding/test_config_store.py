@@ -9,9 +9,9 @@ import tomllib
 
 import pytest
 
-import opensquilla.gateway.config_migration as migration_module
-from opensquilla.gateway.config import AgentEntryConfig, GatewayConfig
-from opensquilla.onboarding.config_store import (
+import openstarry_code.gateway.config_migration as migration_module
+from openstarry_code.gateway.config import AgentEntryConfig, GatewayConfig
+from openstarry_code.onboarding.config_store import (
     PersistResult,
     default_config_path,
     load_config,
@@ -23,10 +23,10 @@ from opensquilla.onboarding.config_store import (
 
 def _clear_path_env(monkeypatch):
     for key in (
-        "OPENSQUILLA_GATEWAY_CONFIG_PATH",
-        "OPENSQUILLA_STATE_DIR",
-        "OPENSQUILLA_HOME",
-        "OPENSQUILLA_PROFILE",
+        "OPENSTARRY_CODE_GATEWAY_CONFIG_PATH",
+        "OPENSTARRY_CODE_STATE_DIR",
+        "OPENSTARRY_CODE_HOME",
+        "OPENSTARRY_CODE_PROFILE",
     ):
         monkeypatch.delenv(key, raising=False)
 
@@ -34,26 +34,26 @@ def _clear_path_env(monkeypatch):
 def test_default_config_path_under_home(monkeypatch, tmp_path):
     _clear_path_env(monkeypatch)
     monkeypatch.setenv("HOME", str(tmp_path))
-    monkeypatch.chdir(tmp_path)  # no opensquilla.toml here
+    monkeypatch.chdir(tmp_path)  # no openstarry-code.toml here
     p = default_config_path()
-    assert p == tmp_path / ".opensquilla" / "config.toml"
+    assert p == tmp_path / ".openstarry-code" / "config.toml"
 
 
 def test_default_path_uses_env_when_set(tmp_path, monkeypatch):
     target = tmp_path / "explicit.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     monkeypatch.chdir(tmp_path)
     assert default_config_path() == target
 
 
 def test_default_path_prefers_cwd_when_present(tmp_path, monkeypatch):
-    monkeypatch.delenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", raising=False)
     monkeypatch.setenv("HOME", str(tmp_path / "home"))
     project = tmp_path / "project"
     project.mkdir()
-    (project / "opensquilla.toml").write_text("")
+    (project / "openstarry-code.toml").write_text("")
     monkeypatch.chdir(project)
-    assert default_config_path() == project / "opensquilla.toml"
+    assert default_config_path() == project / "openstarry-code.toml"
 
 
 def test_resolve_config_path_ignores_cwd_directory(tmp_path, monkeypatch):
@@ -61,12 +61,12 @@ def test_resolve_config_path_ignores_cwd_directory(tmp_path, monkeypatch):
     home = tmp_path / "home"
     home.mkdir()
     monkeypatch.setenv("HOME", str(home))
-    (tmp_path / "opensquilla.toml").mkdir()
+    (tmp_path / "openstarry-code.toml").mkdir()
     monkeypatch.chdir(tmp_path)
 
     path, source = resolve_config_path(None)
 
-    assert path == home / ".opensquilla" / "config.toml"
+    assert path == home / ".openstarry-code" / "config.toml"
     assert source == "home"
 
 
@@ -75,21 +75,21 @@ def test_default_path_falls_back_to_home(tmp_path, monkeypatch):
     home = tmp_path / "home"
     home.mkdir()
     monkeypatch.setenv("HOME", str(home))
-    monkeypatch.chdir(tmp_path)  # no opensquilla.toml in cwd
-    assert default_config_path() == home / ".opensquilla" / "config.toml"
+    monkeypatch.chdir(tmp_path)  # no openstarry-code.toml in cwd
+    assert default_config_path() == home / ".openstarry-code" / "config.toml"
 
 
 def test_resolve_config_path_returns_source(tmp_path, monkeypatch):
-    monkeypatch.delenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", raising=False)
     home = tmp_path / "home"
     home.mkdir()
     monkeypatch.setenv("HOME", str(home))
     project = tmp_path / "project"
     project.mkdir()
-    (project / "opensquilla.toml").write_text("")
+    (project / "openstarry-code.toml").write_text("")
     monkeypatch.chdir(project)
     path, source = resolve_config_path(None)
-    assert path == project / "opensquilla.toml"
+    assert path == project / "openstarry-code.toml"
     assert source == "cwd"
 
 
@@ -289,7 +289,7 @@ def test_persist_omits_runtime_secret_paths(tmp_path):
 
 def test_env_sourced_llm_key_is_not_persisted(tmp_path, monkeypatch):
     monkeypatch.setenv("OPENROUTER_API_KEY", "sk-from-env")
-    from opensquilla.gateway.llm_runtime import resolve_llm_runtime_config
+    from openstarry_code.gateway.llm_runtime import resolve_llm_runtime_config
 
     cfg = GatewayConfig(
         llm={

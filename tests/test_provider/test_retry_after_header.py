@@ -11,8 +11,8 @@ from typing import Any
 import httpx
 import pytest
 
-from opensquilla.provider.selector import build_provider
-from opensquilla.provider.types import ChatConfig, ErrorEvent, Message
+from openstarry_code.provider.selector import build_provider
+from openstarry_code.provider.types import ChatConfig, ErrorEvent, Message
 
 FAKE_API_KEY = "sk-test-000"
 

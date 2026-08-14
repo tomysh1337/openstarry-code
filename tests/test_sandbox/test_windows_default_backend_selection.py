@@ -4,9 +4,9 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.sandbox.config import SandboxSettings
-from opensquilla.sandbox.integration import configure_runtime, reset_runtime
-from opensquilla.sandbox.types import SandboxBackendError
+from openstarry_code.sandbox.config import SandboxSettings
+from openstarry_code.sandbox.integration import configure_runtime, reset_runtime
+from openstarry_code.sandbox.types import SandboxBackendError
 
 
 class _FakeApprovalQueue:
@@ -31,8 +31,8 @@ def test_windows_auto_backend_selects_windows_default_when_available(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    from opensquilla.sandbox import backend as backend_mod
-    from opensquilla.sandbox.backend.windows_default import WindowsDefaultBackend
+    from openstarry_code.sandbox import backend as backend_mod
+    from openstarry_code.sandbox.backend.windows_default import WindowsDefaultBackend
 
     monkeypatch.setattr(backend_mod.sys, "platform", "win32")
     monkeypatch.setattr(WindowsDefaultBackend, "available", lambda self: True)
@@ -50,8 +50,8 @@ def test_explicit_windows_default_fails_closed_when_unavailable(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    from opensquilla.sandbox import backend as backend_mod
-    from opensquilla.sandbox.backend.windows_default import WindowsDefaultBackend
+    from openstarry_code.sandbox import backend as backend_mod
+    from openstarry_code.sandbox.backend.windows_default import WindowsDefaultBackend
 
     monkeypatch.setattr(backend_mod.sys, "platform", "win32")
     monkeypatch.setattr(WindowsDefaultBackend, "available", lambda self: False)
@@ -73,7 +73,7 @@ def test_full_host_access_still_uses_noop_on_windows(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    from opensquilla.sandbox import backend as backend_mod
+    from openstarry_code.sandbox import backend as backend_mod
 
     monkeypatch.setattr(backend_mod.sys, "platform", "win32")
 

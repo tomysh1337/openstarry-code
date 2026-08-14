@@ -16,12 +16,12 @@ import tomllib
 import types
 from typing import Any
 
-from opensquilla.onboarding import flow
-from opensquilla.onboarding.config_store import load_config
-from opensquilla.onboarding.image_generation_specs import (
+from openstarry_code.onboarding import flow
+from openstarry_code.onboarding.config_store import load_config
+from openstarry_code.onboarding.image_generation_specs import (
     get_image_generation_provider_setup_spec,
 )
-from opensquilla.onboarding.search_specs import get_search_provider_setup_spec
+from openstarry_code.onboarding.search_specs import get_search_provider_setup_spec
 
 
 class _Answer:
@@ -174,7 +174,7 @@ def test_image_generation_fields_seed_defaults_from_stored_config(tmp_path, monk
 
 
 def test_image_generation_fields_fresh_config_defaults_unchanged(monkeypatch):
-    from opensquilla.gateway.config import GatewayConfig
+    from openstarry_code.gateway.config import GatewayConfig
 
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     spec = get_image_generation_provider_setup_spec("openai")
@@ -197,7 +197,7 @@ def test_channel_edit_rename_with_blank_secret_keeps_token(tmp_path, monkeypatch
     hint while renaming the entry used to crash with an uncaught
     ValueError ("channel field 'token' requires a non-empty value") because
     the keep-current merge looked up the stored entry by the NEW name."""
-    from opensquilla.onboarding.setup_engine import SetupEngine
+    from openstarry_code.onboarding.setup_engine import SetupEngine
 
     target = tmp_path / "c.toml"
     engine = SetupEngine(path=target)
@@ -241,7 +241,7 @@ def test_channel_edit_rename_with_blank_secret_keeps_token(tmp_path, monkeypatch
 
 
 def _stored_llm_config(provider: str, model: str) -> Any:
-    from opensquilla.gateway.config import GatewayConfig
+    from openstarry_code.gateway.config import GatewayConfig
 
     return GatewayConfig(llm={"provider": provider, "model": model, "api_key": "sk-old"})
 
@@ -253,7 +253,7 @@ def test_same_provider_resave_passes_keep_current_model_not_reset_sentinel(
     ``model=None`` (the mutation layer's keep-current) — the legacy ``""``
     sentinel means "derive the tier default", which silently swapped a
     hand-set ``llm.model`` on an Enter-through key rotation."""
-    from opensquilla.onboarding.provider_specs import get_provider_setup_spec
+    from openstarry_code.onboarding.provider_specs import get_provider_setup_spec
 
     monkeypatch.setattr(flow, "_run_provider_probe", lambda **_kw: None)
 
@@ -276,7 +276,7 @@ def test_same_provider_resave_passes_keep_current_model_not_reset_sentinel(
 def test_provider_switch_keeps_the_legacy_derive_default_sentinel(monkeypatch):
     """Switching providers has no stored model to keep: the legacy ``""``
     (derive the provider's default model) must stay pinned."""
-    from opensquilla.onboarding.provider_specs import get_provider_setup_spec
+    from openstarry_code.onboarding.provider_specs import get_provider_setup_spec
 
     monkeypatch.setattr(flow, "_run_provider_probe", lambda **_kw: None)
 
@@ -300,8 +300,8 @@ def test_same_provider_enter_through_resave_keeps_stored_model_end_to_end(
     """The mutation layer really keeps the stored model for the wizard's
     keep-current answer — the ``""`` regression resets it to the derived
     tier default."""
-    from opensquilla.onboarding.mutations import upsert_llm_provider
-    from opensquilla.onboarding.provider_specs import get_provider_setup_spec
+    from openstarry_code.onboarding.mutations import upsert_llm_provider
+    from openstarry_code.onboarding.provider_specs import get_provider_setup_spec
 
     monkeypatch.setattr(flow, "_run_provider_probe", lambda **_kw: None)
     stored = _stored_llm_config("openrouter", "corp/pinned-model")
@@ -334,7 +334,7 @@ def test_direct_provider_free_text_model_prompt_seeds_the_stored_model(
 ):
     """On a same-provider re-run the free-text "Model id" prompt must default
     to the stored model so plain Enter keeps it instead of retyping it."""
-    from opensquilla.onboarding.provider_specs import get_provider_setup_spec
+    from openstarry_code.onboarding.provider_specs import get_provider_setup_spec
 
     monkeypatch.delenv("GROQ_API_KEY", raising=False)
     monkeypatch.setattr(flow, "_run_provider_probe", lambda **_kw: None)
@@ -358,8 +358,8 @@ def test_direct_provider_discovery_select_preselects_the_stored_model(
     """When live discovery upgrades the prompt to a select, the stored model
     must be pre-selected — defaulting to the first discovered row switches
     models on an Enter-through re-save."""
-    from opensquilla.onboarding.probe import ProviderModelsDiscoverResult
-    from opensquilla.onboarding.provider_specs import get_provider_setup_spec
+    from openstarry_code.onboarding.probe import ProviderModelsDiscoverResult
+    from openstarry_code.onboarding.provider_specs import get_provider_setup_spec
 
     monkeypatch.setattr(flow, "_run_provider_probe", lambda **_kw: None)
     monkeypatch.setattr(
@@ -412,7 +412,7 @@ _HAND_TIERS = {
 
 
 def _config_with_preserved_hand_ladder(*, enabled: bool) -> Any:
-    from opensquilla.gateway.config import GatewayConfig
+    from openstarry_code.gateway.config import GatewayConfig
 
     return GatewayConfig(
         llm={"provider": "openrouter", "model": "hand-c1", "api_key": "sk-old"},
@@ -444,7 +444,7 @@ def test_router_reenable_over_preserved_hand_ladder_restores_it(monkeypatch):
     "SquillaRouter" choice to the custom mode in that state — plain
     "recommended" would wipe the preserved ladder with the packaged profile,
     the exact silent reset the preservation exists to prevent."""
-    from opensquilla.onboarding.mutations import upsert_router
+    from openstarry_code.onboarding.mutations import upsert_router
 
     cfg = _config_with_preserved_hand_ladder(enabled=False)
 

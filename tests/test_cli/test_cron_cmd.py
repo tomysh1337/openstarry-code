@@ -14,7 +14,7 @@ from typing import Any
 import pytest
 import typer
 
-from opensquilla.cli import cron_cmd
+from openstarry_code.cli import cron_cmd
 
 # --- _parse_duration_seconds ---------------------------------------------
 

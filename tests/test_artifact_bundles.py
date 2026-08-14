@@ -5,8 +5,8 @@ from pathlib import Path
 
 import pytest
 
-import opensquilla.artifacts as artifacts_module
-from opensquilla.artifacts import (
+import openstarry_code.artifacts as artifacts_module
+from openstarry_code.artifacts import (
     ARTIFACT_BUNDLE_BLOBS_DIR,
     ARTIFACT_BUNDLE_MANIFEST_NAME,
     ArtifactBudgetError,
@@ -22,8 +22,8 @@ from opensquilla.artifacts import (
     artifact_payload,
     collect_artifact_bundle,
 )
-from opensquilla.tools.builtin.artifacts import publish_artifact
-from opensquilla.tools.types import ToolContext, ToolError, current_tool_context
+from openstarry_code.tools.builtin.artifacts import publish_artifact
+from openstarry_code.tools.types import ToolContext, ToolError, current_tool_context
 
 
 def _site(workspace: Path) -> Path:

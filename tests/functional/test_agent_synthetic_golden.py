@@ -8,24 +8,24 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine import Agent, AgentConfig, ToolResult
-from opensquilla.engine.types import ToolCall
-from opensquilla.provider import (
+from openstarry_code.engine import Agent, AgentConfig, ToolResult
+from openstarry_code.engine.types import ToolCall
+from openstarry_code.provider import (
     ChatConfig,
     Message,
     ToolDefinition,
     ToolInputSchema,
 )
-from opensquilla.provider import (
+from openstarry_code.provider import (
     DoneEvent as ProviderDone,
 )
-from opensquilla.provider import (
+from openstarry_code.provider import (
     TextDeltaEvent as ProviderText,
 )
-from opensquilla.provider import (
+from openstarry_code.provider import (
     ToolUseEndEvent as ProviderToolUseEnd,
 )
-from opensquilla.provider import (
+from openstarry_code.provider import (
     ToolUseStartEvent as ProviderToolUseStart,
 )
 
@@ -118,8 +118,8 @@ def _message_contains_tool_result(messages: list[Message], tool_use_id: str) -> 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("case_path", _case_paths(), ids=lambda path: path.stem)
 async def test_synthetic_complex_agent_golden(case_path: Path) -> None:
-    if os.environ.get("OPENSQUILLA_RUN_LOCAL_GOLDENS") != "1":
-        pytest.skip("set OPENSQUILLA_RUN_LOCAL_GOLDENS=1 to run synthetic local goldens")
+    if os.environ.get("OPENSTARRY_CODE_RUN_LOCAL_GOLDENS") != "1":
+        pytest.skip("set OPENSTARRY_CODE_RUN_LOCAL_GOLDENS=1 to run synthetic local goldens")
 
     case = _load_case(case_path)
     provider = _SyntheticCaseProvider(case["turns"])

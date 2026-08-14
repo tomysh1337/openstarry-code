@@ -14,10 +14,10 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.gateway.rpc import RpcContext
-from opensquilla.gateway.rpc_cron import _handle_cron_add, _handle_cron_update, _job_to_wire
-from opensquilla.scheduler.payloads import AGENT_TURN_KIND, normalize_contract
-from opensquilla.scheduler.types import CronJob, DeliveryConfig, ScheduleKind
+from openstarry_code.gateway.rpc import RpcContext
+from openstarry_code.gateway.rpc_cron import _handle_cron_add, _handle_cron_update, _job_to_wire
+from openstarry_code.scheduler.payloads import AGENT_TURN_KIND, normalize_contract
+from openstarry_code.scheduler.types import CronJob, DeliveryConfig, ScheduleKind
 
 
 class _FakeScheduler:
@@ -128,7 +128,7 @@ async def test_rpc_create_persists_a_validated_project_workspace(monkeypatch) ->
     storage = object()
 
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_cron.get_session_storage",
+        "openstarry_code.gateway.rpc_cron.get_session_storage",
         lambda _manager: storage,
     )
 
@@ -140,7 +140,7 @@ async def test_rpc_create_persists_a_validated_project_workspace(monkeypatch) ->
         )
 
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_cron.resolve_validated_project_workspace",
+        "openstarry_code.gateway.rpc_cron.resolve_validated_project_workspace",
         resolve_workspace,
     )
 

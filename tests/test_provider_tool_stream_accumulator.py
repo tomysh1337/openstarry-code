@@ -10,11 +10,11 @@ from collections.abc import Callable
 
 import pytest
 
-from opensquilla.provider.stream_assembly import (
+from openstarry_code.provider.stream_assembly import (
     ToolStreamAccumulator,
     ToolStreamProtocolError,
 )
-from opensquilla.provider.types import (
+from openstarry_code.provider.types import (
     ToolUseDeltaEvent,
     ToolUseEndEvent,
     ToolUseStartEvent,

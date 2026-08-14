@@ -9,10 +9,10 @@ import typer
 from rich.console import Console
 from rich.panel import Panel
 
-from opensquilla.cli.repl import gateway_runtime, standalone_runtime
-from opensquilla.cli.repl.session_state import ChatSessionState
-from opensquilla.cli.repl.stream import TurnResult
-from opensquilla.engine.commands import Surface
+from openstarry_code.cli.repl import gateway_runtime, standalone_runtime
+from openstarry_code.cli.repl.session_state import ChatSessionState
+from openstarry_code.cli.repl.stream import TurnResult
+from openstarry_code.engine.commands import Surface
 
 REMOVED_TEXT_BACKEND = "text" + "ual"
 REMOVED_BACKEND_IDS = ["terminal", REMOVED_TEXT_BACKEND, f"live-{REMOVED_TEXT_BACKEND}"]
@@ -90,7 +90,7 @@ class _RecordingConsole:
 
 
 def test_gateway_runtime_notifier_maps_all_notice_kinds() -> None:
-    from opensquilla.cli.repl import runtime_bridge
+    from openstarry_code.cli.repl import runtime_bridge
 
     output_console = _RecordingConsole()
     notify = runtime_bridge._gateway_runtime_notifier(
@@ -139,10 +139,10 @@ def test_gateway_runtime_notifier_maps_all_notice_kinds() -> None:
 def test_gateway_exit_receipt_is_plain_and_resumable(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.repl import runtime_bridge
+    from openstarry_code.cli.repl import runtime_bridge
 
     output_console = _RecordingConsole()
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_URL", "ws://127.0.0.1:18791/ws")
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_URL", "ws://127.0.0.1:18791/ws")
 
     runtime_bridge._print_session_exit_receipt(
         output_console,
@@ -158,7 +158,7 @@ def test_gateway_exit_receipt_is_plain_and_resumable(
     receipt = output_console.printed[0]
     assert getattr(receipt, "plain") == (
         "Session saved: Mac TUI work\n"
-        "Resume: opensquilla chat --session agent:main:with spaces\n"
+        "Resume: openstarry-code chat --session agent:main:with spaces\n"
         "Web: http://127.0.0.1:18791/control/chat?session=agent%3Amain%3Awith%20spaces\n"
         "Exit: surface_closed"
     )
@@ -170,7 +170,7 @@ async def test_gateway_runtime_bridge_prints_failure_receipt_once(
     monkeypatch: pytest.MonkeyPatch,
     reason: str,
 ) -> None:
-    from opensquilla.cli.repl import runtime_bridge
+    from openstarry_code.cli.repl import runtime_bridge
 
     output_console = _RecordingConsole()
 
@@ -207,8 +207,8 @@ async def test_gateway_runtime_bridge_prints_failure_receipt_once(
 async def test_gateway_runtime_bridge_formats_missing_resume_without_traceback(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.gateway_client import GatewayRPCError
-    from opensquilla.cli.repl import runtime_bridge
+    from openstarry_code.cli.gateway_client import GatewayRPCError
+    from openstarry_code.cli.repl import runtime_bridge
 
     output_console = _RecordingConsole()
 
@@ -233,7 +233,7 @@ async def test_gateway_runtime_bridge_formats_missing_resume_without_traceback(
     assert len(output_console.printed) == 1
     panel = cast(Panel, output_console.printed[0])
     assert panel.renderable == (
-        "Session 'main' was not found. Run `opensquilla sessions list` to find "
+        "Session 'main' was not found. Run `openstarry-code sessions list` to find "
         "a resumable key, or omit `--session` to create a new session."
     )
 
@@ -242,7 +242,7 @@ async def test_gateway_runtime_bridge_formats_missing_resume_without_traceback(
 async def test_gateway_runtime_bridge_assembles_gateway_dependencies(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.repl import runtime_bridge
+    from openstarry_code.cli.repl import runtime_bridge
 
     captured: dict[str, Any] = {}
     output_console = _RecordingConsole()
@@ -276,7 +276,7 @@ async def test_gateway_runtime_bridge_assembles_gateway_dependencies(
 async def test_gateway_runtime_bridge_resolves_default_repl_runner_at_call_time(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.repl import runtime_bridge
+    from openstarry_code.cli.repl import runtime_bridge
 
     captured: dict[str, Any] = {}
 
@@ -326,7 +326,7 @@ async def test_gateway_runtime_bridge_resolves_default_repl_runner_at_call_time(
 async def test_gateway_runtime_bridge_owns_default_turn_callbacks(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.repl import runtime_bridge
+    from openstarry_code.cli.repl import runtime_bridge
 
     captured: dict[str, Any] = {}
 
@@ -346,9 +346,9 @@ async def test_gateway_runtime_bridge_owns_default_turn_callbacks(
 async def test_run_concurrent_repl_defaults_to_native_bridge(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.repl import runtime_bridge
+    from openstarry_code.cli.repl import runtime_bridge
 
-    monkeypatch.delenv("OPENSQUILLA_TUI_BACKEND", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_TUI_BACKEND", raising=False)
     calls: list[dict[str, Any]] = []
 
     async def fake_native_repl(**kwargs: Any) -> None:
@@ -382,9 +382,9 @@ def test_validate_tui_backend_selection_rejects_removed_backends(
     monkeypatch: pytest.MonkeyPatch,
     backend_id: str,
 ) -> None:
-    from opensquilla.cli.repl import runtime_bridge
+    from openstarry_code.cli.repl import runtime_bridge
 
-    monkeypatch.setenv("OPENSQUILLA_TUI_BACKEND", backend_id)
+    monkeypatch.setenv("OPENSTARRY_CODE_TUI_BACKEND", backend_id)
 
     with pytest.raises(ValueError) as exc_info:
         runtime_bridge.validate_tui_backend_selection()
@@ -397,9 +397,9 @@ def test_validate_tui_backend_selection_rejects_removed_backends(
 async def test_run_concurrent_repl_uses_opentui_bridge_when_selected(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.repl import runtime_bridge
+    from openstarry_code.cli.repl import runtime_bridge
 
-    monkeypatch.setenv("OPENSQUILLA_TUI_BACKEND", "opentui")
+    monkeypatch.setenv("OPENSTARRY_CODE_TUI_BACKEND", "opentui")
     calls: list[dict[str, Any]] = []
 
     async def fake_opentui_repl(**kwargs: Any) -> None:
@@ -437,10 +437,10 @@ async def test_run_concurrent_repl_uses_opentui_bridge_when_selected(
 def test_turn_stream_dependencies_use_native_renderer_by_default(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.repl import runtime_bridge
-    from opensquilla.cli.tui.native.renderer import NativeStreamRenderer
+    from openstarry_code.cli.repl import runtime_bridge
+    from openstarry_code.cli.tui.native.renderer import NativeStreamRenderer
 
-    monkeypatch.delenv("OPENSQUILLA_TUI_BACKEND", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_TUI_BACKEND", raising=False)
 
     deps = runtime_bridge._turn_stream_dependencies()
 
@@ -450,8 +450,8 @@ def test_turn_stream_dependencies_use_native_renderer_by_default(
 def test_turn_stream_dependencies_use_opentui_renderer_when_selected(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.repl import runtime_bridge
-    from opensquilla.cli.tui.opentui.renderer import OpenTuiStreamRenderer
+    from openstarry_code.cli.repl import runtime_bridge
+    from openstarry_code.cli.tui.opentui.renderer import OpenTuiStreamRenderer
 
     monkeypatch.setattr(
         runtime_bridge,
@@ -468,9 +468,9 @@ def test_turn_stream_dependencies_use_opentui_renderer_when_selected(
 async def test_opentui_chat_runtime_exposes_launch_scoped_plugin_manager(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.tui.backend.plugins import TuiPluginManager
-    from opensquilla.cli.tui.opentui import runtime as opentui_runtime
-    from opensquilla.cli.tui.plugins.router_hud import RouterHudPlugin
+    from openstarry_code.cli.tui.backend.plugins import TuiPluginManager
+    from openstarry_code.cli.tui.opentui import runtime as opentui_runtime
+    from openstarry_code.cli.tui.plugins.router_hud import RouterHudPlugin
 
     scope: dict[str, object] = {}
     captured: dict[str, object] = {}
@@ -517,7 +517,7 @@ async def test_opentui_chat_runtime_exposes_launch_scoped_plugin_manager(
 async def test_gateway_runtime_bridge_threads_stream_override_to_default_slash(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.repl import runtime_bridge
+    from openstarry_code.cli.repl import runtime_bridge
 
     captured: dict[str, Any] = {}
     slash_captured: dict[str, Any] = {}
@@ -564,7 +564,7 @@ async def test_gateway_runtime_bridge_threads_stream_override_to_default_slash(
 async def test_standalone_runtime_bridge_assembles_standalone_dependencies(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.repl import runtime_bridge
+    from openstarry_code.cli.repl import runtime_bridge
 
     captured: dict[str, Any] = {}
     output_console = Console(file=None, force_terminal=False)
@@ -604,7 +604,7 @@ async def test_standalone_runtime_bridge_assembles_standalone_dependencies(
 async def test_standalone_runtime_bridge_resolves_default_repl_runner_at_call_time(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.repl import runtime_bridge
+    from openstarry_code.cli.repl import runtime_bridge
 
     captured: dict[str, Any] = {}
 
@@ -632,7 +632,7 @@ async def test_standalone_runtime_bridge_resolves_default_repl_runner_at_call_ti
 async def test_standalone_runtime_bridge_owns_default_turn_callbacks(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.repl import runtime_bridge
+    from openstarry_code.cli.repl import runtime_bridge
 
     captured: dict[str, Any] = {}
 

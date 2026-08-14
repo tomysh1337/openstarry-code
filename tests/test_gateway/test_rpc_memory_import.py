@@ -13,9 +13,9 @@ from typing import Any
 
 import pytest
 
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.rpc import RpcContext, RpcHandlerError, get_dispatcher
-from opensquilla.gateway.rpc_memory_import import (
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.rpc import RpcContext, RpcHandlerError, get_dispatcher
+from openstarry_code.gateway.rpc_memory_import import (
     _GatewayFusionCompletion,
     _handle_memory_import_apply,
     _handle_memory_import_cancel,
@@ -31,8 +31,8 @@ from opensquilla.gateway.rpc_memory_import import (
     run_profile_import_startup_maintenance,
     run_profile_import_startup_recovery,
 )
-from opensquilla.gateway.scopes import METHOD_SCOPES
-from opensquilla.provider.types import DoneEvent, TextDeltaEvent
+from openstarry_code.gateway.scopes import METHOD_SCOPES
+from openstarry_code.provider.types import DoneEvent, TextDeltaEvent
 
 
 class _FakeProfileImportService:
@@ -114,7 +114,7 @@ def _ctx(service: Any, **kwargs: Any) -> RpcContext:
 async def test_background_job_rpc_contract_uses_durable_runner(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.gateway.rpc_memory_import as rpc_memory_import
+    import openstarry_code.gateway.rpc_memory_import as rpc_memory_import
 
     service = _FakeProfileImportService()
     service.job_status = lambda job_id: {
@@ -256,7 +256,7 @@ async def test_info_is_additively_unavailable_without_default_model() -> None:
 async def test_info_keeps_the_recent_receipt_when_default_model_is_unavailable(
     tmp_path: Path,
 ) -> None:
-    from opensquilla.memory.profile_import import (
+    from openstarry_code.memory.profile_import import (
         ModelIdentity,
         ProfileImportPaths,
         ProfileImportPreviewRequest,
@@ -838,7 +838,7 @@ def test_profile_import_method_scope_contract() -> None:
 
 
 def test_gateway_awaits_canonical_profile_recovery_before_turns_and_readiness() -> None:
-    from opensquilla.gateway import boot
+    from openstarry_code.gateway import boot
 
     source = inspect.getsource(boot.start_gateway_server)
     recovery = source.index("await run_profile_import_startup_recovery(")
@@ -894,7 +894,7 @@ async def test_startup_recovery_processes_agents_serially_without_lock_self_cont
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.memory.profile_import as profile_import
+    import openstarry_code.memory.profile_import as profile_import
 
     state = tmp_path / "state"
     workspace = tmp_path / "workspace"
@@ -958,7 +958,7 @@ async def test_startup_recovery_failure_stops_before_later_agents(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.memory.profile_import as profile_import
+    import openstarry_code.memory.profile_import as profile_import
 
     state = tmp_path / "state"
     workspace = tmp_path / "workspace"
@@ -1042,7 +1042,7 @@ def test_profile_import_paths_resolve_state_symlink_before_lock_root_derivation(
 async def test_gateway_completion_reuses_one_resolved_primary_without_tools_or_fallback(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.delenv("OPENSQUILLA_PRIVACY_DISABLE_NETWORK_OBSERVABILITY", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_PRIVACY_DISABLE_NETWORK_OBSERVABILITY", raising=False)
     class _Provider:
         def __init__(self) -> None:
             self.calls: list[tuple[Any, Any]] = []

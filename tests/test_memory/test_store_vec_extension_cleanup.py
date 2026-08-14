@@ -5,7 +5,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.memory.store import LongTermMemoryStore
+from openstarry_code.memory.store import LongTermMemoryStore
 
 
 class _FakeDb:

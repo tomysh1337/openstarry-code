@@ -14,14 +14,14 @@ from unittest.mock import AsyncMock
 import pytest
 import pytest_asyncio
 
-from opensquilla.session import manager as session_manager_module
-from opensquilla.session.compaction import CompactionConfig, CompactionResult
-from opensquilla.session.context_view import (
+from openstarry_code.session import manager as session_manager_module
+from openstarry_code.session.compaction import CompactionConfig, CompactionResult
+from openstarry_code.session.context_view import (
     build_compaction_context_records,
     format_compaction_summary_context,
 )
-from opensquilla.session.manager import SessionManager
-from opensquilla.session.models import (
+from openstarry_code.session.manager import SessionManager
+from openstarry_code.session.models import (
     AgentTaskRecord,
     AgentTaskStatus,
     PlanRunRecord,
@@ -31,13 +31,13 @@ from opensquilla.session.models import (
     SessionSummary,
     TranscriptEntry,
 )
-from opensquilla.session.plans import new_plan_revision
-from opensquilla.session.storage import (
+from openstarry_code.session.plans import new_plan_revision
+from openstarry_code.session.storage import (
     CANONICAL_FORK_PROOF_SCHEMA_VERSION,
     SessionStorage,
     StaleEpochError,
 )
-from opensquilla.turn_outcome_projection import (
+from openstarry_code.turn_outcome_projection import (
     attach_fork_terminal_outcome_projection,
     build_fork_terminal_outcome_projection,
 )
@@ -127,7 +127,7 @@ async def test_apply_intent_new_chat_rejects_existing_key(manager):
 async def test_apply_intent_reset_same_key_rotates_identity_and_clears_state(
     manager, tmp_path, monkeypatch
 ):
-    monkeypatch.setenv("OPENSQUILLA_SESSION_ARCHIVE_DIR", str(tmp_path / "archives"))
+    monkeypatch.setenv("OPENSTARRY_CODE_SESSION_ARCHIVE_DIR", str(tmp_path / "archives"))
     node = await manager.create("agent:main:main")
     old_session_id = node.session_id
     node.total_tokens = 123
@@ -235,7 +235,7 @@ async def test_apply_intent_reset_same_key_rotates_identity_and_clears_state(
 @pytest.mark.skipif(os.name == "nt", reason="POSIX permission semantics only")
 async def test_reset_archive_is_owner_only(manager, tmp_path, monkeypatch):
     archive_root = tmp_path / "session-archive"
-    monkeypatch.setenv("OPENSQUILLA_SESSION_ARCHIVE_DIR", str(archive_root))
+    monkeypatch.setenv("OPENSTARRY_CODE_SESSION_ARCHIVE_DIR", str(archive_root))
     old_umask = os.umask(0o022)
     try:
         await manager.create("agent:main:main")
@@ -258,7 +258,7 @@ async def test_reset_archive_is_owner_only(manager, tmp_path, monkeypatch):
 async def test_reset_same_key_fences_appends_that_read_the_old_epoch(
     manager, tmp_path, monkeypatch
 ):
-    monkeypatch.setenv("OPENSQUILLA_SESSION_ARCHIVE_DIR", str(tmp_path / "archives"))
+    monkeypatch.setenv("OPENSTARRY_CODE_SESSION_ARCHIVE_DIR", str(tmp_path / "archives"))
     node = await manager.create("agent:main:main")
     pre_epoch = await manager._storage.get_epoch("agent:main:main")
 
@@ -288,7 +288,7 @@ async def test_reset_same_key_fences_appends_that_read_the_old_epoch(
 async def test_reset_same_key_archive_preserves_compacted_canonical_transcript(
     manager, tmp_path, monkeypatch
 ):
-    monkeypatch.setenv("OPENSQUILLA_SESSION_ARCHIVE_DIR", str(tmp_path / "archives"))
+    monkeypatch.setenv("OPENSTARRY_CODE_SESSION_ARCHIVE_DIR", str(tmp_path / "archives"))
     node = await manager.create("agent:main:main")
     old_session_id = node.session_id
     for index in range(4):
@@ -334,7 +334,7 @@ async def test_apply_intent_reset_same_key_archive_failure_preserves_history(
 ):
     archive_file = tmp_path / "not-a-directory"
     archive_file.write_text("occupied", encoding="utf-8")
-    monkeypatch.setenv("OPENSQUILLA_SESSION_ARCHIVE_DIR", str(archive_file))
+    monkeypatch.setenv("OPENSTARRY_CODE_SESSION_ARCHIVE_DIR", str(archive_file))
     node = await manager.create("agent:main:main")
     old_epoch = int(node.epoch or 0)
     manager.set_cached_epoch(node.session_key, old_epoch)
@@ -367,7 +367,7 @@ async def test_reset_storage_failure_preserves_identity_history_and_cache(
     tmp_path,
     monkeypatch,
 ):
-    monkeypatch.setenv("OPENSQUILLA_SESSION_ARCHIVE_DIR", str(tmp_path / "archives"))
+    monkeypatch.setenv("OPENSTARRY_CODE_SESSION_ARCHIVE_DIR", str(tmp_path / "archives"))
     node = await manager.create("agent:main:main")
     old_session_id = node.session_id
     old_epoch = int(node.epoch or 0)
@@ -398,7 +398,7 @@ async def test_reset_archive_capture_failure_preserves_identity_and_history(
     tmp_path,
     monkeypatch,
 ):
-    monkeypatch.setenv("OPENSQUILLA_SESSION_ARCHIVE_DIR", str(tmp_path / "archives"))
+    monkeypatch.setenv("OPENSTARRY_CODE_SESSION_ARCHIVE_DIR", str(tmp_path / "archives"))
     node = await manager.create("agent:main:main")
     old_session_id = node.session_id
     await manager.append_message("agent:main:main", "user", "hello")
@@ -424,7 +424,7 @@ async def test_reset_mid_delete_failure_rolls_back_every_database_change(
     monkeypatch,
 ):
     archive_dir = tmp_path / "archives"
-    monkeypatch.setenv("OPENSQUILLA_SESSION_ARCHIVE_DIR", str(archive_dir))
+    monkeypatch.setenv("OPENSTARRY_CODE_SESSION_ARCHIVE_DIR", str(archive_dir))
     node = await manager.create("agent:main:main")
     old_session_id = node.session_id
     old_epoch = int(node.epoch or 0)
@@ -498,10 +498,10 @@ async def test_reset_archive_fsyncs_before_atomic_publish_and_avoids_collisions(
     tmp_path,
     monkeypatch,
 ):
-    from opensquilla.session import manager as manager_module
+    from openstarry_code.session import manager as manager_module
 
     archive_dir = tmp_path / "archives"
-    monkeypatch.setenv("OPENSQUILLA_SESSION_ARCHIVE_DIR", str(archive_dir))
+    monkeypatch.setenv("OPENSTARRY_CODE_SESSION_ARCHIVE_DIR", str(archive_dir))
     monkeypatch.setattr(manager_module, "_now_ms", lambda: 123456789)
     node = await manager.create("agent:main:main")
     await manager.append_message(node.session_key, "user", "durable archive")
@@ -543,10 +543,10 @@ async def test_reset_archive_publish_failure_removes_temporary_file(
     tmp_path,
     monkeypatch,
 ):
-    from opensquilla.session import manager as manager_module
+    from openstarry_code.session import manager as manager_module
 
     archive_dir = tmp_path / "archives"
-    monkeypatch.setenv("OPENSQUILLA_SESSION_ARCHIVE_DIR", str(archive_dir))
+    monkeypatch.setenv("OPENSTARRY_CODE_SESSION_ARCHIVE_DIR", str(archive_dir))
     node = await manager.create("agent:main:main")
     await manager.append_message(node.session_key, "user", "keep source")
     entries = await manager._storage.get_canonical_transcript(node.session_id)
@@ -573,10 +573,10 @@ async def test_reset_archive_bounds_filename_but_preserves_full_session_key(
     tmp_path,
     monkeypatch,
 ):
-    from opensquilla.paths import native_io_path
+    from openstarry_code.paths import native_io_path
 
     archive_dir = tmp_path / "archives"
-    monkeypatch.setenv("OPENSQUILLA_SESSION_ARCHIVE_DIR", str(archive_dir))
+    monkeypatch.setenv("OPENSTARRY_CODE_SESSION_ARCHIVE_DIR", str(archive_dir))
     node = await manager.create("agent:main:main")
     await manager.append_message(node.session_key, "user", "long key archive")
     entries = await manager._storage.get_canonical_transcript(node.session_id)
@@ -602,7 +602,7 @@ async def test_reset_archive_supports_long_windows_path(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.paths import native_io_path
+    from openstarry_code.paths import native_io_path
 
     long_root = tmp_path / "long-session-archive"
     archive_root = long_root
@@ -610,7 +610,7 @@ async def test_reset_archive_supports_long_windows_path(
     while len(str(archive_root)) <= 280:
         archive_root /= f"segment-{index:02d}-" + ("a" * 40)
         index += 1
-    monkeypatch.setenv("OPENSQUILLA_SESSION_ARCHIVE_DIR", str(archive_root))
+    monkeypatch.setenv("OPENSTARRY_CODE_SESSION_ARCHIVE_DIR", str(archive_root))
 
     try:
         node = await manager.create("agent:main:main")
@@ -901,7 +901,7 @@ async def test_get_transcript_orders_same_timestamp_by_insert_id(manager):
 
 
 def test_get_transcript_query_uses_id_tiebreaker() -> None:
-    source = Path("src/opensquilla/session/storage.py").read_text(encoding="utf-8")
+    source = Path("src/openstarry_code/session/storage.py").read_text(encoding="utf-8")
 
     assert "ORDER BY created_at ASC, id ASC LIMIT ? OFFSET ?" in source
 
@@ -2969,7 +2969,7 @@ async def test_compact_with_result_summarizes_completed_tool_round(manager):
         (
             "Goal: finish continuity work.\n"
             "Constraint: do not enable coverage blocking by default.\n"
-            "Keep src/opensquilla/session/models.py and docs/Long Task Report.md."
+            "Keep src/openstarry_code/session/models.py and docs/Long Task Report.md."
         ),
         token_count=500,
     )
@@ -3028,7 +3028,7 @@ async def test_compact_with_result_summarizes_completed_tool_round(manager):
     assert summary.critical_carry_forward == []
     payload = summary.summary_payload
     assert payload is not None
-    assert "src/opensquilla/session/models.py" in str(payload)
+    assert "src/openstarry_code/session/models.py" in str(payload)
     assert {"id": "call_exec_1"} in payload["tool_results_to_remember"]
     assert any(
         "missing summary_payload column" in failure.get("detail", "")
@@ -3050,7 +3050,7 @@ async def test_compact_with_result_summarizes_completed_tool_round(manager):
 @pytest.mark.asyncio
 async def test_compact_with_result_strict_coverage_installs_verified_backfill(manager):
     node = await manager.create("agent:main:main")
-    late_critical_path = "src/opensquilla/session/critical_continuity.py"
+    late_critical_path = "src/openstarry_code/session/critical_continuity.py"
     await manager.append_message(
         "agent:main:main",
         "user",
@@ -3096,7 +3096,7 @@ async def test_compact_with_result_writes_portable_context_state(manager):
     await manager.append_message(
         "agent:main:main",
         "user",
-        "Goal: keep portable state. File src/opensquilla/session/models.py.",
+        "Goal: keep portable state. File src/openstarry_code/session/models.py.",
         token_count=250,
     )
     for i in range(8):

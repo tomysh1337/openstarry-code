@@ -2,9 +2,9 @@ import asyncio
 import json
 from pathlib import Path
 
-from opensquilla.skills.loader import SkillLoader
-from opensquilla.skills.meta.parser import parse_meta_plan
-from opensquilla.skills.meta.templating import evaluate_when
+from openstarry_code.skills.loader import SkillLoader
+from openstarry_code.skills.meta.parser import parse_meta_plan
+from openstarry_code.skills.meta.templating import evaluate_when
 from scripts.compare_meta_skill_openclaw import EndpointResult, JudgeResult, OpenSquillaRunner
 from scripts.compare_meta_skill_openclaw_lifestyle import (
     ARCHIVED_COMPATIBILITY_BENCHMARK,
@@ -40,7 +40,7 @@ def test_lifestyle_catalog_covers_selected_meta_skills_without_exclusions(
     assert "meta-skill-creator" not in {case.skill_name for case in LIFESTYLE_COMPARISON_CASES}
 
     loader = SkillLoader(
-        bundled_dir=Path("src/opensquilla/skills/bundled"),
+        bundled_dir=Path("src/openstarry_code/skills/bundled"),
         snapshot_path=tmp_path / "snapshot.json",
     )
     retired = loader.get_by_name("meta-kid-project-planner")
@@ -55,7 +55,7 @@ def test_selected_meta_skills_are_grounded_in_clawhub_top100_components() -> Non
     }
 
     for skill_name in SELECTED_SKILLS:
-        raw = Path(f"src/opensquilla/skills/bundled/{skill_name}/SKILL.md").read_text(
+        raw = Path(f"src/openstarry_code/skills/bundled/{skill_name}/SKILL.md").read_text(
             encoding="utf-8"
         )
         assert "clawhub_top100_composition:" in raw
@@ -68,7 +68,7 @@ def test_lifestyle_prompts_are_conversational_and_realistic() -> None:
     prompts = [case.prompt for case in LIFESTYLE_COMPARISON_CASES]
 
     assert all("benchmark:" not in prompt.lower() for prompt in prompts)
-    assert all("OpenSquilla" not in prompt and "OpenClaw" not in prompt for prompt in prompts)
+    assert all("OpenStarry Code" not in prompt and "OpenClaw" not in prompt for prompt in prompts)
     assert any("科学课" in prompt for prompt in prompts)
     assert any("阳台种豆芽" in prompt for prompt in prompts)
     assert all("example.invalid" not in prompt for prompt in prompts)
@@ -77,7 +77,7 @@ def test_lifestyle_prompts_are_conversational_and_realistic() -> None:
 
 def _bundled_meta_plan(skill_name: str, tmp_path: Path):
     loader = SkillLoader(
-        bundled_dir=Path("src/opensquilla/skills/bundled"),
+        bundled_dir=Path("src/openstarry_code/skills/bundled"),
         snapshot_path=tmp_path / "snapshot.json",
     )
     spec = loader.get_by_name(skill_name)
@@ -156,7 +156,7 @@ def test_new_lifestyle_meta_skills_hide_runtime_failures_and_reply_inline(
 
 def test_kid_project_preferences_do_not_block_on_optional_context() -> None:
     raw = Path(
-        "src/opensquilla/skills/bundled/meta-kid-project-planner/SKILL.md"
+        "src/openstarry_code/skills/bundled/meta-kid-project-planner/SKILL.md"
     ).read_text(encoding="utf-8")
 
     assert "If the request already includes a project topic, child age or age" in raw
@@ -226,7 +226,7 @@ def test_kid_project_planner_audit_preserves_unsafe_redirect(tmp_path: Path) -> 
     final_text = json.dumps(step_by_id["deliver_project_pack"].with_args, ensure_ascii=False)
     audit_text = json.dumps(step_by_id["project_pack_audit"].with_args, ensure_ascii=False)
     raw = Path(
-        "src/opensquilla/skills/bundled/meta-kid-project-planner/SKILL.md"
+        "src/openstarry_code/skills/bundled/meta-kid-project-planner/SKILL.md"
     ).read_text(encoding="utf-8")
 
     assert "Unsafe redirect source:" in raw
@@ -275,7 +275,7 @@ def test_kid_project_planner_final_avoids_fake_dates_weather_and_data(
 
 def test_kid_project_planner_printable_defaults_to_inline_markdown() -> None:
     raw = Path(
-        "src/opensquilla/skills/bundled/meta-kid-project-planner/SKILL.md"
+        "src/openstarry_code/skills/bundled/meta-kid-project-planner/SKILL.md"
     ).read_text(encoding="utf-8")
 
     assert "Treat requests for a printable worksheet" in raw
@@ -296,7 +296,7 @@ def test_lifestyle_prompts_have_english_equivalents_without_benchmark_jargon() -
     assert all(row["case"]["case_id"].endswith("_en") for row in rows)
     assert all("benchmark:" not in prompt.lower() for prompt in prompts)
     assert all("meta-skill" not in prompt.lower() for prompt in prompts)
-    assert all("OpenSquilla" not in prompt and "OpenClaw" not in prompt for prompt in prompts)
+    assert all("OpenStarry Code" not in prompt and "OpenClaw" not in prompt for prompt in prompts)
     assert any("balcony sprout" in prompt for prompt in prompts)
     assert all("example.invalid" not in prompt for prompt in prompts)
 
@@ -307,7 +307,7 @@ def test_lifestyle_rubrics_reward_meta_specific_artifacts() -> None:
         assert case.failure_modes
         assert "Squilla Router" in case.expected_advantage
         assert "Opus 4.8" in case.expected_advantage
-        assert "If OpenSquilla does not beat OpenClaw" in case.optimization_if_not_better
+        assert "If OpenStarry Code does not beat OpenClaw" in case.optimization_if_not_better
 
 
 def test_lifestyle_score_rewards_strong_answers_over_t3_generic_answers() -> None:
@@ -332,8 +332,8 @@ def test_lifestyle_report_labels_openclaw_t3_opus_baseline() -> None:
     markdown = render_lifestyle_markdown(rows)
     prompts = render_lifestyle_prompts_markdown(rows)
 
-    assert "# OpenSquilla Meta-Skills vs OpenClaw t3 Matched-Skills Lifestyle Benchmark" in markdown
-    assert "OpenSquilla + Squilla Router" in markdown
+    assert "# OpenStarry Code Meta-Skills vs OpenClaw t3 Matched-Skills Lifestyle Benchmark" in markdown
+    assert "OpenStarry Code + Squilla Router" in markdown
     assert "OpenClaw + t3 + capability-equivalent normal skills baseline" in markdown
     assert "multi-search-engine" in markdown
     assert "pdf-toolkit" in markdown
@@ -341,7 +341,7 @@ def test_lifestyle_report_labels_openclaw_t3_opus_baseline() -> None:
     assert "deep-research -> OpenClaw deep-research-pro" in markdown
     assert OPENCLAW_T3_MODEL in markdown
     assert "# Lifestyle Test Prompts" in prompts
-    assert "OpenSquilla" not in prompts
+    assert "OpenStarry Code" not in prompts
     assert "OpenClaw" not in prompts
     assert "Benchmark constraints" not in prompts
     assert "Meta-skill:" not in prompts
@@ -359,7 +359,7 @@ def test_lifestyle_report_surfaces_models_and_judge_scores() -> None:
     row["judge"] = {
         "scores": {"opensquilla": 91, "openclaw": 87},
         "confidence": 0.81,
-        "rationale": "OpenSquilla has the better final artifact.",
+        "rationale": "OpenStarry Code has the better final artifact.",
         "raw": {
             "subscores": {
                 "opensquilla": {"final_artifact_quality": 38},
@@ -370,7 +370,7 @@ def test_lifestyle_report_surfaces_models_and_judge_scores() -> None:
 
     markdown = render_lifestyle_markdown(rows)
 
-    assert "OpenSquilla model" in markdown
+    assert "OpenStarry Code model" in markdown
     assert "Judge 0-100" in markdown
     assert "Final artifact" in markdown
     assert "deepseek/deepseek-v4-flash-20260423" in markdown
@@ -392,7 +392,7 @@ def test_lifestyle_judge_result_requires_subscores_and_rationale() -> None:
         winner="opensquilla",
         scores={"opensquilla": 91, "openclaw": 87},
         confidence=0.8,
-        rationale="OpenSquilla has the better final artifact.",
+        rationale="OpenStarry Code has the better final artifact.",
         risks=[],
         raw={
             "subscores": {
@@ -445,7 +445,7 @@ def test_lifestyle_judge_scores_are_recomputed_from_weighted_subscores() -> None
         winner="openclaw",
         scores={"opensquilla": 0, "openclaw": 100},
         confidence=0.9,
-        rationale="OpenSquilla has the better weighted final artifact.",
+        rationale="OpenStarry Code has the better weighted final artifact.",
         risks=[],
         raw={
             "subscores": {

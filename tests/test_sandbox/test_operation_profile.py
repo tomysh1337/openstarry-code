@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from opensquilla.sandbox.operation_profile import (
+from openstarry_code.sandbox.operation_profile import (
     classify_command,
     package_bundle_for_manager,
     shell_command_approval_variants,
@@ -196,7 +196,7 @@ def test_classify_installer_downloads_require_host_access() -> None:
             "sh",
             "-lc",
             (
-                "cmd /c \"cd /d C:\\Users\\lrk\\.opensquilla\\workspace && "
+                "cmd /c \"cd /d C:\\Users\\lrk\\.openstarry-code\\workspace && "
                 "C:\\Windows\\System32\\curl.exe -L -o DingTalkSetup.exe "
                 "https://dtapp-pub.dingtalk.com/desktop/Win/Release/DingTalkSetup.exe\""
             ),
@@ -470,11 +470,11 @@ def test_workspace_read_tracks_obvious_path_arguments() -> None:
 
 def test_copy_command_tracks_source_read_and_destination_write_paths() -> None:
     profile = classify_command(
-        ("cp", "/workspace-src/opensquilla/LICENSE", "/workspace/opensquilla-license.txt")
+        ("cp", "/workspace-src/openstarry_code/LICENSE", "/workspace/opensquilla-license.txt")
     )
 
     assert profile.name == "path_transfer"
-    assert profile.requested_paths == ("/workspace-src/opensquilla/LICENSE",)
+    assert profile.requested_paths == ("/workspace-src/openstarry_code/LICENSE",)
     assert profile.requested_write_paths == ("/workspace/opensquilla-license.txt",)
 
 
@@ -515,11 +515,11 @@ def test_shell_wrapper_tracks_windows_delete_paths() -> None:
 
 def test_shell_wrapper_preserves_copy_source_and_destination_paths() -> None:
     profile = classify_command(
-        ("sh", "-lc", "cp /workspace-src/opensquilla/LICENSE /workspace/license.txt")
+        ("sh", "-lc", "cp /workspace-src/openstarry_code/LICENSE /workspace/license.txt")
     )
 
     assert profile.name == "path_transfer"
-    assert profile.requested_paths == ("/workspace-src/opensquilla/LICENSE",)
+    assert profile.requested_paths == ("/workspace-src/openstarry_code/LICENSE",)
     assert profile.requested_write_paths == ("/workspace/license.txt",)
 
 

@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from opensquilla.provider.model_catalog import ModelCatalog, _corrections_budget_fallback
+from openstarry_code.provider.model_catalog import ModelCatalog, _corrections_budget_fallback
 
 
 def test_deepseek_v4_direct_models_use_models_dev_limits() -> None:
@@ -354,7 +354,7 @@ async def test_fetch_openrouter_adds_app_attribution_headers() -> None:
         ]
     }
 
-    with patch("opensquilla.provider.model_catalog.httpx.AsyncClient") as mock_client_cls:
+    with patch("openstarry_code.provider.model_catalog.httpx.AsyncClient") as mock_client_cls:
         mock_client = AsyncMock()
         mock_client.__aenter__ = AsyncMock(return_value=mock_client)
         mock_client.__aexit__ = AsyncMock(return_value=False)
@@ -374,7 +374,7 @@ async def test_fetch_openrouter_adds_app_attribution_headers() -> None:
     assert captured["headers"] == {
         "Authorization": "Bearer test-key",
         "HTTP-Referer": "https://opensquilla.ai",
-        "X-Title": "OpenSquilla",
+        "X-Title": "OpenStarry Code",
     }
     model = catalog.get("openai/gpt-4o")
     assert model is not None
@@ -382,7 +382,7 @@ async def test_fetch_openrouter_adds_app_attribution_headers() -> None:
 
 
 def test_local_provider_context_window_uses_runtime_default_not_cloud() -> None:
-    from opensquilla.provider.model_catalog import (
+    from openstarry_code.provider.model_catalog import (
         _LOCAL_CONTEXT_WINDOW,
         DEFAULT_CONTEXT_WINDOW,
     )
@@ -396,7 +396,7 @@ def test_local_provider_context_window_uses_runtime_default_not_cloud() -> None:
 
 
 def test_local_provider_max_tokens_clamped_to_local_window() -> None:
-    from opensquilla.provider.model_catalog import _LOCAL_CONTEXT_WINDOW
+    from openstarry_code.provider.model_catalog import _LOCAL_CONTEXT_WINDOW
 
     catalog = ModelCatalog()
     # max_tokens cannot exceed the (smaller) local context window.
@@ -404,7 +404,7 @@ def test_local_provider_max_tokens_clamped_to_local_window() -> None:
 
 
 def test_cloud_provider_context_window_unchanged() -> None:
-    from opensquilla.provider.model_catalog import DEFAULT_CONTEXT_WINDOW
+    from openstarry_code.provider.model_catalog import DEFAULT_CONTEXT_WINDOW
 
     catalog = ModelCatalog()
     # An unknown cloud model id is unaffected by the provider argument.

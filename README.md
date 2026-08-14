@@ -6,7 +6,8 @@
 
 <p align="center">
   <strong>Stackable multi-provider intelligence for terminal, web, and messaging.</strong><br>
-  One microkernel runtime. Four custom API slots. Automatic model discovery. One composable model mesh.
+  One microkernel runtime. Four custom API slots. Automatic model discovery. One composable model mesh.<br>
+  <strong>面向终端、Web 与消息渠道的可叠加多模型智能运行时。</strong>
 </p>
 
 <p align="center">
@@ -14,6 +15,7 @@
   <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/PYTHON-3.12%2B-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.12+"></a>
   <img src="https://img.shields.io/badge/API_SLOTS-4-00C2A8?style=for-the-badge" alt="Four custom API slots">
   <img src="https://img.shields.io/badge/MODEL_DISCOVERY-AUTO-FF6B35?style=for-the-badge" alt="Automatic model discovery">
+  <a href="https://github.com/tomysh1337/openstarry-code/releases/latest"><img src="https://img.shields.io/github/v/release/tomysh1337/openstarry-code?style=for-the-badge&label=RELEASE" alt="Latest release"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/LICENSE-APACHE_2.0-EA4335?style=for-the-badge" alt="Apache 2.0 License"></a>
 </p>
 
@@ -25,6 +27,7 @@
   <a href="#signal-map">Signal Map</a> ·
   <a href="#architecture">Architecture</a> ·
   <a href="#quick-start">Quick Start</a> ·
+  <a href="#release-build">Release</a> ·
   <a href="#custom-api-mesh">API Mesh</a> ·
   <a href="#command-deck">Command Deck</a> ·
   <a href="#documentation">Documentation</a>
@@ -35,8 +38,18 @@
 > [!IMPORTANT]
 > **OpenStarry Code** is maintained at
 > [`tomysh1337/openstarry-code`](https://github.com/tomysh1337/openstarry-code).
-> The Python package, import path, CLI, configuration files, and
-> `OPENSQUILLA_*` environment variables retain their compatibility names.
+> The distribution and CLI are named `openstarry-code`, the Python import and
+> source package use `openstarry_code`, and new configuration lives under
+> `openstarry-code.toml` or `~/.openstarry-code/`.
+
+## 中文简介
+
+OpenStarry Code 是一个支持终端、Web 控制台和消息渠道的微内核 AI Agent。
+当前 fork 增加四个相互隔离的自定义 API 槽位、自动 `/models` 模型识别和可叠加的
+B5 Ensemble，并统一使用 OpenStarry Code 的包、CLI、源码目录与配置路径。
+
+完整中文安装、配置、构建、发布和 API 网格说明见
+[`README.zh-Hans.md`](README.zh-Hans.md)。
 
 ## Signal Map
 
@@ -127,21 +140,21 @@ Source builds require Python 3.12+, Node.js 22.12+ with npm, Git LFS, and `uv`.
 git lfs install
 git clone https://github.com/tomysh1337/openstarry-code.git
 cd openstarry-code
-git lfs pull --include="src/opensquilla/squilla_router/models/**"
+git lfs pull --include="src/openstarry_code/squilla_router/models/**"
 
-cd opensquilla-webui
+cd openstarry-code-webui
 npm ci
 npm run build
 cd ..
 
 uv sync --extra recommended --extra dev
-uv run opensquilla onboard
-uv run opensquilla gateway run
+uv run openstarry-code onboard
+uv run openstarry-code gateway run
 ```
 
 Open the control console at
 [`http://127.0.0.1:18791/control/`](http://127.0.0.1:18791/control/).
-For terminal chat, run `uv run opensquilla chat`.
+For terminal chat, run `uv run openstarry-code chat`.
 
 <details>
 <summary><strong>Platform bootstrap commands</strong></summary>
@@ -189,14 +202,75 @@ bash scripts/install_source.sh
 powershell -ExecutionPolicy Bypass -File ./scripts/install_source.ps1
 ```
 
-After this installation mode, run `opensquilla` directly instead of
-`uv run opensquilla`.
+After this installation mode, run `openstarry-code` directly instead of
+`uv run openstarry-code`.
 
-Published desktop packages and wheels currently come from the
-[upstream release channel](https://github.com/opensquilla/opensquilla/releases).
-Use the source workflow above when you need this fork's custom API additions.
+The OpenStarry Code release channel publishes the verified Python wheel and
+source distribution. Desktop installers are published separately after their
+bundled gateway and platform runtime pass the packaging gate.
 
 </details>
+
+## Release Build
+
+The current OpenStarry Code release is
+[`v0.5.3`](https://github.com/tomysh1337/openstarry-code/releases/tag/v0.5.3),
+built from the tagged repository state on 2026-08-14.
+
+Install its verified wheel directly with `uv`:
+
+```sh
+uv tool install --python 3.12 \
+  "openstarry-code[recommended] @ https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.3/openstarry_code-0.5.3-py3-none-any.whl"
+```
+<!-- release URL boundary: / -->
+
+| Artifact | Purpose | Integrity |
+| --- | --- | --- |
+| [`openstarry_code-0.5.3-py3-none-any.whl`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.3/openstarry_code-0.5.3-py3-none-any.whl) | Installable Python runtime with the compiled Web UI | Listed in `SHA256SUMS` |
+| [`openstarry_code-0.5.3.tar.gz`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.3/openstarry_code-0.5.3.tar.gz) | Reproducible source distribution | Listed in `SHA256SUMS` |
+| `SHA256SUMS` | SHA-256 manifest for release downloads | Published with the release |
+
+Release verification covers the complete frontend build, artifact contract,
+Python package build, focused provider/configuration tests, Web UI unit tests,
+and dependency audit. The Electron source builds with the OpenStarry Code app
+ID and protocol, but this source-first release does not include a desktop
+installer because the bundled gateway and Windows Python runtime are absent.
+
+| Release gate | Result |
+| --- | --- |
+| Web architecture, theme, motion, security, and locale guards | Passed |
+| Vue TypeScript validation | Passed |
+| Web UI unit suite | 3,748 tests passed |
+| Python focused suite | 36 tests passed |
+| npm dependency audit | 0 known vulnerabilities |
+| Wheel/sdist build | Passed |
+
+See [`CHANGELOG.md`](CHANGELOG.md) for the version history and
+[`docs/releases/0.5.3.md`](docs/releases/0.5.3.md) for detailed release notes.
+
+### Network privacy
+
+Disable non-user-initiated network observability with:
+
+```sh
+OPENSTARRY_CODE_PRIVACY_DISABLE_NETWORK_OBSERVABILITY=true
+```
+
+or:
+
+```toml
+[privacy]
+disable_network_observability = true
+```
+
+`OPENSTARRY_CODE_TELEMETRY_DISABLED=true` and
+`OPENSTARRY_CODE_UPDATE_CHECK_DISABLED=true` apply the same unified opt-out to
+installation telemetry and passive update checks. Legacy aliases remain
+available to the profile migration layer.
+Explicit update-availability checks remain disabled when these controls apply. See
+[`PRIVACY.md`](PRIVACY.md) and
+[`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
 
 ## Custom API Mesh
 
@@ -286,25 +360,25 @@ Commands below assume a user-tool installation. Prefix them with `uv run` in a
 development checkout.
 
 ```sh
-opensquilla onboard                         # interactive setup
-opensquilla onboard status                  # setup diagnostics
-opensquilla gateway run                     # foreground gateway
-opensquilla gateway start --json            # managed background gateway
-opensquilla gateway status                  # runtime status
-opensquilla chat                            # terminal conversation
-opensquilla agent -m "your prompt"           # one-shot automation
-opensquilla doctor --json                   # full readiness report
-opensquilla models list                     # model catalog
-opensquilla providers list                  # provider catalog
-opensquilla mcp-server run                  # expose MCP server mode
+openstarry-code onboard                         # interactive setup
+openstarry-code onboard status                  # setup diagnostics
+openstarry-code gateway run                     # foreground gateway
+openstarry-code gateway start --json            # managed background gateway
+openstarry-code gateway status                  # runtime status
+openstarry-code chat                            # terminal conversation
+openstarry-code agent -m "your prompt"           # one-shot automation
+openstarry-code doctor --json                   # full readiness report
+openstarry-code models list                     # model catalog
+openstarry-code providers list                  # provider catalog
+openstarry-code mcp-server run                  # expose MCP server mode
 ```
 
 Configuration resolution order:
 
 ```text
-OPENSQUILLA_GATEWAY_CONFIG_PATH
-  -> ./opensquilla.toml
-  -> ~/.opensquilla/config.toml
+OPENSTARRY_CODE_GATEWAY_CONFIG_PATH
+  -> ./openstarry-code.toml
+  -> ~/.openstarry-code/config.toml
   -> built-in defaults
 ```
 
@@ -312,8 +386,8 @@ OPENSQUILLA_GATEWAY_CONFIG_PATH
 
 | Path | Responsibility |
 | --- | --- |
-| `src/opensquilla/` | Python runtime, providers, gateway, memory, channels, tools |
-| `opensquilla-webui/` | Vue control console and browser tests |
+| `src/openstarry_code/` | Python runtime, providers, gateway, memory, channels, tools |
+| `openstarry-code-webui/` | Vue control console and browser tests |
 | `desktop/electron/` | Desktop shell and packaging |
 | `docs/` | Operations, providers, architecture, and feature contracts |
 | `tests/` | Unit, integration, functional, and compatibility coverage |
@@ -323,10 +397,10 @@ OPENSQUILLA_GATEWAY_CONFIG_PATH
 
 ```sh
 uv run ruff check src tests
-uv run mypy src/opensquilla --show-error-codes
+uv run mypy src/openstarry_code --show-error-codes
 uv run pytest -q
 
-cd opensquilla-webui
+cd openstarry-code-webui
 npm run typecheck
 npm run test:unit
 ```
@@ -351,14 +425,14 @@ npm run test:unit
 | --- | --- |
 | Repository | `openstarry-code` |
 | Product | **OpenStarry Code** |
-| Python distribution | `opensquilla` |
-| Python import | `opensquilla` |
-| CLI executable | `opensquilla` |
-| Default config | `opensquilla.toml` / `~/.opensquilla/config.toml` |
+| Python distribution | `openstarry-code` |
+| Python import | `openstarry_code` |
+| CLI executable | `openstarry-code` |
+| Default config | `openstarry-code.toml` / `~/.openstarry-code/config.toml` |
 
-These compatibility names are deliberate: existing environments, scripts, and
-plugins continue to work while the repository and product identity move to
-OpenStarry Code.
+Python identifiers use an underscore because imports cannot contain a hyphen.
+Repository, distribution, CLI, Web UI directory, configuration file, and state
+directory otherwise use the `openstarry-code` name.
 
 ## License and Lineage
 

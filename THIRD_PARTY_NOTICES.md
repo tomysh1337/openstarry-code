@@ -3,18 +3,18 @@
 This file records third-party attribution for assets bundled with OpenSquilla.
 It covers:
 
-- The bundled skill descriptors under `src/opensquilla/skills/bundled/`, which
+- The bundled skill descriptors under `src/openstarry_code/skills/bundled/`, which
   include OpenClaw-derived MIT descriptors and OpenSquilla-original descriptors.
 - The bundled pptx skill references the python-pptx and PptxGenJS libraries;
   OpenSquilla does not vendor those libraries, but the skill instructs the
   agent runtime to invoke them and is documented here for transparency.
 - The local SquillaRouter V4 Phase 3 model bundle under
-  `src/opensquilla/squilla_router/models/v4.2_phase3_inference/`.
+  `src/openstarry_code/squilla_router/models/v4.2_phase3_inference/`.
 - Web UI runtime dependencies, bundled fonts, and generated Control UI assets.
 - The Web UI "Arctic" theme color palette, adapted from the Nord palette under
   the MIT license; see the dedicated section below.
 - The built-in tokenjuice tool-result projection backend and bundled
-  reduction rules under `src/opensquilla/plugins/tokenjuice/`.
+  reduction rules under `src/openstarry_code/plugins/tokenjuice/`.
 - Optional managed toolchains downloaded after explicit user confirmation;
   these binaries are not embedded in the OpenSquilla wheel or source tree.
 - The cron prompt-injection scanner was reviewed against Hermes Agent
@@ -25,25 +25,25 @@ It covers:
 
 OpenSquilla builds the Vue Control UI from npm dependencies and locally bundled
 fonts. Release artifacts contain the generated browser assets under
-`src/opensquilla/gateway/static/dist/`; the dependency sources and exact
-resolved versions are recorded by `opensquilla-webui/package.json` and
-`opensquilla-webui/package-lock.json`.
+`src/openstarry_code/gateway/static/dist/`; the dependency sources and exact
+resolved versions are recorded by `openstarry-code-webui/package.json` and
+`openstarry-code-webui/package-lock.json`.
 
 | Component | Distributed files | License and attribution |
 |---|---|---|
-| Vue.js (`vue`, `@vue/reactivity`, `@vue/runtime-core`, `@vue/runtime-dom`, `@vue/shared`) | Vue runtime in generated JavaScript under `src/opensquilla/gateway/static/dist/assets/` | MIT. Copyright (c) 2018-present, Yuxi (Evan) You. |
-| Pinia (`pinia`) | State-management runtime in generated JavaScript under `src/opensquilla/gateway/static/dist/assets/` | MIT. Copyright (c) 2019-present Eduardo San Martin Morote. |
-| Vue Router (`vue-router`) | Client-side routing runtime in generated JavaScript under `src/opensquilla/gateway/static/dist/assets/` | MIT. Copyright (c) 2019-present Eduardo San Martin Morote. |
-| Vue I18n (`vue-i18n`, `@intlify/core-base`, `@intlify/message-compiler`, `@intlify/shared`) | Localization runtime in generated JavaScript under `src/opensquilla/gateway/static/dist/assets/` | MIT. Copyright (c) 2020 kazuya kawaguchi. |
-| html-to-image (`html-to-image`) | Image-export runtime in generated JavaScript under `src/opensquilla/gateway/static/dist/assets/` | MIT. Copyright (c) 2017-2025 W.Y. |
-| KaTeX (`katex`) | npm dependency used by `opensquilla-webui/src/composables/chat/useChatTextRendering.ts`; generated JavaScript, CSS, and `KaTeX_*` fonts under `src/opensquilla/gateway/static/dist/assets/` | MIT. Copyright (c) 2013-2020 Khan Academy and other contributors. |
-| marked (`marked`) | npm dependency used by `opensquilla-webui/src/composables/chat/useChatTextRendering.ts`; generated JavaScript under `src/opensquilla/gateway/static/dist/assets/` | MIT. Copyright (c) 2018+, MarkedJS and Copyright (c) 2011-2018, Christopher Jeffrey. The bundled Markdown-derived portion carries the John Gruber notice reproduced below. |
-| DOMPurify (`dompurify`) | npm dependency used by `opensquilla-webui/src/composables/chat/useChatTextRendering.ts`; generated JavaScript under `src/opensquilla/gateway/static/dist/assets/` | MPL-2.0 OR Apache-2.0. OpenSquilla distributes this component under the Apache-2.0 option. Copyright belongs to Cure53 and other contributors. |
-| highlight.js (`highlight.js`) | npm dependency used by `opensquilla-webui/src/composables/chat/useChatTextRendering.ts`; generated JavaScript under `src/opensquilla/gateway/static/dist/assets/` | BSD-3-Clause. Copyright (c) 2006, Ivan Sagalaev. |
-| IBM Plex Sans and IBM Plex Mono | `opensquilla-webui/src/assets/fonts/ibm-plex-*.woff2` and generated Web UI font assets | SIL Open Font License 1.1. Copyright 2017 IBM Corp. with Reserved Font Name "Plex". |
-| Space Grotesk | `opensquilla-webui/src/assets/fonts/space-grotesk-*.woff2` and generated Web UI font assets | SIL Open Font License 1.1. Copyright 2020 The Space Grotesk Project Authors. |
-| Fraunces | `opensquilla-webui/src/themes/out-of-register/fonts/fraunces-*.woff2` and generated Web UI font assets | SIL Open Font License 1.1. Copyright 2020 The Fraunces Project Authors (https://github.com/undercasetype/Fraunces). |
-| Newsreader | `opensquilla-webui/src/themes/out-of-register/fonts/newsreader-*.woff2` and generated Web UI font assets | SIL Open Font License 1.1. Copyright 2020 The Newsreader Project Authors. |
+| Vue.js (`vue`, `@vue/reactivity`, `@vue/runtime-core`, `@vue/runtime-dom`, `@vue/shared`) | Vue runtime in generated JavaScript under `src/openstarry_code/gateway/static/dist/assets/` | MIT. Copyright (c) 2018-present, Yuxi (Evan) You. |
+| Pinia (`pinia`) | State-management runtime in generated JavaScript under `src/openstarry_code/gateway/static/dist/assets/` | MIT. Copyright (c) 2019-present Eduardo San Martin Morote. |
+| Vue Router (`vue-router`) | Client-side routing runtime in generated JavaScript under `src/openstarry_code/gateway/static/dist/assets/` | MIT. Copyright (c) 2019-present Eduardo San Martin Morote. |
+| Vue I18n (`vue-i18n`, `@intlify/core-base`, `@intlify/message-compiler`, `@intlify/shared`) | Localization runtime in generated JavaScript under `src/openstarry_code/gateway/static/dist/assets/` | MIT. Copyright (c) 2020 kazuya kawaguchi. |
+| html-to-image (`html-to-image`) | Image-export runtime in generated JavaScript under `src/openstarry_code/gateway/static/dist/assets/` | MIT. Copyright (c) 2017-2025 W.Y. |
+| KaTeX (`katex`) | npm dependency used by `openstarry-code-webui/src/composables/chat/useChatTextRendering.ts`; generated JavaScript, CSS, and `KaTeX_*` fonts under `src/openstarry_code/gateway/static/dist/assets/` | MIT. Copyright (c) 2013-2020 Khan Academy and other contributors. |
+| marked (`marked`) | npm dependency used by `openstarry-code-webui/src/composables/chat/useChatTextRendering.ts`; generated JavaScript under `src/openstarry_code/gateway/static/dist/assets/` | MIT. Copyright (c) 2018+, MarkedJS and Copyright (c) 2011-2018, Christopher Jeffrey. The bundled Markdown-derived portion carries the John Gruber notice reproduced below. |
+| DOMPurify (`dompurify`) | npm dependency used by `openstarry-code-webui/src/composables/chat/useChatTextRendering.ts`; generated JavaScript under `src/openstarry_code/gateway/static/dist/assets/` | MPL-2.0 OR Apache-2.0. OpenSquilla distributes this component under the Apache-2.0 option. Copyright belongs to Cure53 and other contributors. |
+| highlight.js (`highlight.js`) | npm dependency used by `openstarry-code-webui/src/composables/chat/useChatTextRendering.ts`; generated JavaScript under `src/openstarry_code/gateway/static/dist/assets/` | BSD-3-Clause. Copyright (c) 2006, Ivan Sagalaev. |
+| IBM Plex Sans and IBM Plex Mono | `openstarry-code-webui/src/assets/fonts/ibm-plex-*.woff2` and generated Web UI font assets | SIL Open Font License 1.1. Copyright 2017 IBM Corp. with Reserved Font Name "Plex". |
+| Space Grotesk | `openstarry-code-webui/src/assets/fonts/space-grotesk-*.woff2` and generated Web UI font assets | SIL Open Font License 1.1. Copyright 2020 The Space Grotesk Project Authors. |
+| Fraunces | `openstarry-code-webui/src/themes/out-of-register/fonts/fraunces-*.woff2` and generated Web UI font assets | SIL Open Font License 1.1. Copyright 2020 The Fraunces Project Authors (https://github.com/undercasetype/Fraunces). |
+| Newsreader | `openstarry-code-webui/src/themes/out-of-register/fonts/newsreader-*.woff2` and generated Web UI font assets | SIL Open Font License 1.1. Copyright 2020 The Newsreader Project Authors. |
 
 The Web UI lockfile is the version authority for these dependencies. The build
 pipeline regenerates the browser bundle from that lockfile; no separate
@@ -119,7 +119,7 @@ POSSIBILITY OF SUCH DAMAGE.
 ## Feather Icons
 
 - Component: `music`, `pause`, and `volume` icon path data in
-  `opensquilla-webui/src/utils/icons.ts` and the generated Web UI assets.
+  `openstarry-code-webui/src/utils/icons.ts` and the generated Web UI assets.
 - Upstream project: https://github.com/feathericons/feather
 - License: MIT
 - Copyright notice: Copyright (c) 2013-2017 Cole Bemis
@@ -242,7 +242,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
 ## Arctic theme color palette (Nord)
 
 - Component: Web UI "Arctic" value theme color palette in
-  `opensquilla-webui/src/themes/arctic/tokens.css` (and its generated Web UI CSS
+  `openstarry-code-webui/src/themes/arctic/tokens.css` (and its generated Web UI CSS
   assets).
 - Upstream project: https://www.nordtheme.com
 - License: MIT
@@ -312,7 +312,7 @@ Build-time npm dependencies are installed from the package registry during CI.
 The Electron and gateway release artifacts distribute the compiled Control UI,
 selected static assets, updater metadata, and packaged runtime outputs rather
 than the full npm source tree. Any static npm-derived file copied into
-`src/opensquilla/gateway/static/` must be listed in this notices file or in a
+`src/openstarry_code/gateway/static/` must be listed in this notices file or in a
 component-local notice file.
 
 Python dependencies are resolved from `pyproject.toml` and `uv.lock` during
@@ -445,7 +445,7 @@ are released under OpenSquilla's repository license (Apache-2.0; see `LICENSE`):
 ## tokenjuice adapted reduction rules
 
 - Component: built-in tokenjuice tool-result projection backend and bundled
-  reduction rules under `src/opensquilla/plugins/tokenjuice/`.
+  reduction rules under `src/openstarry_code/plugins/tokenjuice/`.
 - Upstream project: https://github.com/vincentkoc/tokenjuice
 - License: MIT
 - Copyright notice: Copyright (c) 2026 Vincent Koc
@@ -454,7 +454,7 @@ OpenSquilla includes a Python adaptation of tokenjuice's rule-driven reducer
 and bundles reduction rules derived from the upstream project. OpenSquilla does
 not depend on the upstream tokenjuice npm package at runtime. Additional
 provenance is recorded in
-`src/opensquilla/plugins/tokenjuice/PROVENANCE.md`; the MIT license text is
+`src/openstarry_code/plugins/tokenjuice/PROVENANCE.md`; the MIT license text is
 also shipped with that package as `LICENSE.tokenjuice`.
 
 ```

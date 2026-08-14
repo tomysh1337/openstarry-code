@@ -5,7 +5,7 @@ import json
 
 
 def _execution_status_module():
-    return importlib.import_module("opensquilla.execution_status")
+    return importlib.import_module("openstarry_code.execution_status")
 
 
 def test_execution_status_defaults_to_unknown_normal_status() -> None:

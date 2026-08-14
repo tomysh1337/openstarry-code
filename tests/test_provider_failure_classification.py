@@ -2,14 +2,14 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.engine.fallback import FallbackPolicy
-from opensquilla.provider.failures import (
+from openstarry_code.engine.fallback import FallbackPolicy
+from openstarry_code.provider.failures import (
     ProviderFailureKind,
     ProviderRecoveryAction,
     classify_provider_error,
     decide_recovery_action,
 )
-from opensquilla.provider.registry import list_provider_specs
+from openstarry_code.provider.registry import list_provider_specs
 
 
 @pytest.mark.parametrize(

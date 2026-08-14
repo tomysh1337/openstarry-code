@@ -19,10 +19,10 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from opensquilla.engine import Agent, AgentConfig
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.provider import ChatConfig, DoneEvent, Message, TextDeltaEvent
+from openstarry_code.engine import Agent, AgentConfig
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.provider import ChatConfig, DoneEvent, Message, TextDeltaEvent
 
 
 @dataclass

@@ -9,19 +9,19 @@ import httpx
 import pytest
 import structlog.testing
 
-from opensquilla.engine.types import ThinkingLevel
-from opensquilla.provider.compat_policy import compat_policy_for_kind
-from opensquilla.provider.openai import (
+from openstarry_code.engine.types import ThinkingLevel
+from openstarry_code.provider.compat_policy import compat_policy_for_kind
+from openstarry_code.provider.openai import (
     OpenAIProvider,
     _build_openai_tool,
     _stream_timeout,
     _tool_schema_accepts_arguments,
 )
-from opensquilla.provider.selector import build_provider
-from opensquilla.provider.tokenrhythm_correlation import (
+from openstarry_code.provider.selector import build_provider
+from openstarry_code.provider.tokenrhythm_correlation import (
     is_tokenrhythm_correlation_target,
 )
-from opensquilla.provider.types import (
+from openstarry_code.provider.types import (
     ChatConfig,
     ContentBlockToolResult,
     ContentBlockToolUse,
@@ -36,9 +36,9 @@ from opensquilla.provider.types import (
     ToolInputSchema,
     ToolUseEndEvent,
 )
-from opensquilla.tools.policy_helpers import ToolPolicy, apply_tool_policy
-from opensquilla.tools.registry import get_default_registry
-from opensquilla.tools.types import ToolContext
+from openstarry_code.tools.policy_helpers import ToolPolicy, apply_tool_policy
+from openstarry_code.tools.registry import get_default_registry
+from openstarry_code.tools.types import ToolContext
 
 STRICT_SOURCE_EDIT_TOOL_NAMES = {
     "read_source",
@@ -153,7 +153,7 @@ def _patch_transport(monkeypatch: Any, captured: dict[str, Any]) -> None:
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client)
 
 
 def _patch_transport_body(monkeypatch: Any, captured: dict[str, Any], body: bytes) -> None:
@@ -174,7 +174,7 @@ def _patch_transport_body(monkeypatch: Any, captured: dict[str, Any], body: byte
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client)
 
 
 def _assistant_tool_call_messages(messages: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -281,7 +281,7 @@ def _patch_transport_response(
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client)
 
 
 def _patch_get_transport_response(
@@ -301,7 +301,7 @@ def _patch_get_transport_response(
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client)
 
 
 def _collect(provider: OpenAIProvider, cfg: ChatConfig) -> DoneEvent:
@@ -357,7 +357,7 @@ def test_direct_openai_adapter_defaults_configured_identity_to_family(
 def test_openrouter_stream_write_timeout_defaults_to_request_timeout(
     monkeypatch: Any,
 ) -> None:
-    monkeypatch.delenv("OPENSQUILLA_LLM_STREAM_WRITE_TIMEOUT_SECONDS", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_LLM_STREAM_WRITE_TIMEOUT_SECONDS", raising=False)
 
     timeout = _stream_timeout(120.0)
 
@@ -367,7 +367,7 @@ def test_openrouter_stream_write_timeout_defaults_to_request_timeout(
 def test_openrouter_stream_write_timeout_allows_env_override(
     monkeypatch: Any,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_LLM_STREAM_WRITE_TIMEOUT_SECONDS", "75")
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_STREAM_WRITE_TIMEOUT_SECONDS", "75")
 
     timeout = _stream_timeout(120.0)
 
@@ -402,7 +402,7 @@ def test_openrouter_stream_timeout_emits_heartbeat_before_non_stream_fallback(
             await asyncio.sleep(0.05)
             yield ErrorEvent(message="fallback finished", code="timeout")
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", TimeoutClient)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", TimeoutClient)
     provider = SlowFallbackProvider(
         api_key="test",
         model="deepseek/deepseek-v4-flash",
@@ -460,11 +460,11 @@ def test_stream_timeout_fallback_preserves_tokenrhythm_correlation_headers(
             fallback_headers.update(kwargs["headers"])
             yield DoneEvent(model="deepseek-v4-flash")
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", TimeoutClient)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", TimeoutClient)
     monkeypatch.setattr(
-        "opensquilla.provider.openai.tokenrhythm_install_id_headers",
+        "openstarry_code.provider.openai.tokenrhythm_install_id_headers",
         lambda _provider_kind, _base_url, **_kwargs: {
-            "X-OpenSquilla-Install-Id": "synthetic-install-id"
+            "X-OpenStarry Code-Install-Id": "synthetic-install-id"
         },
     )
     provider = CapturingFallbackProvider(
@@ -490,15 +490,15 @@ def test_stream_timeout_fallback_preserves_tokenrhythm_correlation_headers(
     )
 
     expected = {
-        "X-OpenSquilla-Session-Id": "session-1",
-        "X-OpenSquilla-Turn-Id": "turn-1",
-        "X-OpenSquilla-Execution-Id": "execution-1",
-        "X-OpenSquilla-Call-Kind": "agent.chat",
+        "X-OpenStarry Code-Session-Id": "session-1",
+        "X-OpenStarry Code-Turn-Id": "turn-1",
+        "X-OpenStarry Code-Execution-Id": "execution-1",
+        "X-OpenStarry Code-Call-Kind": "agent.chat",
     }
     assert {name: stream_headers[name] for name in expected} == expected
     assert {name: fallback_headers[name] for name in expected} == expected
-    assert stream_headers["X-OpenSquilla-Install-Id"] == "synthetic-install-id"
-    assert fallback_headers["X-OpenSquilla-Install-Id"] == "synthetic-install-id"
+    assert stream_headers["X-OpenStarry Code-Install-Id"] == "synthetic-install-id"
+    assert fallback_headers["X-OpenStarry Code-Install-Id"] == "synthetic-install-id"
 
 
 def test_stream_timeout_fallback_drops_stale_install_id_after_hot_disable(
@@ -526,7 +526,7 @@ def test_stream_timeout_fallback_drops_stale_install_id_after_hot_disable(
             captured_headers.update(headers)
             return FailingResponse()
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", CapturingClient)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", CapturingClient)
     def install_headers(
         _provider_kind: str,
         _base_url: str,
@@ -535,11 +535,11 @@ def test_stream_timeout_fallback_drops_stale_install_id_after_hot_disable(
         nonlocal install_header_checks
         install_header_checks += 1
         if install_header_checks == 1:
-            return {"X-OpenSquilla-Install-Id": "stale-install-id"}
+            return {"X-OpenStarry Code-Install-Id": "stale-install-id"}
         return {}
 
     monkeypatch.setattr(
-        "opensquilla.provider.openai.tokenrhythm_install_id_headers",
+        "openstarry_code.provider.openai.tokenrhythm_install_id_headers",
         install_headers,
     )
     provider = OpenAIProvider(
@@ -556,7 +556,7 @@ def test_stream_timeout_fallback_drops_stale_install_id_after_hot_disable(
                 payload={"model": "deepseek-v4-flash", "messages": [], "stream": True},
                 headers={
                     "Authorization": "Bearer test",
-                    "X-OpenSquilla-Install-Id": "stale-install-id",
+                    "X-OpenStarry Code-Install-Id": "stale-install-id",
                 },
                 cfg=ChatConfig(timeout=1.0),
                 tools=None,
@@ -567,7 +567,7 @@ def test_stream_timeout_fallback_drops_stale_install_id_after_hot_disable(
     events = asyncio.run(collect_fallback())
 
     assert install_header_checks == 2
-    assert "X-OpenSquilla-Install-Id" not in captured_headers
+    assert "X-OpenStarry Code-Install-Id" not in captured_headers
     assert any(isinstance(event, ErrorEvent) for event in events)
 
 
@@ -599,7 +599,7 @@ def test_dashscope_stream_timeout_emits_heartbeat_before_non_stream_fallback(
             await asyncio.sleep(0.05)
             yield ErrorEvent(message="fallback finished", code="timeout")
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", TimeoutClient)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", TimeoutClient)
     provider = SlowFallbackProvider(
         api_key="test",
         model="qwen3.6-flash",
@@ -652,8 +652,8 @@ def test_dashscope_stream_timeout_strict_off_does_not_fallback(
             pytest.fail("strict DashScope streaming must not call non-stream fallback")
             yield  # pragma: no cover
 
-    monkeypatch.setenv("OPENSQUILLA_DASHSCOPE_NON_STREAM_FALLBACK", "off")
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", TimeoutClient)
+    monkeypatch.setenv("OPENSTARRY_CODE_DASHSCOPE_NON_STREAM_FALLBACK", "off")
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", TimeoutClient)
     provider = NoFallbackProvider(
         api_key="test",
         model="qwen3.7-flash-2026-07-15",
@@ -679,7 +679,7 @@ def test_dashscope_empty_stream_strict_off_does_not_fallback(
             pytest.fail("strict DashScope streaming must not call non-stream fallback")
             yield  # pragma: no cover
 
-    monkeypatch.setenv("OPENSQUILLA_DASHSCOPE_NON_STREAM_FALLBACK", "off")
+    monkeypatch.setenv("OPENSTARRY_CODE_DASHSCOPE_NON_STREAM_FALLBACK", "off")
     provider = NoFallbackProvider(
         api_key="test",
         model="qwen3.7-flash-2026-07-15",
@@ -697,7 +697,7 @@ def test_dashscope_empty_stream_strict_off_does_not_fallback(
 def test_dashscope_non_stream_fallback_invalid_value_fails_closed(
     monkeypatch: Any,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_DASHSCOPE_NON_STREAM_FALLBACK", "of")
+    monkeypatch.setenv("OPENSTARRY_CODE_DASHSCOPE_NON_STREAM_FALLBACK", "of")
     provider = OpenAIProvider(
         api_key="test",
         model="qwen3.7-flash-2026-07-15",
@@ -707,7 +707,7 @@ def test_dashscope_non_stream_fallback_invalid_value_fails_closed(
 
     with pytest.raises(
         ValueError,
-        match="OPENSQUILLA_DASHSCOPE_NON_STREAM_FALLBACK",
+        match="OPENSTARRY_CODE_DASHSCOPE_NON_STREAM_FALLBACK",
     ):
         _collect_events(provider, ChatConfig())
 
@@ -736,9 +736,9 @@ def test_tokenrhythm_chat_adds_app_attribution_headers(
     captured: dict[str, Any] = {}
     _patch_transport(monkeypatch, captured)
     monkeypatch.setattr(
-        "opensquilla.provider.openai.tokenrhythm_install_id_headers",
+        "openstarry_code.provider.openai.tokenrhythm_install_id_headers",
         lambda provider_kind, request_base_url, **_kwargs: (
-            {"X-OpenSquilla-Install-Id": "synthetic-install-id"}
+            {"X-OpenStarry Code-Install-Id": "synthetic-install-id"}
             if is_tokenrhythm_correlation_target(provider_kind, request_base_url)
             else {}
         ),
@@ -754,14 +754,14 @@ def test_tokenrhythm_chat_adds_app_attribution_headers(
 
     assert captured["url"] == expected_url
     assert captured["headers"].get("HTTP-Referer") == "https://opensquilla.ai"
-    assert captured["headers"].get("X-Title") == "OpenSquilla"
+    assert captured["headers"].get("X-Title") == "OpenStarry Code"
     if expects_install_id:
         assert (
-            captured["headers"].get("X-OpenSquilla-Install-Id")
+            captured["headers"].get("X-OpenStarry Code-Install-Id")
             == "synthetic-install-id"
         )
     else:
-        assert "X-OpenSquilla-Install-Id" not in captured["headers"]
+        assert "X-OpenStarry Code-Install-Id" not in captured["headers"]
     assert "synthetic-install-id" not in json.dumps(captured["payload"], sort_keys=True)
 
 
@@ -795,14 +795,14 @@ def test_tokenrhythm_chat_omits_install_id_with_explicit_proxy(
         **_kwargs: Any,
     ) -> dict[str, str]:
         helper_proxies.append(proxy)
-        return {} if proxy else {"X-OpenSquilla-Install-Id": "must-not-send"}
+        return {} if proxy else {"X-OpenStarry Code-Install-Id": "must-not-send"}
 
     monkeypatch.setattr(
-        "opensquilla.provider.openai.httpx.AsyncClient",
+        "openstarry_code.provider.openai.httpx.AsyncClient",
         patched_async_client,
     )
     monkeypatch.setattr(
-        "opensquilla.provider.openai.tokenrhythm_install_id_headers",
+        "openstarry_code.provider.openai.tokenrhythm_install_id_headers",
         install_headers,
     )
     provider = OpenAIProvider(
@@ -818,7 +818,7 @@ def test_tokenrhythm_chat_omits_install_id_with_explicit_proxy(
     assert captured["client_proxy"] == "http://company-proxy.example:8080"
     assert helper_proxies
     assert set(helper_proxies) == {"http://company-proxy.example:8080"}
-    assert "X-OpenSquilla-Install-Id" not in captured["headers"]
+    assert "X-OpenStarry Code-Install-Id" not in captured["headers"]
 
 
 def test_tokenrhythm_chat_adds_session_correlation_headers_only(
@@ -845,10 +845,10 @@ def test_tokenrhythm_chat_adds_session_correlation_headers_only(
         ),
     )
 
-    assert captured["headers"].get("X-OpenSquilla-Session-Id") == "session-1"
-    assert captured["headers"].get("X-OpenSquilla-Turn-Id") == "turn-1"
-    assert captured["headers"].get("X-OpenSquilla-Execution-Id") == "execution-1"
-    assert captured["headers"].get("X-OpenSquilla-Call-Kind") == "agent.chat"
+    assert captured["headers"].get("X-OpenStarry Code-Session-Id") == "session-1"
+    assert captured["headers"].get("X-OpenStarry Code-Turn-Id") == "turn-1"
+    assert captured["headers"].get("X-OpenStarry Code-Execution-Id") == "execution-1"
+    assert captured["headers"].get("X-OpenStarry Code-Call-Kind") == "agent.chat"
     serialized_payload = json.dumps(captured["payload"], sort_keys=True)
     assert "session-1" not in serialized_payload
     assert "turn-1" not in serialized_payload
@@ -884,13 +884,13 @@ def test_tokenrhythm_chat_never_forwards_correlation_across_redirects(
         return real_async_client(*args, **kwargs)
 
     monkeypatch.setattr(
-        "opensquilla.provider.openai.httpx.AsyncClient",
+        "openstarry_code.provider.openai.httpx.AsyncClient",
         patched_async_client,
     )
     monkeypatch.setattr(
-        "opensquilla.provider.openai.tokenrhythm_install_id_headers",
+        "openstarry_code.provider.openai.tokenrhythm_install_id_headers",
         lambda _provider_kind, _base_url, **_kwargs: {
-            "X-OpenSquilla-Install-Id": "synthetic-install-id"
+            "X-OpenStarry Code-Install-Id": "synthetic-install-id"
         },
     )
     provider = OpenAIProvider(
@@ -923,8 +923,8 @@ def test_tokenrhythm_chat_never_forwards_correlation_across_redirects(
     assert client_options["follow_redirects"] is False
     assert len(requests) == 1
     assert requests[0].url.host == "tokenrhythm.studio"
-    assert requests[0].headers["X-OpenSquilla-Install-Id"] == "synthetic-install-id"
-    assert requests[0].headers["X-OpenSquilla-Session-Id"] == "session-1"
+    assert requests[0].headers["X-OpenStarry Code-Install-Id"] == "synthetic-install-id"
+    assert requests[0].headers["X-OpenStarry Code-Session-Id"] == "session-1"
     assert any(isinstance(event, ErrorEvent) for event in events)
 
 
@@ -961,10 +961,10 @@ def test_session_correlation_is_not_sent_to_other_or_custom_provider_origins(
         ),
     )
 
-    assert "X-OpenSquilla-Session-Id" not in captured["headers"]
-    assert "X-OpenSquilla-Turn-Id" not in captured["headers"]
-    assert "X-OpenSquilla-Execution-Id" not in captured["headers"]
-    assert "X-OpenSquilla-Call-Kind" not in captured["headers"]
+    assert "X-OpenStarry Code-Session-Id" not in captured["headers"]
+    assert "X-OpenStarry Code-Turn-Id" not in captured["headers"]
+    assert "X-OpenStarry Code-Execution-Id" not in captured["headers"]
+    assert "X-OpenStarry Code-Call-Kind" not in captured["headers"]
 
 
 def test_tokenrhythm_list_models_adds_app_attribution_headers(
@@ -981,9 +981,9 @@ def test_tokenrhythm_list_models_adds_app_attribution_headers(
         ),
     )
     monkeypatch.setattr(
-        "opensquilla.provider.openai.tokenrhythm_install_id_headers",
+        "openstarry_code.provider.openai.tokenrhythm_install_id_headers",
         lambda _provider_kind, _base_url, **_kwargs: {
-            "X-OpenSquilla-Install-Id": "synthetic-install-id"
+            "X-OpenStarry Code-Install-Id": "synthetic-install-id"
         },
     )
     provider = OpenAIProvider(
@@ -997,9 +997,9 @@ def test_tokenrhythm_list_models_adds_app_attribution_headers(
 
     assert captured["url"] == "https://tokenrhythm.studio/v1/models"
     assert captured["headers"].get("HTTP-Referer") == "https://opensquilla.ai"
-    assert captured["headers"].get("X-Title") == "OpenSquilla"
+    assert captured["headers"].get("X-Title") == "OpenStarry Code"
     assert (
-        captured["headers"].get("X-OpenSquilla-Install-Id")
+        captured["headers"].get("X-OpenStarry Code-Install-Id")
         == "synthetic-install-id"
     )
 
@@ -1069,8 +1069,8 @@ def test_openrouter_stream_header_generation_id_is_traced_and_joined_to_response
 ) -> None:
     captured: dict[str, Any] = {}
     trace_path = tmp_path / "llm_calls.jsonl"
-    monkeypatch.setenv("OPENSQUILLA_LLM_TRACE_RECORDER", "full")
-    monkeypatch.setenv("OPENSQUILLA_LLM_TRACE_PATH", str(trace_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_TRACE_RECORDER", "full")
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_TRACE_PATH", str(trace_path))
     _patch_transport_response(
         monkeypatch,
         captured,
@@ -1114,8 +1114,8 @@ def test_openrouter_http_error_header_generation_id_is_traced_without_other_head
 ) -> None:
     captured: dict[str, Any] = {}
     trace_path = tmp_path / "llm_calls.jsonl"
-    monkeypatch.setenv("OPENSQUILLA_LLM_TRACE_RECORDER", "full")
-    monkeypatch.setenv("OPENSQUILLA_LLM_TRACE_PATH", str(trace_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_TRACE_RECORDER", "full")
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_TRACE_PATH", str(trace_path))
     _patch_transport_response(
         monkeypatch,
         captured,
@@ -1172,8 +1172,8 @@ def test_openrouter_header_generation_id_survives_local_stream_cancellation(
 
     stream = BlockingStream()
     trace_path = tmp_path / "llm_calls.jsonl"
-    monkeypatch.setenv("OPENSQUILLA_LLM_TRACE_RECORDER", "full")
-    monkeypatch.setenv("OPENSQUILLA_LLM_TRACE_PATH", str(trace_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_TRACE_RECORDER", "full")
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_TRACE_PATH", str(trace_path))
 
     def handler(_request: httpx.Request) -> httpx.Response:
         return httpx.Response(
@@ -1193,7 +1193,7 @@ def test_openrouter_header_generation_id_survives_local_stream_cancellation(
         return real_async_client(*args, **kwargs)
 
     monkeypatch.setattr(
-        "opensquilla.provider.openai.httpx.AsyncClient", patched_async_client
+        "openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client
     )
     provider = OpenAIProvider(
         api_key="test",
@@ -1241,8 +1241,8 @@ def test_openrouter_non_stream_header_generation_id_is_joined_to_response(
 ) -> None:
     captured: dict[str, Any] = {}
     trace_path = tmp_path / "llm_calls.jsonl"
-    monkeypatch.setenv("OPENSQUILLA_LLM_TRACE_RECORDER", "full")
-    monkeypatch.setenv("OPENSQUILLA_LLM_TRACE_PATH", str(trace_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_TRACE_RECORDER", "full")
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_TRACE_PATH", str(trace_path))
     _patch_transport_response(
         monkeypatch,
         captured,
@@ -1305,8 +1305,8 @@ def test_openrouter_non_stream_header_generation_id_is_joined_to_response(
 def test_openai_compatible_provider_writes_llm_trace(monkeypatch: Any, tmp_path: Any) -> None:
     captured: dict[str, Any] = {}
     trace_path = tmp_path / "llm_calls.jsonl"
-    monkeypatch.setenv("OPENSQUILLA_LLM_TRACE_RECORDER", "full")
-    monkeypatch.setenv("OPENSQUILLA_LLM_TRACE_PATH", str(trace_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_TRACE_RECORDER", "full")
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_TRACE_PATH", str(trace_path))
     _patch_transport(monkeypatch, captured)
     provider = OpenAIProvider(
         api_key="test",
@@ -1368,10 +1368,10 @@ def test_openai_compatible_provider_terminalizes_cancelled_stream_trace(
         def stream(self, *args: Any, **kwargs: Any) -> BlockingStream:
             return BlockingStream()
 
-    monkeypatch.setenv("OPENSQUILLA_LLM_TRACE_RECORDER", "full")
-    monkeypatch.setenv("OPENSQUILLA_LLM_TRACE_PATH", str(trace_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_TRACE_RECORDER", "full")
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_TRACE_PATH", str(trace_path))
     monkeypatch.setattr(
-        "opensquilla.provider.openai.httpx.AsyncClient",
+        "openstarry_code.provider.openai.httpx.AsyncClient",
         BlockingClient,
     )
     provider = OpenAIProvider(
@@ -1412,8 +1412,8 @@ def test_llm_trace_request_metadata_carries_compaction_proof(
 ) -> None:
     captured: dict[str, Any] = {}
     trace_path = tmp_path / "llm_calls.jsonl"
-    monkeypatch.setenv("OPENSQUILLA_LLM_TRACE_RECORDER", "full")
-    monkeypatch.setenv("OPENSQUILLA_LLM_TRACE_PATH", str(trace_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_TRACE_RECORDER", "full")
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_TRACE_PATH", str(trace_path))
     _patch_transport(monkeypatch, captured)
     provider = OpenAIProvider(
         api_key="test",
@@ -1533,7 +1533,7 @@ def test_tokenrhythm_stream_normalizes_reasoning_alias_but_withholds_text_replay
         return real_async_client(*args, **kwargs)
 
     monkeypatch.setattr(
-        "opensquilla.provider.openai.httpx.AsyncClient",
+        "openstarry_code.provider.openai.httpx.AsyncClient",
         patched_async_client,
     )
     provider = OpenAIProvider(
@@ -3276,8 +3276,8 @@ def test_dashscope_thinking_omits_implicit_level_budget(monkeypatch: Any) -> Non
     assert "reasoning_effort" not in captured["payload"]
 
 
-_DASHSCOPE_BUDGET_ENV = "OPENSQUILLA_DASHSCOPE_THINKING_BUDGET"
-_DASHSCOPE_PARALLEL_TOOL_CALLS_ENV = "OPENSQUILLA_DASHSCOPE_PARALLEL_TOOL_CALLS"
+_DASHSCOPE_BUDGET_ENV = "OPENSTARRY_CODE_DASHSCOPE_THINKING_BUDGET"
+_DASHSCOPE_PARALLEL_TOOL_CALLS_ENV = "OPENSTARRY_CODE_DASHSCOPE_PARALLEL_TOOL_CALLS"
 
 
 def _dashscope_tool_payload(
@@ -3347,7 +3347,7 @@ def test_dashscope_parallel_tool_calls_invalid_value_fails_closed(
 ) -> None:
     monkeypatch.setenv(_DASHSCOPE_PARALLEL_TOOL_CALLS_ENV, "treu")
 
-    with pytest.raises(ValueError, match="OPENSQUILLA_DASHSCOPE_PARALLEL_TOOL_CALLS"):
+    with pytest.raises(ValueError, match="OPENSTARRY_CODE_DASHSCOPE_PARALLEL_TOOL_CALLS"):
         _dashscope_tool_payload(monkeypatch)
 
 
@@ -3568,7 +3568,7 @@ def test_dashscope_experimental_preserve_model_replays_reasoning_content(
 ) -> None:
     captured: dict[str, Any] = {}
     _patch_transport(monkeypatch, captured)
-    monkeypatch.setenv("OPENSQUILLA_DASHSCOPE_PRESERVE_THINKING", "on")
+    monkeypatch.setenv("OPENSTARRY_CODE_DASHSCOPE_PRESERVE_THINKING", "on")
     provider = OpenAIProvider(
         api_key="test",
         model=model,
@@ -3672,7 +3672,7 @@ def test_dashscope_preserve_thinking_off_keeps_supported_model_history_hidden(
 ) -> None:
     captured: dict[str, Any] = {}
     _patch_transport(monkeypatch, captured)
-    monkeypatch.setenv("OPENSQUILLA_DASHSCOPE_PRESERVE_THINKING", "off")
+    monkeypatch.setenv("OPENSTARRY_CODE_DASHSCOPE_PRESERVE_THINKING", "off")
     provider = OpenAIProvider(
         api_key="test",
         model="qwen3.7-flash-2026-07-15",
@@ -3710,7 +3710,7 @@ def test_dashscope_preserve_thinking_off_keeps_supported_model_history_hidden(
 def test_dashscope_preserve_thinking_invalid_value_fails_closed(
     monkeypatch: Any,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_DASHSCOPE_PRESERVE_THINKING", "treu")
+    monkeypatch.setenv("OPENSTARRY_CODE_DASHSCOPE_PRESERVE_THINKING", "treu")
     provider = OpenAIProvider(
         api_key="test",
         model="qwen3.7-flash-2026-07-15",
@@ -3720,7 +3720,7 @@ def test_dashscope_preserve_thinking_invalid_value_fails_closed(
 
     with pytest.raises(
         ValueError,
-        match="OPENSQUILLA_DASHSCOPE_PRESERVE_THINKING",
+        match="OPENSTARRY_CODE_DASHSCOPE_PRESERVE_THINKING",
     ):
         _collect(
             provider,
@@ -3776,7 +3776,7 @@ def test_dashscope_preserve_thinking_auto_keeps_unsupported_model_history_hidden
 def test_dashscope_preserve_thinking_on_rejects_unsupported_model(
     monkeypatch: Any,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_DASHSCOPE_PRESERVE_THINKING", "on")
+    monkeypatch.setenv("OPENSTARRY_CODE_DASHSCOPE_PRESERVE_THINKING", "on")
     provider = OpenAIProvider(
         api_key="test",
         model="qwen3-max",
@@ -4295,7 +4295,7 @@ def test_gemini_stream_tool_call_without_index_is_tolerated(monkeypatch: Any) ->
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client)
     provider = OpenAIProvider(
         api_key="test",
         model="gemini-2.5-flash",
@@ -4365,7 +4365,7 @@ def test_stream_malformed_tool_arguments_fail_closed_without_raw_end(
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client)
     provider = OpenAIProvider(
         api_key="test",
         model="qwen3.6-flash",
@@ -4450,7 +4450,7 @@ def test_stream_dashscope_repairs_parameter_wrapped_tool_arguments(
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client)
     provider = OpenAIProvider(
         api_key="test",
         model="qwen3.6-flash",
@@ -4520,7 +4520,7 @@ def test_stream_dashscope_recovers_qwen_json_text_tool_call(
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client)
     provider = OpenAIProvider(
         api_key="test",
         model="qwen3.6-flash",
@@ -4590,7 +4590,7 @@ def test_stream_dashscope_recovers_qwen_xml_text_tool_call_with_aliases(
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client)
     provider = OpenAIProvider(
         api_key="test",
         model="qwen3.6-flash",
@@ -4659,7 +4659,7 @@ def test_stream_dashscope_rejects_qwen_text_tool_call_with_schema_errors(
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client)
     provider = OpenAIProvider(
         api_key="test",
         model="qwen3.6-flash",
@@ -4731,7 +4731,7 @@ def test_stream_dashscope_ignores_empty_tool_call_chunks(
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client)
     provider = OpenAIProvider(
         api_key="test",
         model="qwen3.6-flash",
@@ -4809,7 +4809,7 @@ def test_stream_dashscope_canonicalizes_repaired_edit_file_aliases(
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client)
     provider = OpenAIProvider(
         api_key="test",
         model="qwen3.6-flash",
@@ -4900,7 +4900,7 @@ def test_stream_dashscope_reports_repaired_edit_file_alias_conflicts(
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client)
     provider = OpenAIProvider(
         api_key="test",
         model="qwen3.6-flash",
@@ -4985,7 +4985,7 @@ def test_stream_dashscope_rejects_repaired_tool_arguments_with_wrong_type(
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client)
     provider = OpenAIProvider(
         api_key="test",
         model="qwen3.6-flash",
@@ -5070,7 +5070,7 @@ def test_stream_dashscope_repairs_embedded_tool_arguments_after_corrupt_prefix(
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client)
     provider = OpenAIProvider(
         api_key="test",
         model="qwen3.6-flash",
@@ -5154,7 +5154,7 @@ def test_stream_dashscope_repairs_common_malformed_tool_arguments(
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client)
     provider = OpenAIProvider(
         api_key="test",
         model="qwen3.6-flash",
@@ -5238,7 +5238,7 @@ def test_stream_dashscope_repairs_literal_control_chars_in_tool_arguments(
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client)
     provider = OpenAIProvider(
         api_key="test",
         model="qwen3.6-flash",
@@ -5322,7 +5322,7 @@ def test_stream_dashscope_keeps_unrepairable_tool_arguments_invalid(
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client)
     provider = OpenAIProvider(
         api_key="test",
         model="qwen3.6-flash",
@@ -5402,7 +5402,7 @@ def test_stream_dashscope_unwraps_nested_raw_tool_arguments(
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client)
     provider = OpenAIProvider(
         api_key="test",
         model="qwen3.6-flash",
@@ -5485,7 +5485,7 @@ def test_stream_openrouter_does_not_repair_dashscope_wrappers(
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client)
     provider = OpenAIProvider(
         api_key="test",
         model="z-ai/glm-5.1",
@@ -5614,7 +5614,7 @@ def test_gemini_stream_multiple_tool_calls_without_indexes_stay_separate(
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client)
     provider = OpenAIProvider(
         api_key="test",
         model="gemini-2.5-flash",
@@ -5885,7 +5885,7 @@ def test_openrouter_routing_pin_strict_env_sends_only_without_fallbacks(
     body = b"".join(f"data: {json.dumps(chunk)}\n\n".encode() for chunk in chunks)
     body += b"data: [DONE]\n\n"
     _patch_transport_body(monkeypatch, captured, body)
-    monkeypatch.setenv("OPENSQUILLA_PROVIDER_ROUTING_STRICT", "on")
+    monkeypatch.setenv("OPENSTARRY_CODE_PROVIDER_ROUTING_STRICT", "on")
     provider = OpenAIProvider(
         api_key="test",
         model="deepseek/deepseek-v4-flash",
@@ -5921,7 +5921,7 @@ def test_openrouter_routing_pin_default_keeps_order_with_fallbacks(
     body = b"".join(f"data: {json.dumps(chunk)}\n\n".encode() for chunk in chunks)
     body += b"data: [DONE]\n\n"
     _patch_transport_body(monkeypatch, captured, body)
-    monkeypatch.delenv("OPENSQUILLA_PROVIDER_ROUTING_STRICT", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_PROVIDER_ROUTING_STRICT", raising=False)
     provider = OpenAIProvider(
         api_key="test",
         model="deepseek/deepseek-v4-flash",
@@ -5970,11 +5970,11 @@ def _patch_stream_transport(monkeypatch: Any, handler: Any) -> None:
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client)
 
 
 def test_stream_error_frame_is_unconditionally_terminal(monkeypatch: Any) -> None:
-    monkeypatch.delenv("OPENSQUILLA_PROVIDER_STREAM_ERROR_FRAMES", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_PROVIDER_STREAM_ERROR_FRAMES", raising=False)
     _patch_stream_transport(monkeypatch, _stream_error_frame_handler)
     provider = OpenAIProvider(
         api_key="test",
@@ -5991,7 +5991,7 @@ def test_stream_error_frame_is_unconditionally_terminal(monkeypatch: Any) -> Non
 
 
 def test_stream_error_frame_env_surfaces_error_event(monkeypatch: Any) -> None:
-    monkeypatch.setenv("OPENSQUILLA_PROVIDER_STREAM_ERROR_FRAMES", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_PROVIDER_STREAM_ERROR_FRAMES", "1")
     _patch_stream_transport(monkeypatch, _stream_error_frame_handler)
     provider = OpenAIProvider(
         api_key="test",
@@ -6011,7 +6011,7 @@ def test_stream_error_frame_env_surfaces_error_event(monkeypatch: Any) -> None:
 
 
 def test_stream_error_frame_without_code_uses_stream_error(monkeypatch: Any) -> None:
-    monkeypatch.setenv("OPENSQUILLA_PROVIDER_STREAM_ERROR_FRAMES", "on")
+    monkeypatch.setenv("OPENSTARRY_CODE_PROVIDER_STREAM_ERROR_FRAMES", "on")
 
     def handler(request: httpx.Request) -> httpx.Response:
         body = f"data: {json.dumps({'error': {'message': 'upstream reset'}})}\n\n".encode()
@@ -6075,7 +6075,7 @@ def _run_reasoning_echo_chat(provider: OpenAIProvider) -> None:
 
 
 def test_reasoning_echo_default_replays_all_assistant_messages(monkeypatch: Any) -> None:
-    monkeypatch.delenv("OPENSQUILLA_REASONING_ECHO_TURNS", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_REASONING_ECHO_TURNS", raising=False)
     captured: dict[str, Any] = {}
     provider = _reasoning_echo_provider(monkeypatch, captured)
 
@@ -6088,7 +6088,7 @@ def test_reasoning_echo_default_replays_all_assistant_messages(monkeypatch: Any)
 
 
 def test_reasoning_echo_all_matches_default(monkeypatch: Any) -> None:
-    monkeypatch.setenv("OPENSQUILLA_REASONING_ECHO_TURNS", "all")
+    monkeypatch.setenv("OPENSTARRY_CODE_REASONING_ECHO_TURNS", "all")
     captured: dict[str, Any] = {}
     provider = _reasoning_echo_provider(monkeypatch, captured)
 
@@ -6101,7 +6101,7 @@ def test_reasoning_echo_all_matches_default(monkeypatch: Any) -> None:
 
 
 def test_reasoning_echo_turns_keeps_only_last_n(monkeypatch: Any) -> None:
-    monkeypatch.setenv("OPENSQUILLA_REASONING_ECHO_TURNS", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_REASONING_ECHO_TURNS", "1")
     captured: dict[str, Any] = {}
     provider = _reasoning_echo_provider(monkeypatch, captured)
 
@@ -6114,7 +6114,7 @@ def test_reasoning_echo_turns_keeps_only_last_n(monkeypatch: Any) -> None:
 
 
 def test_reasoning_echo_turns_zero_drops_all(monkeypatch: Any) -> None:
-    monkeypatch.setenv("OPENSQUILLA_REASONING_ECHO_TURNS", "0")
+    monkeypatch.setenv("OPENSTARRY_CODE_REASONING_ECHO_TURNS", "0")
     captured: dict[str, Any] = {}
     provider = _reasoning_echo_provider(monkeypatch, captured)
 
@@ -6126,7 +6126,7 @@ def test_reasoning_echo_turns_zero_drops_all(monkeypatch: Any) -> None:
 
 
 def test_reasoning_echo_turns_larger_than_history_keeps_all(monkeypatch: Any) -> None:
-    monkeypatch.setenv("OPENSQUILLA_REASONING_ECHO_TURNS", "99")
+    monkeypatch.setenv("OPENSTARRY_CODE_REASONING_ECHO_TURNS", "99")
     captured: dict[str, Any] = {}
     provider = _reasoning_echo_provider(monkeypatch, captured)
 
@@ -6138,9 +6138,9 @@ def test_reasoning_echo_turns_larger_than_history_keeps_all(monkeypatch: Any) ->
 
 
 def test_reasoning_echo_turns_rejects_unrecognized_value(monkeypatch: Any) -> None:
-    monkeypatch.setenv("OPENSQUILLA_REASONING_ECHO_TURNS", "some")
+    monkeypatch.setenv("OPENSTARRY_CODE_REASONING_ECHO_TURNS", "some")
 
-    with pytest.raises(ValueError, match="OPENSQUILLA_REASONING_ECHO_TURNS"):
+    with pytest.raises(ValueError, match="OPENSTARRY_CODE_REASONING_ECHO_TURNS"):
         OpenAIProvider(
             api_key="test",
             model="anthropic/claude-sonnet-4.5",
@@ -6150,7 +6150,7 @@ def test_reasoning_echo_turns_rejects_unrecognized_value(monkeypatch: Any) -> No
 
 
 def test_reasoning_echo_truncation_keeps_required_empty_key(monkeypatch: Any) -> None:
-    monkeypatch.setenv("OPENSQUILLA_REASONING_ECHO_TURNS", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_REASONING_ECHO_TURNS", "1")
     captured: dict[str, Any] = {}
     _patch_transport(monkeypatch, captured)
     provider = OpenAIProvider(
@@ -6188,7 +6188,7 @@ def test_reasoning_echo_truncation_keeps_required_empty_key(monkeypatch: Any) ->
 
 
 def test_reasoning_echo_env_is_inert_for_non_replay_model(monkeypatch: Any) -> None:
-    monkeypatch.setenv("OPENSQUILLA_REASONING_ECHO_TURNS", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_REASONING_ECHO_TURNS", "1")
     captured: dict[str, Any] = {}
     _patch_transport(monkeypatch, captured)
     provider = OpenAIProvider(

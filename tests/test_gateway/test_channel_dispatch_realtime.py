@@ -12,10 +12,10 @@ from typing import Any
 import pytest
 import structlog
 
-from opensquilla.artifacts import ArtifactStore
-from opensquilla.channels.contract import ChannelCapabilityProfile
-from opensquilla.channels.stream_policy import resolve_channel_stream_policy
-from opensquilla.channels.types import (
+from openstarry_code.artifacts import ArtifactStore
+from openstarry_code.channels.contract import ChannelCapabilityProfile
+from openstarry_code.channels.stream_policy import resolve_channel_stream_policy
+from openstarry_code.channels.types import (
     Attachment,
     AuthenticatedPrincipal,
     IncomingMessage,
@@ -23,7 +23,7 @@ from opensquilla.channels.types import (
     IngressVerification,
     OutgoingMessage,
 )
-from opensquilla.engine.types import (
+from openstarry_code.engine.types import (
     ArtifactEvent,
     DoneEvent,
     ErrorEvent,
@@ -31,12 +31,12 @@ from opensquilla.engine.types import (
     ToolResultEvent,
     ToolUseStartEvent,
 )
-from opensquilla.gateway.attachment_ingest import (
+from openstarry_code.gateway.attachment_ingest import (
     MAX_STAGED_PDF_BYTES,
     MAX_TOTAL_ATTACHMENT_BYTES,
     AttachmentTotalTooLargeError,
 )
-from opensquilla.gateway.channel_dispatch import (
+from openstarry_code.gateway.channel_dispatch import (
     _artifact_fallback_lines,
     _build_reply_message,
     _clarify_tool_arguments,
@@ -51,20 +51,20 @@ from opensquilla.gateway.channel_dispatch import (
     _run_turn_with_streaming,
     _RuntimeChannelStreamRelay,
 )
-from opensquilla.gateway.config import AgentEntryConfig, GatewayConfig
-from opensquilla.gateway.protocol import make_ok_res
-from opensquilla.gateway.routing import build_channel_route_envelope
-from opensquilla.project_workspaces import (
+from openstarry_code.gateway.config import AgentEntryConfig, GatewayConfig
+from openstarry_code.gateway.protocol import make_ok_res
+from openstarry_code.gateway.routing import build_channel_route_envelope
+from openstarry_code.project_workspaces import (
     ProjectWorkspaceStateError,
     project_path_key,
 )
-from opensquilla.safety.permission_matrix import Principal, is_tool_allowed
-from opensquilla.sandbox.run_context import RUN_CONTEXT_ORIGIN_KEY
-from opensquilla.sandbox.run_mode import RunMode
-from opensquilla.session.manager import SessionManager
-from opensquilla.session.models import SessionNode
-from opensquilla.session.storage import SessionStorage
-from opensquilla.tools.types import CallerKind
+from openstarry_code.safety.permission_matrix import Principal, is_tool_allowed
+from openstarry_code.sandbox.run_context import RUN_CONTEXT_ORIGIN_KEY
+from openstarry_code.sandbox.run_mode import RunMode
+from openstarry_code.session.manager import SessionManager
+from openstarry_code.session.models import SessionNode
+from openstarry_code.session.storage import SessionStorage
+from openstarry_code.tools.types import CallerKind
 
 
 class _FakeChannel:
@@ -135,7 +135,7 @@ def _restore_retargeted_directory(link: Path, backup: Path) -> None:
 
 @pytest.mark.asyncio
 async def test_atomic_channel_acceptance_does_not_hold_session_lock() -> None:
-    from opensquilla.gateway.channel_dispatch import _channel_acceptance_lock
+    from openstarry_code.gateway.channel_dispatch import _channel_acceptance_lock
 
     lock = asyncio.Lock()
 
@@ -1389,7 +1389,7 @@ async def test_channel_admin_sender_gets_owner_tool_context_for_agent_turn(tmp_p
 
 @pytest.mark.asyncio
 async def test_saved_channel_run_context_is_applied_to_route_envelope(tmp_path) -> None:
-    from opensquilla.gateway.channel_dispatch import _apply_saved_channel_run_context
+    from openstarry_code.gateway.channel_dispatch import _apply_saved_channel_run_context
 
     msg = _authenticated_message()
     envelope = build_channel_route_envelope(
@@ -1431,7 +1431,7 @@ async def test_saved_channel_run_context_is_applied_to_route_envelope(tmp_path) 
 
 @pytest.mark.asyncio
 async def test_global_full_mode_is_applied_to_channel_without_saved_override(tmp_path) -> None:
-    from opensquilla.gateway.channel_dispatch import _apply_saved_channel_run_context
+    from openstarry_code.gateway.channel_dispatch import _apply_saved_channel_run_context
 
     envelope = build_channel_route_envelope(
         _message(),
@@ -2476,10 +2476,10 @@ async def test_direct_channel_turn_uses_authoritative_project_workspace(
 async def test_direct_channel_unbound_turn_refreshes_durable_context(
     tmp_path: Path,
 ) -> None:
-    from opensquilla.gateway.project_workspace_runtime import (
+    from openstarry_code.gateway.project_workspace_runtime import (
         authoritative_project_run_context,
     )
-    from opensquilla.gateway.rpc_sessions import _apply_run_context_route_metadata
+    from openstarry_code.gateway.rpc_sessions import _apply_run_context_route_metadata
 
     storage = await SessionStorage.open(str(tmp_path / "channel-unbound.db"))
     manager = SessionManager(storage, inject_time_prefix=False)

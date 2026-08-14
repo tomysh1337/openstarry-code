@@ -4,8 +4,8 @@ from typing import Any
 
 import pytest
 
-from opensquilla.channels._reactions import FeishuStatusReactor
-from opensquilla.channels.types import IncomingMessage
+from openstarry_code.channels._reactions import FeishuStatusReactor
+from openstarry_code.channels.types import IncomingMessage
 
 
 class _FakeResponse:

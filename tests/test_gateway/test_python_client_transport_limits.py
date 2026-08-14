@@ -11,10 +11,10 @@ from typing import Any
 import pytest
 import websockets
 
-import opensquilla.cli.gateway_client as tui_gateway_client_module
-import opensquilla.gateway_client as generic_gateway_client_module
-from opensquilla.cli.gateway_client import GatewayClient as TuiGatewayClient
-from opensquilla.gateway_client import GatewayRPCClient
+import openstarry_code.cli.gateway_client as tui_gateway_client_module
+import openstarry_code.gateway_client as generic_gateway_client_module
+from openstarry_code.cli.gateway_client import GatewayClient as TuiGatewayClient
+from openstarry_code.gateway_client import GatewayRPCClient
 
 LEGACY_WEBSOCKETS_MAX_MESSAGE_BYTES = 1024 * 1024
 TEST_MESSAGE_CAP_BYTES = 64 * 1024

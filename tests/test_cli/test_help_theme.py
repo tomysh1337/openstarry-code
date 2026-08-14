@@ -12,8 +12,8 @@ from rich.console import Console
 from typer import rich_utils
 from typer.testing import CliRunner
 
-from opensquilla.cli.main import app
-from opensquilla.ui import ACCENT, questionary_style
+from openstarry_code.cli.main import app
+from openstarry_code.ui import ACCENT, questionary_style
 
 runner = CliRunner()
 
@@ -63,7 +63,7 @@ def test_onboard_help_explains_first_run_inputs() -> None:
 
     assert result.exit_code == 0, result.output
     output = click.unstyle(result.output)
-    assert "OpenSquilla setup cockpit" in output
+    assert "OpenStarry Code setup cockpit" in output
     assert "SquillaRouter" in output
     assert "Provider id to configure" in output
     assert "Model id for the provider" in output
@@ -152,7 +152,7 @@ def test_help_theme_accepts_typer_vendored_click_parameters() -> None:
 
 
 def test_cli_brand_surfaces_do_not_use_cyan() -> None:
-    cli_files = [*Path("src/opensquilla/cli").rglob("*.py"), Path("src/opensquilla/ui.py")]
+    cli_files = [*Path("src/openstarry_code/cli").rglob("*.py"), Path("src/openstarry_code/ui.py")]
     forbidden = (
         "bold cyan",
         "[cyan]",
@@ -173,9 +173,9 @@ def test_cli_brand_surfaces_do_not_use_cyan() -> None:
 
 def test_opentui_theme_accents_are_not_cyan() -> None:
     # The brand's no-cyan rule is about the ACCENT, not secondary semantics: every
-    # OpenTUI theme's brand accent must be warm/orange, never cyan. (OpenSquilla's
+    # OpenTUI theme's brand accent must be warm/orange, never cyan. (OpenStarry Code's
     # own --info token is cyan-ish #56C2E6 and is allowed for the route/info role.)
-    theme_mjs = Path("src/opensquilla/cli/tui/opentui/package/src/theme.mjs").read_text(
+    theme_mjs = Path("src/openstarry_code/cli/tui/opentui/package/src/theme.mjs").read_text(
         encoding="utf-8"
     )
     block = theme_mjs.split("PALETTES = Object.freeze({", 1)[1].split("});", 1)[0]

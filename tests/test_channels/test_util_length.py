@@ -9,12 +9,12 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.channels._util import (
+from openstarry_code.channels._util import (
     measured_len,
     split_text_for_channel,
     truncate_to_limit,
 )
-from opensquilla.channels.contract import ChannelLengthUnit as U
+from openstarry_code.channels.contract import ChannelLengthUnit as U
 
 
 def _utf16(text: str) -> int:

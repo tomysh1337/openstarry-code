@@ -4,11 +4,11 @@ from pathlib import Path
 
 
 def test_cache_dirs_cover_common_language_tools(tmp_path: Path) -> None:
-    from opensquilla.sandbox.backend.windows_default_cache import planned_cache_dirs
+    from openstarry_code.sandbox.backend.windows_default_cache import planned_cache_dirs
 
     dirs = planned_cache_dirs(tmp_path)
 
-    names = {path.relative_to(tmp_path / ".opensquilla-cache").parts[0] for path in dirs}
+    names = {path.relative_to(tmp_path / ".openstarry-code-cache").parts[0] for path in dirs}
     assert {
         "temp",
         "home",
@@ -32,11 +32,11 @@ def test_cache_dirs_cover_common_language_tools(tmp_path: Path) -> None:
 
 
 def test_cache_env_points_to_workspace_cache(tmp_path: Path) -> None:
-    from opensquilla.sandbox.backend.windows_default_cache import build_cache_env
+    from openstarry_code.sandbox.backend.windows_default_cache import build_cache_env
 
     env = build_cache_env(tmp_path, base_env={})
 
-    root = tmp_path / ".opensquilla-cache"
+    root = tmp_path / ".openstarry-code-cache"
     assert env["TEMP"] == str(root / "temp")
     assert env["TMP"] == str(root / "temp")
     assert env["HOME"] == str(root / "home")
@@ -64,7 +64,7 @@ def test_cache_env_points_to_workspace_cache(tmp_path: Path) -> None:
 
 
 def test_existing_user_cache_env_can_be_preserved(tmp_path: Path) -> None:
-    from opensquilla.sandbox.backend.windows_default_cache import build_cache_env
+    from openstarry_code.sandbox.backend.windows_default_cache import build_cache_env
 
     external = r"C:\Users\me\.cache\pip"
     env = build_cache_env(
@@ -74,4 +74,4 @@ def test_existing_user_cache_env_can_be_preserved(tmp_path: Path) -> None:
     )
 
     assert env["PIP_CACHE_DIR"] == external
-    assert env["UV_CACHE_DIR"] == str(tmp_path / ".opensquilla-cache" / "uv")
+    assert env["UV_CACHE_DIR"] == str(tmp_path / ".openstarry-code-cache" / "uv")

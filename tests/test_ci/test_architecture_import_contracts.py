@@ -5,7 +5,7 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
-PACKAGE_ROOT = Path(__file__).resolve().parents[2] / "src" / "opensquilla"
+PACKAGE_ROOT = Path(__file__).resolve().parents[2] / "src" / "openstarry_code"
 
 APPROVED_PACKAGE_IMPORTS: frozenset[tuple[str, str]] = frozenset({
     ("agents", "gateway"),
@@ -252,15 +252,15 @@ def _top_level_packages() -> set[str]:
 
 def _resolve_relative_import(file_path: Path, node: ast.ImportFrom) -> list[str]:
     rel_path = file_path.relative_to(PACKAGE_ROOT)
-    package_parts = ("opensquilla", *rel_path.parent.parts)
+    package_parts = ("openstarry_code", *rel_path.parent.parts)
     if node.level > len(package_parts):
         return []
 
     base_parts = package_parts[: len(package_parts) - node.level + 1]
     module_parts = tuple(node.module.split(".")) if node.module else ()
     resolved = ".".join((*base_parts, *module_parts))
-    if resolved == "opensquilla":
-        return [f"opensquilla.{alias.name}" for alias in node.names if alias.name != "*"]
+    if resolved == "openstarry_code":
+        return [f"openstarry_code.{alias.name}" for alias in node.names if alias.name != "*"]
     return [resolved]
 
 
@@ -286,7 +286,7 @@ def _package_import_edges() -> set[tuple[str, str]]:
         source_pkg = file_path.relative_to(PACKAGE_ROOT).parts[0]
         tree = ast.parse(file_path.read_text(encoding="utf-8"), filename=str(file_path))
         for module in _module_imports(tree, file_path):
-            if not module.startswith("opensquilla."):
+            if not module.startswith("openstarry_code."):
                 continue
             parts = module.split(".")
             if len(parts) < 2:
@@ -356,7 +356,7 @@ def test_relative_imports_are_resolved_for_edge_detection() -> None:
     tree = ast.parse("from ..gateway.routing import build_channel_route_envelope\n")
     fake_file = PACKAGE_ROOT / "scheduler" / "handlers.py"
 
-    assert "opensquilla.gateway.routing" in _module_imports(tree, fake_file)
+    assert "openstarry_code.gateway.routing" in _module_imports(tree, fake_file)
 
 
 def test_new_packages_do_not_join_existing_circular_dependency_baseline() -> None:

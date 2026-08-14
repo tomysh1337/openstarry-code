@@ -5,13 +5,13 @@ import json
 import httpx
 import pytest
 
-from opensquilla.search.registry import get_provider_spec
-from opensquilla.search.types import SearchProviderError
+from openstarry_code.search.registry import get_provider_spec
+from openstarry_code.search.types import SearchProviderError
 
 
 @pytest.mark.asyncio
 async def test_exa_search_posts_content_request_and_maps_results() -> None:
-    from opensquilla.search.providers.exa import ExaSearchProvider
+    from openstarry_code.search.providers.exa import ExaSearchProvider
 
     requests: list[httpx.Request] = []
 
@@ -78,7 +78,7 @@ async def test_exa_search_posts_content_request_and_maps_results() -> None:
 
 @pytest.mark.asyncio
 async def test_exa_search_posts_supported_filters() -> None:
-    from opensquilla.search.providers.exa import ExaSearchProvider
+    from openstarry_code.search.providers.exa import ExaSearchProvider
 
     requests: list[httpx.Request] = []
 
@@ -107,7 +107,7 @@ async def test_exa_search_posts_supported_filters() -> None:
 
 @pytest.mark.asyncio
 async def test_exa_missing_api_key_raises_auth_error(monkeypatch: pytest.MonkeyPatch) -> None:
-    from opensquilla.search.providers.exa import ExaSearchProvider
+    from openstarry_code.search.providers.exa import ExaSearchProvider
 
     monkeypatch.delenv("EXA_API_KEY", raising=False)
     provider = ExaSearchProvider()
@@ -138,7 +138,7 @@ async def test_exa_http_errors_are_classified(
     kind: str,
     retryable: bool,
 ) -> None:
-    from opensquilla.search.providers.exa import ExaSearchProvider
+    from openstarry_code.search.providers.exa import ExaSearchProvider
 
     requests: list[httpx.Request] = []
 
@@ -170,7 +170,7 @@ async def test_exa_transport_errors_are_retryable_once(
     error_type: type[httpx.HTTPError],
     kind: str,
 ) -> None:
-    from opensquilla.search.providers.exa import ExaSearchProvider
+    from openstarry_code.search.providers.exa import ExaSearchProvider
 
     requests: list[httpx.Request] = []
 
@@ -193,7 +193,7 @@ async def test_exa_transport_errors_are_retryable_once(
 
 @pytest.mark.asyncio
 async def test_exa_malformed_json_is_terminal_parse_error() -> None:
-    from opensquilla.search.providers.exa import ExaSearchProvider
+    from openstarry_code.search.providers.exa import ExaSearchProvider
 
     requests: list[httpx.Request] = []
 
@@ -215,7 +215,7 @@ async def test_exa_malformed_json_is_terminal_parse_error() -> None:
 
 
 def test_exa_provider_spec_is_runtime_supported_after_import() -> None:
-    import opensquilla.search.providers.exa  # noqa: F401
+    import openstarry_code.search.providers.exa  # noqa: F401
 
     spec = get_provider_spec("exa")
 

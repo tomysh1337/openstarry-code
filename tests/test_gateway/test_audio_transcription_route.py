@@ -5,9 +5,9 @@ from dataclasses import dataclass
 from starlette.applications import Starlette
 from starlette.testclient import TestClient
 
-from opensquilla.gateway.audio_transcription import register_audio_transcription_routes
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.provider.audio import ElevenLabsSpeechToTextResult
+from openstarry_code.gateway.audio_transcription import register_audio_transcription_routes
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.provider.audio import ElevenLabsSpeechToTextResult
 
 
 @dataclass

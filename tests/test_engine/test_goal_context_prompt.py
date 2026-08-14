@@ -6,17 +6,17 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.identity.prompt import assemble_system_prompt
-from opensquilla.identity.types import AgentProfile
-from opensquilla.session.goals import GoalTurnContext
-from opensquilla.session.models import PlanRunRecord
-from opensquilla.session.plans import new_plan_revision
-from opensquilla.tools.builtin.artifacts import _publish_note
-from opensquilla.tools.builtin.goal_control import _goal_turn
-from opensquilla.tools.registry import get_default_registry
-from opensquilla.tools.types import (
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.identity.prompt import assemble_system_prompt
+from openstarry_code.identity.types import AgentProfile
+from openstarry_code.session.goals import GoalTurnContext
+from openstarry_code.session.models import PlanRunRecord
+from openstarry_code.session.plans import new_plan_revision
+from openstarry_code.tools.builtin.artifacts import _publish_note
+from openstarry_code.tools.builtin.goal_control import _goal_turn
+from openstarry_code.tools.registry import get_default_registry
+from openstarry_code.tools.types import (
     CallerKind,
     SafeToolError,
     ToolContext,
@@ -50,7 +50,7 @@ def _tool_context(**overrides: object) -> ToolContext:
     values: dict[str, object] = {
         "caller_kind": CallerKind.WEB,
         "run_mode": "full",
-        "workspace_dir": "/workspace/.opensquilla/workspace",
+        "workspace_dir": "/workspace/.openstarry-code/workspace",
         "collaboration_mode": "default",
     }
     values.update(overrides)

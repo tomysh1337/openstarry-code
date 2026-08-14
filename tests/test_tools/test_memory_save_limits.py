@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 
-from opensquilla.tools.builtin.memory_tools import create_memory_tools
-from opensquilla.tools.registry import ToolRegistry
+from openstarry_code.tools.builtin.memory_tools import create_memory_tools
+from openstarry_code.tools.registry import ToolRegistry
 
 
 class _Store:

@@ -9,11 +9,11 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
 LINT = (
-    REPO / "src" / "opensquilla" / "skills" / "bundled"
+    REPO / "src" / "openstarry_code" / "skills" / "bundled"
     / "skill-creator-linter" / "scripts" / "lint.py"
 )
 CREATOR_MD = (
-    REPO / "src" / "opensquilla" / "skills" / "bundled"
+    REPO / "src" / "openstarry_code" / "skills" / "bundled"
     / "meta-skill-creator" / "SKILL.md"
 )
 

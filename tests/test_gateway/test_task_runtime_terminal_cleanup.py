@@ -24,26 +24,26 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.gateway import task_runtime
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.routing import (
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.gateway import task_runtime
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.routing import (
     RouteEnvelope,
     SourceKind,
     tool_context_from_envelope,
 )
-from opensquilla.gateway.rpc import RpcContext
-from opensquilla.gateway.rpc_sessions import _handle_plans_cancel_run
-from opensquilla.gateway.task_runtime import TaskRuntime
-from opensquilla.sandbox.guest_profile import GuestProfileFactory
-from opensquilla.session.goals import (
+from openstarry_code.gateway.rpc import RpcContext
+from openstarry_code.gateway.rpc_sessions import _handle_plans_cancel_run
+from openstarry_code.gateway.task_runtime import TaskRuntime
+from openstarry_code.sandbox.guest_profile import GuestProfileFactory
+from openstarry_code.session.goals import (
     GOAL_OBJECTIVE_UPDATE_DETAIL_KEY,
     GoalObjectiveUpdate,
     GoalTurnContext,
 )
-from opensquilla.session.manager import SessionManager
-from opensquilla.session.models import (
+from openstarry_code.session.manager import SessionManager
+from openstarry_code.session.models import (
     AgentTaskRecord,
     AgentTaskStatus,
     PlanRevisionRecord,
@@ -51,8 +51,8 @@ from opensquilla.session.models import (
     SessionNode,
     TranscriptEntry,
 )
-from opensquilla.session.storage import SessionStorage
-from opensquilla.session.turn_context import current_turn_context
+from openstarry_code.session.storage import SessionStorage
+from openstarry_code.session.turn_context import current_turn_context
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -664,7 +664,7 @@ async def test_cancel_plan_run_stops_the_implementation_task(
         return None
 
     monkeypatch.setattr(
-        "opensquilla.gateway.rpc_sessions._emit_to_subscribers",
+        "openstarry_code.gateway.rpc_sessions._emit_to_subscribers",
         _ignore_emit,
     )
     rt = TaskRuntime(storage=storage, turn_handler=_handler)
@@ -715,7 +715,7 @@ async def test_terminal_expires_pending_approvals_for_owning_session(
 ) -> None:
     queue = MagicMock()
     monkeypatch.setattr(
-        "opensquilla.application.approval_queue.get_approval_queue",
+        "openstarry_code.application.approval_queue.get_approval_queue",
         lambda: queue,
     )
     rt = _make_runtime()
@@ -733,7 +733,7 @@ async def test_prestart_queued_cancel_preserves_running_owner_approval(
 ) -> None:
     queue = MagicMock()
     monkeypatch.setattr(
-        "opensquilla.application.approval_queue.get_approval_queue",
+        "openstarry_code.application.approval_queue.get_approval_queue",
         lambda: queue,
     )
     started = asyncio.Event()

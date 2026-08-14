@@ -7,12 +7,12 @@ import json
 import pytest
 from pydantic import ValidationError
 
-from opensquilla.provider.candidate_artifact import (
+from openstarry_code.provider.candidate_artifact import (
     CandidateArtifactBuilder,
     CandidateArtifactLimitError,
     strip_candidate_tool_identity,
 )
-from opensquilla.provider.types import ChatConfig
+from openstarry_code.provider.types import ChatConfig
 
 
 def test_candidate_output_mode_is_internal_and_literal_typed() -> None:

@@ -7,12 +7,12 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.pipeline import TurnContext
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.engine.steps import squilla_router as squilla_router_step
-from opensquilla.gateway.config import GatewayConfig, SquillaRouterConfig
-from opensquilla.provider import ChatConfig, EnsembleProvider, Message
-from opensquilla.provider.selector import ProviderConfig
+from openstarry_code.engine.pipeline import TurnContext
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.engine.steps import squilla_router as squilla_router_step
+from openstarry_code.gateway.config import GatewayConfig, SquillaRouterConfig
+from openstarry_code.provider import ChatConfig, EnsembleProvider, Message
+from openstarry_code.provider.selector import ProviderConfig
 
 
 class _Provider:
@@ -141,7 +141,7 @@ async def test_squilla_router_timeout_fails_open(
         return ctx
 
     slow_router.__name__ = "apply_squilla_router"
-    monkeypatch.setattr("opensquilla.engine.steps.apply_squilla_router", slow_router)
+    monkeypatch.setattr("openstarry_code.engine.steps.apply_squilla_router", slow_router)
     runner = TurnRunner(
         provider_selector=None,
         config=_config_with_router_timeout(),
@@ -278,7 +278,7 @@ async def test_squilla_router_timeout_fails_open_for_blocking_router(
         return ctx
 
     blocking_router.__name__ = "apply_squilla_router"
-    monkeypatch.setattr("opensquilla.engine.steps.apply_squilla_router", blocking_router)
+    monkeypatch.setattr("openstarry_code.engine.steps.apply_squilla_router", blocking_router)
     runner = TurnRunner(
         provider_selector=None,
         config=_config_with_router_timeout(),

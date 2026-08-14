@@ -5,20 +5,20 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.cli.tui.opentui.themes import (
+from openstarry_code.cli.tui.opentui.themes import (
     COLOR_ENV_VAR,
     DEFAULT_THEME,
     THEME_ENV_VAR,
     THEME_NAMES,
     handle_theme_command,
 )
-from opensquilla.cli.ui import console
+from openstarry_code.cli.ui import console
 
 _THEME_MJS = (
-    Path(__file__).resolve().parents[4] / "src/opensquilla/cli/tui/opentui/package/src/theme.mjs"
+    Path(__file__).resolve().parents[4] / "src/openstarry_code/cli/tui/opentui/package/src/theme.mjs"
 )
 _MAIN_MJS = (
-    Path(__file__).resolve().parents[4] / "src/opensquilla/cli/tui/opentui/package/src/main.mjs"
+    Path(__file__).resolve().parents[4] / "src/openstarry_code/cli/tui/opentui/package/src/main.mjs"
 )
 
 
@@ -26,7 +26,7 @@ _MAIN_MJS = (
 def _isolated_state_dir(tmp_path_factory: pytest.TempPathFactory, monkeypatch) -> None:
     # handle_theme_command persists valid /theme choices; isolate the state
     # root so these tests never write into the shared pytest-session state.
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path_factory.mktemp("state")))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path_factory.mktemp("state")))
 
 
 def _js_palette_names() -> list[str]:
@@ -122,7 +122,7 @@ async def test_theme_command_explains_when_wrapped_native_handle_cannot_send() -
     # no-ops on the native backend. callable() alone would misclassify /theme as
     # sendable and do nothing; the command must consult supports_send_message and
     # fall back to the OpenTUI-only explanation instead.
-    from opensquilla.cli.tui.adapters.runtime_helpers import TuiPluginOutputHandle
+    from openstarry_code.cli.tui.adapters.runtime_helpers import TuiPluginOutputHandle
 
     class _NativeOutput:
         approval_surface = object()
@@ -139,7 +139,7 @@ async def test_theme_command_explains_when_wrapped_native_handle_cannot_send() -
 
 @pytest.mark.asyncio
 async def test_theme_command_sends_through_wrapped_ipc_capable_handle() -> None:
-    from opensquilla.cli.tui.adapters.runtime_helpers import TuiPluginOutputHandle
+    from openstarry_code.cli.tui.adapters.runtime_helpers import TuiPluginOutputHandle
 
     class _OpenTuiOutput:
         approval_surface = object()

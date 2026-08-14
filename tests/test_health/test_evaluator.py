@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from opensquilla.health.evaluator import (
+from openstarry_code.health.evaluator import (
     evaluate_channels,
     evaluate_image_generation,
     evaluate_logs,
@@ -130,7 +130,7 @@ def test_provider_evaluator_flags_active_provider_missing_key() -> None:
     assert findings[0].id == "provider.active.not_configured"
     assert findings[0].severity == "error"
     assert findings[0].restart_required is True
-    assert "opensquilla providers configure openrouter" in findings[0].fix_steps[0].command
+    assert "openstarry-code providers configure openrouter" in findings[0].fix_steps[0].command
 
 
 def test_provider_evaluator_explains_missing_configured_api_key_env() -> None:
@@ -145,7 +145,7 @@ def test_provider_evaluator_explains_missing_configured_api_key_env() -> None:
                     "buildable": True,
                     "requiresApiKey": True,
                     "apiKeyConfigured": False,
-                    "apiKeyEnv": "OPENSQUILLA_PROVIDER_KEY",
+                    "apiKeyEnv": "OPENSTARRY_CODE_PROVIDER_KEY",
                     "model": "openai/gpt-5.1",
                 }
             ],
@@ -154,10 +154,10 @@ def test_provider_evaluator_explains_missing_configured_api_key_env() -> None:
 
     finding = findings[0]
     assert finding.id == "provider.active.not_configured"
-    assert finding.evidence["apiKeyEnv"] == "OPENSQUILLA_PROVIDER_KEY"
-    assert "OPENSQUILLA_PROVIDER_KEY" in finding.detail
+    assert finding.evidence["apiKeyEnv"] == "OPENSTARRY_CODE_PROVIDER_KEY"
+    assert "OPENSTARRY_CODE_PROVIDER_KEY" in finding.detail
     assert any(
-        step.detail and "OPENSQUILLA_PROVIDER_KEY" in step.detail
+        step.detail and "OPENSTARRY_CODE_PROVIDER_KEY" in step.detail
         for step in finding.fix_steps
     )
 
@@ -180,7 +180,7 @@ def test_provider_evaluator_uses_configured_active_provider_when_missing_row() -
     assert findings[0].id == "provider.active.missing"
     assert findings[0].evidence["activeProvider"] == "zhipu"
     assert findings[0].fix_steps[0].command == (
-        "opensquilla providers configure zhipu --api-key YOUR_API_KEY"
+        "openstarry-code providers configure zhipu --api-key YOUR_API_KEY"
     )
 
 
@@ -192,8 +192,8 @@ def test_provider_evaluator_reports_missing_diagnostic_shape_as_incomplete() -> 
     assert _impact(findings[0]) == "blocks_ready"
     assert "providers" in findings[0].detail
     assert [step.command for step in findings[0].fix_steps] == [
-        "opensquilla providers status --json",
-        "opensquilla gateway restart",
+        "openstarry-code providers status --json",
+        "openstarry-code gateway restart",
     ]
 
 
@@ -212,9 +212,9 @@ def test_provider_evaluator_flags_unknown_active_provider() -> None:
     assert findings[0].severity == "error"
     assert findings[0].evidence["activeProvider"] == "zai"
     commands = [step.command for step in findings[0].fix_steps]
-    assert "opensquilla providers list --json" in commands
-    assert "opensquilla providers configure zhipu --api-key YOUR_API_KEY" in commands
-    assert "opensquilla providers configure zai --api-key YOUR_API_KEY" not in commands
+    assert "openstarry-code providers list --json" in commands
+    assert "openstarry-code providers configure zhipu --api-key YOUR_API_KEY" in commands
+    assert "openstarry-code providers configure zai --api-key YOUR_API_KEY" not in commands
 
 
 def test_provider_evaluator_reports_ready_active_provider() -> None:
@@ -322,7 +322,7 @@ def test_provider_evaluator_warns_on_url_shaped_api_key() -> None:
     assert "verbatim as the request credential" in finding.detail
     assert "401" in finding.detail
     assert (
-        "opensquilla providers configure openrouter --api-key YOUR_API_KEY"
+        "openstarry-code providers configure openrouter --api-key YOUR_API_KEY"
         in [step.command for step in finding.fix_steps]
     )
     assert any(
@@ -411,9 +411,9 @@ def test_provider_evaluator_does_not_report_unidentified_active_row_as_ready() -
     assert _impact(findings[0]) == "blocks_ready"
     assert "did not include a provider id" in findings[0].detail
     assert [step.command for step in findings[0].fix_steps] == [
-        "opensquilla providers status --json",
-        "opensquilla providers configure openrouter --api-key YOUR_API_KEY",
-        "opensquilla gateway restart",
+        "openstarry-code providers status --json",
+        "openstarry-code providers configure openrouter --api-key YOUR_API_KEY",
+        "openstarry-code gateway restart",
     ]
 
 
@@ -438,7 +438,7 @@ def test_memory_evaluator_does_not_report_unknown_status_as_ready() -> None:
 
     assert findings[0].id == "memory.status.unknown"
     assert findings[0].severity == "warn"
-    assert findings[0].fix_steps[0].command == "opensquilla memory status --deep --json"
+    assert findings[0].fix_steps[0].command == "openstarry-code memory status --deep --json"
 
 
 def test_memory_evaluator_treats_missing_status_as_incomplete() -> None:
@@ -449,8 +449,8 @@ def test_memory_evaluator_treats_missing_status_as_incomplete() -> None:
     assert _impact(findings[0]) == "degrades"
     assert "status" in findings[0].detail
     assert [step.command for step in findings[0].fix_steps] == [
-        "opensquilla memory status --deep --json",
-        "opensquilla gateway restart",
+        "openstarry-code memory status --deep --json",
+        "openstarry-code gateway restart",
     ]
 
 
@@ -465,8 +465,8 @@ def test_memory_repair_guidance_uses_existing_cli_options() -> None:
 
     repair = next(finding for finding in findings if finding.id == "memory.repair.pending")
     commands = [step.command for step in repair.fix_steps]
-    assert "opensquilla memory repair run --json" in commands
-    assert "opensquilla memory repair run --yes" not in commands
+    assert "openstarry-code memory repair run --json" in commands
+    assert "openstarry-code memory repair run --yes" not in commands
 
 
 def test_memory_repair_guidance_accepts_pending_repairs_alias() -> None:
@@ -501,9 +501,9 @@ def test_logs_evaluator_flags_missing_debug_log_path() -> None:
     assert findings[0].id == "logs.gateway_file_log.missing"
     assert findings[0].severity == "warn"
     commands = [step.command for step in findings[0].fix_steps]
-    assert "opensquilla diagnostics status" in commands
-    assert "opensquilla gateway restart" in commands
-    assert "opensquilla logs tail" not in commands
+    assert "openstarry-code diagnostics status" in commands
+    assert "openstarry-code gateway restart" in commands
+    assert "openstarry-code logs tail" not in commands
 
 
 def test_logs_evaluator_does_not_treat_missing_diagnostic_shape_as_optional() -> None:
@@ -514,8 +514,8 @@ def test_logs_evaluator_does_not_treat_missing_diagnostic_shape_as_optional() ->
     assert _impact(findings[0]) == "degrades"
     assert "Log diagnostics did not include gateway_file_log" in findings[0].detail
     assert [step.command for step in findings[0].fix_steps] == [
-        "opensquilla diagnostics status",
-        "opensquilla gateway restart",
+        "openstarry-code diagnostics status",
+        "openstarry-code gateway restart",
     ]
 
 
@@ -549,8 +549,8 @@ def test_search_evaluator_treats_partial_provider_diagnostic_as_incomplete() -> 
     assert _impact(findings[0]) == "degrades"
     assert "runtimeSupported" in findings[0].detail
     assert [step.command for step in findings[0].fix_steps] == [
-        "opensquilla search status --json",
-        "opensquilla gateway restart",
+        "openstarry-code search status --json",
+        "openstarry-code gateway restart",
     ]
 
 
@@ -571,8 +571,8 @@ def test_logs_evaluator_treats_disabled_file_logging_as_optional_setup() -> None
     assert _impact(findings[0]) == "optional"
     assert "Persistent gateway file logging is optional" in findings[0].detail
     assert [step.command for step in findings[0].fix_steps] == [
-        "opensquilla config set log_file_enabled true",
-        "opensquilla gateway restart",
+        "openstarry-code config set log_file_enabled true",
+        "openstarry-code gateway restart",
     ]
     assert findings[0].restart_required is True
 
@@ -595,7 +595,7 @@ def test_channels_evaluator_flags_dead_enabled_channel() -> None:
 
     assert findings[0].id == "channel.slack-main.dead"
     assert findings[0].severity == "error"
-    assert findings[0].fix_steps[0].command == "opensquilla channels restart slack-main --yes"
+    assert findings[0].fix_steps[0].command == "openstarry-code channels restart slack-main --yes"
 
 
 def test_channels_evaluator_flags_stopped_enabled_channel() -> None:
@@ -617,8 +617,8 @@ def test_channels_evaluator_flags_stopped_enabled_channel() -> None:
     assert findings[0].id == "channel.slack-main.stopped"
     assert findings[0].severity == "warn"
     commands = [step.command for step in findings[0].fix_steps]
-    assert "opensquilla channels status slack-main --json" in commands
-    assert "opensquilla channels restart slack-main --yes" in commands
+    assert "openstarry-code channels status slack-main --json" in commands
+    assert "openstarry-code channels restart slack-main --yes" in commands
 
 
 def test_channels_evaluator_quotes_channel_names_in_recovery_commands() -> None:
@@ -638,8 +638,8 @@ def test_channels_evaluator_quotes_channel_names_in_recovery_commands() -> None:
     )
 
     commands = [step.command for step in findings[0].fix_steps]
-    assert "opensquilla channels restart 'feishu work' --yes" in commands
-    assert "opensquilla channels status 'feishu work' --json" in commands
+    assert "openstarry-code channels restart 'feishu work' --yes" in commands
+    assert "openstarry-code channels status 'feishu work' --json" in commands
 
 
 def test_channels_evaluator_treats_disabled_channel_as_optional_info() -> None:
@@ -662,8 +662,8 @@ def test_channels_evaluator_treats_disabled_channel_as_optional_info() -> None:
     assert findings[0].severity == "info"
     assert findings[0].restart_required is True
     commands = [step.command for step in findings[0].fix_steps]
-    assert "opensquilla channels enable slack-main" in commands
-    assert "opensquilla configure --section channels" not in commands
+    assert "openstarry-code channels enable slack-main" in commands
+    assert "openstarry-code configure --section channels" not in commands
 
 
 def test_channels_evaluator_treats_no_channels_as_optional_setup() -> None:
@@ -675,7 +675,7 @@ def test_channels_evaluator_treats_no_channels_as_optional_setup() -> None:
     assert _impact(findings[0]) == "optional"
     assert "No channel entrypoints are configured" in findings[0].detail
     assert [step.command for step in findings[0].fix_steps] == [
-        "opensquilla configure --section channels"
+        "openstarry-code configure --section channels"
     ]
 
 
@@ -687,8 +687,8 @@ def test_channels_evaluator_treats_malformed_channels_shape_as_incomplete() -> N
     assert _impact(findings[0]) == "degrades"
     assert "channels" in findings[0].detail
     assert [step.command for step in findings[0].fix_steps] == [
-        "opensquilla channels status --json",
-        "opensquilla gateway restart",
+        "openstarry-code channels status --json",
+        "openstarry-code gateway restart",
     ]
 
 
@@ -700,8 +700,8 @@ def test_channels_evaluator_treats_malformed_channel_rows_as_incomplete() -> Non
     assert _impact(findings[0]) == "degrades"
     assert "channel rows" in findings[0].detail
     assert [step.command for step in findings[0].fix_steps] == [
-        "opensquilla channels status --json",
-        "opensquilla gateway restart",
+        "openstarry-code channels status --json",
+        "openstarry-code gateway restart",
     ]
 
 
@@ -769,8 +769,8 @@ def test_channels_evaluator_does_not_report_unknown_enabled_status_as_ready() ->
         "type": "slack",
     }
     assert [step.command for step in findings[0].fix_steps] == [
-        "opensquilla channels status slack-main --json",
-        "opensquilla channels restart slack-main --yes",
+        "openstarry-code channels status slack-main --json",
+        "openstarry-code channels restart slack-main --yes",
     ]
 
 
@@ -788,7 +788,7 @@ def test_sandbox_evaluator_surfaces_bypass_posture_as_info() -> None:
     assert findings[0].severity == "info"
     assert findings[0].restart_required is True
     assert "restart_required" not in findings[0].evidence
-    assert "opensquilla sandbox on" in findings[0].fix_steps[0].command
+    assert "openstarry-code sandbox on" in findings[0].fix_steps[0].command
 
 
 def test_sandbox_evaluator_does_not_report_unknown_posture_as_ready() -> None:
@@ -803,7 +803,7 @@ def test_sandbox_evaluator_does_not_report_unknown_posture_as_ready() -> None:
     assert findings[0].id == "sandbox.posture.unknown"
     assert findings[0].severity == "warn"
     assert _impact(findings[0]) == "degrades"
-    assert findings[0].fix_steps[0].command == "opensquilla sandbox status --json"
+    assert findings[0].fix_steps[0].command == "openstarry-code sandbox status --json"
 
 
 def test_sandbox_evaluator_does_not_report_custom_posture_as_ready() -> None:
@@ -820,9 +820,9 @@ def test_sandbox_evaluator_does_not_report_custom_posture_as_ready() -> None:
     assert _impact(findings[0]) == "degrades"
     assert findings[0].restart_required is True
     assert [step.command for step in findings[0].fix_steps] == [
-        "opensquilla sandbox status --json",
-        "opensquilla sandbox on",
-        "opensquilla gateway restart",
+        "openstarry-code sandbox status --json",
+        "openstarry-code sandbox on",
+        "openstarry-code gateway restart",
     ]
 
 
@@ -842,7 +842,7 @@ def test_search_evaluator_flags_missing_key_without_blocking_core_runtime() -> N
 
     assert findings[0].id == "search.provider.not_configured"
     assert findings[0].severity == "warn"
-    assert "opensquilla configure search" in findings[0].fix_steps[0].command
+    assert "openstarry-code configure search" in findings[0].fix_steps[0].command
 
 
 def test_search_evaluator_explains_missing_configured_api_key_env() -> None:
@@ -889,8 +889,8 @@ def test_search_evaluator_treats_empty_provider_as_optional_setup() -> None:
     assert "not configured" in findings[0].detail
     assert findings[0].restart_required is True
     assert [step.command for step in findings[0].fix_steps] == [
-        "opensquilla configure search --search-provider duckduckgo",
-        "opensquilla gateway restart",
+        "openstarry-code configure search --search-provider duckduckgo",
+        "openstarry-code gateway restart",
     ]
 
 
@@ -912,8 +912,8 @@ def test_search_evaluator_flags_unknown_provider_with_supported_fallback() -> No
     assert findings[0].id == "search.provider.unknown"
     assert findings[0].severity == "warn"
     commands = [step.command for step in findings[0].fix_steps]
-    assert "opensquilla search list --json" in commands
-    assert "opensquilla configure search --search-provider duckduckgo" in commands
+    assert "openstarry-code search list --json" in commands
+    assert "openstarry-code configure search --search-provider duckduckgo" in commands
     assert all("serpapi" not in command for command in commands)
 
 
@@ -971,8 +971,8 @@ def test_search_evaluator_reports_network_blocked_provider_as_degraded() -> None
     assert finding.evidence["networkReady"] is False
     assert finding.evidence["networkBlockedReason"] == reason
     assert [step.command for step in finding.fix_steps] == [
-        "opensquilla search status duckduckgo --json",
-        "opensquilla sandbox status --json",
+        "openstarry-code search status duckduckgo --json",
+        "openstarry-code sandbox status --json",
     ]
 
 
@@ -992,8 +992,8 @@ def test_image_generation_evaluator_treats_disabled_as_optional_info() -> None:
     assert findings[0].severity == "info"
     assert findings[0].restart_required is True
     assert [step.command for step in findings[0].fix_steps] == [
-        "opensquilla configure image-generation --image-provider openai --api-key YOUR_API_KEY",
-        "opensquilla gateway restart",
+        "openstarry-code configure image-generation --image-provider openai --api-key YOUR_API_KEY",
+        "openstarry-code gateway restart",
     ]
 
 
@@ -1005,8 +1005,8 @@ def test_image_generation_evaluator_treats_partial_enabled_diagnostic_as_incompl
     assert _impact(findings[0]) == "degrades"
     assert "configured" in findings[0].detail
     assert [step.command for step in findings[0].fix_steps] == [
-        "opensquilla onboard status --json",
-        "opensquilla gateway restart",
+        "openstarry-code onboard status --json",
+        "openstarry-code gateway restart",
     ]
 
 
@@ -1024,7 +1024,7 @@ def test_image_generation_evaluator_flags_enabled_missing_credentials() -> None:
 
     assert findings[0].id == "image_generation.credentials.missing"
     assert findings[0].severity == "warn"
-    assert "opensquilla configure image-generation" in findings[0].fix_steps[0].command
+    assert "openstarry-code configure image-generation" in findings[0].fix_steps[0].command
 
 
 def test_image_generation_evaluator_explains_missing_configured_api_key_env() -> None:
@@ -1065,7 +1065,7 @@ def test_image_generation_unknown_provider_uses_supported_default_recovery() -> 
     assert findings[0].id == "image_generation.provider.unknown"
     commands = [step.command for step in findings[0].fix_steps]
     assert (
-        "opensquilla configure image-generation --image-provider openai --api-key YOUR_API_KEY"
+        "openstarry-code configure image-generation --image-provider openai --api-key YOUR_API_KEY"
         in commands
     )
     assert all("--image-provider foo" not in command for command in commands)
@@ -1096,8 +1096,8 @@ def test_router_evaluator_treats_partial_enabled_diagnostic_as_incomplete() -> N
     assert _impact(findings[0]) == "degrades"
     assert "runtimeValid" in findings[0].detail
     assert [step.command for step in findings[0].fix_steps] == [
-        "opensquilla diagnostics status",
-        "opensquilla gateway restart",
+        "openstarry-code diagnostics status",
+        "openstarry-code gateway restart",
     ]
 
 
@@ -1135,8 +1135,8 @@ def test_router_evaluator_does_not_treat_unknown_rollout_phase_as_optional() -> 
     assert _impact(findings[0]) == "degrades"
     assert "mystery" in findings[0].detail
     assert [step.command for step in findings[0].fix_steps] == [
-        "opensquilla configure router --router recommended",
-        "opensquilla gateway restart",
+        "openstarry-code configure router --router recommended",
+        "openstarry-code gateway restart",
     ]
 
 
@@ -1155,7 +1155,7 @@ def test_router_evaluator_flags_required_missing_runtime_as_action_required() ->
 
     assert findings[0].id == "router.runtime.missing"
     assert findings[0].severity == "error"
-    assert "opensquilla configure router --router disabled" in findings[0].fix_steps[0].command
+    assert "openstarry-code configure router --router disabled" in findings[0].fix_steps[0].command
 
 
 def test_router_evaluator_gives_macos_libomp_recovery() -> None:
@@ -1180,8 +1180,8 @@ def test_router_evaluator_gives_macos_libomp_recovery() -> None:
     assert finding.evidence["runtimeErrorKind"] == "macos_libomp_missing"
     assert [step.command for step in finding.fix_steps] == [
         "brew install libomp",
-        "opensquilla gateway restart",
-        "opensquilla configure router --router disabled",
+        "openstarry-code gateway restart",
+        "openstarry-code configure router --router disabled",
     ]
 
 
@@ -1199,7 +1199,7 @@ def test_memory_embedding_evaluator_flags_explicit_remote_without_key() -> None:
 
     assert findings[0].id == "memory_embedding.config.error"
     assert findings[0].severity == "warn"
-    assert "opensquilla configure memory-embedding" in findings[0].fix_steps[0].command
+    assert "openstarry-code configure memory-embedding" in findings[0].fix_steps[0].command
 
 
 def test_memory_embedding_evaluator_treats_config_error_status_as_repairable() -> None:
@@ -1242,8 +1242,8 @@ def test_memory_embedding_evaluator_treats_partial_ready_diagnostic_as_incomplet
     assert _impact(findings[0]) == "degrades"
     assert "effectiveProvider" in findings[0].detail
     assert [step.command for step in findings[0].fix_steps] == [
-        "opensquilla memory status --deep --json",
-        "opensquilla gateway restart",
+        "openstarry-code memory status --deep --json",
+        "openstarry-code gateway restart",
     ]
 
 
@@ -1264,8 +1264,8 @@ def test_memory_embedding_evaluator_does_not_report_unknown_status_as_ready() ->
     assert _impact(findings[0]) == "degrades"
     assert "warming_up" in findings[0].detail
     assert [step.command for step in findings[0].fix_steps] == [
-        "opensquilla memory status --deep --json",
-        "opensquilla gateway restart",
+        "openstarry-code memory status --deep --json",
+        "openstarry-code gateway restart",
     ]
 
 
@@ -1339,8 +1339,8 @@ def test_squilla_router_runtime_evaluator_warns_when_required_runtime_failed() -
     assert finding.restart_required is True
     assert [step.command for step in finding.fix_steps] == [
         "brew install libomp",
-        "opensquilla gateway restart",
-        "opensquilla configure router --router disabled",
+        "openstarry-code gateway restart",
+        "openstarry-code configure router --router disabled",
     ]
 
 
@@ -1415,8 +1415,8 @@ def test_channels_evaluator_surfaces_pending_pairings_without_degrading_ready() 
     }
     commands = [step.command for step in finding.fix_steps if step.command]
     # The first step is the actionable one: the list every decision starts from.
-    assert commands[0] == "opensquilla channels pairings list telegram-main"
-    assert "opensquilla channels status telegram-main --json" in commands
+    assert commands[0] == "openstarry-code channels pairings list telegram-main"
+    assert "openstarry-code channels status telegram-main --json" in commands
 
 
 def test_channels_evaluator_surfaces_sends_with_unknown_outcome() -> None:

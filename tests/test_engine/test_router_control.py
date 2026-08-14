@@ -5,14 +5,14 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.engine.pipeline import TurnContext
-from opensquilla.engine.steps.squilla_router import apply_squilla_router
-from opensquilla.gateway.config import (
+from openstarry_code.engine.pipeline import TurnContext
+from openstarry_code.engine.steps.squilla_router import apply_squilla_router
+from openstarry_code.gateway.config import (
     ROUTER_TIER_PROFILE_IDS,
     SquillaRouterConfig,
     _router_tier_profile_defaults,
 )
-from opensquilla.router_control import (
+from openstarry_code.router_control import (
     RouterControlHoldStore,
     RouterControlValidationError,
     build_router_control_targets,
@@ -139,7 +139,7 @@ async def test_squilla_router_refreshes_hold_idle_ttl_through_copied_metadata(
         ttl_seconds=10.0,
     )
     now = [109.0]
-    monkeypatch.setattr("opensquilla.router_control.time.monotonic", lambda: now[0])
+    monkeypatch.setattr("openstarry_code.router_control.time.monotonic", lambda: now[0])
 
     metadata = copy.deepcopy({"router_control_hold_store": store})
     ctx = TurnContext(
@@ -172,7 +172,7 @@ async def test_squilla_router_applies_hold_before_normal_classification(monkeypa
     def fail_strategy(_cfg: object) -> object:
         raise AssertionError("router classification should not run while hold is valid")
 
-    monkeypatch.setattr("opensquilla.engine.steps.squilla_router._get_strategy", fail_strategy)
+    monkeypatch.setattr("openstarry_code.engine.steps.squilla_router._get_strategy", fail_strategy)
     ctx = TurnContext(
         message="review this",
         session_key="agent:main:test",
@@ -207,7 +207,7 @@ async def test_image_attachments_bypass_text_hold(monkeypatch) -> None:
     def fail_strategy(_cfg: object) -> object:
         raise AssertionError("image route should not classify")
 
-    monkeypatch.setattr("opensquilla.engine.steps.squilla_router._get_strategy", fail_strategy)
+    monkeypatch.setattr("openstarry_code.engine.steps.squilla_router._get_strategy", fail_strategy)
     ctx = TurnContext(
         message="what is in this image?",
         session_key="agent:main:test-image",

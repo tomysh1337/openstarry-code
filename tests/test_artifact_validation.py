@@ -20,8 +20,8 @@ from pptx.enum.chart import XL_CHART_TYPE
 from pptx.exc import PackageNotFoundError
 from pptx.util import Inches
 
-import opensquilla.artifact_validation as validation
-from opensquilla.artifact_validation import (
+import openstarry_code.artifact_validation as validation
+from openstarry_code.artifact_validation import (
     PPTX_MIME,
     ArtifactValidationError,
     ArtifactValidationReport,

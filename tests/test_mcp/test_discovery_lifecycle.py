@@ -5,9 +5,9 @@ from typing import Any
 import pytest
 import pytest_asyncio
 
-from opensquilla.mcp.client import MCPClient
-from opensquilla.mcp.types import MCPServerConfig, MCPToolDef, MCPToolResult
-from opensquilla.tools.registry import ToolRegistry
+from openstarry_code.mcp.client import MCPClient
+from openstarry_code.mcp.types import MCPServerConfig, MCPToolDef, MCPToolResult
+from openstarry_code.tools.registry import ToolRegistry
 
 
 class FakeMCPClient(MCPClient):
@@ -45,7 +45,7 @@ class FakeMCPClient(MCPClient):
 
 @pytest_asyncio.fixture(autouse=True)
 async def _close_mcp_clients():
-    from opensquilla.mcp.discovery import close_active_clients
+    from openstarry_code.mcp.discovery import close_active_clients
 
     await close_active_clients()
     yield
@@ -56,7 +56,7 @@ async def _close_mcp_clients():
 async def test_discovered_mcp_clients_have_owner_and_close_lifecycle(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.mcp import discovery
+    from openstarry_code.mcp import discovery
 
     config = MCPServerConfig(name="docs", transport="stdio", command="mock-mcp")
     client = FakeMCPClient(
@@ -89,7 +89,7 @@ async def test_discovered_mcp_clients_have_owner_and_close_lifecycle(
 async def test_failed_mcp_discovery_closes_client_without_leaking(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.mcp import discovery
+    from openstarry_code.mcp import discovery
 
     config = MCPServerConfig(name="broken", transport="stdio", command="mock-mcp")
     client = FakeMCPClient(config, fail_list=True)
@@ -106,9 +106,9 @@ async def test_failed_mcp_discovery_closes_client_without_leaking(
 async def test_registered_handler_surfaces_client_error_flag(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.mcp import discovery
-    from opensquilla.tool_boundary import ToolCall
-    from opensquilla.tools.dispatch import build_tool_handler
+    from openstarry_code.mcp import discovery
+    from openstarry_code.tool_boundary import ToolCall
+    from openstarry_code.tools.dispatch import build_tool_handler
 
     config = MCPServerConfig(name="docs", transport="stdio", command="mock-mcp")
     client = FakeMCPClient(

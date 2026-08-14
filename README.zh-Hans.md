@@ -16,6 +16,7 @@
   <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/PYTHON-3.12%2B-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.12+"></a>
   <img src="https://img.shields.io/badge/API_SLOTS-4-00C2A8?style=for-the-badge" alt="四个自定义 API 槽位">
   <img src="https://img.shields.io/badge/MODEL_DISCOVERY-AUTO-FF6B35?style=for-the-badge" alt="自动识别模型">
+  <a href="https://github.com/tomysh1337/openstarry-code/releases/latest"><img src="https://img.shields.io/github/v/release/tomysh1337/openstarry-code?style=for-the-badge&label=RELEASE" alt="最新版本"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/LICENSE-APACHE_2.0-EA4335?style=for-the-badge" alt="Apache 2.0 许可证"></a>
 </p>
 
@@ -27,6 +28,7 @@
   <a href="#系统信号">系统信号</a> ·
   <a href="#运行架构">运行架构</a> ·
   <a href="#快速启动">快速启动</a> ·
+  <a href="#发布构建">发布构建</a> ·
   <a href="#自定义-api-网格">API 网格</a> ·
   <a href="#命令面板">命令面板</a> ·
   <a href="#文档导航">文档导航</a>
@@ -37,8 +39,9 @@
 > [!IMPORTANT]
 > **OpenStarry Code** 的维护仓库为
 > [`tomysh1337/openstarry-code`](https://github.com/tomysh1337/openstarry-code)。
-> 为保持现有生态兼容，Python 包、导入路径、CLI 命令、配置文件以及
-> `OPENSQUILLA_*` 环境变量继续使用原有兼容标识。
+> Python 发行包与 CLI 使用 `openstarry-code`，Python 导入路径与源码包目录使用
+> `openstarry_code`，新配置位于 `openstarry-code.toml` 或
+> `~/.openstarry-code/`。
 
 ## 系统信号
 
@@ -126,21 +129,21 @@ OpenStarry Code 的 API 叠加与模型识别功能位于当前仓库，因此�
 git lfs install
 git clone https://github.com/tomysh1337/openstarry-code.git
 cd openstarry-code
-git lfs pull --include="src/opensquilla/squilla_router/models/**"
+git lfs pull --include="src/openstarry_code/squilla_router/models/**"
 
-cd opensquilla-webui
+cd openstarry-code-webui
 npm ci
 npm run build
 cd ..
 
 uv sync --extra recommended --extra dev
-uv run opensquilla onboard
-uv run opensquilla gateway run
+uv run openstarry-code onboard
+uv run openstarry-code gateway run
 ```
 
 控制台地址：
 [`http://127.0.0.1:18791/control/`](http://127.0.0.1:18791/control/)。
-启动终端聊天：`uv run opensquilla chat`。
+启动终端聊天：`uv run openstarry-code chat`。
 
 <details>
 <summary><strong>各平台环境安装命令</strong></summary>
@@ -187,13 +190,92 @@ bash scripts/install_source.sh
 powershell -ExecutionPolicy Bypass -File ./scripts/install_source.ps1
 ```
 
-使用这种方式安装后，直接运行 `opensquilla`，无需添加 `uv run` 前缀。
+使用这种方式安装后，直接运行 `openstarry-code`，无需添加 `uv run` 前缀。
 
 当前已发布的桌面包和 wheel 来自
 [上游发布通道](https://github.com/opensquilla/opensquilla/releases)。
 需要本 fork 的自定义 API 功能时，请使用上面的源码流程。
 
 </details>
+
+## 发布构建
+
+当前 OpenStarry Code 正式版本为
+[`v0.5.3`](https://github.com/tomysh1337/openstarry-code/releases/tag/v0.5.3)，
+由 2026-08-14 的仓库标签状态构建。
+
+使用 `uv` 直接安装已验证的 wheel：
+
+```sh
+uv tool install --python 3.12 \
+  "openstarry-code[recommended] @ https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.3/openstarry_code-0.5.3-py3-none-any.whl"
+```
+<!-- Release URL 分隔：/ -->
+
+| 产物 | 用途 | 完整性 |
+| --- | --- | --- |
+| [`openstarry_code-0.5.3-py3-none-any.whl`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.3/openstarry_code-0.5.3-py3-none-any.whl) | 包含已编译 Web UI 的 Python 运行时 | 记录于 `SHA256SUMS` |
+| [`openstarry_code-0.5.3.tar.gz`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.3/openstarry_code-0.5.3.tar.gz) | 可复现的源码发行包 | 记录于 `SHA256SUMS` |
+| `SHA256SUMS` | Release 下载文件的 SHA-256 清单 | 与版本同步发布 |
+
+发布验证覆盖完整前端构建、产物契约、Python 包构建、提供商与配置专项测试、Web UI
+单元测试和依赖审计。Electron 源码仍可单独构建，但在 app ID 与更新通道完成独立迁移契约前，
+本 fork 不声明已经提供单独重命名的桌面安装器。
+
+| 发布门禁 | 结果 |
+| --- | --- |
+| Web 架构、主题、动画、安全和多语言守卫 | 通过 |
+| Vue TypeScript 校验 | 通过 |
+| Web UI 单元测试 | 3,748 项通过 |
+| Python 专项测试 | 36 项通过 |
+| npm 依赖审计 | 0 个已知漏洞 |
+| wheel/sdist 构建 | 通过 |
+
+版本历史见 [`CHANGELOG.md`](CHANGELOG.md)，详细发行说明见
+[`docs/releases/0.5.3.md`](docs/releases/0.5.3.md)。
+
+### 继承桌面通道
+
+上面的 fork Release 以源码发行包为主。仍需使用继承桌面通道时，上游 0.5.3 的固定版本
+GitHub 产物为：
+
+- [`OpenSquilla-0.5.3-mac-arm64.dmg`](https://github.com/opensquilla/opensquilla/releases/download/v0.5.3/OpenSquilla-0.5.3-mac-arm64.dmg)
+- [`OpenSquilla-0.5.3-win-x64.exe`](https://github.com/opensquilla/opensquilla/releases/download/v0.5.3/OpenSquilla-0.5.3-win-x64.exe)
+
+Alibaba Cloud OSS 镜像提供滚动桌面下载地址：
+
+- <https://opensquilla-releases.oss-cn-beijing.aliyuncs.com/releases/latest/OpenSquilla-mac-arm64.dmg>
+- <https://opensquilla-releases.oss-cn-beijing.aliyuncs.com/releases/latest/OpenSquilla-win-x64.exe>
+
+继承容器镜像为 `ghcr.io/opensquilla/opensquilla:latest`。Portable 压缩包继续保持退役，
+桌面 zip 属于更新器产物，并非独立便携版本。Release 安装命令使用已经发布的 GitHub
+固定版本资源，Python wheel 也使用带版本号的文件名，以便安装器校验包版本。
+
+Windows 构建当前没有代码签名，使用前请阅读
+[`docs/code-signing-policy.md`](docs/code-signing-policy.md)并检查平台信任提示。
+
+从继承的 Windows RC3 桌面端升级时，必须先备份 `%APPDATA%\OpenSquilla`，再将 RC4
+或更高版本直接覆盖安装；不要先卸载 RC3，因为旧卸载器可能删除应用数据目录。
+
+### 网络隐私
+
+通过以下环境变量关闭非用户主动触发的网络可观测行为：
+
+```sh
+OPENSTARRY_CODE_PRIVACY_DISABLE_NETWORK_OBSERVABILITY=true
+```
+
+或使用配置：
+
+```toml
+[privacy]
+disable_network_observability = true
+```
+
+`OPENSTARRY_CODE_TELEMETRY_DISABLED=true` 和
+`OPENSTARRY_CODE_UPDATE_CHECK_DISABLED=true` 会关闭安装遥测与被动更新检查。用户显式触发的更新可用性检查也不会绕过它
+所代表的统一或兼容关闭设置。详情见 [`PRIVACY.md`](PRIVACY.md)和
+[`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md)。
 
 ## 自定义 API 网格
 
@@ -278,25 +360,25 @@ role = "aggregator"
 以下命令按用户级安装编写；在源码开发环境中添加 `uv run` 前缀。
 
 ```sh
-opensquilla onboard                         # 交互式配置
-opensquilla onboard status                  # 配置诊断
-opensquilla gateway run                     # 前台网关
-opensquilla gateway start --json            # 后台托管网关
-opensquilla gateway status                  # 运行状态
-opensquilla chat                            # 终端聊天
-opensquilla agent -m "你的任务"              # 单次自动化
-opensquilla doctor --json                   # 完整就绪检查
-opensquilla models list                     # 模型目录
-opensquilla providers list                  # 提供商目录
-opensquilla mcp-server run                  # MCP 服务端模式
+openstarry-code onboard                         # 交互式配置
+openstarry-code onboard status                  # 配置诊断
+openstarry-code gateway run                     # 前台网关
+openstarry-code gateway start --json            # 后台托管网关
+openstarry-code gateway status                  # 运行状态
+openstarry-code chat                            # 终端聊天
+openstarry-code agent -m "你的任务"              # 单次自动化
+openstarry-code doctor --json                   # 完整就绪检查
+openstarry-code models list                     # 模型目录
+openstarry-code providers list                  # 提供商目录
+openstarry-code mcp-server run                  # MCP 服务端模式
 ```
 
 配置加载顺序：
 
 ```text
-OPENSQUILLA_GATEWAY_CONFIG_PATH
-  -> ./opensquilla.toml
-  -> ~/.opensquilla/config.toml
+OPENSTARRY_CODE_GATEWAY_CONFIG_PATH
+  -> ./openstarry-code.toml
+  -> ~/.openstarry-code/config.toml
   -> 内置默认值
 ```
 
@@ -304,8 +386,8 @@ OPENSQUILLA_GATEWAY_CONFIG_PATH
 
 | 路径 | 职责 |
 | --- | --- |
-| `src/opensquilla/` | Python 运行时、提供商、网关、记忆、渠道与工具 |
-| `opensquilla-webui/` | Vue 控制台和浏览器测试 |
+| `src/openstarry_code/` | Python 运行时、提供商、网关、记忆、渠道与工具 |
+| `openstarry-code-webui/` | Vue 控制台和浏览器测试 |
 | `desktop/electron/` | 桌面壳与打包 |
 | `docs/` | 运维、提供商、架构和功能契约 |
 | `tests/` | 单元、集成、功能和兼容性覆盖 |
@@ -315,10 +397,10 @@ OPENSQUILLA_GATEWAY_CONFIG_PATH
 
 ```sh
 uv run ruff check src tests
-uv run mypy src/opensquilla --show-error-codes
+uv run mypy src/openstarry_code --show-error-codes
 uv run pytest -q
 
-cd opensquilla-webui
+cd openstarry-code-webui
 npm run typecheck
 npm run test:unit
 ```
@@ -343,13 +425,13 @@ npm run test:unit
 | --- | --- |
 | 仓库 | `openstarry-code` |
 | 产品 | **OpenStarry Code** |
-| Python 发行包 | `opensquilla` |
-| Python 导入路径 | `opensquilla` |
-| CLI 可执行命令 | `opensquilla` |
-| 默认配置 | `opensquilla.toml` / `~/.opensquilla/config.toml` |
+| Python 发行包 | `openstarry-code` |
+| Python 导入路径 | `openstarry_code` |
+| CLI 可执行命令 | `openstarry-code` |
+| 默认配置 | `openstarry-code.toml` / `~/.openstarry-code/config.toml` |
 
-保留这些兼容标识是有意设计：现有环境、自动化脚本和插件可以继续工作，仓库与产品展示名称则
-统一为 OpenStarry Code。
+Python 标识符不支持连字符，因此导入路径使用下划线；仓库、发行包、CLI、Web UI 目录、
+配置文件和状态目录统一使用 `openstarry-code`。
 
 ## 许可证与来源
 

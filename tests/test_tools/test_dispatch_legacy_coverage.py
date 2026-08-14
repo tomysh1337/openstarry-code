@@ -24,13 +24,13 @@ from pathlib import Path
 import pytest
 from test_tools.dispatch_corpus import ALL_CASES
 
-import opensquilla.tools.dispatch as _dispatch_module
-from opensquilla.engine.hooks import NoopToolHook
-from opensquilla.result_budget import ToolRunBudgetExceededError, ToolRunBudgetPolicy
-from opensquilla.tool_boundary import ToolCall, ToolContinuation
-from opensquilla.tools.dispatch import build_tool_handler
-from opensquilla.tools.registry import ToolRegistry
-from opensquilla.tools.types import ToolContext, ToolSpec, current_tool_context
+import openstarry_code.tools.dispatch as _dispatch_module
+from openstarry_code.engine.hooks import NoopToolHook
+from openstarry_code.result_budget import ToolRunBudgetExceededError, ToolRunBudgetPolicy
+from openstarry_code.tool_boundary import ToolCall, ToolContinuation
+from openstarry_code.tools.dispatch import build_tool_handler
+from openstarry_code.tools.registry import ToolRegistry
+from openstarry_code.tools.types import ToolContext, ToolSpec, current_tool_context
 
 _DISPATCH_SOURCE: Path = Path(_dispatch_module.__file__).resolve()
 

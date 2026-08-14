@@ -4,30 +4,30 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.channels.admission import CHANNEL_ADMIN_VERIFIED_METADATA_KEY
-from opensquilla.channels.types import IncomingMessage
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.routing import (
+from openstarry_code.channels.admission import CHANNEL_ADMIN_VERIFIED_METADATA_KEY
+from openstarry_code.channels.types import IncomingMessage
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.routing import (
     build_channel_route_envelope,
     build_cli_route_envelope,
     build_web_route_envelope,
     tool_context_from_envelope,
 )
-from opensquilla.gateway.rpc import RpcContext
-from opensquilla.gateway.rpc_sessions import (
+from openstarry_code.gateway.rpc import RpcContext
+from openstarry_code.gateway.rpc_sessions import (
     _apply_run_context_route_metadata,
     _trusted_run_mode_hint,
 )
-from opensquilla.sandbox.run_context import (
+from openstarry_code.sandbox.run_context import (
     DomainGrant,
     MountGrant,
     PackageBundleGrant,
     PublicNetworkGrant,
     RunContext,
 )
-from opensquilla.sandbox.run_mode import RunMode
-from opensquilla.tools.run_mode import full_host_access_for_context
-from opensquilla.tools.types import CallerKind, ToolContext
+from openstarry_code.sandbox.run_mode import RunMode
+from openstarry_code.tools.run_mode import full_host_access_for_context
+from openstarry_code.tools.types import CallerKind, ToolContext
 
 
 def _owner_rpc_context(*, is_owner: bool = True) -> RpcContext:
@@ -66,8 +66,8 @@ def test_saved_route_run_mode_wins_over_later_global_full_default() -> None:
 
 @pytest.mark.asyncio
 async def test_valid_named_token_preserves_persisted_full_without_owner_authority() -> None:
-    from opensquilla.sandbox.run_context import get_run_context
-    from opensquilla.sandbox.run_mode_policy import principal_has_host_execute
+    from openstarry_code.sandbox.run_context import get_run_context
+    from openstarry_code.sandbox.run_mode_policy import principal_has_host_execute
 
     async def get_runtime_preference(key: str) -> str:
         assert key == "sandbox.run_mode"
@@ -126,7 +126,7 @@ async def test_valid_named_token_preserves_persisted_full_without_owner_authorit
 
 
 def test_disabled_runtime_makes_stale_standard_context_resolve_to_full(monkeypatch) -> None:
-    from opensquilla.sandbox import integration
+    from openstarry_code.sandbox import integration
 
     monkeypatch.setattr(
         integration,
@@ -151,7 +151,7 @@ def test_disabled_runtime_makes_stale_standard_context_resolve_to_full(monkeypat
 
 
 def test_enabled_runtime_keeps_valid_standard_context_over_full_default(monkeypatch) -> None:
-    from opensquilla.sandbox import integration
+    from openstarry_code.sandbox import integration
 
     monkeypatch.setattr(
         integration,
@@ -373,9 +373,9 @@ def test_route_metadata_hydrates_full_sandbox_run_context() -> None:
 def test_fresh_route_metadata_preserves_user_scope_grants_for_execution(
     tmp_path,
 ) -> None:
-    from opensquilla.sandbox.integration import _session_mounts_for_policy
-    from opensquilla.sandbox.network_guard import decide_network_access
-    from opensquilla.tools.types import current_tool_context
+    from openstarry_code.sandbox.integration import _session_mounts_for_policy
+    from openstarry_code.sandbox.network_guard import decide_network_access
+    from openstarry_code.tools.types import current_tool_context
 
     workspace = tmp_path / "workspace"
     chat_mount = tmp_path / "chat-mount"
@@ -491,8 +491,8 @@ def test_fresh_route_metadata_preserves_user_scope_grants_for_execution(
 def test_policy_mounts_use_live_run_context_when_legacy_mount_metadata_is_stale(
     tmp_path,
 ) -> None:
-    from opensquilla.sandbox.integration import _session_mounts_for_policy
-    from opensquilla.tools.types import ToolContext, current_tool_context
+    from openstarry_code.sandbox.integration import _session_mounts_for_policy
+    from openstarry_code.tools.types import ToolContext, current_tool_context
 
     workspace = tmp_path / "workspace"
     approved_mount = tmp_path / "approved-mount"
@@ -528,8 +528,8 @@ def test_policy_mounts_use_live_run_context_when_legacy_mount_metadata_is_stale(
 def test_policy_mounts_treat_live_empty_run_context_as_authoritative(
     tmp_path,
 ) -> None:
-    from opensquilla.sandbox.integration import _session_mounts_for_policy
-    from opensquilla.tools.types import ToolContext, current_tool_context
+    from openstarry_code.sandbox.integration import _session_mounts_for_policy
+    from openstarry_code.tools.types import ToolContext, current_tool_context
 
     workspace = tmp_path / "workspace"
     removed_mount = tmp_path / "removed-mount"

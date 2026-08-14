@@ -3,7 +3,7 @@
 
 The server never forwards a request and never retains request prompts, headers,
 or response bodies.  Tests select a scenario with the
-``X-OpenSquilla-Fault-Scenario`` header (or with the server-side sequence), so
+``X-OpenStarry Code-Fault-Scenario`` header (or with the server-side sequence), so
 provider retry and stream-recovery behavior can be exercised without network
 access or credentials.
 """
@@ -160,7 +160,7 @@ class _FaultHandler(BaseHTTPRequestHandler):
         stream = payload.get("stream") is True
         try:
             request_number, scenario = self.fault_server.record_request(
-                self.headers.get("X-OpenSquilla-Fault-Scenario"),
+                self.headers.get("X-OpenStarry Code-Fault-Scenario"),
                 model=model,
                 stream=stream,
                 received_bytes=len(body),

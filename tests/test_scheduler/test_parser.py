@@ -6,7 +6,7 @@ from datetime import UTC, datetime
 
 import pytest
 
-from opensquilla.scheduler.parser import CronParseError, parse_cron, parse_iso_at
+from openstarry_code.scheduler.parser import CronParseError, parse_cron, parse_iso_at
 
 # --- parse_cron ----------------------------------------------------------
 
@@ -99,7 +99,7 @@ def test_matches_ands_day_fields_when_only_one_is_restricted() -> None:
 
 
 def test_next_run_uses_posix_day_union() -> None:
-    from opensquilla.scheduler.engine import _next_run
+    from openstarry_code.scheduler.engine import _next_run
 
     expr = parse_cron("0 9 1,15 * 1")
     after = datetime(2026, 7, 9, 12, 0, tzinfo=UTC)

@@ -7,8 +7,8 @@ from typing import Any
 
 import pytest
 
-from opensquilla.channels.dingtalk import DingTalkChannel, DingTalkChannelConfig
-from opensquilla.channels.types import IngressVerification
+from openstarry_code.channels.dingtalk import DingTalkChannel, DingTalkChannelConfig
+from openstarry_code.channels.types import IngressVerification
 
 
 def _sdk_message(msg_id: str, conversation_id: str, sender_id: str, webhook: str) -> Any:

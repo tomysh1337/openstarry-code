@@ -14,11 +14,11 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.engine import Agent, AgentConfig
-from opensquilla.engine import tool_result_store as trs_module
-from opensquilla.provider import ContentBlockToolResult, ContentBlockToolUse, Message
-from opensquilla.tools import ToolRegistry, tool
-from opensquilla.tools.dispatch import build_tool_handler
+from openstarry_code.engine import Agent, AgentConfig
+from openstarry_code.engine import tool_result_store as trs_module
+from openstarry_code.provider import ContentBlockToolResult, ContentBlockToolUse, Message
+from openstarry_code.tools import ToolRegistry, tool
+from openstarry_code.tools.dispatch import build_tool_handler
 
 
 class _CapturingProvider:

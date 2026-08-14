@@ -13,7 +13,7 @@ from pathlib import Path
 import pytest
 from yoyo import get_backend, read_migrations
 
-from opensquilla.persistence.meta_run_writer import (
+from openstarry_code.persistence.meta_run_writer import (
     MetaRunWriter,
     RunRecord,  # noqa: F401 — explicit public-API surface assertion
     StepRecord,  # noqa: F401 — explicit public-API surface assertion
@@ -25,8 +25,8 @@ from opensquilla.persistence.meta_run_writer import (
     replay_inputs_are_modified,
     summarize_run_record,
 )
-from opensquilla.persistence.migrator import apply_pending
-from opensquilla.skills.meta.types import MetaPlan, MetaResult, MetaStep
+from openstarry_code.persistence.migrator import apply_pending
+from openstarry_code.skills.meta.types import MetaPlan, MetaResult, MetaStep
 
 MIGRATIONS_DIR = Path(__file__).resolve().parents[1].parent / "migrations"
 
@@ -92,7 +92,7 @@ def test_begin_finish_run_roundtrip(writer: MetaRunWriter) -> None:
     )
     assert len(run_id) == 26  # ULID
 
-    from opensquilla.skills.meta.types import MetaResult
+    from openstarry_code.skills.meta.types import MetaResult
     writer.finish_run_sync(
         run_id=run_id,
         status="ok",

@@ -8,13 +8,13 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.skills.eligibility import EligibilityContext, check_eligibility
-from opensquilla.skills.loader import SkillLoader
-from opensquilla.skills.meta.executors.skill_exec import run_skill_exec_step
-from opensquilla.skills.meta.types import MetaStep
+from openstarry_code.skills.eligibility import EligibilityContext, check_eligibility
+from openstarry_code.skills.loader import SkillLoader
+from openstarry_code.skills.meta.executors.skill_exec import run_skill_exec_step
+from openstarry_code.skills.meta.types import MetaStep
 
 ROOT = Path(__file__).resolve().parents[1]
-BUNDLED = ROOT / "src" / "opensquilla" / "skills" / "bundled"
+BUNDLED = ROOT / "src" / "openstarry_code" / "skills" / "bundled"
 DOCX_DIR = BUNDLED / "docx"
 SCRIPTS = DOCX_DIR / "scripts"
 
@@ -35,7 +35,7 @@ def test_skill_loads() -> None:
 
 def test_eligibility_with_python_present(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(
-        "opensquilla.skills.eligibility.shutil.which",
+        "openstarry_code.skills.eligibility.shutil.which",
         lambda name: "/usr/bin/python3" if name in {"python", "python3"} else None,
     )
     spec = _spec_to_loader()
@@ -45,7 +45,7 @@ def test_eligibility_with_python_present(monkeypatch: pytest.MonkeyPatch) -> Non
 
 def test_eligibility_without_python(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(
-        "opensquilla.skills.eligibility.shutil.which",
+        "openstarry_code.skills.eligibility.shutil.which",
         lambda name: None,
     )
     spec = _spec_to_loader()

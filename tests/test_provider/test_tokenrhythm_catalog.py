@@ -6,9 +6,9 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from opensquilla.provider.model_catalog import ModelCatalog, set_shared_catalog
-from opensquilla.provider.openai import OpenAIProvider
-from opensquilla.provider.tokenrhythm_catalog import (
+from openstarry_code.provider.model_catalog import ModelCatalog, set_shared_catalog
+from openstarry_code.provider.openai import OpenAIProvider
+from openstarry_code.provider.tokenrhythm_catalog import (
     TokenRhythmModelMetadata,
     canonical_tokenrhythm_base_url,
     fetch_tokenrhythm_declared,
@@ -23,7 +23,7 @@ from opensquilla.provider.tokenrhythm_catalog import (
     tokenrhythm_published_from_wire,
     tokenrhythm_published_to_wire,
 )
-from opensquilla.provider.types import ModelInfo
+from openstarry_code.provider.types import ModelInfo
 
 
 def _published_row(**overrides: Any) -> dict[str, Any]:
@@ -419,7 +419,7 @@ def test_schema_drift_logs_only_unknown_field_names(
 ) -> None:
     events: list[tuple[str, dict[str, Any]]] = []
     monkeypatch.setattr(
-        "opensquilla.provider.tokenrhythm_catalog.log.debug",
+        "openstarry_code.provider.tokenrhythm_catalog.log.debug",
         lambda event, **fields: events.append((event, fields)),
     )
     secret_value = "DO_NOT_LOG_SECRET_VALUE"
@@ -693,7 +693,7 @@ def test_explicit_override_is_not_clamped_and_warns_once(
 
     warnings: list[tuple[str, dict[str, Any]]] = []
     monkeypatch.setattr(
-        "opensquilla.provider.model_catalog.log.warning",
+        "openstarry_code.provider.model_catalog.log.warning",
         lambda event, **fields: warnings.append((event, fields)),
     )
     first = catalog.resolve_max_tokens(
@@ -730,7 +730,7 @@ def test_deployment_lookup_warns_for_oversized_logical_override(
     )
     warnings: list[tuple[str, dict[str, Any]]] = []
     monkeypatch.setattr(
-        "opensquilla.provider.model_catalog.log.warning",
+        "openstarry_code.provider.model_catalog.log.warning",
         lambda event, **fields: warnings.append((event, fields)),
     )
 
@@ -771,7 +771,7 @@ def test_per_model_override_is_not_clamped_and_warns(
     )
     warnings: list[tuple[str, dict[str, Any]]] = []
     monkeypatch.setattr(
-        "opensquilla.provider.model_catalog.log.warning",
+        "openstarry_code.provider.model_catalog.log.warning",
         lambda event, **fields: warnings.append((event, fields)),
     )
 
@@ -816,12 +816,12 @@ async def test_typed_fetch_helpers_return_normalized_records_and_gate_auth_host(
 
     with (
         patch(
-            "opensquilla.provider.tokenrhythm_catalog.httpx.AsyncClient",
+            "openstarry_code.provider.tokenrhythm_catalog.httpx.AsyncClient",
             return_value=client,
         ) as client_cls,
         patch(
-            "opensquilla.provider.tokenrhythm_catalog.tokenrhythm_install_id_headers",
-            return_value={"X-OpenSquilla-Install-Id": "synthetic-install-id"},
+            "openstarry_code.provider.tokenrhythm_catalog.tokenrhythm_install_id_headers",
+            return_value={"X-OpenStarry Code-Install-Id": "synthetic-install-id"},
         ) as install_headers,
     ):
         published = await fetch_tokenrhythm_published()
@@ -835,12 +835,12 @@ async def test_typed_fetch_helpers_return_normalized_records_and_gate_auth_host(
     auth_response.json.assert_called_once_with(parse_float=Decimal)
     public_call, auth_call = client.get.await_args_list
     assert "Authorization" not in public_call.kwargs["headers"]
-    assert public_call.kwargs["headers"]["X-OpenSquilla-Install-Id"] == (
+    assert public_call.kwargs["headers"]["X-OpenStarry Code-Install-Id"] == (
         "synthetic-install-id"
     )
     assert auth_call.args[0] == "https://tokenrhythm.studio/v1/models"
     assert auth_call.kwargs["headers"]["Authorization"].startswith("Bearer sk-tr-synthetic")
-    assert auth_call.kwargs["headers"]["X-OpenSquilla-Install-Id"] == (
+    assert auth_call.kwargs["headers"]["X-OpenStarry Code-Install-Id"] == (
         "synthetic-install-id"
     )
     assert client_cls.call_count == 2
@@ -854,7 +854,7 @@ async def test_typed_fetch_helpers_return_normalized_records_and_gate_auth_host(
     ]
     assert all(call.kwargs["proxy"] is None for call in install_headers.call_args_list)
     with patch(
-        "opensquilla.provider.tokenrhythm_catalog.httpx.AsyncClient"
+        "openstarry_code.provider.tokenrhythm_catalog.httpx.AsyncClient"
     ) as forbidden_client:
         with pytest.raises(ValueError, match="official HTTPS host"):
             await fetch_tokenrhythm_declared(
@@ -887,11 +887,11 @@ async def test_typed_fetch_passes_explicit_proxy_to_install_id_gate() -> None:
 
     with (
         patch(
-            "opensquilla.provider.tokenrhythm_catalog.httpx.AsyncClient",
+            "openstarry_code.provider.tokenrhythm_catalog.httpx.AsyncClient",
             return_value=client,
         ) as client_cls,
         patch(
-            "opensquilla.provider.tokenrhythm_catalog.tokenrhythm_install_id_headers",
+            "openstarry_code.provider.tokenrhythm_catalog.tokenrhythm_install_id_headers",
             return_value={},
         ) as install_headers,
     ):
@@ -903,7 +903,7 @@ async def test_typed_fetch_passes_explicit_proxy_to_install_id_gate() -> None:
         "https://tokenrhythm.studio/api/models",
         proxy=proxy,
     )
-    assert "X-OpenSquilla-Install-Id" not in client.get.await_args.kwargs["headers"]
+    assert "X-OpenStarry Code-Install-Id" not in client.get.await_args.kwargs["headers"]
 
 
 @pytest.mark.asyncio
@@ -929,22 +929,22 @@ async def test_typed_declared_fetch_redacts_schema_drift_secret_keys(
     client.__aexit__ = AsyncMock(return_value=False)
     client.get = AsyncMock(return_value=response)
     monkeypatch.setattr(
-        "opensquilla.provider.tokenrhythm_catalog.log.debug",
+        "openstarry_code.provider.tokenrhythm_catalog.log.debug",
         lambda event, **fields: events.append((event, fields)),
     )
     monkeypatch.setattr(
-        "opensquilla.provider.tokenrhythm_catalog.redact_tokenrhythm_install_ids",
+        "openstarry_code.provider.tokenrhythm_catalog.redact_tokenrhythm_install_ids",
         lambda text: text.replace(install_id, "***"),
     )
 
     with (
         patch(
-            "opensquilla.provider.tokenrhythm_catalog.httpx.AsyncClient",
+            "openstarry_code.provider.tokenrhythm_catalog.httpx.AsyncClient",
             return_value=client,
         ),
         patch(
-            "opensquilla.provider.tokenrhythm_catalog.tokenrhythm_install_id_headers",
-            return_value={"X-OpenSquilla-Install-Id": install_id},
+            "openstarry_code.provider.tokenrhythm_catalog.tokenrhythm_install_id_headers",
+            return_value={"X-OpenStarry Code-Install-Id": install_id},
         ),
     ):
         declared = await fetch_tokenrhythm_declared(api_key=api_key)
@@ -967,7 +967,7 @@ async def test_typed_fetch_distinguishes_empty_from_malformed_envelope() -> None
     client.get = AsyncMock(return_value=response)
 
     with patch(
-        "opensquilla.provider.tokenrhythm_catalog.httpx.AsyncClient",
+        "openstarry_code.provider.tokenrhythm_catalog.httpx.AsyncClient",
         return_value=client,
     ):
         assert await fetch_tokenrhythm_published() == {}
@@ -994,7 +994,7 @@ async def test_nonempty_malformed_catalog_rows_are_not_legal_empty_lists(
     client.get = AsyncMock(return_value=response)
 
     with patch(
-        "opensquilla.provider.tokenrhythm_catalog.httpx.AsyncClient",
+        "openstarry_code.provider.tokenrhythm_catalog.httpx.AsyncClient",
         return_value=client,
     ):
         with pytest.raises(ValueError, match="invalid TokenRhythm published"):
@@ -1015,7 +1015,7 @@ async def test_non_exact_success_code_cannot_clear_catalog_lkg(
     client.get = AsyncMock(return_value=response)
 
     with patch(
-        "opensquilla.provider.tokenrhythm_catalog.httpx.AsyncClient",
+        "openstarry_code.provider.tokenrhythm_catalog.httpx.AsyncClient",
         return_value=client,
     ):
         with pytest.raises(ValueError, match="unsuccessful TokenRhythm published"):
@@ -1029,7 +1029,7 @@ async def test_tokenrhythm_list_models_merges_public_and_auth_metadata(
     api_key = "sk-tr-synthetic-not-a-real-secret"
     schema_events: list[tuple[str, dict[str, Any]]] = []
     monkeypatch.setattr(
-        "opensquilla.provider.tokenrhythm_catalog.log.debug",
+        "openstarry_code.provider.tokenrhythm_catalog.log.debug",
         lambda event, **fields: schema_events.append((event, fields)),
     )
     catalog = ModelCatalog()
@@ -1052,7 +1052,7 @@ async def test_tokenrhythm_list_models_merges_public_and_auth_metadata(
         ]
     }
     try:
-        with patch("opensquilla.provider.openai.httpx.AsyncClient") as client_cls:
+        with patch("openstarry_code.provider.openai.httpx.AsyncClient") as client_cls:
             client = AsyncMock()
             client.__aenter__ = AsyncMock(return_value=client)
             client.__aexit__ = AsyncMock(return_value=False)
@@ -1106,7 +1106,7 @@ async def test_tokenrhythm_custom_endpoint_does_not_merge_or_mutate_official_met
         ]
     }
     try:
-        with patch("opensquilla.provider.openai.httpx.AsyncClient") as client_cls:
+        with patch("openstarry_code.provider.openai.httpx.AsyncClient") as client_cls:
             client = AsyncMock()
             client.__aenter__ = AsyncMock(return_value=client)
             client.__aexit__ = AsyncMock(return_value=False)
@@ -1166,7 +1166,7 @@ async def test_direct_listing_missing_fields_never_reads_another_authority() -> 
     response.raise_for_status = MagicMock()
     response.json.return_value = {"data": [{"id": "authority-only-model"}]}
     try:
-        with patch("opensquilla.provider.openai.httpx.AsyncClient") as client_cls:
+        with patch("openstarry_code.provider.openai.httpx.AsyncClient") as client_cls:
             client = AsyncMock()
             client.__aenter__ = AsyncMock(return_value=client)
             client.__aexit__ = AsyncMock(return_value=False)
@@ -1203,7 +1203,7 @@ async def test_non_tokenrhythm_listing_keeps_nested_max_output_precedence() -> N
             }
         ]
     }
-    with patch("opensquilla.provider.openai.httpx.AsyncClient") as client_cls:
+    with patch("openstarry_code.provider.openai.httpx.AsyncClient") as client_cls:
         client = AsyncMock()
         client.__aenter__ = AsyncMock(return_value=client)
         client.__aexit__ = AsyncMock(return_value=False)

@@ -43,7 +43,7 @@ jobs:
             platform_key: windows-x64
             paper_platform_key: windows-x64
     env:
-      OPENSQUILLA_REQUIRE_MANAGED_TOOLCHAIN_E2E: "1"
+      OPENSTARRY_CODE_REQUIRE_MANAGED_TOOLCHAIN_E2E: "1"
 
     steps:
       - name: Check out repository
@@ -52,8 +52,8 @@ jobs:
       - name: Configure isolated managed-toolchain state
         shell: bash
         run: |
-          printf 'OPENSQUILLA_GATEWAY_STATE_DIR=%s/opensquilla-managed-toolchain-state\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
-          printf 'OPENSQUILLA_TOOLCHAIN_VALIDATION_ROOT=%s/opensquilla-managed-toolchain-state/toolchains/v1\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'OPENSTARRY_CODE_GATEWAY_STATE_DIR=%s/opensquilla-managed-toolchain-state\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'OPENSTARRY_CODE_TOOLCHAIN_VALIDATION_ROOT=%s/opensquilla-managed-toolchain-state/toolchains/v1\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -91,7 +91,7 @@ jobs:
     container:
       image: python:3.12-alpine
     env:
-      OPENSQUILLA_TOOLCHAIN_VALIDATION_ROOT: /tmp/opensquilla-managed-toolchains
+      OPENSTARRY_CODE_TOOLCHAIN_VALIDATION_ROOT: /tmp/opensquilla-managed-toolchains
       PYTHONPATH: ${{ github.workspace }}/src
 
     steps:

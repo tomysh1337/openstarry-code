@@ -4,9 +4,9 @@ import signal
 
 import pytest
 
-from opensquilla.sandbox import denial_attribution
-from opensquilla.sandbox.denial_attribution import is_likely_sandbox_denied
-from opensquilla.sandbox.types import SandboxResult
+from openstarry_code.sandbox import denial_attribution
+from openstarry_code.sandbox.denial_attribution import is_likely_sandbox_denied
+from openstarry_code.sandbox.types import SandboxResult
 
 
 def _result(

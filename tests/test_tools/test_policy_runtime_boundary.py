@@ -3,22 +3,22 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
-import opensquilla.tools.policy as policy_facade
-from opensquilla.tools import policy_helpers
-from opensquilla.tools.policy_runtime import (
+import openstarry_code.tools.policy as policy_facade
+from openstarry_code.tools import policy_helpers
+from openstarry_code.tools.policy_runtime import (
     ToolSurfaceCapabilities,
     resolve_runtime_tool_surface,
     tool_surface_capabilities_from_runtime,
 )
-from opensquilla.tools.types import CallerKind, InteractionMode, ToolContext
+from openstarry_code.tools.types import CallerKind, InteractionMode, ToolContext
 
 ROOT = Path(__file__).resolve().parents[2]
-POLICY_FACADE = ROOT / "src/opensquilla/tools/policy/__init__.py"
-POLICY_HELPERS = ROOT / "src/opensquilla/tools/policy_helpers.py"
-POLICY_RUNTIME = ROOT / "src/opensquilla/tools/policy_runtime.py"
-VISIBILITY = ROOT / "src/opensquilla/tools/visibility.py"
-RPC_PAYLOAD = ROOT / "src/opensquilla/tools/rpc_payload.py"
-REGISTRY = ROOT / "src/opensquilla/tools/registry.py"
+POLICY_FACADE = ROOT / "src/openstarry_code/tools/policy/__init__.py"
+POLICY_HELPERS = ROOT / "src/openstarry_code/tools/policy_helpers.py"
+POLICY_RUNTIME = ROOT / "src/openstarry_code/tools/policy_runtime.py"
+VISIBILITY = ROOT / "src/openstarry_code/tools/visibility.py"
+RPC_PAYLOAD = ROOT / "src/openstarry_code/tools/rpc_payload.py"
+REGISTRY = ROOT / "src/openstarry_code/tools/registry.py"
 
 
 def _imports_from(path: Path) -> set[tuple[str, str]]:
@@ -67,7 +67,7 @@ def test_policy_facade_and_helpers_delegate_runtime_surface_to_boundary() -> Non
     assert policy_helpers.ToolSurfaceCapabilities is ToolSurfaceCapabilities
     assert policy_helpers.resolve_runtime_tool_surface is resolve_runtime_tool_surface
     assert (
-        "opensquilla.tools.policy_runtime",
+        "openstarry_code.tools.policy_runtime",
         "ToolSurfaceCapabilities",
     ) in facade_imports
     assert "ToolSurfaceCapabilities" not in _top_level_classes(POLICY_HELPERS)
@@ -93,7 +93,7 @@ def test_internal_tool_modules_depend_on_policy_runtime_not_policy_facade() -> N
     for path in (VISIBILITY, RPC_PAYLOAD, REGISTRY):
         imports = _imports_from(path)
         assert any(
-            module == "opensquilla.tools.policy_runtime"
+            module == "openstarry_code.tools.policy_runtime"
             and name
             in {
                 "ToolSurfaceCapabilities",
@@ -102,8 +102,8 @@ def test_internal_tool_modules_depend_on_policy_runtime_not_policy_facade() -> N
             }
             for module, name in imports
         )
-        assert ("opensquilla.tools.policy", "ToolSurfaceCapabilities") not in imports
-        assert ("opensquilla.tools.policy", "resolve_runtime_tool_surface") not in imports
+        assert ("openstarry_code.tools.policy", "ToolSurfaceCapabilities") not in imports
+        assert ("openstarry_code.tools.policy", "resolve_runtime_tool_surface") not in imports
 
 
 def test_policy_runtime_preserves_runtime_capability_denylists() -> None:
@@ -173,10 +173,10 @@ def test_policy_runtime_uses_current_media_image_generation_probe() -> None:
     imports = _imports_from(POLICY_RUNTIME)
 
     assert (
-        "opensquilla.tools.builtin.media",
+        "openstarry_code.tools.builtin.media",
         "image_generation_available",
     ) in imports
     assert (
-        "opensquilla.provider.image_generation_runtime",
+        "openstarry_code.provider.image_generation_runtime",
         "image_generation_available",
     ) not in imports

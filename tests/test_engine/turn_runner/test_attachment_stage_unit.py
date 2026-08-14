@@ -14,11 +14,11 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.turn_runner.attachment_stage import (
+from openstarry_code.engine.turn_runner.attachment_stage import (
     AttachmentStage,
     AttachmentStageInput,
 )
-from opensquilla.engine.turn_runner.outcome import StageOutcome
+from openstarry_code.engine.turn_runner.outcome import StageOutcome
 
 
 @dataclass

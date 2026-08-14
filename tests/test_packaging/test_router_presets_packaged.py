@@ -36,14 +36,14 @@ PACKAGED_PRESET_IDS = LEGACY_PRESET_IDS + CURATED_INLINE_PRESET_IDS
 def test_wheel_contains_all_packaged_router_presets(
     isolated_core_wheel: Path,
 ) -> None:
-    """`uv build --wheel` packages opensquilla/provider/presets/<id>.toml."""
+    """`uv build --wheel` packages openstarry_code/provider/presets/<id>.toml."""
     with zipfile.ZipFile(isolated_core_wheel) as wheel:
         names = set(wheel.namelist())
 
     missing = [
         preset_id
         for preset_id in PACKAGED_PRESET_IDS
-        if f"opensquilla/provider/presets/{preset_id}.toml" not in names
+        if f"openstarry_code/provider/presets/{preset_id}.toml" not in names
     ]
     assert not missing, (
         f"router presets missing from wheel: {missing}; "
@@ -53,6 +53,6 @@ def test_wheel_contains_all_packaged_router_presets(
 
 def test_source_tree_ships_all_packaged_router_presets() -> None:
     """Cheap guard for the default test path: the preset files exist in-tree."""
-    presets_dir = REPO_ROOT / "src" / "opensquilla" / "provider" / "presets"
+    presets_dir = REPO_ROOT / "src" / "openstarry_code" / "provider" / "presets"
     present = {p.stem for p in presets_dir.glob("*.toml")}
     assert present == set(PACKAGED_PRESET_IDS), present

@@ -10,32 +10,32 @@ from typing import Any
 
 import pytest
 
-from opensquilla.cli.chat.session_state import ChatSessionState
-from opensquilla.cli.chat.turn import TurnResult
-from opensquilla.cli.gateway_client import GatewayRPCError
-from opensquilla.cli.tui.adapters import slash_bridge as _slash_bridge
-from opensquilla.cli.tui.adapters import slash_gateway as _slash_gateway
-from opensquilla.cli.tui.adapters import slash_standalone as _slash_standalone
-from opensquilla.cli.tui.adapters.commands import is_exit_command
-from opensquilla.cli.tui.adapters.slash_common import (
+from openstarry_code.cli.chat.session_state import ChatSessionState
+from openstarry_code.cli.chat.turn import TurnResult
+from openstarry_code.cli.gateway_client import GatewayRPCError
+from openstarry_code.cli.tui.adapters import slash_bridge as _slash_bridge
+from openstarry_code.cli.tui.adapters import slash_gateway as _slash_gateway
+from openstarry_code.cli.tui.adapters import slash_standalone as _slash_standalone
+from openstarry_code.cli.tui.adapters.commands import is_exit_command
+from openstarry_code.cli.tui.adapters.slash_common import (
     record_turn,
     registry_handler_words,
     resolve_transcript_target,
     transcript_messages_to_markdown,
 )
-from opensquilla.cli.tui.adapters.slash_gateway import (
+from openstarry_code.cli.tui.adapters.slash_gateway import (
     GATEWAY_SLASH_HANDLER_WORDS,
     GatewaySlashContext,
     handle_gateway_slash_command,
 )
-from opensquilla.cli.tui.adapters.slash_policy import SlashCategory, classify
-from opensquilla.cli.tui.adapters.slash_standalone import (
+from openstarry_code.cli.tui.adapters.slash_policy import SlashCategory, classify
+from openstarry_code.cli.tui.adapters.slash_standalone import (
     STANDALONE_SLASH_HANDLER_WORDS,
     StandaloneSlashContext,
     StandaloneSlashServices,
     handle_standalone_slash_command,
 )
-from opensquilla.engine.commands import Surface
+from openstarry_code.engine.commands import Surface
 
 # Exit words are intercepted by the runtime loops before slash dispatch, so
 # neither handler chain owns them.
@@ -503,7 +503,7 @@ async def test_gateway_connection_loss_renders_reconnect_hint(
     output = recorder.text()
     assert "Gateway command failed" in output
     assert "Gateway connection lost" in output
-    assert "opensquilla gateway" in output
+    assert "openstarry-code gateway" in output
 
 
 async def test_gateway_os_error_from_rpc_is_reported_not_raised(

@@ -9,26 +9,26 @@ from typing import Any
 import pytest
 import structlog.testing
 
-from opensquilla.engine import Agent, AgentConfig, ThinkingLevel, ToolResult
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.engine.usage import UsageTracker
-from opensquilla.provider import (
+from openstarry_code.engine import Agent, AgentConfig, ThinkingLevel, ToolResult
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.engine.usage import UsageTracker
+from openstarry_code.provider import (
     ChatConfig,
     Message,
     ModelCapabilities,
     ToolDefinition,
     ToolInputSchema,
 )
-from opensquilla.provider import DoneEvent as ProviderDone
-from opensquilla.provider import TextDeltaEvent as ProviderText
-from opensquilla.provider import ToolUseDeltaEvent as ProviderToolUseDelta
-from opensquilla.provider import ToolUseEndEvent as ProviderToolUseEnd
-from opensquilla.provider import ToolUseStartEvent as ProviderToolUseStart
-from opensquilla.session.manager import SessionManager
-from opensquilla.session.storage import SessionStorage
-from opensquilla.tools.dispatch import build_tool_handler
-from opensquilla.tools.registry import ToolRegistry
-from opensquilla.tools.types import CallerKind, ToolContext, ToolSpec
+from openstarry_code.provider import DoneEvent as ProviderDone
+from openstarry_code.provider import TextDeltaEvent as ProviderText
+from openstarry_code.provider import ToolUseDeltaEvent as ProviderToolUseDelta
+from openstarry_code.provider import ToolUseEndEvent as ProviderToolUseEnd
+from openstarry_code.provider import ToolUseStartEvent as ProviderToolUseStart
+from openstarry_code.session.manager import SessionManager
+from openstarry_code.session.storage import SessionStorage
+from openstarry_code.tools.dispatch import build_tool_handler
+from openstarry_code.tools.registry import ToolRegistry
+from openstarry_code.tools.types import CallerKind, ToolContext, ToolSpec
 
 
 class _SequenceProvider:
@@ -1543,7 +1543,7 @@ async def test_discarded_empty_attempt_counts_usage_but_skips_cache_check(
         cache_checks.append((args, kwargs))
         return _CacheReport()
 
-    monkeypatch.setattr("opensquilla.engine.agent.check_response_for_cache_break", fake_cache_check)
+    monkeypatch.setattr("openstarry_code.engine.agent.check_response_for_cache_break", fake_cache_check)
     usage = UsageTracker()
     agent = Agent(
         provider=provider,

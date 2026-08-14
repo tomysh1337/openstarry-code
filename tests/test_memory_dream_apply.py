@@ -3,13 +3,13 @@ from __future__ import annotations
 import hashlib
 from pathlib import Path
 
-from opensquilla.memory.dream.curated_apply import apply_promotion_patch
-from opensquilla.memory.dream.models import (
+from openstarry_code.memory.dream.curated_apply import apply_promotion_patch
+from openstarry_code.memory.dream.models import (
     PromotionCandidate,
     PromotionPatch,
     PromotionPatchOperation,
 )
-from opensquilla.memory.dream.rehydrate import rehydrate_candidate
+from openstarry_code.memory.dream.rehydrate import rehydrate_candidate
 
 
 def _sha(text: str) -> str:

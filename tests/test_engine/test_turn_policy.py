@@ -4,7 +4,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.engine.turn_policy import resolve_turn_policy
+from openstarry_code.engine.turn_policy import resolve_turn_policy
 
 
 class _SessionConfigManager:
@@ -22,7 +22,7 @@ def test_turn_policy_preserves_max_iteration_precedence() -> None:
             SimpleNamespace(agent_max_iterations=111)
         ),
         gateway_config=SimpleNamespace(agent_max_iterations=333),
-        env={"OPENSQUILLA_AGENT_MAX_ITERATIONS": "222"},
+        env={"OPENSTARRY_CODE_AGENT_MAX_ITERATIONS": "222"},
     )
 
     assert policy.max_iterations == 111
@@ -37,7 +37,7 @@ def test_turn_policy_prefers_explicit_zero() -> None:
             SimpleNamespace(agent_max_iterations=111)
         ),
         gateway_config=SimpleNamespace(agent_max_iterations=333),
-        env={"OPENSQUILLA_AGENT_MAX_ITERATIONS": "222"},
+        env={"OPENSTARRY_CODE_AGENT_MAX_ITERATIONS": "222"},
     )
 
     assert policy.max_iterations == 0
@@ -49,7 +49,7 @@ def test_turn_policy_env_falls_back_to_gateway_when_invalid() -> None:
         session_key="agent:main:test",
         session_manager=_SessionConfigManager(None),
         gateway_config=SimpleNamespace(agent_max_iterations=333),
-        env={"OPENSQUILLA_AGENT_MAX_ITERATIONS": "bad"},
+        env={"OPENSTARRY_CODE_AGENT_MAX_ITERATIONS": "bad"},
     )
 
     assert policy.max_iterations == 333

@@ -11,7 +11,7 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine import (
+from openstarry_code.engine import (
     Agent,
     AgentConfig,
     AgentState,
@@ -23,11 +23,11 @@ from opensquilla.engine import (
     ToolResult,
     WarningEvent,
 )
-from opensquilla.engine.agent import _progress_watchdog_guidance_message
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.engine.session_sanitize import session_payload_chars
-from opensquilla.engine.types import CompactionEvent
-from opensquilla.provider import (
+from openstarry_code.engine.agent import _progress_watchdog_guidance_message
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.engine.session_sanitize import session_payload_chars
+from openstarry_code.engine.types import CompactionEvent
+from openstarry_code.provider import (
     ChatConfig,
     ContentBlockToolResult,
     ContentBlockToolUse,
@@ -38,33 +38,33 @@ from opensquilla.provider import (
     ToolDefinition,
     ToolInputSchema,
 )
-from opensquilla.provider import DoneEvent as ProviderDone
-from opensquilla.provider import ErrorEvent as ProviderError
-from opensquilla.provider import TextDeltaEvent as ProviderText
-from opensquilla.provider import ToolUseDeltaEvent as ProviderToolUseDelta
-from opensquilla.provider import ToolUseEndEvent as ProviderToolUseEnd
-from opensquilla.provider import ToolUseStartEvent as ProviderToolUseStart
-from opensquilla.provider.openai import OpenAIProvider
-from opensquilla.provider.request_proof import (
+from openstarry_code.provider import DoneEvent as ProviderDone
+from openstarry_code.provider import ErrorEvent as ProviderError
+from openstarry_code.provider import TextDeltaEvent as ProviderText
+from openstarry_code.provider import ToolUseDeltaEvent as ProviderToolUseDelta
+from openstarry_code.provider import ToolUseEndEvent as ProviderToolUseEnd
+from openstarry_code.provider import ToolUseStartEvent as ProviderToolUseStart
+from openstarry_code.provider.openai import OpenAIProvider
+from openstarry_code.provider.request_proof import (
     ProviderRequestBudgetExceeded,
     prove_provider_payload,
 )
-from opensquilla.sandbox.config import SandboxSettings
-from opensquilla.sandbox.integration import configure_runtime, reset_runtime
-from opensquilla.sandbox.run_context import RunContext
-from opensquilla.sandbox.run_mode import RunMode
-from opensquilla.session.compaction import CompactionResult
-from opensquilla.session.compaction_deployment import (
+from openstarry_code.sandbox.config import SandboxSettings
+from openstarry_code.sandbox.integration import configure_runtime, reset_runtime
+from openstarry_code.sandbox.run_context import RunContext
+from openstarry_code.sandbox.run_mode import RunMode
+from openstarry_code.session.compaction import CompactionResult
+from openstarry_code.session.compaction_deployment import (
     CompactionExecutionPlan,
     CompactionExecutionTarget,
 )
-from opensquilla.tools.dispatch import build_tool_handler
-from opensquilla.tools.mutation_receipts import (
+from openstarry_code.tools.dispatch import build_tool_handler
+from openstarry_code.tools.mutation_receipts import (
     fingerprint_path,
     record_semantic_mutation_receipt,
 )
-from opensquilla.tools.registry import get_default_registry
-from opensquilla.tools.types import CallerKind, InteractionMode, ToolContext
+from openstarry_code.tools.registry import get_default_registry
+from openstarry_code.tools.types import CallerKind, InteractionMode, ToolContext
 
 RAW_CURRENT_TURN_OVERFLOW_MESSAGE = (
     "Context overflow is in the current turn's recent tool calls or "
@@ -2895,7 +2895,7 @@ async def test_workspace_edit_gate_allows_real_configured_scratch_edit_file(
 ) -> None:
     # Scratch write tracking is a workspace policy layer; opt out of the
     # sandbox-disabled Full Host Access fallback so it stays active.
-    monkeypatch.setenv("OPENSQUILLA_SANDBOX_DISABLED_FULL_HOST", "off")
+    monkeypatch.setenv("OPENSTARRY_CODE_SANDBOX_DISABLED_FULL_HOST", "off")
     workspace = tmp_path / "workspace"
     scratch = tmp_path / "scratch"
     workspace.mkdir()
@@ -3827,7 +3827,7 @@ async def test_workspace_edit_gate_scratch_repro_does_not_clear_gate(
 ) -> None:
     # Scratch write tracking is a workspace policy layer; opt out of the
     # sandbox-disabled Full Host Access fallback so it stays active.
-    monkeypatch.setenv("OPENSQUILLA_SANDBOX_DISABLED_FULL_HOST", "off")
+    monkeypatch.setenv("OPENSTARRY_CODE_SANDBOX_DISABLED_FULL_HOST", "off")
     workspace = tmp_path / "workspace"
     scratch = tmp_path / "scratch"
     workspace.mkdir()
@@ -4482,7 +4482,7 @@ async def test_agent_skips_price_resolution_per_event_when_turn_cost_budget_disa
     # for the pre-existing DoneEvent cost-reporting computation (out of scope
     # for this gate) — so this asserts the count does *not* scale with the
     # number of LLM calls, rather than asserting zero calls overall.
-    import opensquilla.engine.pricing as pricing_module
+    import openstarry_code.engine.pricing as pricing_module
 
     calls: list[tuple[str, str]] = []
     real_resolve_model_price = pricing_module.resolve_model_price
@@ -4586,7 +4586,7 @@ async def test_agent_labels_turn_cost_budget_error_as_mixed_when_billed_and_esti
 async def test_agent_turn_cost_budget_prices_each_unbilled_ensemble_member(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.engine.pricing import PriceEntry
+    from openstarry_code.engine.pricing import PriceEntry
 
     calls: list[tuple[str, str]] = []
 
@@ -4601,7 +4601,7 @@ async def test_agent_turn_cost_budget_prices_each_unbilled_ensemble_member(
         )
 
     monkeypatch.setattr(
-        "opensquilla.engine.usage_accounting.resolve_model_price",
+        "openstarry_code.engine.usage_accounting.resolve_model_price",
         resolve,
     )
     provider = _EnsembleUsageBreakdownProvider(
@@ -4648,7 +4648,7 @@ async def test_agent_turn_cost_budget_prices_each_unbilled_ensemble_member(
 async def test_agent_turn_cost_budget_combines_billed_and_unbilled_ensemble_members(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.engine.pricing import PriceEntry
+    from openstarry_code.engine.pricing import PriceEntry
 
     calls: list[tuple[str, str]] = []
 
@@ -4661,7 +4661,7 @@ async def test_agent_turn_cost_budget_combines_billed_and_unbilled_ensemble_memb
         )
 
     monkeypatch.setattr(
-        "opensquilla.engine.usage_accounting.resolve_model_price",
+        "openstarry_code.engine.usage_accounting.resolve_model_price",
         resolve,
     )
     provider = _EnsembleUsageBreakdownProvider(
@@ -4708,7 +4708,7 @@ async def test_agent_turn_cost_budget_combines_billed_and_unbilled_ensemble_memb
 async def test_agent_turn_cost_budget_stops_retry_after_ensemble_error_receipt(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.engine.pricing import PriceEntry
+    from openstarry_code.engine.pricing import PriceEntry
 
     calls: list[tuple[str, str]] = []
 
@@ -4721,7 +4721,7 @@ async def test_agent_turn_cost_budget_stops_retry_after_ensemble_error_receipt(
         )
 
     monkeypatch.setattr(
-        "opensquilla.engine.usage_accounting.resolve_model_price",
+        "openstarry_code.engine.usage_accounting.resolve_model_price",
         resolve,
     )
     provider = _RetryingEnsembleErrorProvider(
@@ -4759,7 +4759,7 @@ async def test_agent_turn_cost_budget_stops_retry_after_ensemble_error_receipt(
 
 
 def test_with_model_usage_cost_fields_prices_unbilled_cache_reads_cache_aware() -> None:
-    from opensquilla.engine import agent as agent_module
+    from openstarry_code.engine import agent as agent_module
 
     blind_row = {
         "model": "deepseek/deepseek-v4-pro-20260423",
@@ -5115,7 +5115,7 @@ async def test_context_overflow_noop_compaction_does_not_resend_unchanged_contex
             chunks_processed=0,
         )
 
-    monkeypatch.setattr("opensquilla.engine.agent.compact_context", _noop_compact)
+    monkeypatch.setattr("openstarry_code.engine.agent.compact_context", _noop_compact)
     provider = _ContextOverflowProvider()
     agent = Agent(
         provider=provider,
@@ -5147,7 +5147,7 @@ async def test_context_overflow_summary_only_larger_payload_does_not_retry(
             chunks_processed=1,
         )
 
-    monkeypatch.setattr("opensquilla.engine.agent.compact_context", _summary_only_compact)
+    monkeypatch.setattr("openstarry_code.engine.agent.compact_context", _summary_only_compact)
     provider = _ContextOverflowProvider()
     agent = Agent(
         provider=provider,
@@ -5182,7 +5182,7 @@ async def test_context_overflow_effective_compaction_allows_single_retry(
             chunks_processed=1,
         )
 
-    monkeypatch.setattr("opensquilla.engine.agent.compact_context", _effective_compact)
+    monkeypatch.setattr("openstarry_code.engine.agent.compact_context", _effective_compact)
     provider = _ContextOverflowProvider(success_after=1)
     agent = Agent(
         provider=provider,
@@ -5226,7 +5226,7 @@ async def test_narrow_routed_window_never_durably_compacts_base_session(
         )
 
     monkeypatch.setattr(
-        "opensquilla.engine.agent.compact_context",
+        "openstarry_code.engine.agent.compact_context",
         _unexpected_compaction,
     )
     provider = _ContextOverflowProvider()
@@ -5283,8 +5283,8 @@ async def test_inline_compaction_candidate_gets_terminal_when_retry_never_admits
     def _record_notification(_session_key: str, **payload: Any) -> None:
         notifications.append(payload)
 
-    monkeypatch.setattr("opensquilla.engine.agent.compact_context", _effective_compact)
-    monkeypatch.setattr("opensquilla.engine.agent.notify_compaction", _record_notification)
+    monkeypatch.setattr("openstarry_code.engine.agent.compact_context", _effective_compact)
+    monkeypatch.setattr("openstarry_code.engine.agent.notify_compaction", _record_notification)
     provider = _ContextOverflowProvider()
     agent = Agent(
         provider=provider,
@@ -5352,9 +5352,9 @@ async def test_inline_compaction_install_wait_obeys_absolute_deadline(
         )
 
     notifications: list[dict[str, Any]] = []
-    monkeypatch.setattr("opensquilla.engine.agent.compact_context", _effective_compact)
+    monkeypatch.setattr("openstarry_code.engine.agent.compact_context", _effective_compact)
     monkeypatch.setattr(
-        "opensquilla.engine.agent.notify_compaction",
+        "openstarry_code.engine.agent.notify_compaction",
         lambda _session_key, **payload: notifications.append(payload),
     )
     monkeypatch.setattr(asyncio, "wait", _wake_deadline_limited_wait_early)
@@ -5415,7 +5415,7 @@ async def test_inline_compaction_install_deadline_stops_limiting_accepted_stream
             chunks_processed=1,
         )
 
-    monkeypatch.setattr("opensquilla.engine.agent.compact_context", _effective_compact)
+    monkeypatch.setattr("openstarry_code.engine.agent.compact_context", _effective_compact)
     provider = _TextThenDelayedSuccessAfterOverflowProvider()
     agent = Agent(
         provider=provider,
@@ -5454,7 +5454,7 @@ async def test_native_overflow_after_final_admission_does_not_compact_history(
     async def _unexpected_compaction(_request: Any) -> CompactionResult:
         raise AssertionError("an admitted physical request must not mutate durable history")
 
-    monkeypatch.setattr("opensquilla.engine.agent.compact_context", _unexpected_compaction)
+    monkeypatch.setattr("openstarry_code.engine.agent.compact_context", _unexpected_compaction)
     provider = _FinalAdmissionContextOverflowProvider(success_after=1)
     agent = Agent(
         provider=provider,
@@ -5535,7 +5535,7 @@ async def test_inline_overflow_compaction_preserves_original_structured_tail(
             chunks_processed=1,
         )
 
-    monkeypatch.setattr("opensquilla.engine.agent.compact_context", _prefix_only_compact)
+    monkeypatch.setattr("openstarry_code.engine.agent.compact_context", _prefix_only_compact)
     tool_use = Message(
         role="assistant",
         content=[ContentBlockToolUse(id="tool-live", name="read_file", input={"path": "x"})],
@@ -5576,7 +5576,7 @@ async def test_inline_overflow_refuses_when_protected_current_turn_alone_is_too_
     async def _unexpected_compaction(_request: Any) -> CompactionResult:
         raise AssertionError("durable compaction must not run for an oversized current turn")
 
-    monkeypatch.setattr("opensquilla.engine.agent.compact_context", _unexpected_compaction)
+    monkeypatch.setattr("openstarry_code.engine.agent.compact_context", _unexpected_compaction)
     messages = [
         Message(role="user", content="old question"),
         Message(role="assistant", content="old answer"),
@@ -5620,7 +5620,7 @@ async def test_inline_overflow_projects_completed_live_rounds_without_mutating_p
         )
 
     monkeypatch.setattr(
-        "opensquilla.engine.agent.compact_context",
+        "openstarry_code.engine.agent.compact_context",
         _summarize_completed_rounds,
     )
     current_user = Message(role="user", content="finish the active task exactly")
@@ -5711,7 +5711,7 @@ async def test_durable_and_live_turn_recovery_share_one_compaction_call_budget(
         )
 
     monkeypatch.setattr(
-        "opensquilla.engine.agent.compact_context",
+        "openstarry_code.engine.agent.compact_context",
         _bounded_summary,
     )
     current_user = Message(role="user", content="finish the active task exactly")
@@ -5910,7 +5910,7 @@ async def test_stable_consumer_retries_with_completed_live_round_summary(
             content="result " + ("x" * 6_000),
         )
 
-    monkeypatch.setattr("opensquilla.engine.agent.compact_context", _compact)
+    monkeypatch.setattr("openstarry_code.engine.agent.compact_context", _compact)
     provider = _StableToolLoopBudgetProvider(max_message_chars=17_000)
     agent = Agent(
         provider=provider,
@@ -6080,7 +6080,7 @@ async def test_live_turn_recovery_uses_stable_consumer_input_budget(
             content="result " + ("x" * 6_000),
         )
 
-    monkeypatch.setattr("opensquilla.engine.agent.compact_context", _compact)
+    monkeypatch.setattr("openstarry_code.engine.agent.compact_context", _compact)
     provider = _ExactBudgetToolLoopProvider()
     agent = Agent(
         provider=provider,
@@ -6122,7 +6122,7 @@ async def test_inline_overflow_rejects_compactor_cut_through_protected_turn(
             chunks_processed=1,
         )
 
-    monkeypatch.setattr("opensquilla.engine.agent.compact_context", _violating_compaction)
+    monkeypatch.setattr("openstarry_code.engine.agent.compact_context", _violating_compaction)
     messages = [
         Message(role="user", content="old question"),
         Message(role="assistant", content="old answer"),
@@ -6175,7 +6175,7 @@ async def test_within_budget_skip_on_string_only_history_is_not_reported_as_comp
 async def test_inline_overflow_uses_live_context_not_cumulative_provider_usage(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.engine.agent as agent_module
+    import openstarry_code.engine.agent as agent_module
 
     provider = _HighUsageToolLoopProvider(tool_rounds=3, input_tokens_per_call=4000)
     flush_calls: list[int] = []
@@ -6239,7 +6239,7 @@ async def test_inline_overflow_uses_live_context_not_cumulative_provider_usage(
 async def test_successful_large_request_surface_does_not_compact_durable_history(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.engine.agent as agent_module
+    import openstarry_code.engine.agent as agent_module
 
     provider = _HighUsageToolLoopProvider(tool_rounds=0, input_tokens_per_call=1)
     large_tool = ToolDefinition(
@@ -6299,7 +6299,7 @@ async def test_successful_large_request_surface_does_not_compact_durable_history
 async def test_inline_overflow_flush_enabled_without_trigger_skips_flush(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.engine.agent as agent_module
+    import openstarry_code.engine.agent as agent_module
 
     provider = _HighUsageToolLoopProvider(tool_rounds=0, input_tokens_per_call=1)
     flush_calls: list[int] = []
@@ -6353,9 +6353,9 @@ async def test_provider_request_budget_exhausted_does_not_mutate_durable_history
     async def _unexpected_compact(_request: Any) -> CompactionResult:
         raise AssertionError("request-envelope pressure must not compact durable history")
 
-    monkeypatch.setattr("opensquilla.engine.agent.compact_context", _unexpected_compact)
+    monkeypatch.setattr("openstarry_code.engine.agent.compact_context", _unexpected_compact)
     monkeypatch.setattr(
-        "opensquilla.engine.agent.notify_compaction",
+        "openstarry_code.engine.agent.notify_compaction",
         lambda session_key, **payload: compaction_events.append((session_key, payload)),
     )
     provider = _ProviderRequestBudgetExceededProvider(success_after=1)
@@ -6395,7 +6395,7 @@ async def test_provider_request_budget_does_not_become_a_history_window(
             chunks_processed=1,
         )
 
-    monkeypatch.setattr("opensquilla.engine.agent.compact_context", _effective_compact)
+    monkeypatch.setattr("openstarry_code.engine.agent.compact_context", _effective_compact)
     provider = _ProviderRequestBudgetExceededProvider(
         success_after=1,
         proof={
@@ -6439,7 +6439,7 @@ async def test_provider_request_budget_failure_is_not_retried_via_history_compac
             chunks_processed=1,
         )
 
-    monkeypatch.setattr("opensquilla.engine.agent.compact_context", _effective_compact)
+    monkeypatch.setattr("openstarry_code.engine.agent.compact_context", _effective_compact)
     provider = _BudgetCheckingProvider(proof_budget=2_500)
     agent = Agent(
         provider=provider,
@@ -6475,7 +6475,7 @@ async def test_provider_budget_effective_cap_remains_request_only(
             chunks_processed=1,
         )
 
-    monkeypatch.setattr("opensquilla.engine.agent.compact_context", _record_compaction_window)
+    monkeypatch.setattr("openstarry_code.engine.agent.compact_context", _record_compaction_window)
     provider = _ProviderRequestBudgetExceededProvider(
         success_after=1,
         proof={
@@ -6514,7 +6514,7 @@ async def test_equal_window_routed_cap_does_not_compact_when_stable_consumer_fit
     async def _unexpected_compact(_request: Any) -> CompactionResult:
         raise AssertionError("route-only request pressure must not compact durable history")
 
-    monkeypatch.setattr("opensquilla.engine.agent.compact_context", _unexpected_compact)
+    monkeypatch.setattr("openstarry_code.engine.agent.compact_context", _unexpected_compact)
     routed = _FinalProofBudgetProvider()
     stable = _FinalProofBudgetProvider()
     agent = Agent(
@@ -6574,7 +6574,7 @@ async def test_equal_window_stable_overflow_still_allows_durable_compaction(
             chunks_processed=1,
         )
 
-    monkeypatch.setattr("opensquilla.engine.agent.compact_context", _effective_compact)
+    monkeypatch.setattr("openstarry_code.engine.agent.compact_context", _effective_compact)
     routed = _FinalProofBudgetProvider()
     stable = _FinalProofBudgetProvider()
     agent = Agent(
@@ -6629,7 +6629,7 @@ async def test_narrow_route_uses_stable_window_when_stable_consumer_also_overflo
             chunks_processed=1,
         )
 
-    monkeypatch.setattr("opensquilla.engine.agent.compact_context", _effective_compact)
+    monkeypatch.setattr("openstarry_code.engine.agent.compact_context", _effective_compact)
     routed = _FinalProofBudgetProvider()
     stable = _FinalProofBudgetProvider()
     agent = Agent(
@@ -6691,7 +6691,7 @@ async def test_narrow_route_cannot_force_stable_compaction_to_its_request_cap(
         )
 
     monkeypatch.setattr(
-        "opensquilla.engine.agent.compact_context",
+        "openstarry_code.engine.agent.compact_context",
         _stable_only_compact,
     )
     routed = _FinalProofBudgetProvider()
@@ -6759,7 +6759,7 @@ async def test_mixed_pressure_does_not_install_candidate_that_stable_consumer_re
         )
 
     monkeypatch.setattr(
-        "opensquilla.engine.agent.compact_context",
+        "openstarry_code.engine.agent.compact_context",
         _still_too_large_for_stable,
     )
     routed = _FinalProofBudgetProvider()
@@ -6810,7 +6810,7 @@ async def test_provider_request_budget_recent_tail_reason_survives_noop_compacti
     async def _unexpected_compact(_request: Any) -> CompactionResult:
         raise AssertionError("request-envelope pressure must not compact durable history")
 
-    monkeypatch.setattr("opensquilla.engine.agent.compact_context", _unexpected_compact)
+    monkeypatch.setattr("openstarry_code.engine.agent.compact_context", _unexpected_compact)
     provider = _ProviderRequestBudgetExceededProvider(
         proof={
             "fallback_reason": "provider_request_budget_exhausted",
@@ -6848,7 +6848,7 @@ async def test_provider_request_budget_recent_tail_exhaustion_is_reported_as_con
     async def _unexpected_compact(_request: Any) -> CompactionResult:
         raise AssertionError("request-envelope pressure must not compact durable history")
 
-    monkeypatch.setattr("opensquilla.engine.agent.compact_context", _unexpected_compact)
+    monkeypatch.setattr("openstarry_code.engine.agent.compact_context", _unexpected_compact)
     provider = _ProviderRequestBudgetExceededProvider(
         proof={
             "fallback_reason": "provider_request_budget_exhausted",
@@ -6895,7 +6895,7 @@ async def test_context_overflow_degraded_flush_still_runs_live_compaction_by_def
         )
 
     monkeypatch.setattr(
-        "opensquilla.engine.agent.compact_context",
+        "openstarry_code.engine.agent.compact_context",
         _compact_runs_after_degraded_flush,
     )
     provider = _ContextOverflowProvider(success_after=1)
@@ -6938,7 +6938,7 @@ async def test_context_overflow_flush_timeout_records_backoff_and_retries(
         )
 
     monkeypatch.setattr(
-        "opensquilla.engine.agent.compact_context",
+        "openstarry_code.engine.agent.compact_context",
         _compact_runs_after_flush_timeout,
     )
     provider = _ContextOverflowProvider(success_after=1)

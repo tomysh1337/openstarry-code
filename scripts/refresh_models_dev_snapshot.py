@@ -1,8 +1,8 @@
 """Refresh the vendored models.dev snapshot used by the model catalog.
 
 Fetches https://models.dev/api.json (MIT-licensed, community-maintained),
-trims it to the providers OpenSquilla registers, and writes the compact
-snapshot consumed by ``opensquilla.provider.models_dev``.
+trims it to the providers OpenStarry Code registers, and writes the compact
+snapshot consumed by ``openstarry_code.provider.models_dev``.
 
 Usage::
 
@@ -24,7 +24,7 @@ from pathlib import Path
 
 import httpx
 
-from opensquilla.provider.registry import list_provider_specs
+from openstarry_code.provider.registry import list_provider_specs
 
 API_URL = "https://models.dev/api.json"
 SNAPSHOT_PATH = (
@@ -35,7 +35,7 @@ SNAPSHOT_PATH = (
     / "models_dev_snapshot.json"
 )
 
-# OpenSquilla provider id -> models.dev provider ids (merged in order; the
+# OpenStarry Code provider id -> models.dev provider ids (merged in order; the
 # first source of a model id wins). Derived from each registered spec's
 # ``catalog_source`` so this script cannot drift from the provider registry.
 # Script-only extras (sources for providers the registry does not carry)

@@ -15,9 +15,9 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.gateway.guest_rpc_policy import guest_owned_session_key
-from opensquilla.session.models import SessionNode
-from opensquilla.session.storage import SessionStorage
+from openstarry_code.gateway.guest_rpc_policy import guest_owned_session_key
+from openstarry_code.session.models import SessionNode
+from openstarry_code.session.storage import SessionStorage
 
 
 @pytest.fixture
@@ -34,7 +34,7 @@ async def storage():
 
 async def _seed_session(storage: SessionStorage, session_id: str, entry_count: int) -> None:
     """Create a session row and append `entry_count` transcript entries."""
-    from opensquilla.session.models import SessionNode, TranscriptEntry
+    from openstarry_code.session.models import SessionNode, TranscriptEntry
 
     node = SessionNode(
         session_key=f"agent:test:{session_id}",

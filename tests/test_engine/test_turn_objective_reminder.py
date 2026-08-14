@@ -1,6 +1,6 @@
 """Tests for the turn-objective reminder override.
 
-OPENSQUILLA_TURN_OBJECTIVE_REMINDER gates the per-turn
+OPENSTARRY_CODE_TURN_OBJECTIVE_REMINDER gates the per-turn
 "[Current user request reminder]" user message appended after tool results.
 Unset/"off" suppresses the message (the default); "on" restores it;
 "trim:<chars>" restores it with a replacement truncation cap.
@@ -8,13 +8,13 @@ Unset/"off" suppresses the message (the default); "on" restores it;
 
 import pytest
 
-from opensquilla.engine.agent import (
+from openstarry_code.engine.agent import (
     _TURN_OBJECTIVE_REMINDER_MAX_CHARS,
     Agent,
     _resolve_turn_objective_reminder,
 )
 
-ENV = "OPENSQUILLA_TURN_OBJECTIVE_REMINDER"
+ENV = "OPENSTARRY_CODE_TURN_OBJECTIVE_REMINDER"
 
 
 def test_resolver_defaults_off(monkeypatch) -> None:

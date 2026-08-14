@@ -1,11 +1,11 @@
-"""Unit tests for opensquilla.skills.proposals_lib."""
+"""Unit tests for openstarry_code.skills.proposals_lib."""
 
 from __future__ import annotations
 
 import json
 from pathlib import Path
 
-from opensquilla.skills import proposals_lib
+from openstarry_code.skills import proposals_lib
 
 SAMPLE_SKILL_MD = """---
 name: synth-test-pipeline
@@ -54,7 +54,7 @@ def test_is_valid_proposal_id() -> None:
 
 
 def test_write_then_list_then_pending_count(tmp_path: Path) -> None:
-    home = tmp_path / ".opensquilla"
+    home = tmp_path / ".openstarry-code"
     pid1 = _seed_proposal(home)
     pid2 = _seed_proposal(home)
     rows = proposals_lib.list_proposals(home)["proposals"]
@@ -69,7 +69,7 @@ def test_pending_count_on_empty_home(tmp_path: Path) -> None:
 
 
 def test_list_proposals_surfaces_provenance(tmp_path: Path) -> None:
-    home = tmp_path / ".opensquilla"
+    home = tmp_path / ".openstarry-code"
     pid = _seed_proposal(home)
     # Patch gates.json with provenance
     gates_path = home / "proposals" / pid / "gates.json"
@@ -85,7 +85,7 @@ def test_list_proposals_surfaces_provenance(tmp_path: Path) -> None:
 
 
 def test_list_proposals_surfaces_auto_enable_decision(tmp_path: Path) -> None:
-    home = tmp_path / ".opensquilla"
+    home = tmp_path / ".openstarry-code"
     pid = _seed_proposal(home)
     gates_path = home / "proposals" / pid / "gates.json"
     gates = json.loads(gates_path.read_text())
@@ -110,7 +110,7 @@ def test_list_proposals_surfaces_auto_enable_decision(tmp_path: Path) -> None:
 
 
 def test_show_returns_payload(tmp_path: Path) -> None:
-    home = tmp_path / ".opensquilla"
+    home = tmp_path / ".openstarry-code"
     pid = _seed_proposal(home)
     out = proposals_lib.show_proposal(home, pid)
     assert out["status"] == "ok"
@@ -120,7 +120,7 @@ def test_show_returns_payload(tmp_path: Path) -> None:
 
 
 def test_full_gated_requires_runtime_e2e_result(tmp_path: Path) -> None:
-    home = tmp_path / ".opensquilla"
+    home = tmp_path / ".openstarry-code"
     result = proposals_lib.write_proposal(
         home,
         SAMPLE_SKILL_MD,
@@ -153,7 +153,7 @@ def test_full_gated_requires_runtime_e2e_result(tmp_path: Path) -> None:
 
 
 def test_full_gated_runtime_e2e_blocks_baseline_winner(tmp_path: Path) -> None:
-    home = tmp_path / ".opensquilla"
+    home = tmp_path / ".openstarry-code"
     result = proposals_lib.write_proposal(
         home,
         SAMPLE_SKILL_MD,
@@ -194,7 +194,7 @@ def test_full_gated_runtime_e2e_blocks_baseline_winner(tmp_path: Path) -> None:
 def test_full_gated_acceptance_blocks_single_model_winner_even_when_runtime_passes(
     tmp_path: Path,
 ) -> None:
-    home = tmp_path / ".opensquilla"
+    home = tmp_path / ".openstarry-code"
     result = proposals_lib.write_proposal(
         home,
         SAMPLE_SKILL_MD,
@@ -236,7 +236,7 @@ def test_full_gated_acceptance_blocks_single_model_winner_even_when_runtime_pass
 
 
 def test_full_gated_acceptance_blocks_low_weighted_quality_score(tmp_path: Path) -> None:
-    home = tmp_path / ".opensquilla"
+    home = tmp_path / ".openstarry-code"
     result = proposals_lib.write_proposal(
         home,
         SAMPLE_SKILL_MD,
@@ -271,7 +271,7 @@ def test_full_gated_acceptance_blocks_low_weighted_quality_score(tmp_path: Path)
 
 
 def test_full_gated_blocks_collision_and_high_risk_results(tmp_path: Path) -> None:
-    home = tmp_path / ".opensquilla"
+    home = tmp_path / ".openstarry-code"
     result = proposals_lib.write_proposal(
         home,
         SAMPLE_SKILL_MD,
@@ -305,7 +305,7 @@ def test_full_gated_blocks_collision_and_high_risk_results(tmp_path: Path) -> No
 def test_full_gated_runtime_e2e_allows_meta_winner_when_acceptance_passes(
     tmp_path: Path,
 ) -> None:
-    home = tmp_path / ".opensquilla"
+    home = tmp_path / ".openstarry-code"
     result = proposals_lib.write_proposal(
         home,
         SAMPLE_SKILL_MD,
@@ -346,20 +346,20 @@ def test_full_gated_runtime_e2e_allows_meta_winner_when_acceptance_passes(
 
 
 def test_show_rejects_invalid_id(tmp_path: Path) -> None:
-    home = tmp_path / ".opensquilla"
+    home = tmp_path / ".openstarry-code"
     out = proposals_lib.show_proposal(home, "../etc")
     assert out["status"] == "error"
 
 
 def test_show_missing_proposal(tmp_path: Path) -> None:
-    home = tmp_path / ".opensquilla"
+    home = tmp_path / ".openstarry-code"
     out = proposals_lib.show_proposal(home, "deadbeef")
     assert out["status"] == "error"
     assert "not found" in out["reason"]
 
 
 def test_accept_promotes_to_managed_skills(tmp_path: Path) -> None:
-    home = tmp_path / ".opensquilla"
+    home = tmp_path / ".openstarry-code"
     pid = _seed_proposal(home)
     out = proposals_lib.accept_proposal(home, pid)
     assert out["status"] == "ok"
@@ -371,7 +371,7 @@ def test_accept_promotes_to_managed_skills(tmp_path: Path) -> None:
 
 
 def test_list_and_disable_auto_enabled_skill(tmp_path: Path) -> None:
-    home = tmp_path / ".opensquilla"
+    home = tmp_path / ".openstarry-code"
     pid = _seed_proposal(home)
     gates_path = home / "proposals" / pid / "gates.json"
     gates = json.loads(gates_path.read_text())
@@ -412,7 +412,7 @@ def test_list_and_disable_auto_enabled_skill(tmp_path: Path) -> None:
 
 
 def test_disable_auto_enabled_skill_refuses_manual_skill(tmp_path: Path) -> None:
-    home = tmp_path / ".opensquilla"
+    home = tmp_path / ".openstarry-code"
     pid = _seed_proposal(home)
     accepted = proposals_lib.accept_proposal(home, pid)
     assert accepted["status"] == "ok"
@@ -422,7 +422,7 @@ def test_disable_auto_enabled_skill_refuses_manual_skill(tmp_path: Path) -> None
 
 
 def test_accept_refuses_when_gates_fail_without_force(tmp_path: Path) -> None:
-    home = tmp_path / ".opensquilla"
+    home = tmp_path / ".openstarry-code"
     pid = _seed_proposal(home, eligible=False)
     out = proposals_lib.accept_proposal(home, pid)
     assert out["status"] == "refused"
@@ -431,7 +431,7 @@ def test_accept_refuses_when_gates_fail_without_force(tmp_path: Path) -> None:
 
 
 def test_accept_refuses_when_target_skill_exists(tmp_path: Path) -> None:
-    home = tmp_path / ".opensquilla"
+    home = tmp_path / ".openstarry-code"
     pid1 = _seed_proposal(home)
     proposals_lib.accept_proposal(home, pid1)
     pid2 = _seed_proposal(home)
@@ -441,7 +441,7 @@ def test_accept_refuses_when_target_skill_exists(tmp_path: Path) -> None:
 
 
 def test_reject_removes_directory(tmp_path: Path) -> None:
-    home = tmp_path / ".opensquilla"
+    home = tmp_path / ".openstarry-code"
     pid = _seed_proposal(home)
     out = proposals_lib.reject_proposal(home, pid)
     assert out["status"] == "ok"
@@ -449,19 +449,19 @@ def test_reject_removes_directory(tmp_path: Path) -> None:
 
 
 def test_reject_rejects_invalid_id(tmp_path: Path) -> None:
-    home = tmp_path / ".opensquilla"
+    home = tmp_path / ".openstarry-code"
     out = proposals_lib.reject_proposal(home, "../etc/passwd")
     assert out["status"] == "error"
 
 
 def test_reject_missing_proposal(tmp_path: Path) -> None:
-    home = tmp_path / ".opensquilla"
+    home = tmp_path / ".openstarry-code"
     out = proposals_lib.reject_proposal(home, "deadbeef")
     assert out["status"] == "error"
 
 
 def test_auto_propose_settings_round_trip(tmp_path: Path) -> None:
-    home = tmp_path / ".opensquilla"
+    home = tmp_path / ".openstarry-code"
     assert proposals_lib.read_auto_propose_settings(home) == {}
     proposals_lib.write_auto_propose_settings(
         home, {
@@ -481,7 +481,7 @@ def test_auto_propose_settings_round_trip(tmp_path: Path) -> None:
 
 
 def test_auto_propose_settings_drops_unknown_and_bad_types(tmp_path: Path) -> None:
-    home = tmp_path / ".opensquilla"
+    home = tmp_path / ".openstarry-code"
     # Unknown keys dropped at write time
     proposals_lib.write_auto_propose_settings(
         home, {
@@ -499,7 +499,7 @@ def test_auto_propose_settings_drops_unknown_and_bad_types(tmp_path: Path) -> No
 def test_write_atomic_under_concurrent_writers(tmp_path: Path) -> None:
     """Writing N proposals should produce N distinct directories — the
     atomic-rename guarantees uniqueness even if proposal_ids collide."""
-    home = tmp_path / ".opensquilla"
+    home = tmp_path / ".openstarry-code"
     ids = []
     for _ in range(5):
         out = proposals_lib.write_proposal(home, SAMPLE_SKILL_MD, GATES_PASSING, SMOKE_PASSING)
@@ -530,7 +530,7 @@ def test_degraded_smoke_blocks_auto_enable_eligible(tmp_path: Path) -> None:
 
     The proposal itself still lands (``status == "ok"``) so an operator
     can inspect it; only ``auto_enable_eligible`` flips to False."""
-    home = tmp_path / ".opensquilla"
+    home = tmp_path / ".openstarry-code"
     result = proposals_lib.write_proposal(
         home,
         SAMPLE_SKILL_MD,
@@ -554,7 +554,7 @@ def test_non_degraded_smoke_still_yields_auto_enable_eligible(
     ``degraded`` flag (or carries it as False) must still be eligible
     when all other gates pass. Without this regression the D1 change
     could silently mark every proposal ineligible."""
-    home = tmp_path / ".opensquilla"
+    home = tmp_path / ".openstarry-code"
     smoke_clean = {
         "G3": {"passed": True, "degraded": False},
         "G4": {"passed": True, "degraded": False},

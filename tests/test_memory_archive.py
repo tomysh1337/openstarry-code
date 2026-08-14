@@ -5,7 +5,7 @@ from datetime import UTC, datetime
 
 import pytest
 
-from opensquilla.memory.archive import (
+from openstarry_code.memory.archive import (
     raw_fallback_relative_path,
     write_raw_fallback_archive,
 )

@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.cli.tui.renderers.selection import (
+from openstarry_code.cli.tui.renderers.selection import (
     DEFAULT_CHAT_UI_MODE,
     DEFAULT_TUI_BACKEND_ID,
-    OPENSQUILLA_TUI_BACKEND_ENV,
+    OPENSTARRY_CODE_TUI_BACKEND_ENV,
     RendererBackendSelectionError,
     RendererBackendUnavailableError,
     RendererBackendUnavailableReason,
@@ -32,8 +32,8 @@ def test_native_backend_is_internal_plain_renderer() -> None:
 def test_bare_chat_auto_selects_opentui_when_host_is_available(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.tui.opentui import bridge as opentui_bridge
-    from opensquilla.cli.tui.renderers.selection import RendererBackendAvailability
+    from openstarry_code.cli.tui.opentui import bridge as opentui_bridge
+    from openstarry_code.cli.tui.renderers.selection import RendererBackendAvailability
 
     monkeypatch.setattr(
         opentui_bridge.OpenTuiRendererBackend,
@@ -52,8 +52,8 @@ def test_bare_chat_auto_selects_opentui_when_host_is_available(
 def test_bare_chat_auto_falls_back_to_plain_when_host_is_unavailable(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.tui.opentui import bridge as opentui_bridge
-    from opensquilla.cli.tui.renderers.selection import RendererBackendAvailability
+    from openstarry_code.cli.tui.opentui import bridge as opentui_bridge
+    from openstarry_code.cli.tui.renderers.selection import RendererBackendAvailability
 
     monkeypatch.setattr(
         opentui_bridge.OpenTuiRendererBackend,
@@ -87,8 +87,8 @@ def test_renderer_backend_lookup_rejects_unknown_ids() -> None:
 def test_backend_selection_reads_env_and_preserves_native_default(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.tui.opentui import bridge as opentui_bridge
-    from opensquilla.cli.tui.renderers.selection import RendererBackendAvailability
+    from openstarry_code.cli.tui.opentui import bridge as opentui_bridge
+    from openstarry_code.cli.tui.renderers.selection import RendererBackendAvailability
 
     monkeypatch.setattr(
         opentui_bridge.OpenTuiRendererBackend,
@@ -98,17 +98,17 @@ def test_backend_selection_reads_env_and_preserves_native_default(
 
     assert select_renderer_backend_from_env({}).backend_id == "native"
     assert (
-        select_renderer_backend_from_env({OPENSQUILLA_TUI_BACKEND_ENV: ""}).backend_id == "native"
+        select_renderer_backend_from_env({OPENSTARRY_CODE_TUI_BACKEND_ENV: ""}).backend_id == "native"
     )
     assert (
-        select_renderer_backend_from_env({OPENSQUILLA_TUI_BACKEND_ENV: " opentui "}).backend_id
+        select_renderer_backend_from_env({OPENSTARRY_CODE_TUI_BACKEND_ENV: " opentui "}).backend_id
         == "opentui"
     )
 
 
 def test_backend_selection_rejects_unknown_env_values_clearly() -> None:
     with pytest.raises(RendererBackendSelectionError) as exc_info:
-        select_renderer_backend_from_env({OPENSQUILLA_TUI_BACKEND_ENV: "bogus"})
+        select_renderer_backend_from_env({OPENSTARRY_CODE_TUI_BACKEND_ENV: "bogus"})
 
     assert "Unsupported TUI backend" in str(exc_info.value)
     assert "opentui" in str(exc_info.value)
@@ -145,8 +145,8 @@ def test_public_chat_ui_plain_selects_native() -> None:
 def test_public_chat_ui_tui_selects_opentui_when_host_is_available(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.tui.opentui import bridge as opentui_bridge
-    from opensquilla.cli.tui.renderers.selection import RendererBackendAvailability
+    from openstarry_code.cli.tui.opentui import bridge as opentui_bridge
+    from openstarry_code.cli.tui.renderers.selection import RendererBackendAvailability
 
     monkeypatch.setattr(
         opentui_bridge.OpenTuiRendererBackend,
@@ -164,8 +164,8 @@ def test_public_chat_ui_tui_selects_opentui_when_host_is_available(
 def test_public_chat_ui_auto_falls_back_before_launch(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.cli.tui.opentui import bridge as opentui_bridge
-    from opensquilla.cli.tui.renderers.selection import RendererBackendAvailability
+    from openstarry_code.cli.tui.opentui import bridge as opentui_bridge
+    from openstarry_code.cli.tui.renderers.selection import RendererBackendAvailability
 
     monkeypatch.setattr(
         opentui_bridge.OpenTuiRendererBackend,
@@ -180,8 +180,8 @@ def test_public_chat_ui_auto_falls_back_before_launch(
 
 
 def test_public_chat_ui_tui_is_strict(monkeypatch: pytest.MonkeyPatch) -> None:
-    from opensquilla.cli.tui.opentui import bridge as opentui_bridge
-    from opensquilla.cli.tui.renderers.selection import RendererBackendAvailability
+    from openstarry_code.cli.tui.opentui import bridge as opentui_bridge
+    from openstarry_code.cli.tui.renderers.selection import RendererBackendAvailability
 
     monkeypatch.setattr(
         opentui_bridge.OpenTuiRendererBackend,
@@ -196,7 +196,7 @@ def test_public_chat_ui_tui_is_strict(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_public_chat_ui_ignores_internal_backend_env(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv(OPENSQUILLA_TUI_BACKEND_ENV, "bogus")
+    monkeypatch.setenv(OPENSTARRY_CODE_TUI_BACKEND_ENV, "bogus")
 
     selection = select_chat_ui_backend("plain")
 

@@ -1,4 +1,4 @@
-"""Build one self-contained, platform-specific OpenSquilla TUI host wheel."""
+"""Build one self-contained, platform-specific OpenStarry Code TUI host wheel."""
 
 from __future__ import annotations
 
@@ -16,11 +16,11 @@ import tomllib
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-HOST_SOURCE = REPO_ROOT / "src" / "opensquilla" / "cli" / "tui" / "opentui" / "package"
-COMPANION_PROJECT = REPO_ROOT / "packages" / "opensquilla-tui-host"
+HOST_SOURCE = REPO_ROOT / "src" / "openstarry_code" / "cli" / "tui" / "opentui" / "package"
+COMPANION_PROJECT = REPO_ROOT / "packages" / "openstarry-code-tui-host"
 PINNED_BUN_VERSION = "1.3.14"
 HOST_PROTOCOL_VERSION = 1
-MACOS_SIGNING_IDENTIFIER = "ai.opensquilla.tui-host"
+MACOS_SIGNING_IDENTIFIER = "code.openstarry.tui-host"
 
 _PLATFORMS = {"darwin", "linux", "win32"}
 _ARCHES = {"arm64", "x64"}
@@ -55,18 +55,20 @@ def main(argv: list[str] | None = None) -> int:
     companion_version = _project_version(COMPANION_PROJECT / "pyproject.toml")
     if product_version != companion_version:
         raise SystemExit(
-            "opensquilla and opensquilla-tui-host versions must match exactly: "
+            "openstarry-code and openstarry-code-tui-host versions must match exactly: "
             f"{product_version!r} != {companion_version!r}"
         )
 
     output_dir = args.output_dir.resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
-    with tempfile.TemporaryDirectory(prefix="opensquilla-tui-host-") as temp:
+    with tempfile.TemporaryDirectory(prefix="openstarry-code-tui-host-") as temp:
         staging = Path(temp) / "project"
         shutil.copytree(COMPANION_PROJECT, staging)
-        package_dir = staging / "src" / "opensquilla_tui_host"
+        package_dir = staging / "src" / "openstarry_code_tui_host"
         executable_name = (
-            "opensquilla-tui-host.exe" if target_platform == "win32" else "opensquilla-tui-host"
+            "openstarry-code-tui-host.exe"
+            if target_platform == "win32"
+            else "openstarry-code-tui-host"
         )
         executable = package_dir / "bin" / executable_name
         executable.parent.mkdir(parents=True)

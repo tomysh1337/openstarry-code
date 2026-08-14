@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from opensquilla.tools.builtin.code_exec import _append_code_exec_sandbox_network_hint
-from opensquilla.tools.builtin.shell import (
+from openstarry_code.tools.builtin.code_exec import _append_code_exec_sandbox_network_hint
+from openstarry_code.tools.builtin.shell import (
     _SANDBOX_NETWORK_DISABLED_HINT,
     _SANDBOX_NETWORK_HINT,
     _append_sandbox_network_hint,
@@ -29,8 +29,8 @@ def test_sandbox_network_hint_is_not_duplicated() -> None:
 
 
 def test_sandbox_network_hint_names_disabled_network_default(tmp_path) -> None:
-    from opensquilla.sandbox.config import SandboxSettings
-    from opensquilla.sandbox.integration import configure_runtime, reset_runtime
+    from openstarry_code.sandbox.config import SandboxSettings
+    from openstarry_code.sandbox.integration import configure_runtime, reset_runtime
 
     configure_runtime(
         SandboxSettings(

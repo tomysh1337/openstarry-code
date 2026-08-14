@@ -9,7 +9,7 @@ import pytest
 
 
 def test_setup_status_payload_defaults_to_not_setup() -> None:
-    from opensquilla.sandbox.setup_state import SandboxSetupState, setup_status_payload
+    from openstarry_code.sandbox.setup_state import SandboxSetupState, setup_status_payload
 
     payload = setup_status_payload(SandboxSetupState.NOT_SETUP, platform="win32")
 
@@ -22,7 +22,7 @@ def test_setup_status_payload_defaults_to_not_setup() -> None:
 
 
 def test_linux_setup_does_not_require_admin() -> None:
-    from opensquilla.sandbox.setup_state import SandboxSetupState, setup_status_payload
+    from openstarry_code.sandbox.setup_state import SandboxSetupState, setup_status_payload
 
     payload = setup_status_payload(SandboxSetupState.READY, platform="linux")
 
@@ -31,7 +31,7 @@ def test_linux_setup_does_not_require_admin() -> None:
 
 
 async def test_platform_setup_dispatches_windows(monkeypatch) -> None:
-    from opensquilla.sandbox import setup_state
+    from openstarry_code.sandbox import setup_state
 
     calls = []
 
@@ -54,7 +54,7 @@ async def test_platform_setup_dispatches_windows(monkeypatch) -> None:
 
 
 async def test_macos_setup_status_reports_seatbelt_ready(monkeypatch) -> None:
-    from opensquilla.sandbox import setup_state
+    from openstarry_code.sandbox import setup_state
 
     monkeypatch.setattr(setup_state.sys, "platform", "darwin")
     monkeypatch.setattr(setup_state, "_macos_seatbelt_available", lambda: True)
@@ -71,7 +71,7 @@ async def test_macos_setup_status_reports_seatbelt_ready(monkeypatch) -> None:
 
 
 async def test_macos_setup_status_reports_missing_seatbelt(monkeypatch) -> None:
-    from opensquilla.sandbox import setup_state
+    from openstarry_code.sandbox import setup_state
 
     monkeypatch.setattr(setup_state.sys, "platform", "darwin")
     monkeypatch.setattr(setup_state, "_macos_seatbelt_available", lambda: False)
@@ -85,7 +85,7 @@ async def test_macos_setup_status_reports_missing_seatbelt(monkeypatch) -> None:
 
 
 async def test_windows_setup_status_reports_windows_default_ready(monkeypatch) -> None:
-    from opensquilla.sandbox import setup_state
+    from openstarry_code.sandbox import setup_state
 
     monkeypatch.setattr(setup_state.sys, "platform", "win32")
     monkeypatch.setattr(
@@ -113,8 +113,8 @@ async def test_ensure_windows_setup_repairs_missing_network_boundary(
     monkeypatch,
     tmp_path,
 ) -> None:
-    from opensquilla.sandbox import setup_state
-    from opensquilla.sandbox.backend.windows_default_network import (
+    from openstarry_code.sandbox import setup_state
+    from openstarry_code.sandbox.backend.windows_default_network import (
         FIREWALL_RULE_VERSION,
         WFP_RULE_VERSION,
         WindowsNetworkSetup,
@@ -162,7 +162,7 @@ async def test_ensure_windows_setup_requires_admin_before_mutating(
     monkeypatch,
     tmp_path,
 ) -> None:
-    from opensquilla.sandbox import setup_state
+    from openstarry_code.sandbox import setup_state
 
     marker = tmp_path / "setup_marker.json"
     calls = []
@@ -218,7 +218,7 @@ async def test_ensure_windows_setup_keeps_event_loop_responsive_during_elevation
     monkeypatch,
     tmp_path,
 ) -> None:
-    from opensquilla.sandbox import setup_state
+    from openstarry_code.sandbox import setup_state
 
     marker = tmp_path / "setup_marker.json"
 
@@ -271,7 +271,7 @@ async def test_ensure_windows_setup_reports_elevated_helper_failure(
     monkeypatch,
     tmp_path,
 ) -> None:
-    from opensquilla.sandbox import setup_state
+    from openstarry_code.sandbox import setup_state
 
     marker = tmp_path / "setup_marker.json"
 
@@ -307,7 +307,7 @@ async def test_ensure_windows_setup_reports_elevated_helper_failure(
 async def test_windows_setup_status_reports_windows_default_not_setup(
     monkeypatch,
 ) -> None:
-    from opensquilla.sandbox import setup_state
+    from openstarry_code.sandbox import setup_state
 
     monkeypatch.setattr(setup_state.sys, "platform", "win32")
     monkeypatch.setattr(
@@ -334,8 +334,8 @@ async def test_windows_setup_repairs_stale_offline_identity(
     monkeypatch,
     tmp_path,
 ) -> None:
-    from opensquilla.sandbox import setup_state
-    from opensquilla.sandbox.backend.windows_default_network import (
+    from openstarry_code.sandbox import setup_state
+    from openstarry_code.sandbox.backend.windows_default_network import (
         FIREWALL_RULE_VERSION,
         WFP_RULE_VERSION,
         WindowsNetworkSetup,
@@ -395,7 +395,7 @@ async def test_windows_setup_repairs_unwritable_persistent_storage(
     monkeypatch,
     tmp_path,
 ) -> None:
-    from opensquilla.sandbox import setup_state
+    from openstarry_code.sandbox import setup_state
 
     marker = tmp_path / "setup_marker.json"
     probes = iter(
@@ -444,8 +444,8 @@ async def test_ensure_windows_setup_writes_marker_when_windows_checks_are_ready(
     monkeypatch,
     tmp_path,
 ) -> None:
-    from opensquilla.sandbox import setup_state
-    from opensquilla.sandbox.backend.windows_default_network import (
+    from openstarry_code.sandbox import setup_state
+    from openstarry_code.sandbox.backend.windows_default_network import (
         FIREWALL_RULE_VERSION,
         WFP_RULE_VERSION,
         WindowsNetworkSetup,
@@ -491,7 +491,7 @@ async def test_ensure_windows_setup_writes_marker_when_windows_checks_are_ready(
 
 
 def test_windows_setup_status_reports_network_ready(monkeypatch) -> None:
-    from opensquilla.sandbox import setup_state
+    from openstarry_code.sandbox import setup_state
 
     monkeypatch.setattr(
         setup_state,
@@ -513,15 +513,15 @@ def test_windows_setup_status_reports_network_ready(monkeypatch) -> None:
 
 
 def test_windows_setup_support_uses_marker_proxy_ports(monkeypatch, tmp_path) -> None:
-    from opensquilla.sandbox import setup_state
-    from opensquilla.sandbox.backend import windows_default_setup as setup_marker_mod
-    from opensquilla.sandbox.backend import windows_default_support as support_mod
-    from opensquilla.sandbox.backend.windows_default_network import (
+    from openstarry_code.sandbox import setup_state
+    from openstarry_code.sandbox.backend import windows_default_setup as setup_marker_mod
+    from openstarry_code.sandbox.backend import windows_default_support as support_mod
+    from openstarry_code.sandbox.backend.windows_default_network import (
         FIREWALL_RULE_VERSION,
         WFP_RULE_VERSION,
         WindowsNetworkSetup,
     )
-    from opensquilla.sandbox.backend.windows_default_setup import write_setup_marker
+    from openstarry_code.sandbox.backend.windows_default_setup import write_setup_marker
 
     marker = tmp_path / "setup_marker.json"
     write_setup_marker(
@@ -551,8 +551,8 @@ def test_windows_setup_support_uses_marker_proxy_ports(monkeypatch, tmp_path) ->
 
 @pytest.mark.asyncio
 async def test_ensure_windows_setup_records_network_marker(monkeypatch, tmp_path) -> None:
-    from opensquilla.sandbox import setup_state as mod
-    from opensquilla.sandbox.backend.windows_default_network import (
+    from openstarry_code.sandbox import setup_state as mod
+    from openstarry_code.sandbox.backend.windows_default_network import (
         FIREWALL_RULE_VERSION,
         WFP_RULE_VERSION,
         WindowsNetworkSetup,

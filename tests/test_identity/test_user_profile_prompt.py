@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from opensquilla.identity.prompt import assemble_system_prompt
-from opensquilla.identity.types import AgentProfile
+from openstarry_code.identity.prompt import assemble_system_prompt
+from openstarry_code.identity.types import AgentProfile
 
 
 def test_default_user_template_names_profile_fields() -> None:
-    template = Path("src/opensquilla/identity/templates/bootstrap/USER.md").read_text(
+    template = Path("src/openstarry_code/identity/templates/bootstrap/USER.md").read_text(
         encoding="utf-8"
     )
 
@@ -22,7 +22,7 @@ def test_default_user_template_names_profile_fields() -> None:
 
 
 def test_default_bootstrap_templates_define_distinct_file_roles() -> None:
-    template_dir = Path("src/opensquilla/identity/templates/bootstrap")
+    template_dir = Path("src/openstarry_code/identity/templates/bootstrap")
 
     agents = (template_dir / "AGENTS.md").read_text(encoding="utf-8")
     soul = (template_dir / "SOUL.md").read_text(encoding="utf-8")
@@ -145,7 +145,7 @@ def test_system_prompt_describes_managed_execution_run_mode() -> None:
         runtime_info={
             "os": "Windows",
             "shell": "powershell",
-            "workspace_dir": r"C:\OpenSquilla\workspace",
+            "workspace_dir": r"C:\OpenStarry Code\workspace",
             "run_mode": "trusted",
             "run_mode_label": "Managed Execution",
         },
@@ -476,7 +476,7 @@ def test_headless_source_edit_prompt_is_source_edit_focused() -> None:
     assert "Working directory: /testbed" in prompt
     assert "## Product Identity" not in prompt
     assert "## Tool Call Style" not in prompt
-    assert "## OpenSquilla CLI Quick Reference" not in prompt
+    assert "## OpenStarry Code CLI Quick Reference" not in prompt
     assert "## Runtime" not in prompt
 
 

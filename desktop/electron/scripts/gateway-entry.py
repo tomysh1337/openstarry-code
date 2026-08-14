@@ -29,22 +29,22 @@ if __name__ == "__main__":
         raise SystemExit(_run_desktop_ca_probe())
 
     if sys.argv[1:] == [_SANDBOX_FILESYSTEM_WORKER_ARG]:
-        from opensquilla.sandbox.runtime_launcher import dispatch_internal_child
+        from openstarry_code.sandbox.runtime_launcher import dispatch_internal_child
 
         raise SystemExit(dispatch_internal_child(["filesystem-worker", "-"]))
 
     if len(sys.argv) >= 3 and sys.argv[1] == _INTERNAL_CHILD_ARG:
-        from opensquilla.sandbox.runtime_launcher import dispatch_internal_child
+        from openstarry_code.sandbox.runtime_launcher import dispatch_internal_child
 
         raise SystemExit(dispatch_internal_child(sys.argv[2:]))
 
     if len(sys.argv) == 3 and sys.argv[1] == "--elevated-helper":
-        from opensquilla.sandbox.backend.windows_default_setup import (
+        from openstarry_code.sandbox.backend.windows_default_setup import (
             elevated_setup_helper_main,
         )
 
         raise SystemExit(elevated_setup_helper_main(sys.argv[1:]))
 
-    from opensquilla.cli.main import app
+    from openstarry_code.cli.main import app
 
     app()

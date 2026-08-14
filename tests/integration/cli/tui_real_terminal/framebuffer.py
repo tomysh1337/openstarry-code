@@ -26,7 +26,7 @@ RAIL_EDGE_FRAGMENTS = (
     "ROUTING",
     "OUTING",
 )
-WELCOME_HEADER = "OpenSquilla ·"
+WELCOME_HEADER = "OpenStarry Code ·"
 WELCOME_TAGLINE = "Build with your agent. Stay in the flow."
 WELCOME_READY_MARKER = "OPEN_SQUILLA_TUI_READY"
 WELCOME_BLOCK_MIN_COLUMNS = 100
@@ -288,7 +288,7 @@ def opentui_framebuffer_violations(
     ]
     if len(fixed_header_locations) != 1:
         violations.append(
-            "fixed-header: expected exactly one OpenSquilla identity header, "
+            "fixed-header: expected exactly one OpenStarry Code identity header, "
             f"found {fixed_header_locations}"
         )
     composer_placeholders = ("send a message", "steer current turn · Tab queues")
@@ -522,12 +522,12 @@ def _welcome_identity_violations(
             )
     else:
         # The plain geometric fallback renders the wordmark as text. Exclude
-        # the fixed header's ``OpenSquilla ·`` occurrence and require one
+        # the fixed header's ``OpenStarry Code ·`` occurrence and require one
         # remaining wordmark in the transcript.
         plain_logo_locations = [
             (row_index, match.start())
             for row_index, row in enumerate(rows[: geometry.footer_top])
-            for match in re.finditer("OpenSquilla", row)
+            for match in re.finditer("OpenStarry Code", row)
             if not row[match.end() :].startswith(" ·")
         ]
         if len(plain_logo_locations) != 1:

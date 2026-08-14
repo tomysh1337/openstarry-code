@@ -1,5 +1,5 @@
 """The multi-level settings entry points: the `onboard configure` section hub
-and the re-run fork in `opensquilla onboard`.
+and the re-run fork in `openstarry-code onboard`.
 
 Contract under test:
 - Bare `configure` on a TTY is a menu LOOP (edit a section, come back, Done
@@ -24,11 +24,11 @@ from typing import Any
 
 import pytest
 
-from opensquilla.onboarding import flow
-from opensquilla.onboarding.config_store import PersistResult, load_config, persist_config
-from opensquilla.onboarding.errors import UserCancelledError
-from opensquilla.onboarding.flow import OnboardOptions
-from opensquilla.onboarding.mutations import upsert_llm_provider
+from openstarry_code.onboarding import flow
+from openstarry_code.onboarding.config_store import PersistResult, load_config, persist_config
+from openstarry_code.onboarding.errors import UserCancelledError
+from openstarry_code.onboarding.flow import OnboardOptions
+from openstarry_code.onboarding.mutations import upsert_llm_provider
 
 
 class _Answer:
@@ -456,13 +456,13 @@ def test_restore_reset_backup_keeps_a_newly_persisted_config(tmp_path):
 
 
 def test_start_fresh_pins_the_cwd_resolved_config_path(tmp_path, monkeypatch):
-    """After the backup renames a cwd-resolved ./opensquilla.toml away, the
+    """After the backup renames a cwd-resolved ./openstarry-code.toml away, the
     rest of the reset walk must keep operating on THAT file: a dynamic
     re-resolve would fall through to the HOME config — seeding the "fresh"
     walk from a stale file and overwriting one the confirmation never named."""
     proj = tmp_path / "proj"
     proj.mkdir()
-    proj_config = proj / "opensquilla.toml"
+    proj_config = proj / "openstarry-code.toml"
     _seed_configured_install(proj_config)
     original_project_config = proj_config.read_text()
 
@@ -476,8 +476,8 @@ def test_start_fresh_pins_the_cwd_resolved_config_path(tmp_path, monkeypatch):
     stale_raw = stale_home_config.read_text()
 
     monkeypatch.chdir(proj)
-    monkeypatch.delenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", raising=False)
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.delenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", raising=False)
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
     monkeypatch.setattr(flow, "_is_tty", lambda: True)
     monkeypatch.setattr(flow, "_wait_for_setup_start", lambda: None)
     monkeypatch.setattr(flow, "_ensure_config_dir_writable", lambda _path: None)
@@ -517,13 +517,13 @@ def test_start_fresh_pins_the_cwd_resolved_config_path(tmp_path, monkeypatch):
     # Cancel restored the project config; the home config was never touched.
     assert proj_config.read_text() == original_project_config
     assert stale_home_config.read_text() == stale_raw
-    assert list(proj.glob("opensquilla.toml.backup.*")) == []
+    assert list(proj.glob("openstarry-code.toml.backup.*")) == []
 
 
 def test_onboard_fork_hub_exit_without_changes_does_not_rewrite_config(
     tmp_path, monkeypatch
 ):
-    """`opensquilla onboard` -> "Change specific sections" -> "Exit (nothing
+    """`openstarry-code onboard` -> "Change specific sections" -> "Exit (nothing
     changed)" is an explicit no-op: it must not persist_config over a
     hand-maintained config.toml (stripping comments, normalizing key order,
     bumping the mtime, forcing mode 0600)."""

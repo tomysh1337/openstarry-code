@@ -3,8 +3,8 @@ from __future__ import annotations
 from collections.abc import AsyncIterator, Callable
 from contextlib import asynccontextmanager
 
-from opensquilla.cli.tui.contracts import TuiOutputHandle
-from opensquilla.engine.commands import Surface
+from openstarry_code.cli.tui.contracts import TuiOutputHandle
+from openstarry_code.engine.commands import Surface
 
 
 class _OutputHandle:
@@ -31,7 +31,7 @@ class _SurfaceWithoutOutput:
 
 
 def test_tui_output_binding_owns_scope_storage() -> None:
-    from opensquilla.cli.tui.output_binding import TuiOutputBinding
+    from openstarry_code.cli.tui.output_binding import TuiOutputBinding
 
     scope: dict[str, object] = {}
     output_handle = _OutputHandle()
@@ -50,7 +50,7 @@ def test_tui_output_binding_owns_scope_storage() -> None:
 
 
 def test_tui_output_binding_exposes_typed_surface_handle_only() -> None:
-    from opensquilla.cli.tui.output_binding import TuiOutputBinding
+    from openstarry_code.cli.tui.output_binding import TuiOutputBinding
 
     scope: dict[str, object] = {}
     output_handle = _OutputHandle()

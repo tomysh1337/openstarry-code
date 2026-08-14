@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from opensquilla.sandbox.capability_profile import (
+from openstarry_code.sandbox.capability_profile import (
     Capability,
     Confidence,
     NetworkIntent,

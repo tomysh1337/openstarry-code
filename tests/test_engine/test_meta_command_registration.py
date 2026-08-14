@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from opensquilla.engine.commands import DEFAULT_REGISTRY, Surface
+from openstarry_code.engine.commands import DEFAULT_REGISTRY, Surface
 
 
 def test_meta_command_present_on_gateway_backed_surfaces() -> None:

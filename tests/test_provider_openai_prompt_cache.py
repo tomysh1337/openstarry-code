@@ -6,9 +6,9 @@ from typing import Any
 
 import httpx
 
-from opensquilla.provider import openai as openai_module
-from opensquilla.provider.openai import OpenAIProvider
-from opensquilla.provider.types import ChatConfig, DoneEvent, Message
+from openstarry_code.provider import openai as openai_module
+from openstarry_code.provider.openai import OpenAIProvider
+from openstarry_code.provider.types import ChatConfig, DoneEvent, Message
 
 
 def _openai_sse_body() -> bytes:
@@ -48,7 +48,7 @@ def _patch_openai_transport(monkeypatch, captured: dict[str, Any]) -> None:
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client)
 
 
 def _collect_done(provider: OpenAIProvider, cfg: ChatConfig) -> DoneEvent:
@@ -96,7 +96,7 @@ def test_openrouter_anthropic_auto_cache_adds_top_level_cache_control(monkeypatc
     assert done.cached_tokens == 5
     headers = captured["headers"]
     assert headers["HTTP-Referer"] == "https://opensquilla.ai"
-    assert headers["X-Title"] == "OpenSquilla"
+    assert headers["X-Title"] == "OpenStarry Code"
     payload = captured["payload"]
     assert payload["cache_control"] == {"type": "ephemeral"}
     system_message = payload["messages"][0]

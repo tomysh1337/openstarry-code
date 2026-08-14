@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from opensquilla.paths import media_root_from_config
+from openstarry_code.paths import media_root_from_config
 
 
 class _Config:
@@ -14,10 +14,10 @@ class _Config:
 def test_default_media_root_uses_opensquilla_home_not_cwd(
     monkeypatch, tmp_path: Path
 ) -> None:
-    home = tmp_path / "home" / ".opensquilla"
+    home = tmp_path / "home" / ".openstarry-code"
     long_cwd = tmp_path / ("nested-" + "x" * 24) / ("worktree-" + "y" * 24)
     long_cwd.mkdir(parents=True)
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
     monkeypatch.chdir(long_cwd)
 
     assert media_root_from_config(_Config()) == home / "media"

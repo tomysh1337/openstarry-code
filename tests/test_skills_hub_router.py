@@ -4,9 +4,9 @@ from typing import Any
 
 import pytest
 
-from opensquilla.skills.hub.contracts import DiagnosticPhase
-from opensquilla.skills.hub.router import SourceRouter
-from opensquilla.skills.hub.source import (
+from openstarry_code.skills.hub.contracts import DiagnosticPhase
+from openstarry_code.skills.hub.router import SourceRouter
+from openstarry_code.skills.hub.source import (
     SkillBundle,
     SkillMeta,
     SkillSourceFetchError,

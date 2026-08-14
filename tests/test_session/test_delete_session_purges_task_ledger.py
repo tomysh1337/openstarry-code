@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
-from opensquilla.session.models import (
+from openstarry_code.session.models import (
     AgentTaskRecord,
     AgentTaskStatus,
     MemoryDurableReceipt,
     SessionNode,
 )
-from opensquilla.session.storage import SessionStorage
+from openstarry_code.session.storage import SessionStorage
 
 KEY = "agent:main:webchat:default"
 

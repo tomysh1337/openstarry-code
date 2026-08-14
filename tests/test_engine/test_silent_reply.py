@@ -6,7 +6,7 @@ import json
 
 import pytest
 
-from opensquilla.engine.silent_reply import (
+from openstarry_code.engine.silent_reply import (
     HEARTBEAT_ACK_TOKEN,
     NO_REPLY_TOKEN,
     is_silent_reply_prefix,

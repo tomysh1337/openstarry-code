@@ -7,9 +7,9 @@ from datetime import UTC, datetime, timedelta
 
 import pytest
 
-from opensquilla.scheduler.engine import SchedulerEngine
-from opensquilla.scheduler.persistence import JobStore
-from opensquilla.scheduler.types import (
+from openstarry_code.scheduler.engine import SchedulerEngine
+from openstarry_code.scheduler.persistence import JobStore
+from openstarry_code.scheduler.types import (
     CronJob,
     JobStatus,
     ManualRunStatus,

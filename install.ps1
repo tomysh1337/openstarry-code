@@ -1,4 +1,4 @@
-# install.ps1 - OpenSquilla release installer for Windows PowerShell.
+# install.ps1 - OpenStarry Code release installer for Windows PowerShell.
 #
 # This script installs uv if needed, installs a release wheel with uv tool, then
 # prints the explicit next steps. It does not run onboarding or start the gateway.
@@ -13,10 +13,10 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 $defaultVersion = 'v0.5.3'
-$repoSlug = if ($env:OPENSQUILLA_REPOSITORY) { $env:OPENSQUILLA_REPOSITORY } else { 'opensquilla/opensquilla' }
-$pythonVersion = if ($env:OPENSQUILLA_PYTHON_VERSION) { $env:OPENSQUILLA_PYTHON_VERSION } else { '3.12' }
+$repoSlug = if ($env:OPENSTARRY_CODE_REPOSITORY) { $env:OPENSTARRY_CODE_REPOSITORY } else { 'tomysh1337/openstarry-code' }
+$pythonVersion = if ($env:OPENSTARRY_CODE_PYTHON_VERSION) { $env:OPENSTARRY_CODE_PYTHON_VERSION } else { '3.12' }
 $originalPath = if ($env:Path) { $env:Path } else { '' }
-$dryRun = $env:OPENSQUILLA_INSTALL_DRY_RUN -eq '1'
+$dryRun = $env:OPENSTARRY_CODE_INSTALL_DRY_RUN -eq '1'
 $script:isWindowsHost = if (Get-Variable IsWindows -ErrorAction SilentlyContinue) {
     $IsWindows
 } else {
@@ -24,13 +24,13 @@ $script:isWindowsHost = if (Get-Variable IsWindows -ErrorAction SilentlyContinue
 }
 
 if (-not $Version) {
-    $Version = if ($env:OPENSQUILLA_VERSION) { $env:OPENSQUILLA_VERSION } else { $defaultVersion }
+    $Version = if ($env:OPENSTARRY_CODE_VERSION) { $env:OPENSTARRY_CODE_VERSION } else { $defaultVersion }
 }
 
 $profileName = if ($Profile) {
     $Profile
-} elseif ($env:OPENSQUILLA_INSTALL_PROFILE) {
-    $env:OPENSQUILLA_INSTALL_PROFILE
+} elseif ($env:OPENSTARRY_CODE_INSTALL_PROFILE) {
+    $env:OPENSTARRY_CODE_INSTALL_PROFILE
 } else {
     'recommended'
 }
@@ -60,8 +60,8 @@ function Split-InstallExtras {
 }
 
 $extraInputs = @()
-if ($env:OPENSQUILLA_INSTALL_EXTRAS) {
-    $extraInputs += $env:OPENSQUILLA_INSTALL_EXTRAS
+if ($env:OPENSTARRY_CODE_INSTALL_EXTRAS) {
+    $extraInputs += $env:OPENSTARRY_CODE_INSTALL_EXTRAS
 }
 $extraInputs += $Extras
 $installExtras = @(Split-InstallExtras $extraInputs)
@@ -76,16 +76,16 @@ switch ($profileName) {
     'minimal' { $profileName = 'core'; $targetExtras = @() }
     'recommended' { $targetExtras = @('recommended') }
     default {
-        Write-Error "install.ps1: unsupported OPENSQUILLA_INSTALL_PROFILE='$profileName'. Supported profiles: core, recommended."
+        Write-Error "install.ps1: unsupported OPENSTARRY_CODE_INSTALL_PROFILE='$profileName'. Supported profiles: core, recommended."
         exit 1
     }
 }
 
 $targetExtras += $installExtras
 $packageName = if ($targetExtras.Count -gt 0) {
-    "opensquilla[$($targetExtras -join ',')]"
+    "openstarry-code[$($targetExtras -join ',')]"
 } else {
-    'opensquilla'
+    'openstarry-code'
 }
 
 function Test-ReleaseVersion {
@@ -94,14 +94,14 @@ function Test-ReleaseVersion {
 }
 
 if ($Version -notin @('latest', 'stable') -and -not (Test-ReleaseVersion $Version)) {
-    Write-Error "install.ps1: unsupported OPENSQUILLA_VERSION='$Version'. The release installer only supports latest, stable, or release versions like v0.5.3. Use git clone plus scripts/install_source.ps1 for main, dev, branch, or source installs."
+    Write-Error "install.ps1: unsupported OPENSTARRY_CODE_VERSION='$Version'. The release installer only supports latest, stable, or release versions like v0.5.3. Use git clone plus scripts/install_source.ps1 for main, dev, branch, or source installs."
     exit 1
 }
 
 switch -Regex ($Version) {
     '^(latest|stable)$' {
         try {
-            $latest = Invoke-RestMethod -Uri "https://api.github.com/repos/$repoSlug/releases/latest" -Headers @{ 'User-Agent' = 'OpenSquilla installer' }
+            $latest = Invoke-RestMethod -Uri "https://api.github.com/repos/$repoSlug/releases/latest" -Headers @{ 'User-Agent' = 'OpenStarry Code installer' }
         } catch {
             Write-Error "install.ps1: failed to resolve latest release for $repoSlug. $($_.Exception.Message)"
             exit 1
@@ -112,20 +112,20 @@ switch -Regex ($Version) {
             exit 1
         }
         $releaseVersion = if ($releaseTag.StartsWith('v')) { $releaseTag.Substring(1) } else { $releaseTag }
-        $wheelUrl = "https://github.com/$repoSlug/releases/download/$releaseTag/opensquilla-$releaseVersion-py3-none-any.whl"
+        $wheelUrl = "https://github.com/$repoSlug/releases/download/$releaseTag/openstarry_code-$releaseVersion-py3-none-any.whl"
         $displayVersion = $releaseTag
         break
     }
     '^v' {
         $releaseVersion = $Version.Substring(1)
-        $wheelUrl = "https://github.com/$repoSlug/releases/download/$Version/opensquilla-$releaseVersion-py3-none-any.whl"
+        $wheelUrl = "https://github.com/$repoSlug/releases/download/$Version/openstarry_code-$releaseVersion-py3-none-any.whl"
         $displayVersion = $Version
         break
     }
     default {
         $releaseVersion = $Version
         $releaseTag = "v$releaseVersion"
-        $wheelUrl = "https://github.com/$repoSlug/releases/download/$releaseTag/opensquilla-$releaseVersion-py3-none-any.whl"
+        $wheelUrl = "https://github.com/$repoSlug/releases/download/$releaseTag/openstarry_code-$releaseVersion-py3-none-any.whl"
         $displayVersion = $releaseTag
     }
 }
@@ -188,8 +188,8 @@ function Install-WindowsVCRedistIfNeeded {
     if (-not $script:isWindowsHost -or $profileName -ne 'recommended') {
         return
     }
-    if ($env:OPENSQUILLA_SKIP_VC_REDIST -eq '1') {
-        Write-Host 'install.ps1: skipping Microsoft Visual C++ Redistributable check because OPENSQUILLA_SKIP_VC_REDIST=1.'
+    if ($env:OPENSTARRY_CODE_SKIP_VC_REDIST -eq '1') {
+        Write-Host 'install.ps1: skipping Microsoft Visual C++ Redistributable check because OPENSTARRY_CODE_SKIP_VC_REDIST=1.'
         return
     }
     if (Test-WindowsVCRedistInstalled) {
@@ -218,15 +218,15 @@ function Install-WindowsVCRedistIfNeeded {
         Write-Warning "install.ps1: winget could not install Microsoft Visual C++ Redistributable (exit $LASTEXITCODE)."
     }
 
-    Write-Warning 'OpenSquilla: Microsoft Visual C++ Redistributable 2015-2022 x64 is required for the bundled ONNX router.'
-    Write-Warning 'OpenSquilla can still start with safe router fallback, but bundled ONNX model routing is disabled until this runtime is installed.'
+    Write-Warning 'OpenStarry Code: Microsoft Visual C++ Redistributable 2015-2022 x64 is required for the bundled ONNX router.'
+    Write-Warning 'OpenStarry Code can still start with safe router fallback, but bundled ONNX model routing is disabled until this runtime is installed.'
     Write-Warning "If automatic installation fails, install it manually: $redistUrl"
-    Write-Warning 'After installing, reopen PowerShell and restart OpenSquilla.'
+    Write-Warning 'After installing, reopen PowerShell and restart OpenStarry Code.'
 }
 
 if ($dryRun) {
-    Write-Host "install.ps1: dry-run - would install OpenSquilla $displayVersion"
-    Write-Host "install.ps1: dry-run - would run: uv tool install --python $pythonVersion --force --reinstall-package opensquilla `"$installSpec`""
+    Write-Host "install.ps1: dry-run - would install OpenStarry Code $displayVersion"
+    Write-Host "install.ps1: dry-run - would run: uv tool install --python $pythonVersion --force --reinstall-package openstarry-code `"$installSpec`""
     exit 0
 }
 
@@ -243,8 +243,8 @@ if (-not $uvBin) {
 
 Install-WindowsVCRedistIfNeeded
 
-Write-Host "install.ps1: installing OpenSquilla $displayVersion ($profileName)"
-& $uvBin tool install --python $pythonVersion --force --reinstall-package opensquilla $installSpec
+Write-Host "install.ps1: installing OpenStarry Code $displayVersion ($profileName)"
+& $uvBin tool install --python $pythonVersion --force --reinstall-package openstarry-code $installSpec
 if ($LASTEXITCODE -ne 0) {
     Write-Error "install.ps1: install command failed with exit code $LASTEXITCODE."
     exit $LASTEXITCODE
@@ -257,9 +257,9 @@ try {
     $toolBinDir = ''
 }
 
-# Write an install receipt to aid `opensquilla uninstall`. Best-effort.
+# Write an install receipt to aid `openstarry-code uninstall`. Best-effort.
 try {
-    $receiptHome = if ($env:OPENSQUILLA_STATE_DIR) { $env:OPENSQUILLA_STATE_DIR } else { Join-Path $HOME '.opensquilla' }
+    $receiptHome = if ($env:OPENSTARRY_CODE_STATE_DIR) { $env:OPENSTARRY_CODE_STATE_DIR } else { Join-Path $HOME '.openstarry-code' }
     $toolDir = ''
     try { $toolDir = (& $uvBin tool dir 2>$null).Trim() } catch { $toolDir = '' }
     New-Item -ItemType Directory -Force -Path $receiptHome | Out-Null
@@ -267,8 +267,8 @@ try {
         version        = 1
         install_method = 'uv-tool'
         installed_at   = (Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ')
-        entrypoints    = @("$toolBinDir/opensquilla", "$toolBinDir/gateway")
-        owned_paths    = @("$toolDir/opensquilla", "$toolBinDir/opensquilla", "$toolBinDir/gateway")
+        entrypoints    = @("$toolBinDir/openstarry-code", "$toolBinDir/gateway")
+        owned_paths    = @("$toolDir/openstarry-code", "$toolBinDir/openstarry-code", "$toolBinDir/gateway")
         data_root      = $receiptHome
     }
     $receipt | ConvertTo-Json | Set-Content -Path (Join-Path $receiptHome 'install-receipt.json') -Encoding utf8
@@ -278,11 +278,11 @@ try {
 
 @"
 ----------------------------------------------------------------------------
-OpenSquilla installed from $displayVersion.
+OpenStarry Code installed from $displayVersion.
 
 Next steps:
-  opensquilla onboard
-  opensquilla gateway run
+  openstarry-code onboard
+  openstarry-code gateway run
 
 Default gateway bind: 127.0.0.1:18791 (loopback only).
 Do not expose the gateway on 0.0.0.0 unless it is behind a trusted reverse
@@ -294,7 +294,7 @@ if ($toolBinDir -and -not (($originalPath -split ';') -contains $toolBinDir)) {
     @"
 
 PATH note:
-  Your current PowerShell may not find 'opensquilla' until PATH is refreshed.
+  Your current PowerShell may not find 'openstarry-code' until PATH is refreshed.
   Run this command, then retry the next steps:
 
     `$env:Path = "$toolBinDir;" + `$env:Path

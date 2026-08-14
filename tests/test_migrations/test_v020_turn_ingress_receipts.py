@@ -9,7 +9,7 @@ from pathlib import Path
 import pytest
 from yoyo import get_backend, read_migrations
 
-from opensquilla.persistence.migrator import (
+from openstarry_code.persistence.migrator import (
     SchemaAheadError,
     apply_pending,
     assert_schema_not_ahead,

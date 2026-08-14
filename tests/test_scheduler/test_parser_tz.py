@@ -11,12 +11,12 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.scheduler.jobs import _next_run
-from opensquilla.scheduler.ops import SchedulerOps
-from opensquilla.scheduler.parser import validate_tz
-from opensquilla.scheduler.payloads import make_agent_turn_payload
-from opensquilla.scheduler.persistence import JobStore
-from opensquilla.scheduler.types import CronJob, ScheduleKind, SessionTarget
+from openstarry_code.scheduler.jobs import _next_run
+from openstarry_code.scheduler.ops import SchedulerOps
+from openstarry_code.scheduler.parser import validate_tz
+from openstarry_code.scheduler.payloads import make_agent_turn_payload
+from openstarry_code.scheduler.persistence import JobStore
+from openstarry_code.scheduler.types import CronJob, ScheduleKind, SessionTarget
 
 # --- validate_tz ---------------------------------------------------------
 

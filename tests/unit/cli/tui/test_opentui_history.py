@@ -4,8 +4,8 @@ from typing import Any
 
 import pytest
 
-from opensquilla.cli.chat.session_state import ChatSessionState
-from opensquilla.cli.tui.opentui.history import (
+from openstarry_code.cli.chat.session_state import ChatSessionState
+from openstarry_code.cli.tui.opentui.history import (
     apply_bootstrap_to_state,
     history_replace_from_bootstrap,
     replace_tui_history,

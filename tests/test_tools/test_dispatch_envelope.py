@@ -5,22 +5,22 @@ import json
 
 import pytest
 
-from opensquilla.engine.tool_result_store import ToolResultStore
-from opensquilla.engine.types import ToolCall
-from opensquilla.gateway.approval_queue import get_approval_queue, reset_approval_queue
-from opensquilla.result_budget import (
+from openstarry_code.engine.tool_result_store import ToolResultStore
+from openstarry_code.engine.types import ToolCall
+from openstarry_code.gateway.approval_queue import get_approval_queue, reset_approval_queue
+from openstarry_code.result_budget import (
     DEFAULT_TOOL_RUN_BUDGET_POLICY,
     ToolResultBudgetPolicy,
     ToolRunBudgetExceededError,
     ToolRunBudgetPolicy,
     build_web_retrieval_tool_run_budget_policy,
 )
-from opensquilla.sandbox.elevation import ElevationAction, gate_elevated_action
-from opensquilla.tool_boundary import ToolContinuation
-from opensquilla.tools import dispatch as dispatch_module
-from opensquilla.tools.dispatch import build_tool_handler
-from opensquilla.tools.registry import ToolRegistry
-from opensquilla.tools.types import (
+from openstarry_code.sandbox.elevation import ElevationAction, gate_elevated_action
+from openstarry_code.tool_boundary import ToolContinuation
+from openstarry_code.tools import dispatch as dispatch_module
+from openstarry_code.tools.dispatch import build_tool_handler
+from openstarry_code.tools.registry import ToolRegistry
+from openstarry_code.tools.types import (
     CallerKind,
     InteractionMode,
     ToolContext,
@@ -815,7 +815,7 @@ async def test_dispatch_missing_write_file_path_can_include_supplied_argument_ke
 async def test_dispatch_missing_required_shape_guidance_can_be_enabled_by_env(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_MISSING_REQUIRED_ARGUMENT_SHAPE_GUIDANCE", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_MISSING_REQUIRED_ARGUMENT_SHAPE_GUIDANCE", "1")
     registry = ToolRegistry()
 
     async def write_file(path: str, content: str) -> str:
@@ -2877,7 +2877,7 @@ async def test_dispatch_marks_explicit_web_search_failure_and_replays_terminal_o
             tool_use_id="tc-search-terminal-first",
             tool_name="web_search",
             arguments={
-                "query": "  OpenSquilla   release ",
+                "query": "  OpenStarry Code   release ",
                 "provider": "tavily",
                 "max_results": 3,
             },
@@ -2888,7 +2888,7 @@ async def test_dispatch_marks_explicit_web_search_failure_and_replays_terminal_o
             tool_use_id="tc-search-terminal-replay",
             tool_name="web_search",
             arguments={
-                "query": "opensquilla release",
+                "query": "openstarry-code release",
                 "provider": "duckduckgo",
                 "max_results": 10,
             },
@@ -2985,7 +2985,7 @@ async def test_dispatch_terminal_search_cannot_be_replayed_via_web_discover() ->
             tool_use_id="tc-cross-tool-search",
             tool_name="web_search",
             arguments={
-                "query": " OpenSquilla release ",
+                "query": " OpenStarry Code release ",
                 "provider": "tavily",
                 "max_results": 3,
             },
@@ -2995,7 +2995,7 @@ async def test_dispatch_terminal_search_cannot_be_replayed_via_web_discover() ->
         ToolCall(
             tool_use_id="tc-cross-tool-discover",
             tool_name="web_discover",
-            arguments={"query": "opensquilla release", "max_results": 10},
+            arguments={"query": "openstarry-code release", "max_results": 10},
         )
     )
 
@@ -3053,7 +3053,7 @@ async def test_dispatch_returns_neutral_control_for_duplicate_search_in_flight()
                 tool_use_id="tc-search-inflight-active",
                 tool_name="web_search",
                 arguments={
-                    "query": "OpenSquilla",
+                    "query": "OpenStarry Code",
                     "provider": "tavily",
                     "max_results": 3,
                 },
@@ -3066,7 +3066,7 @@ async def test_dispatch_returns_neutral_control_for_duplicate_search_in_flight()
             tool_use_id="tc-search-inflight-duplicate",
             tool_name="web_search",
             arguments={
-                "query": " opensquilla ",
+                "query": " openstarry-code ",
                 "provider": "duckduckgo",
                 "max_results": 10,
             },
@@ -3129,7 +3129,7 @@ async def test_dispatch_terminal_search_ledger_isolated_by_turn_key() -> None:
                 ToolCall(
                     tool_use_id=tool_use_id,
                     tool_name="web_search",
-                    arguments={"query": "OpenSquilla"},
+                    arguments={"query": "OpenStarry Code"},
                 )
             )
         finally:

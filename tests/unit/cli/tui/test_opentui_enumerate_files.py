@@ -10,8 +10,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.cli.tui.opentui import completion
-from opensquilla.cli.tui.opentui.completion import enumerate_workspace_files
+from openstarry_code.cli.tui.opentui import completion
+from openstarry_code.cli.tui.opentui.completion import enumerate_workspace_files
 
 
 def _touch(path: Path) -> None:

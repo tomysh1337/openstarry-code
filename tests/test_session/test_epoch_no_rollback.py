@@ -16,9 +16,9 @@ import asyncio
 import pytest
 import pytest_asyncio
 
-from opensquilla.session.manager import SessionManager
-from opensquilla.session.models import SessionNode, TranscriptEntry
-from opensquilla.session.storage import SessionStorage, StaleEpochError
+from openstarry_code.session.manager import SessionManager
+from openstarry_code.session.models import SessionNode, TranscriptEntry
+from openstarry_code.session.storage import SessionStorage, StaleEpochError
 
 
 @pytest_asyncio.fixture

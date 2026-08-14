@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.sandbox.backend.windows_default_network import (
+from openstarry_code.sandbox.backend.windows_default_network import (
     blocked_loopback_tcp_remote_ports,
     network_proxy_env,
     proxy_ports_from_env,
@@ -88,7 +88,7 @@ def test_network_proxy_env_overrides_user_proxy_settings() -> None:
     assert env["GIT_CONFIG_COUNT"] == "1"
     assert env["GIT_CONFIG_KEY_0"] == "http.sslBackend"
     assert env["GIT_CONFIG_VALUE_0"] == "openssl"
-    assert env["OPENSQUILLA_SANDBOX_NETWORK"] == "proxy_allowlist"
+    assert env["OPENSTARRY_CODE_SANDBOX_NETWORK"] == "proxy_allowlist"
 
 
 def test_blocked_loopback_tcp_remote_ports_complements_allowed_ports() -> None:
@@ -100,12 +100,12 @@ def test_blocked_loopback_tcp_remote_ports_complements_allowed_ports() -> None:
 
 
 def test_setup_marker_round_trips_network_state(tmp_path: Path) -> None:
-    from opensquilla.sandbox.backend.windows_default_network import (
+    from openstarry_code.sandbox.backend.windows_default_network import (
         FIREWALL_RULE_VERSION,
         WFP_RULE_VERSION,
         WindowsNetworkSetup,
     )
-    from opensquilla.sandbox.backend.windows_default_setup import (
+    from openstarry_code.sandbox.backend.windows_default_setup import (
         read_setup_marker,
         write_setup_marker,
     )
@@ -127,7 +127,7 @@ def test_setup_marker_round_trips_network_state(tmp_path: Path) -> None:
 
 
 def test_legacy_firewall_marker_with_current_wfp_is_not_proxy_ready() -> None:
-    from opensquilla.sandbox.backend.windows_default_network import (
+    from openstarry_code.sandbox.backend.windows_default_network import (
         FIREWALL_RULE_VERSION,
         WFP_RULE_VERSION,
         WindowsNetworkSetup,
@@ -146,7 +146,7 @@ def test_legacy_firewall_marker_with_current_wfp_is_not_proxy_ready() -> None:
 
 
 def test_legacy_firewall_marker_with_local_binding_is_not_proxy_ready() -> None:
-    from opensquilla.sandbox.backend.windows_default_network import (
+    from openstarry_code.sandbox.backend.windows_default_network import (
         WFP_RULE_VERSION,
         WindowsNetworkSetup,
     )
@@ -163,7 +163,7 @@ def test_legacy_firewall_marker_with_local_binding_is_not_proxy_ready() -> None:
 
 
 def test_setup_marker_without_network_is_not_proxy_ready(tmp_path: Path) -> None:
-    from opensquilla.sandbox.backend.windows_default_setup import (
+    from openstarry_code.sandbox.backend.windows_default_setup import (
         setup_marker_proxy_allowlist_ready,
         write_setup_marker,
     )
@@ -175,7 +175,7 @@ def test_setup_marker_without_network_is_not_proxy_ready(tmp_path: Path) -> None
 
 
 def test_offline_username_fits_windows_local_user_limit() -> None:
-    from opensquilla.sandbox.backend.windows_default_setup import OFFLINE_USERNAME
+    from openstarry_code.sandbox.backend.windows_default_setup import OFFLINE_USERNAME
 
     assert len(OFFLINE_USERNAME) <= 20
 
@@ -184,11 +184,11 @@ def test_establish_windows_network_setup_passes_proxy_ports_to_wfp(
     monkeypatch,
     tmp_path: Path,
 ) -> None:
-    from opensquilla.sandbox.backend import (
+    from openstarry_code.sandbox.backend import (
         windows_default_firewall,
         windows_default_wfp,
     )
-    from opensquilla.sandbox.backend import (
+    from openstarry_code.sandbox.backend import (
         windows_default_setup as mod,
     )
 
@@ -227,7 +227,7 @@ def test_establish_windows_network_setup_passes_proxy_ports_to_wfp(
 
 
 def test_ensure_offline_sandbox_user_uses_configured_short_name(monkeypatch, tmp_path):
-    from opensquilla.sandbox.backend import windows_default_setup as mod
+    from openstarry_code.sandbox.backend import windows_default_setup as mod
 
     commands: list[str] = []
 
@@ -244,7 +244,7 @@ def test_ensure_offline_sandbox_user_uses_configured_short_name(monkeypatch, tmp
     monkeypatch.setattr(mod, "_generate_offline_user_password", lambda: "Password123!")
     monkeypatch.setattr(mod.subprocess, "run", fake_run)
     monkeypatch.setattr(
-        "opensquilla.sandbox.backend.windows_default_identity.protect_password",
+        "openstarry_code.sandbox.backend.windows_default_identity.protect_password",
         lambda password: f"protected:{password}",
     )
 
@@ -260,7 +260,7 @@ def test_run_elevated_setup_helper_launches_python_module_with_runas(
     monkeypatch,
     tmp_path,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_setup as mod
+    from openstarry_code.sandbox.backend import windows_default_setup as mod
 
     launched = {}
     marker = tmp_path / "setup_marker.json"
@@ -279,7 +279,7 @@ def test_run_elevated_setup_helper_launches_python_module_with_runas(
     mod.run_elevated_setup_helper(marker)
 
     assert launched["executable"] == r"C:\Python312\python.exe"
-    assert "-m opensquilla.sandbox.backend.windows_default_setup" in launched["parameters"]
+    assert "-m openstarry_code.sandbox.backend.windows_default_setup" in launched["parameters"]
     assert "--elevated-helper" in launched["parameters"]
     assert (Path(launched["directory"]) / "opensquilla").exists()
 
@@ -288,7 +288,7 @@ def test_run_elevated_setup_helper_launches_frozen_helper_without_python_module(
     monkeypatch,
     tmp_path,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_setup as mod
+    from openstarry_code.sandbox.backend import windows_default_setup as mod
 
     launched = {}
     marker = tmp_path / "setup_marker.json"
@@ -296,7 +296,7 @@ def test_run_elevated_setup_helper_launches_frozen_helper_without_python_module(
     monkeypatch.setattr(
         mod.sys,
         "executable",
-        r"C:\Program Files\OpenSquilla\opensquilla-gateway.exe",
+        r"C:\Program Files\OpenStarry Code\opensquilla-gateway.exe",
     )
     monkeypatch.setattr(mod.sys, "frozen", True, raising=False)
     monkeypatch.setattr(mod, "_current_windows_user_sid", lambda: "S-1-real")
@@ -317,7 +317,7 @@ def test_run_elevated_setup_helper_launches_frozen_helper_without_python_module(
 
 
 def test_runas_setup_helper_uses_hidden_window() -> None:
-    from opensquilla.sandbox.backend import windows_default_setup as mod
+    from openstarry_code.sandbox.backend import windows_default_setup as mod
 
     source = inspect.getsource(mod._shell_execute_runas_and_wait)
 
@@ -327,7 +327,7 @@ def test_runas_setup_helper_uses_hidden_window() -> None:
 
 
 def test_run_elevated_setup_helper_reports_nonzero_exit(monkeypatch, tmp_path) -> None:
-    from opensquilla.sandbox.backend import windows_default_setup as mod
+    from openstarry_code.sandbox.backend import windows_default_setup as mod
 
     monkeypatch.setattr(mod, "_shell_execute_runas_and_wait", lambda **kwargs: 9)
     monkeypatch.setattr(mod, "_current_windows_user_sid", lambda: "S-1-real")
@@ -337,7 +337,7 @@ def test_run_elevated_setup_helper_reports_nonzero_exit(monkeypatch, tmp_path) -
 
 
 def test_elevated_setup_helper_main_writes_failure_report(monkeypatch, tmp_path) -> None:
-    from opensquilla.sandbox.backend import windows_default_setup as mod
+    from openstarry_code.sandbox.backend import windows_default_setup as mod
 
     profile = tmp_path / "profile"
     profile.mkdir()
@@ -362,8 +362,8 @@ def test_elevated_setup_helper_accepts_desktop_profile_marker(
     monkeypatch,
     tmp_path,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_setup as mod
-    from opensquilla.sandbox.backend.windows_default_network import (
+    from openstarry_code.sandbox.backend import windows_default_setup as mod
+    from openstarry_code.sandbox.backend.windows_default_network import (
         FIREWALL_RULE_VERSION,
         WFP_RULE_VERSION,
         WindowsNetworkSetup,
@@ -419,8 +419,8 @@ def test_elevated_setup_persists_rotated_identity_before_acl_repair(
     monkeypatch,
     tmp_path,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_setup as mod
-    from opensquilla.sandbox.backend.windows_default_network import (
+    from openstarry_code.sandbox.backend import windows_default_setup as mod
+    from openstarry_code.sandbox.backend.windows_default_network import (
         FIREWALL_RULE_VERSION,
         WFP_RULE_VERSION,
         WindowsNetworkSetup,
@@ -458,7 +458,7 @@ def test_elevated_setup_rejects_unrecognized_marker_inside_profile(
     monkeypatch,
     tmp_path,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_setup as mod
+    from openstarry_code.sandbox.backend import windows_default_setup as mod
 
     profile = tmp_path / "profile"
     profile.mkdir()
@@ -482,8 +482,8 @@ def test_windows_setup_readiness_uses_validated_desktop_marker(
     tmp_path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_setup as mod
-    from opensquilla.sandbox.backend.windows_default_network import (
+    from openstarry_code.sandbox.backend import windows_default_setup as mod
+    from openstarry_code.sandbox.backend.windows_default_network import (
         FIREWALL_RULE_VERSION,
         WFP_RULE_VERSION,
         WindowsNetworkSetup,
@@ -519,7 +519,7 @@ def test_elevated_setup_helper_serializes_mutation_and_rechecks_readiness(
     monkeypatch,
     tmp_path,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_setup as mod
+    from openstarry_code.sandbox.backend import windows_default_setup as mod
 
     profile = tmp_path / "profile"
     profile.mkdir()
@@ -557,7 +557,7 @@ def test_elevated_setup_helper_skips_duplicate_mutation_after_wait(
     monkeypatch,
     tmp_path,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_setup as mod
+    from openstarry_code.sandbox.backend import windows_default_setup as mod
 
     profile = tmp_path / "profile"
     profile.mkdir()
@@ -604,7 +604,7 @@ def test_elevated_setup_helper_skips_duplicate_mutation_after_wait(
 def test_windows_setup_process_lock_releases_named_mutex(monkeypatch, tmp_path) -> None:
     import ctypes
 
-    from opensquilla.sandbox.backend import windows_default_setup as mod
+    from openstarry_code.sandbox.backend import windows_default_setup as mod
 
     calls = []
 
@@ -642,7 +642,7 @@ def test_windows_setup_process_lock_releases_named_mutex(monkeypatch, tmp_path) 
 
 
 def test_elevated_setup_rejects_payload_path_before_any_report_write(monkeypatch, tmp_path) -> None:
-    from opensquilla.sandbox.backend import windows_default_setup as mod
+    from openstarry_code.sandbox.backend import windows_default_setup as mod
 
     profile = tmp_path / "profile"
     profile.mkdir()
@@ -662,13 +662,13 @@ def test_elevated_setup_rejects_payload_path_before_any_report_write(monkeypatch
 
 
 def test_elevated_setup_rejects_precreated_junction_before_writing(monkeypatch, tmp_path) -> None:
-    from opensquilla.sandbox.backend import windows_default_setup as mod
+    from openstarry_code.sandbox.backend import windows_default_setup as mod
 
     profile = tmp_path / "profile"
     outside = tmp_path / "outside"
     profile.mkdir()
     outside.mkdir()
-    _symlink_or_skip(profile / ".opensquilla", outside, target_is_directory=True)
+    _symlink_or_skip(profile / ".openstarry-code", outside, target_is_directory=True)
     marker = mod.default_setup_marker_path(profile)
     payload = mod._encode_setup_helper_payload(marker, user_sid="S-1-real")
     reports = []
@@ -685,7 +685,7 @@ def test_elevated_setup_rejects_precreated_junction_before_writing(monkeypatch, 
 
 
 def test_setup_directory_handle_is_no_follow_and_blocks_delete_sharing() -> None:
-    from opensquilla.sandbox.backend import windows_default_setup as mod
+    from openstarry_code.sandbox.backend import windows_default_setup as mod
 
     source = inspect.getsource(mod._open_directory_no_follow)
 
@@ -699,7 +699,7 @@ def test_setup_directory_handle_is_no_follow_and_blocks_delete_sharing() -> None
 
 
 def test_setup_output_writer_is_no_follow_and_blocks_delete_sharing() -> None:
-    from opensquilla.sandbox.backend import windows_default_setup as mod
+    from openstarry_code.sandbox.backend import windows_default_setup as mod
 
     source = inspect.getsource(mod._write_json_windows_no_follow)
 
@@ -710,7 +710,7 @@ def test_setup_output_writer_is_no_follow_and_blocks_delete_sharing() -> None:
 
 
 def test_setup_marker_replaces_symlink_without_writing_its_target(tmp_path) -> None:
-    from opensquilla.sandbox.backend import windows_default_setup as mod
+    from openstarry_code.sandbox.backend import windows_default_setup as mod
 
     outside = tmp_path / "outside.json"
     outside.write_text("do not touch", encoding="utf-8")
@@ -728,7 +728,7 @@ def test_setup_marker_windows_writer_atomically_replaces_symlink(
     monkeypatch,
     tmp_path,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_setup as mod
+    from openstarry_code.sandbox.backend import windows_default_setup as mod
 
     outside = tmp_path / "outside.json"
     outside.write_text("do not touch", encoding="utf-8")
@@ -752,7 +752,7 @@ def test_setup_marker_windows_writer_atomically_replaces_symlink(
 
 
 def test_lock_revalidates_tree_before_each_recursive_acl_mutation(monkeypatch, tmp_path) -> None:
-    from opensquilla.sandbox.backend import windows_default_setup as mod
+    from openstarry_code.sandbox.backend import windows_default_setup as mod
 
     profile = tmp_path / "profile"
     profile.mkdir()
@@ -786,15 +786,15 @@ def test_lock_revalidates_tree_before_each_recursive_acl_mutation(monkeypatch, t
 
 
 def test_lock_batches_existing_child_acl_resets(monkeypatch, tmp_path) -> None:
-    from opensquilla.sandbox.backend import windows_default_setup as mod
+    from openstarry_code.sandbox.backend import windows_default_setup as mod
 
     profile = tmp_path / "profile"
-    sandbox_root = profile / ".opensquilla" / "sandbox"
+    sandbox_root = profile / ".openstarry-code" / "sandbox"
     (sandbox_root / "workspace-a").mkdir(parents=True)
     (sandbox_root / "workspace-b").mkdir()
-    secrets_root = profile / ".opensquilla" / "sandbox-secrets"
+    secrets_root = profile / ".openstarry-code" / "sandbox-secrets"
     (secrets_root / "provider-a").mkdir(parents=True)
-    bin_root = profile / ".opensquilla" / "sandbox-bin"
+    bin_root = profile / ".openstarry-code" / "sandbox-bin"
     (bin_root / "runtime-a").mkdir(parents=True)
     marker = sandbox_root / "setup_marker.json"
     commands = []
@@ -928,7 +928,7 @@ def test_icacls_wildcard_reset_is_recursive_without_touching_root_or_link_target
 def test_elevated_setup_does_not_write_failure_report_after_lease_race(
     monkeypatch, tmp_path
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_setup as mod
+    from openstarry_code.sandbox.backend import windows_default_setup as mod
 
     profile = tmp_path / "profile"
     profile.mkdir()
@@ -967,7 +967,7 @@ def test_run_elevated_setup_helper_includes_failure_report_detail(
     monkeypatch,
     tmp_path,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_setup as mod
+    from openstarry_code.sandbox.backend import windows_default_setup as mod
 
     marker = tmp_path / "setup_marker.json"
     report_path = marker.parent / "setup_helper_report.json"

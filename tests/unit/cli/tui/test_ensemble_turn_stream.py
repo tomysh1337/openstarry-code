@@ -5,14 +5,14 @@ from typing import Any
 
 import pytest
 
-from opensquilla.cli.chat.turn import UsageCounter, UsageSummary
-from opensquilla.cli.chat.turn_stream import (
+from openstarry_code.cli.chat.turn import UsageCounter, UsageSummary
+from openstarry_code.cli.chat.turn_stream import (
     default_turn_stream_dependencies,
     stream_response_gateway,
     stream_response_turnrunner,
 )
-from opensquilla.engine.types import DoneEvent, EnsembleProgressEvent
-from opensquilla.tools.types import CallerKind, ToolContext
+from openstarry_code.engine.types import DoneEvent, EnsembleProgressEvent
+from openstarry_code.tools.types import CallerKind, ToolContext
 
 PROGRESS_PAYLOAD: dict[str, Any] = {
     "event_type": "proposer_finish",
@@ -206,7 +206,7 @@ async def test_turnrunner_stream_forwards_matching_ensemble_progress_and_done_tr
         ensemble_trace=ENSEMBLE_TRACE,
     )
     turn_runner = _TurnRunner([progress, done])
-    monkeypatch.setattr("opensquilla.engine.runtime.TurnRunner", _TurnRunner)
+    monkeypatch.setattr("openstarry_code.engine.runtime.TurnRunner", _TurnRunner)
 
     result = await stream_response_turnrunner(
         turn_runner,

@@ -2,10 +2,10 @@
 
 from pathlib import Path
 
-CHAT_VIEW = Path("opensquilla-webui/src/views/ChatView.vue")
-CHAT_SEND = Path("opensquilla-webui/src/composables/chat/useChatSend.ts")
-CHAT_MESSAGE_ACTIONS = Path("opensquilla-webui/src/composables/chat/useChatMessageActions.ts")
-ROUTER_FX = Path("opensquilla-webui/src/components/chat/RouterFxStrip.vue")
+CHAT_VIEW = Path("openstarry-code-webui/src/views/ChatView.vue")
+CHAT_SEND = Path("openstarry-code-webui/src/composables/chat/useChatSend.ts")
+CHAT_MESSAGE_ACTIONS = Path("openstarry-code-webui/src/composables/chat/useChatMessageActions.ts")
+ROUTER_FX = Path("openstarry-code-webui/src/components/chat/RouterFxStrip.vue")
 
 
 def test_router_fx_cells_expose_only_model_names() -> None:

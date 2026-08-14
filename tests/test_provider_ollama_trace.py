@@ -6,14 +6,14 @@ from typing import Any
 
 import httpx
 
-from opensquilla.provider.ollama import OllamaProvider
-from opensquilla.provider.types import ChatConfig, DoneEvent, Message
+from openstarry_code.provider.ollama import OllamaProvider
+from openstarry_code.provider.types import ChatConfig, DoneEvent, Message
 
 
 def test_ollama_provider_writes_llm_trace(monkeypatch: Any, tmp_path: Any) -> None:
     trace_path = tmp_path / "ollama-llm-calls.jsonl"
-    monkeypatch.setenv("OPENSQUILLA_LLM_TRACE_RECORDER", "full")
-    monkeypatch.setenv("OPENSQUILLA_LLM_TRACE_PATH", str(trace_path))
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_TRACE_RECORDER", "full")
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_TRACE_PATH", str(trace_path))
     body = b"".join(
         [
             json.dumps({"message": {"content": "ok"}, "done": False}).encode() + b"\n",
@@ -38,7 +38,7 @@ def test_ollama_provider_writes_llm_trace(monkeypatch: Any, tmp_path: Any) -> No
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.ollama.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.ollama.httpx.AsyncClient", patched_async_client)
     provider = OllamaProvider(model="llama3")
 
     async def _run() -> list[Any]:

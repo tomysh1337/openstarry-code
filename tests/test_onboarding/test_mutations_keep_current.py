@@ -6,8 +6,8 @@ router settings — re-saving for a key rotation has to be loss-free.
 
 from __future__ import annotations
 
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.onboarding.mutations import (
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.onboarding.mutations import (
     upsert_llm_provider,
     upsert_router,
     upsert_search_provider,

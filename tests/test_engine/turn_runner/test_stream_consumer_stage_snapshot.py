@@ -16,8 +16,8 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.engine.types import (
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.engine.types import (
     CompactionEvent,
     DoneEvent,
     ErrorEvent,
@@ -459,8 +459,8 @@ def _setup_runner(
     # Force the private-memory check to the case's value.
     # Patch both the runtime_mod reference (used by legacy/direct callers) and
     # the session.keys source (imported lazily by the harness adapter).
-    import opensquilla.engine.runtime as runtime_mod
-    import opensquilla.session.keys as session_keys_mod
+    import openstarry_code.engine.runtime as runtime_mod
+    import openstarry_code.session.keys as session_keys_mod
 
     _pma = lambda session_key: case.private_memory_allowed  # noqa: ARG005, E731
     monkeypatch.setattr(runtime_mod, "allows_private_memory_prompt_injection", _pma)
@@ -472,7 +472,7 @@ def _setup_runner(
     _MAILBOX.refresh_prompt_calls = []
 
     monkeypatch.setattr(runtime_mod, "Agent", _StubAgent)
-    monkeypatch.setattr("opensquilla.engine.agent.Agent", _StubAgent)
+    monkeypatch.setattr("openstarry_code.engine.agent.Agent", _StubAgent)
     return runner
 
 

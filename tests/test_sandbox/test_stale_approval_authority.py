@@ -10,13 +10,13 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine import Agent, AgentConfig
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.project_workspaces import ProjectWorkspaceStateError, project_path_key
-from opensquilla.provider import ChatConfig, Message
-from opensquilla.provider import DoneEvent as ProviderDone
-from opensquilla.provider import TextDeltaEvent as ProviderTextDelta
-from opensquilla.sandbox.escalation import (
+from openstarry_code.engine import Agent, AgentConfig
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.project_workspaces import ProjectWorkspaceStateError, project_path_key
+from openstarry_code.provider import ChatConfig, Message
+from openstarry_code.provider import DoneEvent as ProviderDone
+from openstarry_code.provider import TextDeltaEvent as ProviderTextDelta
+from openstarry_code.sandbox.escalation import (
     apply_sandbox_approval_choice,
     build_network_approval_params,
     build_package_bundle_approval_params,
@@ -28,9 +28,9 @@ from opensquilla.sandbox.escalation import (
     reset_resolved_run_context_overlays,
     resolved_run_context_overlay,
 )
-from opensquilla.sandbox.network_guard import NetworkDecision
-from opensquilla.sandbox.path_validation import MountDecision, decide_path_access
-from opensquilla.sandbox.run_context import (
+from openstarry_code.sandbox.network_guard import NetworkDecision
+from openstarry_code.sandbox.path_validation import MountDecision, decide_path_access
+from openstarry_code.sandbox.run_context import (
     RUN_CONTEXT_ORIGIN_KEY,
     DomainGrant,
     MountGrant,
@@ -40,15 +40,15 @@ from opensquilla.sandbox.run_context import (
     persist_run_context,
     run_context_from_origin_payload,
 )
-from opensquilla.sandbox.run_mode import RunMode
-from opensquilla.session.manager import SessionManager
-from opensquilla.session.storage import SessionStorage
-from opensquilla.tools.types import ToolContext, current_tool_context
+from openstarry_code.sandbox.run_mode import RunMode
+from openstarry_code.session.manager import SessionManager
+from openstarry_code.session.storage import SessionStorage
+from openstarry_code.tools.types import ToolContext, current_tool_context
 
 
 @pytest.fixture(autouse=True)
 def _reset_approval_state():
-    from opensquilla.gateway.approval_queue import reset_approval_queue
+    from openstarry_code.gateway.approval_queue import reset_approval_queue
 
     reset_approval_queue()
     reset_resolved_run_context_overlays()
@@ -296,7 +296,7 @@ async def test_stale_approval_cannot_mutate_recreated_same_key_session(
 async def test_raw_queue_approval_id_without_generation_fails_closed(
     tmp_path: Path,
 ) -> None:
-    from opensquilla.gateway.approval_queue import get_approval_queue
+    from openstarry_code.gateway.approval_queue import get_approval_queue
 
     workspace = tmp_path / "workspace"
     workspace.mkdir()
@@ -340,10 +340,10 @@ async def test_raw_queue_approval_id_without_generation_fails_closed(
 
 @pytest.mark.asyncio
 async def test_generation_reset_expires_real_rpc_approval(tmp_path: Path) -> None:
-    from opensquilla.gateway.approval_queue import get_approval_queue
-    from opensquilla.gateway.auth import Principal
-    from opensquilla.gateway.rpc import RpcContext
-    from opensquilla.gateway.rpc_approvals import _handle_exec_approval_resolve
+    from openstarry_code.gateway.approval_queue import get_approval_queue
+    from openstarry_code.gateway.auth import Principal
+    from openstarry_code.gateway.rpc import RpcContext
+    from openstarry_code.gateway.rpc_approvals import _handle_exec_approval_resolve
 
     workspace = tmp_path / "workspace"
     workspace.mkdir()
@@ -415,11 +415,11 @@ async def test_turn_cleanup_first_prevents_real_rpc_same_type_cas(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.gateway.approval_queue import get_approval_queue
-    from opensquilla.gateway.auth import Principal
-    from opensquilla.gateway.rpc import RpcContext
-    from opensquilla.gateway.rpc_approvals import _handle_exec_approval_resolve
-    from opensquilla.sandbox import escalation as escalation_module
+    from openstarry_code.gateway.approval_queue import get_approval_queue
+    from openstarry_code.gateway.auth import Principal
+    from openstarry_code.gateway.rpc import RpcContext
+    from openstarry_code.gateway.rpc_approvals import _handle_exec_approval_resolve
+    from openstarry_code.sandbox import escalation as escalation_module
 
     workspace = tmp_path / "workspace"
     workspace.mkdir()
@@ -516,11 +516,11 @@ async def test_real_rpc_same_type_apply_first_blocks_cancelled_turn_cleanup(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.gateway.approval_queue import get_approval_queue
-    from opensquilla.gateway.auth import Principal
-    from opensquilla.gateway.rpc import RpcContext
-    from opensquilla.gateway.rpc_approvals import _handle_exec_approval_resolve
-    from opensquilla.sandbox import escalation as escalation_module
+    from openstarry_code.gateway.approval_queue import get_approval_queue
+    from openstarry_code.gateway.auth import Principal
+    from openstarry_code.gateway.rpc import RpcContext
+    from openstarry_code.gateway.rpc_approvals import _handle_exec_approval_resolve
+    from openstarry_code.sandbox import escalation as escalation_module
 
     workspace = tmp_path / "workspace"
     workspace.mkdir()
@@ -675,11 +675,11 @@ async def test_repeated_turn_cancel_revokes_generation_and_expires_rpc_approval(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.gateway.approval_queue import get_approval_queue
-    from opensquilla.gateway.auth import Principal
-    from opensquilla.gateway.rpc import RpcContext
-    from opensquilla.gateway.rpc_approvals import _handle_exec_approval_resolve
-    from opensquilla.sandbox import escalation as escalation_module
+    from openstarry_code.gateway.approval_queue import get_approval_queue
+    from openstarry_code.gateway.auth import Principal
+    from openstarry_code.gateway.rpc import RpcContext
+    from openstarry_code.gateway.rpc_approvals import _handle_exec_approval_resolve
+    from openstarry_code.sandbox import escalation as escalation_module
 
     workspace = tmp_path / "workspace"
     workspace.mkdir()
@@ -1195,7 +1195,7 @@ async def test_network_once_consumption_is_execution_scoped(tmp_path: Path) -> N
         fingerprint: str,
         execution_id: str,
     ) -> None:
-        from opensquilla.gateway.approval_queue import get_approval_queue
+        from openstarry_code.gateway.approval_queue import get_approval_queue
 
         params = build_network_approval_params(
             NetworkDecision(
@@ -1275,11 +1275,11 @@ async def test_auto_review_once_uses_only_generation_bound_delta(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.engine import agent as agent_module
-    from opensquilla.engine.elevation_triage import RuleAssessment
-    from opensquilla.gateway.approval_queue import get_approval_queue
-    from opensquilla.provider import Message
-    from opensquilla.sandbox import escalation as escalation_module
+    from openstarry_code.engine import agent as agent_module
+    from openstarry_code.engine.elevation_triage import RuleAssessment
+    from openstarry_code.gateway.approval_queue import get_approval_queue
+    from openstarry_code.provider import Message
+    from openstarry_code.sandbox import escalation as escalation_module
 
     monkeypatch.setattr(
         agent_module,
@@ -1439,10 +1439,10 @@ async def test_auto_review_binding_failure_cleans_generation(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.engine import agent as agent_module
-    from opensquilla.engine.elevation_triage import RuleAssessment
-    from opensquilla.gateway.approval_queue import get_approval_queue
-    from opensquilla.sandbox import escalation as escalation_module
+    from openstarry_code.engine import agent as agent_module
+    from openstarry_code.engine.elevation_triage import RuleAssessment
+    from openstarry_code.gateway.approval_queue import get_approval_queue
+    from openstarry_code.sandbox import escalation as escalation_module
 
     monkeypatch.setattr(
         agent_module,
@@ -1549,10 +1549,10 @@ async def test_auto_review_revalidates_current_session_identity(
     monkeypatch: pytest.MonkeyPatch,
     session_change: str,
 ) -> None:
-    from opensquilla.engine import agent as agent_module
-    from opensquilla.engine.elevation_triage import RuleAssessment
-    from opensquilla.gateway.approval_queue import get_approval_queue
-    from opensquilla.sandbox import escalation as escalation_module
+    from openstarry_code.engine import agent as agent_module
+    from openstarry_code.engine.elevation_triage import RuleAssessment
+    from openstarry_code.gateway.approval_queue import get_approval_queue
+    from openstarry_code.sandbox import escalation as escalation_module
 
     monkeypatch.setattr(
         agent_module,
@@ -1655,10 +1655,10 @@ async def test_auto_review_revalidates_current_project_binding(
     monkeypatch: pytest.MonkeyPatch,
     project_change: str,
 ) -> None:
-    from opensquilla.engine import agent as agent_module
-    from opensquilla.engine.elevation_triage import RuleAssessment
-    from opensquilla.gateway.approval_queue import get_approval_queue
-    from opensquilla.sandbox import escalation as escalation_module
+    from openstarry_code.engine import agent as agent_module
+    from openstarry_code.engine.elevation_triage import RuleAssessment
+    from openstarry_code.gateway.approval_queue import get_approval_queue
+    from openstarry_code.sandbox import escalation as escalation_module
 
     monkeypatch.setattr(
         agent_module,
@@ -2141,7 +2141,7 @@ async def test_same_type_fails_closed_when_storage_cas_is_unavailable(
 async def test_turn_runner_artifact_context_carries_session_identity(
     tmp_path: Path,
 ) -> None:
-    from opensquilla.engine.runtime import TurnRunner
+    from openstarry_code.engine.runtime import TurnRunner
 
     workspace = tmp_path / "workspace"
     workspace.mkdir()
@@ -2185,7 +2185,7 @@ async def test_agent_turn_finally_clears_only_its_execution_approval_deltas(
     choice: str,
     outcome: str,
 ) -> None:
-    from opensquilla.sandbox import escalation as escalation_module
+    from openstarry_code.sandbox import escalation as escalation_module
 
     workspace = tmp_path / "workspace"
     requested = tmp_path / "requested"
@@ -2300,8 +2300,8 @@ async def test_cancelled_turn_waits_for_apply_first_then_revokes_delta(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.gateway import project_workspace_runtime
-    from opensquilla.sandbox import escalation as escalation_module
+    from openstarry_code.gateway import project_workspace_runtime
+    from openstarry_code.sandbox import escalation as escalation_module
 
     workspace = tmp_path / "workspace"
     requested = tmp_path / "requested"
@@ -2534,13 +2534,13 @@ async def test_safe_public_network_targets_do_not_create_approval(
 ) -> None:
     from types import SimpleNamespace
 
-    from opensquilla.gateway.approval_queue import get_approval_queue
-    from opensquilla.sandbox.network_runtime import (
+    from openstarry_code.gateway.approval_queue import get_approval_queue
+    from openstarry_code.sandbox.network_runtime import (
         NetworkApprovalService,
         NetworkPolicyRequest,
         NetworkProtocol,
     )
-    from opensquilla.sandbox.types import (
+    from openstarry_code.sandbox.types import (
         NetworkMode,
         ResourceLimits,
         SandboxPolicy,

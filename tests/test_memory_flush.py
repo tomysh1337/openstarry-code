@@ -8,21 +8,21 @@ from typing import Any, cast
 
 import pytest
 
-from opensquilla.engine import Agent, AgentConfig
-from opensquilla.memory.archive import write_raw_fallback_archive
-from opensquilla.memory.embedding import NullEmbeddingProvider
-from opensquilla.memory.flush import resolve_flush_plan
-from opensquilla.memory.protocols import MemoryToolHandler
-from opensquilla.memory.retrieval import MemoryRetriever
-from opensquilla.memory.session_flush import (
+from openstarry_code.engine import Agent, AgentConfig
+from openstarry_code.memory.archive import write_raw_fallback_archive
+from openstarry_code.memory.embedding import NullEmbeddingProvider
+from openstarry_code.memory.flush import resolve_flush_plan
+from openstarry_code.memory.protocols import MemoryToolHandler
+from openstarry_code.memory.retrieval import MemoryRetriever
+from openstarry_code.memory.session_flush import (
     FlushReceipt,
     SessionFlushService,
     _make_flush_read_only_handler,
 )
-from opensquilla.memory.store import LongTermMemoryStore
-from opensquilla.memory.sync_manager import MemorySyncManager
-from opensquilla.memory.types import MemorySearchOpts, SearchIntent
-from opensquilla.provider import (
+from openstarry_code.memory.store import LongTermMemoryStore
+from openstarry_code.memory.sync_manager import MemorySyncManager
+from openstarry_code.memory.types import MemorySearchOpts, SearchIntent
+from openstarry_code.provider import (
     DoneEvent,
     Message,
     ProviderRequestCorrelation,
@@ -30,7 +30,7 @@ from opensquilla.provider import (
     ToolUseEndEvent,
     ToolUseStartEvent,
 )
-from opensquilla.tool_boundary import ToolCall, ToolResult
+from openstarry_code.tool_boundary import ToolCall, ToolResult
 
 
 def test_memory_tool_handler_protocol_uses_tool_boundary_types() -> None:
@@ -48,7 +48,7 @@ def test_memory_tool_handler_protocol_uses_tool_boundary_types() -> None:
 
 @pytest.mark.asyncio
 async def test_session_flush_forwards_explicit_provider_request_correlation() -> None:
-    from opensquilla.provider.correlation_context import bind_provider_request_correlation
+    from openstarry_code.provider.correlation_context import bind_provider_request_correlation
 
     correlation = ProviderRequestCorrelation(
         session_id="session-1",
@@ -262,7 +262,7 @@ async def test_curated_flush_memory_is_searchable_but_raw_fallback_is_not(tmp_pa
 async def test_agent_memory_flush_timeout_enters_backoff_without_retrigger(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.engine.agent as agent_module
+    import openstarry_code.engine.agent as agent_module
 
     async def fake_compact_context(_request):
         return SimpleNamespace(
@@ -315,7 +315,7 @@ async def test_agent_memory_flush_timeout_enters_backoff_without_retrigger(
 async def test_agent_memory_flush_timeout_records_backoff_and_compacts(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import opensquilla.engine.agent as agent_module
+    import openstarry_code.engine.agent as agent_module
 
     async def fake_compact_context(_request):
         return SimpleNamespace(
@@ -602,7 +602,7 @@ async def test_session_flush_empty_candidates_is_successful_noop_without_raw_fal
         ),
         tool_handler=handler,
     )
-    caplog.set_level(logging.WARNING, logger="opensquilla.memory.session_flush")
+    caplog.set_level(logging.WARNING, logger="openstarry_code.memory.session_flush")
 
     receipt = await service.execute(
         [Message(role="user", content="Please run a temporary shell command.")],
@@ -1018,7 +1018,7 @@ async def test_session_flush_raw_fallback_archive_error_returns_error_receipt(
         archive_workspace_resolver=lambda _agent_id: tmp_path,
         archive_writer=failing_archive_writer,
     )
-    caplog.set_level(logging.INFO, logger="opensquilla.memory.session_flush")
+    caplog.set_level(logging.INFO, logger="openstarry_code.memory.session_flush")
 
     first = await service._raw_dump_fallback(
         [Message(role="user", content="same transcript")],
@@ -1182,7 +1182,7 @@ async def test_session_flush_execute_logs_done_receipt_for_raw_fallback(caplog, 
         tool_handler=handler,
         archive_workspace_resolver=lambda _agent_id: tmp_path,
     )
-    caplog.set_level(logging.INFO, logger="opensquilla.memory.session_flush")
+    caplog.set_level(logging.INFO, logger="openstarry_code.memory.session_flush")
 
     receipt = await service.execute(
         [Message(role="user", content="flush this transcript")],
@@ -1195,7 +1195,7 @@ async def test_session_flush_execute_logs_done_receipt_for_raw_fallback(caplog, 
     raw_messages = [
         record.getMessage()
         for record in caplog.records
-        if record.name == "opensquilla.memory.session_flush"
+        if record.name == "openstarry_code.memory.session_flush"
         and "raw_fallback" in record.getMessage()
     ]
     assert "session_flush.raw_fallback_save_failed" not in raw_messages
@@ -1203,13 +1203,13 @@ async def test_session_flush_execute_logs_done_receipt_for_raw_fallback(caplog, 
     assert all(
         record.levelname != "ERROR"
         for record in caplog.records
-        if record.name == "opensquilla.memory.session_flush"
+        if record.name == "openstarry_code.memory.session_flush"
         and "raw_fallback" in record.getMessage()
     )
     records = [
         record
         for record in caplog.records
-        if record.name == "opensquilla.memory.session_flush"
+        if record.name == "openstarry_code.memory.session_flush"
         and record.getMessage() == "session_flush.done"
     ]
     assert len(records) == 1

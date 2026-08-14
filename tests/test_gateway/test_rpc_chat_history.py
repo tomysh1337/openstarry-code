@@ -4,19 +4,19 @@ from types import SimpleNamespace
 
 import pytest
 
-import opensquilla.gateway.rpc_chat as rpc_chat_module
-from opensquilla.gateway.rpc import RpcContext, get_dispatcher
-from opensquilla.gateway.rpc_chat import _handle_chat_history
-from opensquilla.session.manager import SessionManager
-from opensquilla.session.models import (
+import openstarry_code.gateway.rpc_chat as rpc_chat_module
+from openstarry_code.gateway.rpc import RpcContext, get_dispatcher
+from openstarry_code.gateway.rpc_chat import _handle_chat_history
+from openstarry_code.session.manager import SessionManager
+from openstarry_code.session.models import (
     AgentTaskRecord,
     AgentTaskStatus,
     SessionSummary,
     TranscriptEntry,
 )
-from opensquilla.session.storage import SessionStorage, StorageBusyError
-from opensquilla.session.turn_context import turn_context_scope
-from opensquilla.session.usage_ledger import UsageEventCompletion, UsageEventStart
+from openstarry_code.session.storage import SessionStorage, StorageBusyError
+from openstarry_code.session.turn_context import turn_context_scope
+from openstarry_code.session.usage_ledger import UsageEventCompletion, UsageEventStart
 
 
 class _FakeSessionManager:

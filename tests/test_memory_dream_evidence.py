@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from opensquilla.memory.dream.candidates import scan_dream_candidates
-from opensquilla.memory.dream.evidence import (
+from openstarry_code.memory.dream.candidates import scan_dream_candidates
+from openstarry_code.memory.dream.evidence import (
     load_evidence_store,
     promotion_evidence_path,
     update_promotion_evidence,
 )
-from opensquilla.memory.dream.models import RawDreamCandidate
-from opensquilla.memory.dream.quarantine import is_quarantined_path, is_quarantined_text
+from openstarry_code.memory.dream.models import RawDreamCandidate
+from openstarry_code.memory.dream.quarantine import is_quarantined_path, is_quarantined_text
 
 
 def _candidate(

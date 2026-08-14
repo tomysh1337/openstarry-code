@@ -2,16 +2,16 @@ from __future__ import annotations
 
 import json
 
-from opensquilla.engine.session_sanitize import sanitize_session_messages
-from opensquilla.engine.tool_text_compat import (
+from openstarry_code.engine.session_sanitize import sanitize_session_messages
+from openstarry_code.engine.tool_text_compat import (
     ProtocolTextLeakGuard,
     strip_protocol_text_leak,
     strip_synthetic_tool_call_suffix,
 )
-from opensquilla.provider.openai import _build_openai_messages, _usage_fields
-from opensquilla.provider.openrouter_attribution import openrouter_app_headers
-from opensquilla.provider.types import ContentBlockText, ContentBlockToolResult, Message
-from opensquilla.session.keys import (
+from openstarry_code.provider.openai import _build_openai_messages, _usage_fields
+from openstarry_code.provider.openrouter_attribution import openrouter_app_headers
+from openstarry_code.provider.types import ContentBlockText, ContentBlockToolResult, Message
+from openstarry_code.session.keys import (
     allows_private_memory_prompt_injection,
     build_subagent_session_key,
     build_webchat_key,
@@ -220,5 +220,5 @@ def test_usage_fields_treat_explicit_canonical_zero_as_real_value() -> None:
 def test_openrouter_attribution_headers_are_scoped_to_openrouter_hosts() -> None:
     assert openrouter_app_headers("https://api.openrouter.ai/v1")[
         "X-Title"
-    ] == "OpenSquilla"
+    ] == "OpenStarry Code"
     assert openrouter_app_headers("https://api.openai.com/v1") == {}

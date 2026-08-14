@@ -7,14 +7,14 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.gateway.approval_queue import get_approval_queue, reset_approval_queue
-from opensquilla.sandbox.config import SandboxSettings
-from opensquilla.sandbox.integration import configure_runtime, reset_runtime
-from opensquilla.sandbox.types import ApprovedHostExecution, SecurityLevel
-from opensquilla.tools.builtin import code_exec, filesystem, shell
-from opensquilla.tools.builtin.code_exec import execute_code
-from opensquilla.tools.builtin.shell_policy import DEFAULT_DENYLIST, PolicyResult, SafeBinPolicy
-from opensquilla.tools.types import (
+from openstarry_code.gateway.approval_queue import get_approval_queue, reset_approval_queue
+from openstarry_code.sandbox.config import SandboxSettings
+from openstarry_code.sandbox.integration import configure_runtime, reset_runtime
+from openstarry_code.sandbox.types import ApprovedHostExecution, SecurityLevel
+from openstarry_code.tools.builtin import code_exec, filesystem, shell
+from openstarry_code.tools.builtin.code_exec import execute_code
+from openstarry_code.tools.builtin.shell_policy import DEFAULT_DENYLIST, PolicyResult, SafeBinPolicy
+from openstarry_code.tools.types import (
     CallerKind,
     InteractionMode,
     ToolContext,
@@ -1093,7 +1093,7 @@ async def test_write_file_allows_small_workspace_file_overwrite(tmp_path: Path) 
 
 
 def test_tool_definitions_include_scratch_guidance_when_configured(tmp_path: Path) -> None:
-    from opensquilla.tools.registry import get_default_registry
+    from openstarry_code.tools.registry import get_default_registry
 
     scratch = tmp_path / "scratch"
     ctx = ToolContext(is_owner=True, scratch_dir=str(scratch))
@@ -1106,7 +1106,7 @@ def test_tool_definitions_include_scratch_guidance_when_configured(tmp_path: Pat
 
 
 def test_exec_command_description_names_windows_powershell_shell() -> None:
-    from opensquilla.tools.registry import get_default_registry
+    from openstarry_code.tools.registry import get_default_registry
 
     ctx = ToolContext(is_owner=True)
 

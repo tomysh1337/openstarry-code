@@ -15,7 +15,7 @@ import pytest
 
 @pytest.fixture(autouse=True)
 def _isolate_windows_acl_internal_state(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     monkeypatch.setattr(
         mod, "_default_allow_acl_state_path", lambda: tmp_path / "allow_acl_state.json"
@@ -24,13 +24,13 @@ def _isolate_windows_acl_internal_state(tmp_path: Path, monkeypatch: pytest.Monk
 
 
 def test_parse_payload_accepts_valid_windows_default_payload(tmp_path) -> None:
-    from opensquilla.sandbox.backend.windows_default_runner import _parse_payload
+    from openstarry_code.sandbox.backend.windows_default_runner import _parse_payload
 
     payload = {
         "backend": "windows_default",
         "argv": ["python", "-c", "print('ok')"],
         "cwd": str(tmp_path),
-        "env": {"TEMP": str(tmp_path / ".opensquilla-cache" / "temp")},
+        "env": {"TEMP": str(tmp_path / ".openstarry-code-cache" / "temp")},
         "policy": {"network": "none", "mounts": [], "workspace_rw": True},
         "runMode": "trusted",
         "timeout": 5,
@@ -47,7 +47,7 @@ def test_helper_error_marker_and_offline_payload_keep_authentication_nonce(
     tmp_path,
     capsys,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     payload = mod.HelperPayload(
         argv=("cmd", "/c", "echo ok"),
@@ -71,7 +71,7 @@ def test_helper_error_marker_and_offline_payload_keep_authentication_nonce(
 
 
 def test_parse_payload_decodes_stdin_base64(tmp_path) -> None:
-    from opensquilla.sandbox.backend.windows_default_runner import _parse_payload
+    from openstarry_code.sandbox.backend.windows_default_runner import _parse_payload
 
     payload = {
         "backend": "windows_default",
@@ -96,7 +96,7 @@ def test_parse_payload_decodes_stdin_base64(tmp_path) -> None:
 def test_parse_payload_accepts_payload_from_environment(
     tmp_path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     payload = {
         "backend": "windows_default",
@@ -123,7 +123,7 @@ def test_parse_payload_accepts_payload_from_environment(
 def test_parse_payload_accepts_payload_from_stdin(
     tmp_path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     payload = {
         "backend": "windows_default",
@@ -149,7 +149,7 @@ def test_parse_payload_accepts_payload_from_stdin(
 
 
 def test_parse_payload_rejects_wrong_backend(tmp_path) -> None:
-    from opensquilla.sandbox.backend.windows_default_runner import _parse_payload
+    from openstarry_code.sandbox.backend.windows_default_runner import _parse_payload
 
     payload = {
         "backend": "not_windows_default",
@@ -166,7 +166,7 @@ def test_parse_payload_rejects_wrong_backend(tmp_path) -> None:
 
 
 def test_runner_rejects_proxy_allowlist_without_proxy_endpoint(tmp_path) -> None:
-    from opensquilla.sandbox.backend.windows_default_runner import (
+    from openstarry_code.sandbox.backend.windows_default_runner import (
         _parse_payload,
         _validate_policy_is_enforceable,
     )
@@ -188,7 +188,7 @@ def test_runner_rejects_proxy_allowlist_without_proxy_endpoint(tmp_path) -> None
 
 
 def test_runner_accepts_proxy_allowlist_with_proxy_endpoint(tmp_path) -> None:
-    from opensquilla.sandbox.backend.windows_default_runner import (
+    from openstarry_code.sandbox.backend.windows_default_runner import (
         _parse_payload,
         _validate_policy_is_enforceable,
     )
@@ -222,7 +222,7 @@ def test_runner_accepts_proxy_allowlist_with_proxy_endpoint(tmp_path) -> None:
 
 
 def test_runner_rejects_proxy_allowlist_without_windows_network_boundary(tmp_path) -> None:
-    from opensquilla.sandbox.backend.windows_default_runner import (
+    from openstarry_code.sandbox.backend.windows_default_runner import (
         _parse_payload,
         _validate_policy_is_enforceable,
     )
@@ -248,7 +248,7 @@ def test_runner_rejects_proxy_allowlist_without_windows_network_boundary(tmp_pat
 
 
 def test_runner_accepts_proxy_allowlist_with_matching_network_boundary(tmp_path) -> None:
-    from opensquilla.sandbox.backend.windows_default_runner import (
+    from openstarry_code.sandbox.backend.windows_default_runner import (
         _parse_payload,
         _validate_policy_is_enforceable,
     )
@@ -295,7 +295,7 @@ def test_runner_accepts_proxy_allowlist_with_matching_network_boundary(tmp_path)
     ],
 )
 def test_proxy_allowlist_blocks_icmp_diagnostics(argv) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     assert mod._proxy_allowlist_icmp_block_reason(argv) is not None
 
@@ -304,8 +304,8 @@ def test_proxy_allowlist_blocks_shell_host_wrapped_icmp_diagnostics(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
-    from opensquilla.tools.builtin import shell
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.tools.builtin import shell
 
     runtime = SimpleNamespace(backend=SimpleNamespace(name="windows_default"))
     monkeypatch.setattr(
@@ -324,7 +324,7 @@ def test_proxy_allowlist_blocks_shell_host_wrapped_icmp_diagnostics(
 
 
 def test_proxy_allowlist_icmp_guard_allows_regular_http_commands() -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     assert (
         mod._proxy_allowlist_icmp_block_reason(
@@ -335,7 +335,7 @@ def test_proxy_allowlist_icmp_guard_allows_regular_http_commands() -> None:
 
 
 def test_proxy_allowlist_icmp_guard_is_enforced_before_acl_refresh(tmp_path) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     payload = mod.HelperPayload(
         argv=("ping.exe", "-n", "1", "1.1.1.1"),
@@ -360,7 +360,7 @@ def test_proxy_allowlist_icmp_guard_is_enforced_before_acl_refresh(tmp_path) -> 
 
 
 def test_runner_applies_acl_refresh_before_process_launch(tmp_path, monkeypatch) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     calls = []
     payload = mod.HelperPayload(
@@ -420,7 +420,7 @@ def test_parent_execution_lease_covers_acl_and_process_lifetime(
 ) -> None:
     from contextlib import contextmanager
 
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     events: list[str] = []
     payload = mod.HelperPayload(
@@ -463,7 +463,7 @@ def test_parent_execution_lease_covers_acl_and_process_lifetime(
 def test_offline_child_does_not_reacquire_execution_lease(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     payload = mod.HelperPayload(
         argv=("cmd",),
@@ -491,7 +491,7 @@ def test_offline_child_does_not_reacquire_execution_lease(
 
 
 def test_cross_process_execution_lease_serializes_concurrent_runs(tmp_path: Path) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     lock = tmp_path / "execution.lock"
     first_entered = threading.Event()
@@ -527,7 +527,7 @@ def test_cross_process_execution_lease_reports_bounded_contention(
 ) -> None:
     import msvcrt
 
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     real_locking = msvcrt.locking
 
@@ -547,7 +547,7 @@ def test_cross_process_execution_lease_reports_bounded_contention(
 def test_offline_parent_reconciles_capability_denies_before_transition(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     events: list[tuple[str, object]] = []
     payload = mod.HelperPayload(
@@ -587,7 +587,7 @@ def test_offline_parent_reconciles_capability_denies_before_transition(
 
 
 def test_grant_path_to_sid_uses_native_acl_writer(tmp_path, monkeypatch) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     calls = []
 
@@ -607,7 +607,7 @@ def test_grant_path_to_sid_uses_native_acl_writer(tmp_path, monkeypatch) -> None
 
 
 def test_deny_write_path_to_sid_uses_native_acl_writer(tmp_path, monkeypatch) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     calls = []
 
@@ -627,7 +627,7 @@ def test_deny_write_path_to_sid_uses_native_acl_writer(tmp_path, monkeypatch) ->
 
 
 def test_deny_read_path_to_sid_uses_shared_native_acl_writer(tmp_path, monkeypatch) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     calls = []
     monkeypatch.setattr(
@@ -643,7 +643,7 @@ def test_deny_read_path_to_sid_uses_shared_native_acl_writer(tmp_path, monkeypat
 
 
 def test_windows_acl_plan_rejects_invalid_deny_read_paths() -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     with pytest.raises(SystemExit, match="denyReadPaths must be a string list"):
         mod._windows_acl_plan(
@@ -661,7 +661,7 @@ def test_windows_acl_plan_rejects_untrusted_deny_acl_state_path(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     trusted = tmp_path / "trusted" / "deny_acl_state.json"
     monkeypatch.setattr(mod, "_default_deny_acl_state_path", lambda: trusted)
@@ -679,7 +679,7 @@ def test_windows_acl_plan_rejects_untrusted_deny_acl_state_path(
 
 
 def test_deny_masks_require_all_requested_bits() -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     assert not mod._ace_mask_covers(mod.FILE_WRITE_DENY_MASK, mod.FILE_READ_DENY_MASK)
     assert mod._ace_mask_covers(mod.FILE_READ_DENY_MASK, mod.FILE_READ_DENY_MASK)
@@ -688,7 +688,7 @@ def test_deny_masks_require_all_requested_bits() -> None:
 
 
 def test_live_deny_acl_requires_exact_nonduplicated_managed_aces() -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     stored_write_mask = mod.FILE_WRITE_DENY_MASK & ~mod.GENERIC_WRITE
     inherited_children = (
@@ -750,7 +750,7 @@ def test_live_deny_acl_requires_exact_nonduplicated_managed_aces() -> None:
     ],
 )
 def test_directory_deny_acl_rejects_incomplete_inheritance(entries) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     stored_write_mask = mod.FILE_WRITE_DENY_MASK & ~mod.GENERIC_WRITE
 
@@ -762,7 +762,7 @@ def test_directory_deny_acl_rejects_incomplete_inheritance(entries) -> None:
 
 
 def test_acl_refresh_skips_missing_expansion_grants(tmp_path, monkeypatch) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     existing = tmp_path / "existing"
     missing = tmp_path / "deleted-probe.txt"
@@ -801,7 +801,7 @@ def test_acl_refresh_grants_current_user_normal_access_when_requested(
     tmp_path,
     monkeypatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     workspace = tmp_path / "workspace"
     workspace.mkdir()
@@ -843,7 +843,7 @@ def test_acl_refresh_skips_only_live_deny_revalidation_for_filesystem_worker(
     tmp_path,
     monkeypatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     calls = []
     monkeypatch.setattr(
@@ -869,7 +869,7 @@ def test_acl_refresh_skips_missing_policy_grants(
     tmp_path,
     monkeypatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     missing = tmp_path / "deleted-probe.txt"
     calls = []
@@ -901,7 +901,7 @@ def test_acl_refresh_does_not_apply_deny_write_to_unrelated_capability_sids(
     tmp_path,
     monkeypatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     runtime = tmp_path / "runtime" / "Scripts"
     workspace = tmp_path / "workspace"
@@ -959,7 +959,7 @@ def test_apply_acl_refresh_never_applies_deny_read_to_capability_sid(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     readable = tmp_path / "readable"
     denied = readable / "secret"
@@ -996,7 +996,7 @@ def test_runner_fails_before_acl_mutation_when_deny_read_has_no_offline_identity
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     denied = tmp_path / "secret"
     denied.mkdir()
@@ -1034,7 +1034,7 @@ def test_acl_refresh_materializes_missing_deny_write_target(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     missing = tmp_path / "missing" / "nested"
     observed: list[bool] = []
@@ -1070,7 +1070,7 @@ def test_acl_refresh_materializes_missing_deny_write_target(
 
 
 def test_deny_write_capability_sids_prefer_overlapping_write_roots(tmp_path) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     workspace = tmp_path / "workspace"
     nested = workspace / "nested"
@@ -1102,7 +1102,7 @@ def test_deny_write_capability_sids_prefer_overlapping_write_roots(tmp_path) -> 
 
 
 def test_deny_write_capability_sids_preserve_writable_grandchild_reopen(tmp_path) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     workspace = tmp_path / "workspace"
     readonly = workspace / ".git"
@@ -1131,7 +1131,7 @@ def test_deny_write_capability_sids_preserve_writable_grandchild_reopen(tmp_path
 def test_grant_acl_plan_to_sid_does_not_apply_deny_write_paths_to_offline_user(
     tmp_path, monkeypatch
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     workspace = tmp_path / "workspace"
     runtime = tmp_path / "runtime"
@@ -1174,7 +1174,7 @@ def test_grant_acl_plan_to_sid_does_not_apply_deny_write_paths_to_offline_user(
 def test_offline_identity_launch_syncs_read_and_write_denies_to_actual_identity(
     monkeypatch: pytest.MonkeyPatch, tmp_path
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     runtime_root = tmp_path / "runtime"
     readonly_mount = tmp_path / "readonly"
@@ -1218,7 +1218,7 @@ def test_offline_identity_launch_syncs_read_and_write_denies_to_actual_identity(
         raising=False,
     )
     monkeypatch.setattr(mod, "_grant_path_to_sid", lambda *_args: None)
-    import opensquilla.sandbox.backend.windows_default_identity as identity_mod
+    import openstarry_code.sandbox.backend.windows_default_identity as identity_mod
 
     monkeypatch.setattr(identity_mod, "unprotect_password", lambda _value: "plain")
     monkeypatch.setattr(
@@ -1244,7 +1244,7 @@ def test_offline_identity_launch_syncs_read_and_write_denies_to_actual_identity(
 def test_offline_identity_launch_combines_read_and_write_denies_for_same_path(
     monkeypatch: pytest.MonkeyPatch, tmp_path
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     runtime = tmp_path / "runtime"
     runtime.mkdir()
@@ -1283,7 +1283,7 @@ def test_offline_identity_launch_combines_read_and_write_denies_for_same_path(
 
     monkeypatch.setattr(mod, "_offline_helper_runtime_roots", lambda: (), raising=False)
     monkeypatch.setattr(mod, "_grant_path_to_sid", lambda *_args: None)
-    import opensquilla.sandbox.backend.windows_default_identity as identity_mod
+    import openstarry_code.sandbox.backend.windows_default_identity as identity_mod
 
     monkeypatch.setattr(identity_mod, "unprotect_password", lambda _value: "plain")
     monkeypatch.setattr(
@@ -1301,7 +1301,7 @@ def test_deny_acl_state_sync_materializes_desired_and_removes_stale(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     state_path = tmp_path / "state" / "deny_acl_state.json"
     stale = tmp_path / "stale"
@@ -1354,7 +1354,7 @@ def test_deny_acl_state_sync_revalidates_unchanged_denies(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     state_path = tmp_path / "deny_acl_state.json"
     denied = tmp_path / "denied"
@@ -1402,7 +1402,7 @@ def test_cached_deny_acl_validation_still_applies_desired_state_changes(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     state_path = tmp_path / "deny_acl_state.json"
     previous = tmp_path / "previous"
@@ -1454,7 +1454,7 @@ def test_deny_acl_state_sync_rolls_back_acl_when_state_write_fails(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     state_path = tmp_path / "state" / "deny_acl_state.json"
     previous = tmp_path / "previous"
@@ -1507,7 +1507,7 @@ def test_deny_acl_state_sync_rolls_back_acl_when_state_write_fails(
 def test_deny_acl_rollback_failure_leaves_taint_and_future_sync_repairs(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     state = tmp_path / "deny_acl_state.json"
     path = tmp_path / "path"
@@ -1537,7 +1537,7 @@ def test_deny_acl_rollback_failure_leaves_taint_and_future_sync_repairs(
 
 
 def test_handle_and_reader_guards_fail_deterministically() -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     kernel = type("Kernel", (), {"SetHandleInformation": lambda *_a: 0})()
     with pytest.raises(OSError, match=r"SetHandleInformation\(stdout\)"):
@@ -1550,7 +1550,7 @@ def test_handle_and_reader_guards_fail_deterministically() -> None:
 def test_allow_acl_state_sync_retains_stale_read_but_revokes_stale_write(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     state = tmp_path / "allow_acl_state.json"
     stale = tmp_path / "stale"
@@ -1593,7 +1593,7 @@ def test_allow_acl_state_sync_retains_stale_read_but_revokes_stale_write(
 def test_allow_acl_grants_child_before_revoking_inherited_parent_access(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     state = tmp_path / "allow_acl_state.json"
     parent = tmp_path / "parent"
@@ -1629,7 +1629,7 @@ def test_allow_acl_state_sync_is_noop_when_effective_grants_are_unchanged(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     state = tmp_path / "allow_acl_state.json"
     retained = tmp_path / "retained"
@@ -1673,7 +1673,7 @@ def test_allow_acl_state_drops_missing_retained_rx_entries(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     state = tmp_path / "allow_acl_state.json"
     stale = tmp_path / "deleted-capability-probe"
@@ -1711,7 +1711,7 @@ def test_deny_acl_state_drops_principals_with_only_missing_paths(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     state = tmp_path / "deny_acl_state.json"
     stale = tmp_path / "deleted-capability-probe"
@@ -1745,7 +1745,7 @@ def test_deny_acl_state_prunes_missing_entries_during_noop_sync(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     state = tmp_path / "deny_acl_state.json"
     current = tmp_path / "current"
@@ -1797,13 +1797,13 @@ def test_deny_acl_state_prunes_missing_entries_during_noop_sync(
 def test_frozen_offline_helper_argv_uses_internal_child_role(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     monkeypatch.setattr(sys, "frozen", True, raising=False)
-    monkeypatch.setattr(sys, "executable", r"C:\Program Files\OpenSquilla\gateway.exe")
+    monkeypatch.setattr(sys, "executable", r"C:\Program Files\OpenStarry Code\gateway.exe")
 
     assert mod._offline_helper_argv() == (
-        r"C:\Program Files\OpenSquilla\gateway.exe",
+        r"C:\Program Files\OpenStarry Code\gateway.exe",
         "--internal-child",
         "windows-default-runner",
         mod.OFFLINE_PAYLOAD_STDIN_ARG,
@@ -1814,7 +1814,7 @@ def test_frozen_offline_helper_argv_uses_internal_child_role(
 def test_allow_taint_recovers_only_permissions_that_may_have_changed(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, persisted_is_new: bool
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     state = tmp_path / "allow.json"
     previous = tmp_path / "previous"
@@ -1855,7 +1855,7 @@ def test_allow_taint_recovery_prunes_deleted_ephemeral_roots(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     state = tmp_path / "allow.json"
     stale = tmp_path / "deleted-capability-probe"
@@ -1896,7 +1896,7 @@ def test_allow_taint_recovery_prunes_deleted_ephemeral_roots(
 def test_deny_taint_recovers_crash_before_or_after_state_replace(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, persisted_is_new: bool
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     state = tmp_path / "deny.json"
     previous = tmp_path / "previous"
@@ -1937,7 +1937,7 @@ def test_deny_taint_recovers_crash_before_or_after_state_replace(
 def test_taint_repair_failure_remains_fail_closed(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     state = tmp_path / "allow.json"
     path = tmp_path / "path"
@@ -1967,7 +1967,7 @@ def test_taint_repair_failure_remains_fail_closed(
 
 
 def test_sandbox_rwx_omits_delete_child_and_native_acl_ignores_inherited_allow() -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     assert not mod.MANAGED_ALLOW_MASK & mod.FILE_DELETE_CHILD
     source = inspect.getsource(mod._grant_path_to_sid_native)
@@ -1980,7 +1980,7 @@ def test_sandbox_rwx_omits_delete_child_and_native_acl_ignores_inherited_allow()
 
 
 def test_legacy_delete_child_cleanup_preserves_host_custom_full_control() -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     write_owner = 0x00080000
     host_custom_mask = mod.MANAGED_ALLOW_MASK | mod.FILE_DELETE_CHILD | write_owner
@@ -2001,14 +2001,14 @@ def test_legacy_delete_child_cleanup_preserves_host_custom_full_control() -> Non
 
 
 def test_managed_deny_mask_includes_read_and_write_denies() -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     assert mod.MANAGED_DENY_MASK & mod.FILE_READ_DENY_MASK
     assert mod.MANAGED_DENY_MASK & mod.FILE_WRITE_DENY_MASK
 
 
 def test_runner_rejects_missing_acl_plan(tmp_path) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     payload = mod.HelperPayload(
         argv=("cmd",),
@@ -2024,7 +2024,7 @@ def test_runner_rejects_missing_acl_plan(tmp_path) -> None:
 
 
 def test_restricted_token_flags_match_codex_legacy() -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     assert mod.RESTRICTED_TOKEN_FLAGS == (
         mod.DISABLE_MAX_PRIVILEGE | mod.LUA_TOKEN | mod.WRITE_RESTRICTED
@@ -2032,7 +2032,7 @@ def test_restricted_token_flags_match_codex_legacy() -> None:
 
 
 def test_restricting_sid_specs_match_codex_legacy_base() -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     sid_specs = mod._base_restricting_sid_specs()
     sid_values = {sid for sid, _label in sid_specs}
@@ -2044,7 +2044,7 @@ def test_restricting_sid_specs_match_codex_legacy_base() -> None:
 
 
 def test_token_post_create_hooks_are_called(monkeypatch) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     calls = []
 
@@ -2071,7 +2071,7 @@ def test_token_post_create_hooks_are_called(monkeypatch) -> None:
 
 
 def test_child_stdin_writer_writes_payload_and_closes(monkeypatch) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     calls = []
 
@@ -2091,7 +2091,7 @@ def test_child_stdin_writer_writes_payload_and_closes(monkeypatch) -> None:
 
 
 def test_native_launchers_assign_and_resume_before_starting_stdin_writer() -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     for launcher in (
         mod._run_payload_as_offline_identity_native,
@@ -2107,7 +2107,7 @@ def test_native_launchers_assign_and_resume_before_starting_stdin_writer() -> No
 
 
 def test_child_stdin_writer_runs_concurrently_and_closes_once(monkeypatch) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     started = threading.Event()
     release = threading.Event()
@@ -2149,7 +2149,7 @@ def test_child_stdin_writer_runs_concurrently_and_closes_once(monkeypatch) -> No
 
 
 def test_child_stdin_writer_failure_terminates_and_surfaces(monkeypatch) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     actions = []
 
@@ -2187,7 +2187,7 @@ def test_child_stdin_writer_failure_terminates_and_surfaces(monkeypatch) -> None
 
 
 def test_finish_child_io_cancels_and_rejoins_blocking_writer_and_readers() -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     cancelled = False
     events = []
@@ -2230,7 +2230,7 @@ def test_finish_child_io_cancels_and_rejoins_blocking_writer_and_readers() -> No
 
 
 def test_timeout_cleanup_preserves_primary_result_over_broken_stdin() -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     events = []
 
@@ -2257,7 +2257,7 @@ def test_timeout_cleanup_preserves_primary_result_over_broken_stdin() -> None:
 
 
 def test_cancel_child_pipe_io_targets_every_retained_handle() -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     calls = []
     kernel = type(
@@ -2272,7 +2272,7 @@ def test_cancel_child_pipe_io_targets_every_retained_handle() -> None:
 
 
 def test_runner_uses_offline_token_for_proxy_allowlist(monkeypatch, tmp_path) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     payload = mod.HelperPayload(
         argv=("cmd",),
@@ -2304,7 +2304,7 @@ def test_runner_uses_offline_token_for_proxy_allowlist(monkeypatch, tmp_path) ->
         calls.append(identity.username)
         return 22
 
-    import opensquilla.sandbox.backend.windows_default_identity as identity_mod
+    import openstarry_code.sandbox.backend.windows_default_identity as identity_mod
 
     monkeypatch.setattr(identity_mod, "logon_offline_identity", fake_logon)
 
@@ -2313,7 +2313,7 @@ def test_runner_uses_offline_token_for_proxy_allowlist(monkeypatch, tmp_path) ->
 
 
 def test_proxy_allowlist_reexecs_helper_under_offline_identity(monkeypatch, tmp_path) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     payload = mod.HelperPayload(
         argv=("cmd",),
@@ -2366,7 +2366,7 @@ def test_capability_probe_uses_restricted_token_without_shared_offline_acl(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     payload = mod.HelperPayload(
         argv=("cmd", "/c", "echo", "probe"),
@@ -2426,8 +2426,8 @@ def test_offline_identity_preflight_fails_before_any_acl_mutation(
     tmp_path: Path,
     failure_stage: str,
 ) -> None:
-    import opensquilla.sandbox.backend.windows_default_identity as identity_mod
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    import openstarry_code.sandbox.backend.windows_default_identity as identity_mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     payload = mod.HelperPayload(
         argv=("cmd",),
@@ -2489,7 +2489,7 @@ def test_offline_identity_preflight_fails_before_any_acl_mutation(
 def test_offline_identity_launch_grants_helper_runtime_rx(
     monkeypatch: pytest.MonkeyPatch, tmp_path
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     payload = mod.HelperPayload(
         argv=("cmd",),
@@ -2527,7 +2527,7 @@ def test_offline_identity_launch_grants_helper_runtime_rx(
         "_grant_path_to_sid",
         lambda path, access, sid: grants.append((path, access, sid)),
     )
-    import opensquilla.sandbox.backend.windows_default_identity as identity_mod
+    import openstarry_code.sandbox.backend.windows_default_identity as identity_mod
 
     monkeypatch.setattr(identity_mod, "unprotect_password", lambda _value: "plain")
     monkeypatch.setattr(
@@ -2547,7 +2547,7 @@ def test_offline_identity_launch_grants_helper_runtime_rx(
 def test_offline_identity_launch_grants_payload_acl_roots_to_offline_user(
     monkeypatch: pytest.MonkeyPatch, tmp_path
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     payload = mod.HelperPayload(
         argv=("cmd",),
@@ -2586,7 +2586,7 @@ def test_offline_identity_launch_grants_payload_acl_roots_to_offline_user(
         "_grant_path_to_sid",
         lambda path, access, sid: grants.append((path, access, sid)),
     )
-    import opensquilla.sandbox.backend.windows_default_identity as identity_mod
+    import openstarry_code.sandbox.backend.windows_default_identity as identity_mod
 
     monkeypatch.setattr(identity_mod, "unprotect_password", lambda _value: "plain")
     monkeypatch.setattr(
@@ -2613,7 +2613,7 @@ def test_offline_identity_native_launch_sets_all_stdio_handles(
 
     import msvcrt
 
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     payload = mod.HelperPayload(
         argv=("cmd", "/c", "echo ok"),
@@ -2754,7 +2754,7 @@ def test_offline_identity_native_launch_sets_all_stdio_handles(
 
 
 def test_offline_reexecuted_helper_uses_current_token(monkeypatch, tmp_path) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     payload = mod.HelperPayload(
         argv=("cmd",),
@@ -2789,7 +2789,7 @@ def test_offline_reexecuted_helper_uses_current_token(monkeypatch, tmp_path) -> 
 
 
 def test_restricted_process_creation_flags_hide_error_windows() -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     flags = mod._restricted_process_creation_flags()
 
@@ -2802,7 +2802,7 @@ def test_restricted_process_creation_flags_hide_error_windows() -> None:
 
 
 def test_restricted_process_application_name_uses_absolute_executable() -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     powershell = r"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe"
 
@@ -2811,7 +2811,7 @@ def test_restricted_process_application_name_uses_absolute_executable() -> None:
 
 
 def test_restricted_token_omits_source_user_sid_for_write_capability_token() -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     assert mod._ordered_restricting_sids(
         capability_sids=("cap",),
@@ -2822,7 +2822,7 @@ def test_restricted_token_omits_source_user_sid_for_write_capability_token() -> 
 
 
 def test_runner_overrides_proxy_env_for_proxy_allowlist(tmp_path) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     payload = mod.HelperPayload(
         argv=("cmd",),
@@ -2864,7 +2864,7 @@ def test_runner_overrides_proxy_env_for_proxy_allowlist(tmp_path) -> None:
 
 
 def test_runner_injects_git_safe_directory_after_existing_git_config(tmp_path) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     (tmp_path / ".git").mkdir()
     payload = mod.HelperPayload(
@@ -2901,7 +2901,7 @@ def test_git_safe_directory_probe_skips_inaccessible_parent_marker(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from opensquilla.sandbox.backend import windows_default_runner as mod
+    from openstarry_code.sandbox.backend import windows_default_runner as mod
 
     workspace = tmp_path / "workspace"
     workspace.mkdir()

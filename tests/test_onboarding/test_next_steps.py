@@ -4,8 +4,8 @@ from __future__ import annotations
 
 
 def test_next_steps_uses_powershell_env_hint_on_windows(monkeypatch):
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.onboarding import next_steps
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.onboarding import next_steps
 
     cfg = GatewayConfig()
     cfg.llm.api_key = ""
@@ -20,25 +20,25 @@ def test_next_steps_uses_powershell_env_hint_on_windows(monkeypatch):
 
 
 def test_onboarding_finish_output_separates_summary_from_commands():
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.onboarding.next_steps import format_next_steps
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.onboarding.next_steps import format_next_steps
 
     text = format_next_steps(GatewayConfig(), config_path="C:/tmp/config.toml")
 
     assert text.startswith("Configuration summary:")
     assert "Next steps:" not in text
     assert "Commands:" in text
-    assert "  Run gateway now: opensquilla gateway run" in text
-    assert "  Start gateway in background: opensquilla gateway start --json" in text
-    assert "  Restart running gateway: opensquilla gateway restart --json" in text
+    assert "  Run gateway now: openstarry-code gateway run" in text
+    assert "  Start gateway in background: openstarry-code gateway start --json" in text
+    assert "  Restart running gateway: openstarry-code gateway restart --json" in text
     assert "Reference:" in text
     assert "  Web UI: http://127.0.0.1:18791/control/setup" in text
     assert "uv run" not in text
 
 
 def test_onboarding_finish_output_summarizes_all_capability_sections():
-    from opensquilla.gateway.config import GatewayConfig, LlmProviderConfig
-    from opensquilla.onboarding.next_steps import format_next_steps
+    from openstarry_code.gateway.config import GatewayConfig, LlmProviderConfig
+    from openstarry_code.onboarding.next_steps import format_next_steps
 
     cfg = GatewayConfig()
     cfg.llm = LlmProviderConfig(
@@ -53,7 +53,7 @@ def test_onboarding_finish_output_summarizes_all_capability_sections():
     cfg.memory.embedding.provider = "openai"
     cfg.memory.embedding.remote.api_key = ""
 
-    text = format_next_steps(cfg, config_path="/tmp/opensquilla/custom.toml")
+    text = format_next_steps(cfg, config_path="/tmp/openstarry_code/custom.toml")
 
     assert (
         "  Capabilities: Web search=Ready | Channels=Later | "
@@ -64,38 +64,38 @@ def test_onboarding_finish_output_summarizes_all_capability_sections():
 
 
 def test_onboarding_finish_output_uses_product_router_label():
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.onboarding.next_steps import format_next_steps
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.onboarding.next_steps import format_next_steps
 
-    text = format_next_steps(GatewayConfig(), config_path="/tmp/opensquilla/custom.toml")
+    text = format_next_steps(GatewayConfig(), config_path="/tmp/openstarry_code/custom.toml")
 
     assert "  Router: SquillaRouter, default=c1" in text
     assert "profile=openrouter-mix" not in text
 
 
 def test_onboarding_finish_output_keeps_explicit_config_in_gateway_commands():
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.onboarding.next_steps import format_next_steps
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.onboarding.next_steps import format_next_steps
 
-    text = format_next_steps(GatewayConfig(), config_path="/tmp/opensquilla/custom.toml")
+    text = format_next_steps(GatewayConfig(), config_path="/tmp/openstarry_code/custom.toml")
 
     assert (
-        "  Run gateway now: opensquilla gateway run --config /tmp/opensquilla/custom.toml"
+        "  Run gateway now: openstarry-code gateway run --config /tmp/openstarry_code/custom.toml"
         in text
     )
     assert (
         "  Start gateway in background: "
-        "opensquilla gateway start --json --config /tmp/opensquilla/custom.toml"
+        "openstarry-code gateway start --json --config /tmp/openstarry_code/custom.toml"
     ) in text
     assert (
         "  Restart running gateway: "
-        "opensquilla gateway restart --json --config /tmp/opensquilla/custom.toml"
+        "openstarry-code gateway restart --json --config /tmp/openstarry_code/custom.toml"
     ) in text
 
 
 def test_onboarding_finish_output_uses_configured_web_setup_url():
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.onboarding.next_steps import format_next_steps
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.onboarding.next_steps import format_next_steps
 
     cfg = GatewayConfig(port=19999)
     cfg.control_ui.base_path = "/ops"
@@ -107,8 +107,8 @@ def test_onboarding_finish_output_uses_configured_web_setup_url():
 
 
 def test_onboarding_finish_output_puts_missing_env_hint_in_commands(monkeypatch):
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.onboarding import next_steps
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.onboarding import next_steps
 
     cfg = GatewayConfig()
     cfg.llm.api_key = ""
@@ -125,8 +125,8 @@ def test_onboarding_finish_output_puts_missing_env_hint_in_commands(monkeypatch)
 
 
 def test_onboarding_finish_output_keeps_provider_key_url_as_reference():
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.onboarding.next_steps import format_next_steps
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.onboarding.next_steps import format_next_steps
 
     cfg = GatewayConfig()
     cfg.llm.provider = "openrouter"
@@ -138,8 +138,8 @@ def test_onboarding_finish_output_keeps_provider_key_url_as_reference():
 
 
 def test_env_reference_warnings_cover_llm_and_search_missing_env(monkeypatch):
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.onboarding.next_steps import env_reference_warnings
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.onboarding.next_steps import env_reference_warnings
 
     cfg = GatewayConfig()
     cfg.llm.api_key = ""
@@ -163,24 +163,24 @@ def test_env_reference_warnings_cover_llm_and_search_missing_env(monkeypatch):
 
 
 def test_env_reference_warnings_cover_image_and_memory_missing_env(monkeypatch):
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.onboarding.next_steps import env_reference_warnings
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.onboarding.next_steps import env_reference_warnings
 
     cfg = GatewayConfig()
     cfg.image_generation.enabled = True
     cfg.image_generation.primary = "openrouter/google/gemini-3.1-flash-image-preview"
     cfg.image_generation.providers.openrouter.api_key = ""
-    cfg.image_generation.providers.openrouter.api_key_env = "OPENSQUILLA_IMAGE_KEY"
+    cfg.image_generation.providers.openrouter.api_key_env = "OPENSTARRY_CODE_IMAGE_KEY"
     cfg.memory.embedding.provider = "openai"
     cfg.memory.embedding.remote.api_key = ""
     cfg.memory.embedding.remote.api_key_env = "OPENAI_EMBEDDINGS_API_KEY"
-    monkeypatch.delenv("OPENSQUILLA_IMAGE_KEY", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_IMAGE_KEY", raising=False)
     monkeypatch.delenv("OPENAI_EMBEDDINGS_API_KEY", raising=False)
 
     warnings = env_reference_warnings(cfg)
 
     assert any(
-        "Image generation provider" in warning and "OPENSQUILLA_IMAGE_KEY" in warning
+        "Image generation provider" in warning and "OPENSTARRY_CODE_IMAGE_KEY" in warning
         for warning in warnings
     )
     assert any(
@@ -192,8 +192,8 @@ def test_env_reference_warnings_cover_image_and_memory_missing_env(monkeypatch):
 def test_env_reference_warnings_do_not_warn_for_image_generation_missing_env_when_disabled(
     monkeypatch,
 ):
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.onboarding.next_steps import env_reference_warnings
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.onboarding.next_steps import env_reference_warnings
 
     cfg = GatewayConfig()
     cfg.image_generation.enabled = False
@@ -206,14 +206,14 @@ def test_env_reference_warnings_do_not_warn_for_image_generation_missing_env_whe
 
 
 def test_headless_setup_commands_cover_the_ensemble_section():
-    from opensquilla.onboarding.next_steps import headless_setup_commands
+    from openstarry_code.onboarding.next_steps import headless_setup_commands
 
     for section in ("ensemble", "llm-ensemble", "llm_ensemble"):
         commands = headless_setup_commands(section)
         assert commands == [
             (
                 "Headless ensemble",
-                "opensquilla onboard configure ensemble --enabled",
+                "openstarry-code onboard configure ensemble --enabled",
             )
         ]
 
@@ -221,7 +221,7 @@ def test_headless_setup_commands_cover_the_ensemble_section():
 def test_quote_cli_arg_uses_posix_quoting_off_windows(monkeypatch):
     import shlex
 
-    from opensquilla.onboarding import next_steps
+    from openstarry_code.onboarding import next_steps
 
     monkeypatch.setattr(next_steps.platform, "system", lambda: "Linux")
 
@@ -233,7 +233,7 @@ def test_quote_cli_arg_uses_posix_quoting_off_windows(monkeypatch):
 
 
 def test_quote_cli_arg_uses_powershell_quoting_on_windows(monkeypatch):
-    from opensquilla.onboarding import next_steps
+    from openstarry_code.onboarding import next_steps
 
     monkeypatch.setattr(next_steps.platform, "system", lambda: "Windows")
 
@@ -256,7 +256,7 @@ def test_quote_cli_arg_uses_powershell_quoting_on_windows(monkeypatch):
 
 
 def test_config_cli_arg_is_powershell_safe_on_windows(monkeypatch):
-    from opensquilla.onboarding import next_steps
+    from openstarry_code.onboarding import next_steps
 
     monkeypatch.setattr(next_steps.platform, "system", lambda: "Windows")
 
@@ -266,7 +266,7 @@ def test_config_cli_arg_is_powershell_safe_on_windows(monkeypatch):
 
 
 def test_set_env_command_is_bare_on_both_platforms(monkeypatch):
-    from opensquilla.onboarding import next_steps
+    from openstarry_code.onboarding import next_steps
 
     monkeypatch.setattr(next_steps.platform, "system", lambda: "Linux")
     assert next_steps.set_env_command("DUMMY_KEY") == 'export DUMMY_KEY="<your-key>"'
@@ -282,7 +282,7 @@ def test_set_env_command_is_bare_on_both_platforms(monkeypatch):
 
 
 def test_human_env_command_labels_only_windows(monkeypatch):
-    from opensquilla.onboarding import next_steps
+    from openstarry_code.onboarding import next_steps
 
     command = '$env:DUMMY_KEY = "<your-key>"'
 
@@ -294,9 +294,9 @@ def test_human_env_command_labels_only_windows(monkeypatch):
 
 
 def test_env_recovery_commands_carry_only_the_command_on_windows(monkeypatch):
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.onboarding import next_steps
-    from opensquilla.onboarding.status import get_onboarding_status
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.onboarding import next_steps
+    from openstarry_code.onboarding.status import get_onboarding_status
 
     cfg = GatewayConfig()
     cfg.llm.api_key = ""
@@ -314,9 +314,9 @@ def test_env_recovery_commands_carry_only_the_command_on_windows(monkeypatch):
 
 
 def test_status_display_words_have_a_single_source_of_truth():
-    from opensquilla.cli import onboard_cmd
-    from opensquilla.onboarding import next_steps
-    from opensquilla.onboarding.section_status import SECTION_STATUS_DISPLAY
+    from openstarry_code.cli import onboard_cmd
+    from openstarry_code.onboarding import next_steps
+    from openstarry_code.onboarding.section_status import SECTION_STATUS_DISPLAY
 
     # The status table renders through the shared mapping object itself…
     assert onboard_cmd._STATUS_DISPLAY is SECTION_STATUS_DISPLAY
@@ -332,10 +332,10 @@ def test_status_display_words_have_a_single_source_of_truth():
 def test_next_steps_mention_persistent_env_file_alongside_export_hint(
     tmp_path, monkeypatch
 ):
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.onboarding import next_steps
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.onboarding import next_steps
 
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "state-home"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "state-home"))
     cfg = GatewayConfig()
     cfg.llm.api_key = ""
     cfg.llm.api_key_env = "DUMMY_UNSET_LLM_KEY"
@@ -355,10 +355,10 @@ def test_next_steps_mention_persistent_env_file_alongside_export_hint(
 
 
 def test_missing_env_warning_mentions_persistent_env_file(tmp_path, monkeypatch):
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.onboarding import next_steps
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.onboarding import next_steps
 
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "state-home"))
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "state-home"))
     cfg = GatewayConfig()
     cfg.llm.api_key = ""
     cfg.llm.api_key_env = "DUMMY_UNSET_LLM_KEY"
@@ -374,8 +374,8 @@ def test_missing_env_warning_mentions_persistent_env_file(tmp_path, monkeypatch)
 
 
 def test_next_steps_advertise_the_configure_hub(monkeypatch):
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.onboarding import next_steps
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.onboarding import next_steps
 
     cfg = GatewayConfig()
 
@@ -383,14 +383,14 @@ def test_next_steps_advertise_the_configure_hub(monkeypatch):
 
     commands = text.split("Commands:", 1)[1].split("Reference:", 1)[0]
     assert (
-        "Change settings anytime: opensquilla onboard configure --config /tmp/config.toml"
+        "Change settings anytime: openstarry-code onboard configure --config /tmp/config.toml"
         in commands
     )
 
 
 def test_fix_next_names_the_exact_command_for_a_degraded_capability(monkeypatch):
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.onboarding import next_steps
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.onboarding import next_steps
 
     cfg = GatewayConfig()
     cfg.search_provider = "tavily"
@@ -402,12 +402,12 @@ def test_fix_next_names_the_exact_command_for_a_degraded_capability(monkeypatch)
 
     assert "Fix next:" in text
     fix_block = text.split("Fix next:", 1)[1].split("Reference:", 1)[0]
-    assert "opensquilla onboard configure search --config /tmp/config.toml" in fix_block
+    assert "openstarry-code onboard configure search --config /tmp/config.toml" in fix_block
 
 
 def test_fix_next_absent_when_nothing_needs_attention():
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.onboarding import next_steps
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.onboarding import next_steps
 
     # Fresh defaults: every capability is either ready or a deliberate
     # "Later" opt-out — nothing to nag about.
@@ -417,8 +417,8 @@ def test_fix_next_absent_when_nothing_needs_attention():
 
 
 def test_fix_next_never_advertises_the_nonexistent_configure_audio(monkeypatch):
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.onboarding import next_steps
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.onboarding import next_steps
 
     cfg = GatewayConfig()
     cfg.audio.enabled = True  # enabled without any provider credential
@@ -428,15 +428,15 @@ def test_fix_next_never_advertises_the_nonexistent_configure_audio(monkeypatch):
 
     assert "Fix next:" in text
     assert "onboard configure audio" not in text
-    assert "opensquilla onboard catalog audio" in text
+    assert "openstarry-code onboard catalog audio" in text
 
 
 def test_fix_next_audio_command_comes_from_the_headless_command_table(monkeypatch):
     """The audio fix line must advertise the command recorded once in
     _HEADLESS_SETUP_COMMANDS — a rename there must not leave a stale
     hardcoded copy in the Fix-next checklist."""
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.onboarding import next_steps
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.onboarding import next_steps
 
     cfg = GatewayConfig()
     cfg.audio.enabled = True  # enabled without any provider credential
@@ -444,13 +444,13 @@ def test_fix_next_audio_command_comes_from_the_headless_command_table(monkeypatc
     monkeypatch.setitem(
         next_steps._HEADLESS_SETUP_COMMANDS,
         "audio",
-        ("Audio recipes", "opensquilla onboard catalog audio-renamed"),
+        ("Audio recipes", "openstarry-code onboard catalog audio-renamed"),
     )
 
     text = next_steps.format_next_steps(cfg, config_path="/tmp/config.toml")
 
     fix_block = text.split("Fix next:", 1)[1]
-    assert "opensquilla onboard catalog audio-renamed --config /tmp/config.toml" in fix_block
+    assert "openstarry-code onboard catalog audio-renamed --config /tmp/config.toml" in fix_block
     assert "catalog audio --config" not in fix_block
 
 
@@ -458,9 +458,9 @@ def test_capability_summary_and_fix_lines_share_one_label_status_resolver(monkey
     """Both lines of the same printed block derive (label, display) through
     _capability_section_view, so a wording change can never make the
     Capabilities summary and the Fix-next checklist disagree."""
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.onboarding import next_steps
-    from opensquilla.onboarding.status import get_onboarding_status
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.onboarding import next_steps
+    from openstarry_code.onboarding.status import get_onboarding_status
 
     cfg = GatewayConfig()
     cfg.search_provider = "tavily"

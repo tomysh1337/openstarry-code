@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import pytest
 
-from opensquilla.provider.compat_policy import TEXT_TOOL_DIALECT_DEEPSEEK_DSML
-from opensquilla.provider.text_tool_normalizer import (
+from openstarry_code.provider.compat_policy import TEXT_TOOL_DIALECT_DEEPSEEK_DSML
+from openstarry_code.provider.text_tool_normalizer import (
     LiteralTextSegment,
     RejectedTextToolSegment,
     SyntheticToolSegment,
@@ -13,7 +13,7 @@ from opensquilla.provider.text_tool_normalizer import (
     classify_text_tool_segments,
     parse_dsml_candidate,
 )
-from opensquilla.provider.types import ToolDefinition, ToolInputSchema
+from openstarry_code.provider.types import ToolDefinition, ToolInputSchema
 
 _TOOL = ToolDefinition(
     name="search",

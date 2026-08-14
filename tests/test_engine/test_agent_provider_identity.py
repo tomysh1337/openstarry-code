@@ -17,12 +17,12 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine import Agent, AgentConfig
-from opensquilla.engine.runtime import _SelectorFallbackProvider
-from opensquilla.engine.usage import UsageTracker
-from opensquilla.provider import ChatConfig, Message
-from opensquilla.provider import DoneEvent as ProviderDoneEvent
-from opensquilla.provider import TextDeltaEvent as ProviderTextDeltaEvent
+from openstarry_code.engine import Agent, AgentConfig
+from openstarry_code.engine.runtime import _SelectorFallbackProvider
+from openstarry_code.engine.usage import UsageTracker
+from openstarry_code.provider import ChatConfig, Message
+from openstarry_code.provider import DoneEvent as ProviderDoneEvent
+from openstarry_code.provider import TextDeltaEvent as ProviderTextDeltaEvent
 
 
 class _LocalCompatProvider:
@@ -145,7 +145,7 @@ def test_routed_turn_cost_budget_prices_the_actual_provider(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """The live cost gate must not price a routed model as the primary provider."""
-    from opensquilla.engine import pricing
+    from openstarry_code.engine import pricing
 
     class _Selector:
         active_provider_id = "deepseek"

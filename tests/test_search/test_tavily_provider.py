@@ -5,8 +5,8 @@ import json
 import httpx
 import pytest
 
-from opensquilla.search.providers.tavily import TavilySearchProvider
-from opensquilla.search.types import SearchProviderError
+from openstarry_code.search.providers.tavily import TavilySearchProvider
+from openstarry_code.search.types import SearchProviderError
 
 
 @pytest.mark.asyncio

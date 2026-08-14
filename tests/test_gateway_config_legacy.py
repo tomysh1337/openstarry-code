@@ -17,9 +17,9 @@ from pathlib import Path
 import pytest
 from pydantic import ValidationError
 
-import opensquilla.gateway.config as config_module
-import opensquilla.gateway.config_migration as migration_module
-from opensquilla.gateway.config import GatewayConfig
+import openstarry_code.gateway.config as config_module
+import openstarry_code.gateway.config_migration as migration_module
+from openstarry_code.gateway.config import GatewayConfig
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -360,11 +360,11 @@ def test_log_file_written_with_per_field_detail(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     """After loading a config with deprecated fields, a .log file must exist
-    under ~/.opensquilla/logs/ containing one JSON line per deprecated field."""
+    under ~/.openstarry-code/logs/ containing one JSON line per deprecated field."""
     monkeypatch.setattr(migration_module, "_LEGACY_MEMORY_FIELDS_WARNED", False)
     monkeypatch.setattr(migration_module, "_LEGACY_MEMORY_FIELDS_SEEN", set())
 
-    # Redirect opensquilla home to tmp_path so the log lands there.
+    # Redirect openstarry-code home to tmp_path so the log lands there.
     monkeypatch.setattr(migration_module, "default_opensquilla_home", lambda: tmp_path)
 
     toml_path = _build_toml_with_deprecated(tmp_path)
@@ -523,23 +523,23 @@ def test_legacy_log_redacts_parked_channel_values(
 
 
 # ---------------------------------------------------------------------------
-# AC#8 guard: no OPENSQUILLA_LEGACY_FALLBACK env switch
+# AC#8 guard: no OPENSTARRY_CODE_LEGACY_FALLBACK env switch
 # ---------------------------------------------------------------------------
 
 
 def test_no_legacy_fallback_env_var() -> None:
-    """The source must not contain an OPENSQUILLA_LEGACY_FALLBACK env switch
+    """The source must not contain an OPENSTARRY_CODE_LEGACY_FALLBACK env switch
     (ADR-3 prohibits runtime opt-out of the fallback)."""
     import inspect
     source = inspect.getsource(config_module)
-    assert "OPENSQUILLA_LEGACY_FALLBACK" not in source
+    assert "OPENSTARRY_CODE_LEGACY_FALLBACK" not in source
 
 
 class TestMetaSkillConfig:
     """C4: GatewayConfig must accept [meta_skill.persistence] section."""
 
     def test_default_meta_skill_config(self) -> None:
-        from opensquilla.gateway.config import GatewayConfig
+        from openstarry_code.gateway.config import GatewayConfig
 
         cfg = GatewayConfig()
         assert cfg.meta_skill.enabled is True
@@ -547,7 +547,7 @@ class TestMetaSkillConfig:
         assert cfg.meta_skill.persistence.orphan_cleanup_age_seconds == 3600
 
     def test_meta_skill_can_be_disabled_globally(self) -> None:
-        from opensquilla.gateway.config import GatewayConfig
+        from openstarry_code.gateway.config import GatewayConfig
 
         cfg = GatewayConfig(
             meta_skill={"enabled": False},
@@ -555,7 +555,7 @@ class TestMetaSkillConfig:
         assert cfg.meta_skill.enabled is False
 
     def test_meta_skill_persistence_disabled(self) -> None:
-        from opensquilla.gateway.config import GatewayConfig
+        from openstarry_code.gateway.config import GatewayConfig
 
         cfg = GatewayConfig(
             meta_skill={"persistence": {"enabled": False}},
@@ -563,27 +563,27 @@ class TestMetaSkillConfig:
         assert cfg.meta_skill.persistence.enabled is False
 
     def test_meta_skill_env_override(self, monkeypatch) -> None:
-        from opensquilla.gateway.config import MetaSkillConfig
+        from openstarry_code.gateway.config import MetaSkillConfig
 
-        monkeypatch.setenv("OPENSQUILLA_META_SKILL_ENABLED", "false")
+        monkeypatch.setenv("OPENSTARRY_CODE_META_SKILL_ENABLED", "false")
         cfg = MetaSkillConfig()
         assert cfg.enabled is False
 
     def test_meta_skill_persistence_env_override(self, monkeypatch) -> None:
-        from opensquilla.gateway.config import MetaSkillPersistenceConfig
+        from openstarry_code.gateway.config import MetaSkillPersistenceConfig
 
-        monkeypatch.setenv("OPENSQUILLA_META_SKILL_PERSISTENCE_ENABLED", "false")
+        monkeypatch.setenv("OPENSTARRY_CODE_META_SKILL_PERSISTENCE_ENABLED", "false")
         cfg = MetaSkillPersistenceConfig()
         assert cfg.enabled is False
 
     def test_example_toml_parses_clean(self) -> None:
-        """Copying opensquilla.toml.example to ~/.opensquilla/config.toml must work."""
+        """Copying openstarry-code.toml.example to ~/.openstarry-code/config.toml must work."""
         import tomllib
         from pathlib import Path
 
-        from opensquilla.gateway.config import GatewayConfig
+        from openstarry_code.gateway.config import GatewayConfig
 
-        example_path = Path(__file__).resolve().parents[1] / "opensquilla.toml.example"
+        example_path = Path(__file__).resolve().parents[1] / "openstarry-code.toml.example"
         with example_path.open("rb") as f:
             data = tomllib.load(f)
 

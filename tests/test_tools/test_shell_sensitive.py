@@ -6,9 +6,9 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.sandbox.path_validation import MountDecision
-from opensquilla.tools.builtin import filesystem, shell
-from opensquilla.tools.types import ToolContext, ToolError, current_tool_context
+from openstarry_code.sandbox.path_validation import MountDecision
+from openstarry_code.tools.builtin import filesystem, shell
+from openstarry_code.tools.types import ToolContext, ToolError, current_tool_context
 
 
 @pytest.mark.asyncio
@@ -82,7 +82,7 @@ def test_dev_null_redirection_does_not_hide_sensitive_operand() -> None:
 
 
 def test_sensitive_shell_allows_configured_workspace_under_sensitive_prefix() -> None:
-    workspace = Path("/root/.opensquilla/workspace")
+    workspace = Path("/root/.openstarry-code/workspace")
     token = current_tool_context.set(ToolContext(workspace_dir=str(workspace)))
     try:
         script = (
@@ -103,7 +103,7 @@ def test_sensitive_shell_allows_configured_workspace_under_sensitive_prefix() ->
 
 
 def test_sensitive_shell_still_blocks_sensitive_command_inside_workspace() -> None:
-    workspace = Path("/root/.opensquilla/workspace")
+    workspace = Path("/root/.openstarry-code/workspace")
     token = current_tool_context.set(ToolContext(workspace_dir=str(workspace)))
     try:
         payload = shell._sensitive_shell_block(
@@ -119,7 +119,7 @@ def test_sensitive_shell_still_blocks_sensitive_command_inside_workspace() -> No
 
 
 def test_sensitive_shell_workspace_exception_keeps_leaf_secret_blocks() -> None:
-    workspace = Path("/root/.opensquilla/workspace")
+    workspace = Path("/root/.openstarry-code/workspace")
     token = current_tool_context.set(ToolContext(workspace_dir=str(workspace)))
     try:
         payload = shell._sensitive_shell_block(

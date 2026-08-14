@@ -55,7 +55,7 @@ def build_pdf(lines: list[str]) -> bytes:
 def main() -> None:
     target = Path(__file__).with_name("router-evaluation-summary.pdf")
     lines = [
-        "OpenSquilla Router Evaluation Summary",
+        "OpenStarry Code Router Evaluation Summary",
         "Page 1 evidence fixture for meta-pdf-intelligence.",
         "Key finding: cost-aware routing reduced estimated spend by 31 percent.",
         "Key finding: fallback accuracy stayed above the acceptance threshold.",

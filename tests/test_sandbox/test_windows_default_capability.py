@@ -8,7 +8,7 @@ import pytest
 
 
 def test_capability_sid_is_stable_per_root(tmp_path: Path) -> None:
-    from opensquilla.sandbox.backend.windows_default_capability import (
+    from openstarry_code.sandbox.backend.windows_default_capability import (
         capability_sid_for_root,
         load_capability_store,
     )
@@ -32,7 +32,7 @@ def test_capability_sid_is_stable_per_root(tmp_path: Path) -> None:
 
 
 def test_command_capabilities_only_include_current_roots(tmp_path: Path) -> None:
-    from opensquilla.sandbox.backend.windows_default_capability import (
+    from openstarry_code.sandbox.backend.windows_default_capability import (
         capability_sid_for_root,
         capability_sids_for_command,
     )
@@ -60,7 +60,7 @@ def test_command_capabilities_only_include_current_roots(tmp_path: Path) -> None
 def test_generated_restricting_sid_uses_create_restricted_token_compatible_form(
     tmp_path: Path,
 ) -> None:
-    from opensquilla.sandbox.backend.windows_default_capability import capability_sid_for_root
+    from openstarry_code.sandbox.backend.windows_default_capability import capability_sid_for_root
 
     sid = capability_sid_for_root(tmp_path / "cap_sids.json", tmp_path / "workspace")
 
@@ -69,7 +69,7 @@ def test_generated_restricting_sid_uses_create_restricted_token_compatible_form(
 
 
 def test_legacy_app_capability_sids_are_not_reused(tmp_path: Path) -> None:
-    from opensquilla.sandbox.backend.windows_default_capability import (
+    from openstarry_code.sandbox.backend.windows_default_capability import (
         capability_sid_for_root,
         load_capability_store,
     )
@@ -94,7 +94,7 @@ def test_legacy_app_capability_sids_are_not_reused(tmp_path: Path) -> None:
 
 
 def test_capability_sid_is_isolated_by_access_level_on_downgrade(tmp_path: Path) -> None:
-    from opensquilla.sandbox.backend.windows_default_capability import (
+    from openstarry_code.sandbox.backend.windows_default_capability import (
         capability_sid_for_root,
         capability_sids_for_command,
     )
@@ -130,7 +130,7 @@ def test_capability_sid_is_isolated_by_access_level_on_downgrade(tmp_path: Path)
 
 
 def test_capability_sid_key_is_windows_case_insensitive(tmp_path: Path) -> None:
-    from opensquilla.sandbox.backend.windows_default_capability import (
+    from openstarry_code.sandbox.backend.windows_default_capability import (
         capability_sid_for_root,
     )
 
@@ -159,7 +159,7 @@ def test_capability_sid_key_is_windows_case_insensitive(tmp_path: Path) -> None:
 
 
 def test_legacy_path_only_sid_is_not_reused_for_access_namespaced_key(tmp_path: Path) -> None:
-    from opensquilla.sandbox.backend.windows_default_capability import capability_sid_for_root
+    from openstarry_code.sandbox.backend.windows_default_capability import capability_sid_for_root
 
     store_path = tmp_path / "cap_sids.json"
     root = tmp_path / "workspace"
@@ -179,7 +179,7 @@ def test_legacy_path_only_sid_is_not_reused_for_access_namespaced_key(tmp_path: 
 
 
 def test_concurrent_capability_store_updates_do_not_lose_roots(tmp_path: Path) -> None:
-    from opensquilla.sandbox.backend.windows_default_capability import (
+    from openstarry_code.sandbox.backend.windows_default_capability import (
         capability_sid_for_root,
         load_capability_store,
     )
@@ -197,7 +197,7 @@ def test_concurrent_capability_store_updates_do_not_lose_roots(tmp_path: Path) -
 
 
 def test_capability_store_atomic_failure_cleans_temp(tmp_path: Path, monkeypatch) -> None:
-    from opensquilla.sandbox.backend import windows_default_capability as mod
+    from openstarry_code.sandbox.backend import windows_default_capability as mod
 
     store = tmp_path / "cap_sids.json"
     monkeypatch.setattr(mod.os, "replace", lambda *_args: (_ for _ in ()).throw(OSError("replace")))

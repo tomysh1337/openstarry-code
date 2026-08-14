@@ -22,8 +22,8 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine.agent_injection import ListPendingInputProvider
-from opensquilla.engine.turn_runner.stream_consumer_stage import (
+from openstarry_code.engine.agent_injection import ListPendingInputProvider
+from openstarry_code.engine.turn_runner.stream_consumer_stage import (
     _SUPPRESS,
     StreamConsumerStage,
     StreamConsumerStageInput,
@@ -37,7 +37,7 @@ from opensquilla.engine.turn_runner.stream_consumer_stage import (
     _ToolUseStartHandler,
     _WarningHandler,
 )
-from opensquilla.engine.types import (
+from openstarry_code.engine.types import (
     ArtifactEvent,
     CompactionEvent,
     DoneEvent,
@@ -48,8 +48,8 @@ from opensquilla.engine.types import (
     ToolUseStartEvent,
     WarningEvent,
 )
-from opensquilla.provider.types import EnsembleProgressEvent as ProviderEnsembleProgressEvent
-from opensquilla.tools.types import ToolContext
+from openstarry_code.provider.types import EnsembleProgressEvent as ProviderEnsembleProgressEvent
+from openstarry_code.tools.types import ToolContext
 
 # ---------------------------------------------------------------------------
 # Recording fakes
@@ -2012,7 +2012,7 @@ async def test_done_publish_cancellation_does_not_race_finalizer() -> None:
     CancelledError unwinds, so a steered follow-up turn's finalizer never
     reads the accumulators while the worker is still writing to disk.
     """
-    from opensquilla.engine.artifact_delivery import OmittedArtifactPublishResult
+    from openstarry_code.engine.artifact_delivery import OmittedArtifactPublishResult
 
     publish_started = threading.Event()
     release_publish = threading.Event()
@@ -2639,7 +2639,7 @@ def test_stage_name() -> None:
 
 def test_turn_context_surface_kind_defaults_to_unknown() -> None:
     """PR3: surface_kind is "unknown" unless gateway/CLI/channel sets it."""
-    from opensquilla.engine.pipeline import TurnContext
+    from openstarry_code.engine.pipeline import TurnContext
 
     # TurnContext requires: message, session_key, config, provider, model,
     # tool_defs, system_prompt — check the actual signature in pipeline.py

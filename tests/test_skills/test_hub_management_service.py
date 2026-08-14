@@ -8,36 +8,36 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.skills.hub import management as hub_management
-from opensquilla.skills.hub.contracts import (
+from openstarry_code.skills.hub import management as hub_management
+from openstarry_code.skills.hub.contracts import (
     DiagnosticPhase,
     DiagnosticSeverity,
     SkillDiagnostic,
 )
-from opensquilla.skills.hub.identity import is_skill_meta_installed
-from opensquilla.skills.hub.installer import InstallResult as LegacyInstallResult
-from opensquilla.skills.hub.lockfile import (
+from openstarry_code.skills.hub.identity import is_skill_meta_installed
+from openstarry_code.skills.hub.installer import InstallResult as LegacyInstallResult
+from openstarry_code.skills.hub.lockfile import (
     LockEntry,
     Lockfile,
     compute_sha256,
     compute_tree_sha256,
 )
-from opensquilla.skills.hub.management import SkillManagementService
-from opensquilla.skills.hub.router import SourceRouter
-from opensquilla.skills.hub.scanner import ScanResult
-from opensquilla.skills.hub.source import (
+from openstarry_code.skills.hub.management import SkillManagementService
+from openstarry_code.skills.hub.router import SourceRouter
+from openstarry_code.skills.hub.scanner import ScanResult
+from openstarry_code.skills.hub.source import (
     SkillBundle,
     SkillMeta,
     SkillSource,
     SkillSourceFetchError,
     SourceResolution,
 )
-from opensquilla.skills.hub.transaction import (
+from openstarry_code.skills.hub.transaction import (
     SkillTransactionJournal,
     rollback_root,
     staging_root,
 )
-from opensquilla.skills.loader import SkillLoader, SkillReloadResult
+from openstarry_code.skills.loader import SkillLoader, SkillReloadResult
 
 
 class FakeImmutableSource(SkillSource):
@@ -2204,7 +2204,7 @@ async def test_post_commit_cleanup_exception_remains_a_successful_install(
         }
     )
     service = _service(tmp_path, source, loader=loader)
-    from opensquilla.skills.hub import management as management_module
+    from openstarry_code.skills.hub import management as management_module
 
     real_validate = management_module.validate_transaction_journal_paths
 
@@ -3931,7 +3931,7 @@ async def test_install_avoids_occupied_untracked_dangling_symlink(
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     "reserved_name",
-    [".opensquilla-staging", ".opensquilla-rollback"],
+    [".openstarry-code-staging", ".openstarry-code-rollback"],
 )
 async def test_install_rejects_symlinked_reserved_transaction_root(
     tmp_path: Path,
@@ -3989,7 +3989,7 @@ async def test_update_fsync_failure_restores_tree_lock_and_catalog(
     rollback_expected: bool,
     recovery_phase: str | None,
 ) -> None:
-    from opensquilla.skills.hub import management as management_module
+    from openstarry_code.skills.hub import management as management_module
 
     managed = tmp_path / "managed"
     loader = SkillLoader(managed_dir=managed)
@@ -4073,7 +4073,7 @@ async def test_uninstall_fsync_failure_restores_tree_lock_and_catalog(
     monkeypatch: pytest.MonkeyPatch,
     directory_call: int,
 ) -> None:
-    from opensquilla.skills.hub import management as management_module
+    from openstarry_code.skills.hub import management as management_module
 
     managed = tmp_path / "managed"
     loader = SkillLoader(managed_dir=managed)

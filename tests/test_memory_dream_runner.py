@@ -5,8 +5,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.memory.dream import Dream
-from opensquilla.memory.dream.evidence import load_evidence_store
+from openstarry_code.memory.dream import Dream
+from openstarry_code.memory.dream.evidence import load_evidence_store
 
 
 class _Response:

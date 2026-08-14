@@ -9,18 +9,18 @@ from typing import Any
 
 import pytest
 
-from opensquilla.project_workspaces import (
+from openstarry_code.project_workspaces import (
     ProjectWorkspaceGuard,
     ProjectWorkspaceStateError,
 )
-from opensquilla.session.models import (
+from openstarry_code.session.models import (
     AgentTaskRecord,
     AgentTaskStatus,
     SessionNode,
     SessionStatus,
     TranscriptEntry,
 )
-from opensquilla.session.storage import (
+from openstarry_code.session.storage import (
     MetaLaunchDraftDiscardedError,
     SessionStorage,
     StorageBusyError,

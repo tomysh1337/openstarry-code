@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import asyncio
 
-from opensquilla.tools.policy_helpers import ToolPolicy, apply_tool_policy
-from opensquilla.tools.registry import get_default_registry
-from opensquilla.tools.types import ToolContext
+from openstarry_code.tools.policy_helpers import ToolPolicy, apply_tool_policy
+from openstarry_code.tools.registry import get_default_registry
+from openstarry_code.tools.types import ToolContext
 
 LOW_ENTROPY_REPO_CODING_TOOLS = {
     "read_source",

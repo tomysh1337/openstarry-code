@@ -8,9 +8,9 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.sandbox import sensitive_paths
-from opensquilla.tools.builtin import code_exec
-from opensquilla.tools.types import ToolContext, current_tool_context
+from openstarry_code.sandbox import sensitive_paths
+from openstarry_code.tools.builtin import code_exec
+from openstarry_code.tools.types import ToolContext, current_tool_context
 
 
 def test_code_exec_prefers_current_interpreter_when_path_has_no_python(

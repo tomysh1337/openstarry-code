@@ -5,8 +5,8 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.skills.eligibility import EligibilityContext
-from opensquilla.skills.hub.contracts import (
+from openstarry_code.skills.eligibility import EligibilityContext
+from openstarry_code.skills.hub.contracts import (
     DiagnosticPhase,
     DiagnosticSeverity,
     SkillCompatibilityState,
@@ -16,19 +16,19 @@ from opensquilla.skills.hub.contracts import (
     SkillReadinessState,
     SkillSelectionState,
 )
-from opensquilla.skills.hub.doctor import SkillDoctor, doctor
-from opensquilla.skills.hub.lockfile import (
+from openstarry_code.skills.hub.doctor import SkillDoctor, doctor
+from openstarry_code.skills.hub.lockfile import (
     LockEntry,
     Lockfile,
     compute_sha256,
     compute_tree_sha256,
 )
-from opensquilla.skills.hub.transaction import (
+from openstarry_code.skills.hub.transaction import (
     SkillTransactionJournal,
     rollback_root,
     staging_root,
 )
-from opensquilla.skills.loader import SkillLoader
+from openstarry_code.skills.loader import SkillLoader
 
 _V1_WRITER_ENTRY_FIELDS = {
     "source",
@@ -365,13 +365,13 @@ def test_doctor_readiness_uses_only_passive_managed_binary_resolution(
         passive_calls.append(name)
         return None
 
-    monkeypatch.setattr("opensquilla.skills.eligibility.shutil.which", lambda _name: None)
+    monkeypatch.setattr("openstarry_code.skills.eligibility.shutil.which", lambda _name: None)
     monkeypatch.setattr(
-        "opensquilla.skills.eligibility.resolve_managed_binary",
+        "openstarry_code.skills.eligibility.resolve_managed_binary",
         active_resolver,
     )
     monkeypatch.setattr(
-        "opensquilla.skills.eligibility.resolve_managed_binary_passive",
+        "openstarry_code.skills.eligibility.resolve_managed_binary_passive",
         passive_resolver,
     )
 

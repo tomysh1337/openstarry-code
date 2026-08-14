@@ -6,18 +6,18 @@ from typing import Any
 
 import pytest
 
-from opensquilla.gateway.memory_repair_service import (
+from openstarry_code.gateway.memory_repair_service import (
     claim_repair_receipt,
     list_repair_queue,
 )
-from opensquilla.session.models import (
+from openstarry_code.session.models import (
     AgentTaskRecord,
     AgentTaskStatus,
     MemoryDurableReceipt,
     SessionNode,
     TranscriptEntry,
 )
-from opensquilla.session.storage import SessionStorage
+from openstarry_code.session.storage import SessionStorage
 
 SESSION_KEY = "agent:main:webchat:repair-gate"
 SESSION_ID = "session-repair-gate"

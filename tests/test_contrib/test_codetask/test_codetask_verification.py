@@ -1,4 +1,4 @@
-"""Unit tests for opensquilla.contrib.codetask.verification."""
+"""Unit tests for openstarry_code.contrib.codetask.verification."""
 
 import json
 import logging
@@ -9,9 +9,9 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.contrib.codetask import verification
-from opensquilla.contrib.codetask.config import VERIFICATION_MANIFEST_NAME
-from opensquilla.contrib.codetask.types import (
+from openstarry_code.contrib.codetask import verification
+from openstarry_code.contrib.codetask.config import VERIFICATION_MANIFEST_NAME
+from openstarry_code.contrib.codetask.types import (
     AcceptanceCheck,
     RegressionResult,
     TaskState,
@@ -335,7 +335,7 @@ def test_red_phase_uses_localized_command(monkeypatch, tmp_path):
 def test_run_shell_resolves_python_from_repo_venv_in_foreign_cwd(tmp_path):
     """Even when cwd has NO venv (the base worktree), repo= makes bare
     python AND python3 resolve to the run repo's .venv interpreter."""
-    from opensquilla.contrib.codetask import verification
+    from openstarry_code.contrib.codetask import verification
 
     repo = tmp_path / "repo"
     venv_bin = repo / ".venv" / ("Scripts" if os.name == "nt" else "bin")
@@ -353,7 +353,7 @@ def test_run_shell_resolves_python_from_repo_venv_in_foreign_cwd(tmp_path):
 
 
 def test_repo_venv_python_candidates_include_windows_scripts(tmp_path):
-    from opensquilla.contrib.codetask import verification
+    from openstarry_code.contrib.codetask import verification
 
     repo = tmp_path / "repo"
     scripts = repo / ".venv" / "Scripts"
@@ -367,7 +367,7 @@ def test_repo_venv_python_candidates_include_windows_scripts(tmp_path):
 
 
 def test_repo_venv_python_candidates_keep_posix_first(tmp_path):
-    from opensquilla.contrib.codetask import verification
+    from openstarry_code.contrib.codetask import verification
 
     repo = tmp_path / "repo"
 
@@ -379,7 +379,7 @@ def test_repo_venv_python_candidates_keep_posix_first(tmp_path):
 
 
 def test_bash_path_entry_converts_windows_drive_path_to_msys(monkeypatch):
-    from opensquilla.contrib.codetask import verification
+    from openstarry_code.contrib.codetask import verification
 
     monkeypatch.setattr(verification.os, "name", "nt")
 
@@ -394,7 +394,7 @@ def test_bash_path_entry_converts_windows_drive_path_to_msys(monkeypatch):
 
 
 def test_bash_path_entry_preserves_posix_path(monkeypatch):
-    from opensquilla.contrib.codetask import verification
+    from openstarry_code.contrib.codetask import verification
 
     monkeypatch.setattr(verification.os, "name", "posix")
     path = Path("/tmp/repo/.venv/bin/python")
@@ -403,7 +403,7 @@ def test_bash_path_entry_preserves_posix_path(monkeypatch):
 
 
 def test_write_python_shim_falls_back_to_wrapper_when_symlink_fails(tmp_path, monkeypatch):
-    from opensquilla.contrib.codetask import verification
+    from openstarry_code.contrib.codetask import verification
 
     chmod_calls = []
 
@@ -438,7 +438,7 @@ def test_run_shell_sets_uv_project_for_uv_repo(tmp_path):
     """For a uv project (has uv.lock), _run_shell exports UV_PROJECT=<repo> so
     `uv run` reuses the run repo's env even from the base worktree; non-uv repos
     get no UV_PROJECT."""
-    from opensquilla.contrib.codetask import verification
+    from openstarry_code.contrib.codetask import verification
 
     uv_repo = tmp_path / "uvrepo"
     uv_repo.mkdir()
@@ -465,7 +465,7 @@ def test_uv_run_from_worktree_reuses_repo_venv(tmp_path):
     """End-to-end: with UV_PROJECT injected by _run_shell, `uv run` from a base
     worktree (which has NO .venv) reuses the RUN REPO's .venv -- deps are present
     and no separate wt/.venv is built. Skips offline (uv sync needs the cache)."""
-    from opensquilla.contrib.codetask import verification
+    from openstarry_code.contrib.codetask import verification
 
     def g(cmd, cwd):
         return subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)
@@ -561,7 +561,7 @@ def test_resolve_bash_skips_fake_cmd_stub(tmp_path, monkeypatch):
         "@echo FAKE BASH STUB\r\n@exit /b 17\r\n", encoding="ascii"
     )
     monkeypatch.setenv("PATH", f"{fake_dir}{os.pathsep}{os.path.dirname(real)}")
-    monkeypatch.delenv("OPENSQUILLA_BASH", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_BASH", raising=False)
 
     resolved = verification._resolve_bash()
 
@@ -583,7 +583,7 @@ def test_resolve_bash_skips_failing_probe(tmp_path, monkeypatch):
     stub = broken_dir / "bash.cmd"
     stub.write_text("@echo broken-bash\r\n@exit /b 99\r\n", encoding="ascii")
     monkeypatch.setenv("PATH", f"{broken_dir}{os.pathsep}{os.path.dirname(real)}")
-    monkeypatch.delenv("OPENSQUILLA_BASH", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_BASH", raising=False)
 
     resolved = verification._resolve_bash()
     assert resolved is not None
@@ -658,7 +658,7 @@ def test_resolve_bash_rejects_non_bash_with_clear_sentinel(tmp_path, monkeypatch
         f'@"{sys.executable}" "{mimic_py}" %*\r\n', encoding="ascii"
     )
     monkeypatch.setenv("PATH", f"{not_bash}{os.pathsep}{os.path.dirname(real)}")
-    monkeypatch.delenv("OPENSQUILLA_BASH", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_BASH", raising=False)
 
     # Sanity: the stub does pass the naive probe (proves the test is honest).
     import subprocess as _sp
@@ -675,13 +675,13 @@ def test_resolve_bash_rejects_non_bash_with_clear_sentinel(tmp_path, monkeypatch
     assert os.path.normcase(resolved) != os.path.normcase(str(stub))
 
 
-@pytest.mark.skipif(os.name != "nt", reason="OPENSQUILLA_BASH override is Windows-only")
+@pytest.mark.skipif(os.name != "nt", reason="OPENSTARRY_CODE_BASH override is Windows-only")
 def test_resolve_bash_honors_env_override(tmp_path, monkeypatch):
-    """OPENSQUILLA_BASH wins over PATH discovery — including over a real bash
+    """OPENSTARRY_CODE_BASH wins over PATH discovery — including over a real bash
     already on PATH — so operators can force a specific shell without
     rearranging PATH."""
     real = _real_bash()
-    monkeypatch.setenv("OPENSQUILLA_BASH", real)
+    monkeypatch.setenv("OPENSTARRY_CODE_BASH", real)
     # Remove all bash candidates from PATH so the only way to find it is via override.
     monkeypatch.setenv("PATH", str(tmp_path))
 
@@ -693,7 +693,7 @@ def test_resolve_bash_returns_none_when_no_working_bash(tmp_path, monkeypatch):
     """If no candidate probes successfully, return None and let `_run_shell`
     surface the actionable OSERROR hint (instead of running a broken stub)."""
     monkeypatch.setenv("PATH", str(tmp_path))  # empty dir, no bash
-    monkeypatch.delenv("OPENSQUILLA_BASH", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_BASH", raising=False)
     # Also blank out the Git-Bash fallback locations our resolver checks.
     for env_var in ("ProgramFiles", "ProgramFiles(x86)", "LOCALAPPDATA"):
         monkeypatch.setenv(env_var, str(tmp_path))
@@ -709,7 +709,7 @@ def test_resolve_bash_memoizes(tmp_path, monkeypatch):
     cost ~50ms each on Windows."""
     real = _real_bash()
     if os.name == "nt":
-        monkeypatch.setenv("OPENSQUILLA_BASH", real)
+        monkeypatch.setenv("OPENSTARRY_CODE_BASH", real)
     # POSIX: cache short-circuits on shutil.which("bash") which is `real`.
 
     first = verification._resolve_bash()

@@ -6,19 +6,19 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.compat import aiosqlite
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.memory.embedding import (
+from openstarry_code.compat import aiosqlite
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.memory.embedding import (
     LocalEmbeddingProvider,
     NullEmbeddingProvider,
     OllamaEmbeddingProvider,
     OpenAIEmbeddingProvider,
 )
-from opensquilla.memory.embedding_resolver import local_bge_available, resolve_memory_embedding
-from opensquilla.memory.meta import MemoryIndexMeta
-from opensquilla.memory.store import LongTermMemoryStore
+from openstarry_code.memory.embedding_resolver import local_bge_available, resolve_memory_embedding
+from openstarry_code.memory.meta import MemoryIndexMeta
+from openstarry_code.memory.store import LongTermMemoryStore
 
-_LOCAL_AVAILABLE_PATH = "opensquilla.memory.embedding_resolver.local_bge_available"
+_LOCAL_AVAILABLE_PATH = "openstarry_code.memory.embedding_resolver.local_bge_available"
 
 
 class _FakeStore:
@@ -53,25 +53,25 @@ class _FakeSyncManager:
 
 def _patch_manager_dependencies(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     _FakeStore.providers = []
-    monkeypatch.setattr("opensquilla.memory.store.LongTermMemoryStore", _FakeStore)
-    monkeypatch.setattr("opensquilla.memory.sync_manager.MemorySyncManager", _FakeSyncManager)
-    monkeypatch.setattr("opensquilla.agents.scope.maybe_migrate_legacy_memory", lambda *_: None)
+    monkeypatch.setattr("openstarry_code.memory.store.LongTermMemoryStore", _FakeStore)
+    monkeypatch.setattr("openstarry_code.memory.sync_manager.MemorySyncManager", _FakeSyncManager)
+    monkeypatch.setattr("openstarry_code.agents.scope.maybe_migrate_legacy_memory", lambda *_: None)
     monkeypatch.setattr(
-        "opensquilla.agents.scope.resolve_agent_memory_db",
+        "openstarry_code.agents.scope.resolve_agent_memory_db",
         lambda agent_id, state_dir: tmp_path / "state" / agent_id / "memory.db",
     )
     monkeypatch.setattr(
-        "opensquilla.agents.scope.resolve_agent_workspace_dir",
+        "openstarry_code.agents.scope.resolve_agent_workspace_dir",
         lambda agent_id, config: tmp_path / "workspace" / agent_id,
     )
     monkeypatch.setattr(
-        "opensquilla.agents.scope.resolve_agent_data_dir",
+        "openstarry_code.agents.scope.resolve_agent_data_dir",
         lambda agent_id, state_dir=None: (
             (Path(state_dir) if state_dir is not None else tmp_path / "data") / "agents" / agent_id
         ),
     )
     monkeypatch.setattr(
-        "opensquilla.agents.scope.resolve_agent_memory_dir",
+        "openstarry_code.agents.scope.resolve_agent_memory_dir",
         lambda agent_id, state_dir=None: (
             (Path(state_dir) if state_dir is not None else tmp_path / "memory")
             / "agents"
@@ -82,7 +82,7 @@ def _patch_manager_dependencies(monkeypatch: pytest.MonkeyPatch, tmp_path: Path)
 
 
 async def _build_one(config: GatewayConfig, monkeypatch, tmp_path, *, session_storage=None):
-    from opensquilla.memory.manager import build_memory_managers
+    from openstarry_code.memory.manager import build_memory_managers
 
     _patch_manager_dependencies(monkeypatch, tmp_path)
     managers = await build_memory_managers(
@@ -171,10 +171,10 @@ async def test_extended_length_state_keeps_memory_sync_and_capture_operational(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    from opensquilla.memory.manager import _native_io_path, build_memory_managers
+    from openstarry_code.memory.manager import _native_io_path, build_memory_managers
 
     monkeypatch.setattr(
-        "opensquilla.agents.scope.maybe_migrate_legacy_memory",
+        "openstarry_code.agents.scope.maybe_migrate_legacy_memory",
         lambda *_: None,
     )
     long_root = tmp_path / "long-state"
@@ -499,7 +499,7 @@ def test_local_bge_available_uses_tokenizers_not_transformers(
         raise AssertionError(name)
 
     monkeypatch.setattr(
-        "opensquilla.memory.embedding_resolver.importlib.util.find_spec",
+        "openstarry_code.memory.embedding_resolver.importlib.util.find_spec",
         fake_find_spec,
     )
 

@@ -12,10 +12,10 @@ from __future__ import annotations
 import asyncio
 import copy
 
-from opensquilla.engine.pipeline import TurnContext
-from opensquilla.engine.routing import ProviderMismatchVeto, provider_mismatch_veto
-from opensquilla.engine.steps import squilla_router as squilla_router_step
-from opensquilla.gateway.config import GatewayConfig
+from openstarry_code.engine.pipeline import TurnContext
+from openstarry_code.engine.routing import ProviderMismatchVeto, provider_mismatch_veto
+from openstarry_code.engine.steps import squilla_router as squilla_router_step
+from openstarry_code.gateway.config import GatewayConfig
 
 VALID_TIERS = ["c0", "c1", "c2", "c3"]
 

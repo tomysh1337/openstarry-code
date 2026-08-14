@@ -4,7 +4,7 @@ import asyncio
 
 import pytest
 
-from opensquilla.skills.hub import deps
+from openstarry_code.skills.hub import deps
 
 
 class _FakeProcess:

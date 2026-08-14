@@ -4,10 +4,10 @@ import tomllib
 
 import pytest
 
-import opensquilla.gateway.rpc_config  # noqa: F401  ensures registration
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.rpc import RpcContext, get_dispatcher
+import openstarry_code.gateway.rpc_config  # noqa: F401  ensures registration
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.rpc import RpcContext, get_dispatcher
 
 
 def _admin_ctx(config: GatewayConfig) -> RpcContext:

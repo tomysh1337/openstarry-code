@@ -15,8 +15,8 @@ import json
 
 import httpx
 
-from opensquilla.provider.anthropic import AnthropicProvider
-from opensquilla.provider.types import (
+from openstarry_code.provider.anthropic import AnthropicProvider
+from openstarry_code.provider.types import (
     ChatConfig,
     DoneEvent,
     Message,
@@ -48,7 +48,7 @@ def _patch_transport(monkeypatch, body: bytes) -> None:
         return real_async_client(*args, **kwargs)
 
     monkeypatch.setattr(
-        "opensquilla.provider.anthropic.httpx.AsyncClient", patched_async_client
+        "openstarry_code.provider.anthropic.httpx.AsyncClient", patched_async_client
     )
 
 
@@ -189,7 +189,7 @@ def _patch_openai_transport(monkeypatch, body: bytes) -> None:
         return real_async_client(*args, **kwargs)
 
     monkeypatch.setattr(
-        "opensquilla.provider.openai.httpx.AsyncClient", patched_async_client
+        "openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client
     )
 
 
@@ -206,8 +206,8 @@ def _collect_openai(provider, cfg) -> list[object]:
 
 
 def _openai_reasoning_cfg():
-    from opensquilla.engine.types import ThinkingLevel
-    from opensquilla.provider.types import ModelCapabilities
+    from openstarry_code.engine.types import ThinkingLevel
+    from openstarry_code.provider.types import ModelCapabilities
 
     return ChatConfig(
         thinking=True,
@@ -221,7 +221,7 @@ def _openai_reasoning_cfg():
 
 
 def test_openai_streams_reasoning_details_as_delta_events(monkeypatch) -> None:
-    from opensquilla.provider.openai import OpenAIProvider
+    from openstarry_code.provider.openai import OpenAIProvider
 
     chunks = [
         {
@@ -280,7 +280,7 @@ def test_openai_streams_reasoning_details_as_delta_events(monkeypatch) -> None:
 
 
 def test_openai_streams_reasoning_content_field_as_delta_events(monkeypatch) -> None:
-    from opensquilla.provider.openai import OpenAIProvider
+    from openstarry_code.provider.openai import OpenAIProvider
 
     chunks = [
         {

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from opensquilla.sandbox.destructive_intents import _extract_intent, _extract_intents
+from openstarry_code.sandbox.destructive_intents import _extract_intent, _extract_intents
 
 
 def test_extract_rm_targets_multiple_and_flags(tmp_path):

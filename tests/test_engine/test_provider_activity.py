@@ -6,18 +6,18 @@ from typing import Any
 
 import pytest
 
-from opensquilla.engine import Agent, AgentConfig
-from opensquilla.engine.agent import _provider_retry_delay_seconds
-from opensquilla.engine.routing.health import ProviderHealthLedger
-from opensquilla.engine.runtime import (
+from openstarry_code.engine import Agent, AgentConfig
+from openstarry_code.engine.agent import _provider_retry_delay_seconds
+from openstarry_code.engine.routing.health import ProviderHealthLedger
+from openstarry_code.engine.runtime import (
     _SELECTOR_REASONING_TRUNCATED_NOTICE,
     _report_credential_pool_failure,
     _SelectorFallbackProvider,
     _SelectorPreTextBuffer,
 )
-from opensquilla.engine.types import ErrorEvent as EngineErrorEvent
-from opensquilla.engine.types import ProviderActivityEvent, ThinkingEvent
-from opensquilla.provider import (
+from openstarry_code.engine.types import ErrorEvent as EngineErrorEvent
+from openstarry_code.engine.types import ProviderActivityEvent, ThinkingEvent
+from openstarry_code.provider import (
     ChatConfig,
     DoneEvent,
     ErrorEvent,
@@ -30,7 +30,7 @@ from opensquilla.provider import (
     ToolUseStartEvent,
     classify_provider_error,
 )
-from opensquilla.provider import (
+from openstarry_code.provider import (
     ProviderActivityEvent as ProviderDomainActivityEvent,
 )
 
@@ -103,7 +103,7 @@ def test_retry_after_reaches_profile_credential_pool(
             calls.append((*args, kwargs))
 
     monkeypatch.setattr(
-        "opensquilla.gateway.llm_runtime.profile_credential_pools",
+        "openstarry_code.gateway.llm_runtime.profile_credential_pools",
         lambda: _PoolManager(),
     )
     _report_credential_pool_failure(
@@ -187,7 +187,7 @@ async def test_agent_emits_structured_activity_and_honors_retry_after(
     async def fake_sleep(delay: float) -> None:
         sleeps.append(delay)
 
-    monkeypatch.setattr("opensquilla.engine.agent.asyncio.sleep", fake_sleep)
+    monkeypatch.setattr("openstarry_code.engine.agent.asyncio.sleep", fake_sleep)
     agent = Agent(
         provider=provider,
         config=AgentConfig(
@@ -269,7 +269,7 @@ async def test_retry_after_that_exceeds_turn_deadline_does_not_retry_early(
     async def fake_sleep(delay: float) -> None:
         sleeps.append(delay)
 
-    monkeypatch.setattr("opensquilla.engine.agent.asyncio.sleep", fake_sleep)
+    monkeypatch.setattr("openstarry_code.engine.agent.asyncio.sleep", fake_sleep)
     agent = Agent(
         provider=provider,
         config=AgentConfig(

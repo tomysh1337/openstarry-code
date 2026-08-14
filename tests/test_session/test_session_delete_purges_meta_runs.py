@@ -6,11 +6,11 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.persistence.meta_run_writer import open_meta_run_writer
-from opensquilla.persistence.migrator import apply_pending
-from opensquilla.session.models import SessionNode
-from opensquilla.session.storage import SessionStorage
-from opensquilla.skills.meta.types import MetaPlan, MetaStep
+from openstarry_code.persistence.meta_run_writer import open_meta_run_writer
+from openstarry_code.persistence.migrator import apply_pending
+from openstarry_code.session.models import SessionNode
+from openstarry_code.session.storage import SessionStorage
+from openstarry_code.skills.meta.types import MetaPlan, MetaStep
 
 MIGRATIONS_DIR = Path(__file__).resolve().parents[1].parent / "migrations"
 

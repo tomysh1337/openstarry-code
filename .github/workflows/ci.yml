@@ -16,7 +16,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  OPENSQUILLA_TESTING: "true"
+  OPENSTARRY_CODE_TESTING: "true"
 
 jobs:
   classify-changes:
@@ -119,23 +119,23 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version-file: opensquilla-webui/.node-version
+          node-version-file: openstarry-code-webui/.node-version
           cache: 'npm'
-          cache-dependency-path: opensquilla-webui/package-lock.json
+          cache-dependency-path: openstarry-code-webui/package-lock.json
 
       - name: Install frontend dependencies
-        working-directory: opensquilla-webui
+        working-directory: openstarry-code-webui
         run: npm ci
 
       - name: Run frontend unit tests
         if: ${{ needs.classify-changes.outputs.frontend_changed == 'true' || needs.classify-changes.outputs.full_required == 'true' }}
-        working-directory: opensquilla-webui
+        working-directory: openstarry-code-webui
         run: npm run test:unit
 
       - name: Verify generated dist is not tracked
         shell: bash
         run: |
-          tracked="$(git ls-files 'src/opensquilla/gateway/static/dist/**')"
+          tracked="$(git ls-files 'src/openstarry_code/gateway/static/dist/**')"
           if [[ -n "${tracked}" ]]; then
             echo "ERROR: generated Web UI dist must not be committed:" >&2
             printf '%s\n' "${tracked}" >&2
@@ -143,7 +143,7 @@ jobs:
           fi
 
       - name: Build verified frontend artifact
-        working-directory: opensquilla-webui
+        working-directory: openstarry-code-webui
         shell: bash
         env:
           FRONTEND_CHANGED: ${{ needs.classify-changes.outputs.frontend_changed }}
@@ -157,7 +157,7 @@ jobs:
           else
             npm run build:artifact
           fi
-          if [[ -e ../src/opensquilla/gateway/static/dist/.DS_Store ]]; then
+          if [[ -e ../src/openstarry_code/gateway/static/dist/.DS_Store ]]; then
             echo "ERROR: Finder metadata survived WebUI artifact normalization" >&2
             exit 1
           fi
@@ -185,14 +185,14 @@ jobs:
 
           # Finder metadata is ignored by Git and must not affect the canonical
           # source fingerprint or enter a source distribution.
-          junk="opensquilla-webui/src/.DS_Store"
+          junk="openstarry-code-webui/src/.DS_Store"
           trap 'rm -f "${junk}"' EXIT
           printf 'CI-only Finder metadata\n' > "${junk}"
 
           uv build --sdist --out-dir "${package_dir}"
-          sdists=("${package_dir}"/opensquilla-*.tar.gz)
+          sdists=("${package_dir}"/openstarry_code-*.tar.gz)
           if [[ "${#sdists[@]}" -ne 1 || ! -f "${sdists[0]}" ]]; then
-            echo "ERROR: expected exactly one OpenSquilla sdist" >&2
+            echo "ERROR: expected exactly one OpenStarry Code sdist" >&2
             exit 1
           fi
           tar_listing="${package_dir}/sdist-files.txt"
@@ -203,9 +203,9 @@ jobs:
           fi
 
           uv build --wheel --out-dir "${wheel_dir}" "${sdists[0]}"
-          wheels=("${wheel_dir}"/opensquilla-*.whl)
+          wheels=("${wheel_dir}"/openstarry_code-*.whl)
           if [[ "${#wheels[@]}" -ne 1 || ! -f "${wheels[0]}" ]]; then
-            echo "ERROR: expected exactly one OpenSquilla wheel" >&2
+            echo "ERROR: expected exactly one OpenStarry Code wheel" >&2
             exit 1
           fi
           python scripts/verify_webui_artifact.py \
@@ -217,8 +217,8 @@ jobs:
         with:
           # Stable across rerun attempts: "re-run failed jobs" does not rerun
           # an already-successful producer, so consumers must reuse its name.
-          name: opensquilla-webui-dist
-          path: src/opensquilla/gateway/static/dist/
+          name: openstarry-code-webui-dist
+          path: src/openstarry_code/gateway/static/dist/
           if-no-files-found: error
           # GitHub permits reruns for 30 days; keep the producer artifact for
           # the full window so a failed-only consumer rerun can still reuse it.
@@ -232,8 +232,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
-      OPENSQUILLA_WEBUI_BASE_URL: http://127.0.0.1:18791
-      OPENSQUILLA_PLAYWRIGHT_MANAGE_WEBUI: gateway
+      OPENSTARRY_CODE_WEBUI_BASE_URL: http://127.0.0.1:18791
+      OPENSTARRY_CODE_PLAYWRIGHT_MANAGE_WEBUI: gateway
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -241,8 +241,8 @@ jobs:
       - name: Download verified frontend artifact
         uses: actions/download-artifact@v4
         with:
-          name: opensquilla-webui-dist
-          path: src/opensquilla/gateway/static/dist/
+          name: openstarry-code-webui-dist
+          path: src/openstarry_code/gateway/static/dist/
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -257,23 +257,23 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version-file: opensquilla-webui/.node-version
+          node-version-file: openstarry-code-webui/.node-version
           cache: 'npm'
-          cache-dependency-path: opensquilla-webui/package-lock.json
+          cache-dependency-path: openstarry-code-webui/package-lock.json
 
       - name: Install Gateway dependencies
         run: uv sync --frozen
 
       - name: Install frontend dependencies
-        working-directory: opensquilla-webui
+        working-directory: openstarry-code-webui
         run: npm ci
 
       - name: Install Chromium
-        working-directory: opensquilla-webui
+        working-directory: openstarry-code-webui
         run: npx playwright install --with-deps chromium
 
       - name: Run production-dist chat and Goal recovery browser contracts
-        working-directory: opensquilla-webui
+        working-directory: openstarry-code-webui
         run: >-
           npm run test:e2e --
           assistant-activity.spec.ts
@@ -291,7 +291,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: webui-chat-recovery-attempt-${{ github.run_attempt }}
-          path: opensquilla-webui/test-results/
+          path: openstarry-code-webui/test-results/
           if-no-files-found: ignore
           retention-days: 14
 
@@ -308,24 +308,24 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version-file: opensquilla-webui/.node-version
+          node-version-file: openstarry-code-webui/.node-version
 
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
         with:
-          bun-version-file: src/opensquilla/cli/tui/opentui/package/.bun-version
+          bun-version-file: src/openstarry_code/cli/tui/opentui/package/.bun-version
 
       - name: Install OpenTUI host dependencies
-        working-directory: src/opensquilla/cli/tui/opentui/package
+        working-directory: src/openstarry_code/cli/tui/opentui/package
         shell: bash
         run: bun install --frozen-lockfile
 
       - name: Run OpenTUI Node tests
-        working-directory: src/opensquilla/cli/tui/opentui/package
+        working-directory: src/openstarry_code/cli/tui/opentui/package
         run: npm run test
 
       - name: Run OpenTUI Bun tests
-        working-directory: src/opensquilla/cli/tui/opentui/package
+        working-directory: src/openstarry_code/cli/tui/opentui/package
         shell: bash
         run: |
           set +e
@@ -401,8 +401,8 @@ jobs:
     env:
       UV_PYTHON: "3.12"
       PYTHONPATH: ${{ github.workspace }}
-      OPENSQUILLA_TURN_CALL_LOG: "0"
-      OPENSQUILLA_DOCKERIGNORE_E2E: "1"
+      OPENSTARRY_CODE_TURN_CALL_LOG: "0"
+      OPENSTARRY_CODE_DOCKERIGNORE_E2E: "1"
 
     steps:
       - name: Check out repository
@@ -413,8 +413,8 @@ jobs:
       - name: Configure runtime directories
         shell: bash
         run: |
-          printf 'OPENSQUILLA_STATE_DIR=%s/opensquilla-state\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
-          printf 'OPENSQUILLA_LOG_DIR=%s/opensquilla-logs\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'OPENSTARRY_CODE_STATE_DIR=%s/opensquilla-state\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'OPENSTARRY_CODE_LOG_DIR=%s/opensquilla-logs\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -436,7 +436,7 @@ jobs:
 
       - name: Type check
         shell: bash
-        run: uv run mypy src/opensquilla --show-error-codes
+        run: uv run mypy src/openstarry_code --show-error-codes
 
       - name: Test targeted PR suite
         if: ${{ needs.classify-changes.outputs.full_required != 'true' }}
@@ -476,7 +476,7 @@ jobs:
         run: |
           set -e
           for name in opensquilla_queue_depth in_flight_turns_total turn_cancellations_total queue_full_errors_total; do
-            count=$(grep -c "$name" src/opensquilla/gateway/task_runtime.py || echo 0)
+            count=$(grep -c "$name" src/openstarry_code/gateway/task_runtime.py || echo 0)
             if [ "$count" -lt 1 ]; then
               echo "ERROR: metric name '$name' missing from task_runtime.py"
               exit 1
@@ -507,7 +507,7 @@ jobs:
     env:
       UV_PYTHON: "3.12"
       PYTHONPATH: ${{ github.workspace }}
-      OPENSQUILLA_TURN_CALL_LOG: "0"
+      OPENSTARRY_CODE_TURN_CALL_LOG: "0"
 
     steps:
       - name: Prepare Ubuntu full report
@@ -527,8 +527,8 @@ jobs:
       - name: Configure runtime directories
         shell: bash
         run: |
-          printf 'OPENSQUILLA_STATE_DIR=%s/opensquilla-state\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
-          printf 'OPENSQUILLA_LOG_DIR=%s/opensquilla-logs\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'OPENSTARRY_CODE_STATE_DIR=%s/opensquilla-state\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'OPENSTARRY_CODE_LOG_DIR=%s/opensquilla-logs\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -579,7 +579,7 @@ jobs:
     env:
       UV_PYTHON: "3.12"
       PYTHONPATH: ${{ github.workspace }}
-      OPENSQUILLA_TURN_CALL_LOG: "0"
+      OPENSTARRY_CODE_TURN_CALL_LOG: "0"
 
     steps:
       - name: Check out repository
@@ -588,8 +588,8 @@ jobs:
       - name: Configure runtime directories
         shell: bash
         run: |
-          printf 'OPENSQUILLA_STATE_DIR=%s/opensquilla-state\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
-          printf 'OPENSQUILLA_LOG_DIR=%s/opensquilla-logs\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'OPENSTARRY_CODE_STATE_DIR=%s/opensquilla-state\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'OPENSTARRY_CODE_LOG_DIR=%s/opensquilla-logs\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -635,7 +635,7 @@ jobs:
     env:
       UV_PYTHON: "3.12"
       PYTHONPATH: ${{ github.workspace }}
-      OPENSQUILLA_TURN_CALL_LOG: "0"
+      OPENSTARRY_CODE_TURN_CALL_LOG: "0"
 
     steps:
       - name: Prepare diagnostic report
@@ -662,8 +662,8 @@ jobs:
       - name: Configure runtime directories
         shell: bash
         run: |
-          printf 'OPENSQUILLA_STATE_DIR=%s/opensquilla-state\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
-          printf 'OPENSQUILLA_LOG_DIR=%s/opensquilla-logs\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'OPENSTARRY_CODE_STATE_DIR=%s/opensquilla-state\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'OPENSTARRY_CODE_LOG_DIR=%s/opensquilla-logs\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -679,12 +679,12 @@ jobs:
         if: ${{ matrix.shard == 'core' }}
         uses: oven-sh/setup-bun@v2
         with:
-          bun-version-file: src/opensquilla/cli/tui/opentui/package/.bun-version
+          bun-version-file: src/openstarry_code/cli/tui/opentui/package/.bun-version
 
       - name: Install OpenTUI host dependencies
         if: ${{ matrix.shard == 'core' }}
         shell: bash
-        run: bun install --frozen-lockfile --cwd=src/opensquilla/cli/tui/opentui/package
+        run: bun install --frozen-lockfile --cwd=src/openstarry_code/cli/tui/opentui/package
 
       - name: Install dependencies
         shell: bash
@@ -731,9 +731,9 @@ jobs:
             $createdRoots.Add($volumeA)
             New-Item -ItemType Directory -Path $volumeB -ErrorAction Stop | Out-Null
             $createdRoots.Add($volumeB)
-            "OPENSQUILLA_WINDOWS_TEST_VOLUME_A=$volumeA" |
+            "OPENSTARRY_CODE_WINDOWS_TEST_VOLUME_A=$volumeA" |
               Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-            "OPENSQUILLA_WINDOWS_TEST_VOLUME_B=$volumeB" |
+            "OPENSTARRY_CODE_WINDOWS_TEST_VOLUME_B=$volumeB" |
               Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           } catch {
             foreach ($testRoot in $createdRoots) {
@@ -805,8 +805,8 @@ jobs:
         shell: pwsh
         run: |
           $testRoots = @(
-            $env:OPENSQUILLA_WINDOWS_TEST_VOLUME_A,
-            $env:OPENSQUILLA_WINDOWS_TEST_VOLUME_B
+            $env:OPENSTARRY_CODE_WINDOWS_TEST_VOLUME_A,
+            $env:OPENSTARRY_CODE_WINDOWS_TEST_VOLUME_B
           )
           foreach ($testRoot in $testRoots) {
             if ($testRoot -and (Test-Path -LiteralPath $testRoot)) {
@@ -833,7 +833,7 @@ jobs:
     env:
       UV_PYTHON: "3.12"
       PYTHONPATH: ${{ github.workspace }}
-      OPENSQUILLA_TURN_CALL_LOG: "0"
+      OPENSTARRY_CODE_TURN_CALL_LOG: "0"
 
     steps:
       - name: Prepare macOS recovery report
@@ -857,8 +857,8 @@ jobs:
       - name: Configure runtime directories
         shell: bash
         run: |
-          printf 'OPENSQUILLA_STATE_DIR=%s/opensquilla-state\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
-          printf 'OPENSQUILLA_LOG_DIR=%s/opensquilla-logs\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'OPENSTARRY_CODE_STATE_DIR=%s/opensquilla-state\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'OPENSTARRY_CODE_LOG_DIR=%s/opensquilla-logs\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -936,7 +936,7 @@ jobs:
     env:
       UV_PYTHON: "3.12"
       PYTHONPATH: ${{ github.workspace }}
-      OPENSQUILLA_TURN_CALL_LOG: "0"
+      OPENSTARRY_CODE_TURN_CALL_LOG: "0"
 
     steps:
       - name: Prepare Desktop recovery report
@@ -960,8 +960,8 @@ jobs:
       - name: Download verified frontend artifact
         uses: actions/download-artifact@v4
         with:
-          name: opensquilla-webui-dist
-          path: src/opensquilla/gateway/static/dist/
+          name: openstarry-code-webui-dist
+          path: src/openstarry_code/gateway/static/dist/
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -980,11 +980,11 @@ jobs:
           cache: 'npm'
           cache-dependency-path: |
             desktop/electron/package-lock.json
-            opensquilla-webui/package-lock.json
+            openstarry-code-webui/package-lock.json
 
       - name: Verify downloaded frontend artifact on consumer OS
         shell: bash
-        run: node opensquilla-webui/scripts/verify-dist.mjs src/opensquilla/gateway/static/dist
+        run: node openstarry-code-webui/scripts/verify-dist.mjs src/openstarry_code/gateway/static/dist
 
       - name: Install Python dependencies
         shell: bash
@@ -996,12 +996,12 @@ jobs:
         run: npm ci
 
       - name: Install WebUI recovery dependencies
-        working-directory: opensquilla-webui
+        working-directory: openstarry-code-webui
         shell: bash
         run: npm ci
 
       - name: Install WebUI recovery browser
-        working-directory: opensquilla-webui
+        working-directory: openstarry-code-webui
         shell: bash
         run: |
           if [[ "${RUNNER_OS}" == "Linux" ]]; then
@@ -1011,11 +1011,11 @@ jobs:
           fi
 
       - name: Run cross-platform production-dist browser session hang contract
-        working-directory: opensquilla-webui
+        working-directory: openstarry-code-webui
         shell: bash
         env:
-          OPENSQUILLA_WEBUI_BASE_URL: http://127.0.0.1:18791
-          OPENSQUILLA_PLAYWRIGHT_MANAGE_WEBUI: gateway
+          OPENSTARRY_CODE_WEBUI_BASE_URL: http://127.0.0.1:18791
+          OPENSTARRY_CODE_PLAYWRIGHT_MANAGE_WEBUI: gateway
         run: |
           set -euo pipefail
           npm run test:e2e -- \
@@ -1045,8 +1045,8 @@ jobs:
         working-directory: desktop/electron
         shell: bash
         env:
-          OPENSQUILLA_DESKTOP_CONSOLIDATION_SCREENSHOT: ${{ runner.temp }}/desktop-recovery-e2e/consolidated-primary.png
-          OPENSQUILLA_DESKTOP_IMPORT_SCREENSHOT_DIR: ${{ runner.temp }}/desktop-recovery-e2e/profile-import-screenshots
+          OPENSTARRY_CODE_DESKTOP_CONSOLIDATION_SCREENSHOT: ${{ runner.temp }}/desktop-recovery-e2e/consolidated-primary.png
+          OPENSTARRY_CODE_DESKTOP_IMPORT_SCREENSHOT_DIR: ${{ runner.temp }}/desktop-recovery-e2e/profile-import-screenshots
         run: |
           set -euo pipefail
 
@@ -1150,7 +1150,7 @@ jobs:
     env:
       UV_PYTHON: "3.12"
       PYTHONPATH: ${{ github.workspace }}
-      OPENSQUILLA_TURN_CALL_LOG: "0"
+      OPENSTARRY_CODE_TURN_CALL_LOG: "0"
 
     steps:
       - name: Check out repository
@@ -1195,10 +1195,10 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version-file: opensquilla-webui/.node-version
+          node-version-file: openstarry-code-webui/.node-version
 
       - name: Check README locale parity
-        working-directory: opensquilla-webui
+        working-directory: openstarry-code-webui
         run: node scripts/check-readme-locales.mjs
 
   managed-toolchain-artifacts:

@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from opensquilla.engine.runtime import TurnRunner
-from opensquilla.tools.registry import ToolRegistry
-from opensquilla.tools.types import CallerKind, InteractionMode, ToolContext, ToolSpec
+from openstarry_code.engine.runtime import TurnRunner
+from openstarry_code.tools.registry import ToolRegistry
+from openstarry_code.tools.types import CallerKind, InteractionMode, ToolContext, ToolSpec
 
 
 async def _handler() -> str:

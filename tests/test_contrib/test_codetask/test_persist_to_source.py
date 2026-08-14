@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import subprocess
 
-from opensquilla.contrib.codetask import workspace
+from openstarry_code.contrib.codetask import workspace
 
 
 def _git(repo, *a):

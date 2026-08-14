@@ -12,11 +12,11 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.gateway.approval_queue import get_approval_queue, reset_approval_queue
-from opensquilla.sandbox.elevation import ElevationAction, gate_elevated_action
-from opensquilla.sandbox.escalation import request_sandbox_approval
-from opensquilla.sandbox.governance import ApprovalGate
-from opensquilla.sandbox.types import (
+from openstarry_code.gateway.approval_queue import get_approval_queue, reset_approval_queue
+from openstarry_code.sandbox.elevation import ElevationAction, gate_elevated_action
+from openstarry_code.sandbox.escalation import request_sandbox_approval
+from openstarry_code.sandbox.governance import ApprovalGate
+from openstarry_code.sandbox.types import (
     ApprovedHostExecution,
     DenialReason,
     DenialResult,
@@ -27,7 +27,7 @@ from opensquilla.sandbox.types import (
     SandboxRequest,
     SecurityLevel,
 )
-from opensquilla.tools.types import CallerKind, ToolContext, current_tool_context
+from openstarry_code.tools.types import CallerKind, ToolContext, current_tool_context
 
 
 @pytest.fixture(autouse=True)

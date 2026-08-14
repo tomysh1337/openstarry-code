@@ -10,33 +10,33 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla import __version__
-from opensquilla.cli.tui import opentui as _opentui_pkg  # noqa: F401  (ensure package import)
-from opensquilla.cli.tui.opentui import bridge as bridge_module
-from opensquilla.cli.tui.opentui import host_runtime as host_runtime_module
-from opensquilla.cli.tui.opentui.bridge import (
+from openstarry_code import __version__
+from openstarry_code.cli.tui import opentui as _opentui_pkg  # noqa: F401  (ensure package import)
+from openstarry_code.cli.tui.opentui import bridge as bridge_module
+from openstarry_code.cli.tui.opentui import host_runtime as host_runtime_module
+from openstarry_code.cli.tui.opentui.bridge import (
     OpenTuiBridge,
     OpenTuiBridgeError,
     OpenTuiHostPaths,
     check_opentui_host_available,
 )
-from opensquilla.cli.tui.opentui.host_runtime import (
+from openstarry_code.cli.tui.opentui.host_runtime import (
     HOST_PROTOCOL_VERSION,
     HostArtifactResolver,
     HostFailureReason,
     HostRuntimeError,
 )
-from opensquilla.cli.tui.opentui.messages import (
+from openstarry_code.cli.tui.opentui.messages import (
     HostInputSubmit,
     HostReady,
     HostToPythonMessageError,
     ScrollbackWrite,
 )
-from opensquilla.cli.tui.opentui.terminal import (
+from openstarry_code.cli.tui.opentui.terminal import (
     TERMINAL_RESET_SEQUENCE,
     PosixTerminalGuardian,
 )
-from opensquilla.cli.tui.renderers.selection import RendererBackendUnavailableReason
+from openstarry_code.cli.tui.renderers.selection import RendererBackendUnavailableReason
 
 
 class _FakeConnection:
@@ -122,7 +122,7 @@ def test_missing_companion_does_not_advertise_an_unpublished_installer(
     monkeypatch,
 ) -> None:
     def missing_module(_name: str) -> None:
-        raise ModuleNotFoundError("opensquilla_tui_host")
+        raise ModuleNotFoundError("openstarry_code_tui_host")
 
     monkeypatch.setattr(host_runtime_module.importlib, "import_module", missing_module)
     resolver = HostArtifactResolver(
@@ -137,7 +137,7 @@ def test_missing_companion_does_not_advertise_an_unpublished_installer(
     assert exc_info.value.reason is HostFailureReason.MISSING
     assert "does not publish one" in message
     assert "--ui plain" in message
-    assert "Reinstall OpenSquilla" not in message
+    assert "Reinstall OpenStarry Code" not in message
 
 
 def test_companion_version_mismatch_has_stable_failure_reason(tmp_path) -> None:
@@ -214,7 +214,7 @@ async def test_next_message_returns_none_on_clean_host_exit() -> None:
 async def test_next_message_tolerates_malformed_line_logging_failure(monkeypatch) -> None:
     """Diagnostic logging failures must not turn skipped garbage into a crash."""
 
-    from opensquilla.cli.tui.opentui.messages import HostInputSubmit
+    from openstarry_code.cli.tui.opentui.messages import HostInputSubmit
 
     def raise_closed_file(*_args: object, **_kwargs: object) -> None:
         raise ValueError("I/O operation on closed file")
@@ -287,25 +287,25 @@ async def test_start_uses_authenticated_loopback_and_reads_versioned_ready(
             import socket
 
             sock = socket.create_connection((
-                os.environ["OPENSQUILLA_OPENTUI_IPC_HOST"],
-                int(os.environ["OPENSQUILLA_OPENTUI_IPC_PORT"]),
+                os.environ["OPENSTARRY_CODE_OPENTUI_IPC_HOST"],
+                int(os.environ["OPENSTARRY_CODE_OPENTUI_IPC_PORT"]),
             ))
             stream = sock.makefile("rwb", buffering=0)
             auth = {
                 "type": "auth",
-                "token": os.environ["OPENSQUILLA_OPENTUI_IPC_TOKEN"],
-                "protocol": int(os.environ["OPENSQUILLA_OPENTUI_PROTOCOL_VERSION"]),
+                "token": os.environ["OPENSTARRY_CODE_OPENTUI_IPC_TOKEN"],
+                "protocol": int(os.environ["OPENSTARRY_CODE_OPENTUI_PROTOCOL_VERSION"]),
             }
             stream.write((json.dumps(auth) + "\\n").encode())
             assert json.loads(stream.readline())["type"] == "auth.ok"
             ready = {
                 "type": "ready",
                 "protocol": 1,
-                "productVersion": os.environ["OPENSQUILLA_PRODUCT_VERSION"],
-                "hostVersion": os.environ["OPENSQUILLA_OPENTUI_HOST_VERSION"],
-                "platform": os.environ["OPENSQUILLA_OPENTUI_HOST_PLATFORM"],
-                "arch": os.environ["OPENSQUILLA_OPENTUI_HOST_ARCH"],
-                "buildId": os.environ["OPENSQUILLA_OPENTUI_BUILD_ID"],
+                "productVersion": os.environ["OPENSTARRY_CODE_PRODUCT_VERSION"],
+                "hostVersion": os.environ["OPENSTARRY_CODE_OPENTUI_HOST_VERSION"],
+                "platform": os.environ["OPENSTARRY_CODE_OPENTUI_HOST_PLATFORM"],
+                "arch": os.environ["OPENSTARRY_CODE_OPENTUI_HOST_ARCH"],
+                "buildId": os.environ["OPENSTARRY_CODE_OPENTUI_BUILD_ID"],
                 "screenMode": "alternate-screen",
                 "capabilities": [
                     "jsonl",
@@ -550,10 +550,10 @@ def test_restore_terminal_writes_reset_sequence_once() -> None:
 @pytest.mark.asyncio
 async def test_start_applies_persisted_theme_to_the_host_env(tmp_path, monkeypatch) -> None:
     # Binds the call site, not just the helper: a saved /theme preference must
-    # reach the spawned host process as OPENSQUILLA_TUI_THEME.
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(tmp_path / "state"))
-    monkeypatch.delenv("OPENSQUILLA_TUI_THEME", raising=False)
-    from opensquilla.cli.tui.opentui.prefs import save_theme_preference
+    # reach the spawned host process as OPENSTARRY_CODE_TUI_THEME.
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(tmp_path / "state"))
+    monkeypatch.delenv("OPENSTARRY_CODE_TUI_THEME", raising=False)
+    from openstarry_code.cli.tui.opentui.prefs import save_theme_preference
 
     save_theme_preference("nord")
 
@@ -567,28 +567,28 @@ async def test_start_applies_persisted_theme_to_the_host_env(tmp_path, monkeypat
             import socket
 
             open({str(seen_theme)!r}, "w").write(
-                os.environ.get("OPENSQUILLA_TUI_THEME", "<unset>")
+                os.environ.get("OPENSTARRY_CODE_TUI_THEME", "<unset>")
             )
             sock = socket.create_connection((
-                os.environ["OPENSQUILLA_OPENTUI_IPC_HOST"],
-                int(os.environ["OPENSQUILLA_OPENTUI_IPC_PORT"]),
+                os.environ["OPENSTARRY_CODE_OPENTUI_IPC_HOST"],
+                int(os.environ["OPENSTARRY_CODE_OPENTUI_IPC_PORT"]),
             ))
             stream = sock.makefile("rwb", buffering=0)
             auth = {{
                 "type": "auth",
-                "token": os.environ["OPENSQUILLA_OPENTUI_IPC_TOKEN"],
-                "protocol": int(os.environ["OPENSQUILLA_OPENTUI_PROTOCOL_VERSION"]),
+                "token": os.environ["OPENSTARRY_CODE_OPENTUI_IPC_TOKEN"],
+                "protocol": int(os.environ["OPENSTARRY_CODE_OPENTUI_PROTOCOL_VERSION"]),
             }}
             stream.write((json.dumps(auth) + "\\n").encode())
             assert json.loads(stream.readline())["type"] == "auth.ok"
             ready = {{
                 "type": "ready",
                 "protocol": 1,
-                "productVersion": os.environ["OPENSQUILLA_PRODUCT_VERSION"],
-                "hostVersion": os.environ["OPENSQUILLA_OPENTUI_HOST_VERSION"],
-                "platform": os.environ["OPENSQUILLA_OPENTUI_HOST_PLATFORM"],
-                "arch": os.environ["OPENSQUILLA_OPENTUI_HOST_ARCH"],
-                "buildId": os.environ["OPENSQUILLA_OPENTUI_BUILD_ID"],
+                "productVersion": os.environ["OPENSTARRY_CODE_PRODUCT_VERSION"],
+                "hostVersion": os.environ["OPENSTARRY_CODE_OPENTUI_HOST_VERSION"],
+                "platform": os.environ["OPENSTARRY_CODE_OPENTUI_HOST_PLATFORM"],
+                "arch": os.environ["OPENSTARRY_CODE_OPENTUI_HOST_ARCH"],
+                "buildId": os.environ["OPENSTARRY_CODE_OPENTUI_BUILD_ID"],
                 "screenMode": "alternate-screen",
                 "capabilities": [
                     "jsonl",

@@ -7,10 +7,10 @@ from typing import Any
 
 import pytest
 
-from opensquilla.gateway.auth import Principal
-from opensquilla.gateway.config import GatewayConfig
-from opensquilla.gateway.rpc import RpcContext, get_dispatcher
-from opensquilla.gateway.scopes import (
+from openstarry_code.gateway.auth import Principal
+from openstarry_code.gateway.config import GatewayConfig
+from openstarry_code.gateway.rpc import RpcContext, get_dispatcher
+from openstarry_code.gateway.scopes import (
     ADMIN_SCOPE,
     METHOD_SCOPES,
     READ_SCOPE,
@@ -18,12 +18,12 @@ from opensquilla.gateway.scopes import (
     WRITE_SCOPE,
     authorize_call,
 )
-from opensquilla.memory.types import MemorySearchResult, MemorySource, SearchIntent
-from opensquilla.search.registry import register_provider
-from opensquilla.search.types import SearchProviderError, SearchProviderSpec, SearchResult
-from opensquilla.session.models import MemoryDurableReceipt
-from opensquilla.session.storage import SessionStorage
-from opensquilla.tools.builtin.web import configure_search, run_web_discover_payload
+from openstarry_code.memory.types import MemorySearchResult, MemorySource, SearchIntent
+from openstarry_code.search.registry import register_provider
+from openstarry_code.search.types import SearchProviderError, SearchProviderSpec, SearchResult
+from openstarry_code.session.models import MemoryDurableReceipt
+from openstarry_code.session.storage import SessionStorage
+from openstarry_code.tools.builtin.web import configure_search, run_web_discover_payload
 
 
 @dataclass
@@ -171,7 +171,7 @@ def test_sessions_delete_is_write_scope_and_allows_remote_operator():
     """Regression for #357 / #307: deleting a session from the Web UI must work for
     a no-auth remote operator.
 
-    On the default Docker bind (``OPENSQUILLA_LISTEN=0.0.0.0``) the gateway is not a
+    On the default Docker bind (``OPENSTARRY_CODE_LISTEN=0.0.0.0``) the gateway is not a
     loopback bind, so even a ``127.0.0.1`` peer is not the local owner and is granted
     only :data:`REMOTE_OPERATOR_SCOPES` (read/write, no approvals or admin). While
     ``sessions.delete`` was admin-gated, every such delete failed with
@@ -1281,12 +1281,12 @@ async def test_providers_status_redacts_keys_and_rejects_unknown_provider():
 @pytest.mark.asyncio
 async def test_providers_status_honors_configured_active_api_key_env(monkeypatch):
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
-    monkeypatch.setenv("OPENSQUILLA_PROVIDER_KEY", "custom-env-key")
+    monkeypatch.setenv("OPENSTARRY_CODE_PROVIDER_KEY", "custom-env-key")
     cfg = GatewayConfig(
         llm={
             "provider": "openrouter",
             "model": "openrouter/model",
-            "api_key_env": "OPENSQUILLA_PROVIDER_KEY",
+            "api_key_env": "OPENSTARRY_CODE_PROVIDER_KEY",
         }
     )
 
@@ -1300,13 +1300,13 @@ async def test_providers_status_honors_configured_active_api_key_env(monkeypatch
     assert res.error is None, res.error
     row = res.payload["providers"][0]
     assert row["apiKeyConfigured"] is True
-    assert row["apiKeyEnv"] == "OPENSQUILLA_PROVIDER_KEY"
+    assert row["apiKeyEnv"] == "OPENSTARRY_CODE_PROVIDER_KEY"
     assert "custom-env-key" not in repr(res.payload)
 
 
 @pytest.mark.asyncio
 async def test_providers_status_probe_surfaces_classified_active_error(monkeypatch):
-    from opensquilla.provider.selector import ModelListResult, ProviderListError
+    from openstarry_code.provider.selector import ModelListResult, ProviderListError
 
     leaked = "sk-or-v1-abcdefghijklmnopqrstuvwxyz"
 
@@ -1353,7 +1353,7 @@ async def test_providers_status_probe_surfaces_classified_active_error(monkeypat
 async def test_providers_status_probe_distinguishes_empty_and_degraded_catalogs(
     monkeypatch,
 ):
-    from opensquilla.provider.selector import ModelListResult, ProviderListError
+    from openstarry_code.provider.selector import ModelListResult, ProviderListError
 
     class _Selector:
         is_configured = True
@@ -1597,7 +1597,7 @@ async def test_providers_status_absent_key_reports_ok_shape(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_providers_status_surfaces_latency_snapshot_from_store(monkeypatch):
-    from opensquilla.gateway.provider_stats import ProviderStatsStore
+    from openstarry_code.gateway.provider_stats import ProviderStatsStore
 
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
     store = ProviderStatsStore()
@@ -1662,7 +1662,7 @@ def _hermetic_sandbox_runtime():
     search RPCs fail with SandboxDenied. Reset to the neutral state so this
     module's behavior does not depend on test ordering.
     """
-    from opensquilla.sandbox.integration import reset_runtime
+    from openstarry_code.sandbox.integration import reset_runtime
 
     reset_runtime()
     yield
@@ -1695,8 +1695,8 @@ async def test_search_status_and_query_return_structured_payloads():
 
 @pytest.mark.asyncio
 async def test_search_status_reports_the_precondition_that_denies_query(tmp_path):
-    from opensquilla.sandbox.config import SandboxSettings
-    from opensquilla.sandbox.integration import configure_runtime
+    from openstarry_code.sandbox.config import SandboxSettings
+    from openstarry_code.sandbox.integration import configure_runtime
 
     register_provider(
         "fake_search_ok",

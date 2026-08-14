@@ -1,10 +1,10 @@
 """Unit tests for the code-task provider preflight + mid-run error mapping."""
 
-from opensquilla.contrib.codetask import preflight as preflight_mod
-from opensquilla.contrib.codetask.agent_config import build_per_run_agent_config
-from opensquilla.contrib.codetask.preflight import provider_block_reason, provider_preflight
-from opensquilla.onboarding.probe import ProviderProbeResult
-from opensquilla.provider.failures import ProviderFailureKind
+from openstarry_code.contrib.codetask import preflight as preflight_mod
+from openstarry_code.contrib.codetask.agent_config import build_per_run_agent_config
+from openstarry_code.contrib.codetask.preflight import provider_block_reason, provider_preflight
+from openstarry_code.onboarding.probe import ProviderProbeResult
+from openstarry_code.provider.failures import ProviderFailureKind
 
 _TEMPLATE = {
     "workspace_strict": False,
@@ -85,12 +85,12 @@ def test_preflight_blocks_on_missing_key(monkeypatch):
     bundle = _bundle({"llm": {"provider": "deepseek", "model": "deepseek-chat"}})
     ok, reason = provider_preflight(bundle)
     assert ok is False
-    assert "deepseek" in reason and "opensquilla onboard" in reason
+    assert "deepseek" in reason and "openstarry-code onboard" in reason
 
 
 def test_preflight_does_not_use_generic_key_when_explicit_env_is_missing(monkeypatch):
     monkeypatch.delenv("NEW_ENDPOINT_KEY", raising=False)
-    monkeypatch.setenv("OPENSQUILLA_LLM_API_KEY", "synthetic-generic-key")
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_API_KEY", "synthetic-generic-key")
     calls = []
     _probe(
         monkeypatch,
@@ -117,7 +117,7 @@ def test_preflight_does_not_use_generic_key_when_explicit_env_is_missing(monkeyp
     ok, reason = provider_preflight(bundle)
 
     assert ok is False
-    assert "openrouter" in reason and "opensquilla onboard" in reason
+    assert "openrouter" in reason and "openstarry-code onboard" in reason
     assert calls[0]["api_key"] == ""
 
 

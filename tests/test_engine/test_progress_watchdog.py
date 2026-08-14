@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from opensquilla.engine.progress_watchdog import ProgressObservation, ProgressWatchdog
+from openstarry_code.engine.progress_watchdog import ProgressObservation, ProgressWatchdog
 
 
 def test_progress_watchdog_observes_progress_and_resets_repeated_errors() -> None:

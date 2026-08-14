@@ -5,14 +5,14 @@ from typing import Any
 
 import pytest
 
-from opensquilla.provider import auxiliary_budget
-from opensquilla.provider.auxiliary_budget import (
+from openstarry_code.provider import auxiliary_budget
+from openstarry_code.provider.auxiliary_budget import (
     AuxiliaryRequestTooLargeError,
     ensure_auxiliary_text_fits,
     resolve_auxiliary_request_budget,
 )
-from opensquilla.provider.protocol import ProviderMetadata
-from opensquilla.provider.types import ChatConfig, DoneEvent, Message, TextDeltaEvent
+from openstarry_code.provider.protocol import ProviderMetadata
+from openstarry_code.provider.types import ChatConfig, DoneEvent, Message, TextDeltaEvent
 
 
 class _Catalog:

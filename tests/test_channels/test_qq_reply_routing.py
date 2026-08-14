@@ -5,7 +5,7 @@ from types import SimpleNamespace
 from typing import Any
 from unittest.mock import AsyncMock
 
-from opensquilla.channels.qq import QQChannel, QQChannelConfig
+from openstarry_code.channels.qq import QQChannel, QQChannelConfig
 
 
 def _make_channel() -> QQChannel:

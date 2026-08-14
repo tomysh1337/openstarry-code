@@ -8,9 +8,9 @@ from typing import Any
 import httpx
 import pytest
 
-from opensquilla.provider.compat_policy import compat_policy_for_kind
-from opensquilla.provider.openai import OpenAIProvider
-from opensquilla.provider.types import (
+from openstarry_code.provider.compat_policy import compat_policy_for_kind
+from openstarry_code.provider.openai import OpenAIProvider
+from openstarry_code.provider.types import (
     ChatConfig,
     DoneEvent,
     ErrorEvent,
@@ -55,7 +55,7 @@ def _patch_body(monkeypatch: pytest.MonkeyPatch, body: bytes) -> None:
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client)
 
 
 def _collect(
@@ -135,7 +135,7 @@ def test_tokenrhythm_inert_candidate_demotes_overlong_native_tool_name(
     long_name = "candidate answer misplaced in function.name: " + ("x" * 17_000)
     long_tool_call_id = "private-upstream-id-" + ("i" * 300_000)
     monkeypatch.setattr(
-        "opensquilla.provider.openai._candidate_wire_digest",
+        "openstarry_code.provider.openai._candidate_wire_digest",
         lambda _value: pytest.fail("a valid stream index must take priority over wire IDs"),
     )
     _patch_body(
@@ -564,7 +564,7 @@ def test_openai_nonstream_inert_candidate_preserves_invalid_action_as_text(
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client)
     compat = replace(
         compat_policy_for_kind("tokenrhythm"),
         stream_timeout_fallback=True,
@@ -649,7 +649,7 @@ def test_openai_nonstream_inert_candidate_preserves_malformed_mapping_wrapper(
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client)
     compat = replace(
         compat_policy_for_kind("tokenrhythm"),
         stream_timeout_fallback=True,
@@ -724,7 +724,7 @@ def test_tokenrhythm_nonstream_fallback_preserves_confirmed_receipt(
         return real_async_client(*args, **kwargs)
 
     monkeypatch.setattr(
-        "opensquilla.provider.openai.httpx.AsyncClient",
+        "openstarry_code.provider.openai.httpx.AsyncClient",
         patched_async_client,
     )
     compat = replace(
@@ -1429,7 +1429,7 @@ def test_openai_nonstream_requires_one_index_zero_finished_choice(
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client)
     provider = OpenAIProvider(
         api_key="test",
         model="test-model",
@@ -1468,7 +1468,7 @@ def test_openai_nonstream_null_error_field_does_not_poison_success(
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client)
     events = _collect(
         OpenAIProvider(
             api_key="test",
@@ -1525,7 +1525,7 @@ def test_openai_nonstream_duplicate_tool_ids_fail_before_first_end(
         kwargs["transport"] = transport
         return real_async_client(*args, **kwargs)
 
-    monkeypatch.setattr("opensquilla.provider.openai.httpx.AsyncClient", patched_async_client)
+    monkeypatch.setattr("openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client)
     events = _collect(
         OpenAIProvider(
             api_key="test",

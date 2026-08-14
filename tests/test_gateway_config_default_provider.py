@@ -14,7 +14,7 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.gateway.config import (
+from openstarry_code.gateway.config import (
     LEGACY_DEFAULT_LLM_BASE_URL,
     LEGACY_DEFAULT_LLM_MODEL,
     LEGACY_DEFAULT_LLM_PROVIDER,
@@ -227,7 +227,7 @@ def test_resolved_legacy_provider_is_not_persisted(
 ) -> None:
     import tomllib
 
-    from opensquilla.onboarding.config_store import load_config, persist_config
+    from openstarry_code.onboarding.config_store import load_config, persist_config
 
     monkeypatch.setenv("OPENROUTER_API_KEY", "sk-or-test")
     target = tmp_path / "config.toml"
@@ -248,7 +248,7 @@ def test_resolved_legacy_provider_is_not_persisted(
 def test_resolved_tokenrhythm_tiers_are_not_persisted(tmp_path: Path) -> None:
     import tomllib
 
-    from opensquilla.onboarding.config_store import load_config, persist_config
+    from openstarry_code.onboarding.config_store import load_config, persist_config
 
     target = tmp_path / "config.toml"
     target.write_text('log_level = "INFO"\n', encoding="utf-8")
@@ -269,8 +269,8 @@ def test_runtime_withholds_known_cross_provider_key_without_erasing_disk(
 ) -> None:
     import tomllib
 
-    from opensquilla.gateway.llm_runtime import resolve_llm_runtime_config
-    from opensquilla.onboarding.config_store import load_config, persist_config
+    from openstarry_code.gateway.llm_runtime import resolve_llm_runtime_config
+    from openstarry_code.onboarding.config_store import load_config, persist_config
 
     target = tmp_path / "config.toml"
     target.write_text(
@@ -298,7 +298,7 @@ def test_runtime_withholds_known_cross_provider_key_without_erasing_disk(
 
 
 def test_runtime_withholds_key_from_conflicting_official_endpoint() -> None:
-    from opensquilla.gateway.llm_runtime import resolve_llm_runtime_config
+    from openstarry_code.gateway.llm_runtime import resolve_llm_runtime_config
 
     cfg = GatewayConfig(
         llm={
@@ -323,7 +323,7 @@ def test_providerless_tokenrhythm_recovery_does_not_rewrite_disk(
 ) -> None:
     import tomllib
 
-    from opensquilla.onboarding.config_store import load_config, persist_config
+    from openstarry_code.onboarding.config_store import load_config, persist_config
 
     target = tmp_path / "config.toml"
     target.write_text(

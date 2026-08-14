@@ -1,4 +1,4 @@
-"""CLI tests for `opensquilla models probe` (offline, injected/fake results).
+"""CLI tests for `openstarry-code models probe` (offline, injected/fake results).
 
 The probe command is live by nature, so these tests never let it reach a
 network: probe results are injected by monkeypatching the shared onboarding
@@ -16,8 +16,8 @@ from typing import Any
 
 from typer.testing import CliRunner
 
-from opensquilla.cli.main import app
-from opensquilla.onboarding.probe import ProviderModelsDiscoverResult, ProviderProbeResult
+from openstarry_code.cli.main import app
+from openstarry_code.onboarding.probe import ProviderModelsDiscoverResult, ProviderProbeResult
 
 runner = CliRunner()
 
@@ -78,11 +78,11 @@ def _patch_draft_install_id_context(monkeypatch):
         return None
 
     monkeypatch.setattr(
-        "opensquilla.cli.models_cmd.load_config",
+        "openstarry_code.cli.models_cmd.load_config",
         fake_load_config,
     )
     monkeypatch.setattr(
-        "opensquilla.provider.tokenrhythm_correlation.prewarm_tokenrhythm_install_id",
+        "openstarry_code.provider.tokenrhythm_correlation.prewarm_tokenrhythm_install_id",
         fake_prewarm,
     )
     return active_config, load_calls, prewarm_calls
@@ -92,7 +92,7 @@ def test_probe_ok_renders_table_and_exits_zero(tmp_path: Path, monkeypatch) -> N
     config = _primary_openai_config(tmp_path)
     calls: list[dict[str, Any]] = []
     monkeypatch.setattr(
-        "opensquilla.cli.models_cmd.probe_llm_provider",
+        "openstarry_code.cli.models_cmd.probe_llm_provider",
         _fake_probe(
             {"openai": ProviderProbeResult(ok=True, provider_id="openai", model="gpt-test-dummy")},
             calls,
@@ -113,7 +113,7 @@ def test_probe_ok_renders_table_and_exits_zero(tmp_path: Path, monkeypatch) -> N
 def test_probe_failure_classifies_and_exits_nonzero(tmp_path: Path, monkeypatch) -> None:
     config = _primary_openai_config(tmp_path)
     monkeypatch.setattr(
-        "opensquilla.cli.models_cmd.probe_llm_provider",
+        "openstarry_code.cli.models_cmd.probe_llm_provider",
         _fake_probe(
             {
                 "openai": ProviderProbeResult(
@@ -148,7 +148,7 @@ def test_probe_redacts_sentinel_secret_from_error_detail(
         code="401",
     )
     monkeypatch.setattr(
-        "opensquilla.cli.models_cmd.probe_llm_provider",
+        "openstarry_code.cli.models_cmd.probe_llm_provider",
         _fake_probe({"openai": poisoned}, []),
     )
 
@@ -167,7 +167,7 @@ def test_probe_redacts_sentinel_secret_from_error_detail(
 def test_probe_json_shape(tmp_path: Path, monkeypatch) -> None:
     config = _primary_openai_config(tmp_path)
     monkeypatch.setattr(
-        "opensquilla.cli.models_cmd.probe_llm_provider",
+        "openstarry_code.cli.models_cmd.probe_llm_provider",
         _fake_probe(
             {
                 "openai": ProviderProbeResult(
@@ -207,7 +207,7 @@ def test_probe_draft_reads_unsaved_credential_from_stdin(monkeypatch) -> None:
         monkeypatch
     )
     monkeypatch.setattr(
-        "opensquilla.cli.models_cmd.probe_llm_provider",
+        "openstarry_code.cli.models_cmd.probe_llm_provider",
         _fake_probe(
             {
                 "tokenrhythm": ProviderProbeResult(
@@ -257,7 +257,7 @@ def test_probe_draft_reads_unsaved_credential_from_stdin(monkeypatch) -> None:
 def test_probe_draft_redacts_failed_provider_detail(monkeypatch) -> None:
     _patch_draft_install_id_context(monkeypatch)
     monkeypatch.setattr(
-        "opensquilla.cli.models_cmd.probe_llm_provider",
+        "openstarry_code.cli.models_cmd.probe_llm_provider",
         _fake_probe(
             {
                 "openai": ProviderProbeResult(
@@ -296,7 +296,7 @@ def test_probe_draft_redacts_failed_provider_detail(monkeypatch) -> None:
 def test_probe_draft_config_load_failure_registers_disabled_privacy(
     monkeypatch,
 ) -> None:
-    from opensquilla.cli import models_cmd
+    from openstarry_code.cli import models_cmd
 
     def fail_load_config(_path):
         raise ValueError("synthetic invalid config")
@@ -304,7 +304,7 @@ def test_probe_draft_config_load_failure_registers_disabled_privacy(
     captured: list[Any] = []
     monkeypatch.setattr(models_cmd, "load_config", fail_load_config)
     monkeypatch.setattr(
-        "opensquilla.provider.tokenrhythm_correlation.prewarm_tokenrhythm_install_id",
+        "openstarry_code.provider.tokenrhythm_correlation.prewarm_tokenrhythm_install_id",
         lambda *, config: captured.append(config),
     )
 
@@ -383,14 +383,14 @@ def test_probe_profile_without_tier_model_uses_models_list(
     probe_calls: list[dict[str, Any]] = []
     discover_calls: list[dict[str, Any]] = []
     monkeypatch.setattr(
-        "opensquilla.cli.models_cmd.probe_llm_provider",
+        "openstarry_code.cli.models_cmd.probe_llm_provider",
         _fake_probe(
             {"openai": ProviderProbeResult(ok=True, provider_id="openai", model="gpt-test-dummy")},
             probe_calls,
         ),
     )
     monkeypatch.setattr(
-        "opensquilla.cli.models_cmd.discover_provider_models",
+        "openstarry_code.cli.models_cmd.discover_provider_models",
         _fake_discover(
             {
                 "anthropic": ProviderModelsDiscoverResult(
@@ -430,7 +430,7 @@ def test_probe_provider_filter_and_model_override(tmp_path: Path, monkeypatch) -
     )
     calls: list[dict[str, Any]] = []
     monkeypatch.setattr(
-        "opensquilla.cli.models_cmd.probe_llm_provider",
+        "openstarry_code.cli.models_cmd.probe_llm_provider",
         _fake_probe(
             {
                 "openai": ProviderProbeResult(

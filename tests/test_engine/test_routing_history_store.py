@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from opensquilla.engine.steps.squilla_router import RoutingHistoryStore
+from openstarry_code.engine.steps.squilla_router import RoutingHistoryStore
 
 
 def test_get_set_setdefault() -> None:

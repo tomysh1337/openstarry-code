@@ -5,12 +5,12 @@ from pathlib import Path
 
 import pytest
 
-from opensquilla.cli.tui.opentui import completion
-from opensquilla.cli.tui.opentui.completion import (
+from openstarry_code.cli.tui.opentui import completion
+from openstarry_code.cli.tui.opentui.completion import (
     CompletionCandidate,
     build_completion_catalog,
 )
-from opensquilla.engine.commands import Surface
+from openstarry_code.engine.commands import Surface
 
 
 @dataclass(frozen=True)

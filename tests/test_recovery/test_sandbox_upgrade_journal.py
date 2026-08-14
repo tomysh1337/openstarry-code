@@ -4,7 +4,7 @@ import json
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-from opensquilla.sandbox.upgrade_migration import (
+from openstarry_code.sandbox.upgrade_migration import (
     SandboxUpgradeCoordinator,
     inspect_sandbox_upgrade,
 )

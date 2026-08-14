@@ -22,7 +22,7 @@ export function primaryProfilePaths(userData: string): DesktopProfilePaths {
   return {
     kind: 'primary',
     recoveryId: null,
-    home: join(root, 'opensquilla'),
+    home: join(root, 'openstarry-code'),
     credentialPath: join(root, 'desktop-credential.json'),
     logsDir: join(root, 'logs'),
   }
@@ -38,7 +38,7 @@ export function recoveryProfilePaths(userData: string, recoveryId: string): Desk
   return {
     kind: 'recovery',
     recoveryId,
-    home: join(root, 'opensquilla'),
+    home: join(root, 'openstarry-code'),
     credentialPath: join(root, 'desktop-credential.json'),
     logsDir: join(root, 'logs'),
   }

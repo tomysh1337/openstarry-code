@@ -20,20 +20,20 @@ from types import SimpleNamespace
 
 import pytest
 
-from opensquilla.gateway.rpc import RpcContext
-from opensquilla.gateway.rpc_models import (
+from openstarry_code.gateway.rpc import RpcContext
+from openstarry_code.gateway.rpc_models import (
     _handle_models_list,
     _list_error_to_wire,
     _model_info_to_wire,
 )
-from opensquilla.provider.selector import (
+from openstarry_code.provider.selector import (
     ModelListResult,
     ModelSelector,
     ProviderConfig,
     ProviderListError,
     SelectorConfig,
 )
-from opensquilla.provider.types import ModelInfo
+from openstarry_code.provider.types import ModelInfo
 
 # Additive wire evolution: ``source`` (catalog provenance) and
 # ``reasoningFormat`` (reasoning dialect) were added deliberately. Extending
@@ -138,7 +138,7 @@ def test_tokenrhythm_wire_prefers_declared_values_and_explicit_false(monkeypatch
                 supports_vision=True,
             )
 
-    monkeypatch.setattr("opensquilla.gateway.rpc_models._catalog", _Catalog())
+    monkeypatch.setattr("openstarry_code.gateway.rpc_models._catalog", _Catalog())
     metadata = {
         "schemaVersion": 1,
         "declared": {
@@ -182,7 +182,7 @@ def test_tokenrhythm_wire_uses_authority_resolved_model_info_without_rewriting_m
                 reasoning_format="none",
             )
 
-    monkeypatch.setattr("opensquilla.gateway.rpc_models._catalog", _Catalog())
+    monkeypatch.setattr("openstarry_code.gateway.rpc_models._catalog", _Catalog())
     metadata = {
         "schemaVersion": 1,
         "declared": {
@@ -292,7 +292,7 @@ async def test_models_list_envelope_keys_are_frozen() -> None:
 
 
 async def test_tokenrhythm_models_list_is_snapshot_only(monkeypatch) -> None:
-    from opensquilla.gateway import model_catalog_refresh
+    from openstarry_code.gateway import model_catalog_refresh
 
     metadata = {"schemaVersion": 1, "published": None, "declared": None}
 
@@ -338,10 +338,10 @@ async def test_models_list_mixed_chain_uses_tokenrhythm_snapshot_per_leg(
     tmp_path,
     tokenrhythm_first: bool,
 ) -> None:
-    from opensquilla.gateway import model_catalog_refresh
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.provider.model_catalog import ModelCatalog
-    from opensquilla.provider.tokenrhythm_catalog import (
+    from openstarry_code.gateway import model_catalog_refresh
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.provider.model_catalog import ModelCatalog
+    from openstarry_code.provider.tokenrhythm_catalog import (
         parse_tokenrhythm_declared,
         parse_tokenrhythm_published,
     )
@@ -396,7 +396,7 @@ async def test_models_list_mixed_chain_uses_tokenrhythm_snapshot_per_leg(
             }
         )
 
-    monkeypatch.setattr("opensquilla.provider.selector._build_provider", fake_build_provider)
+    monkeypatch.setattr("openstarry_code.provider.selector._build_provider", fake_build_provider)
     monkeypatch.setattr(
         model_catalog_refresh,
         "fetch_tokenrhythm_published",
@@ -465,10 +465,10 @@ async def test_models_list_same_tokenrhythm_model_keeps_each_keys_snapshot(
     monkeypatch,
     tmp_path,
 ) -> None:
-    from opensquilla.gateway import model_catalog_refresh
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.provider.model_catalog import ModelCatalog
-    from opensquilla.provider.tokenrhythm_catalog import (
+    from openstarry_code.gateway import model_catalog_refresh
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.provider.model_catalog import ModelCatalog
+    from openstarry_code.provider.tokenrhythm_catalog import (
         parse_tokenrhythm_declared,
         parse_tokenrhythm_published,
     )

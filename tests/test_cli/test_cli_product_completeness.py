@@ -8,8 +8,8 @@ from typing import Any
 import click
 from typer.testing import CliRunner
 
-from opensquilla.cli import gateway_lifecycle
-from opensquilla.cli.main import app
+from openstarry_code.cli import gateway_lifecycle
+from openstarry_code.cli.main import app
 
 runner = CliRunner()
 
@@ -90,12 +90,12 @@ class FakeGatewayClient:
 
 class FailingConnectGatewayClient(FakeGatewayClient):
     async def connect(self, url: str, *, token=None) -> None:
-        raise SystemExit(f"Cannot connect to OpenSquilla gateway at {url}")
+        raise SystemExit(f"Cannot connect to OpenStarry Code gateway at {url}")
 
 
 class RPCFailGatewayClient(FakeGatewayClient):
     async def call(self, method: str, params: dict | None = None) -> Any:
-        from opensquilla.cli.gateway_client import GatewayRPCError
+        from openstarry_code.cli.gateway_client import GatewayRPCError
 
         type(self).calls.append((method, params or {}))
         raise GatewayRPCError(
@@ -113,13 +113,13 @@ def _install_fake_gateway(monkeypatch, cls=FakeGatewayClient) -> type[FakeGatewa
     cls.sessions_payload = {"sessions": [], "count": 0}
     cls.cost_payload = {"breakdown": [], "totalCostUsd": 0.0}
     cls.history_pages = {}
-    monkeypatch.setattr("opensquilla.cli.gateway_client.GatewayClient", cls)
+    monkeypatch.setattr("openstarry_code.cli.gateway_client.GatewayClient", cls)
     return cls
 
 
 def test_catalog_list_json_surfaces(tmp_path: Path, monkeypatch):
     target = tmp_path / "c.toml"
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     runner.invoke(
         app,
         [
@@ -198,12 +198,12 @@ def test_models_list_table_warns_about_provider_listing_errors(monkeypatch):
 
 
 def test_config_get_honors_env_path_and_redacts(tmp_path: Path, monkeypatch):
-    target = tmp_path / "opensquilla.toml"
+    target = tmp_path / "openstarry-code.toml"
     target.write_text(
         'search_api_key = "secret"\n[llm]\nprovider = "openrouter"\nmodel = "test/model"\n',
         encoding="utf-8",
     )
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
 
     model_result = runner.invoke(app, ["config", "get", "llm.model"])
     key_result = runner.invoke(app, ["config", "get", "search_api_key"])
@@ -252,7 +252,7 @@ def test_config_set_llm_replacement_does_not_persist_absorbed_generic_key(
 ) -> None:
     monkeypatch.delenv("OLD_ENDPOINT_KEY", raising=False)
     monkeypatch.delenv("NEW_ENDPOINT_KEY", raising=False)
-    monkeypatch.setenv("OPENSQUILLA_LLM_API_KEY", "synthetic-generic-key")
+    monkeypatch.setenv("OPENSTARRY_CODE_LLM_API_KEY", "synthetic-generic-key")
     target = tmp_path / "explicit.toml"
     target.write_text(
         "\n".join(
@@ -291,8 +291,8 @@ def test_config_set_llm_replacement_does_not_persist_absorbed_generic_key(
     assert "sk-synthetic-old" not in persisted
     assert tomllib.loads(persisted)["llm"]["api_key_env"] == "NEW_ENDPOINT_KEY"
 
-    from opensquilla.gateway.config import GatewayConfig
-    from opensquilla.gateway.llm_runtime import resolve_llm_runtime_config
+    from openstarry_code.gateway.config import GatewayConfig
+    from openstarry_code.gateway.llm_runtime import resolve_llm_runtime_config
 
     runtime = resolve_llm_runtime_config(GatewayConfig.load(target))
     assert runtime.api_key == ""
@@ -332,7 +332,7 @@ def test_config_set_legacy_ensemble_toggle_persists_canonical_router_mode(
     )
 
     assert result.exit_code == 0, result.stdout
-    from opensquilla.gateway.config import GatewayConfig
+    from openstarry_code.gateway.config import GatewayConfig
 
     reloaded = GatewayConfig.load(str(target))
     assert reloaded.llm_ensemble.enabled is True
@@ -377,14 +377,14 @@ def test_version_check_honors_config_privacy_network_observability(
     tmp_path: Path,
     monkeypatch,
 ):
-    from opensquilla.observability import update_check
+    from openstarry_code.observability import update_check
 
     target = tmp_path / "privacy.toml"
     target.write_text(
         "[privacy]\ndisable_network_observability = true\n",
         encoding="utf-8",
     )
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     monkeypatch.setattr(update_check, "_CACHED_INFO", None)
 
     def fail_fetch(*_args, **_kwargs):
@@ -406,15 +406,15 @@ def test_version_check_on_rc_uses_rc_channel_and_keeps_json_contract(
     tmp_path: Path,
     monkeypatch,
 ):
-    import opensquilla
-    from opensquilla.observability import network_policy, update_check
+    import openstarry_code
+    from openstarry_code.observability import network_policy, update_check
 
     target = tmp_path / "config.toml"
     target.write_text(
         f"state_dir = {json.dumps(str(tmp_path / 'state'))}\n",
         encoding="utf-8",
     )
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     for name in (
         network_policy.NETWORK_OBSERVABILITY_DISABLED_ENV,
         update_check.UPDATE_CHECK_DISABLED_ENV,
@@ -424,7 +424,7 @@ def test_version_check_on_rc_uses_rc_channel_and_keeps_json_contract(
         update_check.TELEMETRY_TESTING_ENV,
     ):
         monkeypatch.delenv(name, raising=False)
-    monkeypatch.setattr(opensquilla, "__version__", "0.5.0rc4")
+    monkeypatch.setattr(openstarry_code, "__version__", "0.5.0rc4")
     monkeypatch.setattr(update_check, "_CACHED_INFO", {})
     calls: list[tuple[str, str]] = []
 
@@ -663,7 +663,7 @@ def test_skills_install_and_uninstall_use_gateway_rpc_when_available(monkeypatch
 
 def test_skills_install_and_uninstall_fall_back_when_gateway_unavailable(monkeypatch):
     _install_fake_gateway(monkeypatch, FailingConnectGatewayClient)
-    from opensquilla.skills.hub.installer import InstallResult, SkillInstaller
+    from openstarry_code.skills.hub.installer import InstallResult, SkillInstaller
 
     async def fake_install(self, identifier: str, source: str, force: bool = False):
         return InstallResult(
@@ -690,7 +690,7 @@ def test_skills_install_and_uninstall_fall_back_when_gateway_unavailable(monkeyp
 
 def test_skills_install_legacy_fallback_cannot_bypass_scanner_with_force(monkeypatch):
     _install_fake_gateway(monkeypatch, FailingConnectGatewayClient)
-    from opensquilla.skills.hub.installer import SkillInstaller
+    from openstarry_code.skills.hub.installer import SkillInstaller
 
     called = False
 
@@ -728,7 +728,7 @@ def test_skills_install_legacy_fallback_cannot_bypass_scanner_with_force(monkeyp
 
 def test_skills_install_legacy_fallback_rejects_replace_source_without_call(monkeypatch):
     _install_fake_gateway(monkeypatch, FailingConnectGatewayClient)
-    from opensquilla.skills.hub.installer import InstallResult, SkillInstaller
+    from openstarry_code.skills.hub.installer import InstallResult, SkillInstaller
 
     calls = 0
 
@@ -758,7 +758,7 @@ def test_skills_install_legacy_fallback_rejects_replace_source_without_call(monk
 
 def test_skills_install_legacy_fallback_internal_type_error_is_not_retried(monkeypatch):
     _install_fake_gateway(monkeypatch, FailingConnectGatewayClient)
-    from opensquilla.skills.hub.installer import InstallResult, SkillInstaller
+    from openstarry_code.skills.hub.installer import InstallResult, SkillInstaller
 
     calls = 0
 
@@ -783,7 +783,7 @@ def test_skills_install_legacy_fallback_internal_type_error_is_not_retried(monke
 
 def test_skills_uninstall_legacy_fallback_rejects_exact_identity_without_call(monkeypatch):
     _install_fake_gateway(monkeypatch, FailingConnectGatewayClient)
-    from opensquilla.skills.hub.installer import InstallResult, SkillInstaller
+    from openstarry_code.skills.hub.installer import InstallResult, SkillInstaller
 
     calls = 0
 
@@ -808,7 +808,7 @@ def test_skills_uninstall_legacy_fallback_rejects_exact_identity_without_call(mo
 
 def test_skills_update_legacy_name_fallback_remains_compatible(monkeypatch):
     _install_fake_gateway(monkeypatch, FailingConnectGatewayClient)
-    from opensquilla.skills.hub.installer import InstallResult, SkillInstaller
+    from openstarry_code.skills.hub.installer import InstallResult, SkillInstaller
 
     calls: list[str | None] = []
 
@@ -831,7 +831,7 @@ def test_skills_update_legacy_name_fallback_remains_compatible(monkeypatch):
 def test_skills_install_fallback_exposes_github_source_without_token(monkeypatch):
     _install_fake_gateway(monkeypatch, FailingConnectGatewayClient)
     monkeypatch.delenv("GITHUB_TOKEN", raising=False)
-    from opensquilla.skills.hub.installer import InstallResult, SkillInstaller
+    from openstarry_code.skills.hub.installer import InstallResult, SkillInstaller
 
     async def fake_install(self, identifier: str, source: str, force: bool = False):
         assert source == "github"
@@ -864,7 +864,7 @@ def test_skills_install_fallback_exposes_github_source_without_token(monkeypatch
 
 def test_skills_install_rpc_error_does_not_fall_back_to_local_installer(monkeypatch):
     fake = _install_fake_gateway(monkeypatch, RPCFailGatewayClient)
-    from opensquilla.skills.hub.installer import SkillInstaller
+    from openstarry_code.skills.hub.installer import SkillInstaller
 
     local_install_called = False
 
@@ -945,9 +945,9 @@ def test_sessions_list_uses_active_profile_managed_gateway_runtime_port(
         "count": 1,
     }
     home = tmp_path / "profile"
-    monkeypatch.setenv("OPENSQUILLA_STATE_DIR", str(home))
-    monkeypatch.delenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", raising=False)
-    monkeypatch.delenv("OPENSQUILLA_GATEWAY_URL", raising=False)
+    monkeypatch.setenv("OPENSTARRY_CODE_STATE_DIR", str(home))
+    monkeypatch.delenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", raising=False)
+    monkeypatch.delenv("OPENSTARRY_CODE_GATEWAY_URL", raising=False)
     config = home / "config.toml"
     config.parent.mkdir(parents=True)
     config.write_text('host = "127.0.0.1"\nport = 18791\n', encoding="utf-8")
@@ -1552,7 +1552,7 @@ def test_runtime_diagnostics_commands_use_gateway_config_env_path(tmp_path: Path
     fake = _install_fake_gateway(monkeypatch)
     target = tmp_path / "env-config.toml"
     target.write_text('host = "127.0.0.1"\nport = 20001\n', encoding="utf-8")
-    monkeypatch.setenv("OPENSQUILLA_GATEWAY_CONFIG_PATH", str(target))
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(target))
     fake.rpc_payloads = {
         "providers.status": {"activeProvider": "openrouter", "providers": [], "count": 0},
     }

@@ -4,8 +4,8 @@ from pathlib import Path
 
 import yaml
 
-from opensquilla.identity.prompt import assemble_system_prompt
-from opensquilla.identity.types import AgentProfile
+from openstarry_code.identity.prompt import assemble_system_prompt
+from openstarry_code.identity.types import AgentProfile
 
 GOLDEN_PATH = Path("tests/golden/public_release_open.yaml")
 

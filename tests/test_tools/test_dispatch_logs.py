@@ -3,10 +3,10 @@ from __future__ import annotations
 import pytest
 import structlog.testing
 
-from opensquilla.engine.types import ToolCall
-from opensquilla.tools.dispatch import build_tool_handler
-from opensquilla.tools.registry import ToolRegistry
-from opensquilla.tools.types import (
+from openstarry_code.engine.types import ToolCall
+from openstarry_code.tools.dispatch import build_tool_handler
+from openstarry_code.tools.registry import ToolRegistry
+from openstarry_code.tools.types import (
     CallerKind,
     InteractionMode,
     ToolContext,
@@ -76,7 +76,7 @@ async def test_dispatch_tool_failed_log_includes_surface_context() -> None:
 async def test_dispatch_missing_required_log_records_shape_guidance_flag(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("OPENSQUILLA_MISSING_REQUIRED_ARGUMENT_SHAPE_GUIDANCE", "1")
+    monkeypatch.setenv("OPENSTARRY_CODE_MISSING_REQUIRED_ARGUMENT_SHAPE_GUIDANCE", "1")
     handler = build_tool_handler(_build_registry())
     token = current_tool_context.set(
         ToolContext(

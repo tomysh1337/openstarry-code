@@ -14,10 +14,10 @@ from typing import Any
 
 import pytest
 
-from opensquilla.gateway import rpc_sessions
-from opensquilla.gateway.rpc import get_dispatcher
-from opensquilla.gateway.task_runtime import TaskRuntime
-from opensquilla.session.models import AgentTaskStatus
+from openstarry_code.gateway import rpc_sessions
+from openstarry_code.gateway.rpc import get_dispatcher
+from openstarry_code.gateway.task_runtime import TaskRuntime
+from openstarry_code.session.models import AgentTaskStatus
 from tests.test_gateway.test_rpc_sessions import FakeSession, FakeSessionManager, make_ctx
 from tests.test_gateway.test_task_runtime_terminal_cleanup import (
     _make_envelope,
