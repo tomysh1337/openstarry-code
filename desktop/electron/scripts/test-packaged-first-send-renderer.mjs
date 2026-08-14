@@ -185,6 +185,7 @@ const outboundNetwork = []
 const rpcSendCounts = new Map()
 const rpcSessions = new Map()
 let desktopLogSummary
+let rendererFailureSnapshot
 
 async function browserRpcSnapshot(page) {
   return await page.evaluate(() => {
@@ -280,8 +281,8 @@ try {
     scrubProviderSecrets: true,
     env: {
       GITHUB_ACTIONS: '0',
-      OPENSQUILLA_LLM_CONTEXT_WINDOW_TOKENS: '131072',
-      OPENSQUILLA_TESTING: '0',
+      OPENSTARRY_CODE_LLM_CONTEXT_WINDOW_TOKENS: '131072',
+      OPENSTARRY_CODE_TESTING: '0',
       NO_PROXY: '127.0.0.1,localhost,::1',
       no_proxy: '127.0.0.1,localhost,::1',
     },
@@ -449,6 +450,18 @@ try {
   )
 } catch (error) {
   runError = error
+  const windows = app?.windows() || []
+  const page = windows[0]
+  if (page && !page.isClosed()) {
+    rendererFailureSnapshot = await page.evaluate(() => ({
+      url: window.location.href,
+      activeSession: localStorage.getItem('opensquilla_active_session'),
+      navigation: window.OpenSquillaSessionDiag?.read() || [],
+      probe: globalThis.__opensquillaP15RpcProbe || null,
+      composerCount: document.querySelectorAll('.chat-textarea').length,
+      messageCount: document.querySelectorAll('.msg').length,
+    })).catch(snapshotError => ({ error: String(snapshotError) }))
+  }
 } finally {
   await app?.close().catch(() => {})
   await provider?.close().catch(() => {})
@@ -463,6 +476,7 @@ if (runError) {
     provider: provider?.counts(),
     renderer: { pageErrors: pageErrors.length, consoleErrors: consoleErrors.length },
     externalRendererRequests: outboundNetwork.length,
+    rendererFailureSnapshot,
     desktopLog: desktopLogSummary,
   }, null, 2))
   throw runError

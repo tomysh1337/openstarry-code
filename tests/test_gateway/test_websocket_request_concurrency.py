@@ -283,10 +283,10 @@ async def test_slow_history_does_not_block_another_history_or_noop(
 
 
 @pytest.mark.parametrize("writer_queue_enabled", [False, True])
-async def test_four_slow_optional_reads_do_not_block_interactive_rpc(
+async def test_full_optional_read_burst_does_not_block_interactive_rpc(
     writer_queue_enabled: bool,
 ) -> None:
-    request_ids = tuple(f"session-{index}" for index in range(1, 5))
+    request_ids = tuple(f"session-{index}" for index in range(1, 12))
     dispatcher = _ConcurrentOptionalReadDispatcher(set(request_ids))
     observed: dict[str, bool] = {}
 

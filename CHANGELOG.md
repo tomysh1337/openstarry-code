@@ -40,6 +40,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Fixed the frozen desktop gateway to resolve bundled schema migrations from
   `openstarry_code/_migrations`, so packaged MSI/NSIS installs boot without a
   source checkout.
+- Fixed the packaged first-send release gate to use the current
+  `OPENSTARRY_CODE_*` context and test environment variables, and added a
+  renderer state snapshot when the gate fails.
+- Sized the Gateway's detached optional-read pool to the complete advertised
+  bootstrap method set, preventing a fresh Control UI from rejecting its own
+  concurrent session and metadata reads.
 
 ## [0.5.4] - 2026-08-14
 

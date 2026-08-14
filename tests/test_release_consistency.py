@@ -93,6 +93,9 @@ def test_release_workflow_builds_desktop_installers() -> None:
     assert "if (!alreadyOnEmptyDraft)" in first_send_gate
     assert "await header.waitFor({ state: 'attached'" in first_send_gate
     assert "await page.mouse.move(1, 1)" in first_send_gate
+    assert "OPENSTARRY_CODE_LLM_CONTEXT_WINDOW_TOKENS: '131072'" in first_send_gate
+    assert "OPENSTARRY_CODE_TESTING: '0'" in first_send_gate
+    assert "OPENSQUILLA_TESTING" not in first_send_gate
 
 
 def test_release_workflow_runs_legacy_windows_upgrade_checks_on_server_2022() -> None:

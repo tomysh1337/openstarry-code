@@ -90,7 +90,10 @@ _CONCURRENT_OPTIONAL_READ_METHODS: frozenset[str] = frozenset(
 _DETACHED_RPC_METHODS: frozenset[str] = frozenset({"meta.drafts.list"}).union(
     _CONCURRENT_OPTIONAL_READ_METHODS
 )
-_MAX_DETACHED_REQUESTS_PER_CONNECTION = 4
+# A fresh Control UI can request every advertised optional read at once. Keep
+# the pool bounded, but large enough that the supported bootstrap set does not
+# reject its own metadata reads before they reach the dispatcher.
+_MAX_DETACHED_REQUESTS_PER_CONNECTION = len(_DETACHED_RPC_METHODS)
 _DETACHED_REQUEST_DRAIN_SECONDS = 0.25
 
 
