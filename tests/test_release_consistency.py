@@ -645,6 +645,10 @@ def test_release_workflow_keeps_windows_build_unsigned_until_signing_is_availabl
         "- name: Verify Electron package", 1
     )[0]
 
+    assert "npm run fetch:codex-x:windows" in windows_step
+    assert windows_step.index("npm run fetch:codex-x:windows") < windows_step.index(
+        "npm run build:gateway"
+    )
     assert "npx electron-builder --win --publish never" in windows_step
     assert 'CSC_IDENTITY_AUTO_DISCOVERY: "false"' in windows_step
     assert not Path("desktop/electron/electron-builder.release.cjs").exists()

@@ -489,6 +489,7 @@ jobs:
         run: |
           set -euo pipefail
           npm run fetch:runtimes
+          npm run fetch:codex-x:windows
           npm run build:gateway
           npm run build
           npx electron-builder --win --publish never
