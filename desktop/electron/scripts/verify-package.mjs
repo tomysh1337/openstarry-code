@@ -10,6 +10,7 @@ import {
   loadRuntimeManifest,
   packagedRuntimeTarget,
 } from './fetch-bundled-runtimes.mjs'
+import { assertCodexXReady } from './fetch-codex-x.mjs'
 
 const scriptDir = dirname(fileURLToPath(import.meta.url))
 const packageRoot = resolve(scriptDir, '..')
@@ -218,6 +219,10 @@ function verifyMainProcess(source, label) {
     'openOrResumeDesktopApp',
     'ensureGatewayStarted',
     'isCurrentWindowAtControlUi',
+    "desktop:codex-x:status",
+    "desktop:codex-x:open",
+    'CODEX_HOME: sharedCodexHome()',
+    'CODEXX_HOME: codexXHome()',
   ]) {
     if (!source.includes(expected)) fail(`${label} main process is missing ${expected}`)
   }
@@ -418,6 +423,14 @@ async function verifyGeneratedBundle({ label, resourcesDir, platform }) {
     }
   } catch (error) {
     fail(`${label} bundled runtimes failed verification: ${error instanceof Error ? error.message : String(error)}`)
+  }
+
+  if (platform === 'win32') {
+    try {
+      await assertCodexXReady(join(resourcesDir, 'runtime', 'codex-x'))
+    } catch (error) {
+      fail(`${label} bundled Codex-X failed verification: ${error instanceof Error ? error.message : String(error)}`)
+    }
   }
 
   const asarPath = join(resourcesDir, 'app.asar')

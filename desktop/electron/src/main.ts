@@ -139,6 +139,13 @@ interface GatewayState {
   error?: string
 }
 
+interface CodexXStatus {
+  supported: boolean
+  available: boolean
+  version: string | null
+  sharedCodexHome: boolean
+}
+
 type SecretEncryption = 'safeStorage' | 'plain'
 type DesktopConfigAuthority = 'generated' | 'profile'
 type RouterMode = 'recommended' | 'openrouter-mix' | 'disabled'
@@ -4577,21 +4584,21 @@ function onboardingHtml(
     :root {
       color-scheme: light;
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
-      --bg: #F4F5F7;
+      --bg: #F4F8FC;
       --paper: #FFFFFF;
-      --surface-subtle: #F8F9FA;
-      --ink: #15181C;
-      --muted: #565D66;
-      --dim: #7A818A;
-      --line: #E1E4E8;
-      --line-strong: #C9CED5;
-      --accent: #BA4D0F;
-      --accent-hover: #A5440C;
-      --accent-deep: #8E3A0A;
-      --accent-secondary: #B6501C;
-      --accent-soft: rgba(186, 77, 15, 0.035);
-      --primary: #343A40;
-      --primary-hover: #272C31;
+      --surface-subtle: #EDF3F8;
+      --ink: #111827;
+      --muted: #4B5B6D;
+      --dim: #6F7E8F;
+      --line: #DCE6EE;
+      --line-strong: #C5D5E1;
+      --accent: #12617D;
+      --accent-hover: #0E526B;
+      --accent-deep: #0A3F54;
+      --accent-secondary: #B7442D;
+      --accent-soft: rgba(18, 97, 125, 0.045);
+      --primary: #12617D;
+      --primary-hover: #0E526B;
       color: var(--ink);
     }
     * { box-sizing: border-box; }
@@ -4773,7 +4780,7 @@ function onboardingHtml(
       border: 0;
       border-radius: 7px;
       background: var(--accent);
-      box-shadow: 0 3px 10px rgba(186, 77, 15, 0.14);
+      box-shadow: 0 3px 10px rgba(18, 97, 125, 0.14);
       color: #FFFFFF;
       font-size: 10.5px;
       font-weight: 600;
@@ -4794,7 +4801,7 @@ function onboardingHtml(
       transform: translateY(-1px);
     }
     .provider-promo-cta:focus-visible {
-      outline: 2px solid rgba(186, 77, 15, 0.42);
+      outline: 2px solid rgba(18, 97, 125, 0.42);
       outline-offset: 2px;
     }
     .provider-grid {
@@ -5142,7 +5149,7 @@ function onboardingHtml(
     .provider-feature-select:focus-visible,
     .provider-feature-cta:focus-visible,
     .provider-disclosure-toggle:focus-visible {
-      outline: 2px solid rgba(186, 77, 15, 0.48);
+      outline: 2px solid rgba(18, 97, 125, 0.48);
       outline-offset: 2px;
     }
     .provider-picker {
@@ -5300,7 +5307,7 @@ function onboardingHtml(
       color: var(--ink);
     }
     .inline-search-toggle:focus-visible {
-      outline: 2px solid rgba(186, 77, 15, 0.36);
+      outline: 2px solid rgba(18, 97, 125, 0.36);
       outline-offset: 3px;
     }
     .inline-search-optional {
@@ -5428,7 +5435,7 @@ function onboardingHtml(
     }
     input:focus, select:focus {
       border-color: #B8A69A;
-      box-shadow: 0 0 0 3px rgba(186, 77, 15, 0.07);
+      box-shadow: 0 0 0 3px rgba(18, 97, 125, 0.07);
     }
     input[aria-invalid="true"] {
       border-color: #C2382E;
@@ -5515,12 +5522,12 @@ function onboardingHtml(
     }
     .model-summary-edit:hover,
     .model-editor-done:hover:not(:disabled) {
-      background: rgba(186, 77, 15, 0.06);
+      background: rgba(18, 97, 125, 0.06);
       color: var(--accent-deep);
     }
     .model-summary-edit:focus-visible,
     .model-editor-done:focus-visible {
-      outline: 2px solid rgba(186, 77, 15, 0.36);
+      outline: 2px solid rgba(18, 97, 125, 0.36);
       outline-offset: 1px;
     }
     .model-summary-edit {
@@ -5618,7 +5625,7 @@ function onboardingHtml(
 	    }
 	    .endpoint-summary:focus-visible {
 	      outline: none;
-	      box-shadow: inset 0 0 0 3px rgba(186, 77, 15, 0.12);
+      box-shadow: inset 0 0 0 3px rgba(18, 97, 125, 0.12);
 	    }
 	    .endpoint-content {
 	      display: grid;
@@ -6360,6 +6367,56 @@ async function assertRepoRoot(): Promise<void> {
 function packagedRuntimeRoot(): string {
   if (app.isPackaged) return join(process.resourcesPath, 'runtime')
   return join(packageRoot, 'runtime')
+}
+
+const CODEX_X_BUNDLED_VERSION = '0.3.12'
+
+function codexXExecutablePath(): string {
+  return join(packagedRuntimeRoot(), 'codex-x', 'Codex-X.exe')
+}
+
+function sharedCodexHome(): string {
+  return process.env.CODEX_HOME?.trim() || join(homedir(), '.codex')
+}
+
+function codexXHome(): string {
+  return join(app.getPath('userData'), 'codex-x')
+}
+
+async function codexXStatus(): Promise<CodexXStatus> {
+  const supported = process.platform === 'win32'
+  const available = supported && await pathIsFile(codexXExecutablePath())
+  return {
+    supported,
+    available,
+    version: available ? CODEX_X_BUNDLED_VERSION : null,
+    sharedCodexHome: true,
+  }
+}
+
+async function openCodexX(): Promise<CodexXStatus & { launched: boolean }> {
+  const status = await codexXStatus()
+  if (!status.available) return { ...status, launched: false }
+
+  mkdirSync(codexXHome(), { recursive: true })
+  const child = spawn(codexXExecutablePath(), [], {
+    cwd: dirname(codexXExecutablePath()),
+    detached: true,
+    windowsHide: false,
+    stdio: 'ignore',
+    env: {
+      ...process.env,
+      CODEX_HOME: sharedCodexHome(),
+      CODEXX_HOME: codexXHome(),
+    },
+  })
+  await new Promise<void>((resolveLaunch, rejectLaunch) => {
+    child.once('spawn', resolveLaunch)
+    child.once('error', rejectLaunch)
+  })
+  child.unref()
+  desktopLog('codex_x_opened', { version: CODEX_X_BUNDLED_VERSION })
+  return { ...status, launched: true }
 }
 
 function pathDelimiter(): string {
@@ -10372,6 +10429,14 @@ ipcMain.handle('desktop:theme:set', (_event, payload: unknown) => (
   applyDesktopNativeTheme(normalizeDesktopNativeThemeSource(payload))
 ))
 ipcMain.handle('gateway:status', () => ({ ...gatewayState }))
+ipcMain.handle('desktop:codex-x:status', async (event) => {
+  if (!trustedControlUiIpc(event)) throw new Error('Untrusted Codex-X status request.')
+  return await codexXStatus()
+})
+ipcMain.handle('desktop:codex-x:open', async (event) => {
+  if (!trustedControlUiIpc(event)) throw new Error('Untrusted Codex-X launch request.')
+  return await openCodexX()
+})
 ipcMain.handle('gateway:cli-invocation', async () => {
   const runtime = await resolveGatewayRuntime()
   return buildCliInvocation({

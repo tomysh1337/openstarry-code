@@ -55,8 +55,9 @@ cd desktop/electron
 npm run dist:local
 ```
 
-This builds the Vue Control UI, bundles the gateway with PyInstaller, and emits
-desktop artifacts for the current platform under `dist/desktop-electron/`.
+This builds the Vue Control UI, bundles the gateway with PyInstaller, fetches
+and verifies the pinned Codex-X companion on Windows, and emits desktop
+artifacts for the current platform under `dist/desktop-electron/`.
 
 For a faster rebuild after the runtime already exists:
 
@@ -85,6 +86,9 @@ current policy.
 - Reuses `openstarry-code-webui` and the Python gateway exactly as they run in the
   browser.
 - Starts a bundled `runtime/gateway/openstarry-code-gateway` in packaged builds.
+- Bundles Codex-X `v0.3.12` in Windows packages after verifying the release
+  archive SHA-256. The desktop bridge launches it with shared `CODEX_HOME` and
+  an app-owned `CODEXX_HOME`.
 - Falls back to `uv run openstarry-code gateway run --listen 127.0.0.1 --port <port>`
   during development when no bundled runtime exists.
 - Uses `contextIsolation: true`, `nodeIntegration: false`, and a minimal preload

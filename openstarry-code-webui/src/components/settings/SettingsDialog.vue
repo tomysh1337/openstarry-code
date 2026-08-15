@@ -122,6 +122,7 @@
               @copy="copyCommand"
               @go-to-section="selectSection"
               @select-configured-provider="requestSelectConfiguredProvider"
+              @duplicate-provider="duplicateProvider"
               @remove-provider-profile="removeProviderProfile"
               @add-provider="requestAddProvider"
               @probe-configured-provider="probeConfiguredProvider"
@@ -284,6 +285,7 @@ const {
   selectProvider,
   requestSelectConfiguredProvider,
   requestAddProvider,
+  duplicateProvider,
   cancelProviderEdit,
   setAutoSessionTitles,
   setDisableNetworkObservability,

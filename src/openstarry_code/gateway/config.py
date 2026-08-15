@@ -95,10 +95,7 @@ class AuthConfig(BaseSettings):
             ipaddress.IPv4Network(value)
             for value in ("127.0.0.0/8", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16")
         )
-        private_v6 = tuple(
-            ipaddress.IPv6Network(value)
-            for value in ("::1/128", "fc00::/7")
-        )
+        private_v6 = tuple(ipaddress.IPv6Network(value) for value in ("::1/128", "fc00::/7"))
         normalized: list[str] = []
         for raw in values:
             network = ipaddress.ip_network(str(raw).strip(), strict=False)
@@ -357,9 +354,7 @@ class TaskRuntimeConfig(BaseModel):
             PendingOverflowPolicy(value)
         except ValueError as exc:
             valid = ", ".join(member.value for member in PendingOverflowPolicy)
-            raise ValueError(
-                f"pending_overflow_policy must be one of {{{valid}}}"
-            ) from exc
+            raise ValueError(f"pending_overflow_policy must be one of {{{valid}}}") from exc
         return value
 
     @field_validator("pending_overflow_policy_per_channel")
@@ -373,8 +368,7 @@ class TaskRuntimeConfig(BaseModel):
                 PendingOverflowPolicy(policy)
             except ValueError as exc:
                 raise ValueError(
-                    f"pending_overflow_policy_per_channel[{channel!r}] "
-                    f"must be one of {{{valid}}}"
+                    f"pending_overflow_policy_per_channel[{channel!r}] must be one of {{{valid}}}"
                 ) from exc
         return value
 
@@ -394,11 +388,16 @@ class LlmProviderConfig(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="OPENSTARRY_CODE_LLM_")
 
     provider: str = "tokenrhythm"
+    display_name: str = ""
+    note: str = ""
+    website_url: str = ""
+    complete_url: str = ""
     model: str = "deepseek-v4-pro"
     api_key: str = ""
     api_key_env: str = ""
     base_url: str = "https://tokenrhythm.studio/v1"
     proxy: str = ""  # explicit HTTP proxy URL (e.g. http://127.0.0.1:7890)
+    custom_headers: dict[str, str] = Field(default_factory=dict, repr=False)
     max_tokens: int = 0  # 0 = auto-resolve from model catalog; >0 = explicit override
     # 0 = auto-resolve from model catalog; >0 = explicit context-window override
     # in tokens. Drives the provider-context budget ladder and context usage
@@ -431,6 +430,23 @@ class LlmProviderConfig(BaseSettings):
     # send provider.order=[name] so the provider is preferred without disabling
     # OpenRouter fallback.
     provider_routing: dict[str, str] = Field(default_factory=dict)
+
+    @field_validator("custom_headers", mode="before")
+    @classmethod
+    def _validate_request_headers(cls, value: object) -> dict[str, str]:
+        from openstarry_code.provider.request_headers import normalize_request_headers
+
+        return normalize_request_headers(value)
+
+    @model_validator(mode="after")
+    def _validate_complete_url_origin(self) -> LlmProviderConfig:
+        if not str(self.complete_url or "").strip():
+            return self
+        from openstarry_code.endpoint_identity import base_url_allows_credential_reuse
+
+        if not base_url_allows_credential_reuse(self.base_url, self.complete_url):
+            raise ValueError("complete_url must use the same HTTP origin as base_url")
+        return self
 
     @model_validator(mode="after")
     def _normalize_direct_deepseek_model(self) -> LlmProviderConfig:
@@ -593,8 +609,7 @@ class LlmEnsembleConfig(BaseSettings):
                 "llm_ensemble.min_successful_proposers"
             )
         if (
-            self.selection_mode
-            in {"static_openrouter_b5", "static_tokenrhythm_b5"}
+            self.selection_mode in {"static_openrouter_b5", "static_tokenrhythm_b5"}
             and self.target_successful_proposers is not None
             and self.target_successful_proposers > 4
         ):
@@ -654,9 +669,8 @@ class LlmEnsembleConfig(BaseSettings):
                 "llm_ensemble.min_successful_proposers cannot exceed the "
                 f"custom_b5 proposer count ({len(proposers)})"
             )
-        if (
-            self.target_successful_proposers is not None
-            and self.target_successful_proposers > len(proposers)
+        if self.target_successful_proposers is not None and self.target_successful_proposers > len(
+            proposers
         ):
             raise ValueError(
                 "llm_ensemble.target_successful_proposers cannot exceed the "
@@ -710,12 +724,8 @@ def static_b5_ensemble_active(config: Any) -> bool:
         return False
     from openstarry_code.provider.ensemble import static_b5_credential_available
 
-    selection_mode = str(
-        getattr(getattr(config, "llm_ensemble", None), "selection_mode", "") or ""
-    )
-    return static_b5_credential_available(
-        config, getattr(config, "llm", None), selection_mode
-    )
+    selection_mode = str(getattr(getattr(config, "llm_ensemble", None), "selection_mode", "") or "")
+    return static_b5_credential_available(config, getattr(config, "llm", None), selection_mode)
 
 
 def effective_agent_stream_idle_timeout_seconds(config: Any) -> float:
@@ -1013,9 +1023,7 @@ class MemoryConfig(BaseSettings):
 
     # Flush (pre-compaction memory save)
     flush_enabled: bool = False
-    flush_triggers: list[FlushTrigger] = Field(
-        default_factory=lambda: list(DEFAULT_FLUSH_TRIGGERS)
-    )
+    flush_triggers: list[FlushTrigger] = Field(default_factory=lambda: list(DEFAULT_FLUSH_TRIGGERS))
     flush_pre_compaction: bool = False
     flush_timeout_seconds: float = 15.0
     flush_background_timeout_seconds: float = 120.0
@@ -1310,9 +1318,7 @@ class SquillaRouterConfig(BaseSettings):
             "upgrade_to_c3_compaction_enabled" not in values
             and "upgrade_to_t3_compaction_enabled" in values
         ):
-            values["upgrade_to_c3_compaction_enabled"] = values[
-                "upgrade_to_t3_compaction_enabled"
-            ]
+            values["upgrade_to_c3_compaction_enabled"] = values["upgrade_to_t3_compaction_enabled"]
         if "default_tier" in values:
             values["default_tier"] = normalize_text_tier(values.get("default_tier")) or values.get(
                 "default_tier"
@@ -1408,9 +1414,7 @@ def validate_compaction_deployment_write(payload: dict[str, Any]) -> None:
     provider = str(compaction.get("provider") or "").strip()
     model = str(compaction.get("model") or "").strip()
     if provider and not model:
-        raise ValueError(
-            "compaction.provider requires compaction.model when saving config"
-        )
+        raise ValueError("compaction.provider requires compaction.model when saving config")
 
 
 class SessionNamingConfig(BaseSettings):
@@ -1570,9 +1574,7 @@ class AudioElevenLabsProviderConfig(BaseModel):
 
 
 class AudioProvidersConfig(BaseModel):
-    elevenlabs: AudioElevenLabsProviderConfig = Field(
-        default_factory=AudioElevenLabsProviderConfig
-    )
+    elevenlabs: AudioElevenLabsProviderConfig = Field(default_factory=AudioElevenLabsProviderConfig)
 
 
 class AudioTTSConfig(BaseModel):
@@ -1627,15 +1629,14 @@ class ConfiguredChannelEntry(BaseModel):
             value = value.split(",")
         if not isinstance(value, list | tuple | set | frozenset):
             return value
-        return list(
-            dict.fromkeys(str(item).strip() for item in value if str(item).strip())
-        )
+        return list(dict.fromkeys(str(item).strip() for item in value if str(item).strip()))
 
     @model_validator(mode="after")
     def _validate_dm_access(self) -> ConfiguredChannelEntry:
         if self.dm_access == "allowlist" and not self.allowed_senders:
             raise ValueError("dm_access=allowlist requires allowed_senders")
         return self
+
     # Group conversations are isolated by sender by default. Deployments that
     # intentionally want one transcript shared by the whole room can opt in.
     group_session_scope: Literal["per_sender", "shared_room"] = "per_sender"
@@ -1700,9 +1701,7 @@ class FeishuChannelEntry(ConfiguredChannelEntry):
             and not self.verification_token.strip()
             and not self.encrypt_key.strip()
         ):
-            raise ValueError(
-                "feishu webhook channels require verification_token or encrypt_key"
-            )
+            raise ValueError("feishu webhook channels require verification_token or encrypt_key")
         return self
 
 
@@ -1748,9 +1747,7 @@ class WeComChannelEntry(ConfiguredChannelEntry):
     def validate_wecom_mode(self) -> WeComChannelEntry:
         if self.connection_mode == "websocket":
             missing = [
-                field
-                for field in ("bot_id", "bot_secret")
-                if not str(getattr(self, field)).strip()
+                field for field in ("bot_id", "bot_secret") if not str(getattr(self, field)).strip()
             ]
             if missing:
                 raise ValueError(
@@ -1832,9 +1829,7 @@ class TelegramChannelEntry(ConfiguredChannelEntry):
             if not self.webhook_url:
                 raise ValueError("webhook_url is required for telegram webhook mode")
             if not self.webhook_secret_token:
-                raise ValueError(
-                    "webhook_secret_token is required for telegram webhook mode"
-                )
+                raise ValueError("webhook_secret_token is required for telegram webhook mode")
         return self
 
 
@@ -2117,6 +2112,10 @@ class LlmProviderProfile(BaseModel):
     # Remember the provider-scoped direct/fallback model while this deployment
     # is not primary.  Older configs omit it and continue to resolve the
     # provider catalog default; older binaries ignore this additive field.
+    display_name: str = ""
+    note: str = ""
+    website_url: str = ""
+    complete_url: str = ""
     model: str = ""
     api_key: str = ""
     api_key_env: str = ""
@@ -2130,6 +2129,14 @@ class LlmProviderProfile(BaseModel):
     api_key_env_pool: list[str] = Field(default_factory=list)
     base_url: str = ""
     proxy: str = ""
+    custom_headers: dict[str, str] = Field(default_factory=dict, repr=False)
+
+    @field_validator("custom_headers", mode="before")
+    @classmethod
+    def _validate_request_headers(cls, value: object) -> dict[str, str]:
+        from openstarry_code.provider.request_headers import normalize_request_headers
+
+        return normalize_request_headers(value)
 
 
 class ModelCatalogConfig(BaseSettings):
@@ -2215,8 +2222,7 @@ class ModelOverrideConfig(BaseModel):
         if normalized not in KNOWN_REASONING_FORMATS:
             allowed = ", ".join(sorted(KNOWN_REASONING_FORMATS))
             raise ValueError(
-                f"reasoning_format {value!r} is not a known dialect; "
-                f"expected one of {allowed}"
+                f"reasoning_format {value!r} is not a known dialect; expected one of {allowed}"
             )
         return normalized
 
@@ -2433,33 +2439,23 @@ class GatewayConfig(BaseSettings):
         }
         if "provider" not in fields_set:
             profile = str(getattr(self.squilla_router, "tier_profile", "") or "")
-            router_fields_set = set(
-                getattr(self.squilla_router, "model_fields_set", set())
-            )
-            legacy_intent = bool(
-                {"model", "base_url", "api_key", "api_key_env"} & fields_set
-            ) or (
+            router_fields_set = set(getattr(self.squilla_router, "model_fields_set", set()))
+            legacy_intent = bool({"model", "base_url", "api_key", "api_key_env"} & fields_set) or (
                 "tier_profile" in router_fields_set
                 and profile.strip().lower() == LEGACY_DEFAULT_LLM_PROVIDER
             )
             credential_hints = {
                 hint
                 for hint in (
-                    credential_provider_hint(
-                        llm.api_key if "api_key" in fields_set else ""
-                    ),
+                    credential_provider_hint(llm.api_key if "api_key" in fields_set else ""),
                     credential_provider_hint(
                         "",
-                        api_key_env=(
-                            llm.api_key_env if "api_key_env" in fields_set else ""
-                        ),
+                        api_key_env=(llm.api_key_env if "api_key_env" in fields_set else ""),
                     ),
                 )
                 if hint
             }
-            origin_hint = endpoint_provider_hint(
-                llm.base_url if "base_url" in fields_set else ""
-            )
+            origin_hint = endpoint_provider_hint(llm.base_url if "base_url" in fields_set else "")
             explicit_profile_hint = (
                 LEGACY_DEFAULT_LLM_PROVIDER
                 if "tier_profile" in router_fields_set
@@ -2512,16 +2508,13 @@ class GatewayConfig(BaseSettings):
                 }
             elif legacy_intent or (env_openrouter and not env_tokenrhythm):
                 provider = LEGACY_DEFAULT_LLM_PROVIDER
-                explicit_openrouter = (
-                    strong_hints == {LEGACY_DEFAULT_LLM_PROVIDER}
-                    or (env_openrouter and not env_tokenrhythm and not legacy_intent)
+                explicit_openrouter = strong_hints == {LEGACY_DEFAULT_LLM_PROVIDER} or (
+                    env_openrouter and not env_tokenrhythm and not legacy_intent
                 )
                 resolution = {
                     "status": "legacy_inferred",
                     "effective_provider": provider,
-                    "source": (
-                        "strong_evidence" if explicit_openrouter else "legacy_compat"
-                    ),
+                    "source": ("strong_evidence" if explicit_openrouter else "legacy_compat"),
                     "reason_code": (
                         "providerless_openrouter_evidence"
                         if explicit_openrouter
@@ -2709,9 +2702,7 @@ class GatewayConfig(BaseSettings):
     search_provider: str = "duckduckgo"
     search_api_key: str = ""
     search_api_key_env: str = ""
-    search_max_results: int = Field(
-        default=DEFAULT_SEARCH_MAX_RESULTS, ge=1, le=MAX_SEARCH_RESULTS
-    )
+    search_max_results: int = Field(default=DEFAULT_SEARCH_MAX_RESULTS, ge=1, le=MAX_SEARCH_RESULTS)
     search_proxy: str = ""
     search_use_env_proxy: bool = False
     search_fallback_policy: Literal["off", "network"] = "off"
@@ -2866,6 +2857,7 @@ class GatewayConfig(BaseSettings):
             "capture_roll_max_chars": str(self.memory.capture_roll_max_chars),
             "dream_enabled": str(self.memory.dream.enabled).lower(),
         }
+
     _runtime_secret_paths: set[str] = PrivateAttr(default_factory=set)
     # Paths whose secret value was explicitly entered by the operator (set by
     # ``clear_runtime_secret``): value-coincidence redaction heuristics in
@@ -2903,6 +2895,8 @@ class GatewayConfig(BaseSettings):
                 llm.pop("api_key_env", None)
             if not llm.get("api_key"):
                 llm.pop("api_key", None)
+            if not llm.get("custom_headers"):
+                llm.pop("custom_headers", None)
         llm_profiles = data.get("llm_profiles")
         if isinstance(llm_profiles, dict):
             # Empty credential fields are absence, not a stored credential.
@@ -2918,6 +2912,8 @@ class GatewayConfig(BaseSettings):
                     profile.pop("api_key_env", None)
                 if not profile.get("api_key_env_pool"):
                     profile.pop("api_key_env_pool", None)
+                if not profile.get("custom_headers"):
+                    profile.pop("custom_headers", None)
         if not data.get("search_api_key_env"):
             data.pop("search_api_key_env", None)
         elif not data.get("search_api_key"):
@@ -2967,6 +2963,20 @@ class GatewayConfig(BaseSettings):
     def to_public_dict(self) -> dict[str, Any]:
         """Return a redacted config view safe for public control surfaces."""
         data = cast(dict[str, Any], redact_public_config(self.model_dump()))
+        from openstarry_code.provider.request_headers import redact_request_headers
+
+        llm = data.get("llm")
+        if isinstance(llm, dict) and "custom_headers" in llm:
+            llm["custom_headers"] = redact_request_headers(
+                llm["custom_headers"], placeholder=_REDACTED
+            )
+        profiles = data.get("llm_profiles")
+        if isinstance(profiles, dict):
+            for profile in profiles.values():
+                if isinstance(profile, dict) and "custom_headers" in profile:
+                    profile["custom_headers"] = redact_request_headers(
+                        profile["custom_headers"], placeholder=_REDACTED
+                    )
         ensemble = data.get("llm_ensemble")
         if isinstance(ensemble, dict):
             from openstarry_code.gateway.model_routing import (
@@ -3270,9 +3280,7 @@ class GatewayConfig(BaseSettings):
 
         cfg = cls()
         default_config_path = (
-            candidates[0]
-            if candidates
-            else default_opensquilla_home().expanduser() / "config.toml"
+            candidates[0] if candidates else default_opensquilla_home().expanduser() / "config.toml"
         )
         cls._apply_profile_path_overrides(cfg, default_config_path)
         cfg._mark_env_absorbed_secrets(None)
@@ -3323,6 +3331,7 @@ def _rewrite_migrated_config_best_effort(path: Path, migration: Any) -> None:
             path,
             error,
         )
+
 
 # Wildcard addresses that expose the gateway on every interface. Used by the
 # boot banner and the install-script post-install message.

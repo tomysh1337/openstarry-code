@@ -12,6 +12,8 @@ contextBridge.exposeInMainWorld('opensquillaDesktop', {
   getGatewayStatus: () => ipcRenderer.invoke('gateway:status'),
   getCliInvocation: () => ipcRenderer.invoke('gateway:cli-invocation'),
   revealGatewayLog: () => ipcRenderer.invoke('gateway:reveal-log'),
+  getCodexXStatus: () => ipcRenderer.invoke('desktop:codex-x:status'),
+  openCodexX: () => ipcRenderer.invoke('desktop:codex-x:open'),
   getDesktopSettings: () => ipcRenderer.invoke('desktop:settings:get'),
   saveDesktopSettings: (payload: unknown) => ipcRenderer.invoke('desktop:settings:save', payload),
   resetDesktopSettings: () => ipcRenderer.invoke('desktop:settings:reset'),

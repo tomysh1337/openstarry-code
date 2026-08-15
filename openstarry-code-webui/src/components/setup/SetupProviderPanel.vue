@@ -10,6 +10,12 @@ import SetupProviderCredentialCard from '@/components/setup/SetupProviderCredent
 import SetupProviderRecommendation from '@/components/setup/SetupProviderRecommendation.vue'
 import SetupModelCombobox from '@/components/setup/SetupModelCombobox.vue'
 import SetupProviderCatalogDialog from '@/components/setup/SetupProviderCatalogDialog.vue'
+import SetupCustomHeadersEditor from '@/components/setup/SetupCustomHeadersEditor.vue'
+import {
+  isThirdPartyProvider,
+  nextChatCompletionsCustomSlot,
+  providerProtocolLabel,
+} from '@/composables/setup/providerProtocol'
 import type {
   ConnectionState,
   DiscoveredModel,
@@ -132,6 +138,7 @@ const emit = defineEmits<{
   copy: [command: string]
   goToSection: [value: string]
   selectConfiguredProvider: [value: string]
+  duplicateProvider: [value: string]
   removeProviderProfile: [value: string]
   addProvider: [value: string]
   probeConfiguredProvider: [value: string]
@@ -149,8 +156,41 @@ const sectionRef = ref<HTMLElement | null>(null)
 const pendingRemoval = ref<{ providerId: string; index: number } | null>(null)
 const dialogInvoker = ref<HTMLElement | null>(null)
 
+const isCustomProvider = computed(() => isThirdPartyProvider(props.panel.providerSelected))
+
+const customProviderFields = computed<Record<'displayName' | 'note' | 'website' | 'fullUrl', FieldSpec>>(() => ({
+  displayName: {
+    name: 'display_name',
+    label: t('setup.provider.customDisplayName'),
+    default: '',
+  },
+  note: {
+    name: 'note',
+    label: t('setup.provider.customNote'),
+    default: '',
+  },
+  website: {
+    name: 'website_url',
+    label: t('setup.provider.customWebsite'),
+    default: '',
+  },
+  fullUrl: {
+    name: 'complete_url',
+    label: t('setup.provider.customFullUrl'),
+    default: false,
+  },
+}))
+
+const customDisplayName = computed(() => (
+  isCustomProvider.value
+    ? props.panel.providerFieldValue(customProviderFields.value.displayName).trim()
+    : ''
+))
+
 const selectedProviderLabel = computed(() => (
-  props.panel.credentialPanel?.providerLabel || props.panel.providerSelected
+  customDisplayName.value
+  || props.panel.credentialPanel?.providerLabel
+  || props.panel.providerSelected
 ))
 
 const readyProviderCount = computed(() => (
@@ -173,9 +213,55 @@ const modelFields = computed(() => allProviderFields.value.filter(field => field
 const endpointFields = computed(() => allProviderFields.value.filter(
   field => field.name === 'base_url' || field.name === 'proxy',
 ))
+const baseUrlFields = computed(() => endpointFields.value.filter(field => field.name === 'base_url'))
+const proxyFields = computed(() => endpointFields.value.filter(field => field.name === 'proxy'))
+const customHeadersField = computed(() => allProviderFields.value.find(
+  field => field.name === 'custom_headers',
+) || null)
 const otherProviderFields = computed(() => allProviderFields.value.filter(
-  field => !['model', 'base_url', 'proxy'].includes(field.name),
+  field => !['model', 'base_url', 'proxy', 'custom_headers'].includes(field.name),
 ))
+const customHeadersValid = ref(true)
+const selectedProviderProtocol = computed(() => providerProtocolLabel(props.panel.providerSelected))
+const customFullUrl = computed(() => (
+  Boolean(props.panel.providerFieldValue(customProviderFields.value.fullUrl).trim())
+))
+
+function completeRequestUrl(baseUrl: unknown): string {
+  const base = String(baseUrl || '').trim().replace(/\/+$/, '')
+  if (!base) return ''
+  const protocol = selectedProviderProtocol.value
+  const suffix = protocol === 'Responses'
+    ? '/responses'
+    : (protocol === 'Anthropic Messages' ? '/messages' : '/chat/completions')
+  if (base.toLowerCase().endsWith(suffix)) return base
+  if (/\/v\d+(?:(?:alpha|beta)\d*)?(?:\/openai)?$/i.test(base)) return `${base}${suffix}`
+  return `${base}/v1${suffix}`
+}
+
+function setCustomFullUrl(enabled: boolean) {
+  const baseField = baseUrlFields.value[0]
+  const value = enabled && baseField
+    ? completeRequestUrl(props.panel.providerFieldValue(baseField))
+    : ''
+  emit('updateProviderField', 'complete_url', value)
+}
+
+function updateCustomEndpoint(name: string, value: unknown) {
+  emit('updateProviderField', name, value)
+  if (name === 'base_url' && customFullUrl.value) {
+    emit('updateProviderField', 'complete_url', completeRequestUrl(value))
+  }
+}
+const credentialPanel = computed(() => {
+  const panel = props.panel.credentialPanel
+  if (!panel || customHeadersValid.value) return panel
+  return {
+    ...panel,
+    probeReady: false,
+    probeDisabledReason: t('setup.provider.customHeadersFixBeforeAction'),
+  }
+})
 
 function isEditingProvider(providerId: string): boolean {
   return props.panel.providerSelected.trim().toLowerCase() === providerId.trim().toLowerCase()
@@ -272,6 +358,21 @@ function testConfigured(providerId: string) {
   emit('probeConfiguredProvider', providerId)
 }
 
+function duplicateConfigured(providerId: string) {
+  if (!nextChatCompletionsCustomSlot(providerId, configuredIds.value)) return
+  dialogInvoker.value = document.activeElement instanceof HTMLElement
+    ? document.activeElement
+    : null
+  editorOpen.value = true
+  addOpen.value = false
+  emit('duplicateProvider', providerId)
+}
+
+function canDuplicateConfigured(providerId: string): boolean {
+  return props.panel.profileSaveSupported
+    && Boolean(nextChatCompletionsCustomSlot(providerId, configuredIds.value))
+}
+
 function activateConfigured(providerId: string) {
   emit('activateProvider', providerId)
 }
@@ -339,6 +440,7 @@ const modelSectionDesc = computed(() => {
 
 watch(() => props.panel.providerSelected, (value, previous) => {
   if (!value || value === previous) return
+  customHeadersValid.value = true
   const selectedFromPicker = addOpen.value
   addOpen.value = false
   if (selectedFromPicker) editorOpen.value = true
@@ -762,6 +864,10 @@ const tokenRhythmCredentialReplacementRequired = computed(() => (
         >
           <span class="setup-provider-card__name-row">
             <span class="setup-provider-card__name">{{ provider.label }}</span>
+            <span
+              v-if="providerProtocolLabel(provider.providerId)"
+              class="control-pill setup-provider-protocol-badge"
+            >{{ providerProtocolLabel(provider.providerId) }}</span>
           </span>
           <span
             v-if="showConfiguredProbeStatus(provider.providerId)"
@@ -800,6 +906,17 @@ const tokenRhythmCredentialReplacementRequired = computed(() => (
             {{ t('common.edit') }}
           </button>
           <button
+            v-if="canDuplicateConfigured(provider.providerId)"
+            type="button"
+            class="btn btn--ghost setup-provider-card__action"
+            :aria-label="t('setup.provider.duplicateProvider', { provider: provider.label })"
+            :title="t('setup.provider.duplicateProvider', { provider: provider.label })"
+            @click="duplicateConfigured(provider.providerId)"
+          >
+            <Icon name="copy" :size="14" aria-hidden="true" />
+            {{ t('setup.provider.duplicate') }}
+          </button>
+          <button
             v-if="
               panel.profileSaveSupported
               && (!provider.active || panel.primaryProviderRemovalSupported)
@@ -836,6 +953,10 @@ const tokenRhythmCredentialReplacementRequired = computed(() => (
       <div>
         <div class="setup-provider-editor-head__title-row">
           <h4 ref="editorHeadingRef" tabindex="-1">{{ t('setup.provider.editingTitle', { provider: selectedProviderLabel }) }}</h4>
+          <span
+            v-if="selectedProviderProtocol"
+            class="control-pill setup-provider-protocol-badge"
+          >{{ selectedProviderProtocol }}</span>
           <span class="control-pill">
             {{ editingPrimaryDraft
               ? t('setup.provider.editingRoleNewPrimary')
@@ -865,13 +986,13 @@ const tokenRhythmCredentialReplacementRequired = computed(() => (
     <SetupNeedList :items="panel.providerNeeds" :label="t('setup.provider.needs')" />
 
     <SetupProviderCredentialCard
-      v-if="panel.credentialPanel"
-      :panel="panel.credentialPanel"
-      @reveal="panel.credentialPanel.onReveal?.()"
-      @hide-reveal="panel.credentialPanel.onHideReveal?.()"
-      @replace="panel.credentialPanel.onReplace?.()"
-      @cancel-replace="panel.credentialPanel.onCancelReplace?.()"
-      @remove-credential="panel.credentialPanel.onRemoveCredential?.()"
+      v-if="credentialPanel"
+      :panel="credentialPanel"
+      @reveal="credentialPanel.onReveal?.()"
+      @hide-reveal="credentialPanel.onHideReveal?.()"
+      @replace="credentialPanel.onReplace?.()"
+      @cancel-replace="credentialPanel.onCancelReplace?.()"
+      @remove-credential="credentialPanel.onRemoveCredential?.()"
       @test-connection="emit('probeConnection')"
       @update-field="(name, value) => emit('updateProviderField', name, value)"
     />
@@ -1080,12 +1201,14 @@ const tokenRhythmCredentialReplacementRequired = computed(() => (
         <div
           v-if="editorOpen"
           class="setup-provider-modal-overlay"
+          :class="{ 'setup-provider-modal-overlay--custom': !addOpen && isCustomProvider }"
           @mousedown.self="cancelAndClose()"
         >
           <section
             id="setup-provider-editor-dialog"
             ref="editorDialogRef"
             class="setup-provider-modal"
+            :class="{ 'setup-provider-modal--custom': !addOpen && isCustomProvider }"
             role="dialog"
             aria-modal="true"
             aria-labelledby="setup-provider-modal-title"
@@ -1093,19 +1216,33 @@ const tokenRhythmCredentialReplacementRequired = computed(() => (
           >
             <header class="setup-provider-modal__head">
               <div class="setup-provider-modal__heading">
-                <span class="setup-provider-modal__mark" aria-hidden="true">
+                <button
+                  v-if="!addOpen && isCustomProvider"
+                  type="button"
+                  class="btn btn--icon btn--ghost setup-provider-modal__back"
+                  :aria-label="t('setup.provider.backToProviders')"
+                  @click="cancelAndClose()"
+                >
+                  <Icon name="chevronLeft" :size="19" />
+                </button>
+                <span v-else class="setup-provider-modal__mark" aria-hidden="true">
                   <Icon :name="addOpen ? 'plus' : 'cloud'" :size="18" />
                 </span>
                 <div>
                   <h4 id="setup-provider-modal-title">
                     {{ addOpen
                       ? t('setup.provider.catalogTitle')
-                      : t('setup.provider.editingTitle', { provider: selectedProviderLabel }) }}
+                      : (isCustomProvider
+                        ? t('setup.provider.customEditingTitle')
+                        : t('setup.provider.editingTitle', { provider: selectedProviderLabel })) }}
                   </h4>
-                  <p>{{ addOpen ? t('setup.provider.catalogDesc') : t('setup.provider.pageDesc') }}</p>
+                  <p v-if="addOpen || !isCustomProvider">
+                    {{ addOpen ? t('setup.provider.catalogDesc') : t('setup.provider.pageDesc') }}
+                  </p>
                 </div>
               </div>
               <button
+                v-if="addOpen || !isCustomProvider"
                 type="button"
                 class="btn btn--icon btn--ghost"
                 :aria-label="t('common.close')"
@@ -1139,10 +1276,56 @@ const tokenRhythmCredentialReplacementRequired = computed(() => (
                 class="setup-provider-modal__form"
                 :disabled="providerBusy || saving"
               >
-                <label class="setup-provider-modal__provider-name">
+                <label v-if="!isCustomProvider" class="setup-provider-modal__provider-name">
                   <span>{{ t('setup.provider.title') }}</span>
-                  <strong>{{ selectedProviderLabel }}</strong>
+                  <span class="setup-provider-modal__provider-identity">
+                    <strong>{{ selectedProviderLabel }}</strong>
+                    <span
+                      v-if="selectedProviderProtocol"
+                      class="control-pill setup-provider-protocol-badge"
+                    >{{ selectedProviderProtocol }}</span>
+                  </span>
                 </label>
+
+                <section
+                  v-if="isCustomProvider"
+                  class="setup-custom-provider__identity"
+                  data-testid="setup-custom-provider-identity"
+                >
+                  <label class="setup-custom-provider__field">
+                    <span>{{ t('setup.provider.customDisplayName') }}</span>
+                    <input
+                      class="control-input"
+                      name="setup_provider_display_name"
+                      :value="panel.providerFieldValue(customProviderFields.displayName)"
+                      :placeholder="t('setup.provider.customDisplayNamePlaceholder')"
+                      autocomplete="organization"
+                      @input="emit('updateProviderField', 'display_name', ($event.target as HTMLInputElement).value)"
+                    >
+                  </label>
+                  <label class="setup-custom-provider__field">
+                    <span>{{ t('setup.provider.customNote') }}</span>
+                    <input
+                      class="control-input"
+                      name="setup_provider_note"
+                      :value="panel.providerFieldValue(customProviderFields.note)"
+                      :placeholder="t('setup.provider.customNotePlaceholder')"
+                      @input="emit('updateProviderField', 'note', ($event.target as HTMLInputElement).value)"
+                    >
+                  </label>
+                  <label class="setup-custom-provider__field setup-custom-provider__field--wide">
+                    <span>{{ t('setup.provider.customWebsite') }}</span>
+                    <input
+                      class="control-input"
+                      name="setup_provider_website_url"
+                      type="url"
+                      :value="panel.providerFieldValue(customProviderFields.website)"
+                      :placeholder="t('setup.provider.customWebsitePlaceholder')"
+                      autocomplete="url"
+                      @input="emit('updateProviderField', 'website_url', ($event.target as HTMLInputElement).value)"
+                    >
+                  </label>
+                </section>
 
                 <label
                   v-if="panel.imageGenerationOffer"
@@ -1174,39 +1357,147 @@ const tokenRhythmCredentialReplacementRequired = computed(() => (
                   :credential-replacement-required="tokenRhythmCredentialReplacementRequired"
                 />
 
+                <SetupProviderCredentialCard
+                  v-if="credentialPanel && isCustomProvider"
+                  compact
+                  :panel="credentialPanel"
+                  @reveal="credentialPanel.onReveal?.()"
+                  @hide-reveal="credentialPanel.onHideReveal?.()"
+                  @replace="credentialPanel.onReplace?.()"
+                  @cancel-replace="credentialPanel.onCancelReplace?.()"
+                  @remove-credential="credentialPanel.onRemoveCredential?.()"
+                  @update-field="(name, value) => emit('updateProviderField', name, value)"
+                />
+
                 <section
                   v-if="endpointFields.length"
                   class="setup-provider-modal__endpoint"
+                  :class="{ 'setup-provider-modal__endpoint--custom': isCustomProvider }"
                   data-testid="setup-provider-modal-endpoint"
                 >
-                  <div class="setup-provider-options__head">
+                  <div v-if="isCustomProvider" class="setup-custom-provider__endpoint-head">
+                    <strong>{{ t('setup.provider.customRequestUrl') }}</strong>
+                    <div class="setup-custom-provider__endpoint-actions">
+                      <label class="setup-custom-provider__full-url">
+                        <Icon name="externalLink" :size="14" aria-hidden="true" />
+                        <span>{{ t('setup.provider.customFullUrl') }}</span>
+                        <ControlSwitch
+                          :checked="customFullUrl"
+                          name="setup_provider_full_url"
+                          :aria-label="t('setup.provider.customFullUrl')"
+                          @change="setCustomFullUrl($event)"
+                        />
+                      </label>
+                      <button
+                        type="button"
+                        class="btn btn--ghost setup-custom-provider__test"
+                        :disabled="!credentialPanel?.probeReady || providerBusy || saving || panel.connection.phase === 'probing'"
+                        :title="!credentialPanel?.probeReady ? credentialPanel?.probeDisabledReason : undefined"
+                        :aria-busy="panel.connection.phase === 'probing' ? 'true' : undefined"
+                        @click="emit('probeConnection')"
+                      >
+                        <span v-if="panel.connection.phase === 'probing'" class="setup-connection__spinner" aria-hidden="true"></span>
+                        <Icon v-else name="gauge" :size="15" aria-hidden="true" />
+                        {{ panel.connection.phase === 'probing'
+                          ? t('setup.provider.testing')
+                          : t('setup.provider.customManageAndTest') }}
+                      </button>
+                    </div>
+                  </div>
+                  <div v-else class="setup-provider-options__head">
                     <h5>{{ t('setup.provider.endpointTitle', { provider: selectedProviderLabel }) }}</h5>
                     <p>{{ t('setup.provider.endpointDesc', { provider: selectedProviderLabel }) }}</p>
                   </div>
-                  <template v-for="field in endpointFields" :key="field.name">
+                  <div class="setup-provider-modal__endpoint-fields">
+                    <label
+                      v-if="isCustomProvider && baseUrlFields.length"
+                      class="setup-custom-provider__endpoint-field"
+                    >
+                      <input
+                        class="control-input"
+                        name="setup_provider_base_url"
+                        type="url"
+                        :value="panel.providerFieldValue(baseUrlFields[0])"
+                        autocomplete="url"
+                        @input="updateCustomEndpoint('base_url', ($event.target as HTMLInputElement).value)"
+                      >
+                    </label>
                     <SetupField
+                      v-for="field in (isCustomProvider ? [] : endpointFields)"
+                      :key="field.name"
+                      class="setup-provider-endpoint-field"
+                      :field="field"
+                      :value="panel.providerFieldValue(field)"
+                      scope="provider"
+                      stack
+                      @update="(name, val) => isCustomProvider
+                        ? updateCustomEndpoint(name, val)
+                        : emit('updateProviderField', name, val)"
+                    />
+                  </div>
+                  <p v-if="isCustomProvider" class="setup-custom-provider__url-hint">
+                    <Icon name="info" :size="14" aria-hidden="true" />
+                    {{ customFullUrl
+                      ? t('setup.provider.customFullUrlHint')
+                      : t('setup.provider.customBaseUrlHint') }}
+                  </p>
+                </section>
+
+                <SetupProviderCredentialCard
+                  v-if="credentialPanel && !isCustomProvider"
+                  compact
+                  show-verification
+                  :panel="credentialPanel"
+                  @reveal="credentialPanel.onReveal?.()"
+                  @hide-reveal="credentialPanel.onHideReveal?.()"
+                  @replace="credentialPanel.onReplace?.()"
+                  @cancel-replace="credentialPanel.onCancelReplace?.()"
+                  @remove-credential="credentialPanel.onRemoveCredential?.()"
+                  @test-connection="emit('probeConnection')"
+                  @update-field="(name, value) => emit('updateProviderField', name, value)"
+                />
+
+                <section
+                  v-if="customHeadersField && !isCustomProvider"
+                  class="setup-provider-modal__headers"
+                  data-testid="setup-provider-custom-headers"
+                >
+                  <SetupCustomHeadersEditor
+                    :field="customHeadersField"
+                    :value="panel.providerFieldValue(customHeadersField)"
+                    @update="(name, val) => emit('updateProviderField', name, val)"
+                    @validity="customHeadersValid = $event"
+                  />
+                </section>
+
+                <details
+                  v-if="isCustomProvider && (proxyFields.length || customHeadersField)"
+                  class="setup-custom-provider__advanced"
+                >
+                  <summary>
+                    <Icon name="settings" :size="15" aria-hidden="true" />
+                    {{ t('setup.provider.customAdvanced') }}
+                  </summary>
+                  <div class="setup-custom-provider__advanced-body">
+                    <SetupField
+                      v-for="field in proxyFields"
+                      :key="field.name"
+                      class="setup-provider-endpoint-field"
                       :field="field"
                       :value="panel.providerFieldValue(field)"
                       scope="provider"
                       stack
                       @update="(name, val) => emit('updateProviderField', name, val)"
                     />
-                  </template>
-                </section>
-
-                <SetupProviderCredentialCard
-                  v-if="panel.credentialPanel"
-                  compact
-                  show-verification
-                  :panel="panel.credentialPanel"
-                  @reveal="panel.credentialPanel.onReveal?.()"
-                  @hide-reveal="panel.credentialPanel.onHideReveal?.()"
-                  @replace="panel.credentialPanel.onReplace?.()"
-                  @cancel-replace="panel.credentialPanel.onCancelReplace?.()"
-                  @remove-credential="panel.credentialPanel.onRemoveCredential?.()"
-                  @test-connection="emit('probeConnection')"
-                  @update-field="(name, value) => emit('updateProviderField', name, value)"
-                />
+                    <SetupCustomHeadersEditor
+                      v-if="customHeadersField"
+                      :field="customHeadersField"
+                      :value="panel.providerFieldValue(customHeadersField)"
+                      @update="(name, val) => emit('updateProviderField', name, val)"
+                      @validity="customHeadersValid = $event"
+                    />
+                  </div>
+                </details>
 
                 <section v-if="modelFields.length" class="setup-provider-modal__model">
                   <template v-for="field in modelFields" :key="field.name">
@@ -1230,9 +1521,13 @@ const tokenRhythmCredentialReplacementRequired = computed(() => (
               </fieldset>
             </div>
 
-            <footer v-if="!addOpen && panel.providerSelected" class="setup-provider-modal__footer">
+            <footer
+              v-if="!addOpen && panel.providerSelected"
+              class="setup-provider-modal__footer"
+              :class="{ 'setup-provider-modal__footer--custom': isCustomProvider }"
+            >
               <button
-                v-if="panel.profileSaveSupported && panelIsStoredProvider && selectedConfiguredProvider"
+                v-if="!isCustomProvider && panel.profileSaveSupported && panelIsStoredProvider && selectedConfiguredProvider"
                 type="button"
                 class="btn btn--ghost setup-provider-modal__delete"
                 :disabled="providerBusy || saving"
@@ -1243,6 +1538,7 @@ const tokenRhythmCredentialReplacementRequired = computed(() => (
               </button>
               <span class="setup-provider-modal__footer-spacer"></span>
               <button
+                v-if="!isCustomProvider"
                 type="button"
                 class="btn btn--ghost"
                 :disabled="providerBusy || saving"
@@ -1251,15 +1547,18 @@ const tokenRhythmCredentialReplacementRequired = computed(() => (
               <button
                 type="button"
                 class="btn btn--primary"
-                :disabled="providerBusy || saving || !hasSavableProviderChange || (replacesCurrentProvider && panel.connection.phase !== 'verified')"
-                :title="replacesCurrentProvider && panel.connection.phase !== 'verified'
-                  ? t('setup.provider.currentSettingsNotTested')
-                  : undefined"
+                :disabled="providerBusy || saving || !customHeadersValid || !hasSavableProviderChange || (replacesCurrentProvider && panel.connection.phase !== 'verified')"
+                :title="!customHeadersValid
+                  ? t('setup.provider.customHeadersFixBeforeAction')
+                  : (replacesCurrentProvider && panel.connection.phase !== 'verified'
+                    ? t('setup.provider.currentSettingsNotTested')
+                    : undefined)"
                 :aria-busy="saving ? 'true' : undefined"
                 @click="emit('saveProvider')"
               >
                 <span v-if="saving" class="setup-connection__spinner" aria-hidden="true"></span>
-                {{ t('setup.provider.saveChanges') }}
+                <Icon v-else-if="isCustomProvider" name="save" :size="15" aria-hidden="true" />
+                {{ isCustomProvider ? t('setup.provider.customSave') : t('setup.provider.saveChanges') }}
               </button>
             </footer>
 
@@ -1373,7 +1672,7 @@ const tokenRhythmCredentialReplacementRequired = computed(() => (
   gap: var(--sp-3);
   margin: var(--sp-3) 0 0;
   justify-items: center;
-  padding: var(--sp-7) var(--sp-4);
+  padding: var(--sp-6) var(--sp-4);
   text-align: center;
 }
 
@@ -1452,6 +1751,17 @@ const tokenRhythmCredentialReplacementRequired = computed(() => (
   display: flex;
   flex-wrap: wrap;
   gap: var(--sp-2);
+}
+
+.setup-provider-protocol-badge {
+  background: color-mix(in srgb, var(--accent) 8%, var(--bg-surface));
+  border-color: color-mix(in srgb, var(--accent) 22%, var(--border));
+  color: var(--text-muted);
+  font-size: 10px;
+  line-height: 1.4;
+  min-height: 20px;
+  padding: 1px 7px;
+  white-space: nowrap;
 }
 
 .setup-provider-card__actions {
@@ -1841,6 +2151,26 @@ const tokenRhythmCredentialReplacementRequired = computed(() => (
   position: absolute;
 }
 
+.setup-provider-modal--custom {
+  border-color: var(--border);
+  border-radius: var(--radius-md);
+  height: min(760px, 100dvh);
+  max-height: 100dvh;
+  width: min(900px, 100%);
+}
+
+.setup-provider-modal-overlay--custom {
+  padding: 0 var(--sp-5);
+}
+
+.setup-provider-modal--custom::before {
+  display: none;
+}
+
+.setup-provider-modal--custom .setup-provider-modal__head {
+  padding: 12px 0;
+}
+
 .setup-provider-modal__head {
   align-items: flex-start;
   border-bottom: 1px solid var(--border);
@@ -1855,6 +2185,13 @@ const tokenRhythmCredentialReplacementRequired = computed(() => (
   display: flex;
   gap: var(--sp-3);
   min-width: 0;
+}
+
+.setup-provider-modal__back {
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  height: 38px;
+  width: 38px;
 }
 
 .setup-provider-modal__mark {
@@ -1891,6 +2228,10 @@ const tokenRhythmCredentialReplacementRequired = computed(() => (
   padding: var(--sp-5);
 }
 
+.setup-provider-modal--custom .setup-provider-modal__body {
+  padding: 50px 25px var(--sp-6);
+}
+
 .setup-provider-modal__compat-warning {
   margin: 0;
 }
@@ -1905,6 +2246,14 @@ const tokenRhythmCredentialReplacementRequired = computed(() => (
 
 .setup-provider-modal__footer-spacer {
   flex: 1 1 auto;
+}
+
+.setup-provider-modal__footer--custom {
+  padding: var(--sp-4) 0 var(--sp-4) var(--sp-6);
+}
+
+.setup-provider-modal__footer--custom .btn--primary {
+  min-width: 92px;
 }
 
 .setup-provider-modal__delete {
@@ -1932,15 +2281,65 @@ const tokenRhythmCredentialReplacementRequired = computed(() => (
   padding-bottom: var(--sp-1);
 }
 
-.setup-provider-modal__provider-name span {
+.setup-provider-modal__provider-name > span:first-child {
   color: var(--text-muted);
   font-size: var(--fs-xs);
   font-weight: 600;
 }
 
+.setup-provider-modal__provider-identity {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
 .setup-provider-modal__provider-name strong {
   color: var(--text);
   font-size: var(--fs-md);
+}
+
+.setup-custom-provider__identity {
+  display: grid;
+  gap: 22px 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.setup-custom-provider__field {
+  display: grid;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+
+.setup-custom-provider__field > span,
+.setup-custom-provider__endpoint-head > strong {
+  color: var(--text);
+  font-size: var(--fs-sm);
+  font-weight: 650;
+}
+
+.setup-custom-provider__field--wide {
+  grid-column: 1 / -1;
+}
+
+.setup-custom-provider__field .control-input {
+  height: 36px;
+  max-width: none;
+  min-height: 36px;
+  width: 100%;
+}
+
+.setup-provider-modal--custom :deep(.setup-provider-credential__field) {
+  gap: var(--sp-2);
+}
+
+.setup-provider-modal--custom :deep(.setup-provider-credential__field .control-row__desc) {
+  display: none;
+}
+
+.setup-provider-modal--custom :deep(.setup-provider-credential__input) {
+  height: 36px;
+  min-height: 36px;
 }
 
 .setup-provider-image-offer {
@@ -1952,9 +2351,157 @@ const tokenRhythmCredentialReplacementRequired = computed(() => (
 }
 
 .setup-provider-modal__endpoint,
+.setup-provider-modal__headers,
 .setup-provider-modal__model {
   border-top: 1px solid var(--border);
   padding-top: var(--sp-4);
+}
+
+.setup-provider-modal__endpoint {
+  display: grid;
+  gap: var(--sp-3);
+}
+
+.setup-provider-modal__endpoint--custom {
+  border-top: 0;
+  gap: 5px;
+  padding-top: 0;
+}
+
+.setup-custom-provider__endpoint-head {
+  align-items: center;
+  display: flex;
+  gap: var(--sp-3);
+  justify-content: space-between;
+}
+
+.setup-custom-provider__endpoint-actions,
+.setup-custom-provider__full-url {
+  align-items: center;
+  display: flex;
+}
+
+.setup-custom-provider__endpoint-actions {
+  gap: var(--sp-3);
+}
+
+.setup-custom-provider__full-url {
+  color: var(--text-muted);
+  font-size: var(--fs-xs);
+  gap: var(--sp-2);
+  white-space: nowrap;
+}
+
+.setup-custom-provider__test {
+  gap: var(--sp-1);
+  min-height: 32px;
+}
+
+.setup-provider-modal__endpoint--custom .setup-provider-modal__endpoint-fields {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.setup-custom-provider__endpoint-field {
+  display: grid;
+  gap: var(--sp-2);
+}
+
+.setup-custom-provider__endpoint-field > span {
+  color: var(--text);
+  font-size: var(--fs-sm);
+  font-weight: 650;
+}
+
+.setup-custom-provider__endpoint-field .control-input {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong);
+  font-family: var(--font-mono);
+  height: 36px;
+  max-width: none;
+  min-height: 36px;
+  width: 100%;
+}
+
+.setup-custom-provider__endpoint-field .control-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 14%, transparent);
+}
+
+.setup-custom-provider__url-hint {
+  align-items: flex-start;
+  background: color-mix(in srgb, var(--warn) 9%, var(--bg-surface));
+  border: 1px solid color-mix(in srgb, var(--warn) 52%, var(--border));
+  border-radius: var(--radius-md);
+  color: color-mix(in srgb, var(--warn) 78%, var(--text));
+  display: flex;
+  font-size: var(--fs-xs);
+  gap: var(--sp-2);
+  line-height: 1.5;
+  margin: 0;
+  padding: var(--sp-3);
+}
+
+.setup-custom-provider__url-hint .icon {
+  margin-top: 2px;
+}
+
+.setup-custom-provider__advanced {
+  border-top: 1px solid var(--border);
+  padding-top: var(--sp-3);
+}
+
+.setup-custom-provider__advanced > summary {
+  align-items: center;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  gap: var(--sp-2);
+  list-style: none;
+  padding: var(--sp-2) 0;
+}
+
+.setup-custom-provider__advanced > summary::-webkit-details-marker {
+  display: none;
+}
+
+.setup-custom-provider__advanced-body {
+  display: grid;
+  gap: var(--sp-4);
+  padding-top: var(--sp-3);
+}
+
+.setup-provider-modal__endpoint .setup-provider-options__head {
+  margin: 0;
+}
+
+.setup-provider-modal__endpoint-fields {
+  display: grid;
+  gap: var(--sp-3);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.setup-provider-endpoint-field :deep(.control-row__label-block) {
+  gap: 2px;
+}
+
+.setup-provider-endpoint-field :deep(.control-row__control) {
+  max-width: none;
+  width: 100%;
+}
+
+.setup-provider-endpoint-field :deep(.control-input) {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong);
+  font-family: var(--font-mono);
+  min-height: 42px;
+  width: 100%;
+}
+
+.setup-provider-endpoint-field :deep(.control-input:focus) {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 14%, transparent);
 }
 
 .provider-dialog-enter-active,
@@ -2036,6 +2583,10 @@ const tokenRhythmCredentialReplacementRequired = computed(() => (
 }
 
 @container provider-panel (max-width: 640px) {
+  .setup-provider-modal__endpoint-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .setup-provider-card {
     align-items: stretch;
     display: grid;
@@ -2073,6 +2624,28 @@ const tokenRhythmCredentialReplacementRequired = computed(() => (
   .setup-provider-modal__head,
   .setup-provider-modal__body {
     padding: var(--sp-4);
+  }
+
+  .setup-provider-modal--custom {
+    max-height: 94dvh;
+  }
+
+  .setup-custom-provider__identity {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .setup-custom-provider__field--wide {
+    grid-column: auto;
+  }
+
+  .setup-custom-provider__endpoint-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .setup-custom-provider__endpoint-actions {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
 }

@@ -784,9 +784,7 @@ async def test_successful_submit_plan_atomically_creates_typed_revision(manager)
     assert [step["step_id"] for step in revision.steps] == ["inspect", "implement"]
     assert entry.turn_context is not None
     assert entry.turn_context["plan_revision_id"] == revision.revision_id
-    plan_segments = [
-        segment for segment in entry.tool_calls or [] if segment.get("type") == "plan"
-    ]
+    plan_segments = [segment for segment in entry.tool_calls or [] if segment.get("type") == "plan"]
     assert plan_segments == [
         {
             "type": "plan",
@@ -1308,8 +1306,7 @@ async def test_branch_through_terminal_turn_is_inclusive_and_excludes_promoted_f
 
     assert child.forked_from_parent is True
     assert [
-        (entry.role, entry.content)
-        for entry in await manager.get_transcript(child.session_key)
+        (entry.role, entry.content) for entry in await manager.get_transcript(child.session_key)
     ] == [
         ("user", "question"),
         ("assistant", "calling tool"),
@@ -2313,9 +2310,7 @@ async def test_storage_adds_compaction_lookup_index_to_existing_database(tmp_pat
     upgraded = SessionStorage(str(db_path))
     await upgraded.connect()
     try:
-        async with upgraded.conn.execute(
-            "PRAGMA index_list(compacted_transcript_entries)"
-        ) as cur:
+        async with upgraded.conn.execute("PRAGMA index_list(compacted_transcript_entries)") as cur:
             index_names = {str(row[1]) for row in await cur.fetchall()}
         assert "idx_compacted_transcript_session_compaction" in index_names
 
@@ -2326,10 +2321,7 @@ async def test_storage_adds_compaction_lookup_index_to_existing_database(tmp_pat
             ("session", "compaction"),
         ) as cur:
             query_plan = [str(row[3]) for row in await cur.fetchall()]
-        assert any(
-            "idx_compacted_transcript_session_compaction" in detail
-            for detail in query_plan
-        )
+        assert any("idx_compacted_transcript_session_compaction" in detail for detail in query_plan)
     finally:
         await upgraded.close()
 
@@ -2475,9 +2467,7 @@ async def test_compaction_payload_sanitizes_silent_replies_without_rewriting_sto
         node.session_key,
         "assistant",
         "NO_REPLY\nQuoted protocol example.",
-        tool_calls=[
-            {"type": "text", "text": "HEARTBEAT_OK\nQuoted segment example."}
-        ],
+        tool_calls=[{"type": "text", "text": "HEARTBEAT_OK\nQuoted segment example."}],
         turn_context={},
     )
     await manager._storage.append_transcript_entry(
@@ -2534,9 +2524,7 @@ async def test_compaction_payload_sanitizes_silent_replies_without_rewriting_sto
         },
     ]
     assert payloads[1]["content"] == "NO_REPLY\nQuoted protocol example."
-    assert payloads[1]["tool_calls"][0]["text"] == (
-        "HEARTBEAT_OK\nQuoted segment example."
-    )
+    assert payloads[1]["tool_calls"][0]["text"] == ("HEARTBEAT_OK\nQuoted segment example.")
     assert payloads[2]["content"] == ""
     assert payloads[2]["tool_calls"] is None
 
@@ -2627,6 +2615,12 @@ def test_compaction_singleflight_target_fingerprint_is_credential_aware():
         model="model-a",
         api_key="secret-b",
     )
+    other_headers = CompactionConfig(
+        provider="provider-a",
+        model="model-a",
+        api_key="secret-a",
+        request_headers={"X-Tenant": "tenant-b"},
+    )
     other_model = CompactionConfig(provider="provider-a", model="model-b", api_key="secret-a")
 
     first_fingerprint = session_manager_module._compaction_target_fingerprint(first)
@@ -2639,14 +2633,13 @@ def test_compaction_singleflight_target_fingerprint_is_credential_aware():
         session_manager_module._compaction_target_fingerprint(other_credentials)
         != first_fingerprint
     )
-    assert (
-        session_manager_module._compaction_target_fingerprint(other_model)
-        != first_fingerprint
-    )
+    assert session_manager_module._compaction_target_fingerprint(other_model) != first_fingerprint
+    assert session_manager_module._compaction_target_fingerprint(other_headers) != first_fingerprint
     assert "secret-a" not in first_fingerprint
     assert "secret-b" not in session_manager_module._compaction_target_fingerprint(
         other_credentials
     )
+    assert "tenant-b" not in session_manager_module._compaction_target_fingerprint(other_headers)
 
 
 @pytest.mark.asyncio
@@ -3042,8 +3035,7 @@ async def test_compact_with_result_summarizes_completed_tool_round(manager):
     transcript = await manager.get_transcript("agent:main:main")
     assert not any(entry.tool_call_id == "call_exec_1" for entry in transcript)
     assert not any(
-        entry.tool_calls and entry.tool_calls[0]["id"] == "call_exec_1"
-        for entry in transcript
+        entry.tool_calls and entry.tool_calls[0]["id"] == "call_exec_1" for entry in transcript
     )
 
 
@@ -3077,9 +3069,7 @@ async def test_compact_with_result_strict_coverage_installs_verified_backfill(ma
     assert result.coverage_status == "pass"
     assert result.missing_obligations == []
     assert late_critical_path in str(result.summary_payload)
-    assert len(await manager.get_transcript("agent:main:main")) < len(
-        original_transcript
-    )
+    assert len(await manager.get_transcript("agent:main:main")) < len(original_transcript)
     summaries = await manager.get_summaries("agent:main:main")
     assert len(summaries) == 1
     assert late_critical_path in str(summaries[0].summary_payload)
@@ -3603,8 +3593,7 @@ async def test_inline_compaction_preserves_queued_append_only_suffix(manager):
         "queued request",
     )
     entries_before = {
-        entry.message_id: entry
-        for entry in await manager.get_transcript(node.session_key)
+        entry.message_id: entry for entry in await manager.get_transcript(node.session_key)
     }
 
     installed = await manager.persist_compaction_result(
@@ -4018,8 +4007,7 @@ async def test_canonical_transcript_page_reports_incomplete_legacy_archive(manag
         compaction_id="cmp-legacy",
     )
     await manager._storage.conn.execute(
-        "DELETE FROM compacted_transcript_entries "
-        "WHERE session_id = ? AND compaction_id = ?",
+        "DELETE FROM compacted_transcript_entries WHERE session_id = ? AND compaction_id = ?",
         (node.session_id, "cmp-legacy"),
     )
     await manager._storage.conn.commit()

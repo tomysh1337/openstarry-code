@@ -24,6 +24,7 @@ from openstarry_code.endpoint_identity import base_url_allows_credential_reuse
 from .credentials import credential_provider_hint, endpoint_provider_hint
 from .environment import environment_value
 from .registry import UnknownProviderError, get_provider_spec
+from .request_headers import normalize_request_headers
 from .selector import ProviderConfig
 
 log = structlog.get_logger(__name__)
@@ -137,9 +138,7 @@ def resolve_provider_deployment(
     if not spec.runtime_supported:
         return _unready(provider, model_id, "runtime_unsupported")
 
-    inherited_provider = _text(
-        getattr(inherited_provider_config, "provider", "")
-    ).lower()
+    inherited_provider = _text(getattr(inherited_provider_config, "provider", "")).lower()
     same_provider = bool(inherited_provider_config) and provider == inherited_provider
     profile = None if same_provider else _profile_for(config, provider)
     member_base_url = _text(getattr(overrides, "base_url", ""))
@@ -166,9 +165,7 @@ def resolve_provider_deployment(
             credential_endpoint = profile_base_url or _text(spec.default_base_url)
 
     pool_names = [
-        _text(name)
-        for name in (getattr(profile, "api_key_env_pool", None) or [])
-        if _text(name)
+        _text(name) for name in (getattr(profile, "api_key_env_pool", None) or []) if _text(name)
     ]
     if not api_key and pool_names:
         pooled = None
@@ -196,9 +193,7 @@ def resolve_provider_deployment(
             api_key = _text(getattr(pooled, "api_key", ""))
             credential_source = "profile_pool"
             credential_env = _text(getattr(pooled, "env_name", ""))
-            credential_pool_lease_token = _text(
-                getattr(pooled, "lease_token", "")
-            )
+            credential_pool_lease_token = _text(getattr(pooled, "lease_token", ""))
             credential_endpoint = profile_base_url or _text(spec.default_base_url)
             if turn_metadata is not None:
                 # Non-secret identifiers only; used by the router failure hook
@@ -274,13 +269,43 @@ def resolve_provider_deployment(
         base_url = _text(spec.default_base_url)
         if base_url:
             endpoint_source = "registry"
-    endpoint_hint = endpoint_provider_hint(base_url)
+
+    complete_url = (
+        _text(getattr(inherited_provider_config, "complete_url", ""))
+        if same_provider
+        else _text(getattr(profile, "complete_url", ""))
+    )
+    if complete_url and not base_url_allows_credential_reuse(base_url, complete_url):
+        complete_url = ""
+        if not blocked_reason:
+            blocked_reason = "invalid_endpoint"
+
+    member_request_headers = normalize_request_headers(getattr(overrides, "request_headers", None))
+    inherited_request_headers = normalize_request_headers(
+        getattr(inherited_provider_config, "request_headers", None)
+    )
+    profile_request_headers = normalize_request_headers(getattr(profile, "custom_headers", None))
+    request_headers: dict[str, str] = {}
+    request_headers_endpoint = ""
+    if member_request_headers:
+        request_headers = member_request_headers
+        request_headers_endpoint = member_base_url or base_url
+    elif same_provider and inherited_request_headers:
+        request_headers = inherited_request_headers
+        request_headers_endpoint = inherited_base_url or _text(spec.default_base_url)
+    elif profile_request_headers:
+        request_headers = profile_request_headers
+        request_headers_endpoint = profile_base_url or _text(spec.default_base_url)
     if (
-        api_key
-        and credential_hint
-        and endpoint_hint
-        and credential_hint != endpoint_hint
+        request_headers
+        and request_headers_endpoint
+        and not base_url_allows_credential_reuse(request_headers_endpoint, base_url)
+        and not blocked_reason
     ):
+        request_headers = {}
+        blocked_reason = "request_headers_endpoint_mismatch"
+    endpoint_hint = endpoint_provider_hint(base_url)
+    if api_key and credential_hint and endpoint_hint and credential_hint != endpoint_hint:
         api_key = ""
         credential_source = "none"
         credential_env = ""
@@ -339,12 +364,10 @@ def resolve_provider_deployment(
         model=model_id,
         api_key=api_key,
         base_url=base_url,
-        org_id=(
-            _text(getattr(inherited_provider_config, "org_id", ""))
-            if same_provider
-            else ""
-        ),
+        complete_url=complete_url,
+        org_id=(_text(getattr(inherited_provider_config, "org_id", "")) if same_provider else ""),
         proxy=proxy,
+        request_headers=request_headers,
         provider_routing=provider_routing,
         replay_provider_state=replay,
     )

@@ -349,6 +349,19 @@ export interface PlatformGatewayApi {
   getCliInvocation?: () => Promise<CliInvocation | null>
 }
 
+export interface CodexXStatus {
+  supported: boolean
+  available: boolean
+  version: string | null
+  sharedCodexHome: boolean
+  launched?: boolean
+}
+
+export interface PlatformCodexXApi {
+  getStatus(): Promise<CodexXStatus>
+  open(): Promise<CodexXStatus>
+}
+
 export interface PlatformSettingsApi {
   getDesktopSettings?: () => Promise<DesktopSettings>
   saveDesktopSettings?: (payload: DesktopSettingsPayload) => Promise<DesktopSettings>
@@ -390,6 +403,8 @@ export interface Platform {
   onboarding: PlatformOnboardingApi
   files: PlatformFilesApi
   workbench: PlatformWorkbenchApi
+  /** Bundled Codex-X companion. Present only in the Electron desktop shell. */
+  codexX?: PlatformCodexXApi
   updates: PlatformUpdatesApi
   /**
    * The host OS locale (BCP-47), used only to seed the initial UI language on

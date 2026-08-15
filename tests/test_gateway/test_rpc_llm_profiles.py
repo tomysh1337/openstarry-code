@@ -78,6 +78,48 @@ async def test_profile_probe_rpcs_bind_physical_usage_accounting(
 
 
 @pytest.mark.asyncio
+async def test_provider_probe_accepts_custom_headers_wire_field(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    cfg = GatewayConfig(
+        config_path=str(tmp_path / "config.toml"),
+        llm={
+            "provider": "custom",
+            "model": "model-a",
+            "base_url": "https://llm.example.test/v1",
+        },
+    )
+    observed: dict[str, object] = {}
+
+    async def fake_probe(_ctx, **kwargs):
+        observed.update(kwargs)
+        return ProviderProbeResult(ok=True, provider_id="custom", model="model-a")
+
+    monkeypatch.setattr(rpc_onboarding, "_usage_accounted_provider_probe", fake_probe)
+
+    response = await get_dispatcher().dispatch(
+        "provider-probe-custom-headers",
+        "onboarding.provider.probe",
+        {
+            "providerId": "custom",
+            "model": "model-a",
+            "baseUrl": "https://llm.example.test/v1",
+            "customHeaders": {"X-Tenant": "tenant-secret"},
+            "displayName": "Custom Work",
+            "note": "Saved profile",
+            "websiteUrl": "https://llm.example.test",
+            "completeUrl": "https://llm.example.test/v1/chat/completions",
+        },
+        _admin_ctx(cfg),
+    )
+
+    assert response.error is None, response.error
+    assert response.payload["ok"] is True
+    assert observed["request_headers"] == {"X-Tenant": "tenant-secret"}
+
+
+@pytest.mark.asyncio
 async def test_profile_upsert_persists_but_never_echoes_secret(tmp_path) -> None:
     config_path = tmp_path / "config.toml"
     cfg = GatewayConfig(config_path=str(config_path))
@@ -104,6 +146,45 @@ async def test_profile_upsert_persists_but_never_echoes_secret(tmp_path) -> None
     assert persisted["llm_profiles"]["openai"]["api_key"] == "synthetic-profile-secret"
     assert ctx.config.llm_profiles["openai"].model == "gpt-profile-direct"
     assert ctx.config.llm_profiles["openai"].api_key_env_pool == ["OPENAI_POOL_A"]
+
+
+@pytest.mark.asyncio
+async def test_profile_upsert_accepts_custom_headers_wire_field(tmp_path) -> None:
+    config_path = tmp_path / "config.toml"
+    cfg = GatewayConfig(config_path=str(config_path))
+
+    response = await get_dispatcher().dispatch(
+        "profile-upsert-custom-headers",
+        "onboarding.llmProfile.upsert",
+        {
+            "providerId": "custom",
+            "model": "model-a",
+            "baseUrl": "https://llm.example.test/v1",
+            "customHeaders": {"X-Tenant": "tenant-secret"},
+            "displayName": "Custom Work",
+            "note": "Saved profile",
+            "websiteUrl": "https://llm.example.test",
+            "completeUrl": "https://llm.example.test/v1/chat/completions",
+        },
+        _admin_ctx(cfg),
+    )
+
+    assert response.error is None, response.error
+    assert response.payload["entry"]["custom_headers"] == {"X-Tenant": "***"}
+    assert "tenant-secret" not in repr(response.payload)
+    assert cfg.llm_profiles["custom"].custom_headers == {"X-Tenant": "tenant-secret"}
+    assert cfg.llm_profiles["custom"].display_name == "Custom Work"
+    assert cfg.llm_profiles["custom"].note == "Saved profile"
+    assert cfg.llm_profiles["custom"].website_url == "https://llm.example.test"
+    assert cfg.llm_profiles["custom"].complete_url.endswith("/chat/completions")
+    persisted = tomllib.loads(config_path.read_text())
+    assert persisted["llm_profiles"]["custom"]["custom_headers"] == {"X-Tenant": "tenant-secret"}
+    assert persisted["llm_profiles"]["custom"]["display_name"] == "Custom Work"
+    assert persisted["llm_profiles"]["custom"]["note"] == "Saved profile"
+    assert persisted["llm_profiles"]["custom"]["website_url"] == "https://llm.example.test"
+    assert persisted["llm_profiles"]["custom"]["complete_url"].endswith(
+        "/chat/completions"
+    )
 
 
 @pytest.mark.asyncio
@@ -153,9 +234,7 @@ async def test_profile_upsert_discards_pool_only_when_credential_source_changes(
 
 
 @pytest.mark.asyncio
-async def test_profile_remove_discards_pool_only_after_persist(
-    tmp_path, monkeypatch
-) -> None:
+async def test_profile_remove_discards_pool_only_after_persist(tmp_path, monkeypatch) -> None:
     cfg = GatewayConfig(
         config_path=str(tmp_path / "config.toml"),
         llm_profiles={"deepseek": {"api_key": "synthetic-profile-key"}},
@@ -168,9 +247,7 @@ async def test_profile_remove_discards_pool_only_after_persist(
         events.append("persist")
         return result
 
-    monkeypatch.setattr(
-        "openstarry_code.gateway.rpc_onboarding._persist", recording_persist
-    )
+    monkeypatch.setattr("openstarry_code.gateway.rpc_onboarding._persist", recording_persist)
     monkeypatch.setattr(
         "openstarry_code.gateway.llm_runtime.discard_profile_credential_pool",
         lambda _provider: events.append("discard"),
@@ -188,9 +265,7 @@ async def test_profile_remove_discards_pool_only_after_persist(
 
 
 @pytest.mark.asyncio
-async def test_profile_upsert_persist_failure_preserves_pool(
-    tmp_path, monkeypatch
-) -> None:
+async def test_profile_upsert_persist_failure_preserves_pool(tmp_path, monkeypatch) -> None:
     cfg = GatewayConfig(
         config_path=str(tmp_path / "config.toml"),
         llm_profiles={"deepseek": {"api_key": "synthetic-old-profile-key"}},
@@ -198,9 +273,7 @@ async def test_profile_upsert_persist_failure_preserves_pool(
     discarded: list[str] = []
     monkeypatch.setattr(
         "openstarry_code.gateway.rpc_onboarding._persist",
-        lambda *args, **kwargs: (_ for _ in ()).throw(
-            OSError("synthetic write failure")
-        ),
+        lambda *args, **kwargs: (_ for _ in ()).throw(OSError("synthetic write failure")),
     )
     monkeypatch.setattr(
         "openstarry_code.gateway.llm_runtime.discard_profile_credential_pool",
@@ -1119,7 +1192,7 @@ async def test_profile_activate_hot_media_sync_resolves_demoted_primary_profile(
                     "supports_image": True,
                     "image_only": True,
                 }
-            }
+            },
         },
     )
 
@@ -1137,9 +1210,7 @@ async def test_profile_activate_hot_media_sync_resolves_demoted_primary_profile(
             {"providerId": "deepseek", "model": "deepseek-chat"},
             _admin_ctx(cfg),
         )
-        resolved = media._resolve_vision_provider_config(
-            default_model="openai/gpt-4o-mini"
-        )
+        resolved = media._resolve_vision_provider_config(default_model="openai/gpt-4o-mini")
     finally:
         media.configure_image_generation(None)
 
@@ -1302,6 +1373,98 @@ def test_profile_activate_requires_admin_scope() -> None:
 
 def test_profile_draft_methods_require_admin_scope() -> None:
     assert METHOD_SCOPES["onboarding.llmProfile.draft.probe"] == ADMIN_SCOPE
-    assert (
-        METHOD_SCOPES["onboarding.llmProfile.draft.models.discover"] == ADMIN_SCOPE
+    assert METHOD_SCOPES["onboarding.llmProfile.draft.models.discover"] == ADMIN_SCOPE
+
+
+@pytest.mark.asyncio
+async def test_custom_profile_duplicate_copies_masked_values_server_side(tmp_path) -> None:
+    config_path = tmp_path / "config.toml"
+    cfg = GatewayConfig(
+        config_path=str(config_path),
+        llm={
+            "provider": "custom",
+            "model": "custom-model",
+            "api_key": "synthetic-secret",
+            "base_url": "https://llm.example.test/v1",
+            "custom_headers": {"X-Tenant": "tenant-secret"},
+            "display_name": "Custom Source",
+            "note": "Duplicate this deployment",
+            "website_url": "https://llm.example.test",
+            "complete_url": "https://llm.example.test/v1/chat/completions",
+        },
     )
+
+    response = await get_dispatcher().dispatch(
+        "profile-duplicate",
+        "onboarding.llmProfile.duplicate",
+        {"providerId": "custom", "targetProviderId": "custom_2"},
+        _admin_ctx(cfg),
+    )
+
+    assert response.error is None, response.error
+    assert response.payload["entry"]["api_key"] == "***"
+    assert response.payload["entry"]["custom_headers"] == {"X-Tenant": "***"}
+    copied = cfg.llm_profiles["custom_2"]
+    assert copied.api_key == "synthetic-secret"
+    assert copied.custom_headers == {"X-Tenant": "tenant-secret"}
+    assert copied.display_name == "Custom Source"
+    assert copied.note == "Duplicate this deployment"
+    assert copied.website_url == "https://llm.example.test"
+    assert copied.complete_url.endswith("/chat/completions")
+    persisted = tomllib.loads(config_path.read_text(encoding="utf-8"))
+    assert persisted["llm_profiles"]["custom_2"]["api_key"] == "synthetic-secret"
+    assert persisted["llm_profiles"]["custom_2"]["custom_headers"] == {"X-Tenant": "tenant-secret"}
+    assert persisted["llm_profiles"]["custom_2"]["display_name"] == "Custom Source"
+    assert persisted["llm_profiles"]["custom_2"]["note"] == "Duplicate this deployment"
+    assert persisted["llm_profiles"]["custom_2"]["website_url"] == "https://llm.example.test"
+    assert persisted["llm_profiles"]["custom_2"]["complete_url"].endswith(
+        "/chat/completions"
+    )
+
+
+def test_profile_duplicate_requires_admin_scope() -> None:
+    assert METHOD_SCOPES["onboarding.llmProfile.duplicate"] == ADMIN_SCOPE
+
+
+@pytest.mark.asyncio
+async def test_onboarding_status_exposes_provider_metadata() -> None:
+    cfg = GatewayConfig(
+        llm={
+            "provider": "openai",
+            "model": "gpt-test",
+            "api_key": "synthetic-primary-key",
+            "base_url": "https://primary.example/v1",
+            "display_name": "Primary API",
+            "note": "Active",
+            "website_url": "https://primary.example",
+            "complete_url": "https://primary.example/v1/responses",
+        },
+        llm_profiles={
+            "deepseek": {
+                "api_key": "synthetic-profile-key",
+                "base_url": "https://backup.example/v1",
+                "display_name": "Backup API",
+                "note": "Standby",
+                "website_url": "https://backup.example",
+                "complete_url": "https://backup.example/v1/chat/completions",
+            }
+        },
+    )
+
+    response = await get_dispatcher().dispatch(
+        "profile-status-metadata",
+        "onboarding.status",
+        {},
+        _admin_ctx(cfg),
+    )
+
+    assert response.error is None, response.error
+    rows = {row["provider"]: row for row in response.payload["llmProfileStatus"]}
+    assert rows["openai"]["displayName"] == "Primary API"
+    assert rows["openai"]["note"] == "Active"
+    assert rows["openai"]["websiteUrl"] == "https://primary.example"
+    assert rows["openai"]["completeUrl"].endswith("/responses")
+    assert rows["deepseek"]["displayName"] == "Backup API"
+    assert rows["deepseek"]["note"] == "Standby"
+    assert rows["deepseek"]["websiteUrl"] == "https://backup.example"
+    assert rows["deepseek"]["completeUrl"].endswith("/chat/completions")

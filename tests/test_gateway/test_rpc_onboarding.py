@@ -107,6 +107,40 @@ async def test_provider_configure_redacts_api_key(tmp_path, monkeypatch):
 
 
 @pytest.mark.asyncio
+async def test_provider_configure_persists_provider_metadata(tmp_path, monkeypatch):
+    config_path = tmp_path / "c.toml"
+    monkeypatch.setenv("OPENSTARRY_CODE_GATEWAY_CONFIG_PATH", str(config_path))
+
+    res = await get_dispatcher().dispatch(
+        "provider-metadata",
+        "onboarding.provider.configure",
+        {
+            "providerId": "openrouter",
+            "model": "openai/gpt-test",
+            "apiKey": "synthetic-provider-key",
+            "baseUrl": "https://openrouter.example/api/v1",
+            "displayName": "OpenRouter Work",
+            "note": "Primary work account",
+            "websiteUrl": "https://openrouter.example",
+            "completeUrl": "https://openrouter.example/api/v1/chat/completions",
+        },
+        _admin_ctx(),
+    )
+
+    assert res.error is None, res.error
+    entry = res.payload["entry"]
+    assert entry["display_name"] == "OpenRouter Work"
+    assert entry["note"] == "Primary work account"
+    assert entry["website_url"] == "https://openrouter.example"
+    assert entry["complete_url"].endswith("/chat/completions")
+    persisted = tomllib.loads(config_path.read_text(encoding="utf-8"))["llm"]
+    assert persisted["display_name"] == "OpenRouter Work"
+    assert persisted["note"] == "Primary work account"
+    assert persisted["website_url"] == "https://openrouter.example"
+    assert persisted["complete_url"].endswith("/chat/completions")
+
+
+@pytest.mark.asyncio
 async def test_provider_configure_can_atomically_enable_openrouter_image_default(
     tmp_path,
     monkeypatch,

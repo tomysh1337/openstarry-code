@@ -70,6 +70,7 @@ def _channel_error() -> Iterator[None]:
             details={"fields": details} if details else None,
         ) from exc
 
+
 log = structlog.get_logger(__name__)
 
 _d = get_dispatcher()
@@ -156,7 +157,9 @@ def _sync_provider_selector(ctx: RpcContext, llm_cfg: Any) -> None:
             model=llm_cfg.model,
             api_key=api_key,
             base_url=base_url,
+            complete_url=str(getattr(llm_cfg, "complete_url", "") or ""),
             proxy=proxy,
+            request_headers=dict(getattr(llm_cfg, "custom_headers", {}) or {}),
             provider_routing=getattr(llm_cfg, "provider_routing", {}),
         )
     )
@@ -282,9 +285,7 @@ def _status_payload(ctx: RpcContext) -> dict[str, Any]:
         "memoryEmbeddingSource": s.memory_embedding_source,
         "memoryEmbeddingEnvKey": s.memory_embedding_env_key,
         "capabilityConfiguration": {
-            capability_id: {
-                "resettable": capability_resettable(cfg, capability_id=capability_id)
-            }
+            capability_id: {"resettable": capability_resettable(cfg, capability_id=capability_id)}
             for capability_id in (
                 "search",
                 "image_generation",
@@ -502,9 +503,9 @@ def _request_changes_active_provider_connection(params: Any, cfg: Any) -> bool:
         canonical_tokenrhythm_base_url,
     )
 
-    requested_provider = str(
-        params.get("providerId") or getattr(llm, "provider", "") or ""
-    ).strip().lower()
+    requested_provider = (
+        str(params.get("providerId") or getattr(llm, "provider", "") or "").strip().lower()
+    )
 
     comparisons = (
         ("apiKey", "api_key"),
@@ -535,6 +536,21 @@ def _request_changes_active_provider_connection(params: Any, cfg: Any) -> bool:
             elif not base_url_matches_official_api(active, candidate):
                 return True
         elif candidate != active:
+            return True
+    if "customHeaders" in params:
+        from openstarry_code.provider.request_headers import (
+            merge_redacted_request_headers,
+        )
+
+        try:
+            candidate_headers = merge_redacted_request_headers(
+                getattr(llm, "custom_headers", {}) or {},
+                params.get("customHeaders"),
+                allow_preserve=True,
+            )
+        except ValueError:
+            return True
+        if candidate_headers != dict(getattr(llm, "custom_headers", {}) or {}):
             return True
     return False
 
@@ -581,6 +597,7 @@ async def _provider_configure(params: Any, ctx: RpcContext) -> dict[str, Any]:
     from openstarry_code.onboarding.mutations import upsert_llm_provider
 
     provider_id = _require(params, "providerId")
+    p = params if isinstance(params, dict) else {}
     # Legacy null semantics pinned: absent key OR explicit null = legacy
     # default ("" -> derive/reset), never keep-current (see _param).
     model = _param(params, "model", "")
@@ -595,6 +612,11 @@ async def _provider_configure(params: Any, ctx: RpcContext) -> dict[str, Any]:
             preserve_api_key=_bool_param(params, "preserveApiKey"),
             base_url=_param(params, "baseUrl", ""),
             proxy=_param(params, "proxy", ""),
+            custom_headers=(p.get("customHeaders") if "customHeaders" in p else None),
+            display_name=(p.get("displayName") if "displayName" in p else None),
+            note=(p.get("note") if "note" in p else None),
+            website_url=(p.get("websiteUrl") if "websiteUrl" in p else None),
+            complete_url=(p.get("completeUrl") if "completeUrl" in p else None),
             # Explicit-user-action only (D18): a preset is applied exactly when
             # the client sends presetId; a plain save never auto-applies one.
             preset_id=_param(params, "presetId", ""),
@@ -658,6 +680,11 @@ async def _llm_profile_upsert(params: Any, ctx: RpcContext) -> dict[str, Any]:
             preserve_api_key=preserve_value,
             base_url=p.get("baseUrl") if "baseUrl" in p else None,
             proxy=p.get("proxy") if "proxy" in p else None,
+            custom_headers=(p.get("customHeaders") if "customHeaders" in p else None),
+            display_name=p.get("displayName") if "displayName" in p else None,
+            note=p.get("note") if "note" in p else None,
+            website_url=p.get("websiteUrl") if "websiteUrl" in p else None,
+            complete_url=p.get("completeUrl") if "completeUrl" in p else None,
         )
     credential_source_changed = _llm_profile_credential_signature(
         cfg, str(provider_id)
@@ -720,6 +747,32 @@ async def _llm_profile_credential_clear(params: Any, ctx: RpcContext) -> dict[st
     }
 
 
+@_d.method("onboarding.llmProfile.duplicate", scope="operator.admin")
+async def _llm_profile_duplicate(params: Any, ctx: RpcContext) -> dict[str, Any]:
+    """Copy a custom Chat Completions deployment into an unused slot."""
+
+    from openstarry_code.onboarding.mutations import duplicate_custom_llm_profile
+
+    source_provider_id = str(_require(params, "providerId"))
+    target_provider_id = str(_require(params, "targetProviderId"))
+    cfg = _active_config(ctx)
+    with _validation_error("onboarding.llmProfile.invalid"):
+        res = duplicate_custom_llm_profile(
+            cfg,
+            source_provider_id=source_provider_id,
+            target_provider_id=target_provider_id,
+        )
+    config_path = _persist(ctx, res.config, restart_required=res.restart_required)
+    _apply_inplace(ctx, res.config)
+    return {
+        "changed": res.changed,
+        "restartRequired": res.restart_required,
+        "configPath": config_path,
+        "entry": res.public_payload,
+        "warnings": res.warnings,
+    }
+
+
 @_d.method("onboarding.llmProfile.remove", scope="operator.admin")
 async def _llm_profile_remove(params: Any, ctx: RpcContext) -> dict[str, Any]:
     """Remove a profile only when no Router/Ensemble deployment references it."""
@@ -757,9 +810,7 @@ async def _llm_profile_active_remove(params: Any, ctx: RpcContext) -> dict[str, 
     replacement_provider_id = str(_require(params, "replacementProviderId"))
     replacement_model = str(_param(params, "replacementModel", "") or "")
     router_action = str(_param(params, "routerAction", "preserve"))
-    image_generation_intent = str(
-        _param(params, "imageGenerationIntent", "preserve")
-    )
+    image_generation_intent = str(_param(params, "imageGenerationIntent", "preserve"))
     cfg = _active_config(ctx)
     previous_config = cfg.model_copy(deep=True)
     try:
@@ -773,12 +824,8 @@ async def _llm_profile_active_remove(params: Any, ctx: RpcContext) -> dict[str, 
         )
     except LlmProfileActivationError as exc:
         code_by_reason = {
-            "primary_pool_unsupported": (
-                "onboarding.llmProfile.primary_pool_unsupported"
-            ),
-            "router_provider_conflict": (
-                "onboarding.llmProfile.router_provider_conflict"
-            ),
+            "primary_pool_unsupported": ("onboarding.llmProfile.primary_pool_unsupported"),
+            "router_provider_conflict": ("onboarding.llmProfile.router_provider_conflict"),
         }
         raise RpcHandlerError(
             code_by_reason.get(exc.reason, "onboarding.llmProfile.invalid"),
@@ -857,12 +904,8 @@ async def _llm_profile_activate(params: Any, ctx: RpcContext) -> dict[str, Any]:
         )
     except LlmProfileActivationError as exc:
         code_by_reason = {
-            "primary_pool_unsupported": (
-                "onboarding.llmProfile.primary_pool_unsupported"
-            ),
-            "router_provider_conflict": (
-                "onboarding.llmProfile.router_provider_conflict"
-            ),
+            "primary_pool_unsupported": ("onboarding.llmProfile.primary_pool_unsupported"),
+            "router_provider_conflict": ("onboarding.llmProfile.router_provider_conflict"),
         }
         code = code_by_reason.get(exc.reason, "onboarding.llmProfile.invalid")
         details = {
@@ -970,6 +1013,7 @@ def _draft_llm_profile_config(params: Any, ctx: RpcContext) -> tuple[str, Any]:
         preserve_api_key=preserve_value,
         base_url=p.get("baseUrl") if "baseUrl" in p else None,
         proxy=p.get("proxy") if "proxy" in p else None,
+        custom_headers=(p.get("customHeaders") if "customHeaders" in p else None),
     )
     return provider, draft.config
 
@@ -983,6 +1027,7 @@ async def _usage_accounted_provider_probe(
     api_key_env: str,
     base_url: str,
     proxy: str,
+    request_headers: dict[str, str] | None = None,
     allow_default_api_key_env: bool,
 ) -> ProviderProbeResult:
     """Probe one deployment under the shared physical-call usage boundary."""
@@ -1034,6 +1079,8 @@ async def _usage_accounted_provider_probe(
         "proxy": proxy,
         "allow_default_api_key_env": allow_default_api_key_env,
     }
+    if request_headers:
+        probe_kwargs["request_headers"] = request_headers
     if chat_stream_factory is not None:
         probe_kwargs["chat_stream_factory"] = chat_stream_factory
     with bind_usage_accounting_scope(usage_scope):
@@ -1063,6 +1110,7 @@ async def _llm_profile_probe(params: Any, ctx: RpcContext) -> dict[str, Any]:
             api_key_env="",
             base_url=deployment.base_url,
             proxy=deployment.proxy,
+            request_headers=dict(deployment.request_headers),
             allow_default_api_key_env=False,
         )
         if not result.ok and resolution.credential_source == "profile_pool":
@@ -1099,6 +1147,7 @@ async def _llm_profile_draft_probe(params: Any, ctx: RpcContext) -> dict[str, An
             api_key_env="",
             base_url=deployment.base_url,
             proxy=deployment.proxy,
+            request_headers=dict(deployment.request_headers),
             allow_default_api_key_env=False,
         )
         if not result.ok and resolution.credential_source == "profile_pool":
@@ -1128,17 +1177,20 @@ async def _llm_profile_models_discover(params: Any, ctx: RpcContext) -> dict[str
             session_key=session_key,
         )
         deployment = resolution.provider_config
-        result = await discover_selectable_provider_models(
-            provider_id=deployment.provider,
-            api_key=deployment.api_key,
-            api_key_env="",
-            base_url=deployment.base_url,
-            proxy=deployment.proxy,
-            allow_default_api_key_env=False,
-            force_refresh=_bool_param(params, "forceRefresh"),
-            persist_catalog=True,
-            catalog_config=cfg,
-        )
+        discover_kwargs: dict[str, Any] = {
+            "provider_id": deployment.provider,
+            "api_key": deployment.api_key,
+            "api_key_env": "",
+            "base_url": deployment.base_url,
+            "proxy": deployment.proxy,
+            "allow_default_api_key_env": False,
+            "force_refresh": _bool_param(params, "forceRefresh"),
+            "persist_catalog": True,
+            "catalog_config": cfg,
+        }
+        if deployment.request_headers:
+            discover_kwargs["request_headers"] = dict(deployment.request_headers)
+        result = await discover_selectable_provider_models(**discover_kwargs)
         if not result.ok and resolution.credential_source == "profile_pool":
             _report_llm_profile_rpc_failure(
                 deployment.provider,
@@ -1164,17 +1216,20 @@ async def _llm_profile_draft_models_discover(params: Any, ctx: RpcContext) -> di
             session_key=session_key,
         )
         deployment = resolution.provider_config
-        result = await discover_selectable_provider_models(
-            provider_id=deployment.provider,
-            api_key=deployment.api_key,
-            api_key_env="",
-            base_url=deployment.base_url,
-            proxy=deployment.proxy,
-            allow_default_api_key_env=False,
-            force_refresh=_bool_param(params, "forceRefresh"),
-            persist_catalog=False,
-            catalog_config=draft,
-        )
+        discover_kwargs: dict[str, Any] = {
+            "provider_id": deployment.provider,
+            "api_key": deployment.api_key,
+            "api_key_env": "",
+            "base_url": deployment.base_url,
+            "proxy": deployment.proxy,
+            "allow_default_api_key_env": False,
+            "force_refresh": _bool_param(params, "forceRefresh"),
+            "persist_catalog": False,
+            "catalog_config": draft,
+        }
+        if deployment.request_headers:
+            discover_kwargs["request_headers"] = dict(deployment.request_headers)
+        result = await discover_selectable_provider_models(**discover_kwargs)
         if not result.ok and resolution.credential_source == "profile_pool":
             _report_llm_profile_rpc_failure(
                 deployment.provider,
@@ -1220,6 +1275,20 @@ async def _provider_probe(params: Any, ctx: RpcContext) -> dict[str, Any]:
             proxy = str(getattr(cfg.llm, "proxy", "") or "")
     model = str(p.get("model", "") or "")
     with _validation_error("onboarding.provider.invalid"):
+        from openstarry_code.provider.request_headers import (
+            merge_redacted_request_headers,
+        )
+
+        stored_request_headers = dict(getattr(cfg.llm, "custom_headers", {}) or {})
+        request_headers = (
+            stored_request_headers
+            if "customHeaders" not in p and same_provider and reuse_stored_credentials
+            else merge_redacted_request_headers(
+                stored_request_headers,
+                p.get("customHeaders") or {},
+                allow_preserve=same_provider and reuse_stored_credentials,
+            )
+        )
         result = await _usage_accounted_provider_probe(
             ctx,
             provider_id=str(provider_id),
@@ -1228,9 +1297,8 @@ async def _provider_probe(params: Any, ctx: RpcContext) -> dict[str, Any]:
             api_key_env=api_key_env,
             base_url=base_url,
             proxy=proxy,
-            allow_default_api_key_env=(
-                not same_provider or reuse_stored_credentials
-            ),
+            request_headers=request_headers,
+            allow_default_api_key_env=(not same_provider or reuse_stored_credentials),
         )
     saved_model = str(getattr(cfg.llm, "model", "") or "").strip()
     if (
@@ -1350,21 +1418,36 @@ async def _models_discover(params: Any, ctx: RpcContext) -> dict[str, Any]:
         if not proxy:
             proxy = str(getattr(cfg.llm, "proxy", "") or "")
     with _validation_error("onboarding.provider.invalid"):
-        result = await discover_selectable_provider_models(
-            provider_id=provider_id,
-            api_key=api_key,
-            api_key_env=api_key_env,
-            base_url=base_url,
-            proxy=proxy,
-            allow_default_api_key_env=(
-                not same_provider or reuse_stored_credentials
-            ),
-            force_refresh=force_refresh,
-            persist_catalog=(
+        from openstarry_code.provider.request_headers import (
+            merge_redacted_request_headers,
+        )
+
+        stored_request_headers = dict(getattr(cfg.llm, "custom_headers", {}) or {})
+        request_headers = (
+            stored_request_headers
+            if "customHeaders" not in p and same_provider and reuse_stored_credentials
+            else merge_redacted_request_headers(
+                stored_request_headers,
+                p.get("customHeaders") or {},
+                allow_preserve=same_provider and reuse_stored_credentials,
+            )
+        )
+        discover_kwargs: dict[str, Any] = {
+            "provider_id": provider_id,
+            "api_key": api_key,
+            "api_key_env": api_key_env,
+            "base_url": base_url,
+            "proxy": proxy,
+            "allow_default_api_key_env": (not same_provider or reuse_stored_credentials),
+            "force_refresh": force_refresh,
+            "persist_catalog": (
                 same_provider and reuse_stored_credentials and not request_overrides
             ),
-            catalog_config=cfg,
-        )
+            "catalog_config": cfg,
+        }
+        if request_headers:
+            discover_kwargs["request_headers"] = request_headers
+        result = await discover_selectable_provider_models(**discover_kwargs)
     return result.to_payload()
 
 
@@ -1501,9 +1584,7 @@ async def _channel_probe(params: Any, ctx: RpcContext) -> dict[str, Any]:
         "probeKind": "local_validation",
         "restartRequired": True,
         "entry": redact_channel_entry(type_name, normalized),
-        "warnings": [
-            "Configuration is locally valid; no provider connection was attempted."
-        ],
+        "warnings": ["Configuration is locally valid; no provider connection was attempted."],
     }
 
 
@@ -1565,9 +1646,7 @@ async def _image_generation_configure(params: Any, ctx: RpcContext) -> dict[str,
             clear_fallbacks=(
                 params.get("clearFallbacks", False) if isinstance(params, dict) else False
             ),
-            credential_mode=(
-                params.get("credentialMode") if isinstance(params, dict) else None
-            ),
+            credential_mode=(params.get("credentialMode") if isinstance(params, dict) else None),
         )
     # Persist first: if the write fails, the live config is untouched and
     # memory/disk stay consistent. Tool syncs run only on applied state.

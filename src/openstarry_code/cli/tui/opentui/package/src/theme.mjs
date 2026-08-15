@@ -46,24 +46,24 @@ function darkenHex(hex, factor = 0.45) {
 }
 
 export const PALETTES = Object.freeze({
-  // Canonical — verbatim from openstarry-code-webui/src/assets/base.css.
+  // Canonical — aligned with the OpenStarry starfield application icon.
   "opensquilla-dark": {
-    bg: "#121212", bgSurface: "#1A1A1B", bgElevated: "#232325",
-    text: "#ECECEC", textMuted: "#A6A6A8", textDim: "#8C8C8E",
-    accent: "#EC6A1A", accentSecondary: "#FF8A4C",
+    bg: "#070C1C", bgSurface: "#0D1628", bgElevated: "#192943",
+    text: "#F4FBFF", textMuted: "#B8C8D7", textDim: "#8498AA",
+    accent: "#74DFFF", accentSecondary: "#FF9878",
     ok: "#39D7A2", warn: "#E8B23A", danger: "#FF6B6B", info: "#56C2E6", queued: "#8C7DF2",
   },
   "opensquilla-light": {
-    bg: "#F7F7F8", bgSurface: "#FFFFFF", bgElevated: "#F0F0F2",
-    text: "#18181A", textMuted: "#56565A", textDim: "#6C6C70",
-    accent: "#B0440A", accentSecondary: "#B14E1D",
+    bg: "#F4F8FC", bgSurface: "#FFFFFF", bgElevated: "#EDF3F8",
+    text: "#111827", textMuted: "#4B5B6D", textDim: "#6F7E8F",
+    accent: "#12617D", accentSecondary: "#B7442D",
     ok: "#0E7A52", warn: "#8A6410", danger: "#C2382E", info: "#1E6E8C", queued: "#5A48C0",
   },
-  // Deep indigo night — cool and calm, brand orange for warmth.
+  // Deep starfield night — cyan light with coral warmth.
   midnight: {
-    bg: "#0B1021", bgSurface: "#121831", bgElevated: "#1A2342",
-    text: "#DCE3F2", textMuted: "#93A0C0", textDim: "#828DAD",
-    accent: "#EC6A1A", accentSecondary: "#FF9A52",
+    bg: "#070C1C", bgSurface: "#101A30", bgElevated: "#192943",
+    text: "#F4FBFF", textMuted: "#AFC3D5", textDim: "#8498AA",
+    accent: "#74DFFF", accentSecondary: "#FF9878",
     ok: "#4FD6B0", warn: "#F0C674", danger: "#FF6B8A", info: "#6AB7FF", queued: "#A78BFA",
   },
   // Warm charcoal/amber — cozy, orange-forward.

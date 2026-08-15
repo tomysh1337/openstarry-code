@@ -40,6 +40,10 @@ def redact_provider_payload(payload: dict[str, Any]) -> dict[str, Any]:
     for key in _PROVIDER_SECRET_FIELDS:
         if key in out and out[key]:
             out[key] = REDACTED_PLACEHOLDER
+    if "custom_headers" in out:
+        from openstarry_code.provider.request_headers import redact_request_headers
+
+        out["custom_headers"] = redact_request_headers(out["custom_headers"])
     return out
 
 

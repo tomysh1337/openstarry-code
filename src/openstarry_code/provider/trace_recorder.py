@@ -11,6 +11,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+from collections.abc import Collection
 from datetime import UTC, datetime
 from itertools import count
 from pathlib import Path
@@ -35,6 +36,7 @@ _INCLUDE_CHUNKS_ENV = "OPENSTARRY_CODE_LLM_TRACE_INCLUDE_CHUNKS"
 _OFF_VALUES = {"0", "false", "no", "off", "disabled", "disable"}
 _CALL_COUNTER = count(1)
 _PRESENT = "[PRESENT]"
+_REDACTED = "[REDACTED]"
 _CORRELATION_HEADER_NAMES = frozenset(
     name.lower()
     for name in (
@@ -86,12 +88,16 @@ def _redact_install_ids(value: Any) -> Any:
     return value
 
 
-def _redact_request_headers(headers: dict[str, Any]) -> dict[str, Any]:
+def _redact_request_headers(
+    headers: dict[str, Any],
+    secret_header_names: Collection[str] = (),
+) -> dict[str, Any]:
+    secret_names = {str(name).lower() for name in secret_header_names}
     return {
         str(name): (
             _PRESENT
             if str(name).lower() in _CORRELATION_HEADER_NAMES
-            else _redact(value, key=str(name))
+            else (_REDACTED if str(name).lower() in secret_names else _redact(value, key=str(name)))
         )
         for name, value in headers.items()
     }
@@ -134,6 +140,7 @@ class LLMTraceRecorder:
         payload: dict[str, Any],
         headers: dict[str, Any] | None = None,
         metadata: dict[str, Any] | None = None,
+        secret_header_names: Collection[str] = (),
     ) -> None:
         sanitized_payload = _redact(payload)
         self._append(
@@ -141,7 +148,7 @@ class LLMTraceRecorder:
                 "event": "llm.request",
                 "payload_sha256": _sha256(sanitized_payload),
                 "payload": sanitized_payload,
-                "headers": _redact_request_headers(headers or {}),
+                "headers": _redact_request_headers(headers or {}, secret_header_names),
                 "metadata": _redact(metadata or {}),
             }
         )

@@ -36,6 +36,94 @@ def test_profile_upsert_redacts_secret_and_keeps_credential_sources() -> None:
     assert result.restart_required is False
 
 
+def test_profile_upsert_persists_and_preserves_provider_metadata() -> None:
+    created = upsert_llm_profile(
+        GatewayConfig(),
+        provider_id="custom",
+        base_url="https://gateway.example/v1",
+        display_name="Private Gateway",
+        note="Low-latency route",
+        website_url="https://gateway.example",
+        complete_url="https://gateway.example/v1/chat/completions",
+    )
+    profile = created.config.llm_profiles["custom"]
+    assert profile.display_name == "Private Gateway"
+    assert profile.note == "Low-latency route"
+    assert profile.website_url == "https://gateway.example"
+    assert profile.complete_url == "https://gateway.example/v1/chat/completions"
+    assert created.public_payload["display_name"] == "Private Gateway"
+
+    updated = upsert_llm_profile(
+        created.config,
+        provider_id="custom",
+        note="Updated note",
+        complete_url="",
+    )
+    profile = updated.config.llm_profiles["custom"]
+    assert profile.display_name == "Private Gateway"
+    assert profile.note == "Updated note"
+    assert profile.website_url == "https://gateway.example"
+    assert profile.complete_url == ""
+
+
+def test_profile_activation_moves_provider_metadata_with_the_deployment() -> None:
+    cfg = GatewayConfig(
+        llm={
+            "provider": "openai",
+            "model": "gpt-test",
+            "api_key": "old-secret",
+            "base_url": "https://openai.example/v1",
+            "display_name": "OpenAI Primary",
+            "note": "Current route",
+            "website_url": "https://openai.example",
+            "complete_url": "https://openai.example/v1/responses",
+        },
+        llm_profiles={
+            "deepseek": {
+                "api_key": "new-secret",
+                "base_url": "https://deepseek.example/v1",
+                "display_name": "DeepSeek Backup",
+                "note": "Promotion target",
+                "website_url": "https://deepseek.example",
+                "complete_url": "https://deepseek.example/v1/chat/completions",
+            }
+        },
+        squilla_router={"preset_binding": "follow_primary"},
+    )
+
+    activated = activate_llm_profile(cfg, provider_id="deepseek")
+
+    assert activated.config.llm.display_name == "DeepSeek Backup"
+    assert activated.config.llm.note == "Promotion target"
+    assert activated.config.llm.website_url == "https://deepseek.example"
+    assert activated.config.llm.complete_url.endswith("/chat/completions")
+    demoted = activated.config.llm_profiles["openai"]
+    assert demoted.display_name == "OpenAI Primary"
+    assert demoted.note == "Current route"
+    assert demoted.website_url == "https://openai.example"
+    assert demoted.complete_url.endswith("/responses")
+    assert activated.public_payload["display_name"] == "DeepSeek Backup"
+
+
+def test_profile_complete_url_reaches_the_runtime_deployment() -> None:
+    cfg = GatewayConfig(
+        llm_profiles={
+            "custom": {
+                "model": "custom-model",
+                "api_key": "synthetic-key",
+                "base_url": "https://custom.example/v1",
+                "complete_url": "https://custom.example/private/chat",
+            }
+        }
+    )
+
+    resolution = resolve_provider_deployment(cfg, "custom", "custom-model")
+
+    assert resolution.ready is True
+    assert resolution.provider_config is not None
+    assert resolution.provider_config.complete_url == "https://custom.example/private/chat"
+
+
 def test_inactive_openrouter_profile_upsert_does_not_enable_image_generation() -> None:
     cfg = GatewayConfig(
         llm={
@@ -864,9 +952,21 @@ def test_profile_activation_moves_runtime_secret_and_endpoint_provenance() -> No
 def test_profile_status_reports_primary_eligibility(monkeypatch) -> None:
     monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
     cfg = GatewayConfig(
-        llm={"provider": "openai", "model": "gpt-test", "api_key": "old-secret"},
+        llm={
+            "provider": "openai",
+            "model": "gpt-test",
+            "api_key": "old-secret",
+            "display_name": "Primary OpenAI",
+            "website_url": "https://openai.example",
+        },
         llm_profiles={
-            "deepseek": {"api_key": "ready-secret"},
+            "deepseek": {
+                "api_key": "ready-secret",
+                "base_url": "https://deepseek.example/v1",
+                "display_name": "DeepSeek Profile",
+                "note": "Fallback",
+                "complete_url": "https://deepseek.example/v1/chat/completions",
+            },
             "gemini": {"api_key_env_pool": ["GEMINI_POOL_A"]},
         },
     )
@@ -881,6 +981,11 @@ def test_profile_status_reports_primary_eligibility(monkeypatch) -> None:
     assert rows["deepseek"]["primaryBlockReason"] == ""
     assert rows["gemini"]["primaryEligible"] is False
     assert rows["gemini"]["primaryBlockReason"] == "primary_pool_unsupported"
+    assert rows["openai"]["displayName"] == "Primary OpenAI"
+    assert rows["openai"]["websiteUrl"] == "https://openai.example"
+    assert rows["deepseek"]["displayName"] == "DeepSeek Profile"
+    assert rows["deepseek"]["note"] == "Fallback"
+    assert rows["deepseek"]["completeUrl"].endswith("/chat/completions")
 
 
 def test_profile_status_does_not_treat_route_member_model_as_direct_model() -> None:

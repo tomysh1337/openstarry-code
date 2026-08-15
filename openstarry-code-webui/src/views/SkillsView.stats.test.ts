@@ -10,7 +10,10 @@ async function mountSkillsView(reloadResult: Record<string, unknown> | Promise<R
   removed: [],
   modified: [],
   errors: [],
-}, loadDataResult: boolean | undefined = undefined, queueBusy = false) {
+}, loadDataResult: boolean | undefined = undefined, queueBusy = false, codexXApi?: {
+  getStatus: () => Promise<Record<string, unknown>>
+  open: () => Promise<Record<string, unknown>>
+}) {
   vi.resetModules()
 
   const { createApp, defineComponent, h, KeepAlive, nextTick, ref } = await import('vue')
@@ -115,6 +118,9 @@ async function mountSkillsView(reloadResult: Record<string, unknown> | Promise<R
   }))
   vi.doMock('@/composables/useToasts', () => ({
     useToasts: () => ({ pushToast }),
+  }))
+  vi.doMock('@/platform', () => ({
+    getPlatform: () => ({ codexX: codexXApi }),
   }))
 
   vi.doMock('@/composables/skills/useSkillProposals', () => ({
@@ -240,7 +246,38 @@ afterEach(() => {
   vi.doUnmock('@/composables/skills/useSkillRegistry')
   vi.doUnmock('@/composables/skills/useSkillsCatalog')
   vi.doUnmock('@/composables/useToasts')
+  vi.doUnmock('@/platform')
   vi.doUnmock('@/stores/rpc')
+})
+
+describe('SkillsView Codex-X companion', () => {
+  it('opens the bundled companion through the desktop bridge', async () => {
+    const getStatus = vi.fn(async () => ({
+      supported: true,
+      available: true,
+      version: '0.3.12',
+      sharedCodexHome: true,
+    }))
+    const open = vi.fn(async () => ({
+      supported: true,
+      available: true,
+      version: '0.3.12',
+      sharedCodexHome: true,
+      launched: true,
+    }))
+    const { app, el, pushToast } = await mountSkillsView(
+      undefined,
+      undefined,
+      false,
+      { getStatus, open },
+    )
+
+    await vi.waitFor(() => expect(getStatus).toHaveBeenCalledTimes(1))
+    el.querySelector<HTMLButtonElement>('[data-testid="skills-codex-x"]')?.click()
+    await vi.waitFor(() => expect(open).toHaveBeenCalledTimes(1))
+    expect(pushToast).toHaveBeenCalledWith(expect.stringContaining('0.3.12'), { tone: 'ok' })
+    app.unmount()
+  })
 })
 
 describe('SkillsView stats navigation', () => {

@@ -23,7 +23,8 @@ the existing truncation fallback (``derive_transcript_title``) remains in effect
 from __future__ import annotations
 
 import asyncio
-from dataclasses import dataclass
+from collections.abc import Mapping
+from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
 import httpx
@@ -41,6 +42,7 @@ from openstarry_code.provider.protocol import (
     configured_provider_id,
     provider_connection_config,
 )
+from openstarry_code.provider.request_headers import normalize_request_headers
 from openstarry_code.provider.tokenrhythm_correlation import (
     redact_tokenrhythm_install_ids,
     tokenrhythm_correlation_headers,
@@ -106,6 +108,7 @@ class NamingTarget:
     base_url: str
     timeout: float
     provider: str = ""
+    request_headers: dict[str, str] = field(default_factory=dict, repr=False)
 
 
 def _display_name_is_generic(value: str | None) -> bool:
@@ -224,6 +227,7 @@ def resolve_naming_target(
         base_url=base_url,
         timeout=timeout,
         provider=conn.provider_kind,
+        request_headers=dict(conn.request_headers),
     )
 
 
@@ -318,6 +322,7 @@ async def call_naming_llm(
     language: str = "auto",
     provider: str = "",
     provider_request_correlation: ProviderRequestCorrelation | None = None,
+    request_headers: Mapping[str, str] | None = None,
 ) -> str | None:
     """Summarize ``first_message`` into a short title. Returns ``None`` on failure."""
 
@@ -364,10 +369,14 @@ async def call_naming_llm(
     }
     if _should_disable_openrouter_reasoning(url, model):
         payload["reasoning"] = {"enabled": False}
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json",
-    }
+    headers = normalize_request_headers(request_headers)
+    request_headers = None
+    headers.update(
+        {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        }
+    )
     headers.update(provider_app_headers(url))
     headers.update(
         tokenrhythm_correlation_headers(
@@ -382,8 +391,7 @@ async def call_naming_llm(
     from openstarry_code.engine.usage_http import reserve_direct_usage_call
 
     usage = await reserve_direct_usage_call(
-        provider=provider
-        or ("openrouter" if "openrouter.ai" in url.lower() else "openai_compat"),
+        provider=provider or ("openrouter" if "openrouter.ai" in url.lower() else "openai_compat"),
         model=model,
         base_url=url,
     )
@@ -511,9 +519,7 @@ async def generate_session_title(
         with bind_usage_accounting_scope(usage_scope):
             correlation_kwargs: dict[str, Any] = {}
             if provider_request_correlation is not None:
-                correlation_kwargs["provider_request_correlation"] = (
-                    provider_request_correlation
-                )
+                correlation_kwargs["provider_request_correlation"] = provider_request_correlation
             title = await call_naming_llm(
                 first_message,
                 model=target.model,
@@ -523,6 +529,7 @@ async def generate_session_title(
                 max_chars=int(getattr(naming_cfg, "max_chars", 48)),
                 language=str(getattr(naming_cfg, "language", "auto")),
                 provider=target.provider,
+                request_headers=target.request_headers,
                 **correlation_kwargs,
             )
         if not title:

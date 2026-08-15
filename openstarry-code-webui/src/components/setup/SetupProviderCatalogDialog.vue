@@ -2,6 +2,10 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import Icon from '@/components/Icon.vue'
+import {
+  isThirdPartyProvider,
+  providerProtocolLabel,
+} from '@/composables/setup/providerProtocol'
 
 interface ProviderOption { providerId: string; label: string }
 
@@ -21,15 +25,17 @@ const inputRef = ref<HTMLInputElement | null>(null)
 const query = ref('')
 const activeIndex = ref(0)
 const FEATURED = [
-  'tokenrhythm',
   'custom',
   'custom_responses',
   'custom_anthropic',
+  'custom_2',
+  'custom_3',
+  'custom_4',
+  'tokenrhythm',
   'openrouter',
   'deepseek',
   'gemini',
 ]
-const TOKENRHYTHM_REGISTRATION_URL = 'https://tokenrhythm.studio/'
 
 const configured = computed(() => new Set(
   props.configuredIds.map(id => id.trim().toLowerCase()),
@@ -38,7 +44,7 @@ const configured = computed(() => new Set(
 const available = computed(() => {
   return props.providers.filter(provider => {
     const providerId = provider.providerId.trim().toLowerCase()
-    return providerId === 'tokenrhythm' || !configured.value.has(providerId)
+    return !configured.value.has(providerId)
   })
 })
 
@@ -63,12 +69,12 @@ const filtered = computed(() => {
     : available.value)
 })
 
-const recommendedProviders = computed(() => filtered.value
+const thirdPartyProviders = computed(() => filtered.value
   .map((provider, index) => ({ provider, index }))
-  .filter(({ provider }) => provider.providerId.trim().toLowerCase() === 'tokenrhythm'))
+  .filter(({ provider }) => isThirdPartyProvider(provider.providerId)))
 const otherProviders = computed(() => filtered.value
   .map((provider, index) => ({ provider, index }))
-  .filter(({ provider }) => provider.providerId.trim().toLowerCase() !== 'tokenrhythm'))
+  .filter(({ provider }) => !isThirdPartyProvider(provider.providerId)))
 
 const activeId = computed(() => filtered.value[activeIndex.value]
   ? `setup-provider-catalog-option-${activeIndex.value}`
@@ -204,42 +210,37 @@ watch(() => props.open, open => {
       role="listbox"
       :aria-label="t('setup.provider.providerResults')"
     >
-      <section v-if="recommendedProviders.length" class="provider-picker__group" role="presentation">
-        <p class="provider-picker__group-label">{{ t('setup.provider.recommendedProviders') }}</p>
-        <div
-          v-for="{ provider, index } in recommendedProviders"
+      <section
+        v-if="thirdPartyProviders.length"
+        class="provider-picker__group provider-picker__group--third-party"
+        role="presentation"
+        data-testid="provider-catalog-third-party"
+      >
+        <p class="provider-picker__group-label">{{ t('setup.provider.thirdPartyProviders') }}</p>
+        <button
+          v-for="{ provider, index } in thirdPartyProviders"
+          :id="`setup-provider-catalog-option-${index}`"
           :key="provider.providerId"
-          class="provider-picker__option-row"
+          type="button"
+          class="provider-picker__option"
+          :class="{ 'is-active': index === activeIndex }"
+          role="option"
+          tabindex="-1"
+          :aria-selected="index === activeIndex ? 'true' : 'false'"
           @mousemove="activeIndex = index"
+          @click="choose(provider.providerId)"
         >
-          <button
-            :id="`setup-provider-catalog-option-${index}`"
-            type="button"
-            class="provider-picker__option provider-picker__option--with-offer"
-            :class="{ 'is-active': index === activeIndex }"
-            role="option"
-            tabindex="-1"
-            :disabled="isConfigured(provider.providerId)"
-            :aria-selected="index === activeIndex ? 'true' : 'false'"
-            :title="isConfigured(provider.providerId) ? t('setup.provider.alreadyConfigured') : undefined"
-            @click="choose(provider.providerId)"
-          >
-            <span class="provider-picker__option-copy">
+          <span class="provider-picker__option-copy">
+            <span class="provider-picker__option-title">
               <strong>{{ provider.label }}</strong>
-              <code>{{ provider.providerId }}</code>
+              <span
+                class="control-pill provider-picker__protocol"
+                :data-provider-protocol="providerProtocolLabel(provider.providerId)"
+              >{{ providerProtocolLabel(provider.providerId) }}</span>
             </span>
-          </button>
-          <a
-            class="control-pill provider-picker__offer"
-            :href="TOKENRHYTHM_REGISTRATION_URL"
-            target="_blank"
-            rel="noopener noreferrer"
-            :aria-label="t('setup.provider.recommendation.externalLabel')"
-          >
-            {{ t('setup.provider.limitedFreeBadge') }}
-            <Icon name="externalLink" :size="12" aria-hidden="true" />
-          </a>
-        </div>
+            <code>{{ provider.providerId }}</code>
+          </span>
+        </button>
       </section>
       <section v-if="otherProviders.length" class="provider-picker__group" role="presentation">
         <p class="provider-picker__group-label">{{ t('setup.provider.otherProviders') }}</p>
@@ -370,6 +371,21 @@ watch(() => props.open, open => {
   display: grid;
   gap: var(--sp-1);
 }
+.provider-picker__group--third-party {
+  background: color-mix(in srgb, var(--accent) 4%, var(--bg-surface-2));
+  border: 1px solid color-mix(in srgb, var(--accent) 20%, var(--border));
+  border-radius: var(--radius-md);
+  gap: var(--sp-2);
+  padding: var(--sp-3);
+}
+.provider-picker__group--third-party .provider-picker__group-label {
+  color: var(--accent);
+  padding: 0;
+}
+.provider-picker__group--third-party .provider-picker__option {
+  background: var(--bg-surface);
+  border-color: var(--border);
+}
 .provider-picker__group-label {
   color: var(--text-muted);
   font-size: var(--fs-xs);
@@ -391,50 +407,32 @@ watch(() => props.open, open => {
   padding: var(--sp-2) var(--sp-3);
   text-align: left;
 }
-.provider-picker__option-row {
-  min-width: 0;
-  position: relative;
-}
-.provider-picker__option--with-offer {
-  padding-right: clamp(148px, 38%, 190px);
-  width: 100%;
-}
 .provider-picker__option-copy {
   display: grid;
   gap: 1px;
   min-width: 0;
 }
+.provider-picker__option-title {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+.provider-picker__protocol {
+  background: color-mix(in srgb, var(--accent) 8%, var(--bg-surface));
+  border-color: color-mix(in srgb, var(--accent) 22%, var(--border));
+  color: var(--text-muted);
+  font-size: 10px;
+  line-height: 1.4;
+  min-height: 20px;
+  padding: 1px 7px;
+  white-space: nowrap;
+}
 .provider-picker__option code {
   color: var(--text-muted);
   font-size: var(--fs-xs);
   overflow-wrap: anywhere;
-}
-.provider-picker__offer {
-  align-items: center;
-  background: color-mix(in srgb, var(--accent) 12%, transparent);
-  border-color: color-mix(in srgb, var(--accent) 25%, transparent);
-  color: var(--accent-deep);
-  display: inline-flex;
-  flex: 0 0 auto;
-  gap: 4px;
-  position: absolute;
-  right: var(--sp-3);
-  text-decoration: none;
-  top: 50%;
-  transform: translateY(-50%);
-  transition: background var(--dur-fast) var(--ease-out),
-              border-color var(--dur-fast) var(--ease-out),
-              box-shadow var(--dur-fast) var(--ease-out);
-}
-.provider-picker__offer:hover {
-  background: color-mix(in srgb, var(--accent) 19%, transparent);
-  border-color: color-mix(in srgb, var(--accent) 42%, transparent);
-  text-decoration: none;
-}
-.provider-picker__offer:focus-visible {
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
 }
 .provider-picker__option:hover,
 .provider-picker__option.is-active,
@@ -461,7 +459,6 @@ watch(() => props.open, open => {
 }
 @container provider-panel (max-width: 560px) {
   .provider-picker__option { align-items: center; gap: var(--sp-2); }
-  .provider-picker__option--with-offer { padding-right: clamp(136px, 46%, 172px); }
   .provider-picker__results-head { align-items: flex-start; flex-direction: column; gap: var(--sp-1); }
 }
 </style>

@@ -2854,7 +2854,9 @@ async def build_services(
                     model=llm_runtime.model,
                     api_key=api_key,
                     base_url=resolved_base,
+                    complete_url=llm_runtime.complete_url,
                     proxy=proxy,
+                    request_headers=llm_runtime.request_headers,
                     provider_routing=llm_runtime.provider_routing,
                 )
             )
@@ -3137,6 +3139,7 @@ async def build_services(
             bundled_dir=layer_dirs.bundled_dir,
             workspace_dir=layer_dirs.workspace_dir,
             managed_dir=managed_skill_dir,
+            personal_codex_dir=layer_dirs.personal_codex_dir,
             personal_agents_dir=layer_dirs.personal_agents_dir,
             project_agents_dir=layer_dirs.project_agents_dir,
             extra_dirs=layer_dirs.extra_dirs,

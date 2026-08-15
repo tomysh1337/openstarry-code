@@ -201,23 +201,23 @@ powershell -ExecutionPolicy Bypass -File ./scripts/install_source.ps1
 ## 发布构建
 
 当前 OpenStarry Code 正式版本为
-[`v0.5.5`](https://github.com/tomysh1337/openstarry-code/releases/tag/v0.5.5)，
-由 2026-08-14 的仓库标签状态构建。
+[`v0.5.6`](https://github.com/tomysh1337/openstarry-code/releases/tag/v0.5.6)，
+由 2026-08-15 的仓库标签状态构建。
 
 使用 `uv` 直接安装已验证的 wheel：
 
 ```sh
 uv tool install --python 3.12 \
-  "openstarry-code[recommended] @ https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.5/openstarry_code-0.5.5-py3-none-any.whl"
+  "openstarry-code[recommended] @ https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.6/openstarry_code-0.5.6-py3-none-any.whl"
 ```
 <!-- Release URL 分隔：/ -->
 
 | 产物 | 用途 | 完整性 |
 | --- | --- | --- |
-| [`OpenStarry-Code-0.5.5-win-x64.exe`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.5/OpenStarry-Code-0.5.5-win-x64.exe) | NSIS Windows 交互式安装包 | 记录于 `SHA256SUMS` |
-| [`OpenStarry-Code-0.5.5-win-x64.msi`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.5/OpenStarry-Code-0.5.5-win-x64.msi) | WiX MSI Windows 安装包 | 记录于 `SHA256SUMS` |
-| [`openstarry_code-0.5.5-py3-none-any.whl`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.5/openstarry_code-0.5.5-py3-none-any.whl) | 包含已编译 Web UI 的 Python 运行时 | 记录于 `SHA256SUMS` |
-| [`openstarry_code-0.5.5.tar.gz`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.5/openstarry_code-0.5.5.tar.gz) | 可复现的源码发行包 | 记录于 `SHA256SUMS` |
+| [`OpenStarry-Code-0.5.6-win-x64.exe`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.6/OpenStarry-Code-0.5.6-win-x64.exe) | NSIS Windows 交互式安装包 | 记录于 `SHA256SUMS` |
+| [`OpenStarry-Code-0.5.6-win-x64.msi`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.6/OpenStarry-Code-0.5.6-win-x64.msi) | WiX MSI Windows 安装包 | 记录于 `SHA256SUMS` |
+| [`openstarry_code-0.5.6-py3-none-any.whl`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.6/openstarry_code-0.5.6-py3-none-any.whl) | 包含已编译 Web UI 的 Python 运行时 | 记录于 `SHA256SUMS` |
+| [`openstarry_code-0.5.6.tar.gz`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.6/openstarry_code-0.5.6.tar.gz) | 可复现的源码发行包 | 记录于 `SHA256SUMS` |
 | `SHA256SUMS` | Release 下载文件的 SHA-256 清单 | 与版本同步发布 |
 
 发布验证覆盖完整前端构建、产物契约、Python 包构建、提供商与配置专项测试、Web UI
@@ -229,18 +229,37 @@ Git Bash runtime，同时提供 NSIS EXE 与 WiX MSI。当前 Windows 安装包�
 | --- | --- |
 | Web 架构、主题、动画、安全和多语言守卫 | 通过 |
 | Vue TypeScript 校验 | 通过 |
-| Web UI 单元测试 | 3,748 项通过 |
-| Python 专项测试 | 36 项通过 |
+| Web UI 单元测试 | 3,755 项通过 |
+| Python 专项测试 | 698 项通过，3 项跳过 |
 | npm 依赖审计 | 0 个已知漏洞 |
 | wheel/sdist 构建 | 通过 |
 | Windows EXE/MSI 构建与包结构校验 | 通过 |
 
 版本历史见 [`CHANGELOG.md`](CHANGELOG.md)，详细发行说明见
-[`docs/releases/0.5.5.md`](docs/releases/0.5.5.md)。
+[`docs/releases/0.5.6.md`](docs/releases/0.5.6.md)。
+
+## Codex-X 伴生工具
+
+Windows EXE 与 MSI 安装包内置经过校验的
+[Codex-X `v0.3.12`](https://github.com/yynxxxxx/Codex-X) portable 版本。可从
+“技能”页工具栏直接打开，用于管理 Codex 提示词模板、对话索引、Skills 与 MCP 配置。
+
+- 构建过程只下载固定版本压缩包，并校验 SHA-256
+  `3641a3cc4434fd8bf237108ccb7177c231606639b4990b32630faccee403978f`。
+- Codex-X 与 OpenStarry Code 使用相同的 `${CODEX_HOME:-~/.codex}`，提示词、
+  对话、Skills 与 MCP 配置以同一个 Codex 数据目录为准。
+- OpenStarry Code 将 `${CODEX_HOME:-~/.codex}/skills` 作为独立 `codex`
+  技能层直接加载；目录重新加载后即可看到变更，不在仓库中复制个人技能树。
+- Codex-X 自身的应用数据库通过 `CODEXX_HOME` 留在 OpenStarry 桌面 profile
+  中。该伴生应用依赖 Microsoft Edge WebView2 Runtime。
+
+桌面包会把上游 MIT 许可证放在 `Codex-X.exe` 旁边。模型侧新增只读
+`sandbox_status` 工具，可查看当前沙箱 backend、setup/capability 状态和有效的
+文件/网络策略，不会启动命令。
 
 ### 上游兼容下载
 
-OpenStarry Code v0.5.5 已提供独立 Windows 安装包。需要核对上游 0.5.3 行为时，
+OpenStarry Code v0.5.6 已提供独立 Windows 安装包。需要核对上游 0.5.3 行为时，
 对应的固定版本 GitHub 产物为：
 
 - [`OpenSquilla-0.5.3-mac-arm64.dmg`](https://github.com/opensquilla/opensquilla/releases/download/v0.5.3/OpenSquilla-0.5.3-mac-arm64.dmg)
@@ -283,8 +302,8 @@ disable_network_observability = true
 
 ## 自定义 API 网格
 
-每个自定义端点都是独立的一等提供商。目录会把三种主要自定义协议放在 TokenRhythm
-之后，首次启动时即可直接填写自己的 Base URL。
+每个自定义端点都是独立的一等提供商。设置目录将这些端点集中在独立的“第三方 API”
+分组，并为每个入口显示实际使用的协议标识，无需猜测兼容端点的请求格式。
 
 | Provider ID | 默认密钥变量 | 隔离配置 |
 | --- | --- | --- |
@@ -297,6 +316,19 @@ disable_network_observability = true
 
 连接探测成功后，每个槽位都会请求 `GET <base_url>/models`，返回的模型 ID 会自动进入
 模型选择器。不提供模型目录的端点仍可通过手动模型 ID 使用。
+
+### 自定义请求头与配置复制
+
+设置面板支持为租户、项目、路由或供应商元数据添加自定义请求头。这些 Header 会统一
+用于连接探测、模型发现、正常对话、Router/Ensemble、自动会话命名和上下文压缩。
+Header 值会在公开配置、RPC 回包、对象表示和 LLM trace 中脱敏。
+
+Header 名称不区分大小写且不可重复；认证类和 HTTP framing Header 为保留项，输入中的
+CR、LF 或 NUL 会被拒绝。同源编辑时可以保留已掩码的值；Base URL 跨 origin 变更时会
+清空旧 Header，避免把凭据发送到另一个主机。
+
+任意 Chat Completions 配置都可以原子复制到下一个空闲自定义槽位。服务端会复制其
+Base URL、模型、代理、凭据引用和自定义 Header，同时不向浏览器回显敏感值。
 
 ## 网络搜索矩阵
 

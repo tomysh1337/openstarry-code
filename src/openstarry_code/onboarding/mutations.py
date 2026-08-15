@@ -67,6 +67,8 @@ from openstarry_code.provider.image_generation_policy import (
     resolve_image_generation_base_url,
 )
 from openstarry_code.provider.preset_registry import ProviderPreset, get_preset
+from openstarry_code.provider.registry import CUSTOM_OPENAI_PROVIDER_IDS
+from openstarry_code.provider.request_headers import merge_redacted_request_headers
 from openstarry_code.router_tiers import (
     DEFAULT_TEXT_TIER,
     TEXT_TIERS,
@@ -145,6 +147,17 @@ def _clean_optional_str(value: str | None) -> str:
     if value is None:
         return ""
     return value.strip()
+
+
+def _provider_metadata_value(
+    value: str | None,
+    *,
+    current: object = "",
+    preserve_current: bool,
+) -> str:
+    if value is None and preserve_current:
+        return str(current or "").strip()
+    return str(value or "").strip()
 
 
 def _ambient_llm_credential_available(config: GatewayConfig, *, spec_env_key: str) -> bool:
@@ -415,9 +428,7 @@ def _cross_provider_tier_warnings(
                     f"model will be requested from '{active_provider}'."
                 )
         elif cross_provider_enabled:
-            unready_reason = _tier_provider_deployment_unready_reason(
-                tier_provider, llm_profiles
-            )
+            unready_reason = _tier_provider_deployment_unready_reason(tier_provider, llm_profiles)
             if unready_reason == "missing_base_url":
                 warnings.append(
                     f"Router tier '{tier_name}' routes to provider '{tier_provider}' but no "
@@ -447,9 +458,7 @@ def _resolve_provider_preset(preset_id: str, provider_id: str) -> ProviderPreset
         return None
     preset = get_preset(preset_id_clean)
     if preset is None or preset.provider_id != provider_id:
-        raise ValueError(
-            f"preset {preset_id!r} does not apply to provider {provider_id!r}"
-        )
+        raise ValueError(f"preset {preset_id!r} does not apply to provider {provider_id!r}")
     return preset
 
 
@@ -464,8 +473,7 @@ def _normalize_router_conflict_action(value: str | None) -> RouterConflictAction
     if action not in allowed:
         raise LlmProfileActivationError(
             "invalid_router_action",
-            "routerAction must be preserve, use_recommended, "
-            "enable_cross_provider, or disable",
+            "routerAction must be preserve, use_recommended, enable_cross_provider, or disable",
         )
     return cast(RouterConflictAction, action)
 
@@ -614,9 +622,7 @@ def _apply_primary_provider_router_policy(
         )
         return
 
-    if binding == "follow_primary" or (
-        binding is None and _implicit_primary_and_router(source)
-    ):
+    if binding == "follow_primary" or (binding is None and _implicit_primary_and_router(source)):
         _reconcile_router_profile_for_provider(candidate, target_provider)
         return
 
@@ -632,8 +638,7 @@ def _apply_primary_provider_router_policy(
         joined = ", ".join(conflicts)
         raise LlmProfileActivationError(
             "router_provider_conflict",
-            "custom Router tiers reference provider(s) that differ from the "
-            f"new primary: {joined}",
+            f"custom Router tiers reference provider(s) that differ from the new primary: {joined}",
             details={
                 "conflictProviders": list(conflicts),
                 "allowedRouterActions": [
@@ -655,6 +660,11 @@ def upsert_llm_provider(
     preserve_api_key: bool = False,
     base_url: str | None = None,
     proxy: str | None = None,
+    custom_headers: Mapping[str, str] | None = None,
+    display_name: str | None = None,
+    note: str | None = None,
+    website_url: str | None = None,
+    complete_url: str | None = None,
     provider_routing: dict[str, str] | None = None,
     preset_id: str | None = None,
     router_action: str | None = None,
@@ -815,20 +825,47 @@ def upsert_llm_provider(
         effective_proxy = str(config.llm.proxy or "") if same_provider else ""
     else:
         effective_proxy = proxy
+    existing_request_headers = dict(getattr(config.llm, "custom_headers", {}) or {})
+    if custom_headers is None:
+        effective_request_headers = (
+            existing_request_headers if same_provider and stored_credentials_match_endpoint else {}
+        )
+    else:
+        effective_request_headers = merge_redacted_request_headers(
+            existing_request_headers,
+            custom_headers,
+            allow_preserve=same_provider and stored_credentials_match_endpoint,
+        )
     if provider_routing is None:
         effective_provider_routing = (
             dict(config.llm.provider_routing or {}) if same_provider else {}
         )
     else:
         effective_provider_routing = dict(provider_routing)
+    metadata_values = {
+        field_name: _provider_metadata_value(
+            field_value,
+            current=getattr(config.llm, field_name, ""),
+            preserve_current=same_provider,
+        )
+        for field_name, field_value in (
+            ("display_name", display_name),
+            ("note", note),
+            ("website_url", website_url),
+            ("complete_url", complete_url),
+        )
+    }
+    if metadata_values["complete_url"] and not base_url_allows_credential_reuse(
+        effective_base_url,
+        metadata_values["complete_url"],
+    ):
+        raise ValueError("complete_url must use the same HTTP origin as base_url")
 
     new_cfg = _clone(config)
     # Seed from the stored section on a same-provider re-save so fields
     # without a parameter here (max_tokens, thinking, future additions) keep
     # their values instead of silently resetting to model defaults.
-    llm_payload: dict[str, Any] = (
-        config.llm.model_dump(mode="python") if same_provider else {}
-    )
+    llm_payload: dict[str, Any] = config.llm.model_dump(mode="python") if same_provider else {}
     llm_payload.update(
         {
             "provider": provider_id,
@@ -837,7 +874,9 @@ def upsert_llm_provider(
             "api_key_env": effective_api_key_env,
             "base_url": effective_base_url,
             "proxy": effective_proxy,
+            "custom_headers": effective_request_headers,
             "provider_routing": effective_provider_routing,
+            **metadata_values,
         }
     )
     new_cfg.llm = LlmProviderConfig(**llm_payload)
@@ -893,7 +932,9 @@ def upsert_llm_provider(
         ),
         "base_url": effective_base_url,
         "proxy": effective_proxy,
+        "custom_headers": effective_request_headers,
         "provider_routing": effective_provider_routing,
+        **metadata_values,
     }
     if image_generation_change is not None:
         payload["capabilityChanges"] = {
@@ -930,19 +971,14 @@ def clear_llm_provider_credentials(
     if not provider:
         raise ValueError("providerId is required")
     if provider != active_provider:
-        raise ValueError(
-            f"credential clear only supports the active provider {active_provider!r}"
-        )
+        raise ValueError(f"credential clear only supports the active provider {active_provider!r}")
 
     new_cfg = _clone(config)
     old_api_key = str(getattr(new_cfg.llm, "api_key", "") or "")
     old_api_key_env = str(getattr(new_cfg.llm, "api_key_env", "") or "")
     runtime_secret_paths: set[str] = getattr(new_cfg, "_runtime_secret_paths", set())
     explicit_secret_paths: set[str] = getattr(new_cfg, "_explicit_secret_paths", set())
-    had_provenance = (
-        "llm.api_key" in runtime_secret_paths
-        or "llm.api_key" in explicit_secret_paths
-    )
+    had_provenance = "llm.api_key" in runtime_secret_paths or "llm.api_key" in explicit_secret_paths
     new_cfg.llm.api_key = ""
     new_cfg.llm.api_key_env = ""
     # A runtime-resolved value can still be materialized in llm.api_key even
@@ -975,9 +1011,7 @@ def upsert_router(
     tier_provider_mismatch: str | None = None,
 ) -> MutationResult:
     if mode not in {"recommended", "openrouter-mix", "custom", "disabled"}:
-        raise ValueError(
-            "router mode must be recommended, openrouter-mix, custom, or disabled"
-        )
+        raise ValueError("router mode must be recommended, openrouter-mix, custom, or disabled")
     router_mode = cast(RouterMode, mode)
     provider = str(config.llm.provider or "").strip().lower()
     router_payload = config.squilla_router.model_dump(mode="python")
@@ -1031,9 +1065,7 @@ def upsert_router(
             if (
                 getattr(config.squilla_router, "tier_profile", None) is None
                 and stored_tiers
-                and not _tiers_equal_after_canonical_normalization(
-                    stored_tiers, _default_tiers()
-                )
+                and not _tiers_equal_after_canonical_normalization(stored_tiers, _default_tiers())
             ):
                 source_tiers = stored_tiers
         merged_tiers = _merge_router_tiers(base_tiers, source_tiers)
@@ -1061,9 +1093,7 @@ def upsert_router(
             and preset is not None
             and _tiers_equal_after_canonical_normalization(merged_tiers, base_tiers)
         )
-        router_payload["preset_binding"] = (
-            "follow_primary" if follows_managed_preset else "custom"
-        )
+        router_payload["preset_binding"] = "follow_primary" if follows_managed_preset else "custom"
         writes_packaged_profile = (
             follows_managed_preset and preset is not None and preset.persistable
         )
@@ -1089,9 +1119,7 @@ def upsert_router(
             cast(dict[str, Any], router_payload.get("tiers") or {}),
             provider,
             cross_provider_enabled=bool(router_payload.get("cross_provider_tiers")),
-            tier_provider_mismatch=str(
-                router_payload.get("tier_provider_mismatch") or "route"
-            ),
+            tier_provider_mismatch=str(router_payload.get("tier_provider_mismatch") or "route"),
             llm_profiles=getattr(config, "llm_profiles", None),
         )
 
@@ -1112,9 +1140,7 @@ def upsert_router(
     public_payload["tiers"] = redact_router_tiers_payload(new_cfg.squilla_router.tiers)
     public_payload["cross_provider_tiers"] = bool(new_cfg.squilla_router.cross_provider_tiers)
     public_payload["tier_provider_mismatch"] = new_cfg.squilla_router.tier_provider_mismatch
-    public_payload["router_binding"] = (
-        new_cfg.squilla_router.preset_binding or "legacy"
-    )
+    public_payload["router_binding"] = new_cfg.squilla_router.preset_binding or "legacy"
     return MutationResult(
         config=new_cfg,
         changed=True,
@@ -1128,12 +1154,10 @@ def upsert_router(
 # config model's own Literal annotations so the mutation can never drift
 # from what GatewayConfig actually accepts.
 _LLM_ENSEMBLE_SELECTION_MODES: tuple[str, ...] = tuple(
-    str(value)
-    for value in get_args(LlmEnsembleConfig.model_fields["selection_mode"].annotation)
+    str(value) for value in get_args(LlmEnsembleConfig.model_fields["selection_mode"].annotation)
 )
 _LLM_ENSEMBLE_ALL_FAILED_POLICIES: tuple[str, ...] = tuple(
-    str(value)
-    for value in get_args(LlmEnsembleConfig.model_fields["all_failed_policy"].annotation)
+    str(value) for value in get_args(LlmEnsembleConfig.model_fields["all_failed_policy"].annotation)
 )
 
 
@@ -1160,9 +1184,7 @@ def upsert_llm_ensemble(
     """
     current = config.llm_ensemble.model_dump(mode="python")
     merged = dict(current)
-    explicit_fields = set(
-        getattr(config.llm_ensemble, "model_fields_set", set())
-    )
+    explicit_fields = set(getattr(config.llm_ensemble, "model_fields_set", set()))
     generated_fields: set[str] = set()
 
     if enabled is not None:
@@ -1172,8 +1194,7 @@ def upsert_llm_ensemble(
         mode_clean = str(selection_mode).strip()
         if mode_clean not in _LLM_ENSEMBLE_SELECTION_MODES:
             raise ValueError(
-                "selection_mode must be one of: "
-                + ", ".join(_LLM_ENSEMBLE_SELECTION_MODES)
+                "selection_mode must be one of: " + ", ".join(_LLM_ENSEMBLE_SELECTION_MODES)
             )
         merged["selection_mode"] = mode_clean
         explicit_fields.add("selection_mode")
@@ -1226,17 +1247,12 @@ def upsert_llm_ensemble(
         policy_clean = str(all_failed_policy).strip()
         if policy_clean not in _LLM_ENSEMBLE_ALL_FAILED_POLICIES:
             raise ValueError(
-                "all_failed_policy must be one of: "
-                + ", ".join(_LLM_ENSEMBLE_ALL_FAILED_POLICIES)
+                "all_failed_policy must be one of: " + ", ".join(_LLM_ENSEMBLE_ALL_FAILED_POLICIES)
             )
         merged["all_failed_policy"] = policy_clean
         explicit_fields.add("all_failed_policy")
 
-    if (
-        enabled is True
-        and not bool(current.get("enabled", False))
-        and selection_mode is None
-    ):
+    if enabled is True and not bool(current.get("enabled", False)) and selection_mode is None:
         activation = ensemble_activation_patches(config)
         if activation:
             merged["selection_mode"] = activation["llm_ensemble.selection_mode"]
@@ -1257,9 +1273,7 @@ def upsert_llm_ensemble(
     )
     new_cfg.llm_ensemble = new_ensemble
     routing_changes: dict[str, Any] = {}
-    enabled_changed = enabled is not None and bool(enabled) != bool(
-        current.get("enabled", False)
-    )
+    enabled_changed = enabled is not None and bool(enabled) != bool(current.get("enabled", False))
     if enabled_changed:
         routing_changes = apply_model_routing_mode(
             new_cfg,
@@ -1297,15 +1311,11 @@ def upsert_llm_ensemble(
     }
     if candidates is not None or new_ensemble.candidates:
         payload["candidates"] = [
-            candidate.model_dump(mode="python")
-            for candidate in new_ensemble.candidates
+            candidate.model_dump(mode="python") for candidate in new_ensemble.candidates
         ]
     return MutationResult(
         config=new_cfg,
-        changed=(
-            current != new_ensemble.model_dump(mode="python")
-            or bool(routing_changes)
-        ),
+        changed=(current != new_ensemble.model_dump(mode="python") or bool(routing_changes)),
         restart_required=False,
         warnings=[],
         public_payload=payload,
@@ -1369,15 +1379,9 @@ def upsert_search_provider(
     )
 
     effective_api_key = (
-        clean_header_secret(api_key, label="Search API key")
-        if spec.requires_api_key
-        else ""
+        clean_header_secret(api_key, label="Search API key") if spec.requires_api_key else ""
     )
-    effective_api_key_env = (
-        ""
-        if api_key or not spec.requires_api_key
-        else api_key_env.strip()
-    )
+    effective_api_key_env = "" if api_key or not spec.requires_api_key else api_key_env.strip()
     if (
         not effective_api_key
         and not effective_api_key_env
@@ -1494,9 +1498,8 @@ def _is_legacy_image_generation_provider_switch_payload(
     if source_provider_id == provider_id or not source_spec.runtime_supported:
         return False
     stored_base_url = str(getattr(source_provider_cfg, "base_url", "") or "")
-    return (
-        base_url == stored_base_url
-        and fallbacks == list(getattr(config.image_generation, "fallbacks", []) or [])
+    return base_url == stored_base_url and fallbacks == list(
+        getattr(config.image_generation, "fallbacks", []) or []
     )
 
 
@@ -1541,9 +1544,7 @@ def upsert_image_generation_provider(
     )
     preserve_legacy_primary = not enabled and requested_primary == stored_primary
     try:
-        primary_provider, primary_model_name = parse_image_generation_model_ref(
-            requested_primary
-        )
+        primary_provider, primary_model_name = parse_image_generation_model_ref(requested_primary)
     except ValueError:
         if not preserve_legacy_primary:
             raise
@@ -1555,14 +1556,12 @@ def upsert_image_generation_provider(
         raise ValueError(
             "primary must be a provider/model reference for "
             f"image generation provider {provider_id!r}"
-    )
+        )
 
     # size/output_format are constrained; empty keeps the current value.
     effective_size = (size or "").strip() or config.image_generation.size
     if effective_size not in _VALID_IMAGE_SIZES:
-        raise ValueError(
-            f"image size must be one of {', '.join(_VALID_IMAGE_SIZES)}"
-        )
+        raise ValueError(f"image size must be one of {', '.join(_VALID_IMAGE_SIZES)}")
     effective_output_format = (output_format or "").strip() or config.image_generation.output_format
     if effective_output_format not in _VALID_IMAGE_OUTPUT_FORMATS:
         raise ValueError(
@@ -1580,9 +1579,7 @@ def upsert_image_generation_provider(
     current_fallbacks = list(config.image_generation.fallbacks)
     cleaned_fallbacks: list[str] = []
     preserve_legacy_fallbacks = (
-        not enabled
-        and fallbacks is not None
-        and list(fallbacks) == current_fallbacks
+        not enabled and fallbacks is not None and list(fallbacks) == current_fallbacks
     )
     if preserve_legacy_fallbacks:
         cleaned_fallbacks = current_fallbacks
@@ -1597,15 +1594,10 @@ def upsert_image_generation_provider(
                     f"image fallback {fallback!r} must be a provider/model reference"
                 ) from exc
             cleaned_fallbacks.append(f"{fallback_provider}/{fallback_model}")
-    fallbacks_updated = (
-        not preserve_legacy_fallbacks
-        and (bool(cleaned_fallbacks) or clear_fallbacks)
+    fallbacks_updated = not preserve_legacy_fallbacks and (
+        bool(cleaned_fallbacks) or clear_fallbacks
     )
-    effective_fallbacks = (
-        cleaned_fallbacks
-        if fallbacks_updated
-        else current_fallbacks
-    )
+    effective_fallbacks = cleaned_fallbacks if fallbacks_updated else current_fallbacks
 
     current_provider_cfg = _image_generation_provider_config(config, provider_id)
     api_key_is_redacted = is_redacted_secret_sentinel(api_key)
@@ -1655,14 +1647,9 @@ def upsert_image_generation_provider(
     else:
         effective_base_url = str(base_url).strip() or spec.default_base_url
     preserve_legacy_base_url = (
-        not enabled
-        and bool(stored_base_url)
-        and effective_base_url == stored_base_url
+        not enabled and bool(stored_base_url) and effective_base_url == stored_base_url
     )
-    if (
-        not is_valid_image_generation_base_url(effective_base_url)
-        and not preserve_legacy_base_url
-    ):
+    if not is_valid_image_generation_base_url(effective_base_url) and not preserve_legacy_base_url:
         raise ValueError("image base_url must be an absolute http:// or https:// URL")
     conflicting_provider = conflicting_image_generation_endpoint_provider(
         provider_id,
@@ -1684,9 +1671,7 @@ def upsert_image_generation_provider(
         effective_base_url,
     )
     stored_api_key = (
-        str(getattr(current_provider_cfg, "api_key", "") or "")
-        if endpoint_allows_reuse
-        else ""
+        str(getattr(current_provider_cfg, "api_key", "") or "") if endpoint_allows_reuse else ""
     )
     # A newly selected env reference replaces a stored direct key. Without
     # this branch the runtime keeps preferring the old direct key, so the UI
@@ -1710,9 +1695,7 @@ def upsert_image_generation_provider(
         # current credential", not a credential authored for the changed
         # endpoint origin, so it is gated like every stored source.
         explicit_env_key = ""
-    current_env_key = (
-        stored_env_key if endpoint_allows_reuse and stored_env_is_explicit else ""
-    )
+    current_env_key = stored_env_key if endpoint_allows_reuse and stored_env_is_explicit else ""
     if credential_source == "direct" or api_key:
         env_key = ""
     elif credential_source == "env":
@@ -1785,9 +1768,7 @@ def upsert_image_generation_provider(
                 f"{spec.env_key}, or a matching configured model-service provider"
             )
     if base_url is not None:
-        new_cfg.mark_force_persist(
-            f"image_generation.providers.{provider_id}.base_url"
-        )
+        new_cfg.mark_force_persist(f"image_generation.providers.{provider_id}.base_url")
     if explicit_env_key == spec.env_key and not base_url_allows_credential_reuse(
         spec.default_base_url,
         effective_base_url,
@@ -1795,13 +1776,9 @@ def upsert_image_generation_provider(
         # Preserve authorship when the operator deliberately binds the
         # registry-named env var to a custom endpoint. Without force-persist,
         # a value equal to the model default may disappear from sparse TOML.
-        new_cfg.mark_force_persist(
-            f"image_generation.providers.{provider_id}.api_key_env"
-        )
+        new_cfg.mark_force_persist(f"image_generation.providers.{provider_id}.api_key_env")
     if api_key:
-        clear_runtime_secret_paths(
-            new_cfg, {f"image_generation.providers.{provider_id}.api_key"}
-        )
+        clear_runtime_secret_paths(new_cfg, {f"image_generation.providers.{provider_id}.api_key"})
 
     payload = {
         "provider": provider_id,
@@ -1903,9 +1880,7 @@ def upsert_audio_provider(
         effective_base_url,
     )
     stored_api_key = (
-        str(getattr(current_provider_cfg, "api_key", "") or "")
-        if endpoint_allows_reuse
-        else ""
+        str(getattr(current_provider_cfg, "api_key", "") or "") if endpoint_allows_reuse else ""
     )
     effective_api_key = clean_header_secret(
         api_key or stored_api_key,
@@ -1933,9 +1908,7 @@ def upsert_audio_provider(
         env_key=env_key,
     )
     if enabled and spec.requires_api_key and api_key_source == "none":
-        raise ValueError(
-            f"audio provider {provider_id!r} requires an api_key or {spec.env_key}"
-        )
+        raise ValueError(f"audio provider {provider_id!r} requires an api_key or {spec.env_key}")
 
     effective_tts_voice = tts_voice or config.audio.tts.voice or spec.default_tts_voice
     effective_tts_model = tts_model or config.audio.tts.model or spec.default_tts_model
@@ -1954,9 +1927,7 @@ def upsert_audio_provider(
         spec.default_base_url,
         effective_base_url,
     ):
-        new_cfg.mark_force_persist(
-            f"audio.providers.{provider_id}.api_key_env"
-        )
+        new_cfg.mark_force_persist(f"audio.providers.{provider_id}.api_key_env")
     new_cfg.audio.tts.voice = effective_tts_voice
     new_cfg.audio.tts.model = effective_tts_model
     new_cfg.audio.tts.language_code = effective_language_code
@@ -2013,13 +1984,9 @@ def upsert_memory_embedding(
     payload: dict[str, Any] = {"provider": provider}
 
     if provider in _REMOTE_MEMORY_EMBEDDING_PROVIDERS:
-        current_api_key_env = _clean_optional_str(
-            getattr(current.remote, "api_key_env", None)
-        )
+        current_api_key_env = _clean_optional_str(getattr(current.remote, "api_key_env", None))
         stored_base_url = current.remote.base_url or current.base_url or ""
-        effective_base_url = (
-            base_url_value or stored_base_url or _DEFAULT_REMOTE_EMBEDDING_BASE_URL
-        )
+        effective_base_url = base_url_value or stored_base_url or _DEFAULT_REMOTE_EMBEDDING_BASE_URL
         # A stored credential must not follow a changed endpoint origin: on a
         # scheme/host/effective-port change every reusable secret source is
         # dropped fail-closed (the required-key check below then forces the
@@ -2030,9 +1997,7 @@ def upsert_memory_embedding(
         )
         reusable_stored_env = current_api_key_env if endpoint_allows_reuse else None
         reusable_stored_key = (
-            (current.remote.api_key or current.api_key or "")
-            if endpoint_allows_reuse
-            else ""
+            (current.remote.api_key or current.api_key or "") if endpoint_allows_reuse else ""
         )
         submitted_env_key = api_key_env_value
         if not endpoint_allows_reuse and submitted_env_key == current_api_key_env:
@@ -2040,17 +2005,12 @@ def upsert_memory_embedding(
             # a re-submitted value equal to the stored reference means "keep
             # the current credential" and must not follow the changed origin.
             submitted_env_key = ""
-        effective_api_key_env = "" if api_key_value else (
-            submitted_env_key or reusable_stored_env or ""
+        effective_api_key_env = (
+            "" if api_key_value else (submitted_env_key or reusable_stored_env or "")
         )
-        effective_api_key = (
-            api_key_value
-            or ("" if effective_api_key_env else reusable_stored_key)
-        )
+        effective_api_key = api_key_value or ("" if effective_api_key_env else reusable_stored_key)
         if not effective_api_key and not effective_api_key_env:
-            raise ValueError(
-                "remote memory embedding provider requires an api_key or api_key_env"
-            )
+            raise ValueError("remote memory embedding provider requires an api_key or api_key_env")
         payload["remote"] = {"base_url": effective_base_url}
         if effective_api_key:
             payload["remote"]["api_key"] = effective_api_key
@@ -2061,9 +2021,7 @@ def upsert_memory_embedding(
             payload["remote"]["model"] = remote_model
     elif provider == "auto":
         remote_payload: dict[str, str] = {}
-        current_api_key_env = _clean_optional_str(
-            getattr(current.remote, "api_key_env", None)
-        )
+        current_api_key_env = _clean_optional_str(getattr(current.remote, "api_key_env", None))
         stored_base_url = current.remote.base_url or current.base_url or ""
         remote_base_url = base_url_value or stored_base_url
         # A stored remote credential must not follow a changed configured
@@ -2074,9 +2032,7 @@ def upsert_memory_embedding(
         )
         reusable_stored_env = current_api_key_env if endpoint_allows_reuse else None
         reusable_stored_key = (
-            (current.remote.api_key or current.api_key or "")
-            if endpoint_allows_reuse
-            else ""
+            (current.remote.api_key or current.api_key or "") if endpoint_allows_reuse else ""
         )
         submitted_env_key = api_key_env_value
         if not endpoint_allows_reuse and submitted_env_key == current_api_key_env:
@@ -2084,21 +2040,20 @@ def upsert_memory_embedding(
             # a re-submitted value equal to the stored reference means "keep
             # the current credential" and must not follow the changed origin.
             submitted_env_key = ""
-        effective_api_key_env = "" if api_key_value else (
-            submitted_env_key or reusable_stored_env or ""
+        effective_api_key_env = (
+            "" if api_key_value else (submitted_env_key or reusable_stored_env or "")
         )
-        effective_api_key = (
-            api_key_value
-            or ("" if effective_api_key_env else reusable_stored_key)
-        )
+        effective_api_key = api_key_value or ("" if effective_api_key_env else reusable_stored_key)
         if effective_api_key:
             remote_payload["api_key"] = effective_api_key
         if effective_api_key_env:
             remote_payload["api_key_env"] = effective_api_key_env
         if remote_base_url:
             remote_payload["base_url"] = remote_base_url
-        remote_model = model_value or current.remote.model or (
-            current.model if (effective_api_key or effective_api_key_env) else None
+        remote_model = (
+            model_value
+            or current.remote.model
+            or (current.model if (effective_api_key or effective_api_key_env) else None)
         )
         if remote_model:
             remote_payload["model"] = remote_model
@@ -2114,9 +2069,7 @@ def upsert_memory_embedding(
     elif provider == "ollama":
         payload["ollama"] = {
             "base_url": (
-                base_url_value
-                or current.ollama.base_url
-                or _DEFAULT_OLLAMA_EMBEDDING_BASE_URL
+                base_url_value or current.ollama.base_url or _DEFAULT_OLLAMA_EMBEDDING_BASE_URL
             ),
         }
         ollama_model = model_value or current.ollama.model
@@ -2190,9 +2143,7 @@ def capability_resettable(config: GatewayConfig, *, capability_id: str) -> bool:
                 "search_fallback_policy",
                 "search_diagnostics",
             )
-            search_managed = {
-                key: persisted[key] for key in search_keys if key in persisted
-            }
+            search_managed = {key: persisted[key] for key in search_keys if key in persisted}
             return search_managed not in ({}, {"search_provider": "duckduckgo"})
         if capability == "image_generation":
             image_managed = persisted.get("image_generation")
@@ -2253,9 +2204,7 @@ def capability_resettable(config: GatewayConfig, *, capability_id: str) -> bool:
         )
     if capability == "audio":
         default_audio = AudioConfig.model_construct()
-        return config.audio.model_dump(mode="python") != (
-            default_audio.model_dump(mode="python")
-        )
+        return config.audio.model_dump(mode="python") != (default_audio.model_dump(mode="python"))
     if capability == "memory_embedding":
         return config.memory.embedding.model_dump(mode="python") != (
             MemoryEmbeddingConfig().model_dump(mode="python")
@@ -2367,9 +2316,7 @@ def _llm_profile_storage_keys(
     profiles = getattr(config, "llm_profiles", None) or {}
     exact = [key for key in profiles if str(key) == provider]
     variants = [
-        key
-        for key in profiles
-        if str(key) != provider and str(key).strip().lower() == provider
+        key for key in profiles if str(key) != provider and str(key).strip().lower() == provider
     ]
     return tuple(exact + variants)
 
@@ -2412,6 +2359,11 @@ def upsert_llm_profile(
     preserve_api_key: bool = False,
     base_url: str | None = None,
     proxy: str | None = None,
+    custom_headers: Mapping[str, str] | None = None,
+    display_name: str | None = None,
+    note: str | None = None,
+    website_url: str | None = None,
+    complete_url: str | None = None,
 ) -> MutationResult:
     """Create or update one non-primary provider deployment profile.
 
@@ -2424,9 +2376,7 @@ def upsert_llm_profile(
     provider = str(provider_id or "").strip().lower()
     spec = get_provider_setup_spec(provider)
     if not spec.runtime_supported:
-        raise ValueError(
-            f"provider {provider!r} is not runtime-supported and cannot be configured"
-        )
+        raise ValueError(f"provider {provider!r} is not runtime-supported and cannot be configured")
     if is_redacted_secret_sentinel(api_key):
         # A round-tripped redaction mask means "keep the stored key" — the
         # same server-side trust boundary as upsert_llm_provider. This also
@@ -2474,18 +2424,14 @@ def upsert_llm_profile(
 
     if api_key_env is None:
         effective_api_key_env = (
-            str(getattr(existing, "api_key_env", "") or "").strip()
-            if endpoint_allows_reuse
-            else ""
+            str(getattr(existing, "api_key_env", "") or "").strip() if endpoint_allows_reuse else ""
         )
     else:
         effective_api_key_env = str(api_key_env or "").strip()
 
     if api_key_env_pool is None:
         effective_pool = (
-            list(getattr(existing, "api_key_env_pool", None) or [])
-            if endpoint_allows_reuse
-            else []
+            list(getattr(existing, "api_key_env_pool", None) or []) if endpoint_allows_reuse else []
         )
     else:
         effective_pool = []
@@ -2501,6 +2447,35 @@ def upsert_llm_profile(
     else:
         effective_proxy = str(proxy or "").strip()
 
+    existing_request_headers = dict(getattr(existing, "custom_headers", {}) or {})
+    if custom_headers is None:
+        effective_request_headers = existing_request_headers if endpoint_allows_reuse else {}
+    else:
+        effective_request_headers = merge_redacted_request_headers(
+            existing_request_headers,
+            custom_headers,
+            allow_preserve=endpoint_allows_reuse,
+        )
+    metadata_values = {
+        field_name: _provider_metadata_value(
+            field_value,
+            current=getattr(existing, field_name, ""),
+            preserve_current=existing is not None,
+        )
+        for field_name, field_value in (
+            ("display_name", display_name),
+            ("note", note),
+            ("website_url", website_url),
+            ("complete_url", complete_url),
+        )
+    }
+    effective_endpoint_base = effective_base_url or str(spec.default_base_url or "").strip()
+    if metadata_values["complete_url"] and not base_url_allows_credential_reuse(
+        effective_endpoint_base,
+        metadata_values["complete_url"],
+    ):
+        raise ValueError("complete_url must use the same HTTP origin as base_url")
+
     profile = LlmProviderProfile(
         model=effective_model,
         api_key=effective_api_key,
@@ -2508,6 +2483,8 @@ def upsert_llm_profile(
         api_key_env_pool=effective_pool,
         base_url=effective_base_url,
         proxy=effective_proxy,
+        custom_headers=effective_request_headers,
+        **metadata_values,
     )
     new_cfg = _clone(config)
     new_cfg.llm_profiles = dict(new_cfg.llm_profiles)
@@ -2518,8 +2495,7 @@ def upsert_llm_profile(
         path
         for path in getattr(new_cfg, "_runtime_secret_paths", set())
         if any(
-            path == f"llm_profiles.{key}"
-            or path.startswith(f"llm_profiles.{key}.")
+            path == f"llm_profiles.{key}" or path.startswith(f"llm_profiles.{key}.")
             for key in profile_keys
         )
     }
@@ -2576,17 +2552,12 @@ def clear_llm_profile_credentials(
         profile = new_cfg.llm_profiles[key]
         payload = profile.model_dump(mode="python")
         changed = changed or bool(
-            payload.get("api_key")
-            or payload.get("api_key_env")
-            or payload.get("api_key_env_pool")
+            payload.get("api_key") or payload.get("api_key_env") or payload.get("api_key_env_pool")
         )
         payload.update(api_key="", api_key_env="", api_key_env_pool=[])
         new_cfg.llm_profiles[key] = LlmProviderProfile(**payload)
 
-    provenance_paths = {
-        f"llm_profiles.{key}.api_key"
-        for key in profile_keys
-    }
+    provenance_paths = {f"llm_profiles.{key}.api_key" for key in profile_keys}
     for path in provenance_paths:
         if path in getattr(new_cfg, "_runtime_secret_paths", set()) or path in getattr(
             new_cfg, "_explicit_secret_paths", set()
@@ -2604,6 +2575,66 @@ def clear_llm_profile_credentials(
             "active": False,
             "storedCredentialsCleared": True,
         },
+    )
+
+
+def duplicate_custom_llm_profile(
+    config: GatewayConfig,
+    *,
+    source_provider_id: str,
+    target_provider_id: str,
+) -> MutationResult:
+    """Copy one Chat Completions custom deployment into an unused slot."""
+
+    source = str(source_provider_id or "").strip().lower()
+    target = str(target_provider_id or "").strip().lower()
+    if source not in CUSTOM_OPENAI_PROVIDER_IDS:
+        raise ValueError(f"provider {source!r} does not support custom-slot duplication")
+    if target not in CUSTOM_OPENAI_PROVIDER_IDS:
+        raise ValueError(f"provider {target!r} is not a Chat Completions custom slot")
+    if source == target:
+        raise ValueError("source and target provider slots must differ")
+
+    active_provider = str(config.llm.provider or "").strip().lower()
+    if target == active_provider or _llm_profile_storage_keys(config, target):
+        raise ValueError(f"target provider slot {target!r} is already configured")
+
+    if source == active_provider:
+        source_spec = get_provider_setup_spec(source)
+        runtime_key = "llm.api_key" in getattr(config, "_runtime_secret_paths", set())
+        profile = LlmProviderProfile(
+            model=str(config.llm.model or ""),
+            api_key="" if runtime_key else str(config.llm.api_key or ""),
+            api_key_env=(
+                str(config.llm.api_key_env or "") or (source_spec.env_key if runtime_key else "")
+            ),
+            api_key_env_pool=[],
+            base_url=_stored_runtime_field(config, "llm.base_url", str(config.llm.base_url or "")),
+            proxy=_stored_runtime_field(config, "llm.proxy", str(config.llm.proxy or "")),
+            custom_headers=dict(getattr(config.llm, "custom_headers", {}) or {}),
+            display_name=str(getattr(config.llm, "display_name", "") or ""),
+            note=str(getattr(config.llm, "note", "") or ""),
+            website_url=str(getattr(config.llm, "website_url", "") or ""),
+            complete_url=str(getattr(config.llm, "complete_url", "") or ""),
+        )
+    else:
+        source_keys = _llm_profile_storage_keys(config, source)
+        if not source_keys:
+            raise KeyError(f"LLM profile {source!r} does not exist")
+        profile = LlmProviderProfile(
+            **config.llm_profiles[source_keys[0]].model_dump(mode="python")
+        )
+
+    new_cfg = _clone(config)
+    new_cfg.llm_profiles = dict(new_cfg.llm_profiles)
+    new_cfg.llm_profiles[target] = profile
+    public_payload = profile.model_dump(mode="python")
+    public_payload.update(provider=target, source_provider=source, active=False)
+    return MutationResult(
+        config=new_cfg,
+        changed=True,
+        restart_required=False,
+        public_payload=redact_provider_payload(public_payload),
     )
 
 
@@ -2626,8 +2657,7 @@ def remove_llm_profile(config: GatewayConfig, *, provider_id: str) -> MutationRe
         path
         for path in getattr(new_cfg, "_runtime_secret_paths", set())
         if any(
-            path == f"llm_profiles.{key}"
-            or path.startswith(f"llm_profiles.{key}.")
+            path == f"llm_profiles.{key}" or path.startswith(f"llm_profiles.{key}.")
             for key in profile_keys
         )
     }
@@ -2722,10 +2752,13 @@ def activate_llm_profile(
             api_key=str(config.llm.api_key or ""),
             api_key_env=str(config.llm.api_key_env or ""),
             api_key_env_pool=[],
-            base_url=_stored_runtime_field(
-                config, "llm.base_url", str(config.llm.base_url or "")
-            ),
+            base_url=_stored_runtime_field(config, "llm.base_url", str(config.llm.base_url or "")),
             proxy=_stored_runtime_field(config, "llm.proxy", str(config.llm.proxy or "")),
+            custom_headers=dict(getattr(config.llm, "custom_headers", {}) or {}),
+            display_name=str(getattr(config.llm, "display_name", "") or ""),
+            note=str(getattr(config.llm, "note", "") or ""),
+            website_url=str(getattr(config.llm, "website_url", "") or ""),
+            complete_url=str(getattr(config.llm, "complete_url", "") or ""),
         )
     new_cfg.llm_profiles = profiles
     new_cfg.llm = LlmProviderConfig(
@@ -2735,6 +2768,11 @@ def activate_llm_profile(
         api_key_env=str(profile.api_key_env or ""),
         base_url=str(profile.base_url or spec.default_base_url or ""),
         proxy=str(profile.proxy or ""),
+        custom_headers=dict(getattr(profile, "custom_headers", {}) or {}),
+        display_name=str(getattr(profile, "display_name", "") or ""),
+        note=str(getattr(profile, "note", "") or ""),
+        website_url=str(getattr(profile, "website_url", "") or ""),
+        complete_url=str(getattr(profile, "complete_url", "") or ""),
     )
     _apply_primary_provider_router_policy(
         config,
@@ -2781,6 +2819,10 @@ def activate_llm_profile(
         "active": True,
         "routerBinding": new_cfg.squilla_router.preset_binding or "legacy",
     }
+    for field_name in ("display_name", "note", "website_url", "complete_url"):
+        value = str(getattr(new_cfg.llm, field_name, "") or "").strip()
+        if value:
+            public_payload[field_name] = value
     if image_generation_change is not None:
         public_payload["capabilityChanges"] = {
             "imageGeneration": image_generation_change,
@@ -2942,9 +2984,7 @@ def _require_non_blank_secret_fields(type_name: str, entry: Mapping[str, Any]) -
         ):
             continue
         if value is None or not str(value).strip():
-            raise ValueError(
-                f"channel field {field_spec.name!r} requires a non-empty value"
-            )
+            raise ValueError(f"channel field {field_spec.name!r} requires a non-empty value")
 
 
 def validate_channel_entry(payload: dict[str, Any]) -> dict[str, Any]:
@@ -3003,9 +3043,7 @@ def upsert_channel(
     )
 
 
-def _merge_with_existing_secrets(
-    config: GatewayConfig, payload: dict[str, Any]
-) -> dict[str, Any]:
+def _merge_with_existing_secrets(config: GatewayConfig, payload: dict[str, Any]) -> dict[str, Any]:
     """Mirror upsert_llm_provider: blank secret in payload = keep current.
 
     Only secret fields are auto-preserved here so that re-adding an entry
@@ -3051,9 +3089,7 @@ def _merge_with_existing_secrets(
     return merged
 
 
-def merge_channel_entry_secrets(
-    config: GatewayConfig, payload: dict[str, Any]
-) -> dict[str, Any]:
+def merge_channel_entry_secrets(config: GatewayConfig, payload: dict[str, Any]) -> dict[str, Any]:
     """Public wrapper over the blank-secret keep-current merge.
 
     Lets validation-only surfaces (gateway ``onboarding.channel.probe``)

@@ -40,11 +40,13 @@ class LlmRuntimeConfig:
     model: str
     api_key: str
     base_url: str
+    complete_url: str
     proxy: str
     provider_routing: dict[str, str]
     api_key_from_env: bool = False
     api_key_env_name: str = ""
     base_url_from_env: bool = False
+    request_headers: dict[str, str] = field(default_factory=dict, repr=False)
 
 
 @dataclass(frozen=True)
@@ -81,9 +83,7 @@ def resolve_llm_credential(
 
     runtime_secret_paths: set[str] = getattr(config, "_runtime_secret_paths", set())
     stored_api_key = str(getattr(llm, "api_key", "") or "")
-    explicit_api_key = (
-        "" if "llm.api_key" in runtime_secret_paths else stored_api_key
-    )
+    explicit_api_key = "" if "llm.api_key" in runtime_secret_paths else stored_api_key
     configured_env_name = str(getattr(llm, "api_key_env", "") or "").strip()
     settings_env_name = environment_value("OPENSTARRY_CODE_LLM_API_KEY_ENV").strip()
     env_name = configured_env_name or settings_env_name or str(registry_env_key or "").strip()
@@ -118,11 +118,7 @@ def resolve_llm_credential(
     # the environment earlier in this process may remain usable after its
     # source variable is removed. Keep its runtime provenance instead of
     # misclassifying that cached secret as explicit.
-    if (
-        include_runtime_cache
-        and stored_api_key
-        and "llm.api_key" in runtime_secret_paths
-    ):
+    if include_runtime_cache and stored_api_key and "llm.api_key" in runtime_secret_paths:
         return ResolvedLlmCredential(
             api_key=stored_api_key,
             source="env",
@@ -244,11 +240,7 @@ def resolve_llm_runtime_config(config: Any) -> LlmRuntimeConfig:
             )
         api_key = ""
         setter = getattr(config, "set_provider_resolution", None)
-        if (
-            callable(setter)
-            and credential_mismatch
-            and not provider_resolution_blocked
-        ):
+        if callable(setter) and credential_mismatch and not provider_resolution_blocked:
             setter(
                 status="conflict",
                 effective_provider=provider,
@@ -274,10 +266,7 @@ def resolve_llm_runtime_config(config: Any) -> LlmRuntimeConfig:
         base_url = env_base_url or (spec.default_base_url if spec else stored_base_url)
     endpoint_hint = endpoint_provider_hint(base_url)
     credential_endpoint_mismatch = bool(
-        api_key
-        and credential_hint
-        and endpoint_hint
-        and credential_hint != endpoint_hint
+        api_key and credential_hint and endpoint_hint and credential_hint != endpoint_hint
     )
     if credential_endpoint_mismatch:
         reason_code = "credential_endpoint_provider_mismatch"
@@ -288,10 +277,7 @@ def resolve_llm_runtime_config(config: Any) -> LlmRuntimeConfig:
             endpoint_provider_hint=endpoint_hint,
             reason_code=reason_code,
         )
-        if (
-            credential.source == "explicit"
-            and hasattr(config, "record_runtime_override")
-        ):
+        if credential.source == "explicit" and hasattr(config, "record_runtime_override"):
             config.record_runtime_override(
                 "llm.api_key",
                 str(getattr(llm, "api_key", "") or ""),
@@ -335,7 +321,9 @@ def resolve_llm_runtime_config(config: Any) -> LlmRuntimeConfig:
         model=llm.model,
         api_key=api_key,
         base_url=base_url,
+        complete_url=str(getattr(llm, "complete_url", "") or "").strip(),
         proxy=proxy,
+        request_headers=dict(getattr(llm, "custom_headers", {}) or {}),
         provider_routing=_resolve_provider_routing(
             provider,
             getattr(llm, "provider_routing", {}),

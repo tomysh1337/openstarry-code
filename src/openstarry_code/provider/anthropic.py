@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Mapping
 from typing import Any
 
 import httpx
@@ -16,7 +16,9 @@ from .candidate_artifact import CandidateArtifactBuilder, CandidateArtifactLimit
 from .error_redaction import redact_upstream_error_code, redact_upstream_error_text
 from .failures import retry_after_from_headers
 from .model_catalog import shared_catalog
+from .protocol import ProviderConnectionConfig, ProviderMetadata
 from .registry import AuthHeaderStyle
+from .request_headers import normalize_request_headers
 from .request_proof import (
     ProviderRequestBudgetExceededError,
     project_final_request_payload,
@@ -296,6 +298,7 @@ class AnthropicProvider:
         api_key: str,
         model: str = "claude-sonnet-4-6",
         base_url: str = _ANTHROPIC_API_BASE,
+        complete_url: str | None = None,
         proxy: str | None = None,
         replay_provider_state: bool = True,
         auth_header_style: AuthHeaderStyle = "x-api-key",
@@ -303,6 +306,7 @@ class AnthropicProvider:
         listing_model_ids: tuple[str, ...] | None = None,
         temperature_floor_model_ids: frozenset[str] = frozenset(),
         temperature_floor: float = 0.0,
+        request_headers: Mapping[str, str] | None = None,
     ) -> None:
         # The default auth style matches Anthropic proper so direct
         # construction (tests, embedding) against the default host behaves
@@ -311,6 +315,7 @@ class AnthropicProvider:
         self._api_key = api_key
         self._model = model
         self._base_url = base_url.rstrip("/")
+        self._complete_url = str(complete_url or "").strip()
         self._proxy = proxy or None
         self._replay_provider_state = replay_provider_state
         self._auth_header_style = auth_header_style
@@ -318,6 +323,7 @@ class AnthropicProvider:
         # profiles such as MiniMax carry their own configured identity for
         # response attribution without changing Anthropic-shaped behavior.
         self.provider_id = (provider_id or self.provider_name).strip()
+        self._request_headers = normalize_request_headers(request_headers)
         self._listing_model_ids = listing_model_ids
         self._temperature_floor_model_ids = temperature_floor_model_ids
         self._temperature_floor = temperature_floor
@@ -336,8 +342,30 @@ class AnthropicProvider:
 
         self._replay_provider_state = False
 
+    def provider_metadata(self) -> ProviderMetadata:
+        """Return read-only non-secret provider metadata for consumers."""
+        return ProviderMetadata(
+            provider_name=self.provider_name,
+            provider_kind="anthropic",
+            model=self._model,
+            base_url=self._base_url,
+            provider_id=self.provider_id,
+        )
+
+    def provider_connection_config(self) -> ProviderConnectionConfig:
+        """Return provider-owned connection fields for internal runtime calls."""
+        return ProviderConnectionConfig(
+            provider_kind="anthropic",
+            model=self._model,
+            api_key=self._api_key,
+            base_url=self._base_url,
+            request_headers=dict(self._request_headers),
+        )
+
     def _api_url(self, path: str) -> str:
         """Build an API URL without duplicating the version prefix."""
+        if self._complete_url and path.rstrip("/").endswith("/messages"):
+            return self._complete_url
         if self._base_url.endswith("/v1") and path.startswith("/v1/"):
             return f"{self._base_url}{path[3:]}"
         return f"{self._base_url}{path}"
@@ -392,10 +420,7 @@ class AnthropicProvider:
             payload["system"] = system_payload
         if cfg.temperature is not None and not cfg.thinking:
             temperature = cfg.temperature
-            if (
-                self._model.rsplit("/", 1)[-1].strip().lower()
-                in self._temperature_floor_model_ids
-            ):
+            if self._model.rsplit("/", 1)[-1].strip().lower() in self._temperature_floor_model_ids:
                 temperature = max(temperature, self._temperature_floor)
             payload["temperature"] = temperature
         if cfg.stop_sequences:
@@ -501,11 +526,14 @@ class AnthropicProvider:
             )
             return
 
-        headers = {
-            "anthropic-version": _ANTHROPIC_VERSION,
-            "content-type": "application/json",
-            "accept": "text/event-stream",
-        }
+        headers = dict(self._request_headers)
+        headers.update(
+            {
+                "anthropic-version": _ANTHROPIC_VERSION,
+                "content-type": "application/json",
+                "accept": "text/event-stream",
+            }
+        )
         if self._api_key:
             if self._auth_header_style == "bearer":
                 headers["Authorization"] = f"Bearer {self._api_key}"
@@ -522,6 +550,7 @@ class AnthropicProvider:
         trace.record_request(
             payload=payload,
             headers=headers,
+            secret_header_names=self._request_headers,
             metadata={
                 "timeout_seconds": cfg.timeout,
                 "tools_count": len(tools or []),
@@ -534,9 +563,7 @@ class AnthropicProvider:
         # calls are retained as inert evidence instead of entering the
         # executable ToolUse lifecycle.
         candidate_artifact = (
-            CandidateArtifactBuilder()
-            if cfg.candidate_output_mode == "inert_artifact"
-            else None
+            CandidateArtifactBuilder() if cfg.candidate_output_mode == "inert_artifact" else None
         )
         tools_acc = ToolStreamAccumulator()
         text_parts: list[str] = []
@@ -687,12 +714,16 @@ class AnthropicProvider:
                             trace.record_error(code="invalid_stream_order", message=message)
                             yield ErrorEvent(message=message, code="invalid_stream_order")
                             return
-                        if etype in {
-                            "content_block_start",
-                            "content_block_delta",
-                            "content_block_stop",
-                            "message_delta",
-                        } and not message_started:
+                        if (
+                            etype
+                            in {
+                                "content_block_start",
+                                "content_block_delta",
+                                "content_block_stop",
+                                "message_delta",
+                            }
+                            and not message_started
+                        ):
                             message = "Anthropic stream emitted content before message_start"
                             trace.record_error(code="invalid_stream_order", message=message)
                             yield ErrorEvent(message=message, code="invalid_stream_order")
@@ -738,9 +769,7 @@ class AnthropicProvider:
                                 # a tool block from here on.
                                 non_tool_block_indices.discard(index)
                                 raw_tool_name = block.get("name")
-                                tool_name = (
-                                    raw_tool_name if isinstance(raw_tool_name, str) else ""
-                                )
+                                tool_name = raw_tool_name if isinstance(raw_tool_name, str) else ""
                                 if candidate_artifact is not None:
                                     candidate_artifact.start(
                                         index,
@@ -787,9 +816,7 @@ class AnthropicProvider:
                                     # Not a client tool block at this index
                                     # (e.g. a server-side tool call) — never
                                     # a client tool call.
-                                    log.debug(
-                                        "anthropic.non_tool_block_delta", index=index
-                                    )
+                                    log.debug("anthropic.non_tool_block_delta", index=index)
                                     continue
                                 fragment = delta.get("partial_json", "")
                                 if candidate_artifact is not None:
@@ -880,9 +907,7 @@ class AnthropicProvider:
                             identity_valid = bool(tool_name.strip())
                             if arguments_valid and identity_valid:
                                 try:
-                                    tool_events = tools_acc.finish_with_arguments(
-                                        index, arguments
-                                    )
+                                    tool_events = tools_acc.finish_with_arguments(index, arguments)
                                 except ToolStreamProtocolError as exc:
                                     invalid_tool_call_ids.add(exc.tool_use_id)
                                     log.warning(
@@ -985,8 +1010,7 @@ class AnthropicProvider:
                         candidate_artifact is not None
                         and (candidate_open_blocks or candidate_lifecycle_invalid)
                     ) or (
-                        candidate_artifact is None
-                        and (pending_tool_calls or invalid_tool_call_ids)
+                        candidate_artifact is None and (pending_tool_calls or invalid_tool_call_ids)
                     ):
                         message = "Anthropic response ended with an incomplete tool call"
                         trace.record_error(code="incomplete_tool_call", message=message)
@@ -1114,9 +1138,7 @@ class AnthropicProvider:
         """
         rows: list[ModelInfo] = []
         model_ids = (
-            _LISTING_MODEL_IDS
-            if self._listing_model_ids is None
-            else self._listing_model_ids
+            _LISTING_MODEL_IDS if self._listing_model_ids is None else self._listing_model_ids
         )
         for model_id in model_ids:
             entry = shared_catalog().resolve_entry(model_id, provider=self.provider_id)

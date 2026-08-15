@@ -43,11 +43,11 @@ def _replace_unencodable(data: str, stream: object) -> str:
 console = Console(file=cast(IO[str], _DynamicStream("stdout")), highlight=False)
 error_console = Console(file=cast(IO[str], _DynamicStream("stderr")), highlight=False)
 
-ACCENT = "#F56600"
-ACCENT_SOFT = "#FF8A4C"
-ACCENT_DEEP = "#B0440A"
-ACCENT_DIM = "#7A2C00"
-ACCENT_INK = "#1a0e02"
+ACCENT = "#64E1FF"
+ACCENT_SOFT = "#FF9878"
+ACCENT_DEEP = "#318FBE"
+ACCENT_DIM = "#12617D"
+ACCENT_INK = "#071020"
 ACCENT_HEADER = f"bold {ACCENT}"
 ACCENT_MARKUP = ACCENT
 

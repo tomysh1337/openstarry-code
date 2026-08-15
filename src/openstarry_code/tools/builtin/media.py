@@ -1015,6 +1015,7 @@ def _configured_provider_config(provider_name: str, model: str):
             model=model,
             api_key=runtime.api_key,
             base_url=runtime.base_url,
+            complete_url=runtime.complete_url,
             proxy=runtime.proxy,
             provider_routing=runtime.provider_routing,
         )

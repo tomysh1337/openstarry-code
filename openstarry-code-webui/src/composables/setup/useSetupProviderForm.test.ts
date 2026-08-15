@@ -93,6 +93,7 @@ describe('useSetupProviderForm — runtime provider hydration', () => {
     f.initStoredProfile('custom', {
       base_url: 'https://llm.example.test/v1',
       proxy: 'http://proxy.example.test:8080',
+      custom_headers: { 'X-Organization-ID': 'org-42' },
       api_key: '[redacted]',
       api_key_env: 'CUSTOM_API_KEY',
     })
@@ -100,11 +101,13 @@ describe('useSetupProviderForm — runtime provider hydration', () => {
     expect(f.providerFieldValues.value).toEqual({
       base_url: 'https://llm.example.test/v1',
       proxy: 'http://proxy.example.test:8080',
+      custom_headers: { 'X-Organization-ID': 'org-42' },
     })
     expect(f.payload()).toEqual({
       providerId: 'custom',
       baseUrl: 'https://llm.example.test/v1',
       proxy: 'http://proxy.example.test:8080',
+      customHeaders: { 'X-Organization-ID': 'org-42' },
     })
     expect(f.isDirty.value).toBe(false)
   })
@@ -825,10 +828,12 @@ describe('useSetupProviderForm — connection state machine', () => {
     f.initStoredProfile('custom', {
       base_url: 'https://old.example.test/v1',
       proxy: 'http://old-proxy.example.test:8080',
+      custom_headers: { 'X-Tenant': 'old' },
     })
     f.updateField('api_key', 'draft-secret')
     f.updateField('base_url', 'https://new.example.test/v1')
     f.updateField('proxy', '')
+    f.updateField('custom_headers', { 'X-Tenant': 'new', 'X-Trace': 'enabled' })
     f.updateField('model', 'draft-model')
 
     await f.probeConnection({ draftProfile: true })
@@ -838,6 +843,7 @@ describe('useSetupProviderForm — connection state machine', () => {
       apiKey: 'draft-secret',
       baseUrl: 'https://new.example.test/v1',
       proxy: '',
+      customHeaders: { 'X-Tenant': 'new', 'X-Trace': 'enabled' },
       model: 'draft-model',
       keepCurrentSecret: false,
     }

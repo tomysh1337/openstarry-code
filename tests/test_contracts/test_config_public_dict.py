@@ -128,6 +128,39 @@ def test_secret_keys_are_redacted_not_leaked(tmp_path, monkeypatch: pytest.Monke
     assert secret not in repr(data)
 
 
+def test_provider_metadata_is_exposed_for_primary_and_profiles() -> None:
+    cfg = GatewayConfig(
+        llm={
+            "base_url": "https://primary.example/v1",
+            "display_name": "Primary API",
+            "note": "Main deployment",
+            "website_url": "https://primary.example",
+            "complete_url": "https://primary.example/v1/responses",
+        },
+        llm_profiles={
+            "custom": {
+                "base_url": "https://custom.example/v1",
+                "display_name": "Custom API",
+                "note": "Secondary deployment",
+                "website_url": "https://custom.example",
+                "complete_url": "https://custom.example/v1/chat/completions",
+            }
+        },
+    )
+
+    public = cfg.to_public_dict()
+
+    assert public["llm"]["display_name"] == "Primary API"
+    assert public["llm"]["note"] == "Main deployment"
+    assert public["llm"]["website_url"] == "https://primary.example"
+    assert public["llm"]["complete_url"].endswith("/responses")
+    profile = public["llm_profiles"]["custom"]
+    assert profile["display_name"] == "Custom API"
+    assert profile["note"] == "Secondary deployment"
+    assert profile["website_url"] == "https://custom.example"
+    assert profile["complete_url"].endswith("/chat/completions")
+
+
 def test_privacy_carries_the_effective_network_observability_flag(
     public_config: GatewayConfig,
 ) -> None:

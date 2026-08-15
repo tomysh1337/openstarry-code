@@ -186,9 +186,7 @@ async def _stream_with_heartbeats(
     stream_iter = stream.__aiter__()
     pending: asyncio.Future[StreamEvent] = asyncio.ensure_future(stream_iter.__anext__())
     timeout_budget = (
-        timeout_seconds
-        if timeout_seconds is not None and timeout_seconds > 0
-        else None
+        timeout_seconds if timeout_seconds is not None and timeout_seconds > 0 else None
     )
     deadline = time.monotonic() + timeout_budget if timeout_budget is not None else None
     try:
@@ -264,9 +262,7 @@ async def _stream_with_heartbeats(
                     loop = asyncio.get_running_loop()
                 except RuntimeError:
                     return
-                close_task = loop.create_task(
-                    _close_async_iterator(stream_iter, phase=phase)
-                )
+                close_task = loop.create_task(_close_async_iterator(stream_iter, phase=phase))
                 close_task.add_done_callback(_consume_task_result)
 
             pending.add_done_callback(_close_after_pending)
@@ -384,9 +380,7 @@ class _CandidateResult:
                     "attempt_ok": self.ok,
                     "request_started": self.request_started,
                     "usage_reported": self.usage_reported,
-                    "usage_receipt_missing": (
-                        self.request_started and not self.usage_reported
-                    ),
+                    "usage_receipt_missing": (self.request_started and not self.usage_reported),
                     "stop_reason": self.stop_reason,
                     "error_code": self.error_code,
                     "retryable": self.retryable,
@@ -423,9 +417,7 @@ class _CandidateResult:
                 {
                     "attempt_index": self.attempt_index,
                     "usage_reported": self.usage_reported,
-                    "usage_receipt_missing": (
-                        self.request_started and not self.usage_reported
-                    ),
+                    "usage_receipt_missing": (self.request_started and not self.usage_reported),
                     "error_code": self.error_code,
                     "retryable": self.retryable,
                     "retry_reason": self.retry_reason,
@@ -572,11 +564,7 @@ def _ensemble_call_kind(call_kind: str, phase: str) -> str:
     """Replace a leaf chat kind with one ensemble phase, preserving failover."""
 
     provider_fallback = call_kind.endswith(".provider_fallback")
-    base_kind = (
-        call_kind.removesuffix(".provider_fallback")
-        if provider_fallback
-        else call_kind
-    )
+    base_kind = call_kind.removesuffix(".provider_fallback") if provider_fallback else call_kind
     if base_kind not in {"agent.chat", "subagent.chat"}:
         return call_kind
     base_kind = base_kind.removesuffix(".chat")
@@ -657,30 +645,24 @@ def _member_chat_config(
             and request_budget_binding.context_window_tokens > 0
         ):
             thinking_budget_tokens = (
-                max(0, int(effective.thinking_budget_tokens or 0))
-                if effective.thinking
-                else 0
+                max(0, int(effective.thinking_budget_tokens or 0)) if effective.thinking else 0
             )
-            rebound_cap = ContextBudgetGovernor.from_values(
-                context_window_tokens=request_budget_binding.context_window_tokens,
-                max_output_tokens=effective.max_tokens,
-                thinking_budget_tokens=thinking_budget_tokens,
-                context_overflow_threshold=(
-                    request_budget_binding.context_overflow_threshold
-                ),
-            ).snapshot().provider_request_max_chars
+            rebound_cap = (
+                ContextBudgetGovernor.from_values(
+                    context_window_tokens=request_budget_binding.context_window_tokens,
+                    max_output_tokens=effective.max_tokens,
+                    thinking_budget_tokens=thinking_budget_tokens,
+                    context_overflow_threshold=(request_budget_binding.context_overflow_threshold),
+                )
+                .snapshot()
+                .provider_request_max_chars
+            )
         explicit_cap = max(0, int(request_budget_binding.top_level_explicit_cap or 0))
         if explicit_cap > 0:
-            rebound_cap = (
-                min(explicit_cap, rebound_cap)
-                if rebound_cap > 0
-                else explicit_cap
-            )
+            rebound_cap = min(explicit_cap, rebound_cap) if rebound_cap > 0 else explicit_cap
         if rebound_cap <= 0 and request_budget_binding.inherit_top_level_cap:
             rebound_cap = inherited_cap
-        effective = effective.model_copy(
-            update={"provider_request_max_chars": rebound_cap}
-        )
+        effective = effective.model_copy(update={"provider_request_max_chars": rebound_cap})
     if (
         request_budget_binding is not None
         and int(effective.provider_request_max_chars or 0) > 0
@@ -696,12 +678,8 @@ def _member_chat_config(
                 model=member_cfg.model,
                 inherited_request_max_chars=inherited_cap,
                 effective_request_max_chars=effective.provider_request_max_chars,
-                effective_context_window_tokens=(
-                    request_budget_binding.context_window_tokens
-                ),
-                effective_context_window_source=(
-                    request_budget_binding.context_window_source
-                ),
+                effective_context_window_tokens=(request_budget_binding.context_window_tokens),
+                effective_context_window_source=(request_budget_binding.context_window_source),
             )
     derived = _derive_ensemble_chat_config(effective, role)
     return derived if derived is not None else effective
@@ -797,8 +775,7 @@ def _rollup_cost_source(rows: Sequence[dict[str, Any]]) -> str:
     billed = sum(
         1
         for row in rows
-        if str(row.get("cost_source") or "none")
-        in {"provider_billed", "openrouter_usage"}
+        if str(row.get("cost_source") or "none") in {"provider_billed", "openrouter_usage"}
     )
     if "mixed" in sources:
         return "mixed"
@@ -861,9 +838,7 @@ def _candidate_missing_usage_count(candidates: Sequence[_CandidateResult]) -> in
     for candidate in candidates:
         attempts = candidate.attempts or [candidate]
         missing_count += sum(
-            1
-            for attempt in attempts
-            if attempt.request_started and not attempt.usage_reported
+            1 for attempt in attempts if attempt.request_started and not attempt.usage_reported
         )
     return missing_count
 
@@ -882,9 +857,7 @@ def _uniform_message_limit_proof(
         if candidate.message_limit_proof is None:
             return None
         proofs.append(candidate.message_limit_proof)
-    provider_identities = {
-        (proof.provider_kind, proof.base_host) for proof in proofs
-    }
+    provider_identities = {(proof.provider_kind, proof.base_host) for proof in proofs}
     if len(provider_identities) != 1:
         return None
     # Limits can differ across mirrored endpoints/models.  The strictest exact
@@ -973,9 +946,7 @@ class EnsembleProvider:
         proposer_tools: bool = False,
         quorum_grace_seconds: float = 0.0,
         selection_plan: Mapping[str, Any] | None = None,
-        _member_request_budget_bindings: Mapping[
-            tuple[str, str, str], _MemberRequestBudgetBinding
-        ]
+        _member_request_budget_bindings: Mapping[tuple[str, str, str], _MemberRequestBudgetBinding]
         | None = None,
         _fallback_request_budget_member: EnsembleMemberConfig | None = None,
         _credential_pool_failure_reporter: CredentialPoolFailureReporter | None = None,
@@ -988,12 +959,8 @@ class EnsembleProvider:
         self.fallback_model = str(fallback_model or "")
         self._fallback_api_key = str(fallback_api_key or "")
         self.min_successful_proposers = max(1, int(min_successful_proposers or 1))
-        requested_target = int(
-            target_successful_proposers or self.min_successful_proposers
-        )
-        available_candidates = sum(
-            max(1, int(member.k or 1)) for member in self.proposers
-        )
+        requested_target = int(target_successful_proposers or self.min_successful_proposers)
+        available_candidates = sum(max(1, int(member.k or 1)) for member in self.proposers)
         self.target_successful_proposers = min(
             max(1, available_candidates),
             max(self.min_successful_proposers, requested_target),
@@ -1008,9 +975,7 @@ class EnsembleProvider:
         self.proposer_tools = bool(proposer_tools)
         self.quorum_grace_seconds = max(0.0, float(quorum_grace_seconds or 0.0))
         self.selection_plan = dict(selection_plan or {})
-        self._member_request_budget_bindings = dict(
-            _member_request_budget_bindings or {}
-        )
+        self._member_request_budget_bindings = dict(_member_request_budget_bindings or {})
         self._fallback_request_budget_member = _fallback_request_budget_member
         self._credential_pool_failure_reporter = _credential_pool_failure_reporter
 
@@ -1022,10 +987,7 @@ class EnsembleProvider:
         code: str,
     ) -> None:
         """Classify and report one pool-backed member failure; never raises."""
-        if (
-            not member.credential_pool_provider
-            or self._credential_pool_failure_reporter is None
-        ):
+        if not member.credential_pool_provider or self._credential_pool_failure_reporter is None:
             return
         try:
             kind = classify_provider_error(
@@ -1074,9 +1036,7 @@ class EnsembleProvider:
             updates["tool_choice"] = None
         chat_config = chat_config.model_copy(update=updates)
         if self.proposer_timeout_seconds > 0:
-            chat_config = chat_config.model_copy(
-                update={"timeout": self.proposer_timeout_seconds}
-            )
+            chat_config = chat_config.model_copy(update={"timeout": self.proposer_timeout_seconds})
         return chat_config
 
     def _proposer_static_unavailability(
@@ -1204,9 +1164,7 @@ class EnsembleProvider:
     ) -> tuple[int | None, dict[str, Any] | None, bool]:
         """Return the joint escaped-candidate budget before proposer billing."""
 
-        available_candidate_slots = sum(
-            max(1, int(member.k or 1)) for member in self.proposers
-        )
+        available_candidate_slots = sum(max(1, int(member.k or 1)) for member in self.proposers)
         # Pre-billing admission only needs to prove that the aggregator can
         # receive the configured quorum. Requiring framing for every optional
         # proposer would incorrectly fall back when a valid quorum still fits.
@@ -1244,12 +1202,9 @@ class EnsembleProvider:
             return None, proof, True
         available = max(
             0,
-            int(proof.get("effective_proof_budget") or 0)
-            - int(proof.get("estimated_chars") or 0),
+            int(proof.get("effective_proof_budget") or 0) - int(proof.get("estimated_chars") or 0),
         )
-        effective_token_budget = int(
-            proof.get("effective_proof_token_budget") or 0
-        )
+        effective_token_budget = int(proof.get("effective_proof_token_budget") or 0)
         estimated_tokens = int(proof.get("estimated_tokens") or 0)
         if effective_token_budget > 0:
             available = min(
@@ -1489,8 +1444,7 @@ class EnsembleProvider:
         if self.all_failed_policy == "fallback_single" and self.fallback_provider is not None:
             fallback_config = (
                 config.model_copy(update={"candidate_output_mode": "normal"})
-                if config is not None
-                and config.candidate_output_mode != "normal"
+                if config is not None and config.candidate_output_mode != "normal"
                 else config
             )
             fallback_config = _derive_ensemble_chat_config(
@@ -1607,10 +1561,7 @@ class EnsembleProvider:
                 messages,
                 tools=tools,
                 config=config,
-                reason=(
-                    "ensemble aggregator has no reliable provider-specific "
-                    "request budget"
-                ),
+                reason=("ensemble aggregator has no reliable provider-specific request budget"),
                 code="provider_request_budget_exhausted",
                 candidates=[],
             ):
@@ -1620,23 +1571,18 @@ class EnsembleProvider:
             candidate_bundle_budget,
             candidate_budget_proof,
             exact_admission_available,
-        ) = (
-            self._aggregator_candidate_budget(
-                aggregator_provider,
-                messages,
-                tools=tools,
-                config=aggregator_cfg,
-            )
+        ) = self._aggregator_candidate_budget(
+            aggregator_provider,
+            messages,
+            tools=tools,
+            config=aggregator_cfg,
         )
         if not exact_admission_available:
             async for event in self._fallback_or_error(
                 messages,
                 tools=tools,
                 config=config,
-                reason=(
-                    "ensemble aggregator does not expose exact final-request "
-                    "admission"
-                ),
+                reason=("ensemble aggregator does not expose exact final-request admission"),
                 code="provider_request_budget_exhausted",
                 candidates=[],
             ):
@@ -1654,8 +1600,7 @@ class EnsembleProvider:
                 tools=tools,
                 config=config,
                 reason=(
-                    "ensemble aggregator request budget is exhausted before "
-                    "candidate generation"
+                    "ensemble aggregator request budget is exhausted before candidate generation"
                 ),
                 code="provider_request_budget_exhausted",
                 candidates=[],
@@ -1693,10 +1638,7 @@ class EnsembleProvider:
                 except TimeoutError:
                     yield ProviderHeartbeatEvent(
                         phase="ensemble_proposers_wait",
-                        message=(
-                            "Still waiting for "
-                            f"{len(self.proposers)} proposer model(s)"
-                        ),
+                        message=(f"Still waiting for {len(self.proposers)} proposer model(s)"),
                     )
                     continue
                 if progress_event is None:
@@ -1737,10 +1679,7 @@ class EnsembleProvider:
             config=aggregator_cfg,
             max_budget_chars=candidate_bundle_budget,
         )
-        if (
-            fitted_candidates is None
-            and len(ordered_successful) > self.min_successful_proposers
-        ):
+        if fitted_candidates is None and len(ordered_successful) > self.min_successful_proposers:
             # Optional successful drafts must not make a previously admitted
             # quorum impossible to aggregate. Keep a deterministic quorum and
             # re-run the final proof before falling back.
@@ -1757,18 +1696,13 @@ class EnsembleProvider:
                 messages,
                 tools=tools,
                 config=config,
-                reason=(
-                    "ensemble aggregator request budget is exhausted after "
-                    "candidate shaping"
-                ),
+                reason=("ensemble aggregator request budget is exhausted after candidate shaping"),
                 code="provider_request_budget_exhausted",
                 candidates=candidates,
             ):
                 yield event
             return
-        selected_candidates, aggregator_messages, _actual_budget_proof = (
-            fitted_candidates
-        )
+        selected_candidates, aggregator_messages, _actual_budget_proof = fitted_candidates
         trace = self._trace_payload(
             candidates,
             successful_count=len(successful),
@@ -1892,8 +1826,7 @@ class EnsembleProvider:
             if pending:
                 controlled_code = cancel_code or "quorum_cancelled"
                 controlled_message = cancel_message or (
-                    "proposer cancelled after "
-                    f"{self.quorum_grace_seconds:g}s ensemble quorum grace"
+                    f"proposer cancelled after {self.quorum_grace_seconds:g}s ensemble quorum grace"
                 )
                 for task in pending:
                     setattr(task, "_opensquilla_ensemble_cancel_code", controlled_code)
@@ -2033,10 +1966,7 @@ class EnsembleProvider:
                     )
                     controlled_cancel = True
                 except TimeoutError:
-                    attempt.error = (
-                        "proposer timed out after "
-                        f"{self.proposer_timeout_seconds:g}s"
-                    )
+                    attempt.error = f"proposer timed out after {self.proposer_timeout_seconds:g}s"
                     attempt.error_code = "timeout"
                 except Exception as exc:  # noqa: BLE001 - diagnostic candidate data
                     attempt.error = redact_upstream_error_text(
@@ -2049,9 +1979,7 @@ class EnsembleProvider:
                         api_key=cfg.api_key,
                     )
                 finally:
-                    attempt.elapsed_ms = int(
-                        (time.monotonic() - attempt_started) * 1000
-                    )
+                    attempt.elapsed_ms = int((time.monotonic() - attempt_started) * 1000)
 
                 if not retry_enabled:
                     return attempt
@@ -2079,9 +2007,7 @@ class EnsembleProvider:
                     next_attempt_index=attempt_index + 1,
                     retry_reason=retry_reason,
                 )
-                await asyncio.sleep(
-                    _proposer_retry_backoff_seconds(retry_number)
-                )
+                await asyncio.sleep(_proposer_retry_backoff_seconds(retry_number))
         except asyncio.CancelledError:
             current_task = asyncio.current_task()
             code = str(getattr(current_task, "_opensquilla_ensemble_cancel_code", "") or "")
@@ -2140,9 +2066,7 @@ class EnsembleProvider:
             return ""
         if not result.text.strip():
             if str(result.stop_reason or "").strip().lower() == "length":
-                result.error = (
-                    "proposer exhausted its output budget without visible text"
-                )
+                result.error = "proposer exhausted its output budget without visible text"
                 result.error_code = "candidate_length_no_visible_text"
                 return "length_no_visible_text"
             result.error = "proposer returned no visible candidate text"
@@ -2167,34 +2091,20 @@ class EnsembleProvider:
         candidate.execution = dict(attempt.execution)
         candidate.model = attempt.model
         candidate.billing_receipt = attempt.billing_receipt
-        candidate.request_started = any(
-            item.request_started for item in candidate.attempts
-        )
-        candidate.usage_reported = any(
-            item.usage_reported for item in candidate.attempts
-        )
+        candidate.request_started = any(item.request_started for item in candidate.attempts)
+        candidate.usage_reported = any(item.usage_reported for item in candidate.attempts)
         candidate.input_tokens = sum(item.input_tokens for item in candidate.attempts)
         candidate.output_tokens = sum(item.output_tokens for item in candidate.attempts)
-        candidate.reasoning_tokens = sum(
-            item.reasoning_tokens for item in candidate.attempts
-        )
-        candidate.cached_tokens = sum(
-            item.cached_tokens for item in candidate.attempts
-        )
-        candidate.cache_write_tokens = sum(
-            item.cache_write_tokens for item in candidate.attempts
-        )
-        candidate.billed_cost = sum(
-            item.billed_cost for item in candidate.attempts
-        )
+        candidate.reasoning_tokens = sum(item.reasoning_tokens for item in candidate.attempts)
+        candidate.cached_tokens = sum(item.cached_tokens for item in candidate.attempts)
+        candidate.cache_write_tokens = sum(item.cache_write_tokens for item in candidate.attempts)
+        candidate.billed_cost = sum(item.billed_cost for item in candidate.attempts)
         started_rows = [
             item.usage_row(role="proposer", profile="")
             for item in candidate.attempts
             if item.request_started
         ]
-        candidate.cost_source = (
-            _rollup_cost_source(started_rows) if started_rows else "none"
-        )
+        candidate.cost_source = _rollup_cost_source(started_rows) if started_rows else "none"
 
     async def _collect_candidate_inner(
         self,
@@ -2256,9 +2166,7 @@ class EnsembleProvider:
                 event,
                 (ToolUseStartEvent, ToolUseDeltaEvent, ToolUseEndEvent),
             ):
-                result.error = (
-                    "proposer provider violated the inert candidate-output contract"
-                )
+                result.error = "proposer provider violated the inert candidate-output contract"
                 result.error_code = "candidate_mode_contract_violation"
                 break
             elif isinstance(event, DoneEvent):
@@ -2375,9 +2283,7 @@ class EnsembleProvider:
             "quorum_grace_seconds": self.quorum_grace_seconds,
             "content_max_chars": TRACE_CONTENT_MAX_CHARS,
             "final_request_role": final_request_role,
-            "llm_request_count": sum(
-                candidate.request_count for candidate in candidates
-            ),
+            "llm_request_count": sum(candidate.request_count for candidate in candidates),
             "selected_candidate_count": len(selected),
             "selected_candidate_indexes": [candidate.index for candidate in selected],
             "candidates": [
@@ -2401,9 +2307,7 @@ class EnsembleProvider:
                 chat_config=final_request_config,
                 tools=final_request_tools,
                 timeout_seconds=final_request_timeout_seconds,
-                request_budget_binding=self._member_request_budget_binding(
-                    final_request_member
-                ),
+                request_budget_binding=self._member_request_budget_binding(final_request_member),
             )
         elif final_request_config is not None or final_request_tools is not None:
             final_request["execution"] = _request_execution_trace(
@@ -2544,9 +2448,7 @@ class EnsembleProvider:
             return replace(
                 event,
                 model_usage_breakdown=[*prior_rows, *retry_rows],
-                usage_missing_count=(
-                    prior_missing_count + retry_missing_count + 1
-                ),
+                usage_missing_count=(prior_missing_count + retry_missing_count + 1),
             )
 
         yield aggregator_progress("aggregator_start")
@@ -2560,9 +2462,7 @@ class EnsembleProvider:
                 _mark_final_request_started(trace)
                 stream = provider.chat(messages, tools=tools, config=config)
                 timeout_seconds = (
-                    self.aggregator_timeout_seconds
-                    if self.aggregator_timeout_seconds > 0
-                    else None
+                    self.aggregator_timeout_seconds if self.aggregator_timeout_seconds > 0 else None
                 )
                 heartbeat_stream = _stream_with_heartbeats(
                     stream,
@@ -2576,9 +2476,7 @@ class EnsembleProvider:
                 )
                 async for event in heartbeat_stream:
                     if isinstance(event, DoneEvent):
-                        aggregator_elapsed_ms = int(
-                            (time.monotonic() - aggregator_started) * 1000
-                        )
+                        aggregator_elapsed_ms = int((time.monotonic() - aggregator_started) * 1000)
                         if str(event.stop_reason or "").strip().lower() == "error":
                             _attach_final_request_output(
                                 trace,
@@ -2586,8 +2484,7 @@ class EnsembleProvider:
                                 output_text="".join(final_text_parts),
                             )
                             can_retry = (
-                                not content_streamed
-                                and attempt < _ENSEMBLE_AGGREGATOR_MAX_RETRIES
+                                not content_streamed and attempt < _ENSEMBLE_AGGREGATOR_MAX_RETRIES
                             )
                             failed_row = aggregator_usage_row(
                                 event,
@@ -2596,15 +2493,10 @@ class EnsembleProvider:
                                 attempt_ok=False,
                                 retryable=can_retry,
                                 error_code="aggregator_error_finish_reason",
-                                retry_reason=(
-                                    "error_finish_reason" if can_retry else ""
-                                ),
+                                retry_reason=("error_finish_reason" if can_retry else ""),
                             )
                             error = ErrorEvent(
-                                message=(
-                                    "ensemble aggregator terminated with error "
-                                    "finish reason"
-                                ),
+                                message=("ensemble aggregator terminated with error finish reason"),
                                 code="ensemble_aggregator_error_finish_reason",
                             )
                             if can_retry:
@@ -2625,9 +2517,7 @@ class EnsembleProvider:
                             yield replace(
                                 error,
                                 model_usage_breakdown=terminal_rows,
-                                usage_missing_count=(
-                                    prior_missing_count + retry_missing_count
-                                ),
+                                usage_missing_count=(prior_missing_count + retry_missing_count),
                             )
                             return
                         done_event = ensemble_done(
@@ -2639,8 +2529,7 @@ class EnsembleProvider:
                             (
                                 row
                                 for row in reversed(usage_rows)
-                                if isinstance(row, Mapping)
-                                and row.get("role") == "aggregator"
+                                if isinstance(row, Mapping) and row.get("role") == "aggregator"
                             ),
                             {},
                         )
@@ -2765,10 +2654,7 @@ class EnsembleProvider:
                     message="ensemble aggregator stream ended before DoneEvent",
                     code="ensemble_aggregator_incomplete",
                 )
-                if (
-                    not content_streamed
-                    and attempt < _ENSEMBLE_AGGREGATOR_MAX_RETRIES
-                ):
+                if not content_streamed and attempt < _ENSEMBLE_AGGREGATOR_MAX_RETRIES:
                     retry_error = error
                 else:
                     yield aggregator_progress("aggregator_finish", error=error.message)
@@ -2866,16 +2752,13 @@ class EnsembleProvider:
             fallback_config = _member_chat_config(
                 config,
                 fallback_member,
-                request_budget_binding=self._member_request_budget_binding(
-                    fallback_member
-                ),
+                request_budget_binding=self._member_request_budget_binding(fallback_member),
                 role="fallback_single",
             ).model_copy(update={"candidate_output_mode": "normal"})
         else:
             fallback_config = (
                 config.model_copy(update={"candidate_output_mode": "normal"})
-                if config is not None
-                and config.candidate_output_mode != "normal"
+                if config is not None and config.candidate_output_mode != "normal"
                 else config
             )
             fallback_config = _derive_ensemble_chat_config(
@@ -2901,9 +2784,7 @@ class EnsembleProvider:
             final_request_timeout_seconds=fallback_timeout_seconds,
         )
         trace["fallback_code"] = (
-            "provider_request_budget_exhausted"
-            if request_budget_error is not None
-            else code
+            "provider_request_budget_exhausted" if request_budget_error is not None else code
         )
         if prior_trace is not None:
             trace["llm_request_count"] = max(
@@ -3064,10 +2945,7 @@ def _message_content_text(content: Any) -> str:
                 if item_type == "text":
                     parts.append(str(item.get("text") or ""))
                 elif item_type == "tool_use":
-                    parts.append(
-                        f"[tool_use:{item.get('name') or ''} "
-                        f"{item.get('input') or {}}]"
-                    )
+                    parts.append(f"[tool_use:{item.get('name') or ''} {item.get('input') or {}}]")
                 elif item_type == "tool_result":
                     parts.append(f"[tool_result:{item.get('content') or ''}]")
                 elif item_type == "image":
@@ -3776,9 +3654,7 @@ def _candidate_pool(
                 continue
             add(
                 _dynamic_candidate(
-                    provider=str(
-                        tier_cfg.get("provider") or inherited_provider_config.provider
-                    ),
+                    provider=str(tier_cfg.get("provider") or inherited_provider_config.provider),
                     model=model,
                     tier_hint=str(tier_name),
                     thinking=_coerce_thinking_level(tier_cfg.get("thinking_level")),
@@ -3968,12 +3844,10 @@ def _score_trace(row: Mapping[str, Any]) -> dict[str, Any]:
         "duplicate_count": int(row.get("duplicate_count") or 0),
         "duplicate_penalty": round(float(row.get("duplicate_penalty") or 0.0), 5),
         "components": {
-            key: round(float(value), 5)
-            for key, value in dict(row.get("components") or {}).items()
+            key: round(float(value), 5) for key, value in dict(row.get("components") or {}).items()
         },
         "weights": {
-            key: round(float(value), 5)
-            for key, value in dict(row.get("weights") or {}).items()
+            key: round(float(value), 5) for key, value in dict(row.get("weights") or {}).items()
         },
     }
 
@@ -4235,9 +4109,7 @@ def _custom_b5_candidates(config: Any) -> list[_CustomB5Candidate]:
             if identity in seen:
                 continue
             seen.add(identity)
-        thinking_level = str(
-            getattr(entry, "thinking_level", "") or ""
-        ).strip() or None
+        thinking_level = str(getattr(entry, "thinking_level", "") or "").strip() or None
         rows.append(
             _CustomB5Candidate(
                 provider=provider,
@@ -4346,7 +4218,9 @@ def custom_b5_lineup_ready(
         model=str(getattr(inherited, "model", "") or ""),
         api_key=str(getattr(inherited, "api_key", "") or ""),
         base_url=str(getattr(inherited, "base_url", "") or ""),
+        complete_url=str(getattr(inherited, "complete_url", "") or ""),
         proxy=str(getattr(inherited, "proxy", "") or ""),
+        request_headers=dict(getattr(inherited, "request_headers", {}) or {}),
     )
     rows = _custom_b5_candidates(config)
     proposer_rows = [row for row in rows if row.role != "aggregator"]
@@ -4442,11 +4316,11 @@ def static_b5_credential_available(
             model=str(getattr(inherited_provider_config, "model", "") or ""),
             api_key=str(getattr(inherited_provider_config, "api_key", "") or ""),
             base_url=str(getattr(inherited_provider_config, "base_url", "") or ""),
+            complete_url=str(getattr(inherited_provider_config, "complete_url", "") or ""),
             org_id=str(getattr(inherited_provider_config, "org_id", "") or ""),
             proxy=str(getattr(inherited_provider_config, "proxy", "") or ""),
-            provider_routing=dict(
-                getattr(inherited_provider_config, "provider_routing", {}) or {}
-            ),
+            request_headers=dict(getattr(inherited_provider_config, "request_headers", {}) or {}),
+            provider_routing=dict(getattr(inherited_provider_config, "provider_routing", {}) or {}),
         )
     member_models = (*profile.proposer_models, profile.aggregator_model)
     return all(
@@ -4511,9 +4385,9 @@ def ensemble_runtime_status(config: Any) -> dict[str, Any]:
         ready, reason = custom_b5_lineup_ready(config)
         providers = {row.provider for row in rows if row.provider}
         if not aggregators:
-            inherited_provider = str(
-                getattr(getattr(config, "llm", None), "provider", "") or ""
-            ).strip().lower()
+            inherited_provider = (
+                str(getattr(getattr(config, "llm", None), "provider", "") or "").strip().lower()
+            )
             if inherited_provider:
                 providers.add(inherited_provider)
         return {
@@ -4535,9 +4409,9 @@ def ensemble_runtime_status(config: Any) -> dict[str, Any]:
             if isinstance(tier, dict)
         }
         providers.discard("")
-        inherited_provider = str(
-            getattr(getattr(config, "llm", None), "provider", "") or ""
-        ).strip().lower()
+        inherited_provider = (
+            str(getattr(getattr(config, "llm", None), "provider", "") or "").strip().lower()
+        )
         if inherited_provider:
             providers.add(inherited_provider)
         return {
@@ -4621,15 +4495,11 @@ def _runtime_member_request_budget_bindings(
     llm_cfg = getattr(config, "llm", None)
     top_level_provider = str(getattr(llm_cfg, "provider", "") or "").strip().lower()
     try:
-        explicit_cap = int(
-            getattr(llm_cfg, "provider_request_proof_max_chars", 0) or 0
-        )
+        explicit_cap = int(getattr(llm_cfg, "provider_request_proof_max_chars", 0) or 0)
     except (TypeError, ValueError):
         explicit_cap = 0
     try:
-        global_context_override = int(
-            getattr(llm_cfg, "context_window_tokens", 0) or 0
-        )
+        global_context_override = int(getattr(llm_cfg, "context_window_tokens", 0) or 0)
     except (TypeError, ValueError):
         global_context_override = 0
 
@@ -4640,13 +4510,9 @@ def _runtime_member_request_budget_bindings(
             continue
         member_cfg = member.provider_config
         member_provider = str(member_cfg.provider or "").strip().lower()
-        same_top_level_provider = bool(
-            top_level_provider and member_provider == top_level_provider
-        )
+        same_top_level_provider = bool(top_level_provider and member_provider == top_level_provider)
         member_explicit_cap = explicit_cap if same_top_level_provider else 0
-        member_global_context_override = (
-            global_context_override if same_top_level_provider else 0
-        )
+        member_global_context_override = global_context_override if same_top_level_provider else 0
         context_window: int | None = None
         context_source = "error" if model_catalog is None else "default"
         if model_catalog is None and member_global_context_override > 0:
@@ -4746,10 +4612,7 @@ def build_ensemble_provider_from_config(
     is_static_b5 = static_profile is not None or is_custom_b5
     configured_min_success = int(getattr(ensemble_cfg, "min_successful_proposers", 1) or 1)
     requested_min_success = configured_min_success
-    if (
-        is_static_b5
-        and configured_min_success == _LEGACY_ENSEMBLE_MIN_SUCCESSFUL_PROPOSERS
-    ):
+    if is_static_b5 and configured_min_success == _LEGACY_ENSEMBLE_MIN_SUCCESSFUL_PROPOSERS:
         requested_min_success = (
             # Custom lineups size freely (2–6): quorum defaults to N-1, the
             # same "all but one" shape the 3-of-4 static default encodes.
@@ -4798,10 +4661,7 @@ def build_ensemble_provider_from_config(
         getattr(ensemble_cfg, "shuffle_candidates", _LEGACY_ENSEMBLE_SHUFFLE_CANDIDATES)
     )
     shuffle_candidates = configured_shuffle_candidates
-    if (
-        is_static_b5
-        and configured_shuffle_candidates == _LEGACY_ENSEMBLE_SHUFFLE_CANDIDATES
-    ):
+    if is_static_b5 and configured_shuffle_candidates == _LEGACY_ENSEMBLE_SHUFFLE_CANDIDATES:
         shuffle_candidates = _STATIC_B5_DEFAULT_SHUFFLE_CANDIDATES
     quorum_grace_seconds = _STATIC_B5_QUORUM_GRACE_SECONDS if is_static_b5 else 0.0
     selection_plan["configured_min_successful_proposers"] = configured_min_success
@@ -4814,12 +4674,8 @@ def build_ensemble_provider_from_config(
     selection_plan["effective_shuffle_candidates"] = shuffle_candidates
     selection_plan["quorum_grace_seconds"] = quorum_grace_seconds
     if configured_target_success is not None:
-        selection_plan["configured_target_successful_proposers"] = int(
-            configured_target_success
-        )
-        selection_plan["effective_target_successful_proposers"] = (
-            target_successful_proposers
-        )
+        selection_plan["configured_target_successful_proposers"] = int(configured_target_success)
+        selection_plan["effective_target_successful_proposers"] = target_successful_proposers
     if proposer_max_retries:
         selection_plan["proposer_max_retries"] = proposer_max_retries
     inherited_provider = str(inherited_provider_config.provider or "").strip().lower()

@@ -223,6 +223,7 @@ def _model_service_resolution(
                     model=model,
                     api_key=_text(getattr(resolved, "api_key", "")),
                     base_url=_text(getattr(resolved, "base_url", "")),
+                    complete_url=_text(getattr(resolved, "complete_url", "")),
                     proxy=_text(getattr(resolved, "proxy", "")),
                     provider_routing=dict(
                         getattr(resolved, "provider_routing", {}) or {}
@@ -234,6 +235,7 @@ def _model_service_resolution(
                     model=model,
                     api_key=_text(getattr(active, "api_key", "")),
                     base_url=_text(getattr(active, "base_url", "")),
+                    complete_url=_text(getattr(active, "complete_url", "")),
                     proxy=_text(getattr(active, "proxy", "")),
                 )
         except (KeyError, TypeError, ValueError):
@@ -242,6 +244,7 @@ def _model_service_resolution(
                 model=model,
                 api_key=_text(getattr(active, "api_key", "")),
                 base_url=_text(getattr(active, "base_url", "")),
+                complete_url=_text(getattr(active, "complete_url", "")),
                 proxy=_text(getattr(active, "proxy", "")),
             )
 

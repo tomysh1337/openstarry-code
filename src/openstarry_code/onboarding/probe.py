@@ -110,6 +110,7 @@ async def probe_llm_provider(
     api_key_env: str = "",
     base_url: str = "",
     proxy: str = "",
+    request_headers: Mapping[str, str] | None = None,
     allow_default_api_key_env: bool = True,
     timeout: float = _PROBE_TIMEOUT_SECONDS,
     chat_stream_factory: Callable[
@@ -149,14 +150,15 @@ async def probe_llm_provider(
             message=f"No API key available (checked {checked}).",
         )
 
+    build_kwargs: dict[str, Any] = {
+        "api_key": resolved_key,
+        "base_url": base_url.strip(),
+        "proxy": proxy.strip(),
+    }
+    if request_headers:
+        build_kwargs["request_headers"] = request_headers
     try:
-        provider = build_provider(
-            provider_id,
-            model,
-            api_key=resolved_key,
-            base_url=base_url.strip(),
-            proxy=proxy.strip(),
-        )
+        provider = build_provider(provider_id, model, **build_kwargs)
     except ProviderBuildError as exc:
         return ProviderProbeResult(
             ok=False,
@@ -376,18 +378,14 @@ def _discover_model_row(info: ModelInfo, provider_id: str) -> dict[str, object]:
         context_window = info.context_window
     else:
         context_window = entry.context_window
-    max_output = (
-        info.max_output_tokens if info.max_output_tokens > 0 else entry.max_output_tokens
-    )
+    max_output = info.max_output_tokens if info.max_output_tokens > 0 else entry.max_output_tokens
     tools = _metadata_capability(metadata, "tools")
     reasoning = _metadata_capability(metadata, "reasoning")
     vision = _metadata_capability(metadata, "vision")
     safe_tools = info.supports_tools or entry.supports_tools
     tools_enabled = False if tools is False else safe_tools
     safe_reasoning = info.supports_reasoning or entry.supports_reasoning
-    reasoning_enabled = (
-        False if reasoning is False else safe_reasoning
-    )
+    reasoning_enabled = False if reasoning is False else safe_reasoning
     safe_vision = info.supports_vision or entry.supports_vision
     vision_enabled = False if vision is False else safe_vision
     capabilities: list[str] = ["chat"]
@@ -454,6 +452,7 @@ async def discover_provider_models(
     api_key_env: str = "",
     base_url: str = "",
     proxy: str = "",
+    request_headers: Mapping[str, str] | None = None,
     allow_default_api_key_env: bool = True,
 ) -> ProviderModelsDiscoverResult:
     """List a candidate provider's live models without persisting anything.
@@ -488,13 +487,18 @@ async def discover_provider_models(
             detail=f"No API key available (checked {checked}).",
         )
 
+    build_kwargs: dict[str, Any] = {
+        "api_key": resolved_key,
+        "base_url": base_url.strip(),
+        "proxy": proxy.strip(),
+    }
+    if request_headers:
+        build_kwargs["request_headers"] = request_headers
     try:
         provider = build_provider(
             provider_id,
             "",  # listing models needs no bound model id
-            api_key=resolved_key,
-            base_url=base_url.strip(),
-            proxy=proxy.strip(),
+            **build_kwargs,
         )
     except ProviderBuildError as exc:
         return ProviderModelsDiscoverResult(
@@ -551,6 +555,7 @@ async def discover_selectable_provider_models(
     api_key_env: str = "",
     base_url: str = "",
     proxy: str = "",
+    request_headers: Mapping[str, str] | None = None,
     allow_default_api_key_env: bool = True,
     force_refresh: bool = False,
     persist_catalog: bool = False,
@@ -633,9 +638,7 @@ async def discover_selectable_provider_models(
             config=catalog_config,
         )
 
-    discovery_provider_id = (
-        spec.selectable_model_discovery_provider_id or provider_id
-    )
+    discovery_provider_id = spec.selectable_model_discovery_provider_id or provider_id
     discover_kwargs: dict[str, Any] = {
         "provider_id": discovery_provider_id,
         "api_key": api_key,
@@ -643,13 +646,11 @@ async def discover_selectable_provider_models(
         # A sibling discovery provider owns a different protocol path. Its
         # registry default is the only trusted listing endpoint; never pass
         # the configured chat base path across protocols.
-        "base_url": (
-            base_url.strip()
-            if discovery_provider_id == provider_id
-            else ""
-        ),
+        "base_url": (base_url.strip() if discovery_provider_id == provider_id else ""),
         "proxy": proxy,
     }
+    if request_headers:
+        discover_kwargs["request_headers"] = request_headers
     if not allow_default_api_key_env:
         discover_kwargs["allow_default_api_key_env"] = False
     result = await discover_provider_models(**discover_kwargs)

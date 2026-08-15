@@ -34,6 +34,7 @@ class ProviderConfig:
     model: str
     api_key: str = field(default="", repr=False)
     base_url: str = ""
+    complete_url: str = ""
     org_id: str = ""
     proxy: str = ""  # explicit HTTP proxy URL
     provider_routing: dict[str, str] = field(default_factory=dict)
@@ -41,6 +42,7 @@ class ProviderConfig:
     # state minted elsewhere (thinking blocks / thought signatures) must not
     # be replayed to a provider that did not produce it.
     replay_provider_state: bool = True
+    request_headers: dict[str, str] = field(default_factory=dict, repr=False)
 
 
 @dataclass
@@ -110,10 +112,7 @@ class ProviderNotConfiguredError(ProviderBuildError):
 
 
 def _unsupported_runtime_message(provider: str) -> str:
-    return (
-        f"Provider '{provider}' is registered but runtime support "
-        "is not enabled in this wave"
-    )
+    return f"Provider '{provider}' is registered but runtime support is not enabled in this wave"
 
 
 def _missing_base_url_message(provider: str) -> str:
@@ -136,12 +135,23 @@ def _exception_status_code(exc: Exception) -> int | None:
 
 
 _ProviderConfigIdentity = tuple[
-    str, str, str, str, str, str, bool, tuple[tuple[str, str], ...]
+    str,
+    str,
+    str,
+    str,
+    str,
+    str,
+    bool,
+    tuple[tuple[str, str], ...],
+    tuple[tuple[str, str], ...],
 ]
 
 
 def _provider_config_identity(cfg: ProviderConfig) -> _ProviderConfigIdentity:
     provider_routing = tuple(sorted((str(k), str(v)) for k, v in cfg.provider_routing.items()))
+    request_headers = tuple(
+        sorted((str(k).lower(), str(v)) for k, v in cfg.request_headers.items())
+    )
     return (
         cfg.provider,
         cfg.model,
@@ -151,6 +161,7 @@ def _provider_config_identity(cfg: ProviderConfig) -> _ProviderConfigIdentity:
         cfg.proxy,
         cfg.replay_provider_state,
         provider_routing,
+        request_headers,
     )
 
 
@@ -159,6 +170,7 @@ def _without_provider_state_replay(cfg: ProviderConfig) -> ProviderConfig:
 
     return replace(
         cfg,
+        request_headers=dict(cfg.request_headers),
         provider_routing=dict(cfg.provider_routing),
         replay_provider_state=False,
     )
@@ -216,8 +228,10 @@ class ProviderBuildContext:
     model: str
     api_key: str = ""
     base_url: str = ""  # resolved: config override or the spec default
+    complete_url: str = ""
     org_id: str = ""
     proxy: str = ""
+    request_headers: Mapping[str, str] = field(default_factory=dict, repr=False)
     provider_routing: Mapping[str, str] = field(default_factory=dict)
     replay_provider_state: bool = True
     # OllamaProvider knob; never populated today because ProviderConfig has
@@ -237,8 +251,10 @@ def _build_context(cfg: ProviderConfig, spec: ProviderSpec) -> ProviderBuildCont
         model=cfg.model,
         api_key=cfg.api_key,
         base_url=cfg.base_url or spec.default_base_url,
+        complete_url=cfg.complete_url,
         org_id=cfg.org_id,
         proxy=cfg.proxy,
+        request_headers=dict(cfg.request_headers),
         provider_routing=dict(cfg.provider_routing),
         replay_provider_state=cfg.replay_provider_state,
         auth_header_style=spec.auth_header_style,
@@ -254,6 +270,8 @@ def _build_anthropic(ctx: ProviderBuildContext) -> LLMProvider:
         "replay_provider_state": ctx.replay_provider_state,
         "auth_header_style": ctx.auth_header_style,
         "provider_id": ctx.provider_id,
+        "request_headers": ctx.request_headers,
+        "complete_url": ctx.complete_url or None,
         # Native Anthropic keeps its built-in SKU list. Compatibility
         # endpoints use an exact registry list when present, otherwise the
         # configured model only — never an unrelated Claude catalog.
@@ -280,6 +298,8 @@ def _build_openai_compat(ctx: ProviderBuildContext) -> LLMProvider:
         "compat": ctx.compat,
         "replay_provider_state": ctx.replay_provider_state,
         "provider_id": ctx.provider_id,
+        "request_headers": ctx.request_headers,
+        "complete_url": ctx.complete_url or None,
     }
     if ctx.base_url:
         kwargs["base_url"] = ctx.base_url
@@ -302,6 +322,8 @@ def _build_openai_responses(ctx: ProviderBuildContext) -> LLMProvider:
         "api_key": ctx.api_key,
         "model": ctx.model,
         "provider_id": ctx.provider_id,
+        "request_headers": ctx.request_headers,
+        "complete_url": ctx.complete_url or None,
     }
     if ctx.base_url:
         kwargs["base_url"] = ctx.base_url
@@ -485,16 +507,16 @@ class ModelSelector:
                 model=model,
                 api_key=self._chain[0].api_key,
                 base_url=self._chain[0].base_url,
+                complete_url=self._chain[0].complete_url,
                 org_id=self._chain[0].org_id,
                 proxy=self._chain[0].proxy,
+                request_headers=dict(self._chain[0].request_headers),
                 provider_routing=self._chain[0].provider_routing,
                 replay_provider_state=self._chain[0].replay_provider_state,
             )
             fallback_chain = [original_primary, *self._chain[1:]]
             deduped_fallbacks: list[ProviderConfig] = []
-            seen: set[_ProviderConfigIdentity] = {
-                _provider_config_identity(overridden_primary)
-            }
+            seen: set[_ProviderConfigIdentity] = {_provider_config_identity(overridden_primary)}
             for cfg in fallback_chain:
                 identity = _provider_config_identity(cfg)
                 if identity in seen:
@@ -517,6 +539,7 @@ class ModelSelector:
         restored = replace(
             original,
             model=model or original.model,
+            request_headers=dict(original.request_headers),
             provider_routing=dict(original.provider_routing),
         )
         candidates = [*self._config.fallbacks, *self._chain]
@@ -537,9 +560,7 @@ class ModelSelector:
         self._provider_state_replay_disabled = True
         self._config = SelectorConfig(
             primary=_without_provider_state_replay(self._config.primary),
-            fallbacks=[
-                _without_provider_state_replay(cfg) for cfg in self._config.fallbacks
-            ],
+            fallbacks=[_without_provider_state_replay(cfg) for cfg in self._config.fallbacks],
         )
         self._chain = [_without_provider_state_replay(cfg) for cfg in self._chain]
 
@@ -562,9 +583,7 @@ class ModelSelector:
 
         current = self._chain[0]
         existing_tail = list(self._chain[1:])
-        existing_by_provider_model = {
-            (cfg.provider, cfg.model): cfg for cfg in existing_tail
-        }
+        existing_by_provider_model = {(cfg.provider, cfg.model): cfg for cfg in existing_tail}
 
         router_fallbacks: list[ProviderConfig] = []
         for entry in fallback_chain:
@@ -588,17 +607,17 @@ class ModelSelector:
                     model=candidate_model,
                     api_key=current.api_key,
                     base_url=current.base_url,
+                    complete_url=current.complete_url,
                     org_id=current.org_id,
                     proxy=current.proxy,
+                    request_headers=dict(current.request_headers),
                     provider_routing=current.provider_routing,
                     replay_provider_state=current.replay_provider_state,
                 )
             )
 
         deduped_tail: list[ProviderConfig] = []
-        seen: set[_ProviderConfigIdentity] = {
-            _provider_config_identity(current)
-        }
+        seen: set[_ProviderConfigIdentity] = {_provider_config_identity(current)}
         for cfg in [*router_fallbacks, *existing_tail]:
             identity = _provider_config_identity(cfg)
             if identity in seen:
@@ -632,10 +651,15 @@ class ModelSelector:
         config_copy = SelectorConfig(
             primary=replace(
                 self._config.primary,
+                request_headers=dict(self._config.primary.request_headers),
                 provider_routing=dict(self._config.primary.provider_routing),
             ),
             fallbacks=[
-                replace(cfg, provider_routing=dict(cfg.provider_routing))
+                replace(
+                    cfg,
+                    request_headers=dict(cfg.request_headers),
+                    provider_routing=dict(cfg.provider_routing),
+                )
                 for cfg in self._config.fallbacks
             ],
         )
@@ -650,8 +674,7 @@ class ModelSelector:
     async def list_models_detailed(
         self,
         *,
-        snapshot_resolver: Callable[[ProviderConfig], Sequence[ModelInfo] | None]
-        | None = None,
+        snapshot_resolver: Callable[[ProviderConfig], Sequence[ModelInfo] | None] | None = None,
     ) -> ModelListResult:
         """Aggregate models across the chain, keeping per-provider failures.
 
@@ -707,6 +730,7 @@ def build_provider(
     base_url: str = "",
     org_id: str = "",
     proxy: str = "",
+    request_headers: Mapping[str, str] | None = None,
 ) -> LLMProvider:
     """Convenience factory: build a single provider directly."""
     return build_provider_from_config(
@@ -717,6 +741,7 @@ def build_provider(
             base_url=base_url,
             org_id=org_id,
             proxy=proxy,
+            request_headers=dict(request_headers or {}),
         )
     )
 
@@ -732,6 +757,7 @@ def build_provider_from_config(config: ProviderConfig) -> LLMProvider:
 
     isolated = replace(
         config,
+        request_headers=dict(config.request_headers),
         provider_routing=dict(config.provider_routing),
     )
     return _build_provider(isolated)

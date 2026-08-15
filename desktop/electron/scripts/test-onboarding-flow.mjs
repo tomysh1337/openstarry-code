@@ -92,14 +92,14 @@ try {
   assert.equal(await page.locator('#apiKeyRequiredMarker').isVisible(), true)
   assert.equal(
     await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()),
-    '#BA4D0F',
+    '#12617D',
     'onboarding should use the in-app light-theme accent',
   )
   await page.mouse.move(0, 0)
   assert.equal(
     await page.locator('#finish').evaluate((button) => getComputedStyle(button).backgroundColor),
-    'rgb(52, 58, 64)',
-    'the single primary action should use the softer graphite treatment',
+    'rgb(18, 97, 125)',
+    'the single primary action should use the starfield blue treatment',
   )
   assert.equal(await page.locator('#finish').innerText(), '启动 OpenStarry Code')
   assert.equal(await page.locator('.next-button, .back-button').count(), 0, 'single-page onboarding must not render next or back actions')
@@ -121,7 +121,7 @@ try {
   )
   assert.equal(
     await providerScreen.locator('.provider-promo-copy strong').evaluate((copy) => getComputedStyle(copy).color),
-    'rgb(186, 77, 15)',
+    'rgb(18, 97, 125)',
   )
   assert.equal(await page.locator('#endpointPanel, #endpointToggle').count(), 0, 'simple onboarding should not expose endpoint controls')
   assert.equal(await page.locator('#provider').inputValue(), 'tokenrhythm', 'TokenRhythm should be selected by default')
@@ -265,8 +265,8 @@ try {
   )
   assert.equal(
     await tokenRhythmCta.evaluate((link) => getComputedStyle(link).backgroundColor),
-    'rgb(186, 77, 15)',
-    'the registration call to action should use the canonical light-theme accent',
+    'rgb(18, 97, 125)',
+    'the registration call to action should use the canonical starfield accent',
   )
   assert.equal(await tokenRhythmCta.evaluate((link) => getComputedStyle(link).color), 'rgb(255, 255, 255)')
   assert.equal(await tokenRhythmCta.evaluate((link) => getComputedStyle(link).borderRadius), '7px')
@@ -332,8 +332,8 @@ try {
   )
   assert.equal(
     await page.locator('[data-search-provider="duckduckgo"] .search-provider-billing').evaluate((billing) => getComputedStyle(billing).color),
-    'rgb(142, 58, 10)',
-    'the free status should use the canonical deep light-theme accent',
+    'rgb(10, 63, 84)',
+    'the free status should use the canonical OpenStarry light-theme accent',
   )
   if (screenshotPath) {
     await mkdir(dirname(screenshotPath), { recursive: true })

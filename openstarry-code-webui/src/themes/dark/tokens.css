@@ -6,27 +6,25 @@
    decided by source order, i.e. by the alphabetical position of theme folder
    names in the tokens glob: a folder sorting before "dark" would be silently
    overridden by this ground.) See src/themes/dark/manifest.ts. */
-/* Dark theme — neutral graphite: achromatic charcoal surfaces (hierarchy by
-   lightness, like the leading agent consoles) with the orange strike + the
-   6-channel spectral status language (default). */
+/* Dark theme — the icon's navy starfield with cyan light and a coral orbit. */
 [data-theme="dark"], :where(:root) {
   /* Instrument — cool graphite: a 5-step luminance ladder (bg < surface <
      surface-2 < elevated < hover) so surfaces separate by lightness AND by the
      machined --elev shadow below. Deeper/cooler than the old #121212 so raised
      surfaces read as lit. */
-  --bg: #18181A;
-  --bg-surface: #202022;
-  --bg-surface-2: #28282B;
-  --bg-elevated: #2D2D30;
-  --bg-hover: #353539;
-  --text: #F5F5F7;
-  --text-muted: #B0B0B6;
-  --text-dim: #87878E;
-  --border: #303034;
-  --border-strong: #444448;
-  --border-focus: #55555B;
-  --card: #202022;
-  --hairline: #29292C;
+  --bg: #070C1C;
+  --bg-surface: #0D1628;
+  --bg-surface-2: #14213A;
+  --bg-elevated: #192943;
+  --bg-hover: #203653;
+  --text: #F4FBFF;
+  --text-muted: #B8C8D7;
+  --text-dim: #8498AA;
+  --border: #223854;
+  --border-strong: #35516F;
+  --border-focus: #6FE0FF;
+  --card: #0D1628;
+  --hairline: #172741;
 
   /* User bubble: the deeper graphite canvas needs one more step than the
      foundation's 7% default for the fill to read at a glance. */
@@ -34,11 +32,11 @@
 
   /* One disciplined strike — refined off the old #EC6A1A for AA on the deeper
      canvas. Reserved for the primary action, focus and running-state only. */
-  --accent: #F26A1B;
-  --accent-hover: #FF7A2E;
-  --accent-deep: #D95A11;
-  --accent-secondary: #FF8A4C;
-  --accent-foreground: #160B02;
+  --accent: #74DFFF;
+  --accent-hover: #9BEAFF;
+  --accent-deep: #318FBE;
+  --accent-secondary: #FF9878;
+  --accent-foreground: #071020;
 
   /* The spectrum — six calibrated channels (keep the existing semantic names;
      --queued is the new sixth). Used only to encode run state, never decor. */

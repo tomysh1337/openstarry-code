@@ -26,6 +26,7 @@ class _MetadataProvider:
             model="meta/model",
             api_key="meta-key",
             base_url="https://metadata.example/v1",
+            request_headers={"X-Tenant": "tenant-secret"},
         )
 
 
@@ -44,7 +45,9 @@ def test_provider_connection_config_keeps_secret_out_of_repr() -> None:
     config = provider_connection_config(_MetadataProvider())
 
     assert config.api_key == "meta-key"
+    assert config.request_headers == {"X-Tenant": "tenant-secret"}
     assert "meta-key" not in repr(config)
+    assert "tenant-secret" not in repr(config)
 
 
 def test_compaction_config_uses_provider_connection_config_protocol() -> None:
@@ -53,3 +56,4 @@ def test_compaction_config_uses_provider_connection_config_protocol() -> None:
     assert cfg.api_key == "meta-key"
     assert cfg.model == "meta/model"
     assert cfg.base_url == "https://metadata.example/v1"
+    assert cfg.request_headers == {"X-Tenant": "tenant-secret"}

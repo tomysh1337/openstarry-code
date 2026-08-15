@@ -28,6 +28,7 @@ import {
   type EnsembleCredentialStatus,
 } from '@/composables/setup/useSetupEnsembleForm'
 import { useSetupModelStrategyForm } from '@/composables/setup/useSetupModelStrategyForm'
+import { nextChatCompletionsCustomSlot } from '@/composables/setup/providerProtocol'
 import { invalidateReadiness } from '@/composables/setup/useReadinessSummary'
 import { useSettingsPromotedForm, DEFAULT_LLM_TIMEOUT_SECONDS } from '@/composables/setup/useSettingsPromotedForm'
 import { useSettingsSection } from '@/composables/setup/useSettingsSection'
@@ -289,11 +290,16 @@ interface OnboardingCatalog {
 interface StoredLlmProfileConfig {
   // config.get redacts api_key; the WebUI never reads or reconstructs it.
   model?: string
+  display_name?: string
+  note?: string
+  website_url?: string
+  complete_url?: string
   api_key?: string
   api_key_env?: string
   api_key_env_pool?: string[]
   base_url?: string
   proxy?: string
+  custom_headers?: Record<string, string>
   [key: string]: unknown
 }
 
@@ -301,10 +307,15 @@ interface ConfigData {
   llm?: {
     provider?: string
     model?: string
+    display_name?: string
+    note?: string
+    website_url?: string
+    complete_url?: string
     base_url?: string
     proxy?: string
     api_key_env?: string
     api_key?: string
+    custom_headers?: Record<string, string>
     [key: string]: unknown
   }
   // Public config.get redacts profile secrets but preserves the profile keys.
@@ -836,6 +847,13 @@ const modelStrategyForm = useSetupModelStrategyForm(
 const runtimeProviders = computed(() => (catalog.value.providers || []).filter(p => p.runtimeSupported))
 function providerCatalogLabel(providerId: string): string {
   const id = normalizeProviderId(providerId)
+  const customLabelValue = (
+    id === normalizeProviderId(currentProvider.value)
+      ? currentProviderConfig.value.display_name
+      : storedProfileConfig(id).display_name
+  )
+  const customLabel = String(customLabelValue || '').trim()
+  if (customLabel) return customLabel
   return runtimeProviders.value.find(provider => normalizeProviderId(provider.providerId) === id)?.label
     || providerId
 }
@@ -1075,9 +1093,14 @@ const providerEditorConfig = computed(() => {
     // profile. An explicit saved model wins; otherwise the provider's direct
     // default is shown and activation resolves the same fallback server-side.
     model: stored.model || providerSpec.value?.defaultDirectModel || '',
+    display_name: stored.display_name || '',
+    note: stored.note || '',
+    website_url: stored.website_url || '',
+    complete_url: stored.complete_url || '',
     api_key_env: stored.api_key_env || profile?.credentialEnv || '',
     base_url: stored.base_url || '',
     proxy: stored.proxy || '',
+    custom_headers: stored.custom_headers || {},
   }
 })
 const providerImageGenerationOffer = computed(() => {
@@ -2344,6 +2367,33 @@ async function requestAddProvider(value: string) {
   if (!next || !(await confirmProviderDraftDiscard())) return
   providerForm.selectProvider(next)
   onProviderChange()
+}
+
+async function duplicateProvider(value: string) {
+  if (providerInteractionLocked()) return
+  const sourceProviderId = normalizeProviderId(value)
+  const targetProviderId = nextChatCompletionsCustomSlot(
+    sourceProviderId,
+    configuredProviderIds.value,
+  )
+  if (!sourceProviderId || !targetProviderId) return
+  providerSavePending.value = true
+  try {
+    await rpc.call('onboarding.llmProfile.duplicate', {
+      providerId: sourceProviderId,
+      targetProviderId,
+    })
+    await loadData()
+    applyConfiguredProviderSelection(targetProviderId)
+    pushToast(t('setup.toast.providerDuplicated', {
+      provider: providerCatalogLabel(sourceProviderId),
+      target: providerCatalogLabel(targetProviderId),
+    }))
+  } catch (err) {
+    pushToast(providerRpcErrorMessage(err), { tone: 'danger' })
+  } finally {
+    providerSavePending.value = false
+  }
 }
 
 function cancelProviderEdit() {
@@ -3748,6 +3798,7 @@ async function copyConfigPath() {
     selectConfiguredProvider,
     requestSelectConfiguredProvider,
     requestAddProvider,
+    duplicateProvider,
     cancelProviderEdit,
     setAutoSessionTitles,
     setDisableNetworkObservability,

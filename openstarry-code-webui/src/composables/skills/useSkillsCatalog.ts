@@ -37,7 +37,7 @@ export interface SkillsCatalog {
   setStatusFilter: (key: string) => void
 }
 
-const LAYER_ORDER = ['workspace', 'bundled', 'managed', 'personal', 'project', 'extra']
+const LAYER_ORDER = ['workspace', 'bundled', 'managed', 'codex', 'personal', 'project', 'extra']
 
 // Known layer keys; labels/help text resolve through i18n by key.
 const KNOWN_LAYERS = new Set(LAYER_ORDER)

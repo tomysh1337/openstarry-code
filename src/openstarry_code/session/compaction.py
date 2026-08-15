@@ -8,7 +8,7 @@ import inspect
 import json
 import time
 import uuid
-from collections.abc import Awaitable, Callable, Sequence
+from collections.abc import Awaitable, Callable, Mapping, Sequence
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Literal, cast
 
@@ -19,6 +19,7 @@ from openstarry_code.env import trust_env as _trust_env
 from openstarry_code.provider.app_attribution import provider_app_headers
 from openstarry_code.provider.failures import classify_provider_error
 from openstarry_code.provider.protocol import provider_connection_config
+from openstarry_code.provider.request_headers import normalize_request_headers
 from openstarry_code.provider.tokenrhythm_correlation import (
     redact_tokenrhythm_install_ids,
     tokenrhythm_correlation_headers,
@@ -117,6 +118,7 @@ class CompactionConfig:
     # may disable only this redundant semantic-tail check for their isolated
     # completed prefix. Durable/session compaction always leaves it enabled.
     protect_semantic_tail: bool = True
+    request_headers: dict[str, str] = field(default_factory=dict, repr=False)
 
 
 @dataclass
@@ -280,6 +282,7 @@ def build_compaction_config_from_provider(
     cfg.api_key = api_key
     cfg.model = configured_model or model_override or model or default_model
     cfg.provider = connection_config.provider_kind
+    cfg.request_headers = dict(connection_config.request_headers)
     if base_url:
         cfg.base_url = base_url
     cfg.llm_plan = build_compaction_llm_plan_from_provider(
@@ -593,14 +596,10 @@ def _apply_protected_tail(
 ) -> int:
     protected_recent = _profile_protected_recent_messages(cfg)
     protected_start = (
-        max(0, len(entries) - protected_recent)
-        if protected_recent > 0
-        else len(entries)
+        max(0, len(entries) - protected_recent) if protected_recent > 0 else len(entries)
     )
     semantic_start = (
-        _semantic_protected_tail_start(entries)
-        if cfg.protect_semantic_tail
-        else len(entries)
+        _semantic_protected_tail_start(entries) if cfg.protect_semantic_tail else len(entries)
     )
     return min(cut, protected_start, semantic_start)
 
@@ -623,17 +622,15 @@ def _nested_tool_result_segments(entry: dict[str, Any]) -> list[dict[str, Any]]:
         segment
         for segment in tool_calls
         if isinstance(segment, dict)
-        and (
-            str(segment.get("type") or "").strip().lower() == "tool_result"
-            or "result" in segment
-        )
+        and (str(segment.get("type") or "").strip().lower() == "tool_result" or "result" in segment)
     ]
 
 
 def _execution_status_is_live(value: Any) -> bool:
     status, reason, preservation_class = _execution_status_parts(value)
     return bool(
-        status in {
+        status
+        in {
             "pending",
             "running",
             "in_progress",
@@ -643,7 +640,8 @@ def _execution_status_is_live(value: Any) -> bool:
             "requires_action",
             "awaiting_approval",
         }
-        or reason in {
+        or reason
+        in {
             "background_running",
             "pending",
             "queued",
@@ -671,9 +669,7 @@ def _api_round_requires_raw(entries: list[dict[str, Any]]) -> bool:
                 if not isinstance(segment, dict):
                     continue
                 segment_type = str(segment.get("type") or "").strip().lower()
-                segment_id = str(
-                    segment.get("tool_use_id") or segment.get("id") or ""
-                ).strip()
+                segment_id = str(segment.get("tool_use_id") or segment.get("id") or "").strip()
                 is_result = segment_type == "tool_result" or "result" in segment
                 is_call = bool(
                     segment_type in {"tool_use", "function"}
@@ -704,9 +700,7 @@ def _api_round_requires_raw(entries: list[dict[str, Any]]) -> bool:
             unstructured_call_open = True
 
         if _is_tool_result_entry(entry) and not nested_results:
-            if _execution_status_is_live(
-                entry.get("execution_status") or entry.get("status")
-            ):
+            if _execution_status_is_live(entry.get("execution_status") or entry.get("status")):
                 return True
             result_id = str(entry.get("tool_call_id") or "").strip()
             if result_id:
@@ -717,16 +711,9 @@ def _api_round_requires_raw(entries: list[dict[str, Any]]) -> bool:
 
     last = entries[-1] if entries else None
     unanswered_user = bool(
-        last is not None
-        and last.get("role") == "user"
-        and not _is_tool_result_entry(last)
+        last is not None and last.get("role") == "user" and not _is_tool_result_entry(last)
     )
-    return bool(
-        unanswered_user
-        or pending_ids
-        or unidentified_calls > 0
-        or unstructured_call_open
-    )
+    return bool(unanswered_user or pending_ids or unidentified_calls > 0 or unstructured_call_open)
 
 
 def _semantic_protected_tail_start(
@@ -754,17 +741,14 @@ def _retreat_to_turn_boundary(entries: list[dict[str, Any]], cut: int) -> int:
             result_start = cut
             while result_start > 0 and _is_tool_result_entry(entries[result_start - 1]):
                 result_start -= 1
-            if result_start > 0 and _is_assistant_tool_call_entry(
-                entries[result_start - 1]
-            ):
+            if result_start > 0 and _is_assistant_tool_call_entry(entries[result_start - 1]):
                 cut = result_start - 1
                 continue
             if result_start != cut:
                 cut = result_start
                 continue
         if not (
-            _is_assistant_tool_call_entry(entries[cut - 1])
-            and _is_tool_result_entry(first_kept)
+            _is_assistant_tool_call_entry(entries[cut - 1]) and _is_tool_result_entry(first_kept)
         ):
             return cut
         cut -= 1
@@ -812,22 +796,15 @@ def _compaction_quality_report(
     if protected_recent > 0:
         protected_tail = entries[-protected_recent:]
         protected_tail_preserved = (
-            len(kept) >= len(protected_tail)
-            and kept[-len(protected_tail) :] == protected_tail
+            len(kept) >= len(protected_tail) and kept[-len(protected_tail) :] == protected_tail
         )
-    compression_ratio = (
-        float(tokens_after) / float(tokens_before)
-        if tokens_before > 0
-        else 1.0
-    )
+    compression_ratio = float(tokens_after) / float(tokens_before) if tokens_before > 0 else 1.0
     # The caller passes the consumer history capacity after its own reserves.
     # Safety margin controls when compaction starts; applying it again to the
     # candidate double-counts headroom and rejects otherwise admissible output.
     fits_context_window = bool(tokens_after <= context_window_tokens)
     fits_character_window = bool(
-        context_window_chars is None
-        or chars_after is None
-        or chars_after <= context_window_chars
+        context_window_chars is None or chars_after is None or chars_after <= context_window_chars
     )
     reduces_tokens = tokens_after < tokens_before
     # Message-count recovery removes wire-message cardinality rather than
@@ -839,10 +816,7 @@ def _compaction_quality_report(
         and protected_tail_preserved
         and fits_context_window
         and fits_character_window
-        and (
-            reduces_tokens
-            or trigger == "message_count"
-        )
+        and (reduces_tokens or trigger == "message_count")
     )
     return {
         "profile": str(getattr(cfg, "compaction_profile", "conversation") or "conversation"),
@@ -864,6 +838,7 @@ def _api_round_groups(
 
     groups: list[list[dict[str, Any]]] = []
     current: list[dict[str, Any]] = []
+
     def flush() -> None:
         nonlocal current
         if current:
@@ -911,11 +886,7 @@ def _retreat_to_api_round_boundary(
 ) -> int:
     """Move a cut earlier to the nearest complete API-round boundary."""
 
-    eligible = [
-        boundary
-        for boundary in _api_round_boundaries(entries)
-        if boundary <= cut
-    ]
+    eligible = [boundary for boundary in _api_round_boundaries(entries) if boundary <= cut]
     if not eligible:
         return 0
     return _retreat_to_turn_boundary(entries, max(eligible))
@@ -963,9 +934,7 @@ def _compaction_target_input_budget(
     plan = request.config.llm_plan
     target = target or (plan.primary if plan is not None else None)
     context_window = int(
-        getattr(target, "context_window_tokens", 0)
-        or request.context_window_tokens
-        or 0
+        getattr(target, "context_window_tokens", 0) or request.context_window_tokens or 0
     )
     output_reserve = int(getattr(target, "max_output_tokens", 0) or 1024)
     framing_reserve = max(128, context_window // 20)
@@ -1007,20 +976,12 @@ def _fit_compaction_input_to_target(
             previous_summary,
             chunk_projection,
         )
-        while (
-            chunk_projection
-            and _estimate_tokens(deterministic) > budget
-        ):
+        while chunk_projection and _estimate_tokens(deterministic) > budget:
             current_tokens = max(1, _estimate_tokens(chunk_projection))
             excess = max(1, _estimate_tokens(deterministic) - budget)
             target_chars = max(
                 0,
-                int(
-                    len(chunk_projection)
-                    * max(0, current_tokens - excess)
-                    / current_tokens
-                    * 0.8
-                ),
+                int(len(chunk_projection) * max(0, current_tokens - excess) / current_tokens * 0.8),
             )
             if target_chars >= len(chunk_projection):
                 target_chars = len(chunk_projection) - 1
@@ -1032,10 +993,7 @@ def _fit_compaction_input_to_target(
         return deterministic if _estimate_tokens(deterministic) <= budget else None
 
     deterministic = _merge_rolling_fallback("", chunk_projection)
-    projected = (
-        "[Deterministic token-aware preprojection]\n"
-        f"{deterministic}"
-    )
+    projected = f"[Deterministic token-aware preprojection]\n{deterministic}"
     while len(projected) > 1 and _estimate_tokens(projected) > budget:
         current_tokens = max(1, _estimate_tokens(projected))
         target_chars = max(
@@ -1051,9 +1009,7 @@ def _fit_compaction_input_to_target(
         head_chars = int((target_chars - len(marker)) * 0.65)
         tail_chars = target_chars - len(marker) - head_chars
         projected = (
-            projected[:head_chars]
-            + marker
-            + (projected[-tail_chars:] if tail_chars > 0 else "")
+            projected[:head_chars] + marker + (projected[-tail_chars:] if tail_chars > 0 else "")
         )
     return projected
 
@@ -1505,6 +1461,7 @@ async def call_compaction_provider(
             )
             accounted_stream = provider_stream
         else:
+
             def _start_provider_stream() -> Any:
                 nonlocal provider_stream
                 provider_stream = deployment.provider.chat(
@@ -1536,9 +1493,7 @@ async def call_compaction_provider(
             if max(reported_output_tokens, estimated_output_tokens) > (
                 deployment.max_output_tokens
             ):
-                raise _CompactionProviderError(
-                    "provider output exceeded compaction token budget"
-                )
+                raise _CompactionProviderError("provider output exceeded compaction token budget")
 
         async with asyncio.timeout(timeout):
             async for event in accounted_stream:
@@ -1567,9 +1522,7 @@ async def call_compaction_provider(
                         0,
                         int(getattr(event, "output_tokens", 0) or 0),
                     )
-                    terminal_reasoning_content = str(
-                        getattr(event, "reasoning_content", "") or ""
-                    )
+                    terminal_reasoning_content = str(getattr(event, "reasoning_content", "") or "")
                     _enforce_output_budget()
                     continue
 
@@ -1622,6 +1575,7 @@ async def call_compaction_llm(
     provider_request_correlation: ProviderRequestCorrelation | None = None,
     compaction_id: str | None = None,
     chunk_index: int | None = None,
+    request_headers: Mapping[str, str] | None = None,
 ) -> str | None:
     """Legacy raw OpenAI-compatible summary helper.
 
@@ -1653,10 +1607,14 @@ async def call_compaction_llm(
         "temperature": 0,
         "stream": False,
     }
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json",
-    }
+    headers = normalize_request_headers(request_headers)
+    request_headers = None
+    headers.update(
+        {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        }
+    )
     headers.update(provider_app_headers(url))
     headers.update(
         tokenrhythm_correlation_headers(
@@ -1671,8 +1629,7 @@ async def call_compaction_llm(
     from openstarry_code.engine.usage_http import reserve_direct_usage_call
 
     usage = await reserve_direct_usage_call(
-        provider=provider
-        or ("openrouter" if "openrouter.ai" in url.lower() else "openai_compat"),
+        provider=provider or ("openrouter" if "openrouter.ai" in url.lower() else "openai_compat"),
         model=model,
         base_url=url,
     )
@@ -1779,17 +1736,12 @@ def _fit_structured_summary_current_status(
     """Bound duplicative prose while preserving structured obligation fields."""
 
     budget = max(1, int(max_tokens or 0))
-    char_budget = (
-        max(1, int(max_chars))
-        if max_chars is not None
-        else None
-    )
+    char_budget = max(1, int(max_chars)) if max_chars is not None else None
 
     def fits() -> bool:
         rendered = render_structured_summary(summary)
-        return (
-            _estimate_tokens(rendered) <= budget
-            and (char_budget is None or len(rendered) <= char_budget)
+        return _estimate_tokens(rendered) <= budget and (
+            char_budget is None or len(rendered) <= char_budget
         )
 
     if fits():
@@ -1871,10 +1823,7 @@ def _find_turn_boundary_cut(
         group_tokens = sum(_entry_tokens(entry) for entry in group)
         group_chars = estimate_entries_model_replay_chars(group)
         fits_tokens = kept_tokens + group_tokens <= keep_budget
-        fits_chars = bool(
-            keep_char_budget is None
-            or kept_chars + group_chars <= keep_char_budget
-        )
+        fits_chars = bool(keep_char_budget is None or kept_chars + group_chars <= keep_char_budget)
         if not fits_tokens or not fits_chars:
             break
         kept_tokens += group_tokens
@@ -1919,17 +1868,12 @@ async def compact_context_new(request: CompactionRequest) -> CompactionResult:
         if prev_summary and request.summary_replay_renderer is not None
         else prev_summary
     )
-    previous_summary_tokens = (
-        _estimate_tokens(previous_replay)
-        if previous_replay
-        else 0
-    )
+    previous_summary_tokens = _estimate_tokens(previous_replay) if previous_replay else 0
     total_tokens = raw_entry_tokens + previous_summary_tokens
     total_chars = estimate_entries_model_replay_chars(entries) + len(previous_replay)
     over_token_budget = total_tokens * cfg.safety_margin > window
     over_character_budget = bool(
-        request.context_window_chars is not None
-        and total_chars > request.context_window_chars
+        request.context_window_chars is not None and total_chars > request.context_window_chars
     )
 
     if not entries and not prev_summary:
@@ -1966,11 +1910,7 @@ async def compact_context_new(request: CompactionRequest) -> CompactionResult:
     # If we're within budget, no token-driven compaction is needed.  A valid
     # forced prefix cut is an independent cardinality recovery request and must
     # still run even when the transcript already fits the token window.
-    if (
-        forced_cut is None
-        and not over_token_budget
-        and not over_character_budget
-    ):
+    if forced_cut is None and not over_token_budget and not over_character_budget:
         return CompactionResult(
             summary="",
             kept_entries=entries,
@@ -2173,6 +2113,7 @@ async def compact_context_new(request: CompactionRequest) -> CompactionResult:
                 provider=cfg.provider,
                 compaction_id=cfg.operation_id,
                 chunk_index=chunk_index,
+                request_headers=cfg.request_headers,
                 **legacy_llm_kwargs,
             )
             require_compaction_time(cfg, phase="summarizing")
@@ -2224,20 +2165,14 @@ async def compact_context_new(request: CompactionRequest) -> CompactionResult:
     # Reserve the complete probe, including its tiny body, so token-boundary
     # interactions cannot make the wrapper estimate optimistic.
     wrapper_tokens = _estimate_tokens(probed_wrapper) if probed_wrapper else 0
-    wrapper_chars = (
-        max(0, len(probed_wrapper) - len(wrapper_probe))
-        if probed_wrapper
-        else 0
-    )
+    wrapper_chars = max(0, len(probed_wrapper) - len(wrapper_probe)) if probed_wrapper else 0
     _fit_structured_summary_current_status(
         structured_summary,
         max_tokens=max(1, window - kept_tokens - wrapper_tokens),
         max_chars=(
             max(
                 1,
-                int(request.context_window_chars)
-                - kept_chars
-                - wrapper_chars,
+                int(request.context_window_chars) - kept_chars - wrapper_chars,
             )
             if request.context_window_chars is not None
             else None
@@ -2412,13 +2347,9 @@ async def compact_context(request: CompactionRequest) -> CompactionResult:
             "pressure_kind": request.trigger,
             "physical_call_count": int(cfg.llm_calls_started),
             "latency_ms": (
-                max(0, int((time.monotonic() - started_at) * 1000))
-                if started_at is not None
-                else 0
+                max(0, int((time.monotonic() - started_at) * 1000)) if started_at is not None else 0
             ),
-            "consumer_window_source": str(
-                request.context_window_source or "consumer_capacity"
-            ),
+            "consumer_window_source": str(request.context_window_source or "consumer_capacity"),
             "consumer_window_tokens": max(
                 0,
                 int(request.context_window_tokens or 0),

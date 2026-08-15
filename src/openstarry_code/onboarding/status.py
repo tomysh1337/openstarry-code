@@ -483,8 +483,7 @@ def _ensemble_credential_status(
     if deployment_statuses is None:
         deployment_statuses = _llm_profile_status(cfg)
     by_provider = {
-        str(row.get("provider") or "").strip().lower(): row
-        for row in deployment_statuses
+        str(row.get("provider") or "").strip().lower(): row for row in deployment_statuses
     }
     source_map = {
         "profile": "explicit",
@@ -617,11 +616,11 @@ def _llm_profile_status(
             model=str(getattr(runtime, "model", "") or getattr(cfg.llm, "model", "")),
             api_key=str(getattr(runtime, "api_key", "") or ""),
             base_url=str(getattr(runtime, "base_url", "") or ""),
+            complete_url=str(getattr(runtime, "complete_url", "") or ""),
             proxy=str(getattr(runtime, "proxy", "") or ""),
+            request_headers=dict(getattr(runtime, "request_headers", {}) or {}),
             provider_routing=dict(getattr(runtime, "provider_routing", {}) or {}),
-            replay_provider_state=bool(
-                getattr(runtime, "replay_provider_state", True)
-            ),
+            replay_provider_state=bool(getattr(runtime, "replay_provider_state", True)),
         )
 
     ordered = ([active_provider] if active_provider else []) + sorted(
@@ -668,6 +667,15 @@ def _llm_profile_status(
             "primaryEligible": primary_eligible,
             "primaryBlockReason": primary_block_reason,
         }
+        metadata_source = cfg.llm if provider == active_provider else profile
+        row.update(
+            {
+                "displayName": str(getattr(metadata_source, "display_name", "") or ""),
+                "note": str(getattr(metadata_source, "note", "") or ""),
+                "websiteUrl": str(getattr(metadata_source, "website_url", "") or ""),
+                "completeUrl": str(getattr(metadata_source, "complete_url", "") or ""),
+            }
+        )
         if probe_history is not None:
             from openstarry_code.onboarding.probe_history import (
                 last_probe_payload,
@@ -781,8 +789,10 @@ def _llm_source(cfg: GatewayConfig, status: SectionStatus) -> tuple[str, str]:
         return "unsupported", ""
     if not spec.requires_api_key:
         return "not_required", ""
-    if status is SectionStatus.OK and llm.api_key and (
-        "llm.api_key" not in getattr(cfg, "_runtime_secret_paths", set())
+    if (
+        status is SectionStatus.OK
+        and llm.api_key
+        and ("llm.api_key" not in getattr(cfg, "_runtime_secret_paths", set()))
     ):
         return "explicit", ""
     env_key = (getattr(llm, "api_key_env", "") or "").strip()
@@ -845,15 +855,13 @@ def _image_generation_provider_source(
         default_base_url=endpoint[0],
         effective_base_url=(
             spec.default_base_url
-            if str(getattr(cfg.image_generation, "binding", "custom") or "custom")
-            == "follow_llm"
+            if str(getattr(cfg.image_generation, "binding", "custom") or "custom") == "follow_llm"
             else endpoint[1]
         ),
         gateway_config=cfg,
         model=str(getattr(cfg.image_generation, "primary", "") or "image-generation"),
         include_image_credentials=(
-            str(getattr(cfg.image_generation, "binding", "custom") or "custom")
-            != "follow_llm"
+            str(getattr(cfg.image_generation, "binding", "custom") or "custom") != "follow_llm"
         ),
     )
     return (
@@ -921,11 +929,7 @@ def _image_generation_detail(
                 )
     return _with_provider(
         provider,
-        (
-            "same provider key"
-            if source == "llm_fallback"
-            else _source_detail(source, env_key)
-        ),
+        ("same provider key" if source == "llm_fallback" else _source_detail(source, env_key)),
     )
 
 
@@ -941,10 +945,7 @@ def _memory_embedding_annotations(
     if provider in {"none", "auto", "local", "ollama"}:
         return "not_required", ""
     remote = getattr(embedding, "remote", None)
-    key = (
-        str(getattr(remote, "api_key", "") or "")
-        or str(getattr(embedding, "api_key", "") or "")
-    )
+    key = str(getattr(remote, "api_key", "") or "") or str(getattr(embedding, "api_key", "") or "")
     if key:
         return "explicit", ""
     env_key = str(getattr(remote, "api_key_env", "") or "").strip()
@@ -989,9 +990,9 @@ def _runtime_blocking_sections(
     memory_status: SectionStatus,
 ) -> set[str]:
     blocking: set[str] = set()
-    if (
-        memory_provider in {"openai", "openai-compatible"}
-        and memory_status not in (SectionStatus.OK, SectionStatus.OPTIONAL)
+    if memory_provider in {"openai", "openai-compatible"} and memory_status not in (
+        SectionStatus.OK,
+        SectionStatus.OPTIONAL,
     ):
         blocking.add("memory_embedding")
     return blocking
@@ -1013,9 +1014,7 @@ def get_onboarding_status(
     audio_status = sections["audio"]
     memory_status = sections["memory_embedding"]
     llm_source, llm_env_key = _llm_source(config, llm_status)
-    search_provider, search_source, search_env_key = _search_annotations(
-        config, search_status
-    )
+    search_provider, search_source, search_env_key = _search_annotations(config, search_status)
     image_source, image_provider, image_primary, image_env_key = _image_generation_annotations(
         config, image_status
     )
@@ -1071,9 +1070,7 @@ def get_onboarding_status(
 
         section_details["ensemble"].update(ensemble_runtime_status(config))
     resolution_getter = getattr(config, "provider_resolution", None)
-    provider_resolution = (
-        resolution_getter() if callable(resolution_getter) else {}
-    )
+    provider_resolution = resolution_getter() if callable(resolution_getter) else {}
     if "llm" in section_details and provider_resolution:
         effective_provider = provider_resolution.get("effective_provider")
         section_details["llm"]["providerResolution"] = {
@@ -1084,15 +1081,9 @@ def get_onboarding_status(
                 else effective_provider
             ),
             "source": str(provider_resolution.get("source") or "config"),
-            "reasonCode": str(
-                provider_resolution.get("reason_code") or "provider_explicit"
-            ),
-            "actionRequired": bool(
-                provider_resolution.get("action_required", False)
-            ),
-            "actionRecommended": bool(
-                provider_resolution.get("action_recommended", False)
-            ),
+            "reasonCode": str(provider_resolution.get("reason_code") or "provider_explicit"),
+            "actionRequired": bool(provider_resolution.get("action_required", False)),
+            "actionRecommended": bool(provider_resolution.get("action_recommended", False)),
         }
 
     warnings: tuple[str, ...] = ()

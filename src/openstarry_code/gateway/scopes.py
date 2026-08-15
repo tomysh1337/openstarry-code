@@ -401,6 +401,7 @@ METHOD_SCOPES: dict[str, str] = {
     # The probe persists nothing but carries candidate credentials.
     "onboarding.provider.probe": ADMIN_SCOPE,
     "onboarding.llmProfile.upsert": ADMIN_SCOPE,
+    "onboarding.llmProfile.duplicate": ADMIN_SCOPE,
     "onboarding.llmProfile.credential.clear": ADMIN_SCOPE,
     "onboarding.llmProfile.remove": ADMIN_SCOPE,
     "onboarding.llmProfile.active.remove": ADMIN_SCOPE,

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Mapping
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
@@ -45,6 +45,7 @@ class ProviderConnectionConfig:
     model: str = ""
     api_key: str = field(default="", repr=False)
     base_url: str = ""
+    request_headers: Mapping[str, str] = field(default_factory=dict, repr=False)
 
 
 @runtime_checkable
@@ -157,11 +158,14 @@ def provider_connection_config(provider: object | None) -> ProviderConnectionCon
     metadata = provider_metadata(provider)
     api_key = _string_value(getattr(provider, "api_key", ""))
     api_key = api_key or _string_value(getattr(provider, "_api_key", ""))
+    request_headers = getattr(provider, "request_headers", None)
+    request_headers = request_headers or getattr(provider, "_request_headers", None)
     return ProviderConnectionConfig(
         provider_kind=metadata.provider_kind,
         model=metadata.model,
         api_key=api_key,
         base_url=metadata.base_url,
+        request_headers=(dict(request_headers) if isinstance(request_headers, Mapping) else {}),
     )
 
 

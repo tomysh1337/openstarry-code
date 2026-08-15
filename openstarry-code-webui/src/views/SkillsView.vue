@@ -6,6 +6,19 @@
         <p class="sk-stage__subtitle control-stage__subtitle">{{ t('cronSkills.skillsView.subtitle') }}</p>
       </div>
       <div class="sk-stage__actions control-stage__actions">
+        <button
+          v-if="codexX"
+          class="btn btn--ghost sk-codex-x-trigger"
+          data-testid="skills-codex-x"
+          type="button"
+          :disabled="codexXOpening || codexXUnavailable"
+          :aria-busy="codexXOpening"
+          :title="t('cronSkills.skillsView.codexXTooltip')"
+          @click="launchCodexX"
+        >
+          <Icon name="externalLink" :size="16" />
+          <span>{{ codexXOpening ? t('cronSkills.skillsView.codexXOpening') : 'Codex-X' }}</span>
+        </button>
         <div class="sk-search-wrap">
           <span class="sk-search-icon">
             <Icon name="search" :size="16" />
@@ -209,6 +222,7 @@ import { createSkillMutationGate } from '@/composables/skills/useSkillMutationGa
 import { useSkillRegistry } from '@/composables/skills/useSkillRegistry'
 import { skillLayerHelp, skillLayerLabel, useSkillsCatalog } from '@/composables/skills/useSkillsCatalog'
 import { useToasts } from '@/composables/useToasts'
+import { getPlatform, type CodexXStatus } from '@/platform'
 import { useRpcStore } from '@/stores/rpc'
 import type { Proposal, Skill } from '@/types/skills'
 
@@ -236,6 +250,9 @@ const { pushToast } = useToasts()
 const rpc = useRpcStore()
 const addSkillOpen = ref(false)
 const reloading = ref(false)
+const codexX = getPlatform().codexX
+const codexXOpening = ref(false)
+const codexXUnavailable = ref(false)
 const selectedProposal = ref<Proposal | null>(null)
 const proposalsPanelRef = ref<InstanceType<typeof PendingSkillProposals> | null>(null)
 
@@ -276,6 +293,38 @@ const {
 } = catalog
 
 loadData = catalog.loadData
+
+async function refreshCodexXStatus() {
+  if (!codexX) return
+  try {
+    const status = await codexX.getStatus()
+    codexXUnavailable.value = !status.available
+  } catch {
+    codexXUnavailable.value = false
+  }
+}
+
+async function launchCodexX() {
+  if (!codexX || codexXOpening.value) return
+  codexXOpening.value = true
+  try {
+    const status: CodexXStatus = await codexX.open()
+    codexXUnavailable.value = !status.available
+    if (!status.launched) {
+      pushToast(t('cronSkills.skillsView.codexXUnavailable'), { tone: 'danger' })
+      return
+    }
+    pushToast(t('cronSkills.skillsView.codexXOpened', {
+      version: status.version || '',
+    }), { tone: 'ok' })
+  } catch (err) {
+    pushToast(t('cronSkills.skillsView.codexXOpenFailed', {
+      error: (err as Error).message,
+    }), { tone: 'danger' })
+  } finally {
+    codexXOpening.value = false
+  }
+}
 
 function reloadSummary(result: SkillReloadResult): string {
   return t('cronSkills.skillsView.reloadSummary', {
@@ -380,6 +429,7 @@ function teardownLive() {
 onActivated(() => {
   if (queueRunning.value) return
   void loadData()
+  void refreshCodexXStatus()
 })
 
 onDeactivated(teardownLive)
@@ -547,6 +597,10 @@ async function uninstallSkillAndClose(name: string, installId: string) {
 }
 
 .sk-add-trigger {
+  white-space: nowrap;
+}
+
+.sk-codex-x-trigger {
   white-space: nowrap;
 }
 

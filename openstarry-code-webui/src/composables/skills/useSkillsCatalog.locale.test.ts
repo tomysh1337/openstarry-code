@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import { localizedSkillDescription } from './useSkillsCatalog'
+import {
+  localizedSkillDescription,
+  skillLayerHelp,
+  skillLayerLabel,
+} from './useSkillsCatalog'
 
 describe('localizedSkillDescription', () => {
   const skill = { description: 'English summary', description_zh: '中文摘要' }
@@ -21,5 +25,12 @@ describe('localizedSkillDescription', () => {
   it('returns an empty string when nothing is available', () => {
     expect(localizedSkillDescription({}, 'zh-Hans')).toBe('')
     expect(localizedSkillDescription({}, 'en')).toBe('')
+  })
+})
+
+describe('Codex skill layer localization', () => {
+  it('uses the dedicated label and CODEX_HOME help text', () => {
+    expect(skillLayerLabel('codex')).toBe('Codex')
+    expect(skillLayerHelp('codex')).toContain('CODEX_HOME')
   })
 })

@@ -47,6 +47,7 @@ def compaction_deployment_fingerprint(
     proxy: str = "",
     provider_routing: Mapping[str, str] | None = None,
     replay_provider_state: bool = False,
+    request_headers: Mapping[str, str] | None = None,
 ) -> str:
     """Return a process-local opaque identity for one compaction deployment."""
 
@@ -58,10 +59,12 @@ def compaction_deployment_fingerprint(
         "org_id": str(org_id or "").strip(),
         "proxy": str(proxy or "").strip(),
         "provider_routing": sorted(
-            (str(key), str(value))
-            for key, value in (provider_routing or {}).items()
+            (str(key), str(value)) for key, value in (provider_routing or {}).items()
         ),
         "replay_provider_state": bool(replay_provider_state),
+        "request_headers": sorted(
+            (str(key).lower(), str(value)) for key, value in (request_headers or {}).items()
+        ),
     }
     canonical = json.dumps(
         identity,
@@ -88,6 +91,7 @@ def _provider_config_fingerprint(config: ProviderConfig) -> str:
         proxy=config.proxy,
         provider_routing=config.provider_routing,
         replay_provider_state=config.replay_provider_state,
+        request_headers=config.request_headers,
     )
 
 
@@ -211,16 +215,13 @@ def _resolved_target_budgets(
     # override when it may have come from a catalog or per-model profile.
     window_source = "caller_resolved"
     if resolved_window <= 0:
-        catalog_window = int(
-            catalog.resolve_context_window(model, provider=provider_id) or 0
-        )
+        catalog_window = int(catalog.resolve_context_window(model, provider=provider_id) or 0)
         resolved_window = catalog_window
         window_source = "model_catalog" if catalog_window > 0 else "bounded_fallback"
     resolved_window = max(1, resolved_window)
 
     catalog_output = int(
-        catalog.resolve_max_tokens(model, user_override=0, provider=provider_id)
-        or 0
+        catalog.resolve_max_tokens(model, user_override=0, provider=provider_id) or 0
     )
     requested_output = max(1, int(max_output_tokens or 0))
     resolved_output = min(
@@ -229,18 +230,18 @@ def _resolved_target_budgets(
         catalog_output if catalog_output > 0 else requested_output,
         resolved_window,
     )
-    derived_chars = ContextBudgetGovernor.from_values(
-        context_window_tokens=resolved_window,
-        max_output_tokens=resolved_output,
-        thinking_budget_tokens=0,
-        context_overflow_threshold=_COMPACTION_CONTEXT_THRESHOLD,
-    ).snapshot().provider_request_max_chars
-    requested_chars = max(0, int(provider_request_max_chars or 0))
-    resolved_chars = (
-        min(requested_chars, derived_chars)
-        if requested_chars > 0
-        else derived_chars
+    derived_chars = (
+        ContextBudgetGovernor.from_values(
+            context_window_tokens=resolved_window,
+            max_output_tokens=resolved_output,
+            thinking_budget_tokens=0,
+            context_overflow_threshold=_COMPACTION_CONTEXT_THRESHOLD,
+        )
+        .snapshot()
+        .provider_request_max_chars
     )
+    requested_chars = max(0, int(provider_request_max_chars or 0))
+    resolved_chars = min(requested_chars, derived_chars) if requested_chars > 0 else derived_chars
     return resolved_window, resolved_output, max(1, resolved_chars), window_source
 
 
@@ -279,6 +280,7 @@ def build_compaction_llm_plan_from_provider_config(
     isolated = replace(
         config,
         model=model,
+        request_headers=dict(config.request_headers),
         provider_routing=dict(config.provider_routing),
         # A summary request contains freshly serialized portable messages.
         # Provider-private state from the consumer turn must never be replayed.
@@ -296,8 +298,7 @@ def build_compaction_llm_plan_from_provider_config(
                 max_output_tokens=resolved_output,
                 provider_request_max_chars=resolved_chars,
                 deployment_fingerprint=(
-                    deployment_fingerprint
-                    or _provider_config_fingerprint(isolated)
+                    deployment_fingerprint or _provider_config_fingerprint(isolated)
                 ),
                 portable=portable,
                 source=source,
@@ -435,9 +436,7 @@ def resolve_compaction_execution_plan(
                     target,
                     credential_pool_provider=pool_provider,
                     credential_pool_session_key=pool_session_key,
-                    credential_pool_failure_reporter=(
-                        credential_pool_failure_reporter
-                    ),
+                    credential_pool_failure_reporter=(credential_pool_failure_reporter),
                 )
         if target.deployment_fingerprint in seen:
             return
@@ -463,9 +462,7 @@ def resolve_compaction_execution_plan(
                 credential_pool=resolution_metadata.get("credential_pool"),
             )
 
-    explicit_provider = str(
-        getattr(compaction_config, "provider", "") or ""
-    ).strip()
+    explicit_provider = str(getattr(compaction_config, "provider", "") or "").strip()
     explicit_model = str(getattr(compaction_config, "model", "") or "").strip()
     if explicit_provider and explicit_model:
         resolution_metadata: dict[str, Any] = {}
@@ -490,6 +487,7 @@ def resolve_compaction_execution_plan(
             replace(
                 active_provider_config,
                 model=explicit_model,
+                request_headers=dict(active_provider_config.request_headers),
                 provider_routing=dict(active_provider_config.provider_routing),
                 replay_provider_state=False,
             ),

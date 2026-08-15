@@ -8,7 +8,7 @@ state protocols that should evolve independently.
 from __future__ import annotations
 
 import json
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Mapping
 from typing import Any
 from uuid import uuid4
 
@@ -31,6 +31,7 @@ from .error_redaction import (
 from .failures import retry_after_from_headers
 from .openai import _http_error_body_text, _resolve_llm_proxy, _versioned_api_url
 from .protocol import ProviderConnectionConfig, ProviderMetadata
+from .request_headers import normalize_request_headers
 from .request_proof import (
     RESPONSES_REQUEST_ENVELOPE,
     ProviderRequestBudgetExceededError,
@@ -205,16 +206,20 @@ class OpenAIResponsesProvider:
         api_key: str,
         model: str = "gpt-5.4",
         base_url: str = _OPENAI_RESPONSES_BASE,
+        complete_url: str | None = None,
         org_id: str | None = None,
         proxy: str | None = None,
         provider_id: str | None = None,
+        request_headers: Mapping[str, str] | None = None,
     ) -> None:
         self._api_key = clean_header_secret(api_key, label="LLM API key")
         self._model = model
         self._base_url = base_url.rstrip("/")
+        self._complete_url = str(complete_url or "").strip()
         self._org_id = org_id
         self._proxy = _resolve_llm_proxy(proxy)
         self.provider_id = (provider_id or self.provider_name).strip()
+        self._request_headers = normalize_request_headers(request_headers)
 
     @property
     def model(self) -> str:
@@ -242,9 +247,12 @@ class OpenAIResponsesProvider:
             model=self._model,
             api_key=self._api_key,
             base_url=self._base_url,
+            request_headers=dict(self._request_headers),
         )
 
     def _api_url(self, path: str) -> str:
+        if self._complete_url and path.rstrip("/").endswith("/responses"):
+            return self._complete_url
         return _versioned_api_url(self._base_url, path)
 
     def _build_payload(
@@ -330,9 +338,7 @@ class OpenAIResponsesProvider:
             else None
         )
         if wire_active_user_index != cfg.active_user_message_index:
-            cfg = cfg.model_copy(
-                update={"active_user_message_index": wire_active_user_index}
-            )
+            cfg = cfg.model_copy(update={"active_user_message_index": wire_active_user_index})
         return self.chat_items(
             input_items,
             tools=tools,
@@ -356,11 +362,14 @@ class OpenAIResponsesProvider:
         tools: list[ToolDefinition] | None,
         config: ChatConfig,
     ) -> AsyncIterator[StreamEvent]:
-        headers = {
-            "Authorization": f"Bearer {self._api_key}",
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-        }
+        headers = dict(self._request_headers)
+        headers.update(
+            {
+                "Authorization": f"Bearer {self._api_key}",
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            }
+        )
         if self._org_id:
             headers["OpenAI-Organization"] = self._org_id
 
@@ -421,6 +430,7 @@ class OpenAIResponsesProvider:
         trace.record_request(
             payload=payload,
             headers=headers,
+            secret_header_names=self._request_headers,
             metadata={
                 "timeout_seconds": config.timeout,
                 "tools_count": len(tools or []),
@@ -548,9 +558,7 @@ class OpenAIResponsesProvider:
             return
         output_items = raw_output_items if isinstance(raw_output_items, list) else []
         candidate_artifact = (
-            CandidateArtifactBuilder()
-            if config.candidate_output_mode == "inert_artifact"
-            else None
+            CandidateArtifactBuilder() if config.candidate_output_mode == "inert_artifact" else None
         )
         parsed_tool_arguments: dict[
             int,
@@ -596,15 +604,12 @@ class OpenAIResponsesProvider:
                 # Unknown but well-shaped output item types are provider state
                 # that this adapter does not need to surface.
                 continue
-            if candidate_artifact is not None and (
-                response_completed or truncated_by_length
-            ):
+            if candidate_artifact is not None and (response_completed or truncated_by_length):
                 candidate_name = item.get("name")
                 candidate_arguments = item.get("arguments")
-                if (
-                    not _candidate_field_has_content(candidate_name)
-                    and not _candidate_field_has_content(candidate_arguments)
-                ):
+                if not _candidate_field_has_content(
+                    candidate_name
+                ) and not _candidate_field_has_content(candidate_arguments):
                     candidate_arguments = _candidate_malformed_function_call(item)
                 try:
                     if truncated_by_length:
@@ -673,9 +678,7 @@ class OpenAIResponsesProvider:
                 arguments = (
                     json.loads(
                         raw_arguments,
-                        parse_constant=lambda value: (_ for _ in ()).throw(
-                            ValueError(value)
-                        ),
+                        parse_constant=lambda value: (_ for _ in ()).throw(ValueError(value)),
                     )
                     if raw_arguments.strip()
                     else {}
@@ -858,9 +861,7 @@ class OpenAIResponsesProvider:
             )
             yield ErrorEvent(message=message, code="incomplete_tool_call")
             return
-        elif emitted_tool or (
-            candidate_artifact is not None and candidate_artifact.has_calls
-        ):
+        elif emitted_tool or (candidate_artifact is not None and candidate_artifact.has_calls):
             stop_reason = "tool_use"
         else:
             stop_reason = "end_turn"
@@ -912,7 +913,8 @@ class OpenAIResponsesProvider:
         so callers that must distinguish a wrong key from an empty catalog
         (e.g. onboarding discovery) can classify it.
         """
-        headers = {"Authorization": f"Bearer {self._api_key}"}
+        headers = dict(self._request_headers)
+        headers["Authorization"] = f"Bearer {self._api_key}"
         try:
             async with httpx.AsyncClient(
                 timeout=30,
@@ -967,11 +969,14 @@ class OpenAIResponsesProvider:
         """
 
         cfg = config or ChatConfig()
-        headers = {
-            "Authorization": f"Bearer {self._api_key}",
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-        }
+        headers = dict(self._request_headers)
+        headers.update(
+            {
+                "Authorization": f"Bearer {self._api_key}",
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            }
+        )
         if self._org_id:
             headers["OpenAI-Organization"] = self._org_id
         endpoint = self._api_url("/v1/responses/compact")
@@ -1012,6 +1017,7 @@ class OpenAIResponsesProvider:
         trace.record_request(
             payload=payload,
             headers=headers,
+            secret_header_names=self._request_headers,
             metadata={
                 "timeout_seconds": cfg.timeout,
                 "operation": "compact_window",

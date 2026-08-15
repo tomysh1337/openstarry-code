@@ -19,6 +19,7 @@ def test_all_runtime_roots_are_kept_before_directories_exist(
 ) -> None:
     home = tmp_path / "home"
     workspace = tmp_path / "workspace"
+    monkeypatch.delenv("CODEX_HOME", raising=False)
     monkeypatch.setattr(Path, "home", classmethod(lambda cls: home))
 
     layer_dirs = resolve_skill_layer_dirs(
@@ -27,5 +28,15 @@ def test_all_runtime_roots_are_kept_before_directories_exist(
     )
 
     assert layer_dirs.workspace_dir == workspace / "skills"
+    assert layer_dirs.personal_codex_dir == home / ".codex" / "skills"
     assert layer_dirs.personal_agents_dir == home / ".agents" / "skills"
     assert layer_dirs.project_agents_dir == workspace / ".agents" / "skills"
+
+
+def test_codex_home_overrides_default_codex_skills_dir(tmp_path, monkeypatch) -> None:
+    codex_home = tmp_path / "shared-codex"
+    monkeypatch.setenv("CODEX_HOME", str(codex_home))
+
+    layer_dirs = resolve_skill_layer_dirs(allow_bundled=False)
+
+    assert layer_dirs.personal_codex_dir == codex_home / "skills"

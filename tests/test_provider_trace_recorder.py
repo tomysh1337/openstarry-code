@@ -35,7 +35,9 @@ def test_llm_trace_recorder_writes_full_payload_and_redacts_headers(
             "X-OpenStarry-Code-Turn-Id": "turn-1",
             "X-OpenStarry-Code-Execution-Id": "execution-1",
             "X-OpenStarry-Code-Call-Kind": "agent.chat",
+            "X-Custom-Tenant": "tenant-secret",
         },
+        secret_header_names={"X-Custom-Tenant"},
     )
     recorder.record_response_headers(response_ids=["gen-safe-1"])
     recorder.record_chunk({"id": "chatcmpl-1", "choices": [{"delta": {"content": "ok"}}]})
@@ -61,6 +63,7 @@ def test_llm_trace_recorder_writes_full_payload_and_redacts_headers(
     assert rows[0]["headers"]["X-OpenStarry-Code-Turn-Id"] == "[PRESENT]"
     assert rows[0]["headers"]["X-OpenStarry-Code-Execution-Id"] == "[PRESENT]"
     assert rows[0]["headers"]["X-OpenStarry-Code-Call-Kind"] == "[PRESENT]"
+    assert rows[0]["headers"]["X-Custom-Tenant"] == "[REDACTED]"
     serialized = json.dumps(rows[0]["headers"], sort_keys=True)
     assert "install-1" not in serialized
     assert "session-1" not in serialized

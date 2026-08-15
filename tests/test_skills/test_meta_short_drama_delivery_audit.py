@@ -17,7 +17,7 @@ from openstarry_code.skills.loader import SkillLoader
 BUNDLED = (
     Path(__file__).resolve().parents[2]
     / "src"
-    / "opensquilla"
+    / "openstarry_code"
     / "skills"
     / "bundled"
 )
@@ -27,7 +27,7 @@ def _load_audit_module() -> ModuleType:
     script = (
         Path(__file__).resolve().parents[2]
         / "src"
-        / "opensquilla"
+        / "openstarry_code"
         / "skills"
         / "bundled"
         / "short-drama-delivery-audit"

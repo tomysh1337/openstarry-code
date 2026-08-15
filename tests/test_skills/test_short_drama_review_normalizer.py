@@ -13,7 +13,7 @@ def _load_module() -> ModuleType:
     script = (
         Path(__file__).resolve().parents[2]
         / "src"
-        / "opensquilla"
+        / "openstarry_code"
         / "skills"
         / "bundled"
         / "short-drama-review-normalizer"

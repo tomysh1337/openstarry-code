@@ -40,6 +40,10 @@ def _configured_openrouter() -> GatewayConfig:
         api_key="sk-old",
         base_url="https://llm.corp.example/v1",
         proxy="http://127.0.0.1:7890",
+        display_name="Corporate Router",
+        note="Primary internal endpoint",
+        website_url="https://llm.corp.example",
+        complete_url="https://llm.corp.example/v1/chat/completions",
         provider_routing={"corp-model": "corp-upstream"},
     )
     cfg = res.config
@@ -62,6 +66,10 @@ def test_upsert_llm_provider_same_provider_resave_keeps_unspecified_fields():
     assert llm.base_url == "https://llm.corp.example/v1"
     assert llm.proxy == "http://127.0.0.1:7890"
     assert llm.provider_routing == {"corp-model": "corp-upstream"}
+    assert llm.display_name == "Corporate Router"
+    assert llm.note == "Primary internal endpoint"
+    assert llm.website_url == "https://llm.corp.example"
+    assert llm.complete_url == "https://llm.corp.example/v1/chat/completions"
     assert llm.max_tokens == 4096
     assert llm.thinking == "high"
 
@@ -75,6 +83,10 @@ def test_upsert_llm_provider_public_payload_reflects_kept_values():
     assert res.public_payload["base_url"] == "https://llm.corp.example/v1"
     assert res.public_payload["proxy"] == "http://127.0.0.1:7890"
     assert res.public_payload["provider_routing"] == {"corp-model": "corp-upstream"}
+    assert res.public_payload["display_name"] == "Corporate Router"
+    assert res.public_payload["note"] == "Primary internal endpoint"
+    assert res.public_payload["website_url"] == "https://llm.corp.example"
+    assert res.public_payload["complete_url"].endswith("/chat/completions")
 
 
 def test_upsert_llm_provider_explicit_values_still_override_stored():
@@ -87,6 +99,10 @@ def test_upsert_llm_provider_explicit_values_still_override_stored():
         api_key="sk-rotated",
         base_url="https://other.example/v1",
         proxy="",
+        display_name="Updated Router",
+        note="",
+        website_url="https://updated.example",
+        complete_url="https://other.example/v1/chat/completions",
         provider_routing={},
     )
 
@@ -95,6 +111,10 @@ def test_upsert_llm_provider_explicit_values_still_override_stored():
     assert llm.base_url == "https://other.example/v1"
     assert llm.proxy == ""
     assert llm.provider_routing == {}
+    assert llm.display_name == "Updated Router"
+    assert llm.note == ""
+    assert llm.website_url == "https://updated.example"
+    assert llm.complete_url == "https://other.example/v1/chat/completions"
 
 
 def test_upsert_llm_provider_empty_model_string_keeps_legacy_default_chain():
@@ -122,6 +142,10 @@ def test_upsert_llm_provider_provider_switch_does_not_carry_unrelated_fields():
     assert llm.base_url != "https://llm.corp.example/v1"
     assert llm.max_tokens == 0
     assert llm.thinking is None
+    assert llm.display_name == ""
+    assert llm.note == ""
+    assert llm.website_url == ""
+    assert llm.complete_url == ""
 
 
 def test_upsert_llm_provider_same_provider_resave_keeps_custom_router_tiers():

@@ -18,10 +18,15 @@ interface ProviderSpec {
 interface ProviderConfig {
   provider?: string
   model?: string
+  display_name?: string
+  note?: string
+  website_url?: string
+  complete_url?: string
   base_url?: string
   proxy?: string
   api_key_env?: string
   api_key?: string
+  custom_headers?: Record<string, string>
   [key: string]: unknown
 }
 
@@ -283,7 +288,13 @@ const AUTH_FAILURE_KINDS = new Set(['auth_invalid'])
 // A model selection only invalidates the probe verdict: the catalog itself is
 // still valid for the same provider deployment and must remain available in
 // the combobox.
-const DEPLOYMENT_CONNECTION_FIELDS = new Set(['api_key', 'api_key_env', 'base_url', 'proxy'])
+const DEPLOYMENT_CONNECTION_FIELDS = new Set([
+  'api_key',
+  'api_key_env',
+  'base_url',
+  'proxy',
+  'custom_headers',
+])
 
 export const PROVIDER_CREDENTIAL_REVEAL_TIMEOUT_MS = 30_000
 
@@ -653,7 +664,7 @@ export function useSetupProviderForm() {
   function connectionParams(defaultModel = '', modelOverride?: string): Record<string, unknown> {
     const p = payload()
     const params: Record<string, unknown> = { providerId: providerSelected.value }
-    for (const key of ['apiKey', 'apiKeyEnv', 'baseUrl', 'proxy'] as const) {
+    for (const key of ['apiKey', 'apiKeyEnv', 'baseUrl', 'proxy', 'customHeaders'] as const) {
       if (p[key] !== undefined) params[key] = p[key]
     }
     const model = modelOverride !== undefined
@@ -891,7 +902,15 @@ export function useSetupProviderForm() {
     // deployment instead of silently dropping its direct model or transport.
     const savedModel = String(config.model ?? '').trim()
     if (savedModel) providerFieldValues.value.model = savedModel
-    for (const name of ['base_url', 'proxy'] as const) {
+    for (const name of [
+      'display_name',
+      'note',
+      'website_url',
+      'complete_url',
+      'base_url',
+      'proxy',
+      'custom_headers',
+    ] as const) {
       if (config[name] !== undefined) providerFieldValues.value[name] = config[name]
     }
     baseline.value = serialized.value
@@ -901,13 +920,21 @@ export function useSetupProviderForm() {
   function fieldValue(field: ProviderField, current: ProviderConfig): string {
     const name = field.name
     if (providerFieldValues.value[name] !== undefined) {
+      if (name === 'custom_headers') {
+        const headers = providerFieldValues.value[name]
+        return typeof headers === 'string' ? headers : JSON.stringify(headers || {})
+      }
       return String(providerFieldValues.value[name] || '')
     }
     if (name === 'model') return String(current.model || field.default || '')
     if (name === 'base_url') return String(current.base_url || field.default || '')
     if (name === 'proxy') return String(current.proxy || '')
+    if (name === 'custom_headers') return JSON.stringify(current.custom_headers || {})
     if (name === 'api_key_env') return String(current.api_key_env || (current.api_key ? '' : field.default || ''))
-    return ''
+    const configured = current[name]
+    return configured === undefined || configured === null
+      ? String(field.default ?? '')
+      : String(configured)
   }
 
   function isNonEmpty(value: unknown): boolean {

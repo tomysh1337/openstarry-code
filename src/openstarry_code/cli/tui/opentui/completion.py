@@ -436,6 +436,7 @@ def _build_skill_loader(*, workspace_dir: Path | None = None) -> SkillCompletion
         bundled_dir=layer_dirs.bundled_dir,
         workspace_dir=layer_dirs.workspace_dir,
         managed_dir=layer_dirs.managed_dir,
+        personal_codex_dir=layer_dirs.personal_codex_dir,
         personal_agents_dir=layer_dirs.personal_agents_dir,
         project_agents_dir=layer_dirs.project_agents_dir,
         extra_dirs=layer_dirs.extra_dirs,

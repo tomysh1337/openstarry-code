@@ -426,6 +426,7 @@ def _compaction_target_fingerprint(config: CompactionConfig) -> str:
                 model=str(config.model or ""),
                 api_key=config.api_key,
                 base_url=config.base_url,
+                request_headers=config.request_headers,
             ),
         }
     return hashlib.sha256(_stable_json(target_payload).encode("utf-8")).hexdigest()
@@ -449,9 +450,7 @@ def _frozen_compaction_prefix_hash(
         digest.update(_stable_json(row).encode("utf-8"))
         digest.update(b"\n")
     request_shape = {
-        "previous_summary_sha256": hashlib.sha256(
-            previous_summary.encode("utf-8")
-        ).hexdigest(),
+        "previous_summary_sha256": hashlib.sha256(previous_summary.encode("utf-8")).hexdigest(),
         "custom_instructions_sha256": hashlib.sha256(
             (custom_instructions or "").encode("utf-8")
         ).hexdigest(),
@@ -529,10 +528,7 @@ def _fork_material_references(
             if (
                 isinstance(artifact_id, str)
                 and artifact_id
-                and (
-                    value.get("kind") == "artifact_ref"
-                    or value.get("store") == "artifacts"
-                )
+                and (value.get("kind") == "artifact_ref" or value.get("store") == "artifacts")
             ):
                 artifact_ids.add(artifact_id)
             artifacts = value.get("artifacts")
@@ -1266,11 +1262,7 @@ class SessionManager:
         """Resolve terminal turns and bind their snapshots to the target child."""
 
         turn_ids = sorted(
-            {
-                turn_id
-                for entry in entries
-                if (turn_id := _entry_turn_id(entry)) is not None
-            }
+            {turn_id for entry in entries if (turn_id := _entry_turn_id(entry)) is not None}
         )
         if not turn_ids:
             return _ForkTerminalOutcomeResolution({}, frozenset(), frozenset())
@@ -1303,18 +1295,13 @@ class SessionManager:
         if callable(exact_tasks):
             rows = await exact_tasks(turn_ids)
         elif callable(get_task):
-            rows = [
-                row
-                for turn_id in turn_ids
-                if (row := await get_task(turn_id)) is not None
-            ]
+            rows = [row for turn_id in turn_ids if (row := await get_task(turn_id)) is not None]
         else:
             rows = []
         tasks_by_id = {
             task_id: row
             for row in rows
-            if isinstance((task_id := getattr(row, "task_id", None)), str)
-            and task_id
+            if isinstance((task_id := getattr(row, "task_id", None)), str) and task_id
         }
 
         projections: dict[str, dict[str, Any]] = {}
@@ -1529,8 +1516,7 @@ class SessionManager:
                 ]
                 if not matching_indexes:
                     raise KeyError(
-                        f"Transcript turn not found in {parent_session_key}: "
-                        f"{fork_through_turn_id}"
+                        f"Transcript turn not found in {parent_session_key}: {fork_through_turn_id}"
                     )
                 first_index = matching_indexes[0]
                 last_index = matching_indexes[-1]
@@ -1547,9 +1533,7 @@ class SessionManager:
                 for index, entry in enumerate(canonical_entries[: last_index + 1]):
                     turn_id = _entry_turn_id(entry)
                     if first_index < index < last_index and turn_id is None:
-                        raise ValueError(
-                            "Cannot fork through a turn with unscoped canonical rows"
-                        )
+                        raise ValueError("Cannot fork through a turn with unscoped canonical rows")
                     if index >= first_index and turn_id not in {
                         None,
                         fork_through_turn_id,
@@ -1574,9 +1558,7 @@ class SessionManager:
                 parent_context_states = []
             else:
                 parent_entries = await self._storage.get_transcript(parent.session_id)
-                outcome_entries = await self._storage.get_canonical_transcript(
-                    parent.session_id
-                )
+                outcome_entries = await self._storage.get_canonical_transcript(parent.session_id)
                 parent_summaries = await self._storage.get_all_summaries(parent.session_id)
                 parent_context_states = await self._storage.get_context_states(parent_session_key)
             outcome_resolution = await self._resolve_fork_terminal_outcomes(
@@ -1594,8 +1576,7 @@ class SessionManager:
                 and fork_through_turn_id not in outcome_resolution.projections
             ):
                 raise KeyError(
-                    f"Completion state not found for transcript turn: "
-                    f"{fork_through_turn_id}"
+                    f"Completion state not found for transcript turn: {fork_through_turn_id}"
                 )
             summary_tokens = sum(
                 estimate_tokens(summary.summary_text) for summary in parent_summaries
@@ -1603,9 +1584,7 @@ class SessionManager:
             parent_tokens = sum(e.token_count or 0 for e in parent_entries) + summary_tokens
             if max_fork_tokens is None or parent_tokens <= max_fork_tokens:
                 material_references = (
-                    _fork_material_references(parent_entries)
-                    if fork_through_turn_id
-                    else None
+                    _fork_material_references(parent_entries) if fork_through_turn_id else None
                 )
                 if is_prefix_fork:
                     # A prefix fork rewrites every copied canonical row as active raw
@@ -1614,9 +1593,7 @@ class SessionManager:
                     # a durable unmatched count so this child cannot claim completeness
                     # after the missing rows have already been discarded.
                     child.compaction_count = (
-                        0
-                        if parent_canonical_complete
-                        else max(1, parent_compaction_count)
+                        0 if parent_canonical_complete else max(1, parent_compaction_count)
                     )
                 else:
                     # Full forks copy summaries and compacted rows verbatim. Preserve
@@ -1732,9 +1709,7 @@ class SessionManager:
         parent = await self._storage.get_session(parent_session_key)
         if parent is None:
             raise KeyError(f"Parent session not found: {parent_session_key}")
-        parent_coverage = await self._storage.get_canonical_transcript_coverage(
-            parent.session_id
-        )
+        parent_coverage = await self._storage.get_canonical_transcript_coverage(parent.session_id)
         canonical_entries = await self._storage.get_canonical_transcript(parent.session_id)
         fork_index = next(
             (
@@ -1746,8 +1721,7 @@ class SessionManager:
         )
         if fork_index is None:
             raise KeyError(
-                f"Transcript message not found in {parent_session_key}: "
-                f"{fork_before_message_id}"
+                f"Transcript message not found in {parent_session_key}: {fork_before_message_id}"
             )
 
         now = _now_ms()
@@ -1772,9 +1746,7 @@ class SessionManager:
             workspace_id=parent.workspace_id,
         )
         child.compaction_count = (
-            0
-            if parent_coverage.canonical_complete
-            else max(1, parent_coverage.compaction_count)
+            0 if parent_coverage.canonical_complete else max(1, parent_coverage.compaction_count)
         )
         child.schema_version = max(
             child.schema_version,
@@ -1972,11 +1944,7 @@ class SessionManager:
             provenance=provenance,
         )
         token_delta = token_count if token_count and turn_usage is None else 0
-        submitted_plan = (
-            _successful_submit_plan_input(tool_calls)
-            if role == "assistant"
-            else None
-        )
+        submitted_plan = _successful_submit_plan_input(tool_calls) if role == "assistant" else None
         if submitted_plan is None:
             await self._storage.append_transcript_entry_and_touch(
                 entry,
@@ -2017,8 +1985,7 @@ class SessionManager:
                 parent=parent,
                 source_turn_id=(
                     str(entry.turn_context.get("turn_id"))
-                    if isinstance(entry.turn_context, dict)
-                    and entry.turn_context.get("turn_id")
+                    if isinstance(entry.turn_context, dict) and entry.turn_context.get("turn_id")
                     else None
                 ),
                 source_message_id=entry.message_id,
@@ -2111,11 +2078,7 @@ class SessionManager:
                 ),
                 None,
             )
-            source_entries = (
-                transcript[: boundary_index + 1]
-                if boundary_index is not None
-                else []
-            )
+            source_entries = transcript[: boundary_index + 1] if boundary_index is not None else []
         boundary = source_entries[-1] if source_entries else None
         return CompactionSourceSnapshot(
             entries=tuple(source_entries),
@@ -2187,10 +2150,7 @@ class SessionManager:
         event_body_hash = checkpoint_event_hash(
             "\n".join(serialize_checkpoint_event(event) for event in events)
         )
-        failure_key = (
-            f"checkpoint:{session_key}:{resolved_turn_id}:"
-            f"{event_body_hash}"
-        )
+        failure_key = f"checkpoint:{session_key}:{resolved_turn_id}:{event_body_hash}"
         checkpoint_started = time.monotonic()
         try:
             if workspace is None:
@@ -2213,9 +2173,7 @@ class SessionManager:
                     phase="checkpointing",
                 )
         except Exception as exc:
-            failure_key = (
-                f"{failure_key}:failed:{checkpoint_event_hash(str(exc))[:16]}"
-            )
+            failure_key = f"{failure_key}:failed:{checkpoint_event_hash(str(exc))[:16]}"
             receipt = MemoryDurableReceipt(
                 session_key=session_key,
                 session_id=node.session_id,
@@ -2269,9 +2227,7 @@ class SessionManager:
             coverage_turn_id=coverage_turn_id,
             coverage_hash=coverage_hash,
             coverage_entry_count=coverage_entry_count,
-            idempotency_key=(
-                f"checkpoint:{session_key}:{resolved_turn_id}:{result.content_hash}"
-            ),
+            idempotency_key=(f"checkpoint:{session_key}:{resolved_turn_id}:{result.content_hash}"),
             status="checkpoint_saved",
             attempt_count=1,
         )
@@ -2465,9 +2421,7 @@ class SessionManager:
         """
         correlation_kwargs: dict[str, Any] = {}
         if provider_request_correlation is not None:
-            correlation_kwargs["provider_request_correlation"] = (
-                provider_request_correlation
-            )
+            correlation_kwargs["provider_request_correlation"] = provider_request_correlation
         result = await self.compact_with_result(
             session_key,
             context_window_tokens,
@@ -2479,11 +2433,7 @@ class SessionManager:
             consumer_admission_fingerprint=consumer_admission_fingerprint,
             **correlation_kwargs,
         )
-        return (
-            result.summary
-            if result.removed_count or result.replaced_previous_summary
-            else ""
-        )
+        return result.summary if result.removed_count or result.replaced_previous_summary else ""
 
     async def compact_with_result(
         self,
@@ -2507,7 +2457,11 @@ class SessionManager:
         # Runtime counters/deadlines belong to one logical operation. Public
         # callers may reuse a config object, so isolate it before arming; a
         # concurrent waiter must never reset the owner's deadline or call cap.
-        effective_config = replace(config) if config is not None else CompactionConfig()
+        effective_config = (
+            replace(config, request_headers=dict(config.request_headers))
+            if config is not None
+            else CompactionConfig()
+        )
         persisted_compaction_id = compaction_id or new_compaction_id()
         arm_compaction_deadline(
             effective_config,
@@ -2543,15 +2497,10 @@ class SessionManager:
                 summaries=summaries,
             )
             previous_summary = "\n\n".join(
-                record.text.strip()
-                for record in previous_context_records
-                if record.text.strip()
+                record.text.strip() for record in previous_context_records if record.text.strip()
             )
             previous_covered_through_id = max(
-                (
-                    int(record.covered_through_id or 0)
-                    for record in previous_context_records
-                ),
+                (int(record.covered_through_id or 0) for record in previous_context_records),
                 default=0,
             )
             previous_context_fingerprint = compaction_context_fingerprint(
@@ -2790,14 +2739,10 @@ class SessionManager:
                 removed_count=result.removed_count,
                 kept_count=len(kept_entries),
                 chunk_count=result.chunks_processed,
-                flush_receipt_status=_compaction_flush_status_for_persistence(
-                    flush_receipt_status
-                ),
+                flush_receipt_status=_compaction_flush_status_for_persistence(flush_receipt_status),
                 covered_through_id=max(
                     previous_covered_through_id,
-                    max((entry.id or 0) for entry in removed_entries)
-                    if removed_entries
-                    else 0,
+                    max((entry.id or 0) for entry in removed_entries) if removed_entries else 0,
                 ),
             )
             current_node.compaction_count = (current_node.compaction_count or 0) + 1
@@ -2836,9 +2781,7 @@ class SessionManager:
                     expected_context_fingerprint=previous_context_fingerprint,
                 )
             )
-            installed, cancellation_reconciled = await _await_compaction_commit_barrier(
-                commit_task
-            )
+            installed, cancellation_reconciled = await _await_compaction_commit_barrier(commit_task)
             if installed is False:
                 return replace(
                     result,
@@ -2940,10 +2883,7 @@ class SessionManager:
                     source_boundary_message_id is None
                     or boundary.message_id == source_boundary_message_id
                 )
-                and (
-                    source_boundary_entry_id is None
-                    or boundary.id == source_boundary_entry_id
-                )
+                and (source_boundary_entry_id is None or boundary.id == source_boundary_entry_id)
                 and isinstance(removed_count, int)
                 and not isinstance(removed_count, bool)
                 and 0 <= removed_count <= len(expected_source_entries)
@@ -2986,9 +2926,7 @@ class SessionManager:
             return False
 
         persisted_kept_count = (
-            len(preserved_entries)
-            if expected_source_entries is not None
-            else len(kept_entries)
+            len(preserved_entries) if expected_source_entries is not None else len(kept_entries)
         )
 
         # Store summary out-of-band. New compactions must not prepend a
@@ -3009,9 +2947,7 @@ class SessionManager:
                 for entry in removed_entries
             ]
             if summary_format == "structured_v1" and summary_payload is not None:
-                structured_summary = StructuredCompactionSummary.model_validate(
-                    summary_payload
-                )
+                structured_summary = StructuredCompactionSummary.model_validate(summary_payload)
                 resolved_coverage_status = coverage_status
                 resolved_missing_obligations = list(missing_obligations or ())
                 resolved_critical_carry_forward = list(
@@ -3042,9 +2978,7 @@ class SessionManager:
                 critical_carry_forward=resolved_critical_carry_forward,
                 removed_count=len(removed_entries),
                 kept_count=persisted_kept_count,
-                flush_receipt_status=_compaction_flush_status_for_persistence(
-                    flush_receipt_status
-                ),
+                flush_receipt_status=_compaction_flush_status_for_persistence(flush_receipt_status),
                 covered_through_id=max((entry.id or 0) for entry in removed_entries)
                 if removed_entries
                 else 0,

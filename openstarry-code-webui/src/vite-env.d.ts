@@ -49,6 +49,8 @@ declare global {
     getGatewayStatus: () => Promise<DesktopSettings['gateway']>
     getCliInvocation?: () => Promise<unknown>
     revealGatewayLog: () => Promise<boolean>
+    getCodexXStatus?: () => Promise<unknown>
+    openCodexX?: () => Promise<unknown>
     getDesktopSettings: () => Promise<DesktopSettings>
     saveDesktopSettings: (payload: DesktopSettingsPayload) => Promise<DesktopSettings>
     resetDesktopSettings: () => Promise<{ ok: boolean }>

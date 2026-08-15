@@ -216,23 +216,23 @@ bundled gateway and platform runtime pass the packaging gate.
 ## Release Build
 
 The current OpenStarry Code release is
-[`v0.5.5`](https://github.com/tomysh1337/openstarry-code/releases/tag/v0.5.5),
-built from the tagged repository state on 2026-08-14.
+[`v0.5.6`](https://github.com/tomysh1337/openstarry-code/releases/tag/v0.5.6),
+built from the tagged repository state on 2026-08-15.
 
 Install its verified wheel directly with `uv`:
 
 ```sh
 uv tool install --python 3.12 \
-  "openstarry-code[recommended] @ https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.5/openstarry_code-0.5.5-py3-none-any.whl"
+  "openstarry-code[recommended] @ https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.6/openstarry_code-0.5.6-py3-none-any.whl"
 ```
 <!-- release URL boundary: / -->
 
 | Artifact | Purpose | Integrity |
 | --- | --- | --- |
-| [`OpenStarry-Code-0.5.5-win-x64.exe`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.5/OpenStarry-Code-0.5.5-win-x64.exe) | Interactive NSIS Windows installer | Listed in `SHA256SUMS` |
-| [`OpenStarry-Code-0.5.5-win-x64.msi`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.5/OpenStarry-Code-0.5.5-win-x64.msi) | WiX MSI Windows installer | Listed in `SHA256SUMS` |
-| [`openstarry_code-0.5.5-py3-none-any.whl`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.5/openstarry_code-0.5.5-py3-none-any.whl) | Installable Python runtime with the compiled Web UI | Listed in `SHA256SUMS` |
-| [`openstarry_code-0.5.5.tar.gz`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.5/openstarry_code-0.5.5.tar.gz) | Reproducible source distribution | Listed in `SHA256SUMS` |
+| [`OpenStarry-Code-0.5.6-win-x64.exe`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.6/OpenStarry-Code-0.5.6-win-x64.exe) | Interactive NSIS Windows installer | Listed in `SHA256SUMS` |
+| [`OpenStarry-Code-0.5.6-win-x64.msi`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.6/OpenStarry-Code-0.5.6-win-x64.msi) | WiX MSI Windows installer | Listed in `SHA256SUMS` |
+| [`openstarry_code-0.5.6-py3-none-any.whl`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.6/openstarry_code-0.5.6-py3-none-any.whl) | Installable Python runtime with the compiled Web UI | Listed in `SHA256SUMS` |
+| [`openstarry_code-0.5.6.tar.gz`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.6/openstarry_code-0.5.6.tar.gz) | Reproducible source distribution | Listed in `SHA256SUMS` |
 | `SHA256SUMS` | SHA-256 manifest for release downloads | Published with the release |
 
 Release verification covers the complete frontend build, artifact contract,
@@ -245,13 +245,36 @@ Windows installers are currently unsigned; verify `SHA256SUMS` before use.
 | --- | --- |
 | Web architecture, theme, motion, security, and locale guards | Passed |
 | Vue TypeScript validation | Passed |
-| Web UI unit suite | 3,748 tests passed |
-| Python focused suite | 36 tests passed |
+| Web UI unit suite | 3,755 tests passed |
+| Python focused suite | 698 passed, 3 skipped |
 | npm dependency audit | 0 known vulnerabilities |
 | Wheel/sdist build | Passed |
 
 See [`CHANGELOG.md`](CHANGELOG.md) for the version history and
-[`docs/releases/0.5.5.md`](docs/releases/0.5.5.md) for detailed release notes.
+[`docs/releases/0.5.6.md`](docs/releases/0.5.6.md) for detailed release notes.
+
+## Codex-X Companion
+
+Windows EXE and MSI packages include
+[Codex-X `v0.3.12`](https://github.com/yynxxxxx/Codex-X) as a verified portable
+companion. Open it from the Skills toolbar to manage Codex prompt templates,
+conversation indexes, Skills, and MCP configuration.
+
+- The build downloads one pinned portable archive and verifies SHA-256
+  `3641a3cc4434fd8bf237108ccb7177c231606639b4990b32630faccee403978f`.
+- Codex-X receives the same `${CODEX_HOME:-~/.codex}` used by OpenStarry Code;
+  prompts, conversations, Skills, and MCP configuration therefore stay on one
+  shared Codex data source.
+- OpenStarry Code reads `${CODEX_HOME:-~/.codex}/skills` as the dedicated
+  `codex` Skill layer. Changes become available after catalog reload without
+  copying the personal Skill tree into the repository.
+- Codex-X's separate application database remains under the OpenStarry desktop
+  profile through `CODEXX_HOME`. Microsoft Edge WebView2 Runtime is required.
+
+The desktop package includes the upstream MIT license next to `Codex-X.exe`.
+The model-facing `sandbox_status` tool separately reports the current sandbox
+backend, setup/capability state, and effective file/network posture without
+starting a command.
 
 ### Network privacy
 
@@ -279,8 +302,9 @@ Explicit update-availability checks remain disabled when these controls apply. S
 ## Custom API Mesh
 
 Each custom endpoint is a first-class provider with independent connection
-state. The catalog puts the three primary protocol choices directly after
-TokenRhythm so a user-supplied Base URL is available during first-run setup.
+state. The setup catalog keeps these endpoints in a dedicated **Third-party
+APIs** group and labels every entry with its wire protocol, so a compatible
+endpoint can be selected without guessing its request format.
 
 | Provider ID | Default key variable | Isolation |
 | --- | --- | --- |
@@ -295,6 +319,25 @@ After a successful connection probe, each slot requests
 `GET <base_url>/models`. Returned model IDs populate the model picker. An
 endpoint without a model catalog remains usable through the manual model-ID
 field.
+
+### Custom request headers and profile duplication
+
+The setup panel accepts named request headers for gateways that require tenant,
+project, routing, or vendor-specific metadata. The same headers are used by
+connection probes, model discovery, normal turns, Router/Ensemble candidates,
+automatic session naming, and context compaction. Header values are redacted
+from public configuration, RPC responses, object representations, and LLM
+traces.
+
+Header names must be unique without regard to case. Authentication and HTTP
+framing headers are reserved, and CR, LF, or NUL characters are rejected.
+Masked values can be retained while editing the same origin; changing the Base
+URL to a different origin clears the old headers so credentials are not sent to
+another host.
+
+Any Chat Completions profile can be duplicated atomically into the next empty
+custom slot. The server copies its Base URL, model, proxy, credential reference,
+and custom headers without returning secret values to the browser.
 
 ## Web Search Matrix
 

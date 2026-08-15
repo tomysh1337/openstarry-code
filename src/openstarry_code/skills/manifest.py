@@ -560,6 +560,7 @@ def compile_skill_manifest(
     *,
     skill_bytes: bytes | None = None,
     profile: SkillCompileProfile = SkillCompileProfile.TRUSTED,
+    fallback_name: str | None = None,
 ) -> SkillSpec:
     """Compile one SKILL.md using the requested trust-boundary profile.
 
@@ -581,7 +582,10 @@ def compile_skill_manifest(
     else:
         frontmatter, body = parse_skill_frontmatter(text)
     if not frontmatter or "name" not in frontmatter:
-        raise ValueError("SKILL.md has no usable frontmatter name")
+        if fallback_name is None:
+            raise ValueError("SKILL.md has no usable frontmatter name")
+        frontmatter = dict(frontmatter)
+        frontmatter["name"] = fallback_name
 
     if profile is SkillCompileProfile.COMMUNITY_INSTRUCTION:
         return _compile_community_instruction_manifest(

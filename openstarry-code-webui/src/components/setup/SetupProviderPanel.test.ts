@@ -35,7 +35,6 @@ const DISCOVERED: DiscoveredModel[] = [
 ]
 
 const TOKENRHYTHM_REGISTRATION_URL = 'https://tokenrhythm.studio/register'
-const TOKENRHYTHM_CATALOG_URL = 'https://tokenrhythm.studio/'
 const TOKENRHYTHM_PROVIDER = { providerId: 'tokenrhythm', label: 'TokenRhythm' }
 const OPENROUTER_PROVIDER = { providerId: 'openrouter', label: 'OpenRouter' }
 
@@ -510,6 +509,223 @@ describe('SetupProviderPanel — configured provider management', () => {
     app.unmount()
   })
 
+  it('renders the dedicated custom provider editor and keeps complete URL in sync', async () => {
+    const onUpdateProviderField = vi.fn()
+    const onProbeConnection = vi.fn()
+    const providerId = 'custom'
+    const label = 'Custom endpoint'
+    const values = reactive<Record<string, string>>({
+      display_name: 'My Codex',
+      note: 'Company account',
+      website_url: 'https://custom.example.test',
+      model: 'test-model',
+      base_url: 'https://custom.example.test/v1',
+      complete_url: '',
+    })
+    const { app, el, panelState } = await mountPanel({
+      providerSelected: providerId,
+      providerSummary: label,
+      runtimeProviders: [{ providerId, label }],
+      configuredProviders: [{
+        providerId,
+        label,
+        active: false,
+        ready: true,
+        credentialSource: 'explicit',
+        credentialEnv: '',
+        endpointSource: 'explicit',
+        reason: '',
+      }],
+      editingPrimary: false,
+      selectedStoredProfile: true,
+      providerCoreFields: [{ name: 'model', label: 'Model', required: true }],
+      providerAdvancedFields: [
+        { name: 'base_url', label: 'Base URL', required: true },
+        { name: 'proxy', label: 'HTTP proxy' },
+      ],
+      providerFieldValue: (field: { name: string }) => values[field.name] || '',
+      credentialPanel: {
+        ...(panel().credentialPanel as Record<string, unknown>),
+        providerLabel: label,
+      },
+    }, { onUpdateProviderField, onProbeConnection, dirty: true })
+
+    el.querySelector<HTMLButtonElement>(
+      '[data-provider-id="custom"] .setup-provider-card__select',
+    )?.click()
+    await nextTick()
+
+    const dialog = document.body.querySelector<HTMLElement>('.setup-provider-modal--custom')!
+    expect(dialog.parentElement?.classList.contains('setup-provider-modal-overlay--custom')).toBe(true)
+    expect(dialog.querySelector('#setup-provider-modal-title')?.textContent).toContain('Edit provider')
+    expect(dialog.querySelector('.setup-provider-modal__back')).not.toBeNull()
+    expect(dialog.querySelector('.setup-provider-modal__head > .btn--icon:last-child')).toBeNull()
+    expect(dialog.querySelector('.setup-provider-modal__provider-identity')).toBeNull()
+
+    const displayName = dialog.querySelector<HTMLInputElement>('input[name="setup_provider_display_name"]')!
+    const note = dialog.querySelector<HTMLInputElement>('input[name="setup_provider_note"]')!
+    const website = dialog.querySelector<HTMLInputElement>('input[name="setup_provider_website_url"]')!
+    expect(displayName.value).toBe('My Codex')
+    expect(note.value).toBe('Company account')
+    expect(website.value).toBe('https://custom.example.test')
+
+    displayName.value = 'Starry API'
+    displayName.dispatchEvent(new Event('input', { bubbles: true }))
+    note.value = 'Primary endpoint'
+    note.dispatchEvent(new Event('input', { bubbles: true }))
+    website.value = 'https://starry.example.test'
+    website.dispatchEvent(new Event('input', { bubbles: true }))
+    expect(onUpdateProviderField).toHaveBeenCalledWith('display_name', 'Starry API')
+    expect(onUpdateProviderField).toHaveBeenCalledWith('note', 'Primary endpoint')
+    expect(onUpdateProviderField).toHaveBeenCalledWith('website_url', 'https://starry.example.test')
+
+    const fullUrl = dialog.querySelector<HTMLInputElement>('input[name="setup_provider_full_url"]')!
+    fullUrl.click()
+    expect(onUpdateProviderField).toHaveBeenCalledWith(
+      'complete_url',
+      'https://custom.example.test/v1/chat/completions',
+    )
+
+    values.complete_url = 'https://custom.example.test/v1/chat/completions'
+    ;(panelState as unknown as { providerSummary: string }).providerSummary = 'Updated custom endpoint'
+    await nextTick()
+    const endpoint = dialog.querySelector<HTMLInputElement>('input[name="setup_provider_base_url"]')!
+    endpoint.value = 'https://api.starry.example/v1'
+    endpoint.dispatchEvent(new Event('input', { bubbles: true }))
+    expect(onUpdateProviderField).toHaveBeenCalledWith('base_url', 'https://api.starry.example/v1')
+    expect(onUpdateProviderField).toHaveBeenCalledWith(
+      'complete_url',
+      'https://api.starry.example/v1/chat/completions',
+    )
+
+    dialog.querySelector<HTMLButtonElement>('.setup-custom-provider__test')?.click()
+    expect(onProbeConnection).toHaveBeenCalledTimes(1)
+    const advanced = dialog.querySelector<HTMLDetailsElement>('.setup-custom-provider__advanced')!
+    expect(advanced.open).toBe(false)
+    expect(advanced.querySelector('input[name="setup_provider_proxy"]')).not.toBeNull()
+    expect(dialog.querySelector('.setup-provider-modal__footer--custom .btn--primary')?.textContent)
+      .toContain('Save')
+
+    app.unmount()
+  })
+
+  it('edits custom request headers and blocks transport-owned header names', async () => {
+    const onUpdateProviderField = vi.fn()
+    const providerId = 'custom'
+    const label = 'Custom endpoint'
+    const { app, el } = await mountPanel({
+      providerSelected: providerId,
+      providerSummary: label,
+      runtimeProviders: [{ providerId, label }],
+      configuredProviders: [{
+        providerId,
+        label,
+        active: true,
+        ready: true,
+        credentialSource: 'explicit',
+        credentialEnv: '',
+        endpointSource: 'explicit',
+        reason: '',
+      }],
+      providerCoreFields: [{ name: 'model', label: 'Model', required: true }],
+      providerAdvancedFields: [
+        { name: 'base_url', label: 'Base URL', required: true },
+        { name: 'custom_headers', label: 'Custom request headers' },
+      ],
+      providerFieldValue: (field: { name: string }) => ({
+        model: 'test-model',
+        base_url: 'https://custom.example.test/v1',
+        custom_headers: JSON.stringify({ 'X-Tenant': 'tenant-a' }),
+      })[field.name] || '',
+      credentialPanel: {
+        ...(panel().credentialPanel as Record<string, unknown>),
+        providerLabel: label,
+        requiresApiKey: false,
+      },
+    }, { onUpdateProviderField, dirty: true })
+
+    el.querySelector<HTMLButtonElement>(
+      '[data-provider-id="custom"] .setup-provider-card__select',
+    )?.click()
+    await nextTick()
+
+    expect(el.querySelector('[data-provider-id="custom"] .setup-provider-protocol-badge')?.textContent)
+      .toContain('Chat Completions')
+    expect(document.body.querySelector('.setup-provider-modal__provider-identity')).toBeNull()
+
+    const advanced = document.body.querySelector<HTMLDetailsElement>(
+      '.setup-custom-provider__advanced',
+    )!
+    advanced.open = true
+    await nextTick()
+
+    const editor = document.body.querySelector<HTMLElement>(
+      '.setup-custom-provider__advanced .custom-headers',
+    )!
+    const name = editor.querySelector<HTMLInputElement>(
+      'input[name="setup_provider_custom_headers_0_name"]',
+    )!
+    const value = editor.querySelector<HTMLInputElement>(
+      'input[name="setup_provider_custom_headers_0_value"]',
+    )!
+    expect(name.value).toBe('X-Tenant')
+    expect(value.value).toBe('tenant-a')
+
+    for (const restricted of ['Authorization', 'x-api-key', 'Host', 'Content-Length']) {
+      name.value = restricted
+      name.dispatchEvent(new Event('input', { bubbles: true }))
+      await nextTick()
+
+      expect(editor.querySelector('[role="alert"]')?.textContent).toContain(restricted)
+      expect(name.getAttribute('aria-invalid')).toBe('true')
+      expect(onUpdateProviderField).toHaveBeenLastCalledWith('custom_headers', {})
+      expect(document.body.querySelector<HTMLButtonElement>(
+        '.setup-provider-modal__footer .btn--primary',
+      )?.disabled).toBe(true)
+      expect(document.body.querySelector<HTMLButtonElement>('.setup-custom-provider__test')?.disabled)
+        .toBe(true)
+    }
+
+    name.value = 'X-Tenant-ID'
+    name.dispatchEvent(new Event('input', { bubbles: true }))
+    await nextTick()
+
+    expect(editor.querySelector('[role="alert"]')).toBeNull()
+    expect(onUpdateProviderField).toHaveBeenLastCalledWith('custom_headers', {
+      'X-Tenant-ID': 'tenant-a',
+    })
+    expect(document.body.querySelector<HTMLButtonElement>(
+      '.setup-provider-modal__footer .btn--primary',
+    )?.disabled).toBe(false)
+    app.unmount()
+  })
+
+  it('offers server-side duplication when another Chat Completions slot is free', async () => {
+    const onDuplicateProvider = vi.fn()
+    const { app, el } = await mountPanel({
+      configuredProviders: [{
+        providerId: 'custom',
+        label: 'Custom Chat',
+        active: true,
+        ready: true,
+        credentialSource: 'explicit',
+        credentialEnv: '',
+        endpointSource: 'explicit',
+        reason: '',
+      }],
+    }, { onDuplicateProvider })
+
+    const button = el.querySelector<HTMLButtonElement>(
+      '[data-provider-id="custom"] button[title*="next available custom API slot"]',
+    )
+    expect(button).not.toBeNull()
+    button?.click()
+    await nextTick()
+
+    expect(onDuplicateProvider).toHaveBeenCalledWith('custom')
+    app.unmount()
+  })
+
   it('selects the editor from the full information block with native click and Enter semantics', async () => {
     const onSelectConfiguredProvider = vi.fn()
     const { app, el } = await mountPanel({ configuredProviders: configured }, {
@@ -673,34 +889,6 @@ describe('SetupProviderPanel — configured provider management', () => {
 
     options[0]?.click()
     expect(onAddProvider).toHaveBeenCalledWith('gemini')
-    app.unmount()
-  })
-
-  it('opens the TokenRhythm limited-time offer without selecting the provider', async () => {
-    const onAddProvider = vi.fn()
-    const { app, el } = await mountPanel({
-      configuredProviders: [],
-      runtimeProviders: [TOKENRHYTHM_PROVIDER, OPENROUTER_PROVIDER],
-    }, { onAddProvider })
-
-    Array.from(el.querySelectorAll<HTMLButtonElement>('button'))
-      .find(button => button.textContent?.trim() === 'Add provider')?.click()
-    await nextTick()
-    await nextTick()
-
-    const offer = document.body.querySelector<HTMLAnchorElement>('.provider-picker__offer')
-    expect(offer?.href).toBe(TOKENRHYTHM_CATALOG_URL)
-    expect(offer?.getAttribute('target')).toBe('_blank')
-    expect(offer?.getAttribute('rel')).toBe('noopener noreferrer')
-    expect(offer?.getAttribute('aria-label')).toContain('opens in a new tab')
-    expect(offer?.textContent).toContain('Limited-time free access')
-
-    offer?.addEventListener('click', event => event.preventDefault(), { once: true })
-    offer?.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }))
-    await nextTick()
-
-    expect(onAddProvider).not.toHaveBeenCalled()
-    expect(document.body.querySelector('[data-testid="provider-catalog-picker"]')).toBeTruthy()
     app.unmount()
   })
 
@@ -1342,8 +1530,8 @@ describe('SetupProviderPanel — configured provider management', () => {
     const initial = Array.from(document.body.querySelectorAll<HTMLElement>('.provider-picker__option'))
       .map(option => option.textContent)
     expect(initial).toEqual([
-      expect.stringContaining('TokenRhythm'),
       expect.stringContaining('Custom endpoint'),
+      expect.stringContaining('TokenRhythm'),
       expect.stringContaining('DeepSeek'),
       expect.stringContaining('Gemini'),
       expect.stringContaining('Anthropic'),
@@ -1352,8 +1540,7 @@ describe('SetupProviderPanel — configured provider management', () => {
     expect(document.body.querySelector('.provider-picker__list')).toBeTruthy()
     expect(Array.from(document.body.querySelectorAll<HTMLButtonElement>('button'))
       .some(button => button.textContent?.includes('Browse all providers'))).toBe(false)
-    expect(document.body.querySelector('.provider-picker__offer')?.textContent)
-      .toContain('Limited-time free access')
+    expect(document.body.querySelector('.provider-picker__offer')).toBeNull()
 
     const search = document.body.querySelector<HTMLInputElement>('input[name="setup_provider_search"]')!
     search.value = 'custom'
@@ -1364,6 +1551,46 @@ describe('SetupProviderPanel — configured provider management', () => {
     result.click()
     expect(onAddProvider).toHaveBeenCalledWith('custom')
 
+    app.unmount()
+  })
+
+  it('groups third-party APIs and labels each custom protocol', async () => {
+    const { app, el } = await mountPanel({
+      configuredProviders: [],
+      runtimeProviders: [
+        { providerId: 'openai', label: 'OpenAI' },
+        { providerId: 'custom', label: 'Custom Chat' },
+        { providerId: 'custom_responses', label: 'Custom Responses' },
+        { providerId: 'custom_anthropic', label: 'Custom Anthropic' },
+        { providerId: 'custom_2', label: 'Custom Chat 2' },
+        { providerId: 'custom_3', label: 'Custom Chat 3' },
+        { providerId: 'custom_4', label: 'Custom Chat 4' },
+      ],
+    })
+    Array.from(el.querySelectorAll<HTMLButtonElement>('button'))
+      .find(button => button.textContent?.trim() === 'Add provider')?.click()
+    await nextTick()
+
+    const group = document.body.querySelector<HTMLElement>(
+      '[data-testid="provider-catalog-third-party"]',
+    )!
+    expect(group.querySelector('.provider-picker__group-label')?.textContent).toContain('Third-party APIs')
+    const protocols = Object.fromEntries(
+      Array.from(group.querySelectorAll<HTMLElement>('.provider-picker__option')).map(option => [
+        option.querySelector('code')?.textContent,
+        option.querySelector<HTMLElement>('[data-provider-protocol]')?.dataset.providerProtocol,
+      ]),
+    )
+    expect(protocols).toEqual({
+      custom: 'Chat Completions',
+      custom_responses: 'Responses',
+      custom_anthropic: 'Anthropic Messages',
+      custom_2: 'Chat Completions',
+      custom_3: 'Chat Completions',
+      custom_4: 'Chat Completions',
+    })
+    expect(document.body.querySelector('.provider-picker__group:last-of-type')?.textContent)
+      .toContain('OpenAI')
     app.unmount()
   })
 

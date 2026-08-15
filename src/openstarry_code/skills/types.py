@@ -9,11 +9,12 @@ from typing import Any
 
 
 class SkillLayer(StrEnum):
-    """Where a skill is loaded from (6-layer precedence, low→high)."""
+    """Where a skill is loaded from (7-layer precedence, low→high)."""
 
     EXTRA = "extra"
     BUNDLED = "bundled"
     MANAGED = "managed"
+    CODEX = "codex"
     PERSONAL = "personal"
     PROJECT = "project"
     WORKSPACE = "workspace"

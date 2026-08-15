@@ -21,6 +21,18 @@ from openstarry_code.provider.types import (
 )
 
 
+def test_anthropic_complete_url_overrides_only_the_messages_route() -> None:
+    provider = AnthropicProvider(
+        api_key="test",
+        model="m",
+        base_url="https://x.example/api/v3",
+        complete_url="https://x.example/private/messages",
+    )
+
+    assert provider._api_url("/v1/messages") == "https://x.example/private/messages"
+    assert provider._api_url("/v1/models") == "https://x.example/api/v3/v1/models"
+
+
 def test_anthropic_input_tokens_include_cache_read_and_creation_tokens() -> None:
     total, cache_read, cache_creation = _anthropic_input_token_counts(
         {

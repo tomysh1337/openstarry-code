@@ -51,9 +51,7 @@ def _update_config_in_place(old: Any, new: Any) -> None:
     # boot-time stored value). ``reconcile_runtime_overrides`` keeps an old
     # record only while the new value still equals its applied value and
     # lets the candidate's freshly derived records win per path.
-    if hasattr(old, "reconcile_runtime_overrides") and hasattr(
-        new, "_runtime_field_overrides"
-    ):
+    if hasattr(old, "reconcile_runtime_overrides") and hasattr(new, "_runtime_field_overrides"):
         old.reconcile_runtime_overrides(new)
 
 
@@ -243,8 +241,7 @@ def _align_auto_router_profile_for_provider_patch(
     if "llm.provider" not in explicit_paths:
         return
     if any(
-        path == "squilla_router" or path.startswith("squilla_router.")
-        for path in explicit_paths
+        path == "squilla_router" or path.startswith("squilla_router.") for path in explicit_paths
     ):
         return
 
@@ -409,9 +406,7 @@ def _live_applied_sections(
     excluded = set(restart_gated) | {"config_path"}
     keys = set(old_dump) | set(new_dump)
     return sorted(
-        key
-        for key in keys
-        if key not in excluded and old_dump.get(key) != new_dump.get(key)
+        key for key in keys if key not in excluded and old_dump.get(key) != new_dump.get(key)
     )
 
 
@@ -441,9 +436,7 @@ def _change_meta(
         old_sandbox_posture_fingerprint=old_sandbox_posture_fingerprint,
         new_config=new_config,
     )
-    live_applied = _live_applied_sections(
-        old_dump, _config_dump(new_config), restart_sections
-    )
+    live_applied = _live_applied_sections(old_dump, _config_dump(new_config), restart_sections)
     return {
         "restartRequired": bool(restart_sections),
         "restartSections": restart_sections,
@@ -474,7 +467,9 @@ def _resolve_provider_selector_config(config: Any) -> Any | None:
         model=runtime.model,
         api_key=runtime.api_key,
         base_url=runtime.base_url,
+        complete_url=runtime.complete_url,
         proxy=runtime.proxy,
+        request_headers=runtime.request_headers,
         provider_routing=runtime.provider_routing,
     )
 
@@ -528,9 +523,7 @@ def _live_catalog_fingerprint(config: Any) -> tuple[str, str, str]:
     return live_catalog_refresh_fingerprint(config)
 
 
-async def _refresh_live_catalog_after_change(
-    previous: tuple[str, str, str], config: Any
-) -> None:
+async def _refresh_live_catalog_after_change(previous: tuple[str, str, str], config: Any) -> None:
     """Refresh public model metadata when its runtime connection changed."""
 
     from openstarry_code.gateway.model_catalog_refresh import (
@@ -542,9 +535,7 @@ async def _refresh_live_catalog_after_change(
 
 def _tokenrhythm_profile_credential_signature(config: Any) -> tuple[object, ...]:
     profile = None
-    for provider_id, candidate in (
-        getattr(config, "llm_profiles", None) or {}
-    ).items():
+    for provider_id, candidate in (getattr(config, "llm_profiles", None) or {}).items():
         if str(provider_id or "").strip().lower() == "tokenrhythm":
             profile = candidate
             break
@@ -597,8 +588,7 @@ def _path_is_or_contains_readonly(path: str) -> bool:
 
 def _path_segments_is_or_contains_readonly(path: tuple[str, ...]) -> bool:
     return any(
-        readonly == path or readonly[: len(path)] == path
-        for readonly in _READONLY_PATH_SEGMENTS
+        readonly == path or readonly[: len(path)] == path for readonly in _READONLY_PATH_SEGMENTS
     )
 
 
@@ -611,6 +601,7 @@ def _prune_readonly_paths(patch: dict[str, Any]) -> dict[str, Any]:
     non-mapping replacement of a read-only ancestor is dropped because it
     would otherwise replace or delete the protected descendants wholesale.
     """
+
     def _walk(node: dict[str, Any], prefix: str) -> dict[str, Any]:
         cleaned: dict[str, Any] = {}
         for key, value in node.items():
@@ -630,6 +621,7 @@ def _prune_readonly_paths(patch: dict[str, Any]) -> dict[str, Any]:
         return cleaned
 
     return _walk(patch, "")
+
 
 _SAFE_WRITE_PATCH_PATHS = frozenset(
     {
@@ -823,9 +815,7 @@ async def _handle_config_set(params: dict | None, ctx: RpcContext) -> dict[str, 
 
     validate_compaction_deployment_write(cfg_dict)
     new_config = GatewayConfig(**cfg_dict)
-    routing_changes = reconcile_model_routing_write(
-        new_config, explicit_paths, previous=ctx.config
-    )
+    routing_changes = reconcile_model_routing_write(new_config, explicit_paths, previous=ctx.config)
     if routing_changes:
         routing_paths = set(routing_changes)
         explicit_paths.update(routing_paths)
@@ -839,9 +829,7 @@ async def _handle_config_set(params: dict | None, ctx: RpcContext) -> dict[str, 
     if hasattr(new_config, "inherit_persist_provenance"):
         new_config.inherit_persist_provenance(ctx.config)
     _mark_explicit_provider_resolution(new_config, explicit_paths)
-    explicit_force_paths = force_persist_paths - {
-        tuple(path.split(".")) for path in redacted_paths
-    }
+    explicit_force_paths = force_persist_paths - {tuple(path.split(".")) for path in redacted_paths}
     _clear_runtime_override_paths(new_config, explicit_force_paths)
     _mark_force_persist_paths(new_config, explicit_force_paths)
     provider_config = _resolve_provider_selector_config(new_config)
@@ -854,9 +842,7 @@ async def _handle_config_set(params: dict | None, ctx: RpcContext) -> dict[str, 
     _sync_resolved_provider_selector(ctx, provider_config)
     _sync_image_generation(new_config)
     _sync_model_catalog_overrides(new_config)
-    await _reconcile_tokenrhythm_profile_after_config_change(
-        previous_config, ctx.config
-    )
+    await _reconcile_tokenrhythm_profile_after_config_change(previous_config, ctx.config)
     # Refresh from the authoritative live object after the durable in-place
     # commit.  A slower, older config mutation must never re-activate its
     # candidate authority after a newer mutation has already won.
@@ -954,13 +940,9 @@ async def _handle_config_patch(
     for path, value in dot_patches.items():
         explicit_paths.update(_collect_paths(value, path))
     explicit_paths -= _READONLY_PATHS
-    explicit_paths = {
-        path for path in explicit_paths if not _is_public_derived_config_path(path)
-    }
+    explicit_paths = {path for path in explicit_paths if not _is_public_derived_config_path(path)}
     force_persist_paths = {
-        path
-        for path in force_persist_paths
-        if not _is_public_derived_config_path(".".join(path))
+        path for path in force_persist_paths if not _is_public_derived_config_path(".".join(path))
     }
     _align_auto_router_profile_for_provider_patch(ctx.config, cfg_dict, explicit_paths)
     linked_paths = _link_dream_for_self_learning_patch(ctx.config, cfg_dict, explicit_paths)
@@ -974,9 +956,7 @@ async def _handle_config_patch(
 
     validate_compaction_deployment_write(cfg_dict)
     new_config = GatewayConfig(**cfg_dict)
-    routing_changes = reconcile_model_routing_write(
-        new_config, explicit_paths, previous=ctx.config
-    )
+    routing_changes = reconcile_model_routing_write(new_config, explicit_paths, previous=ctx.config)
     if routing_changes:
         routing_paths = set(routing_changes)
         explicit_paths.update(routing_paths)
@@ -991,9 +971,7 @@ async def _handle_config_patch(
     if hasattr(new_config, "inherit_persist_provenance"):
         new_config.inherit_persist_provenance(ctx.config)
     _mark_explicit_provider_resolution(new_config, explicit_paths)
-    explicit_force_paths = force_persist_paths - {
-        tuple(path.split(".")) for path in redacted_paths
-    }
+    explicit_force_paths = force_persist_paths - {tuple(path.split(".")) for path in redacted_paths}
     _clear_runtime_override_paths(new_config, explicit_force_paths)
     _mark_force_persist_paths(new_config, explicit_force_paths)
     provider_config = _resolve_provider_selector_config(new_config)
@@ -1006,9 +984,7 @@ async def _handle_config_patch(
     _sync_resolved_provider_selector(ctx, provider_config)
     _sync_image_generation(new_config)
     _sync_model_catalog_overrides(new_config)
-    await _reconcile_tokenrhythm_profile_after_config_change(
-        previous_config, ctx.config
-    )
+    await _reconcile_tokenrhythm_profile_after_config_change(previous_config, ctx.config)
     await _refresh_live_catalog_after_change(old_live_catalog_fingerprint, ctx.config)
 
     change_meta = _change_meta(
@@ -1085,9 +1061,7 @@ async def _handle_config_apply(params: dict | None, ctx: RpcContext) -> dict[str
     if ctx.config is not None and not config_payload.get("config_path"):
         config_payload["config_path"] = getattr(ctx.config, "config_path", None)
 
-    previous_config = (
-        ctx.config.model_copy(deep=True) if ctx.config is not None else None
-    )
+    previous_config = ctx.config.model_copy(deep=True) if ctx.config is not None else None
     old_live_catalog_fingerprint = _live_catalog_fingerprint(ctx.config)
     old_memory_fingerprint = _memory_restart_fingerprint(ctx.config)
     old_channels_fingerprint = _channels_restart_fingerprint(ctx.config)
@@ -1265,9 +1239,7 @@ async def _handle_config_reload(params: dict | None, ctx: RpcContext) -> dict[st
     await _notify_goal_config_changed(ctx, previous_config)
     _sync_image_generation(candidate)
     _sync_model_catalog_overrides(candidate)
-    await _reconcile_tokenrhythm_profile_after_config_change(
-        previous_config, ctx.config
-    )
+    await _reconcile_tokenrhythm_profile_after_config_change(previous_config, ctx.config)
 
     # Reload is the operator's explicit retry path: if the active provider has
     # a configured registry-backed live catalog, refresh even when its

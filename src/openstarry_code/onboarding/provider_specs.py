@@ -161,6 +161,9 @@ _ONBOARDING_VERIFIED_PROVIDER_IDS = frozenset(
 )
 
 _LOCAL_PROVIDER_IDS = frozenset({"ollama", "vllm", "lm_studio", "ovms"})
+_THIRD_PARTY_PROVIDER_IDS = frozenset(
+    {"custom", "custom_2", "custom_3", "custom_4", "custom_responses", "custom_anthropic"}
+)
 _OAUTH_PROVIDER_IDS = frozenset({"openai_codex", "github_copilot"})
 _BAILIAN_CODING_PROVIDER_IDS = frozenset({"bailian_coding", "bailian_coding_cn"})
 _DEDICATED_SK_SP_PROVIDER_IDS = _BAILIAN_CODING_PROVIDER_IDS | {
@@ -319,10 +322,24 @@ def _fields_for(spec: ProviderSpec) -> tuple[ProviderSetupField, ...]:
             field_type="text",
             required=False,
             default="",
-            description=(
-                "Optional explicit HTTP proxy URL "
-                "(e.g. http://127.0.0.1:7890)."
-            ),
+            description=("Optional explicit HTTP proxy URL (e.g. http://127.0.0.1:7890)."),
+        ),
+        *(
+            (
+                ProviderSetupField(
+                    name="custom_headers",
+                    label="Custom request headers",
+                    field_type="text",
+                    required=False,
+                    default="",
+                    description=(
+                        "Additional endpoint-specific HTTP headers. "
+                        "Authentication and transport headers remain adapter-managed."
+                    ),
+                ),
+            )
+            if spec.provider_id in _THIRD_PARTY_PROVIDER_IDS
+            else ()
         ),
     )
 
@@ -334,9 +351,7 @@ def _to_setup_spec(spec: ProviderSpec) -> ProviderSetupSpec:
     # configured them via TOML.
     runtime_supported = spec.runtime_supported
     verification: Verification = (
-        "verified"
-        if spec.provider_id in _ONBOARDING_VERIFIED_PROVIDER_IDS
-        else "experimental"
+        "verified" if spec.provider_id in _ONBOARDING_VERIFIED_PROVIDER_IDS else "experimental"
     )
     label = _PROVIDER_LABELS.get(spec.provider_id, spec.provider_id)
     if runtime_supported and verification == "experimental":
@@ -406,10 +421,7 @@ def _preset_payload(preset: ProviderPreset) -> dict[str, Any]:
         "description": preset.description,
         "synthesized": preset.synthesized,
         "defaultModel": preset.default_model,
-        "tiers": {
-            name: _tier_payload(tier)
-            for name, tier in preset.tier_defaults().items()
-        },
+        "tiers": {name: _tier_payload(tier) for name, tier in preset.tier_defaults().items()},
     }
 
 
@@ -466,8 +478,4 @@ def _provider_entry_payload(s: ProviderSetupSpec) -> dict[str, Any]:
 
 
 def provider_catalog_payload() -> list[dict[str, Any]]:
-    return [
-        _provider_entry_payload(s)
-        for s in list_provider_setup_specs()
-        if s.runtime_supported
-    ]
+    return [_provider_entry_payload(s) for s in list_provider_setup_specs() if s.runtime_supported]

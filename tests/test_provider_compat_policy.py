@@ -72,6 +72,18 @@ def test_api_url_absorbs_any_version_suffix() -> None:
         assert provider._api_url("/v1/chat/completions") == expected, base
 
 
+def test_chat_completions_complete_url_overrides_only_the_chat_route() -> None:
+    provider = OpenAIProvider(
+        api_key="k",
+        model="m",
+        base_url="https://x.example/api/v3",
+        complete_url="https://x.example/private/chat",
+    )
+
+    assert provider._api_url("/v1/chat/completions") == "https://x.example/private/chat"
+    assert provider._api_url("/v1/models") == "https://x.example/api/v3/models"
+
+
 def test_tokenrhythm_v4_reasoning_is_exact_and_endpoint_scoped() -> None:
     policy = compat_policy_for_kind("tokenrhythm")
     assert policy.thinking_toggle_model_ids == frozenset()

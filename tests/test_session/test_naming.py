@@ -62,6 +62,7 @@ class _FakeProvider:
         base_url: str = "",
         provider_kind: str = "openrouter",
         provider_id: str = "",
+        request_headers: dict[str, str] | None = None,
     ):
         if provider_id:
             # picked up by provider_metadata()'s attribute fallback
@@ -71,6 +72,7 @@ class _FakeProvider:
             model=model,
             api_key=api_key,
             base_url=base_url or "https://openrouter.ai/api/v1",
+            request_headers=dict(request_headers or {}),
         )
 
     def provider_connection_config(self) -> ProviderConnectionConfig:
@@ -176,6 +178,19 @@ def test_resolve_target_defaults_to_default_tier_model():
     assert target.api_key == "KEY"
 
 
+def test_resolve_target_carries_private_request_headers() -> None:
+    cfg = SimpleNamespace(tier=None, model=None, timeout_seconds=30.0)
+    target = resolve_naming_target(
+        cfg,
+        _router("c1"),
+        _FakeProvider(request_headers={"X-Tenant": "tenant-secret"}),
+        None,
+    )
+
+    assert target.request_headers == {"X-Tenant": "tenant-secret"}
+    assert "tenant-secret" not in repr(target)
+
+
 def test_resolve_target_tier_override():
     cfg = SimpleNamespace(tier="c0", model=None, timeout_seconds=30.0)
     target = resolve_naming_target(cfg, _router("c1"), _FakeProvider(), None)
@@ -238,15 +253,11 @@ def test_resolve_target_provider_match_is_case_insensitive():
     cfg = SimpleNamespace(tier=None, model=None, timeout_seconds=30.0)
     # Connection-side mixed case.
     provider = _FakeProvider(provider_kind="OpenRouter", model="z-ai/glm-5.2")
-    target = resolve_naming_target(
-        cfg, _profile_router(tier_provider="openrouter"), provider, None
-    )
+    target = resolve_naming_target(cfg, _profile_router(tier_provider="openrouter"), provider, None)
     assert target.model == "deepseek/deepseek-v4-pro"
     # Tier-side mixed case (tier tables are free-form user TOML).
     provider = _FakeProvider(provider_kind="openrouter", model="z-ai/glm-5.2")
-    target = resolve_naming_target(
-        cfg, _profile_router(tier_provider="OpenRouter"), provider, None
-    )
+    target = resolve_naming_target(cfg, _profile_router(tier_provider="OpenRouter"), provider, None)
     assert target.model == "deepseek/deepseek-v4-pro"
 
 
@@ -370,6 +381,27 @@ async def test_call_naming_llm_payload_and_sanitization(monkeypatch):
 
 
 @pytest.mark.asyncio
+async def test_call_naming_llm_includes_custom_request_headers(monkeypatch):
+    captured: dict = {}
+    monkeypatch.setattr(
+        "openstarry_code.session.naming.httpx.AsyncClient",
+        lambda **kwargs: _fake_client(captured),
+    )
+
+    title = await call_naming_llm(
+        "Name this session",
+        model="test-model",
+        api_key="test-key",
+        base_url="https://llm.example.test/v1",
+        request_headers={"X-Tenant": "tenant-secret"},
+    )
+
+    assert title == "Reset my password"
+    assert captured["headers"]["X-Tenant"] == "tenant-secret"
+    assert captured["headers"]["Authorization"] == "Bearer test-key"
+
+
+@pytest.mark.asyncio
 async def test_call_naming_llm_truncates_to_resolved_token_budget(monkeypatch):
     captured: dict = {}
     monkeypatch.setattr(
@@ -440,9 +472,7 @@ async def test_call_naming_llm_adds_tokenrhythm_app_attribution(monkeypatch):
     )
     monkeypatch.setattr(
         "openstarry_code.session.naming.tokenrhythm_install_id_headers",
-        lambda _provider_kind, _base_url: {
-            "X-OpenStarry-Code-Install-Id": install_id
-        },
+        lambda _provider_kind, _base_url: {"X-OpenStarry-Code-Install-Id": install_id},
     )
     monkeypatch.setattr(
         "openstarry_code.session.naming.redact_tokenrhythm_install_ids",
@@ -534,9 +564,7 @@ async def test_call_naming_llm_cancellation_does_not_retain_install_id(monkeypat
     )
     monkeypatch.setattr(
         "openstarry_code.session.naming.tokenrhythm_install_id_headers",
-        lambda _provider_kind, _base_url: {
-            "X-OpenStarry-Code-Install-Id": install_id
-        },
+        lambda _provider_kind, _base_url: {"X-OpenStarry-Code-Install-Id": install_id},
     )
     monkeypatch.setattr(
         "openstarry_code.engine.usage_http.reserve_direct_usage_call",
@@ -765,9 +793,7 @@ def _patch_provider_and_emit(monkeypatch, *, title: str | None):
         # tokenrhythm provider, and the provider-consistency guard skips tiers
         # aimed at another provider. The explicit model keeps resolution alive
         # via the connection fallback if the default profile ever changes.
-        lambda ctx, session: _FakeProvider(
-            provider_kind="tokenrhythm", model="deepseek-v4-pro"
-        ),
+        lambda ctx, session: _FakeProvider(provider_kind="tokenrhythm", model="deepseek-v4-pro"),
     )
 
     calls: dict = {"llm": 0}
@@ -972,15 +998,11 @@ async def test_should_auto_title_custom_named_channel_matches_type_named(storage
             }
         ]
     }
-    mapped_ctx = SimpleNamespace(
-        config=GatewayConfig(channels=channels_cfg), session_manager=mgr
-    )
+    mapped_ctx = SimpleNamespace(config=GatewayConfig(channels=channels_cfg), session_manager=mgr)
     unmapped_ctx = SimpleNamespace(config=GatewayConfig(), session_manager=mgr)
 
     type_named_key = "agent:main:feishu:direct:ou_x"
-    type_named = SessionNode(
-        session_key=type_named_key, session_id="sid-tn", last_channel="feishu"
-    )
+    type_named = SessionNode(session_key=type_named_key, session_id="sid-tn", last_channel="feishu")
     await storage.upsert_session(type_named)
 
     custom_key = "agent:main:飞书:direct:ou_x"
@@ -990,13 +1012,9 @@ async def test_should_auto_title_custom_named_channel_matches_type_named(storage
     type_named_eligible = await _should_auto_title(
         mapped_ctx, storage, type_named, type_named_key, "sid-tn"
     )
-    custom_eligible = await _should_auto_title(
-        mapped_ctx, storage, custom, custom_key, "sid-cn"
-    )
+    custom_eligible = await _should_auto_title(mapped_ctx, storage, custom, custom_key, "sid-cn")
     assert type_named_eligible is True
     assert custom_eligible is type_named_eligible
 
     # Without the mapping the custom name is unclassifiable -> ineligible.
-    assert (
-        await _should_auto_title(unmapped_ctx, storage, custom, custom_key, "sid-cn")
-    ) is False
+    assert (await _should_auto_title(unmapped_ctx, storage, custom, custom_key, "sid-cn")) is False

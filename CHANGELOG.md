@@ -6,6 +6,59 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.5.6] - 2026-08-15
+
+### Added
+
+- Bundled Codex-X `v0.3.12` in Windows desktop builds with a pinned release URL,
+  SHA-256 verification, portable-runtime marker, and packaged MIT notice. The
+  Skills page can launch it through a trusted Electron bridge.
+- Added a `codex` Skill layer that reads `${CODEX_HOME:-~/.codex}/skills`
+  directly, keeping Codex and OpenStarry Code on one live Skill catalog without
+  copying personal Skill directories.
+- Added the read-only `sandbox_status` model tool for inspecting the active
+  sandbox backend, setup state, capability probe, and effective file/network
+  posture.
+- Added a dedicated Third-party APIs catalog group with visible protocol badges
+  for OpenAI Chat Completions, OpenAI Responses, and Anthropic Messages.
+- Added editable custom request headers for third-party endpoints. Headers now
+  flow through connection probes, model discovery, runtime requests,
+  Router/Ensemble calls, automatic naming, and context compaction.
+- Added atomic duplication of Chat Completions profiles into the next available
+  custom slot, including credentials and request headers without returning
+  secret values to the browser.
+- Added a dedicated custom-provider editor with provider metadata, API key,
+  endpoint mode, connection testing, proxy, and custom Header controls in one
+  focused workflow.
+
+### Changed
+
+- Codex-X now starts with the shared `CODEX_HOME` so Codex prompts,
+  conversations, Skills, and MCP configuration remain visible to both tools;
+  Codex-X application data stays isolated under the OpenStarry desktop profile.
+- Expanded the custom API mesh to keep four independent Chat Completions slots
+  alongside dedicated Responses and Anthropic endpoints, with consistent
+  protocol metadata across setup and runtime surfaces.
+- Hardened request-header handling with case-insensitive duplicate detection,
+  reserved-header validation, control-character rejection, same-origin masked
+  value retention, and cross-origin credential clearing.
+- Redacted custom Header values from public configuration, RPC payloads, object
+  representations, and LLM traces while preserving non-secret Header names.
+- Added protocol-aware full request URL handling for Chat Completions,
+  Responses, and Anthropic Messages while retaining Base URL mode for
+  compatible gateways.
+
+### Fixed
+
+- Unified the frontend and backend RPC field as `customHeaders`, fixing a wiring
+  mismatch that previously prevented configured headers from reaching probes
+  and persisted provider profiles.
+- Updated two bundled-skill regression tests to load scripts from the renamed
+  `src/openstarry_code` package path.
+- Corrected the custom-provider editor spacing token and calibrated its
+  902 x 642 layout, input heights, content margins, and fixed save bar against
+  the desktop reference surface.
+
 ## [0.5.5] - 2026-08-14
 
 ### Added

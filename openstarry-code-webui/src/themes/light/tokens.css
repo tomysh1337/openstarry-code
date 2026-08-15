@@ -1,48 +1,48 @@
 /* Theme: light (value) — L1 token block. See src/themes/light/manifest.ts. */
-/* Light theme — Feishu/Lark structural logic with a warm-orange brand.
+/* Light theme — quiet operational surfaces using the starfield icon palette.
    Neutrals, text hierarchy, and borders follow Lark's published design language
    (open.feishu.cn/document/design-specification/design-language/color): a
    near-white field, four levels of grey text carrying the hierarchy, and
    borders so light they read as separation rather than as frames. Colour is
    reserved for call-to-action, selected state, and status — never as area.
-   The brand hue is the strike orange shared with the desktop launch sequence,
-   so both surfaces resolve to one family instead of drifting apart. */
+   Cyan-blue carries primary actions while the icon's coral orbit remains a
+   secondary signal, keeping desktop and web surfaces in one family. */
 [data-theme="light"] {
   /* Lark neutrals: #F5F6F7 field, pure-white cards, #EFF0F1 for the recessed
      step (hover fills, inset wells). Separation is border + soft --elev, never
      tint stacking. */
-  --bg: #F7F7F8;
+  --bg: #F4F8FC;
   --bg-surface: #FFFFFF;
-  --bg-surface-2: #F0F0F2;
+  --bg-surface-2: #EDF3F8;
   --bg-elevated: #FFFFFF;
-  --bg-hover: #EAEAED;
+  --bg-hover: #E2ECF4;
   /* Four-level text ramp, straight from Lark. --text-dim is #868C95 rather than
      Lark's #8F959E: the published tertiary lands at 2.79:1 on this field, under
      the 3:1 floor check-webui-colors.mjs enforces, so it is darkened by the
      smallest step that clears it (3.13:1). */
-  --text: #1D1D1F;
-  --text-muted: #5F6066;
-  --text-dim: #85868D;
+  --text: #111827;
+  --text-muted: #4B5B6D;
+  --text-dim: #6F7E8F;
   /* Card border / control border / disabled, per Lark. */
-  --border: #E6E6E9;
-  --border-strong: #D5D5DA;
+  --border: #DCE6EE;
+  --border-strong: #C5D5E1;
   /* Emphasis border for hover/focus rings. Deliberately NEUTRAL: this token is
      also the hover border on stat cards, the composer, and approval/clarify
      cards, so tying it to the brand turned every hover orange. Brand colour is
      applied explicitly where it belongs, not through this. */
-  --border-focus: #B9BAC1;
+  --border-focus: #6D9FBC;
   --card: #FFFFFF;
-  --hairline: #EFEFF1;
+  --hairline: #EAF0F5;
 
   /* Brand orange — the canonical strike accent (the family
      check-cross-surface-tokens.mjs pins for desktop boot). Following Lark's
      logic the brand carries the primary call-to-action, so the former ink-black
      pill is now orange; every AA floor still clears (accent 4.67:1 on the
      field, white-on-accent 5.05:1). */
-  --accent: #BA4D0F;
-  --accent-hover: #A5440C;
-  --accent-deep: #8E3A0A;
-  --accent-secondary: #B6501C;
+  --accent: #12617D;
+  --accent-hover: #0E526B;
+  --accent-deep: #0A3F54;
+  --accent-secondary: #B7442D;
   --accent-foreground: #FFFFFF;
 
   /* Mist elevation — thin hairline ring + soft, wide, low-opacity shadows
@@ -89,15 +89,15 @@
   /* Sidebar is the lightest Lark ground (#F8F9FA) with no separate plate; rows
      step to #EFF0F1 on hover and active. Text reuses the four-level ramp so the
      rail and the content area share one hierarchy. */
-  --sidebar-bg: #F3F3F5;
+  --sidebar-bg: #EDF4F8;
   --sidebar-control-bg: #FFFFFF;
-  --sidebar-control-hover: #F8F8F9;
-  --sidebar-item-hover: #EAEAED;
-  --sidebar-item-active: #E4E4E8;
-  --sidebar-text-strong: #18181A;
-  --sidebar-text: #56565A;
-  --sidebar-text-soft: #6C6C70;
-  --sidebar-border: #EBEBEE;
+  --sidebar-control-hover: #F7FBFD;
+  --sidebar-item-hover: #DDEAF2;
+  --sidebar-item-active: #D4E4EE;
+  --sidebar-text-strong: #101B2D;
+  --sidebar-text: #485B6E;
+  --sidebar-text-soft: #64768A;
+  --sidebar-border: #DCE7EE;
 }
 
 /* Structural identity — light explicitly re-asserts the foundation type + radius

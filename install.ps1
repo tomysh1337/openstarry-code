@@ -12,7 +12,7 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-$defaultVersion = 'v0.5.5'
+$defaultVersion = 'v0.5.6'
 $repoSlug = if ($env:OPENSTARRY_CODE_REPOSITORY) { $env:OPENSTARRY_CODE_REPOSITORY } else { 'tomysh1337/openstarry-code' }
 $pythonVersion = if ($env:OPENSTARRY_CODE_PYTHON_VERSION) { $env:OPENSTARRY_CODE_PYTHON_VERSION } else { '3.12' }
 $originalPath = if ($env:Path) { $env:Path } else { '' }
@@ -94,7 +94,7 @@ function Test-ReleaseVersion {
 }
 
 if ($Version -notin @('latest', 'stable') -and -not (Test-ReleaseVersion $Version)) {
-    Write-Error "install.ps1: unsupported OPENSTARRY_CODE_VERSION='$Version'. The release installer only supports latest, stable, or release versions like v0.5.5. Use git clone plus scripts/install_source.ps1 for main, dev, branch, or source installs."
+    Write-Error "install.ps1: unsupported OPENSTARRY_CODE_VERSION='$Version'. The release installer only supports latest, stable, or release versions like v0.5.6. Use git clone plus scripts/install_source.ps1 for main, dev, branch, or source installs."
     exit 1
 }
 

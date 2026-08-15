@@ -23,6 +23,7 @@ _NAMES = [
     "patch",
     "plan_control",
     "router_control",
+    "sandbox_status",
     "sessions",
     "session_search",
     "shell",

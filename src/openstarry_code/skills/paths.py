@@ -6,6 +6,7 @@ agree on where managed skills, taps, and related state live.
 
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -51,6 +52,14 @@ def default_bundled_skills_dir() -> Path:
     return Path(__file__).parent / "bundled"
 
 
+def default_codex_skills_dir() -> Path:
+    """Return the Skills directory shared with the local Codex installation."""
+    codex_home = os.environ.get("CODEX_HOME", "").strip()
+    if codex_home:
+        return Path(codex_home).expanduser() / "skills"
+    return Path.home() / ".codex" / "skills"
+
+
 @dataclass(frozen=True)
 class SkillLayerDirs:
     """Resolved directories for every skill layer, ready for ``SkillLoader``.
@@ -62,6 +71,7 @@ class SkillLayerDirs:
     bundled_dir: Path | None = None
     workspace_dir: Path | None = None
     managed_dir: Path | None = None
+    personal_codex_dir: Path | None = None
     personal_agents_dir: Path | None = None
     project_agents_dir: Path | None = None
     extra_dirs: list[Path] = field(default_factory=list)
@@ -106,6 +116,8 @@ def resolve_skill_layer_dirs(
 
     managed_dir = resolve_managed_skills_dir(managed_override)
 
+    personal_codex_dir = default_codex_skills_dir()
+
     personal_agents = Path.home() / ".agents" / "skills"
     personal_agents_dir = personal_agents
 
@@ -117,6 +129,7 @@ def resolve_skill_layer_dirs(
         bundled_dir=bundled_dir,
         workspace_dir=workspace_dir,
         managed_dir=managed_dir,
+        personal_codex_dir=personal_codex_dir,
         personal_agents_dir=personal_agents_dir,
         project_agents_dir=project_agents_dir,
         extra_dirs=list(extra_dirs or []),

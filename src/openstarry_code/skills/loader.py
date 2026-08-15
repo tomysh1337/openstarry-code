@@ -42,6 +42,7 @@ from openstarry_code.skills.types import (
 log = structlog.get_logger(__name__)
 
 MAX_SKILLS_PER_SOURCE = 200  # per layer cap
+MAX_CODEX_SKILLS_PER_SOURCE = 1000
 
 # Bump when on-disk snapshot fields change so stale caches are invalidated
 # instead of silently losing new fields. v12 uses nanosecond mtimes and stores
@@ -351,6 +352,7 @@ _LAYER_ORDER = [
     SkillLayer.EXTRA,
     SkillLayer.BUNDLED,
     SkillLayer.MANAGED,
+    SkillLayer.CODEX,
     SkillLayer.PERSONAL,
     SkillLayer.PROJECT,
     SkillLayer.WORKSPACE,
@@ -365,6 +367,7 @@ class SkillLoader:
         bundled_dir: Path | None = None,
         workspace_dir: Path | None = None,
         managed_dir: Path | None = None,
+        personal_codex_dir: Path | None = None,
         personal_agents_dir: Path | None = None,
         project_agents_dir: Path | None = None,
         extra_dirs: list[Path] | None = None,
@@ -374,6 +377,7 @@ class SkillLoader:
         self._bundled_dir = bundled_dir
         self._workspace_dir = workspace_dir
         self._managed_dir = managed_dir
+        self._personal_codex_dir = personal_codex_dir
         self._personal_agents_dir = personal_agents_dir
         self._project_agents_dir = project_agents_dir
         self._extra_dirs = extra_dirs or []
@@ -399,7 +403,7 @@ class SkillLoader:
         # ``None`` means the managed layer is healthy and may be scanned.
         # A tuple means recovery has quarantined that layer: cold start uses
         # an empty tuple, while a runtime failure retains only the managed
-        # candidates from the last published catalog.  The other five layers
+        # candidates from the last published catalog.  The other six layers
         # continue to refresh normally.
         self._managed_recovery_candidates: tuple[SkillSpec, ...] | None = None
         self._managed_recovery_digests: dict[str, str] = {}
@@ -577,6 +581,8 @@ class SkillLoader:
             layer_dirs.append((self._bundled_dir, SkillLayer.BUNDLED))
         if self._managed_dir:
             layer_dirs.append((self._managed_dir, SkillLayer.MANAGED))
+        if self._personal_codex_dir:
+            layer_dirs.append((self._personal_codex_dir, SkillLayer.CODEX))
         if self._personal_agents_dir:
             layer_dirs.append((self._personal_agents_dir, SkillLayer.PERSONAL))
         if self._project_agents_dir:
@@ -1214,12 +1220,17 @@ class SkillLoader:
             if not dir_path.exists():
                 continue
             layer_count = 0
+            layer_limit = (
+                MAX_CODEX_SKILLS_PER_SOURCE
+                if layer is SkillLayer.CODEX
+                else MAX_SKILLS_PER_SOURCE
+            )
             for skill_dir in sorted(dir_path.iterdir()):
-                if layer_count >= MAX_SKILLS_PER_SOURCE:
+                if layer_count >= layer_limit:
                     log.warning(
                         "layer %s has %d+ skills, truncating",
                         layer.value,
-                        MAX_SKILLS_PER_SOURCE,
+                        layer_limit,
                     )
                     break
                 if not skill_dir.is_dir() or skill_dir.name.startswith("."):
@@ -1538,17 +1549,22 @@ class SkillLoader:
             # contract while delegating all manifest semantics to the shared
             # tolerant compiler.  Source and tree digests remain based on the
             # original on-disk bytes.
+            try:
+                decoded_skill = skill_bytes.decode("utf-8")
+            except UnicodeDecodeError:
+                if layer is not SkillLayer.CODEX:
+                    raise
+                decoded_skill = skill_bytes.decode("utf-8", errors="replace")
+                log.warning("skill.codex_invalid_utf8_replaced", path=str(skill_file))
             normalized_bytes = (
-                skill_bytes.decode("utf-8")
-                .replace("\r\n", "\n")
-                .replace("\r", "\n")
-                .encode("utf-8")
+                decoded_skill.replace("\r\n", "\n").replace("\r", "\n").encode("utf-8")
             )
             skill = compile_skill_manifest(
                 skill_dir,
                 layer,
                 skill_bytes=normalized_bytes,
                 profile=profile or SkillCompileProfile.TRUSTED,
+                fallback_name=(skill_dir.name if layer is SkillLayer.CODEX else None),
             )
             skill.tree_digest = compute_tree_sha256(skill_dir)
             return skill

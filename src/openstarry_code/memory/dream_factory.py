@@ -73,6 +73,7 @@ def build_dream_provider_selector(config: Any) -> Any | None:
                 model=model,
                 api_key=api_key,
                 base_url=base_url,
+                complete_url=runtime.complete_url,
                 proxy=proxy,
                 provider_routing=getattr(llm_cfg, "provider_routing", {}),
             )

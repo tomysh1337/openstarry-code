@@ -1,6 +1,7 @@
 import { desktopCapabilities } from './capabilities'
 import type {
   CliInvocation,
+  CodexXStatus,
   DesktopUpdateErrorCode,
   DesktopUpdateInstallMode,
   DesktopUpdateSource,
@@ -17,6 +18,19 @@ function requireDesktopApi(): OpenSquillaDesktopApi {
   const api = window.opensquillaDesktop
   if (!api) throw new Error('OpenStarry Code desktop API is unavailable.')
   return api
+}
+
+function normalizeCodexXStatus(payload: unknown): CodexXStatus {
+  const raw = payload && typeof payload === 'object'
+    ? payload as Record<string, unknown>
+    : {}
+  return {
+    supported: raw.supported === true,
+    available: raw.available === true,
+    version: typeof raw.version === 'string' && raw.version ? raw.version : null,
+    sharedCodexHome: raw.sharedCodexHome === true,
+    ...(typeof raw.launched === 'boolean' ? { launched: raw.launched } : {}),
+  }
 }
 
 const UPDATE_STATUSES = new Set<DesktopUpdateStatus>([
@@ -360,6 +374,19 @@ export function createDesktopPlatform(): Platform {
     workbench: {
       ...(nativeWorkbench ? { native: nativeWorkbench } : {}),
     },
+    ...(typeof desktopApi.getCodexXStatus === 'function'
+      && typeof desktopApi.openCodexX === 'function'
+      ? {
+          codexX: {
+            async getStatus() {
+              return normalizeCodexXStatus(await requireDesktopApi().getCodexXStatus!())
+            },
+            async open() {
+              return normalizeCodexXStatus(await requireDesktopApi().openCodexX!())
+            },
+          },
+        }
+      : {}),
     updates: {
       async getState() {
         const api = requireDesktopApi()

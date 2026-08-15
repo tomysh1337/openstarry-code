@@ -147,6 +147,20 @@ def test_openai_responses_api_url_absorbs_versioned_base_url() -> None:
     )
 
 
+def test_openai_responses_complete_url_does_not_override_compaction_route() -> None:
+    provider = OpenAIResponsesProvider(
+        api_key="test",
+        model="m",
+        base_url="https://x.example/api/v3",
+        complete_url="https://x.example/private/responses",
+    )
+
+    assert provider._api_url("/v1/responses") == "https://x.example/private/responses"
+    assert provider._api_url("/v1/responses/compact") == (
+        "https://x.example/api/v3/responses/compact"
+    )
+
+
 def test_openai_responses_provider_posts_responses_payload_and_usage(
     monkeypatch: Any,
 ) -> None:

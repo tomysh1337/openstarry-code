@@ -51,9 +51,7 @@ def test_api_round_groups_keep_user_role_tool_result_with_its_call() -> None:
     }
     next_assistant = {"role": "assistant", "content": "The file is valid."}
 
-    groups = _api_round_groups(
-        [active_user, tool_call, tool_result, next_assistant]
-    )
+    groups = _api_round_groups([active_user, tool_call, tool_result, next_assistant])
 
     assert groups[0] == [active_user, tool_call, tool_result]
     assert groups[1] == [next_assistant]
@@ -733,9 +731,7 @@ async def test_coding_profile_preserves_configured_recent_tail():
     assert result.quality_report["protected_tail_preserved"] is True
     assert result.quality_report["fits_context_window"] is True
     assert result.quality_report["passes_structural_gate"] is True
-    assert compaction_result_payload(result)["quality_report"][
-        "passes_structural_gate"
-    ] is True
+    assert compaction_result_payload(result)["quality_report"]["passes_structural_gate"] is True
 
 
 @pytest.mark.asyncio
@@ -768,9 +764,7 @@ async def test_quality_report_marks_compaction_that_still_exceeds_window():
     assert result.skip_reason == "quality_gate_failed"
     assert result.quality_report["fits_context_window"] is False
     assert result.quality_report["passes_structural_gate"] is False
-    assert compaction_result_payload(result)["quality_report"][
-        "fits_context_window"
-    ] is False
+    assert compaction_result_payload(result)["quality_report"]["fits_context_window"] is False
 
 
 @pytest.mark.asyncio
@@ -1347,11 +1341,7 @@ async def test_call_compaction_llm_adds_tokenrhythm_app_attribution(monkeypatch)
             return None
 
         def json(self) -> dict:
-            return {
-                "choices": [
-                    {"message": {"content": f"summary echoed {install_id}"}}
-                ]
-            }
+            return {"choices": [{"message": {"content": f"summary echoed {install_id}"}}]}
 
     class FakeClient:
         async def __aenter__(self):
@@ -1372,9 +1362,7 @@ async def test_call_compaction_llm_adds_tokenrhythm_app_attribution(monkeypatch)
     )
     monkeypatch.setattr(
         "openstarry_code.session.compaction.tokenrhythm_install_id_headers",
-        lambda _provider_kind, _base_url: {
-            "X-OpenStarry-Code-Install-Id": install_id
-        },
+        lambda _provider_kind, _base_url: {"X-OpenStarry-Code-Install-Id": install_id},
     )
     monkeypatch.setattr(
         "openstarry_code.session.compaction.redact_tokenrhythm_install_ids",
@@ -1452,6 +1440,7 @@ async def test_call_compaction_llm_privacy_switch_removes_correlation_on_wire(
 
     class FakeResponse:
         text = ""
+
         def raise_for_status(self) -> None:
             return None
 
@@ -1563,9 +1552,7 @@ async def test_call_compaction_llm_cancellation_does_not_retain_install_id(
     )
     monkeypatch.setattr(
         "openstarry_code.session.compaction.tokenrhythm_install_id_headers",
-        lambda _provider_kind, _base_url: {
-            "X-OpenStarry-Code-Install-Id": install_id
-        },
+        lambda _provider_kind, _base_url: {"X-OpenStarry-Code-Install-Id": install_id},
     )
     monkeypatch.setattr(
         "openstarry_code.engine.usage_http.reserve_direct_usage_call",
@@ -1686,6 +1673,49 @@ async def test_call_compaction_llm_timeout_returns_none(monkeypatch) -> None:
     )
 
     assert result is None
+
+
+@pytest.mark.asyncio
+async def test_call_compaction_llm_includes_custom_request_headers(monkeypatch) -> None:
+    captured_headers: dict[str, str] = {}
+
+    class FakeResponse:
+        text = ""
+
+        def raise_for_status(self) -> None:
+            return None
+
+        def json(self) -> dict:
+            return {"choices": [{"message": {"content": "summary"}}]}
+
+    class FakeClient:
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, exc_type, exc, tb) -> bool:
+            return False
+
+        async def post(self, url, *, json, headers):
+            captured_headers.update(headers)
+            return FakeResponse()
+
+    monkeypatch.setattr(
+        "openstarry_code.session.compaction.httpx.AsyncClient",
+        lambda **kwargs: FakeClient(),
+    )
+
+    result = await call_compaction_llm(
+        chunk_text="old conversation",
+        identifier_instruction="",
+        model="test-model",
+        api_key="test-key",
+        base_url="https://llm.example.test/v1",
+        request_headers={"X-Tenant": "tenant-secret"},
+    )
+
+    assert result == "summary"
+    assert captured_headers["X-Tenant"] == "tenant-secret"
+    assert captured_headers["Authorization"] == "Bearer test-key"
 
 
 @pytest.mark.asyncio

@@ -14,6 +14,7 @@ public wheelhouse zips, or separately branded macOS or Linux portable bundles.
 
 | Version | Tag | Date | Notes |
 |---|---|---|---|
+| 0.5.6 | v0.5.6 | 2026-08-15 | Codex-X companion, shared Codex Skills/prompts/conversations, sandbox status tool, third-party API catalog, custom request headers, and credential redaction |
 | 0.5.5 | v0.5.5 | 2026-08-14 | Custom Chat/Responses/Anthropic endpoints, Bing China/Baidu/Sogou search, complete OpenStarry branding, and correlation-header fixes |
 | 0.5.4 | v0.5.4 | 2026-08-14 | Windows desktop release: NSIS EXE, WiX MSI, bundled application-build skill, and portable tar extraction compatibility |
 | 0.5.3 | v0.5.3 | 2026-08-14 | OpenStarry Code: four custom API slots, automatic model discovery, B5 stacking, rebranded documentation, dependency fixes, and the inherited 0.5.3 runtime improvements |
@@ -32,12 +33,12 @@ public wheelhouse zips, or separately branded macOS or Linux portable bundles.
 | 0.2.0rc1 | v0.2.0rc1 | 2026-05-19 | Second public preview |
 | 0.1.0rc1 | v0.1.0rc1 | 2026-05-12 | First public preview |
 
-OpenStarry Code v0.5.5 publishes these verified artifacts:
+OpenStarry Code v0.5.6 publishes these verified artifacts:
 
-- `OpenStarry-Code-0.5.5-win-x64.exe`
-- `OpenStarry-Code-0.5.5-win-x64.msi`
-- `openstarry_code-0.5.5-py3-none-any.whl`
-- `openstarry_code-0.5.5.tar.gz`
+- `OpenStarry-Code-0.5.6-win-x64.exe`
+- `OpenStarry-Code-0.5.6-win-x64.msi`
+- `openstarry_code-0.5.6-py3-none-any.whl`
+- `openstarry_code-0.5.6.tar.gz`
 - `SHA256SUMS`
 
 The release is marked stable after the wheel contents, compiled Web UI,
