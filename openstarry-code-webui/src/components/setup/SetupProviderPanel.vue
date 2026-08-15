@@ -488,7 +488,7 @@ function probeFor(providerId: string): ConnectionState {
   return (props.panel.configuredProviderProbes || {})[providerId.toLowerCase()] || {
     phase: 'unverified', failureKind: '', detail: '',
     firstResponseMs: null, totalMs: null, latencyMs: null,
-    models: [], modelSource: 'none', discoverError: '',
+    models: [], modelSource: 'none', discoverFailureKind: '', discoverError: '',
   }
 }
 

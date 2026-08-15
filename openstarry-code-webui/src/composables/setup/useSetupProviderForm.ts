@@ -219,7 +219,7 @@ export interface DiscoveredModel {
 
 export interface DiscoveredModelCatalog {
   models: DiscoveredModel[]
-  source: 'live' | 'none'
+  source: 'live' | 'configured' | 'none'
   catalog?: CatalogSyncStatus | null
 }
 
@@ -242,7 +242,8 @@ export interface ConnectionState {
   /** @deprecated Legacy gateway field retained only for in-memory compatibility. */
   latencyMs: number | null
   models: DiscoveredModel[]
-  modelSource: 'live' | 'none'
+  modelSource: 'live' | 'configured' | 'none'
+  discoverFailureKind: string
   discoverError: string
   catalog?: CatalogSyncStatus | null
 }
@@ -308,9 +309,25 @@ function freshConnection(providerId: string): ConnectionState {
     latencyMs: null,
     models: [],
     modelSource: 'none',
+    discoverFailureKind: '',
     discoverError: '',
     catalog: null,
   }
+}
+
+function configuredModelRow(modelId: unknown): DiscoveredModel[] {
+  const id = String(modelId ?? '').trim()
+  if (!id) return []
+  return [{
+    id,
+    name: id,
+    contextWindow: null,
+    maxOutputTokens: null,
+    capabilities: [],
+    pricing: null,
+    capabilitySource: 'configured',
+    metadata: null,
+  }]
 }
 
 function normalizeLegacyLatencyMs(value: unknown): number | null {
@@ -780,6 +797,11 @@ export function useSetupProviderForm() {
       })
     }
     const epoch = connectionEpoch
+    const configuredModels = configuredModelRow(
+      options.modelOverride === undefined
+        ? providerFieldValues.value.model
+        : options.modelOverride,
+    )
     const rpc = useRpcStore()
     const request = (async () => {
       try {
@@ -812,14 +834,16 @@ export function useSetupProviderForm() {
             ...connection.value,
             models: modelSource === 'live' ? normalizeDiscoveredModels(res.models) : [],
             modelSource,
+            discoverFailureKind: '',
             discoverError: '',
             catalog: normalizeCatalogSyncStatus(res.catalog),
           }
         } else {
           connection.value = {
             ...connection.value,
-            models: [],
-            modelSource: 'none',
+            models: configuredModels,
+            modelSource: configuredModels.length ? 'configured' : 'none',
+            discoverFailureKind: String(res?.failureKind || ''),
             discoverError: String(res?.detail || res?.failureKind || 'discover failed'),
             catalog: null,
           }
@@ -828,8 +852,9 @@ export function useSetupProviderForm() {
         if (epoch !== connectionEpoch) return
         connection.value = {
           ...connection.value,
-          models: [],
-          modelSource: 'none',
+          models: configuredModels,
+          modelSource: configuredModels.length ? 'configured' : 'none',
+          discoverFailureKind: '',
           discoverError: err instanceof Error ? err.message : String(err),
           catalog: null,
         }
@@ -959,7 +984,17 @@ export function useSetupProviderForm() {
     // Any field used by the provider-bounded probe invalidates its earned
     // verdict. A model choice does not invalidate the provider's model
     // listing, while credential/endpoint changes do.
-    if (name === 'model') invalidateProbeVerdictPreservingCatalog()
+    if (name === 'model') {
+      if (connection.value.modelSource === 'configured') {
+        const models = configuredModelRow(value)
+        connection.value = {
+          ...connection.value,
+          models,
+          modelSource: models.length ? 'configured' : 'none',
+        }
+      }
+      invalidateProbeVerdictPreservingCatalog()
+    }
     else if (DEPLOYMENT_CONNECTION_FIELDS.has(name)) resetConnection()
   }
 

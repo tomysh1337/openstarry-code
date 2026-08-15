@@ -243,6 +243,16 @@ const verdictModelsText = computed(() => {
   const samples = connection.models.slice(0, 3).map(model => model.id).join(joiner)
   return t('setup.provider.verdictModels', { count: connection.models.length, samples })
 })
+
+const discoveryFailureText = computed(() => {
+  const connection = props.panel.connection
+  if (!connection.discoverError) return ''
+  if (connection.modelSource !== 'configured') return t('setup.provider.discoverFailed')
+  const fallback = t('setup.provider.discoverConfiguredFallback')
+  return connection.discoverFailureKind === 'transport_transient'
+    ? `${t('setup.provider.failureUnreachable')} ${fallback}`
+    : fallback
+})
 </script>
 
 <template>
@@ -425,9 +435,9 @@ const verdictModelsText = computed(() => {
           </template>
         </div>
         <span
-          v-if="panel.connection.phase === 'verified' && panel.connection.discoverError"
+          v-if="panel.connection.discoverError"
           class="setup-connection__hint"
-        >{{ t('setup.provider.discoverFailed') }}</span>
+        >{{ discoveryFailureText }}</span>
       </div>
     </div>
 

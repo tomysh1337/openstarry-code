@@ -905,6 +905,7 @@
       "notReachable": "✗ Verbindung fehlgeschlagen — {reason}",
       "streamIncompatible": "✗ Streaming-Antwort inkompatibel — Der Anbieter hat Schlüssel und Modellanfrage akzeptiert, aber ein nicht unterstütztes Stream-Format zurückgegeben.",
       "discoverFailed": "Modelle konnten nicht aufgelistet werden — Modell-ID eintippen.",
+      "discoverConfiguredFallback": "Das gespeicherte Modell bleibt verfügbar, während die Live-Erkennung offline ist.",
       "verdictModels": "{count} Modelle · z. B. {samples}",
       "verdictSampleJoiner": ", ",
       "failureAuth": "Der Anbieter hat diesen API-Schlüssel abgelehnt.",

@@ -956,6 +956,7 @@
       "notReachable": "✗ Couldn't connect — {reason}",
       "streamIncompatible": "✗ Streaming response incompatible — The provider accepted the credential and model request, but returned an unsupported stream format.",
       "discoverFailed": "Couldn't list models — type a model id.",
+      "discoverConfiguredFallback": "The saved model remains available while live discovery is offline.",
       "verdictModels": "{count} models · e.g. {samples}",
       "verdictSampleJoiner": ", ",
       "failureAuth": "The provider rejected this API key.",

@@ -1050,6 +1050,54 @@ describe('useSetupProviderForm — connection state machine', () => {
     expect(f.connection.value.discoverError).toBe('listing unsupported')
   })
 
+  it('keeps a stored configured model selectable when live discovery is unreachable', async () => {
+    callMock.mockResolvedValue({
+      ok: false,
+      failureKind: 'transport_transient',
+      detail: "ConnectError('')",
+      source: 'none',
+      models: [],
+    })
+    const f = useSetupProviderForm()
+    f.initStoredProfile('custom', { model: 'deepseek-v4-flash' })
+
+    await f.discoverModels({ storedProfile: true })
+
+    expect(callMock).toHaveBeenCalledWith('onboarding.llmProfile.models.discover', {
+      providerId: 'custom',
+    })
+    expect(f.connection.value.models).toEqual([
+      expect.objectContaining({
+        id: 'deepseek-v4-flash',
+        name: 'deepseek-v4-flash',
+        capabilitySource: 'configured',
+      }),
+    ])
+    expect(f.connection.value.modelSource).toBe('configured')
+    expect(f.connection.value.discoverFailureKind).toBe('transport_transient')
+    expect(f.connection.value.discoverError).toBe("ConnectError('')")
+
+    f.updateField('model', 'deepseek-v4-pro')
+    expect(f.connection.value.models).toEqual([
+      expect.objectContaining({ id: 'deepseek-v4-pro', capabilitySource: 'configured' }),
+    ])
+  })
+
+  it('replaces the configured fallback with a successful live model listing', async () => {
+    callMock.mockResolvedValue(DISCOVER_OK)
+    const f = useSetupProviderForm()
+    f.initStoredProfile('custom', { model: 'deepseek-v4-flash' })
+
+    await f.discoverModels({ storedProfile: true })
+
+    expect(f.connection.value.modelSource).toBe('live')
+    expect(f.connection.value.models).toEqual([
+      expect.objectContaining({ id: 'test-vendor/test-model' }),
+    ])
+    expect(f.connection.value.discoverFailureKind).toBe('')
+    expect(f.connection.value.discoverError).toBe('')
+  })
+
   it('an empty listing (ok, source none) is not an error', async () => {
     mockRpc({ discover: { ok: true, failureKind: '', detail: '', source: 'none', models: [] } })
     const f = useSetupProviderForm()

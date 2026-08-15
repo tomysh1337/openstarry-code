@@ -104,6 +104,7 @@ function verifiedConnection(overrides: Record<string, unknown> = {}) {
       discoveredModel('test-vendor/delta'),
     ],
     modelSource: 'live',
+    discoverFailureKind: '',
     discoverError: '',
     ...overrides,
   }
@@ -618,6 +619,25 @@ describe('SetupProviderCredentialCard — configuration verification verdict', (
     expect(verdict?.textContent).toContain('First model response · 123 ms')
     expect(verdict?.textContent).toContain('Complete probe · 412 ms')
     expect(verdict?.textContent).not.toContain('models')
+
+    app.unmount()
+  })
+
+  it('explains transport discovery failures while retaining the configured model', async () => {
+    const { app, el } = await mountCard({
+      connection: verifiedConnection({
+        phase: 'unverified',
+        models: [discoveredModel('deepseek-v4-flash')],
+        modelSource: 'configured',
+        discoverFailureKind: 'transport_transient',
+        discoverError: "ConnectError('')",
+      }),
+    })
+
+    const hint = el.querySelector('.setup-connection__hint')
+    expect(hint?.textContent).toContain("Couldn't reach the endpoint")
+    expect(hint?.textContent).toContain('The saved model remains available')
+    expect(hint?.textContent).not.toContain('ConnectError')
 
     app.unmount()
   })

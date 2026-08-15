@@ -2424,6 +2424,7 @@ function freshConfiguredProbe(phase: ConnectionState['phase'] = 'unverified'): C
     latencyMs: null,
     models: [],
     modelSource: 'none',
+    discoverFailureKind: '',
     discoverError: '',
   }
 }

@@ -905,6 +905,7 @@
       "notReachable": "✗ No se pudo conectar — {reason}",
       "streamIncompatible": "✗ Respuesta de streaming incompatible — El proveedor aceptó la credencial y la solicitud del modelo, pero devolvió un formato de streaming no compatible.",
       "discoverFailed": "No se pudieron listar los modelos — escribe un id de modelo.",
+      "discoverConfiguredFallback": "El modelo guardado sigue disponible mientras la detección en vivo está desconectada.",
       "verdictModels": "{count} modelos · p. ej. {samples}",
       "verdictSampleJoiner": ", ",
       "failureAuth": "El proveedor rechazó esta clave de API.",

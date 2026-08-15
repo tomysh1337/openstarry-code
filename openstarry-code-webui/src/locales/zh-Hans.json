@@ -956,6 +956,7 @@
       "notReachable": "✗ 无法连接 — {reason}",
       "streamIncompatible": "✗ 流式响应不兼容 — 服务商已接受凭证和模型请求，但返回的流格式不受支持。",
       "discoverFailed": "无法列出模型 — 请直接输入模型 ID。",
+      "discoverConfiguredFallback": "实时模型获取暂时离线，已保留当前配置的模型。",
       "verdictModels": "{count} 个模型 · 例如 {samples}",
       "verdictSampleJoiner": "、",
       "failureAuth": "服务商拒绝了这个 API 密钥。",

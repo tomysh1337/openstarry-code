@@ -905,6 +905,7 @@
       "notReachable": "✗ Connexion impossible — {reason}",
       "streamIncompatible": "✗ Réponse en streaming incompatible — Le fournisseur a accepté l’identifiant et la requête du modèle, mais a renvoyé un format de flux non pris en charge.",
       "discoverFailed": "Impossible de lister les modèles — saisissez un id de modèle.",
+      "discoverConfiguredFallback": "Le modèle enregistré reste disponible pendant que la détection en direct est hors ligne.",
       "verdictModels": "{count} modèles · p. ex. {samples}",
       "verdictSampleJoiner": ", ",
       "failureAuth": "Le fournisseur a refusé cette clé d'API.",

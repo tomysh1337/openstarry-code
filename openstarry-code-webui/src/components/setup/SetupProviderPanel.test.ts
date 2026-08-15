@@ -17,6 +17,7 @@ function connection(overrides: Partial<ConnectionState> = {}): ConnectionState {
     latencyMs: null,
     models: [],
     modelSource: 'none',
+    discoverFailureKind: '',
     discoverError: '',
     ...overrides,
   }

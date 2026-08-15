@@ -6,6 +6,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.5.7] - 2026-08-16
+
+### Changed
+
+- Model discovery now distinguishes a live provider catalog from the model
+  already stored in a provider profile. When a live catalog request fails, the
+  saved model remains selectable with `configured` provenance instead of being
+  discarded as an unknown model.
+- Provider verification now retains the discovery failure kind separately from
+  the connection verdict, allowing transport failures to be explained without
+  exposing raw HTTP client exception text.
+- Custom Chat Completions slots can be used as fully independent deployments,
+  including separate credential environment variables, endpoints, and saved
+  models.
+
+### Fixed
+
+- Fixed model pickers becoming empty after DNS, TLS, timeout, or other
+  transient transport failures while refreshing a custom provider catalog.
+- Fixed configured fallback models being hidden because the combobox only
+  accepted live or curated catalog sources.
+- Fixed stale fallback rows after editing the saved model ID while live model
+  discovery remained offline.
+- Included the Codex-X runtime in subsequent Windows release artifacts after
+  the post-0.5.6 release-bundle correction.
+
 ## [0.5.6] - 2026-08-15
 
 ### Added

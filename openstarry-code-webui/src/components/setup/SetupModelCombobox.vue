@@ -70,7 +70,7 @@ const fieldTooltipId = computed(() => `${fieldId.value}-info-tooltip`)
 const query = computed(() => String(props.value || '').trim().toLowerCase())
 const catalogAvailable = computed(() => (
   !props.disabled
-  && (props.modelSource === 'live' || props.modelSource === 'catalog')
+  && ['live', 'catalog', 'configured'].includes(props.modelSource)
   && props.models.length > 0
 ))
 const describedBy = computed(() => {

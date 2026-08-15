@@ -166,6 +166,18 @@ describe('SetupModelCombobox', () => {
     expect(popup()?.textContent).not.toContain('Live')
   })
 
+  it('opens the saved configured model fallback without claiming it is live', async () => {
+    const { el } = await mountCombobox({
+      modelSource: 'configured',
+      models: [makeModel('deepseek-v4-flash', 'configured')],
+    })
+    await openList(el)
+
+    expect(optionRows()).toHaveLength(1)
+    expect(optionRows()[0].textContent).toContain('deepseek-v4-flash')
+    expect(popup()?.textContent).not.toContain('Live')
+  })
+
   it('opts out of password-manager field classification', async () => {
     const { el } = await mountCombobox()
     const input = el.querySelector<HTMLInputElement>('input[name="setup_provider_model"]')

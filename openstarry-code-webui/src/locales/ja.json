@@ -905,6 +905,7 @@
       "notReachable": "✗ 接続できませんでした — {reason}",
       "streamIncompatible": "✗ ストリーミング応答に互換性がありません — プロバイダーは認証情報とモデル要求を受理しましたが、未対応のストリーム形式を返しました。",
       "discoverFailed": "モデル一覧を取得できませんでした — モデル ID を入力してください。",
+      "discoverConfiguredFallback": "ライブ検出がオフラインの間も、保存済みモデルを利用できます。",
       "verdictModels": "{count} 件のモデル · 例: {samples}",
       "verdictSampleJoiner": "、",
       "failureAuth": "プロバイダーがこの API キーを拒否しました。",
