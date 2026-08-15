@@ -7,7 +7,7 @@
 <p align="center">
   <strong>Stackable multi-provider intelligence for terminal, web, and messaging.</strong><br>
   One microkernel runtime. Four stackable API slots. Three custom protocols. Automatic model discovery.<br>
-  <strong>面向终端、Web 与消息渠道的可叠加多模型智能运行时。</strong>
+  <strong>面向终端、Web 与消息渠道的可叠加多模型智能运行时。本项目在opensquilla的基础上增加了自定义api支持</strong>
 </p>
 
 <p align="center">
