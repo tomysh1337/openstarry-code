@@ -6,6 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.5.8] - 2026-08-16
+
+### Added
+
+- Added desktop integration settings for computer control, browser targets,
+  and coding worktrees, Git, environment, hooks, and connections.
+
+### Fixed
+
+- Fixed remote custom-provider deployments being budgeted as local 8192-token
+  runtimes when their model catalog did not report a context window.
+- Remote custom endpoints now use a 131072-token compatibility window while
+  localhost and loopback endpoints retain the conservative 8192-token default.
+- Preserved live model discovery rows for independent custom slots, including
+  all three model ids returned by the configured relay.
+- Fixed oversized request admission being rejected before a remote provider
+  could receive the request.
+
 ## [0.5.7] - 2026-08-16
 
 ### Changed

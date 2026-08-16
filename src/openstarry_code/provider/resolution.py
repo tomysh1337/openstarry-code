@@ -210,6 +210,7 @@ def resolve_effective_llm(config: Any, catalog: ModelCatalog) -> dict[str, Resol
             model,
             provider=provider,
             global_override=getattr(llm, "context_window_tokens", 0) or 0,
+            base_url=str(getattr(llm, "base_url", "") or ""),
         )
         fields["llm.context_window"] = ResolvedField(
             context_window, _CATALOG_SOURCE_MAP[context_window_source]

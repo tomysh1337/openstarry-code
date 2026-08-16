@@ -201,23 +201,23 @@ powershell -ExecutionPolicy Bypass -File ./scripts/install_source.ps1
 ## 发布构建
 
 当前 OpenStarry Code 正式版本为
-[`v0.5.7`](https://github.com/tomysh1337/openstarry-code/releases/tag/v0.5.7)，
+[`v0.5.8`](https://github.com/tomysh1337/openstarry-code/releases/tag/v0.5.8)，
 由 2026-08-16 的仓库标签状态构建。
 
 使用 `uv` 直接安装已验证的 wheel：
 
 ```sh
 uv tool install --python 3.12 \
-  "openstarry-code[recommended] @ https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.7/openstarry_code-0.5.7-py3-none-any.whl"
+  "openstarry-code[recommended] @ https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.8/openstarry_code-0.5.8-py3-none-any.whl"
 ```
 <!-- Release URL 分隔：/ -->
 
 | 产物 | 用途 | 完整性 |
 | --- | --- | --- |
-| [`OpenStarry-Code-0.5.7-win-x64.exe`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.7/OpenStarry-Code-0.5.7-win-x64.exe) | NSIS Windows 交互式安装包 | 记录于 `SHA256SUMS` |
-| [`OpenStarry-Code-0.5.7-win-x64.msi`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.7/OpenStarry-Code-0.5.7-win-x64.msi) | WiX MSI Windows 安装包 | 记录于 `SHA256SUMS` |
-| [`openstarry_code-0.5.7-py3-none-any.whl`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.7/openstarry_code-0.5.7-py3-none-any.whl) | 包含已编译 Web UI 的 Python 运行时 | 记录于 `SHA256SUMS` |
-| [`openstarry_code-0.5.7.tar.gz`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.7/openstarry_code-0.5.7.tar.gz) | 可复现的源码发行包 | 记录于 `SHA256SUMS` |
+| [`OpenStarry-Code-0.5.8-win-x64.exe`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.8/OpenStarry-Code-0.5.8-win-x64.exe) | NSIS Windows 交互式安装包 | 记录于 `SHA256SUMS` |
+| [`OpenStarry-Code-0.5.8-win-x64.msi`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.8/OpenStarry-Code-0.5.8-win-x64.msi) | WiX MSI Windows 安装包 | 记录于 `SHA256SUMS` |
+| [`openstarry_code-0.5.8-py3-none-any.whl`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.8/openstarry_code-0.5.8-py3-none-any.whl) | 包含已编译 Web UI 的 Python 运行时 | 记录于 `SHA256SUMS` |
+| [`openstarry_code-0.5.8.tar.gz`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.8/openstarry_code-0.5.8.tar.gz) | 可复现的源码发行包 | 记录于 `SHA256SUMS` |
 | `SHA256SUMS` | Release 下载文件的 SHA-256 清单 | 与版本同步发布 |
 
 发布验证覆盖完整前端构建、产物契约、Python 包构建、提供商与配置专项测试、Web UI
@@ -236,7 +236,7 @@ Git Bash runtime，同时提供 NSIS EXE 与 WiX MSI。当前 Windows 安装包�
 | Windows EXE/MSI 构建与包结构校验 | 通过 |
 
 版本历史见 [`CHANGELOG.md`](CHANGELOG.md)，详细发行说明见
-[`docs/releases/0.5.7.md`](docs/releases/0.5.7.md)。
+[`docs/releases/0.5.8.md`](docs/releases/0.5.8.md)。
 
 ## Codex-X 伴生工具
 
@@ -259,7 +259,7 @@ Windows EXE 与 MSI 安装包内置经过校验的
 
 ### 上游兼容下载
 
-OpenStarry Code v0.5.7 已提供独立 Windows 安装包。需要核对上游 0.5.3 行为时，
+OpenStarry Code v0.5.8 已提供独立 Windows 安装包。需要核对上游 0.5.3 行为时，
 对应的固定版本 GitHub 产物为：
 
 - [`OpenSquilla-0.5.3-mac-arm64.dmg`](https://github.com/opensquilla/opensquilla/releases/download/v0.5.3/OpenSquilla-0.5.3-mac-arm64.dmg)

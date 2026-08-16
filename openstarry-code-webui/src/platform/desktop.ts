@@ -29,6 +29,9 @@ function normalizeCodexXStatus(payload: unknown): CodexXStatus {
     available: raw.available === true,
     version: typeof raw.version === 'string' && raw.version ? raw.version : null,
     sharedCodexHome: raw.sharedCodexHome === true,
+    ...(typeof raw.sharedCodexHomePath === 'string' && raw.sharedCodexHomePath
+      ? { sharedCodexHomePath: raw.sharedCodexHomePath }
+      : {}),
     ...(typeof raw.launched === 'boolean' ? { launched: raw.launched } : {}),
   }
 }

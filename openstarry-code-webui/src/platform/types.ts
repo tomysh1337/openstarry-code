@@ -354,6 +354,7 @@ export interface CodexXStatus {
   available: boolean
   version: string | null
   sharedCodexHome: boolean
+  sharedCodexHomePath?: string
   launched?: boolean
 }
 

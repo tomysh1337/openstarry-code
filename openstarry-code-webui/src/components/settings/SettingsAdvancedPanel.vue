@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import ControlSwitch from '@/components/ControlSwitch.vue'
 import MemoryLearningGroup from '@/components/settings/MemoryLearningGroup.vue'
+import { getPlatform, type CodexXStatus } from '@/platform'
 
 const { t } = useI18n()
+const platform = getPlatform()
 const emit = defineEmits<{
   'open-agent-configuration': []
   'open-data-maintenance': []
@@ -71,9 +73,63 @@ function localStorageGet(key: string): string | null {
   try { return localStorage.getItem(key) } catch { return null }
 }
 
+const INVESTIGATION_PROMPT_KEY = 'openstarry.prompts.investigation'
+const DEFAULT_INVESTIGATION_PROMPT = '调查当前 OpenStarry Code 问题：先读取项目状态、相关配置、运行日志和实际请求链路，基于可复现证据定位根因；列出影响范围和最小修复方案，只修改必要文件；完成后运行针对性测试或构建验证，并报告变更、验证命令、结果和仍需关注的风险。缺少信息时使用明确占位符，不要凭空假设运行结果。'
+const investigationPrompt = ref(localStorageGet(INVESTIGATION_PROMPT_KEY) || DEFAULT_INVESTIGATION_PROMPT)
+
+function saveInvestigationPrompt() {
+  try { localStorage.setItem(INVESTIGATION_PROMPT_KEY, investigationPrompt.value.trim() || DEFAULT_INVESTIGATION_PROMPT) } catch { /* private mode */ }
+}
+
+function resetInvestigationPrompt() {
+  investigationPrompt.value = DEFAULT_INVESTIGATION_PROMPT
+  saveInvestigationPrompt()
+}
+
+async function copyInvestigationPrompt() {
+  try { await navigator.clipboard.writeText(investigationPrompt.value) } catch { /* clipboard may be unavailable */ }
+}
+
+const codexX = platform.codexX
+const codexXStatus = ref<CodexXStatus | null>(null)
+const codexXLoading = ref(false)
+const codexXOpening = ref(false)
+const codexXError = ref('')
+const codexXHome = computed(() => codexXStatus.value?.sharedCodexHomePath || '~/.openstarry-code')
+const codexXStateLabel = computed(() => {
+  if (!codexX) return t('setup.advanced.codexXUnsupported')
+  if (codexXLoading.value) return t('setup.advanced.codexXChecking')
+  if (codexXStatus.value?.available) return t('setup.advanced.codexXReady')
+  return t('setup.advanced.codexXUnavailable')
+})
+
+async function refreshCodexX() {
+  if (!codexX || codexXLoading.value) return
+  codexXLoading.value = true
+  codexXError.value = ''
+  try { codexXStatus.value = await codexX.getStatus() }
+  catch (error) { codexXError.value = error instanceof Error ? error.message : String(error) }
+  finally { codexXLoading.value = false }
+}
+
+async function openCodexX() {
+  if (!codexX || codexXOpening.value) return
+  codexXOpening.value = true
+  codexXError.value = ''
+  try {
+    const status = await codexX.open()
+    codexXStatus.value = status
+    if (!status.launched) codexXError.value = t('setup.advanced.codexXUnavailable')
+  } catch (error) {
+    codexXError.value = error instanceof Error ? error.message : String(error)
+  } finally { codexXOpening.value = false }
+}
+
 const agentConfigAriaLabel = computed(() =>
   `${t('setup.advanced.agentConfigAction')}: ${t('setup.advanced.agentConfigLabel')}`,
 )
+
+onMounted(() => { void refreshCodexX() })
 </script>
 
 <template>
@@ -136,6 +192,43 @@ const agentConfigAriaLabel = computed(() =>
     </label>
 
     <MemoryLearningGroup />
+
+    <div class="control-row control-row--stack" data-testid="advanced-investigation-prompt">
+      <div class="control-row__label-block">
+        <span class="control-row__label">{{ t('setup.advanced.investigationPromptLabel') }}</span>
+        <span class="control-row__desc">{{ t('setup.advanced.investigationPromptDesc') }}</span>
+      </div>
+      <div class="control-row__control prompt-template-control">
+        <textarea
+          v-model="investigationPrompt"
+          class="control-input prompt-template"
+          rows="4"
+          :aria-label="t('setup.advanced.investigationPromptLabel')"
+          @change="saveInvestigationPrompt"
+        ></textarea>
+        <div class="prompt-template__actions">
+          <button type="button" class="btn btn--ghost" @click="copyInvestigationPrompt">{{ t('setup.advanced.investigationPromptCopy') }}</button>
+          <button type="button" class="btn btn--ghost" @click="resetInvestigationPrompt">{{ t('setup.advanced.investigationPromptReset') }}</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="control-row control-row--stack" data-testid="advanced-codex-x">
+      <div class="control-row__label-block">
+        <span class="control-row__label">{{ t('setup.advanced.codexXLabel') }}</span>
+        <span class="control-row__desc">{{ t('setup.advanced.codexXDesc') }}</span>
+      </div>
+      <div class="control-row__control codex-x-control">
+        <span class="codex-x-status" :class="{ 'is-ready': codexXStatus?.available }">{{ codexXStateLabel }}</span>
+        <span v-if="codexXStatus?.version" class="codex-x-version">v{{ codexXStatus.version }}</span>
+        <code class="codex-x-home" :title="codexXHome">{{ codexXHome }}</code>
+        <div class="codex-x-actions">
+          <button type="button" class="btn btn--ghost" :disabled="codexXLoading" @click="refreshCodexX">{{ t('setup.advanced.codexXRefresh') }}</button>
+          <button type="button" class="btn btn--primary" :disabled="!codexXStatus?.available || codexXOpening" :aria-busy="codexXOpening ? 'true' : undefined" @click="openCodexX">{{ codexXOpening ? t('setup.advanced.codexXOpening') : t('setup.advanced.codexXOpen') }}</button>
+        </div>
+        <span v-if="codexXError" class="codex-x-error" role="alert">{{ codexXError }}</span>
+      </div>
+    </div>
 
     <label class="control-row">
       <div class="control-row__label-block">
@@ -221,5 +314,49 @@ const agentConfigAriaLabel = computed(() =>
 .advanced-maintenance:focus-within,
 .advanced-maintenance:hover {
   opacity: 1;
+}
+
+.prompt-template-control,
+.codex-x-control {
+  align-items: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  min-width: min(100%, 420px);
+}
+
+.prompt-template {
+  min-height: 96px;
+  resize: vertical;
+  width: min(100%, 560px);
+}
+
+.prompt-template__actions,
+.codex-x-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  justify-content: flex-end;
+}
+
+.codex-x-status,
+.codex-x-version {
+  color: var(--text-dim);
+  font-size: var(--fs-xs);
+}
+
+.codex-x-status.is-ready {
+  color: var(--ok);
+}
+
+.codex-x-home {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.codex-x-error {
+  color: var(--danger);
+  font-size: var(--fs-xs);
 }
 </style>

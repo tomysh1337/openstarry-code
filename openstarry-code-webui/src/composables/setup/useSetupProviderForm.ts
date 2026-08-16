@@ -330,6 +330,18 @@ function configuredModelRow(modelId: unknown): DiscoveredModel[] {
   }]
 }
 
+function preserveConfiguredModel(
+  liveModels: DiscoveredModel[],
+  configuredModels: DiscoveredModel[],
+): DiscoveredModel[] {
+  if (!configuredModels.length) return liveModels
+  const liveIds = new Set(liveModels.map(model => model.id))
+  return [
+    ...liveModels,
+    ...configuredModels.filter(model => !liveIds.has(model.id)),
+  ]
+}
+
 function normalizeLegacyLatencyMs(value: unknown): number | null {
   // The gateway sends latencyMs=0 as the "never reached the network" sentinel
   // (missing key / build failure), so a zero is not a real round trip — treat
@@ -829,10 +841,22 @@ export function useSetupProviderForm() {
         )
         if (epoch !== connectionEpoch) return
         if (res?.ok) {
-          const modelSource = res.source === 'live' ? 'live' : 'none'
+          const liveSource = res.source === 'live'
+          const liveModels = liveSource ? normalizeDiscoveredModels(res.models) : []
+          // A provider may answer successfully while omitting a live catalog
+          // (for example an OpenAI-compatible endpoint without /models). Keep
+          // the configured ID selectable in that case instead of erasing it.
+          // It also stays selectable when a live catalog is partial or scoped
+          // to a different entitlement set than the saved deployment.
+          const models = liveModels.length
+            ? preserveConfiguredModel(liveModels, configuredModels)
+            : configuredModels
+          const modelSource = liveSource
+            ? 'live'
+            : (configuredModels.length ? 'configured' : 'none')
           connection.value = {
             ...connection.value,
-            models: modelSource === 'live' ? normalizeDiscoveredModels(res.models) : [],
+            models,
             modelSource,
             discoverFailureKind: '',
             discoverError: '',

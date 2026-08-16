@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import Icon from '@/components/Icon.vue'
 import {
   isThirdPartyProvider,
+  nextChatCompletionsCustomSlot,
   providerProtocolLabel,
 } from '@/composables/setup/providerProtocol'
 
@@ -41,10 +42,18 @@ const configured = computed(() => new Set(
   props.configuredIds.map(id => id.trim().toLowerCase()),
 ))
 
+function selectableProviderId(providerId: string): string {
+  const normalized = providerId.trim().toLowerCase()
+  if (!configured.value.has(normalized)) return providerId
+  // Chat Completions slots represent independent deployments. Keep the
+  // visible provider entry usable after its first API is saved by routing a
+  // repeated selection to the next free slot.
+  return nextChatCompletionsCustomSlot(normalized, configured.value) || ''
+}
+
 const available = computed(() => {
   return props.providers.filter(provider => {
-    const providerId = provider.providerId.trim().toLowerCase()
-    return !configured.value.has(providerId)
+    return Boolean(selectableProviderId(provider.providerId))
   })
 })
 
@@ -85,8 +94,9 @@ function isConfigured(providerId: string) {
   return configured.value.has(providerId.trim().toLowerCase())
 }
 function choose(providerId: string) {
-  if (isConfigured(providerId)) return
-  emit('select', providerId)
+  const target = selectableProviderId(providerId)
+  if (!target) return
+  emit('select', target)
 }
 function move(index: number, direction = 1) {
   const length = filtered.value.length
@@ -97,7 +107,7 @@ function move(index: number, direction = 1) {
   let candidate = (index + length) % length
   for (let visited = 0; visited < length; visited += 1) {
     const provider = filtered.value[candidate]
-    if (provider && !isConfigured(provider.providerId)) break
+    if (provider && selectableProviderId(provider.providerId)) break
     candidate = (candidate + direction + length) % length
   }
   activeIndex.value = candidate

@@ -67,6 +67,56 @@ def test_cold_instance_synthesizes_unknown_model() -> None:
     assert entry.quality_prior is None
 
 
+def test_remote_custom_deployment_uses_remote_context_floor() -> None:
+    catalog = ModelCatalog()
+
+    remote = catalog.resolve_deployment_limits(
+        "relay-only-model",
+        provider="custom_2",
+        base_url="https://relay.example.test/v1",
+    )
+    local = catalog.resolve_deployment_limits(
+        "relay-only-model",
+        provider="custom_2",
+        base_url="http://127.0.0.1:8000/v1",
+    )
+
+    assert remote.context_window == 131_072
+    assert local.context_window == 8_192
+
+
+def test_remote_custom_deployment_keeps_explicit_context_override() -> None:
+    catalog = ModelCatalog()
+    catalog.set_user_overrides(
+        {"custom_2/relay-only-model": {"context_window": 131_072}}
+    )
+
+    limits = catalog.resolve_deployment_limits(
+        "relay-only-model",
+        provider="custom_2",
+        base_url="https://relay.example.test/v1",
+    )
+
+    assert limits.context_window == 131_072
+
+
+def test_effective_context_window_uses_remote_custom_endpoint() -> None:
+    catalog = ModelCatalog()
+
+    assert resolve_effective_context_window(
+        catalog,
+        "relay-only-model",
+        provider="custom_2",
+        base_url="https://relay.example.test/v1",
+    ) == (131_072, "default")
+    assert resolve_effective_context_window(
+        catalog,
+        "relay-only-model",
+        provider="custom_2",
+        base_url="http://localhost:8000/v1",
+    ) == (8_192, "default")
+
+
 # ---------------------------------------------------------------------------
 # Per-field authority merging
 # ---------------------------------------------------------------------------

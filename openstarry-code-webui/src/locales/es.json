@@ -536,6 +536,9 @@
       "privacy": "Privacidad",
       "sandbox": "Sandbox",
       "memory": "Memoria y perfil",
+      "computerControl": "Control del ordenador",
+      "browser": "Navegador",
+      "coding": "Codificación",
       "router": "Enrutador",
       "ensemble": "Conjunto",
       "capabilities": "Capacidades",
@@ -546,7 +549,9 @@
         "gateway": "Puerta de enlace",
         "ai": "Configuración de IA",
         "preferences": "Preferencias",
-        "capabilities": "Capacidades"
+        "capabilities": "Capacidades",
+        "integrations": "Integraciones",
+        "coding": "Programación"
       }
     }
   },
@@ -1550,7 +1555,20 @@
       "dataMaintenanceAria": "Abrir el mantenimiento de datos",
       "runTraceLabel": "Panel de traza de ejecución en Registros",
       "runTraceDesc": "Hace que las líneas de registro sean interactivas y abre un panel de detalle de pasos por nodo para cada línea en la vista de Registros.",
-      "runTraceAria": "Panel de traza de ejecución en Registros (surte efecto tras recargar)"
+      "runTraceAria": "Panel de traza de ejecución en Registros (surte efecto tras recargar)",
+      "investigationPromptLabel": "Plantilla de prompt de investigación",
+      "investigationPromptDesc": "Plantilla reutilizable para investigar OpenStarry Code con evidencias. Se guarda en este navegador.",
+      "investigationPromptCopy": "Copiar plantilla",
+      "investigationPromptReset": "Restablecer plantilla",
+      "codexXLabel": "Codex-X",
+      "codexXDesc": "Abrir el compañero Codex-X incluido con los prompts y el directorio de datos compartidos de OpenStarry Code.",
+      "codexXUnsupported": "Compañero de escritorio no disponible",
+      "codexXChecking": "Comprobando estado…",
+      "codexXReady": "Listo",
+      "codexXUnavailable": "No disponible",
+      "codexXRefresh": "Actualizar",
+      "codexXOpen": "Abrir Codex-X",
+      "codexXOpening": "Abriendo…"
     },
     "privacy": {
       "title": "Privacidad",

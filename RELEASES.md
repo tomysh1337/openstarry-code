@@ -14,6 +14,7 @@ public wheelhouse zips, or separately branded macOS or Linux portable bundles.
 
 | Version | Tag | Date | Notes |
 |---|---|---|---|
+| 0.5.8 | v0.5.8 | 2026-08-16 | Remote custom-provider context budgeting, live Luna/Sol/Terra discovery, and desktop integration settings |
 | 0.5.7 | v0.5.7 | 2026-08-16 | Resilient custom-provider model discovery, configured-model fallback, clearer transport diagnostics, and independent Zen API profiles |
 | 0.5.6 | v0.5.6 | 2026-08-15 | Codex-X companion, shared Codex Skills/prompts/conversations, sandbox status tool, third-party API catalog, custom request headers, and credential redaction |
 | 0.5.5 | v0.5.5 | 2026-08-14 | Custom Chat/Responses/Anthropic endpoints, Bing China/Baidu/Sogou search, complete OpenStarry branding, and correlation-header fixes |
@@ -34,12 +35,12 @@ public wheelhouse zips, or separately branded macOS or Linux portable bundles.
 | 0.2.0rc1 | v0.2.0rc1 | 2026-05-19 | Second public preview |
 | 0.1.0rc1 | v0.1.0rc1 | 2026-05-12 | First public preview |
 
-OpenStarry Code v0.5.7 publishes these verified artifacts:
+OpenStarry Code v0.5.8 publishes these verified artifacts:
 
-- `OpenStarry-Code-0.5.7-win-x64.exe`
-- `OpenStarry-Code-0.5.7-win-x64.msi`
-- `openstarry_code-0.5.7-py3-none-any.whl`
-- `openstarry_code-0.5.7.tar.gz`
+- `OpenStarry-Code-0.5.8-win-x64.exe`
+- `OpenStarry-Code-0.5.8-win-x64.msi`
+- `openstarry_code-0.5.8-py3-none-any.whl`
+- `openstarry_code-0.5.8.tar.gz`
 - `SHA256SUMS`
 
 The release is marked stable after the wheel contents, compiled Web UI,

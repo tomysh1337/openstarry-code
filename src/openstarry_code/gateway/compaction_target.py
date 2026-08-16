@@ -1123,6 +1123,7 @@ def _execution_budget(
         model,
         provider=provider_id,
         global_override=global_window,
+        base_url=str(getattr(llm_config, "base_url", "") or ""),
     )
     provider_output_limit = int(
         catalog.resolve_max_tokens(model, user_override=0, provider=provider_id) or 0
@@ -1168,6 +1169,7 @@ def _consumer_execution_budget(
         model,
         provider=provider_id,
         global_override=global_window,
+        base_url=str(getattr(llm_config, "base_url", "") or ""),
     )
     application_cap = int(
         getattr(gateway_config, "context_budget_tokens", 0) or 0

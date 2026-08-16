@@ -536,6 +536,9 @@
       "privacy": "Datenschutz",
       "sandbox": "Sandbox",
       "memory": "Gedächtnis und Profil",
+      "computerControl": "Computersteuerung",
+      "browser": "Browser",
+      "coding": "Codierung",
       "router": "Router",
       "ensemble": "Ensemble",
       "capabilities": "Fähigkeiten",
@@ -546,7 +549,9 @@
         "gateway": "Gateway",
         "ai": "AI-Konfiguration",
         "preferences": "Einstellungen",
-        "capabilities": "Fähigkeiten"
+        "capabilities": "Fähigkeiten",
+        "integrations": "Integrationen",
+        "coding": "Codierung"
       }
     }
   },
@@ -1550,7 +1555,20 @@
       "dataMaintenanceAria": "Datenpflege öffnen",
       "runTraceLabel": "Run-Trace-Schublade in Protokollen",
       "runTraceDesc": "Macht Protokollzeilen interaktiv und öffnet eine zeilenweise Detailschublade für Knotenschritte in der Protokollansicht.",
-      "runTraceAria": "Run-Trace-Schublade in Protokollen (wird nach dem Neuladen wirksam)"
+      "runTraceAria": "Run-Trace-Schublade in Protokollen (wird nach dem Neuladen wirksam)",
+      "investigationPromptLabel": "Vorlage für Untersuchungs-Prompt",
+      "investigationPromptDesc": "Wiederverwendbare Vorlage für evidenzbasierte OpenStarry-Code-Fehlersuche. Sie wird in diesem Browser gespeichert.",
+      "investigationPromptCopy": "Vorlage kopieren",
+      "investigationPromptReset": "Vorlage zurücksetzen",
+      "codexXLabel": "Codex-X",
+      "codexXDesc": "Den gebündelten Codex-X-Begleiter mit den gemeinsam genutzten OpenStarry-Code-Prompts und dem Datenordner öffnen.",
+      "codexXUnsupported": "Desktop-Begleiter nicht verfügbar",
+      "codexXChecking": "Status wird geprüft…",
+      "codexXReady": "Bereit",
+      "codexXUnavailable": "Nicht verfügbar",
+      "codexXRefresh": "Aktualisieren",
+      "codexXOpen": "Codex-X öffnen",
+      "codexXOpening": "Wird geöffnet…"
     },
     "privacy": {
       "title": "Datenschutz",

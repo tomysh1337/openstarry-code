@@ -587,6 +587,9 @@
       "privacy": "隐私",
       "sandbox": "沙箱",
       "memory": "记忆与画像",
+      "computerControl": "电脑操控",
+      "browser": "浏览器",
+      "coding": "编码",
       "router": "路由",
       "ensemble": "模型融合",
       "capabilities": "能力",
@@ -597,7 +600,9 @@
         "gateway": "网关",
         "ai": "AI 配置",
         "preferences": "偏好设置",
-        "capabilities": "能力"
+        "capabilities": "能力",
+        "integrations": "集成",
+        "coding": "编码"
       }
     }
   },
@@ -1601,7 +1606,20 @@
       "dataMaintenanceAria": "打开数据维护",
       "runTraceLabel": "日志中的运行追踪抽屉",
       "runTraceDesc": "使日志行可交互，并在日志视图中为每行打开节点步骤详情抽屉。",
-      "runTraceAria": "日志中的运行追踪抽屉（重新加载后生效）"
+      "runTraceAria": "日志中的运行追踪抽屉（重新加载后生效）",
+      "investigationPromptLabel": "调查提示词模板",
+      "investigationPromptDesc": "用于基于证据排查 OpenStarry Code 问题的可复用模板，会保存在当前浏览器。",
+      "investigationPromptCopy": "复制模板",
+      "investigationPromptReset": "恢复模板",
+      "codexXLabel": "Codex-X 设置",
+      "codexXDesc": "打开内置 Codex-X，并使用 OpenStarry Code 共享的提示词与数据目录。",
+      "codexXUnsupported": "桌面伴侣不可用",
+      "codexXChecking": "正在检查状态…",
+      "codexXReady": "已就绪",
+      "codexXUnavailable": "不可用",
+      "codexXRefresh": "刷新",
+      "codexXOpen": "打开 Codex-X",
+      "codexXOpening": "正在打开…"
     },
     "privacy": {
       "title": "隐私",

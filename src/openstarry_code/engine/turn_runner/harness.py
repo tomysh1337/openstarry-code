@@ -519,6 +519,7 @@ class _TurnRunnerModelCatalogAdapter(ModelCatalogPort):
                 model_id,
                 provider=provider_name,
                 global_override=user_context_window,
+                base_url=str(base_url or ""),
             )
             capabilities = runner._model_catalog.get_capabilities(
                 model_id, provider_name=provider_name, base_url=base_url

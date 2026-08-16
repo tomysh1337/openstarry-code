@@ -594,9 +594,11 @@ describe('useSetupProviderForm — connection state machine', () => {
     expect(f.connection.value.totalMs).toBe(412)
     expect(f.connection.value.latencyMs).toBeNull()
     expect(f.connection.value.modelSource).toBe('live')
-    expect(f.connection.value.models).toHaveLength(1)
+    expect(f.connection.value.models).toHaveLength(2)
     expect(f.connection.value.models[0].id).toBe('test-vendor/test-model')
     expect(f.connection.value.models[0].metadata).toBeNull()
+    expect(f.connection.value.models[1].id).toBe('test-model')
+    expect(f.connection.value.models[1].capabilitySource).toBe('configured')
     expect(f.connection.value.catalog).toBeNull()
     expect(f.connection.value.discoverError).toBe('')
     expect(callMock).toHaveBeenCalledTimes(2)
@@ -1083,7 +1085,7 @@ describe('useSetupProviderForm — connection state machine', () => {
     ])
   })
 
-  it('replaces the configured fallback with a successful live model listing', async () => {
+  it('keeps the configured model alongside a successful live model listing', async () => {
     callMock.mockResolvedValue(DISCOVER_OK)
     const f = useSetupProviderForm()
     f.initStoredProfile('custom', { model: 'deepseek-v4-flash' })
@@ -1091,9 +1093,10 @@ describe('useSetupProviderForm — connection state machine', () => {
     await f.discoverModels({ storedProfile: true })
 
     expect(f.connection.value.modelSource).toBe('live')
-    expect(f.connection.value.models).toEqual([
+    expect(f.connection.value.models).toEqual(expect.arrayContaining([
       expect.objectContaining({ id: 'test-vendor/test-model' }),
-    ])
+      expect.objectContaining({ id: 'deepseek-v4-flash', capabilitySource: 'configured' }),
+    ]))
     expect(f.connection.value.discoverFailureKind).toBe('')
     expect(f.connection.value.discoverError).toBe('')
   })
@@ -1107,6 +1110,20 @@ describe('useSetupProviderForm — connection state machine', () => {
     expect(f.connection.value.phase).toBe('verified')
     expect(f.connection.value.models).toEqual([])
     expect(f.connection.value.modelSource).toBe('none')
+    expect(f.connection.value.discoverError).toBe('')
+  })
+
+  it('keeps a configured model when a successful listing has no live rows', async () => {
+    callMock.mockResolvedValue({ ok: true, failureKind: '', detail: '', source: 'none', models: [] })
+    const f = useSetupProviderForm()
+    f.initStoredProfile('custom', { model: 'deepseek-v4-flash' })
+
+    await f.discoverModels({ storedProfile: true })
+
+    expect(f.connection.value.models).toEqual([
+      expect.objectContaining({ id: 'deepseek-v4-flash', capabilitySource: 'configured' }),
+    ])
+    expect(f.connection.value.modelSource).toBe('configured')
     expect(f.connection.value.discoverError).toBe('')
   })
 

@@ -942,11 +942,12 @@ const tokenRhythmCredentialReplacementRequired = computed(() => (
     </section>
 
     <div hidden>
-    <SetupProviderRecommendation
-      v-if="showTokenRhythmRecommendation"
-      :token-rhythm-selected="tokenRhythmSelected"
-      :credential-replacement-required="tokenRhythmCredentialReplacementRequired"
-    />
+      <SetupProviderRecommendation
+        v-if="showTokenRhythmRecommendation"
+        :token-rhythm-selected="tokenRhythmSelected"
+        :credential-replacement-required="tokenRhythmCredentialReplacementRequired"
+      />
+    </div>
 
     <template v-if="panel.providerSelected">
     <div class="setup-provider-editor-head" data-testid="provider-editor-scope">
@@ -1192,8 +1193,6 @@ const tokenRhythmCredentialReplacementRequired = computed(() => (
         <Icon name="chevronRight" :size="15" aria-hidden="true" />
       </button>
     </div>
-    </div>
-
     </fieldset>
 
     <Teleport to="body">

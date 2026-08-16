@@ -313,6 +313,12 @@ const args = [
   'tokenizers',
   '--hidden-import',
   'tiktoken',
+  // tiktoken discovers encodings through the tiktoken_ext namespace package
+  // at runtime. PyInstaller cannot infer that pkgutil-based plugin scan from
+  // the direct tiktoken import, so preserve the plugin module and package
+  // metadata in the frozen gateway.
+  '--collect-all',
+  'tiktoken_ext',
   '--hidden-import',
   'onnxruntime',
   '--hidden-import',

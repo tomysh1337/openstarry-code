@@ -69,6 +69,7 @@ PATH_POLICY_FIXTURE_FILES = {
     "openstarry-code-webui/src/components/ErrorBoundary.test.ts",
     "openstarry-code-webui/src/components/errorBoundaryDetails.test.ts",
     "openstarry-code-webui/src/components/SupportDiagnosticsMenu.test.ts",
+    "openstarry-code-webui/src/platform/codex-x.test.ts",
     "openstarry-code-webui/src/composables/chat/useChatShareExport.test.ts",
     "openstarry-code-webui/src/utils/chat/activityToolDetails.test.ts",
     "openstarry-code-webui/src/utils/overviewDiagnostics.test.ts",

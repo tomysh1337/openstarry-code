@@ -34,11 +34,11 @@
               :class="{ 'is-active': activeRailSection === s.id }"
               :aria-selected="activeRailSection === s.id ? 'true' : 'false'"
               :aria-controls="'settings-section-' + (activeRailSection === s.id ? section : s.id)"
-              :aria-label="s.client ? t('settings.rail.' + s.id) : `${t('settings.rail.' + s.id)}: ${sectionStatus(s.id).label}${sectionDirty(s.id) ? t('settings.dialog.unsavedSuffix') : ''}`"
+              :aria-label="s.client ? railLabel(s) : `${railLabel(s)}: ${sectionStatus(s.id).label}${sectionDirty(s.id) ? t('settings.dialog.unsavedSuffix') : ''}`"
               @click="selectSection(s.id)"
             >
               <Icon :name="s.icon" :size="16" aria-hidden="true" />
-              <span class="settings-rail__label">{{ t('settings.rail.' + s.id) }}</span>
+              <span class="settings-rail__label">{{ railLabel(s) }}</span>
               <span v-if="sectionDirty(s.id)" class="settings-rail__dirty" aria-hidden="true"></span>
               <span v-if="!s.client && s.id === 'connection'" class="settings-rail__dot" :class="sectionStatus(s.id).tone" aria-hidden="true"></span>
               <span v-else-if="!s.client && sectionStatus(s.id).tone === 'is-warn'" class="settings-rail__warn" aria-hidden="true">!</span>
@@ -89,6 +89,19 @@
           <SettingsMemoryPanel v-else-if="section === 'memory'" />
 
           <SandboxSettingsPanel v-else-if="section === 'sandbox'" />
+
+          <SettingsDesktopIntegrationsPanel
+            v-else-if="section === 'computerControl'"
+            mode="computerControl"
+          />
+          <SettingsDesktopIntegrationsPanel
+            v-else-if="section === 'browser'"
+            mode="browser"
+          />
+          <SettingsDesktopIntegrationsPanel
+            v-else-if="section === 'coding'"
+            mode="coding"
+          />
 
           <!-- Optional cross-installation discovery is deliberately mounted
                only when the user opens this section. It never runs at app or
@@ -245,6 +258,7 @@ import SettingsMemoryPanel from '@/components/settings/SettingsMemoryPanel.vue'
 import SandboxSettingsPanel from '@/components/settings/SandboxSettingsPanel.vue'
 import DesktopRuntimePanel from '@/components/settings/DesktopRuntimePanel.vue'
 import DataMigrationPanel from '@/components/settings/DataMigrationPanel.vue'
+import SettingsDesktopIntegrationsPanel from '@/components/settings/SettingsDesktopIntegrationsPanel.vue'
 import { useSetupCatalog, SETTINGS_SECTIONS } from '@/composables/setup/useSetupCatalog'
 import { parseProviderHash, sectionFromRouteParam } from '@/composables/setup/useSettingsSection'
 import { useConfirm } from '@/composables/useConfirm'
@@ -260,6 +274,12 @@ const { confirm, confirmState } = useConfirm()
 // hides. `desktopOnly` sections are filtered out everywhere else.
 const isDesktop = usePlatform().capabilities.isDesktop
 const visibleSections = computed(() => SETTINGS_SECTIONS.filter(s => !s.desktopOnly || isDesktop))
+
+function railLabel(sectionEntry: (typeof SETTINGS_SECTIONS)[number]): string {
+  return ['computerControl', 'browser', 'coding'].includes(sectionEntry.id)
+    ? sectionEntry.label
+    : t('settings.rail.' + sectionEntry.id)
+}
 
 const {
   section,

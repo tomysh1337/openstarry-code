@@ -536,6 +536,9 @@
       "privacy": "Confidentialité",
       "sandbox": "Bac à sable",
       "memory": "Mémoire et profil",
+      "computerControl": "Contrôle de l’ordinateur",
+      "browser": "Navigateur",
+      "coding": "Codage",
       "router": "Routeur",
       "ensemble": "Ensemble",
       "capabilities": "Capacités",
@@ -546,7 +549,9 @@
         "gateway": "Passerelle",
         "ai": "Configuration IA",
         "preferences": "Préférences",
-        "capabilities": "Capacités"
+        "capabilities": "Capacités",
+        "integrations": "Intégrations",
+        "coding": "Codage"
       }
     }
   },
@@ -1550,7 +1555,20 @@
       "dataMaintenanceAria": "Ouvrir la maintenance des données",
       "runTraceLabel": "Tiroir de trace d'exécution dans les Journaux",
       "runTraceDesc": "Rend les lignes de journal interactives et ouvre un tiroir de détail par étape de nœud dans la vue Journaux.",
-      "runTraceAria": "Tiroir de trace d'exécution dans les Journaux (prend effet après rechargement)"
+      "runTraceAria": "Tiroir de trace d'exécution dans les Journaux (prend effet après rechargement)",
+      "investigationPromptLabel": "Modèle de prompt d'investigation",
+      "investigationPromptDesc": "Modèle réutilisable pour diagnostiquer OpenStarry Code à partir de preuves. Il est enregistré dans ce navigateur.",
+      "investigationPromptCopy": "Copier le modèle",
+      "investigationPromptReset": "Réinitialiser le modèle",
+      "codexXLabel": "Codex-X",
+      "codexXDesc": "Ouvrir le compagnon Codex-X intégré avec les prompts et le dossier de données partagés d'OpenStarry Code.",
+      "codexXUnsupported": "Compagnon de bureau indisponible",
+      "codexXChecking": "Vérification de l'état…",
+      "codexXReady": "Prêt",
+      "codexXUnavailable": "Indisponible",
+      "codexXRefresh": "Actualiser",
+      "codexXOpen": "Ouvrir Codex-X",
+      "codexXOpening": "Ouverture…"
     },
     "privacy": {
       "title": "Confidentialité",

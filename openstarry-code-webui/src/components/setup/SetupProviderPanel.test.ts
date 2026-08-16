@@ -1555,6 +1555,34 @@ describe('SetupProviderPanel — configured provider management', () => {
     app.unmount()
   })
 
+  it('routes a repeated custom-provider selection to the next API slot', async () => {
+    const onAddProvider = vi.fn()
+    const { app, el } = await mountPanel({
+      configuredProviders: [{
+        ...configured[0],
+        providerId: 'custom',
+        label: 'Custom endpoint',
+      }],
+      runtimeProviders: [
+        { providerId: 'custom', label: 'Custom endpoint' },
+        { providerId: 'custom_2', label: 'Custom endpoint 2' },
+        { providerId: 'custom_3', label: 'Custom endpoint 3' },
+      ],
+    }, { onAddProvider })
+    Array.from(el.querySelectorAll<HTMLButtonElement>('button'))
+      .find(button => button.textContent?.trim() === 'Add provider')?.click()
+    await nextTick()
+
+    const customOption = Array.from(
+      document.body.querySelectorAll<HTMLButtonElement>('.provider-picker__option'),
+    ).find(option => option.querySelector('code')?.textContent === 'custom')
+    expect(customOption).toBeTruthy()
+    customOption?.click()
+
+    expect(onAddProvider).toHaveBeenCalledWith('custom_2')
+    app.unmount()
+  })
+
   it('groups third-party APIs and labels each custom protocol', async () => {
     const { app, el } = await mountPanel({
       configuredProviders: [],
@@ -1702,6 +1730,27 @@ describe('SetupProviderPanel — configured provider management', () => {
 })
 
 describe('SetupProviderPanel — editor scope', () => {
+  it('keeps the selected provider editor visible', async () => {
+    const { app, el } = await mountPanel({
+      providerCoreFields: [{ name: 'model', label: 'Model' }],
+      providerAdvancedFields: [],
+      providerSelected: 'deepseek',
+      editingPrimary: false,
+      selectedStoredProfile: true,
+      editingNew: false,
+      credentialPanel: {
+        ...(panel().credentialPanel as Record<string, unknown>),
+        providerLabel: 'DeepSeek',
+      },
+    })
+
+    const scope = el.querySelector<HTMLElement>('[data-testid="provider-editor-scope"]')
+    expect(scope).toBeTruthy()
+    expect(scope?.parentElement?.hasAttribute('hidden')).toBe(false)
+
+    app.unmount()
+  })
+
   it('keeps the editor heading in normal document flow', () => {
     const source = readFileSync('src/components/setup/SetupProviderPanel.vue', 'utf8')
     const editorHeadingRule = source.match(/\.setup-provider-editor-head \{([\s\S]*?)\n\}/)?.[1] || ''

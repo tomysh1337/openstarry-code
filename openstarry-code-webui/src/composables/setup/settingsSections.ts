@@ -32,6 +32,11 @@ export const SETTINGS_SECTIONS = [
   // client-like keeps it out of readiness and the global dirty/save bar; the
   // panel owns its RPC feature gate, progress, confirmation, and recovery.
   { id: 'memory', label: 'Memory & Profile', icon: 'user', client: true, desktopOnly: false, group: 'preferences' },
+  // Desktop/browser controls mirror the companion-app integration surfaces;
+  // they are client-only preferences and never enter gateway save state.
+  { id: 'computerControl', label: '电脑操控', icon: 'monitor', client: true, desktopOnly: false, group: 'integrations' },
+  { id: 'browser', label: '浏览器', icon: 'cloud', client: true, desktopOnly: false, group: 'integrations' },
+  { id: 'coding', label: '编码', icon: 'fileCode', client: true, desktopOnly: false, group: 'coding' },
   // Client-only sections carry no readiness/RPC state: they edit local browser
   // preferences that apply instantly and never enter the dirty bar. The status
   // dot is suppressed for them in the rail.

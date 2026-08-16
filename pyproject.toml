@@ -1,6 +1,6 @@
 [project]
 name = "openstarry-code"
-version = "0.5.7"
+version = "0.5.8"
 description = "OpenStarry Code - stackable multi-provider Python agent runtime with automatic model discovery"
 license = "Apache-2.0"
 readme = "README.md"

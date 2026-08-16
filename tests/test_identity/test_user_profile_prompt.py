@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from openstarry_code.identity.prompt import assemble_system_prompt
+from openstarry_code.identity.prompt import assemble_system_prompt, load_prompt_template
 from openstarry_code.identity.types import AgentProfile
 
 
@@ -56,6 +56,16 @@ def test_system_prompt_routes_profile_to_user_md() -> None:
     assert "relevant `USER.md`, `MEMORY.md`, or `memory/**/*.md` file" in prompt
     assert "decisions, dates, people, preferences, or todos" not in prompt
     assert "prior work, decisions, dated history, todos" in prompt
+
+
+def test_default_identity_uses_openstarry_and_ships_investigation_template() -> None:
+    prompt = assemble_system_prompt(AgentProfile(agent_id="main", prompt_mode="full"))
+
+    assert "You are OpenStarry" in prompt
+    assert "OpenSquilla" not in prompt
+    template = load_prompt_template()
+    assert template.startswith("# OpenStarry Code")
+    assert "可复现证据" in template
 
 
 def test_system_prompt_requires_bare_single_token_silent_replies() -> None:

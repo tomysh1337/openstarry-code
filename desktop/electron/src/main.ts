@@ -144,6 +144,7 @@ interface CodexXStatus {
   available: boolean
   version: string | null
   sharedCodexHome: boolean
+  sharedCodexHomePath: string
 }
 
 type SecretEncryption = 'safeStorage' | 'plain'
@@ -6376,7 +6377,12 @@ function codexXExecutablePath(): string {
 }
 
 function sharedCodexHome(): string {
-  return process.env.CODEX_HOME?.trim() || join(homedir(), '.codex')
+  // OpenStarry Code owns the default companion state. Keep CODEX_HOME as an
+  // explicit compatibility override, but never create a new ~/.codex tree.
+  return process.env.OPENSTARRY_CODE_STATE_DIR?.trim()
+    || process.env.OPENSTARRY_CODE_HOME?.trim()
+    || process.env.CODEX_HOME?.trim()
+    || join(homedir(), '.openstarry-code')
 }
 
 function codexXHome(): string {
@@ -6386,11 +6392,13 @@ function codexXHome(): string {
 async function codexXStatus(): Promise<CodexXStatus> {
   const supported = process.platform === 'win32'
   const available = supported && await pathIsFile(codexXExecutablePath())
+  const sharedHome = sharedCodexHome()
   return {
     supported,
     available,
     version: available ? CODEX_X_BUNDLED_VERSION : null,
     sharedCodexHome: true,
+    sharedCodexHomePath: sharedHome,
   }
 }
 
@@ -9664,6 +9672,12 @@ async function fetchDesktopUpdateChannelFromGithubReleases(): Promise<unknown> {
   return manifest
 }
 
+async function fetchDesktopUpdateChannelForSource(source: DesktopUpdateSource): Promise<unknown> {
+  return source === 'oss'
+    ? await fetchDesktopUpdateChannelFromRoot()
+    : await fetchDesktopUpdateChannelFromGithubReleases()
+}
+
 async function fetchDesktopUpdateChannel(): Promise<unknown> {
   if (!updateChannelPathForVersion(app.getVersion())) {
     throw new UpdateChannelError('manifest_invalid', 'The installed version has no supported update channel.')
@@ -9682,9 +9696,7 @@ async function fetchDesktopUpdateChannel(): Promise<unknown> {
   let lastError: unknown = null
   for (const source of order) {
     try {
-      return source === 'oss'
-        ? await fetchDesktopUpdateChannelFromRoot()
-        : await fetchDesktopUpdateChannelFromGithubReleases()
+      return await fetchDesktopUpdateChannelForSource(source)
     } catch (err) {
       lastError = err
       desktopLog('update_channel_discovery_failed', {
@@ -9977,11 +9989,48 @@ async function resolveDesktopUpdate(): Promise<ResolvedDesktopUpdate | null> {
   if (!platform) {
     throw new UpdateChannelError('manifest_invalid', 'This desktop architecture has no update feed.')
   }
-  const manifest = await fetchDesktopUpdateChannel()
-  const candidate = candidateFromUpdateChannel(app.getVersion(), manifest, platform)
-  if (!candidate) return null
-  const chosen = await chooseDesktopUpdateSource(candidate)
-  return { candidate, ...chosen }
+  const rootOverride = (process.env.OPENSTARRY_CODE_DESKTOP_UPDATE_CHANNEL_ROOT || '').trim()
+  if (rootOverride) {
+    const manifest = await fetchDesktopUpdateChannelFromRoot(rootOverride)
+    const candidate = candidateFromUpdateChannel(app.getVersion(), manifest, platform)
+    if (!candidate) return null
+    const chosen = await chooseDesktopUpdateSource(candidate)
+    return { candidate, ...chosen }
+  }
+
+  loadDesktopUpdatePersistence()
+  const order = orderedUpdateSources(
+    desktopUpdateLocaleTags(),
+    lastSuccessfulUpdateSource,
+    process.env.OPENSTARRY_CODE_DESKTOP_UPDATE_SOURCE,
+  )
+  let lastError: unknown = null
+  let sawValidManifest = false
+  for (const source of order) {
+    try {
+      const manifest = await fetchDesktopUpdateChannelForSource(source)
+      // Validate each source before deciding that the channel has no update.
+      // A stale or legacy mirror must not prevent the GitHub inventory fallback
+      // from finding the current release.
+      const candidate = candidateFromUpdateChannel(app.getVersion(), manifest, platform)
+      if (!candidate) {
+        sawValidManifest = true
+        desktopLog('update_channel_source_current', { source })
+        continue
+      }
+      const chosen = await chooseDesktopUpdateSource(candidate)
+      return { candidate, ...chosen }
+    } catch (err) {
+      lastError = err
+      desktopLog('update_channel_source_failed', {
+        source,
+        error: String(err instanceof Error ? err.message : err),
+      })
+    }
+  }
+  if (sawValidManifest) return null
+  if (lastError instanceof UpdateChannelError) throw lastError
+  throw new UpdateChannelError('source_unreachable', 'No desktop update discovery source is reachable.')
 }
 
 function configureDesktopUpdateFeed(resolved: ResolvedDesktopUpdate): void {

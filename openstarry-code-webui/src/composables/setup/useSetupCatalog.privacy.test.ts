@@ -874,8 +874,9 @@ describe('useSetupCatalog model strategy IA', () => {
       providerId: 'tokenrhythm',
       model: 'deepseek-v4-pro',
     })
-    expect(api.routerPanel.value.discoveredModelsByProvider.tokenrhythm?.models).toHaveLength(1)
-    expect(api.routerPanel.value.discoveredModelsByProvider.tokenrhythm?.models[0]?.id).toBe('deepseek-v4-flash')
+    expect(api.routerPanel.value.discoveredModelsByProvider.tokenrhythm?.models).toHaveLength(2)
+    expect(api.routerPanel.value.discoveredModelsByProvider.tokenrhythm?.models.map(model => model.id))
+      .toEqual(['deepseek-v4-flash', 'deepseek-v4-pro'])
     app.unmount()
   })
 

@@ -2095,8 +2095,18 @@ def test_desktop_gateway_build_and_verifier_cover_runtime_capabilities() -> None
 
     for extra in ["recommended", "mcp", "msg", "matrix", "document-extras"]:
         assert f"'{extra}'" in build_gateway
-    for module in ["joblib", "sklearn", "lightgbm", "tokenizers", "tiktoken", "onnxruntime", "mcp"]:
+    for module in [
+        "joblib",
+        "sklearn",
+        "lightgbm",
+        "tokenizers",
+        "tiktoken",
+        "tiktoken_ext",
+        "onnxruntime",
+        "mcp",
+    ]:
         assert f"'{module}'" in build_gateway
+    assert "'--collect-all',\n  'tiktoken_ext'" in build_gateway
     assert "'--collect-all',\n  'sklearn'" not in build_gateway
     assert "'--collect-all',\n  'lightgbm'" not in build_gateway
     assert "'--collect-binaries',\n  'sklearn'" in build_gateway

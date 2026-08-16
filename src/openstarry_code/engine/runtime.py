@@ -2465,12 +2465,14 @@ class _SelectorFallbackProvider:
                 str(getattr(current, "model", "") or ""),
                 provider=str(getattr(current, "provider", "") or ""),
                 global_override=global_override,
+                base_url=str(getattr(current, "base_url", "") or ""),
             )
             fallback_window, fallback_source = resolve_effective_context_window(
                 catalog,
                 str(getattr(fallback, "model", "") or ""),
                 provider=str(getattr(fallback, "provider", "") or ""),
                 global_override=global_override,
+                base_url=str(getattr(fallback, "base_url", "") or ""),
             )
         except Exception:  # noqa: BLE001 - unknown capacity is not an escalation proof
             return False
@@ -4877,6 +4879,15 @@ class TurnRunner:
                         model,
                         provider=active_provider_id,
                         global_override=getattr(llm_cfg, "context_window_tokens", 0) or 0,
+                        base_url=str(
+                            getattr(
+                                getattr(cloned_selector, "current_config", None),
+                                "base_url",
+                                "",
+                            )
+                            or getattr(llm_cfg, "base_url", "")
+                            or ""
+                        ),
                     )
                     compaction_context_window_tokens = window
             from openstarry_code.session.compaction_deployment import (
@@ -5037,6 +5048,9 @@ class TurnRunner:
                             global_override=(
                                 getattr(llm_cfg, "context_window_tokens", 0) or 0
                             ),
+                            base_url=str(
+                                getattr(fresh_current, "base_url", "") or ""
+                            ),
                         )
                     )
                 return resolve_compaction_execution_plan(
@@ -5094,6 +5108,7 @@ class TurnRunner:
                             base_model,
                             provider=base_provider,
                             global_override=base_global_window,
+                            base_url=str(getattr(llm_cfg, "base_url", "") or ""),
                         )
                     )
                     stable_consumer_max_output_tokens = int(

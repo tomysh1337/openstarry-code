@@ -9,6 +9,7 @@ from types import SimpleNamespace
 from typing import Any
 
 import pytest
+import structlog
 from starlette.websockets import WebSocketDisconnect, WebSocketState
 
 from openstarry_code.gateway.config import GatewayConfig
@@ -186,6 +187,13 @@ class _HistoryWebSocket:
     def has_response(self, req_id: str) -> bool:
         event = self._response_events.get(req_id)
         return event is not None and event.is_set()
+
+
+class _ReceiveAfterCloseWebSocket(_HistoryWebSocket):
+    async def receive_text(self) -> str:
+        if self._frames:
+            return self._frames.pop(0)
+        raise RuntimeError('WebSocket is not connected. Need to call "accept" first.')
 
 
 @pytest.mark.parametrize("writer_queue_enabled", [False, True])
@@ -431,6 +439,21 @@ async def test_disconnect_cancels_in_flight_detached_history() -> None:
 
     assert dispatcher.history_cancelled.is_set()
     assert all(frame["id"] != "history" for frame in ws.responses())
+
+
+async def test_receive_after_concurrent_close_is_logged_as_disconnect() -> None:
+    dispatcher = _HistoryDispatcher()
+    ws = _ReceiveAfterCloseWebSocket([_CONNECT_FRAME], dispatcher)
+
+    with structlog.testing.capture_logs() as captured:
+        await handle_ws_connection(
+            ws,
+            GatewayConfig(ws_writer_queue_enabled=False),
+            dispatcher=dispatcher,
+        )
+
+    assert any(event["event"] == "ws.receive_after_close" for event in captured)
+    assert not any(event["event"] == "ws.error" for event in captured)
 
 
 @pytest.mark.parametrize("writer_queue_enabled", [False, True])

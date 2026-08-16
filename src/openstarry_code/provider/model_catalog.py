@@ -21,7 +21,7 @@ from .catalog_types import CatalogSource, ModelCatalogEntry, coerce_entry_field
 from .models_dev import lookup_limits as _models_dev_limits
 from .models_dev import lookup_model as _models_dev_model
 from .ollama import _OLLAMA_DEFAULT_NUM_CTX
-from .registry import LOCAL_RUNTIME_PROVIDERS
+from .registry import CUSTOM_OPENAI_PROVIDER_IDS, LOCAL_RUNTIME_PROVIDERS
 from .tokenrhythm_catalog import (
     TOKENRHYTHM_API_BASE_URL,
     TokenRhythmCatalogEntries,
@@ -77,6 +77,26 @@ ContextWindowSource = Literal["override", "catalog", "default"]
 # actually allows. Membership lives in registry.py (LOCAL_RUNTIME_PROVIDERS)
 # next to its keyless sibling set so the two cannot drift apart unnoticed.
 _LOCAL_CONTEXT_WINDOW = _OLLAMA_DEFAULT_NUM_CTX
+# Generic custom HTTP endpoints are frequently relays for hosted models. They
+# do not have a public catalog row, so the local-runtime 8k fallback is too
+# restrictive for a real remote deployment. Use a 128k compatibility default
+# for the remote relay class; operators can still pin an exact window through
+# [models.*] context_window or live model metadata.
+_REMOTE_CUSTOM_CONTEXT_WINDOW = 131_072
+
+
+def _is_remote_http_endpoint(base_url: str) -> bool:
+    """Return whether a custom endpoint is clearly outside the local host."""
+    from urllib.parse import urlsplit
+
+    try:
+        parsed = urlsplit(str(base_url or "").strip())
+    except ValueError:
+        return False
+    if parsed.scheme not in {"http", "https"}:
+        return False
+    hostname = (parsed.hostname or "").strip().lower().rstrip(".")
+    return bool(hostname and hostname not in {"localhost", "127.0.0.1", "::1"})
 
 # One-release migration gate (recorded decision OQ#5). get_capabilities has
 # always early-returned EMPTY capabilities (reasoning off, tools on, vision
@@ -825,8 +845,23 @@ class ModelCatalog:
                 user_override=0,
                 provider=provider_id,
             )
+            context_window, context_source = self.resolve_context_window_with_source(
+                model_id,
+                provider=provider_id,
+            )
+            # ``custom*`` is also used for local/self-hosted servers, so the
+            # legacy 8k fallback remains correct for the plain resolver. Once
+            # the physical deployment supplies a clearly remote HTTP endpoint,
+            # an unknown model must receive the remote compatibility floor or
+            # every tool-heavy request is rejected before it reaches the API.
+            if (
+                provider_id in CUSTOM_OPENAI_PROVIDER_IDS
+                and context_source == "default"
+                and _is_remote_http_endpoint(base_url)
+            ):
+                context_window = _REMOTE_CUSTOM_CONTEXT_WINDOW
             return DeploymentModelLimits(
-                context_window=self.resolve_context_window(model_id, provider_id),
+                context_window=context_window,
                 max_output_tokens=max_tokens,
                 max_output_tokens_known=source in {"catalog", "override"},
             )
@@ -1307,10 +1342,14 @@ class ModelCatalog:
 
         return effective, source
 
-    def resolve_context_window(self, model_id: str, provider: str = "") -> int:
+    def resolve_context_window(
+        self, model_id: str, provider: str = "", base_url: str = ""
+    ) -> int:
         """Resolve context window: user override > scoped live > bare live >
         provider corrections > snapshot > basename corrections > default."""
-        return self.resolve_context_window_with_source(model_id, provider)[0]
+        return self.resolve_context_window_with_source(
+            model_id, provider, base_url=base_url
+        )[0]
 
     def user_context_window_override(self, model_id: str, provider: str = "") -> int | None:
         """Positive ``[models.*]`` context_window override for the model, else None.
@@ -1327,7 +1366,7 @@ class ModelCatalog:
         return None
 
     def resolve_context_window_with_source(
-        self, model_id: str, provider: str = ""
+        self, model_id: str, provider: str = "", *, base_url: str = ""
     ) -> tuple[int, ContextWindowSource]:
         """Resolve the context window and name the layer that decided it.
 
@@ -1373,13 +1412,22 @@ class ModelCatalog:
         budgets = _corrections_budget_fallback(model_id)
         if budgets is not None and budgets[1] > 0:
             return budgets[1], "catalog"
+        if (
+            provider_id in CUSTOM_OPENAI_PROVIDER_IDS
+            and _is_remote_http_endpoint(base_url)
+        ):
+            return _REMOTE_CUSTOM_CONTEXT_WINDOW, "default"
         if provider and provider.strip().lower() in LOCAL_RUNTIME_PROVIDERS:
             return _LOCAL_CONTEXT_WINDOW, "default"
         return DEFAULT_CONTEXT_WINDOW, "default"
 
 
 def resolve_effective_context_window(
-    catalog: Any, model_id: str, provider: str = "", global_override: int = 0
+    catalog: Any,
+    model_id: str,
+    provider: str = "",
+    global_override: int = 0,
+    base_url: str = "",
 ) -> tuple[int, str]:
     """Resolve the effective context window with the full layered precedence.
 
@@ -1399,7 +1447,14 @@ def resolve_effective_context_window(
     with_source = getattr(catalog, "resolve_context_window_with_source", None)
     source = "catalog"
     if callable(with_source):
-        window, raw_source = with_source(model_id, provider=provider)
+        try:
+            window, raw_source = with_source(
+                model_id, provider=provider, base_url=base_url
+            )
+        except TypeError:
+            # Keep compatibility with embedded/test catalogs implementing the
+            # older two-argument resolver contract.
+            window, raw_source = with_source(model_id, provider=provider)
         source = str(raw_source)
         if source == "override":
             return int(window), "override"
@@ -1409,7 +1464,14 @@ def resolve_effective_context_window(
         global_window = 0
     if global_window > 0:
         return global_window, "config"
-    return int(catalog.resolve_context_window(model_id, provider=provider)), source
+    resolve_window = catalog.resolve_context_window
+    try:
+        window = resolve_window(model_id, provider=provider, base_url=base_url)
+    except TypeError:
+        # Keep compatibility with embedded/test catalogs implementing the
+        # older two-argument resolver contract.
+        window = resolve_window(model_id, provider=provider)
+    return int(window), source
 
 
 # ---------------------------------------------------------------------------

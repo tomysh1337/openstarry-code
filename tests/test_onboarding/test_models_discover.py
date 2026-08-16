@@ -452,6 +452,64 @@ def test_discover_lists_models_with_explicit_key(monkeypatch: Any) -> None:
     assert seen[0].headers["authorization"] == "Bearer sk-explicit"
 
 
+def test_discover_normalizes_compatible_model_envelopes_and_id_aliases(
+    monkeypatch: Any,
+) -> None:
+    _patch_response(
+        monkeypatch,
+        lambda: httpx.Response(
+            200,
+            headers={"content-type": "application/json"},
+            content=json.dumps(
+                {"models": [{"model": "zen-model-a"}, {"model_id": "zen-model-b"}]}
+            ).encode(),
+        ),
+    )
+
+    result = _discover(
+        provider_id="custom",
+        api_key="sk-explicit",
+        base_url="https://models.example.test/v1",
+    )
+
+    assert result.ok is True
+    assert result.source == "live"
+    assert [model["id"] for model in result.models] == ["zen-model-a", "zen-model-b"]
+
+
+def test_discover_retries_direct_models_path_after_versioned_404(monkeypatch: Any) -> None:
+    seen: list[httpx.Request] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen.append(request)
+        if request.url.path == "/api/v1/models":
+            return httpx.Response(404)
+        return _models_response()
+
+    transport = httpx.MockTransport(handler)
+    real_async_client = httpx.AsyncClient
+
+    def patched_async_client(*args: Any, **kwargs: Any) -> httpx.AsyncClient:
+        kwargs["transport"] = transport
+        return real_async_client(*args, **kwargs)
+
+    monkeypatch.setattr(
+        "openstarry_code.provider.openai.httpx.AsyncClient", patched_async_client
+    )
+
+    result = _discover(
+        provider_id="custom",
+        api_key="sk-explicit",
+        base_url="https://models.example.test/api",
+    )
+
+    assert result.source == "live"
+    assert [str(request.url) for request in seen] == [
+        "https://models.example.test/api/v1/models",
+        "https://models.example.test/api/models",
+    ]
+
+
 def test_discover_resolves_key_from_provider_env(monkeypatch: Any) -> None:
     # Mirrors the probe: an unset explicit key falls back to the provider's
     # registry env key.

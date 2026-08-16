@@ -587,6 +587,9 @@
       "privacy": "Privacy",
       "sandbox": "Sandbox",
       "memory": "Memory & Profile",
+      "computerControl": "Computer control",
+      "browser": "Browser",
+      "coding": "Coding",
       "router": "Router",
       "ensemble": "Ensemble",
       "capabilities": "Capabilities",
@@ -597,7 +600,9 @@
         "gateway": "Gateway",
         "ai": "AI configuration",
         "preferences": "Preferences",
-        "capabilities": "Capabilities"
+        "capabilities": "Capabilities",
+        "integrations": "Integrations",
+        "coding": "Coding"
       }
     }
   },
@@ -1601,7 +1606,20 @@
       "dataMaintenanceAria": "Open data maintenance",
       "runTraceLabel": "Run-trace drawer in Logs",
       "runTraceDesc": "Make log lines interactive and open a per-line node-step detail drawer in the Logs view.",
-      "runTraceAria": "Run-trace drawer in Logs (takes effect after reload)"
+      "runTraceAria": "Run-trace drawer in Logs (takes effect after reload)",
+      "investigationPromptLabel": "Investigation prompt template",
+      "investigationPromptDesc": "A reusable prompt for evidence-based OpenStarry Code troubleshooting. It is stored locally in this browser.",
+      "investigationPromptCopy": "Copy template",
+      "investigationPromptReset": "Reset template",
+      "codexXLabel": "Codex-X",
+      "codexXDesc": "Open the bundled Codex-X companion with the shared OpenStarry Code prompts and data directory.",
+      "codexXUnsupported": "Desktop companion unavailable",
+      "codexXChecking": "Checking status…",
+      "codexXReady": "Ready",
+      "codexXUnavailable": "Unavailable",
+      "codexXRefresh": "Refresh",
+      "codexXOpen": "Open Codex-X",
+      "codexXOpening": "Opening…"
     },
     "privacy": {
       "title": "Privacy",

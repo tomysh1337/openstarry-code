@@ -536,6 +536,9 @@
       "privacy": "プライバシー",
       "sandbox": "サンドボックス",
       "memory": "メモリとプロフィール",
+      "computerControl": "コンピューター操作",
+      "browser": "ブラウザー",
+      "coding": "コーディング",
       "router": "ルーター",
       "ensemble": "アンサンブル",
       "capabilities": "機能",
@@ -546,7 +549,9 @@
         "gateway": "ゲートウェイ",
         "ai": "AI 設定",
         "preferences": "環境設定",
-        "capabilities": "機能"
+        "capabilities": "機能",
+        "integrations": "連携",
+        "coding": "コーディング"
       }
     }
   },
@@ -1550,7 +1555,20 @@
       "dataMaintenanceAria": "データメンテナンスを開く",
       "runTraceLabel": "ログの実行トレースドロワー",
       "runTraceDesc": "ログ行を操作可能にし、ログビューで行ごとのノードステップ詳細ドロワーを開きます。",
-      "runTraceAria": "ログの実行トレースドロワー（再読み込み後に有効）"
+      "runTraceAria": "ログの実行トレースドロワー（再読み込み後に有効）",
+      "investigationPromptLabel": "調査プロンプトテンプレート",
+      "investigationPromptDesc": "OpenStarry Code の問題を証拠に基づいて調査する再利用可能なテンプレートです。このブラウザーに保存されます。",
+      "investigationPromptCopy": "テンプレートをコピー",
+      "investigationPromptReset": "テンプレートをリセット",
+      "codexXLabel": "Codex-X",
+      "codexXDesc": "OpenStarry Code と共有するプロンプトとデータディレクトリで、内蔵 Codex-X を開きます。",
+      "codexXUnsupported": "デスクトップコンパニオンは利用できません",
+      "codexXChecking": "状態を確認中…",
+      "codexXReady": "準備完了",
+      "codexXUnavailable": "利用できません",
+      "codexXRefresh": "更新",
+      "codexXOpen": "Codex-X を開く",
+      "codexXOpening": "開いています…"
     },
     "privacy": {
       "title": "プライバシー",

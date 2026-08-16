@@ -67,6 +67,7 @@ _MAX_DETACHED_READS_PER_CONNECTION = 4
 _DETACHED_READ_STOP_TIMEOUT_SECONDS = 2.0
 _DIRECT_SEND_TIMEOUT_SECONDS = 2.0
 _DIRECT_CLOSE_TIMEOUT_SECONDS = 1.0
+_WEBSOCKET_NOT_CONNECTED_ERROR = "WebSocket is not connected. Need to call \"accept\" first."
 
 # Sentinel pushed into the outbox by ``_stop_writer`` to wake a writer
 # blocked in ``await self._outbox.get()`` and exit cleanly.
@@ -1120,6 +1121,14 @@ async def handle_ws_connection(
         )
     except WebSocketDisconnect:
         pass
+    except RuntimeError as exc:
+        # Starlette raises this exact error when another task closes the
+        # application side while the receive loop is between frames. Treat it
+        # as a normal disconnect; unrelated runtime errors remain visible.
+        if str(exc) != _WEBSOCKET_NOT_CONNECTED_ERROR:
+            log.error("ws.error", conn_id=conn_id, error=str(exc))
+        else:
+            log.debug("ws.receive_after_close", conn_id=conn_id)
     except Exception as exc:
         log.error("ws.error", conn_id=conn_id, error=str(exc))
     finally:

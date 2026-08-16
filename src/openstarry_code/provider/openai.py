@@ -219,6 +219,47 @@ def _versioned_api_url(base_url: str, path: str) -> str:
     return f"{base}{path}"
 
 
+def _model_listing_rows(payload: Any) -> list[dict[str, Any]]:
+    """Normalize the common model-list response envelopes.
+
+    OpenAI-compatible gateways usually return ``{"data": [...]}``, but a
+    number of otherwise compatible services return a root array, ``models``,
+    ``results``, or use ``model``/``model_id`` instead of ``id``.  Keeping the
+    normalization at the adapter boundary lets onboarding and the CLI share
+    one reliable model-id contract without weakening response validation.
+    """
+
+    def raw_rows(value: Any, depth: int = 0) -> list[Any]:
+        if depth > 2:
+            return []
+        if isinstance(value, list):
+            return value
+        if not isinstance(value, Mapping):
+            return []
+        for key in ("data", "models", "results", "items"):
+            if key in value:
+                nested = raw_rows(value[key], depth + 1)
+                if nested:
+                    return nested
+        return []
+
+    rows: list[dict[str, Any]] = []
+    for raw in raw_rows(payload):
+        if not isinstance(raw, Mapping):
+            continue
+        row = dict(raw)
+        model_id = ""
+        for key in ("id", "model", "model_id", "modelId", "name"):
+            candidate = row.get(key)
+            if isinstance(candidate, str) and candidate.strip():
+                model_id = candidate.strip()
+                break
+        if model_id:
+            row["id"] = model_id
+            rows.append(row)
+    return rows
+
+
 _EPHEMERAL_CACHE_CONTROL: dict[str, str] = {"type": "ephemeral"}
 _DASHSCOPE_MAX_CACHE_MARKERS = 4
 _DASHSCOPE_CACHE_MARKER_ROLES = {"system", "user", "assistant", "tool"}
@@ -5996,19 +6037,27 @@ class OpenAIProvider:
                         proxy=self._proxy,
                     )
                 )
-                resp = await client.get(self._api_url("/v1/models"), headers=headers)
-                resp.raise_for_status()
+                model_endpoints = [self._api_url("/v1/models")]
+                # Some compatible servers expose the catalog directly below
+                # the configured API root (for example ``/api/models``) rather
+                # than below an implicit ``/v1`` prefix. Retry that shape only
+                # after a 404 so auth and transport failures keep their normal
+                # classification and do not trigger duplicate requests.
+                direct_models_endpoint = f"{self._base_url.rstrip('/')}/models"
+                if direct_models_endpoint not in model_endpoints:
+                    model_endpoints.append(direct_models_endpoint)
+                for endpoint_index, endpoint in enumerate(model_endpoints):
+                    resp = await client.get(endpoint, headers=headers)
+                    if resp.status_code == 404 and endpoint_index < len(model_endpoints) - 1:
+                        continue
+                    resp.raise_for_status()
+                    break
                 data = (
                     resp.json(parse_float=Decimal)
                     if self._provider_kind == "tokenrhythm"
                     else resp.json()
                 )
-                raw_rows = data.get("data", [])
-                rows = (
-                    [row for row in raw_rows if isinstance(row, Mapping)]
-                    if isinstance(raw_rows, list)
-                    else []
-                )
+                rows = _model_listing_rows(data)
                 if self._compat.model_listing_excluded_ids:
                     excluded_model_ids = {
                         model_id.lower() for model_id in self._compat.model_listing_excluded_ids

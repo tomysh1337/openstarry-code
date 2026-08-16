@@ -93,7 +93,13 @@ def _resolve_context_window(model: str | None, ctx: RpcContext) -> tuple[int | N
             if catalog is None or not hasattr(catalog, "resolve_context_window"):
                 continue
             window, source = resolve_effective_context_window(
-                catalog, model, provider=provider, global_override=global_window or 0
+                catalog,
+                model,
+                provider=provider,
+                global_override=global_window or 0,
+                base_url=str(
+                    getattr(getattr(config, "llm", None), "base_url", "") or ""
+                ),
             )
             resolved = _positive_int(window)
             if resolved is None:

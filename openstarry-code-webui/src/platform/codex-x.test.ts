@@ -24,12 +24,14 @@ describe('Codex-X desktop companion bridge', () => {
       available: true,
       version: '0.3.12',
       sharedCodexHome: true,
+      sharedCodexHomePath: 'C:/Users/test/.openstarry-code',
     }))
     const openCodexX = vi.fn(async () => ({
       supported: true,
       available: true,
       version: '0.3.12',
       sharedCodexHome: true,
+      sharedCodexHomePath: 'C:/Users/test/.openstarry-code',
       launched: true,
       ignored: 'private host field',
     }))
@@ -41,12 +43,14 @@ describe('Codex-X desktop companion bridge', () => {
       available: true,
       version: '0.3.12',
       sharedCodexHome: true,
+      sharedCodexHomePath: 'C:/Users/test/.openstarry-code',
     })
     expect(await companion?.open()).toEqual({
       supported: true,
       available: true,
       version: '0.3.12',
       sharedCodexHome: true,
+      sharedCodexHomePath: 'C:/Users/test/.openstarry-code',
       launched: true,
     })
   })

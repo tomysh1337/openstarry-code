@@ -9,6 +9,15 @@ from .types import AgentProfile
 _TEMPLATES_DIR = Path(__file__).parent / "templates"
 
 
+def load_prompt_template(name: str = "investigation_prompt.md") -> str:
+    """Load a shipped user-facing prompt template without rendering it."""
+
+    template_path = _TEMPLATES_DIR / name
+    if not template_path.is_file() or template_path.parent != _TEMPLATES_DIR:
+        raise ValueError(f"Unknown identity prompt template: {name}")
+    return template_path.read_text(encoding="utf-8").strip()
+
+
 def _make_env() -> Environment:
     return Environment(
         loader=FileSystemLoader(str(_TEMPLATES_DIR)),

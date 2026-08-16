@@ -2,7 +2,7 @@
 
 from .bootstrap import AgentWorkspaceBootstrapResult, ensure_agent_workspace
 from .parser import parse_agents, parse_identity, parse_soul
-from .prompt import assemble_system_prompt
+from .prompt import assemble_system_prompt, load_prompt_template
 from .types import (
     AgentCapability,
     AgentIdentity,
@@ -22,6 +22,7 @@ __all__ = [
     "IdentityFields",
     "SoulDocument",
     "assemble_system_prompt",
+    "load_prompt_template",
     "ensure_agent_workspace",
     "load_workspace_files",
     "load_workspace_files_async",
