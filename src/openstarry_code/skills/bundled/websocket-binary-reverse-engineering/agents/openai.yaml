@@ -1,0 +1,4 @@
+interface:
+  display_name: "WebSocket Binary Reverse Engineering"
+  short_description: "Recover binary WebSocket formats and state machines."
+  default_prompt: "Use -binary-reverse-engineering to analyze this WebSocket traffic and document its binary protocol."

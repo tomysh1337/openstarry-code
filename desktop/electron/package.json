@@ -1,6 +1,6 @@
 {
   "name": "@openstarry-code/desktop-electron",
-  "version": "0.5.8",
+  "version": "0.5.9",
   "private": true,
   "description": "Electron desktop shell for the OpenStarry Code Control UI.",
   "repository": {
@@ -102,6 +102,7 @@
     "directories": {
       "output": "../../dist/desktop-electron"
     },
+    "msiProjectCreated": "scripts/prepare-msi-project.mjs",
     "files": [
       "dist/**",
       "assets/**",
@@ -171,7 +172,10 @@
       "runAfterFinish": true,
       "createDesktopShortcut": "always",
       "createStartMenuShortcut": true,
-      "shortcutName": "OpenStarry Code"
+      "shortcutName": "OpenStarry Code",
+      "additionalLightArgs": [
+        "-cultures:zh-cn"
+      ]
     }
   }
 }

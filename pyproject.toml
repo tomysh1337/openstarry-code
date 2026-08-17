@@ -1,6 +1,6 @@
 [project]
 name = "openstarry-code"
-version = "0.5.8"
+version = "0.5.9"
 description = "OpenStarry Code - stackable multi-provider Python agent runtime with automatic model discovery"
 license = "Apache-2.0"
 readme = "README.md"
@@ -110,11 +110,6 @@ packages = ["src/openstarry_code"]
 artifacts = ["src/openstarry_code/gateway/static/dist/**"]
 exclude = [
     "src/openstarry_code/scheduler/templates/*.md",
-    "src/openstarry_code/skills/bundled/**/THIRD_PARTY_NOTICES.md",
-    "src/openstarry_code/skills/bundled/**/README.md",
-    "src/openstarry_code/skills/bundled/**/LICENSE.md",
-    "src/openstarry_code/skills/bundled/**/skill-card.md",
-    "src/openstarry_code/skills/bundled/**/references/*.md",
     "src/openstarry_code/skills/exp/**",
     "src/openstarry_code/skills/meta/META_SKILL_AUTHORING.md",
     # The core distribution may carry the OpenTUI JavaScript sources for

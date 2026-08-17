@@ -1,0 +1,4 @@
+interface:
+  display_name: "Code Quality Standards"
+  short_description: "Apply maintainable coding standards while implementing changes."
+  default_prompt: "Use $code-quality-standards to implement this change with repository-aligned quality, tests, and maintainability."

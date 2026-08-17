@@ -12,7 +12,7 @@ REPO = Path(__file__).resolve().parents[2]
 SCRIPT = (
     REPO
     / "src"
-    / "opensquilla"
+    / "openstarry_code"
     / "skills"
     / "bundled"
     / "nano-banana-pro-openrouter"

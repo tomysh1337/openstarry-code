@@ -1,0 +1,6 @@
+interface:
+  display_name: "Documents and Research Router"
+  short_description: "Route document and research tasks by format and intent"
+  default_prompt: "Use $docs-research-router to select the right document or research skill."
+policy:
+  allow_implicit_invocation: true

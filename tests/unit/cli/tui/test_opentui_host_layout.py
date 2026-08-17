@@ -7,7 +7,7 @@ from pathlib import Path
 SRC = (
     Path(__file__).resolve().parents[4]
     / "src"
-    / "opensquilla"
+    / "openstarry_code"
     / "cli"
     / "tui"
     / "opentui"

@@ -1,0 +1,5 @@
+interface:
+  display_name: "Find Skills On SkillHub"
+  short_description: "Search and compare Tencent SkillHub skills"
+  default_prompt: "Use $find-skill-skillhub to find and rank the best SkillHub candidates for this task."
+

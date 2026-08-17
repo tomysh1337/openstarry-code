@@ -41,6 +41,7 @@ from openstarry_code.provider.ensemble import (
     build_ensemble_provider_from_config,
     ensemble_runtime_status,
 )
+from openstarry_code.provider.model_catalog import ModelCatalog
 from openstarry_code.provider.request_proof import project_final_request_payload
 from openstarry_code.provider.selector import ProviderConfig
 from openstarry_code.provider.types import (
@@ -2079,6 +2080,38 @@ def test_cross_provider_member_uses_its_own_catalog_budget() -> None:
     assert cross_cfg.provider_request_max_chars > 100_000
 
 
+def test_remote_custom_member_uses_conservative_unverified_window() -> None:
+    member = EnsembleMemberConfig(
+        provider_config=ProviderConfig(
+            provider="custom_2",
+            model="gpt-5.6-sol",
+            base_url="https://www.zen-api.top/v1",
+        ),
+        max_tokens=10_000,
+        thinking="off",
+    )
+    config = GatewayConfig(
+        llm={
+            "provider": "custom_3",
+            "model": "claude-opus-5",
+            "context_window_tokens": 0,
+        }
+    )
+
+    bindings = _runtime_member_request_budget_bindings(
+        config=config,
+        members=[member],
+        model_catalog=ModelCatalog(),
+        context_overflow_threshold=0.85,
+    )
+
+    binding = bindings[("custom_2", "gpt-5.6-sol", "https://www.zen-api.top/v1")]
+    assert binding.context_window_tokens == 8_192
+    assert binding.context_window_source == "unverified_default"
+    assert binding.rederive is True
+    assert binding.cap_source == "member_context"
+
+
 @pytest.mark.asyncio
 async def test_cross_provider_proposer_without_reliable_cap_is_skipped_before_chat(
     monkeypatch: pytest.MonkeyPatch,
@@ -3602,43 +3635,41 @@ async def test_aggregator_error_finish_before_content_retries_and_preserves_rece
 
 
 @pytest.mark.asyncio
-async def test_aggregator_error_finish_after_visible_content_is_terminal_without_replay(
+async def test_aggregator_error_finish_after_buffered_content_replays_cleanly(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     failed = _aggregator_done_with_receipt(scale=1, stop_reason="error")
+    succeeded = _aggregator_done_with_receipt(scale=2, stop_reason="stop")
     _, call_count = _flaky_aggregator_harness(
         monkeypatch,
         [
             [TextDeltaEvent(text="partial answer"), failed],
             [
                 TextDeltaEvent(text="must not be replayed"),
-                _aggregator_done_with_receipt(scale=2, stop_reason="stop"),
+                succeeded,
             ],
         ],
     )
 
     events = await _collect(_retry_test_provider())
 
-    assert call_count[0] == 1
+    assert call_count[0] == 2
     assert [event.text for event in events if isinstance(event, TextDeltaEvent)] == [
-        "partial answer"
+        "must not be replayed"
     ]
-    assert not any(isinstance(event, DoneEvent) for event in events)
-    terminal = next(event for event in events if isinstance(event, ErrorEvent))
+    done = next(event for event in events if isinstance(event, DoneEvent))
     aggregator_rows = [
         row
-        for row in terminal.model_usage_breakdown
+        for row in done.model_usage_breakdown
         if row["role"] == "aggregator"
     ]
-    assert [row["attempt_index"] for row in aggregator_rows] == [1]
-    assert [row["stop_reason"] for row in aggregator_rows] == ["error"]
-    assert [row["input_tokens"] for row in aggregator_rows] == [10]
-    assert [row["output_tokens"] for row in aggregator_rows] == [20]
-    assert [row["billed_cost"] for row in aggregator_rows] == pytest.approx([0.01])
+    assert [row["attempt_index"] for row in aggregator_rows] == [1, 2]
+    assert [row["stop_reason"] for row in aggregator_rows] == ["error", "stop"]
     assert [row["billing_receipt"] for row in aggregator_rows] == [
-        failed.billing_receipt
+        failed.billing_receipt,
+        succeeded.billing_receipt,
     ]
-    assert terminal.usage_missing_count == 0
+    assert done.usage_missing_count == 0
 
 
 @pytest.mark.asyncio
@@ -3728,6 +3759,37 @@ async def test_aggregator_transient_exception_is_retried_in_place(
     assert call_count[0] == 2
     assert not any(isinstance(event, ErrorEvent) for event in events)
     assert any(isinstance(event, DoneEvent) for event in events)
+
+
+@pytest.mark.asyncio
+async def test_aggregator_transient_exception_exhaustion_uses_single_fallback(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    async def failed_aggregator() -> AsyncIterator[StreamEvent]:
+        if False:
+            yield DoneEvent(model="agg")
+        raise RuntimeError("connect timeout while contacting upstream")
+
+    async def successful_fallback() -> AsyncIterator[StreamEvent]:
+        yield TextDeltaEvent(text="fallback answer")
+        yield DoneEvent(model="fallback")
+
+    provider, _, aggregator, fallback = _aggregator_timeout_harness(
+        monkeypatch,
+        aggregator_stream=failed_aggregator,
+        fallback_stream=successful_fallback,
+        timeout_seconds=1,
+    )
+
+    events = await _collect(provider)
+
+    assert len(aggregator.calls) == 3
+    assert fallback is not None and len(fallback.calls) == 1
+    assert not any(isinstance(event, ErrorEvent) for event in events)
+    assert any(
+        isinstance(event, TextDeltaEvent) and event.text == "fallback answer"
+        for event in events
+    )
 
 
 @pytest.mark.asyncio
@@ -3828,7 +3890,7 @@ async def test_aggregator_non_transient_error_is_not_retried(
 
 
 @pytest.mark.asyncio
-async def test_aggregator_transient_error_after_content_is_terminal(
+async def test_aggregator_transient_error_after_buffered_content_retries(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     _, call_count = _flaky_aggregator_harness(
@@ -3844,10 +3906,9 @@ async def test_aggregator_transient_error_after_content_is_terminal(
 
     events = await _collect(_retry_test_provider())
 
-    # Replaying after user-visible content would duplicate output downstream.
-    assert call_count[0] == 1
-    error = next(event for event in events if isinstance(event, ErrorEvent))
-    assert error.code == "429"
+    assert call_count[0] == 2
+    assert [event.text for event in events if isinstance(event, TextDeltaEvent)] == ["never"]
+    assert not any(isinstance(event, ErrorEvent) for event in events)
 
 
 @pytest.mark.asyncio
@@ -4559,6 +4620,87 @@ async def test_aggregator_retries_then_timeout_preserves_request_counts_in_fallb
     assert done.ensemble_trace is not None
     assert done.ensemble_trace["llm_request_count"] == 5
     assert done.ensemble_trace["prior_final_request"]["retry_count"] == 2
+
+
+@pytest.mark.asyncio
+async def test_aggregator_overload_after_retries_uses_single_fallback(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    aggregator_attempts = 0
+
+    def overloaded_aggregator() -> AsyncIterator[StreamEvent]:
+        nonlocal aggregator_attempts
+        aggregator_attempts += 1
+
+        async def stream() -> AsyncIterator[StreamEvent]:
+            yield ErrorEvent(message="upstream overloaded", code="502")
+
+        return stream()
+
+    async def successful_fallback() -> AsyncIterator[StreamEvent]:
+        yield TextDeltaEvent(text="fallback answer")
+        yield DoneEvent(input_tokens=11, output_tokens=5, model="fallback")
+
+    provider, _, aggregator, fallback = _aggregator_timeout_harness(
+        monkeypatch,
+        aggregator_stream=overloaded_aggregator,
+        fallback_stream=successful_fallback,
+        proposer_done=DoneEvent(input_tokens=7, output_tokens=3, model="p1"),
+    )
+
+    events = await _collect(provider)
+
+    assert aggregator_attempts == 3
+    assert len(aggregator.calls) == 3
+    assert fallback is not None and len(fallback.calls) == 1
+    assert not any(isinstance(event, ErrorEvent) for event in events)
+    assert [event.text for event in events if isinstance(event, TextDeltaEvent)] == [
+        "fallback answer"
+    ]
+    done = next(event for event in events if isinstance(event, DoneEvent))
+    assert done.ensemble_trace is not None
+    assert done.ensemble_trace["fallback_used"] is True
+    assert done.ensemble_trace["fallback_code"] == "502"
+    assert done.ensemble_trace["prior_final_request"]["terminal_code"] == "502"
+    assert done.ensemble_trace["llm_request_count"] == 5
+    assert done.usage_missing_count == 3
+
+
+@pytest.mark.asyncio
+async def test_aggregator_overload_after_buffered_partial_text_retries_then_falls_back(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    aggregator_attempts = 0
+
+    def partial_then_overloaded() -> AsyncIterator[StreamEvent]:
+        nonlocal aggregator_attempts
+        aggregator_attempts += 1
+
+        async def stream() -> AsyncIterator[StreamEvent]:
+            yield TextDeltaEvent(text=f"partial-{aggregator_attempts}")
+            yield ErrorEvent(message="upstream overloaded", code="502")
+
+        return stream()
+
+    async def successful_fallback() -> AsyncIterator[StreamEvent]:
+        yield TextDeltaEvent(text="fallback answer")
+        yield DoneEvent(model="fallback")
+
+    provider, _, aggregator, fallback = _aggregator_timeout_harness(
+        monkeypatch,
+        aggregator_stream=partial_then_overloaded,
+        fallback_stream=successful_fallback,
+    )
+
+    events = await _collect(provider)
+
+    assert aggregator_attempts == 3
+    assert len(aggregator.calls) == 3
+    assert fallback is not None and len(fallback.calls) == 1
+    assert [event.text for event in events if isinstance(event, TextDeltaEvent)] == [
+        "fallback answer"
+    ]
+    assert not any(isinstance(event, ErrorEvent) for event in events)
 
 
 @pytest.mark.asyncio

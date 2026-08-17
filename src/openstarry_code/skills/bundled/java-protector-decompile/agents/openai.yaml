@@ -1,0 +1,4 @@
+interface:
+  display_name: "Java Protector Decompile"
+  short_description: "Analyze protected Java, JNIC, ZKM, and VMP artifacts"
+  default_prompt: "Use $java-protector-decompile to triage and decompile a protected Java or JNI artifact."

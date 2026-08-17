@@ -136,6 +136,39 @@ def test_system_prompt_only_documents_canonical_tool_names() -> None:
     assert "send_message" not in prompt
 
 
+def test_system_prompt_orchestrates_complex_work_with_subagents() -> None:
+    prompt = assemble_system_prompt(
+        AgentProfile(agent_id="main", prompt_mode="full"),
+        tools=["sessions_spawn", "sessions_yield"],
+    )
+
+    assert "## Subagent Orchestration" in prompt
+    assert "two or more independent, substantial workstreams" in prompt
+    assert "proactively use `sessions_spawn`" in prompt
+    assert "Keep simple or single-track tasks in the parent session" in prompt
+    assert "concise, user-visible decomposition and status update" in prompt
+    assert "channel adapters may stream public reasoning and tool events" in prompt
+    assert "call `sessions_yield` with no `session_key`" in prompt
+    assert "at most one focused retry with a narrower task or corrected context" in prompt
+    assert "The parent session owns the final result" in prompt
+    assert "run integrated verification" in prompt
+
+
+def test_system_prompt_only_adds_subagent_orchestration_with_both_full_mode_tools() -> None:
+    for tools in (["sessions_spawn"], ["sessions_yield"], None):
+        prompt = assemble_system_prompt(
+            AgentProfile(agent_id="main", prompt_mode="full"),
+            tools=tools,
+        )
+        assert "## Subagent Orchestration" not in prompt
+
+    prompt = assemble_system_prompt(
+        AgentProfile(agent_id="main", prompt_mode="minimal"),
+        tools=["sessions_spawn", "sessions_yield"],
+    )
+    assert "## Subagent Orchestration" not in prompt
+
+
 def test_system_prompt_requires_tool_preambles_and_conversation_language() -> None:
     prompt = assemble_system_prompt(
         AgentProfile(agent_id="main", prompt_mode="full"),

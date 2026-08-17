@@ -324,7 +324,11 @@ def _build_catalog_summary() -> str:
             continue
         if getattr(spec, "kind", "skill") == "meta":
             continue
-        first_line = (spec.description or "").split("\n", 1)[0][:120]
+        # Keep every stable name visible while bounding the catalog prompt.
+        # Imported packs can add hundreds of skills; long descriptions would
+        # otherwise make the creator's two-pass proposal exceed its 25k-token
+        # input contract before user intent is considered.
+        first_line = (spec.description or "").split("\n", 1)[0][:32]
         lines.append(f"- {spec.name}: {first_line}")
     return "\n".join(lines)
 

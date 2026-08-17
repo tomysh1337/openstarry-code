@@ -36,7 +36,7 @@ entrypoint:
     - --local-path-prefix
     - "{{ with.local_path_prefix | default('project/assets/images') }}"
   env:
-    OPENSQUILLA_META_CAPABILITY_LEASE_REQUIRED: "1"
+    OPENSTARRY_CODE_META_CAPABILITY_LEASE_REQUIRED: "1"
   stdin: "{{ with.payload | default(with.prompt | default(inputs.user_message)) }}"
   parse: text
   timeout: 300

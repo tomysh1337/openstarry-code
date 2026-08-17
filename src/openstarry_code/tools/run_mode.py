@@ -134,7 +134,30 @@ def full_host_access_active() -> bool:
 def trusted_sandbox_active() -> bool:
     """Compatibility alias: true when the current tool call is in Safe mode."""
 
-    return not full_host_access_active() and current_run_mode() == "safe"
+    if full_host_access_active():
+        return False
+
+    mode = current_run_mode()
+    if mode is not None:
+        return mode == "safe"
+
+    # Internal agent turns can arrive without a serialized run-mode field.
+    # The sandbox runtime still has an explicit default (normally Safe for
+    # the capability runtime), so use it instead of treating the mode as
+    # unknown.  This keeps read-only tools usable while preserving the
+    # Full-host and guest checks above.
+    ctx = current_tool_context.get()
+    if ctx is not None and bool(getattr(ctx, "guest_safe", False)):
+        return False
+    try:
+        from openstarry_code.sandbox.integration import get_runtime
+
+        runtime = get_runtime()
+    except Exception:  # pragma: no cover - defensive import boundary
+        runtime = None
+    default_mode = getattr(runtime, "default_run_mode", None)
+    default_value = getattr(default_mode, "value", default_mode)
+    return str(default_value or "").strip().lower() == "safe"
 
 
 __all__ = [

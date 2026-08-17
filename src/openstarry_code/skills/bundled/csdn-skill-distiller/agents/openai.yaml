@@ -1,0 +1,4 @@
+interface:
+  display_name: "CSDN Skill Distiller"
+  short_description: "Convert Chinese tech research into skills"
+  default_prompt: "Use $csdn-skill-distiller to turn Chinese technical research into a concise reusable Codex skill."

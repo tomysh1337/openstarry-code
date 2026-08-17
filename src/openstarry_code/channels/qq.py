@@ -12,8 +12,8 @@ Coverage limit
 
 Streaming
 ---------
-QQ has **no message-edit primitive**, so :meth:`send_streaming` accumulates
-the LLM stream and emits exactly one outbound POST at completion.
+QQ has **no message-edit primitive**, so :meth:`send_streaming` emits bounded
+append-only updates instead of editing a single message.
 :meth:`edit` and :meth:`delete` are unsupported and exist to satisfy the
 :class:`~openstarry_code.channels.types.ManagedChannel` Protocol surface.
 """
@@ -21,10 +21,14 @@ the LLM stream and emits exactly one outbound POST at completion.
 from __future__ import annotations
 
 import asyncio
+import contextlib
+import hashlib
 from collections.abc import AsyncIterator
 from datetime import UTC, datetime
+from pathlib import Path
 from typing import Any, cast
 
+import httpx
 import structlog
 from pydantic import BaseModel
 
@@ -36,8 +40,10 @@ from openstarry_code.channels.contract import (
     ChannelPlatformCapabilityStatus,
     ChannelPlatformCategories,
     ChannelPlatformManifest,
+    ChannelSendResult,
 )
 from openstarry_code.channels.types import (
+    Attachment,
     AuthenticatedPrincipal,
     ChannelHealth,
     IncomingMessage,
@@ -70,6 +76,34 @@ FATAL_ERROR_CLASSES: tuple[str, ...] = (
 )
 
 _DEDUPE_SIZE = 4096
+_STREAM_FLUSH_SECONDS = 0.8
+_STREAM_FLUSH_CHARS = 600
+_STREAM_MESSAGE_CHARS = 1800
+_QQ_MD5_PREFIX_BYTES = 10_002_432
+_QQ_PASSIVE_REPLY_LIMITS = {"c2c": 4, "group": 5}
+_QQ_MSG_SEQ_CACHE_LIMIT = 8192
+
+
+def _qq_file_type(path: Path) -> int:
+    suffix = path.suffix.lower()
+    if suffix in {".png", ".jpg", ".jpeg", ".gif", ".webp"}:
+        return 1
+    if suffix == ".mp4":
+        return 2
+    if suffix == ".silk":
+        return 3
+    return 4
+
+
+def _qq_attachment_file_type(attachment: Attachment) -> int:
+    mime = (attachment.mime_type or "").lower()
+    if mime in {"image/png", "image/jpeg"}:
+        return 1
+    if mime == "video/mp4":
+        return 2
+    if mime in {"audio/silk", "audio/vnd.tencent.silk"}:
+        return 3
+    return _qq_file_type(Path(attachment.name))
 
 
 class QQChannelConfig(BaseModel):
@@ -188,10 +222,12 @@ class QQChannel(_QQClientBase):  # type: ignore[misc, valid-type]
             group_chat=True,
             mentions=True,
             reply=True,
+            native_file_upload=True,
+            media=True,
             transports=("websocket",),
             notes=(
-                "QQ Bot Platform rich-media APIs exist, but this adapter currently "
-                "sends text replies only.",
+                "QQ Bot Platform media and file delivery use direct multipart upload, "
+                "with URL upload retained for compatibility.",
             ),
         )
 
@@ -202,13 +238,13 @@ class QQChannel(_QQClientBase):  # type: ignore[misc, valid-type]
         ).with_capabilities(
             ChannelPlatformCapability(
                 category=ChannelPlatformCategories.FILES,
-                status=ChannelPlatformCapabilityStatus.UNSUPPORTED,
-                notes=("QQ official bot file delivery is not implemented in this adapter.",),
+                status=ChannelPlatformCapabilityStatus.SUPPORTED,
+                notes=("Local files use the QQ multipart upload_prepare flow.",),
             ),
             ChannelPlatformCapability(
                 category=ChannelPlatformCategories.MEDIA,
-                status=ChannelPlatformCapabilityStatus.UNSUPPORTED,
-                notes=("QQ official bot rich media is not implemented in this adapter.",),
+                status=ChannelPlatformCapabilityStatus.SUPPORTED,
+                notes=("Images, MP4 video, and silk audio use QQ rich-media messages.",),
             ),
         )
 
@@ -361,9 +397,37 @@ class QQChannel(_QQClientBase):  # type: ignore[misc, valid-type]
     # ------------------------------------------------------------------
 
     def _next_msg_seq(self, target: str) -> int:
+        if target not in self._msg_seq and len(self._msg_seq) >= _QQ_MSG_SEQ_CACHE_LIMIT:
+            self._msg_seq.pop(next(iter(self._msg_seq)))
         seq = self._msg_seq.get(target, 0) + 1
         self._msg_seq[target] = seq
         return seq
+
+    def _passive_msg_seq(self, chat_type: str, msg_id: str | None, target: str) -> int | None:
+        """Reserve a passive reply slot, or return ``None`` for an active send.
+
+        QQ limits replies tied to one inbound ``msg_id`` to four C2C or five
+        group messages. Once the budget is exhausted, omitting ``msg_id``
+        switches the same endpoint to an active message addressed by the
+        OpenID, preserving later final text and media delivery.
+        """
+        if not msg_id:
+            return None
+        limit = _QQ_PASSIVE_REPLY_LIMITS.get(chat_type)
+        if limit is None:
+            return None
+        key = f"{chat_type}:{msg_id}"
+        current = self._msg_seq.get(key, 0)
+        if current >= limit:
+            log.info(
+                "qq.passive_reply_budget_exhausted",
+                chat_type=chat_type,
+                target=target,
+                msg_id=msg_id,
+                limit=limit,
+            )
+            return None
+        return self._next_msg_seq(key)
 
     def is_group_mentioned(self, msg: IncomingMessage) -> bool:
         """QQ group callbacks are already scoped to ``@bot`` messages."""
@@ -448,31 +512,291 @@ class QQChannel(_QQClientBase):  # type: ignore[misc, valid-type]
             target = meta.get("group_openid", "")
             if not target:
                 raise ValueError("qq.send: metadata['group_openid'] required for group chat_type")
-            seq = self._next_msg_seq(f"group:{msg_id or target}")
-            await api.post_group_message(
-                group_openid=target,
-                msg_type=0,
-                content=message.content,
-                msg_id=msg_id,
-                msg_seq=seq,
-            )
+            if message.content:
+                seq = self._passive_msg_seq("group", msg_id, target)
+                kwargs: dict[str, Any] = {
+                    "group_openid": target,
+                    "msg_type": 0,
+                    "content": message.content,
+                    "msg_seq": seq or 1,
+                }
+                if seq is not None:
+                    kwargs["msg_id"] = msg_id
+                await api.post_group_message(**kwargs)
         elif chat_type == "c2c":
             target = meta.get("openid", "") or meta.get("user_openid", "")
             if not target:
                 raise ValueError("qq.send: metadata['openid'] required for c2c chat_type")
-            seq = self._next_msg_seq(f"c2c:{msg_id or target}")
-            await api.post_c2c_message(
-                openid=target,
-                msg_type=0,
-                content=message.content,
-                msg_id=msg_id,
-                msg_seq=seq,
-            )
+            if message.content:
+                seq = self._passive_msg_seq("c2c", msg_id, target)
+                kwargs = {
+                    "openid": target,
+                    "msg_type": 0,
+                    "content": message.content,
+                    "msg_seq": seq or 1,
+                }
+                if seq is not None:
+                    kwargs["msg_id"] = msg_id
+                await api.post_c2c_message(**kwargs)
         else:
             raise ValueError(
                 f"qq.send: metadata['chat_type'] must be 'c2c' or 'group', got {chat_type!r}"
             )
-        log.debug("qq.outbound_sent", chat_type=chat_type, length=len(message.content))
+        for attachment in message.attachments:
+            url = (attachment.url or "").strip()
+            if not url.lower().startswith(("https://", "http://")):
+                raise ValueError("qq.send: outbound attachments require an HTTP(S) URL")
+            file_type = _qq_attachment_file_type(attachment)
+            if chat_type == "group":
+                await api.post_group_file(
+                    group_openid=target,
+                    file_type=file_type,
+                    url=url,
+                    srv_send_msg=True,
+                )
+            else:
+                await api.post_c2c_file(
+                    openid=target,
+                    file_type=file_type,
+                    url=url,
+                    srv_send_msg=True,
+                )
+        log.debug(
+            "qq.outbound_sent",
+            chat_type=chat_type,
+            length=len(message.content),
+            attachment_count=len(message.attachments),
+        )
+
+    @staticmethod
+    def _artifact_public_url(artifact: dict[str, Any] | None) -> str:
+        if not isinstance(artifact, dict):
+            return ""
+        for key in ("channel_download_url", "signed_download_url"):
+            value = artifact.get(key)
+            if isinstance(value, str) and value.strip().lower().startswith(("https://", "http://")):
+                return value.strip()
+        return ""
+
+    async def _multipart_upload(
+        self,
+        *,
+        chat_type: str,
+        target: str,
+        file_path: Path,
+        file_type: int,
+        srv_send_msg: bool,
+    ) -> dict[str, Any]:
+        raw = file_path.read_bytes()
+        digest_md5 = hashlib.md5(raw, usedforsecurity=False).hexdigest()
+        digest_sha1 = hashlib.sha1(raw, usedforsecurity=False).hexdigest()
+        prefix_md5 = hashlib.md5(
+            raw[:_QQ_MD5_PREFIX_BYTES],
+            usedforsecurity=False,
+        ).hexdigest()
+        api_http = getattr(self.api, "_http", None)
+        if api_http is None or not callable(getattr(api_http, "request", None)):
+            raise RuntimeError("qq media upload requires the botpy HTTP transport")
+
+        from botpy.http import Route  # type: ignore[import-untyped]
+
+        if chat_type == "group":
+            prepare_route = Route(
+                "POST",
+                "/v2/groups/{group_id}/upload_prepare",
+                group_id=target,
+            )
+            finish_path = "/v2/groups/{group_id}/upload_part_finish"
+            files_route = Route(
+                "POST",
+                "/v2/groups/{group_openid}/files",
+                group_openid=target,
+            )
+            route_target_key = "group_id"
+        elif chat_type == "c2c":
+            prepare_route = Route(
+                "POST",
+                "/v2/users/{user_id}/upload_prepare",
+                user_id=target,
+            )
+            finish_path = "/v2/users/{user_id}/upload_part_finish"
+            files_route = Route(
+                "POST",
+                "/v2/users/{user_openid}/files",
+                user_openid=target,
+            )
+            route_target_key = "user_id"
+        else:
+            raise ValueError(f"qq media upload has invalid chat_type {chat_type!r}")
+
+        prepared = await api_http.request(
+            prepare_route,
+            json={
+                "file_type": file_type,
+                "file_size": str(len(raw)),
+                "file_name": file_path.name,
+                "md5": digest_md5,
+                "sha1": digest_sha1,
+                "md5_10m": prefix_md5,
+            },
+        )
+        if not isinstance(prepared, dict):
+            raise RuntimeError("qq media upload_prepare returned an invalid response")
+        upload_id = str(prepared.get("upload_id") or "")
+        parts = prepared.get("parts")
+        block_size = int(prepared.get("block_size") or 0)
+        if not upload_id or not isinstance(parts, list) or not parts or block_size <= 0:
+            raise RuntimeError("qq media upload_prepare omitted upload metadata")
+
+        async with httpx.AsyncClient(follow_redirects=True, timeout=90.0) as client:
+            for ordinal, part in enumerate(parts):
+                if not isinstance(part, dict):
+                    raise RuntimeError("qq media upload_prepare returned an invalid part")
+                part_index = int(part.get("index", ordinal))
+                start = part_index * block_size
+                chunk_size = int(part.get("block_size") or block_size)
+                chunk = raw[start : start + chunk_size]
+                presigned_url = str(part.get("presigned_url") or "")
+                if not presigned_url.lower().startswith(("https://", "http://")):
+                    raise RuntimeError("qq media upload part omitted its presigned URL")
+                response = await client.put(presigned_url, content=chunk)
+                response.raise_for_status()
+                finish_route = Route(
+                    "POST",
+                    finish_path,
+                    **{route_target_key: target},
+                )
+                await api_http.request(
+                    finish_route,
+                    json={
+                        "upload_id": upload_id,
+                        "part_index": part_index,
+                        "block_size": str(len(chunk)),
+                        "md5": hashlib.md5(chunk, usedforsecurity=False).hexdigest(),
+                    },
+                )
+
+        media = await api_http.request(
+            files_route,
+            json={
+                "file_type": file_type,
+                "file_name": file_path.name,
+                "upload_id": upload_id,
+                "srv_send_msg": srv_send_msg,
+            },
+        )
+        if not isinstance(media, dict) or not media.get("file_info"):
+            raise RuntimeError("qq media upload did not return file_info")
+        return media
+
+    async def _upload_media(
+        self,
+        *,
+        chat_type: str,
+        target: str,
+        file_path: Path,
+        artifact: dict[str, Any] | None,
+        srv_send_msg: bool,
+    ) -> dict[str, Any]:
+        public_url = self._artifact_public_url(artifact)
+        file_type = _qq_file_type(file_path)
+        if public_url:
+            if chat_type == "group":
+                media = await self.api.post_group_file(
+                    group_openid=target,
+                    file_type=file_type,
+                    url=public_url,
+                    srv_send_msg=srv_send_msg,
+                )
+            elif chat_type == "c2c":
+                media = await self.api.post_c2c_file(
+                    openid=target,
+                    file_type=file_type,
+                    url=public_url,
+                    srv_send_msg=srv_send_msg,
+                )
+            else:
+                raise ValueError(f"qq media upload has invalid chat_type {chat_type!r}")
+            if not isinstance(media, dict) or not media.get("file_info"):
+                raise RuntimeError("qq media URL upload did not return file_info")
+            return media
+        return await self._multipart_upload(
+            chat_type=chat_type,
+            target=target,
+            file_path=file_path,
+            file_type=file_type,
+            srv_send_msg=srv_send_msg,
+        )
+
+    async def send_artifact(
+        self,
+        inbound: IncomingMessage,
+        file_path: str,
+        artifact: dict[str, Any] | None = None,
+    ) -> ChannelSendResult:
+        """Upload an artifact and bind it to the exact passive QQ reply route."""
+        route = self.streaming_reply_kwargs(inbound)
+        chat_type = str(route.get("chat_type") or "")
+        target = str(route.get("target") or "")
+        msg_id = str(route.get("msg_id") or "")
+        path = Path(file_path)
+        if not target or not path.is_file():
+            return ChannelSendResult.failed(
+                capability="native_file_upload",
+                target_id=target,
+                reason="invalid_target_or_file",
+            )
+        try:
+            passive_seq = self._passive_msg_seq(chat_type, msg_id or None, target)
+            passive_msg_id = msg_id if passive_seq is not None else ""
+            media = await self._upload_media(
+                chat_type=chat_type,
+                target=target,
+                file_path=path,
+                artifact=artifact,
+                srv_send_msg=not bool(passive_msg_id),
+            )
+            if passive_msg_id:
+                if chat_type == "group":
+                    sent = await self.api.post_group_message(
+                        group_openid=target,
+                        msg_type=7,
+                        media=media,
+                        msg_id=passive_msg_id,
+                        msg_seq=passive_seq,
+                    )
+                else:
+                    sent = await self.api.post_c2c_message(
+                        openid=target,
+                        msg_type=7,
+                        media=media,
+                        msg_id=passive_msg_id,
+                        msg_seq=passive_seq,
+                    )
+            else:
+                sent = media
+        except Exception as exc:  # noqa: BLE001 - preserve artifact fallback upstream.
+            log.warning(
+                "qq.artifact_send_failed",
+                chat_type=chat_type,
+                target=target,
+                error_type=type(exc).__name__,
+                error=str(exc),
+            )
+            return ChannelSendResult.failed(
+                capability="native_file_upload",
+                target_id=target,
+                reason=type(exc).__name__,
+                retryable=isinstance(exc, (httpx.HTTPError, TimeoutError)),
+            )
+        provider_message_id = sent.get("id", "") if isinstance(sent, dict) else ""
+        provider_file_id = media.get("file_uuid", "") if isinstance(media, dict) else ""
+        return ChannelSendResult.sent(
+            capability="native_file_upload",
+            target_id=target,
+            provider_message_id=str(provider_message_id or ""),
+            provider_file_id=str(provider_file_id or ""),
+        )
 
     async def edit(self, message_id: str, content: str) -> None:
         """Raise: QQ Bot Platform has no message-edit primitive."""
@@ -491,7 +815,7 @@ class QQChannel(_QQClientBase):  # type: ignore[misc, valid-type]
         )
 
     # ------------------------------------------------------------------
-    # Streaming — final-flush only
+    # Streaming — bounded real-time message batches
     # ------------------------------------------------------------------
 
     async def send_streaming(
@@ -503,19 +827,7 @@ class QQChannel(_QQClientBase):  # type: ignore[misc, valid-type]
         msg_id: str | None = None,
         metadata: dict[str, Any] | None = None,
     ) -> None:
-        """Accumulate the LLM stream and emit exactly one outbound call.
-
-        QQ has no edit primitive, so per-chunk updates would require
-        a recall+resend fan-out we cannot reliably control. We instead
-        buffer until the stream completes and then call :meth:`send`
-        exactly once.
-        """
-        accumulated = ""
-        async for chunk in chunks:
-            accumulated += chunk
-        if not accumulated:
-            return
-
+        """Flush bounded progress messages while the model is still running."""
         out_meta: dict[str, Any] = dict(metadata or {})
 
         # Implicit-context fallback: the dispatcher calls
@@ -550,4 +862,46 @@ class QQChannel(_QQClientBase):  # type: ignore[misc, valid-type]
             elif ct == "c2c" and "openid" not in out_meta:
                 out_meta["openid"] = target
 
-        await self.send(OutgoingMessage(content=accumulated, metadata=out_meta))
+        async def flush(text: str) -> None:
+            remaining = text
+            while remaining:
+                piece = remaining[:_STREAM_MESSAGE_CHARS]
+                remaining = remaining[_STREAM_MESSAGE_CHARS:]
+                if piece.strip():
+                    await self.send(OutgoingMessage(content=piece, metadata=out_meta))
+
+        iterator = chunks.__aiter__()
+        pending: asyncio.Task[str] | None = None
+        buffer = ""
+        try:
+            pending = asyncio.create_task(iterator.__anext__())
+            while pending is not None:
+                try:
+                    chunk = await asyncio.wait_for(
+                        asyncio.shield(pending),
+                        timeout=_STREAM_FLUSH_SECONDS,
+                    )
+                except TimeoutError:
+                    if buffer:
+                        await flush(buffer)
+                        buffer = ""
+                    continue
+                except StopAsyncIteration:
+                    pending = None
+                    break
+                buffer += chunk
+                pending = asyncio.create_task(iterator.__anext__())
+                if len(buffer) >= _STREAM_FLUSH_CHARS or "\n\n" in chunk:
+                    await flush(buffer)
+                    buffer = ""
+            if buffer:
+                await flush(buffer)
+        finally:
+            if pending is not None and not pending.done():
+                pending.cancel()
+                with contextlib.suppress(asyncio.CancelledError):
+                    await pending
+            aclose = getattr(iterator, "aclose", None)
+            if callable(aclose):
+                with contextlib.suppress(Exception):
+                    await aclose()

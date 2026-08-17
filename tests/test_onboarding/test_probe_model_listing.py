@@ -74,6 +74,31 @@ def _garbled() -> httpx.Response:
     )
 
 
+def test_openai_compat_listing_preserves_configured_provider_slot(monkeypatch: Any) -> None:
+    """Model rows must remain filterable when a custom slot uses OpenAI wire format."""
+
+    _patch_response(
+        monkeypatch,
+        "openai",
+        httpx.Response(
+            200,
+            headers={"content-type": "application/json"},
+            content=b'{"data":[{"id":"gpt-5.6-sol"}]}',
+        ),
+    )
+    provider = OpenAIProvider(
+        api_key="sk-test",
+        model="",
+        provider_id="custom_3",
+        base_url="https://example.test/v1",
+    )
+
+    models = asyncio.run(provider.list_models(raise_on_error=True))
+
+    assert [model.provider for model in models] == ["custom_3"]
+    assert [model.model_id for model in models] == ["gpt-5.6-sol"]
+
+
 @pytest.mark.parametrize("module", sorted(_ADAPTER_MODULES))
 def test_list_models_default_swallows_http_errors(monkeypatch: Any, module: str) -> None:
     _patch_response(monkeypatch, module, _unauthorized())

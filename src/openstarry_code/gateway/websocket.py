@@ -83,6 +83,8 @@ _CONCURRENT_OPTIONAL_READ_METHODS: frozenset[str] = frozenset(
         "models.routing.get",
         "onboarding.status",
         "sandbox.run_mode.preference.get",
+        "skills.list",
+        "skills.status",
         "sessions.list",
         "usage.status",
         "workspaces.list",

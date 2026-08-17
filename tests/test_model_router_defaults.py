@@ -420,7 +420,7 @@ def test_runtime_router_config_does_not_ship_unused_cost_fields() -> None:
     runtime_config = (
         REPO_ROOT
         / "src"
-        / "opensquilla"
+        / "openstarry_code"
         / "squilla_router"
         / "models"
         / "v4.2_phase3_inference"

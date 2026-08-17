@@ -9,7 +9,7 @@ SCRIPT_PATH = REPO_ROOT / "scripts" / "update_router_artifact_manifest.py"
 BUNDLE_DIR = (
     REPO_ROOT
     / "src"
-    / "opensquilla"
+    / "openstarry_code"
     / "squilla_router"
     / "models"
     / "v4.2_phase3_inference"

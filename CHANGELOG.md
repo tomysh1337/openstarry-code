@@ -6,6 +6,33 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.5.9] - 2026-08-17
+
+### Added
+
+- Added expanded bundled Skills and tool support, including Java/JAR/EXE
+  reverse orchestration, Android workflows, native-residue triage, and VMP 3.x
+  analysis guidance.
+- Added automatic subagent decomposition for projects with multiple independent
+  substantial workstreams.
+
+### Changed
+
+- External channels now receive live public reasoning, intermediate narration,
+  tool activity, provider status, router decisions, and fusion progress as
+  separate process updates.
+- QQ group and C2C delivery now supports official multipart uploads for
+  generated local files and images, plus route-aware proactive media sends.
+
+### Fixed
+
+- Fixed mixed-provider fusion limits, duplicate `/v1/v1` model-discovery paths,
+  and custom-provider slot loss when resolving live model IDs.
+- Fixed partial provider output being repeated or replaced by fallback output
+  after an upstream interruption.
+- Fixed Windows full-host network and read-only filesystem behavior when an
+  optional sandbox backend is unavailable.
+
 ## [0.5.8] - 2026-08-16
 
 ### Added

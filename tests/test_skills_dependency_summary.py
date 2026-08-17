@@ -272,6 +272,25 @@ API docs mention EXAMPLE_API_KEY.
     assert "scripts/broken.py" in summary["inferred"]["scan_errors"][0]
 
 
+def test_summary_replaces_invalid_markdown_bytes(tmp_path: Path) -> None:
+    skill_dir = tmp_path / "invalid-markdown-skill"
+    skill_dir.mkdir(parents=True)
+    (skill_dir / "SKILL.md").write_bytes(
+        b"---\nname: invalid-markdown-skill\ndescription: Broken bytes.\n---\n"
+        b"Needs EXAMPLE_API_KEY and invalid byte: \x80\n"
+    )
+
+    loader = SkillLoader(bundled_dir=tmp_path, snapshot_path=tmp_path / "snapshot.json")
+    spec = loader.get_by_name("invalid-markdown-skill")
+    assert spec is not None
+
+    summary = build_dependency_summary(spec, loader=loader, ctx=EligibilityContext(os_name="linux"))
+
+    assert summary["inferred"]["api_env"] == [
+        {"name": "EXAMPLE_API_KEY", "sources": ["SKILL.md"], "not_enforced": True}
+    ]
+
+
 def test_summary_uses_precomputed_report_when_provided(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,

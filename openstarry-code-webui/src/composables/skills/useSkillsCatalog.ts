@@ -39,6 +39,12 @@ export interface SkillsCatalog {
 
 const LAYER_ORDER = ['workspace', 'bundled', 'managed', 'codex', 'personal', 'project', 'extra']
 
+// The Gateway publishes its SkillLoader during boot. A UI connection can
+// become ready a few milliseconds before that publication, so the first
+// skills.list call may legitimately return an empty catalog. Retry briefly at
+// startup instead of turning that transient state into a permanent empty view.
+const SKILLS_LIST_RETRY_DELAYS_MS = [250, 500, 750, 1000, 1500, 2000]
+
 // Known layer keys; labels/help text resolve through i18n by key.
 const KNOWN_LAYERS = new Set(LAYER_ORDER)
 
@@ -543,8 +549,19 @@ export function useSkillsCatalog(
       return false
     }
     try {
-      const data = await rpc.call<SkillsListData>('skills.list', { includeLifecycle: true })
-      allSkills.value = (data.skills || []).map(normalizeSkill)
+      let loadedSkills: Skill[] = []
+      for (let attempt = 0; attempt <= SKILLS_LIST_RETRY_DELAYS_MS.length; attempt += 1) {
+        const data = await rpc.call<SkillsListData>('skills.list', { includeLifecycle: true })
+        loadedSkills = (data.skills || []).map(normalizeSkill)
+        if (loadedSkills.length > 0 || attempt === SKILLS_LIST_RETRY_DELAYS_MS.length) break
+        await new Promise(resolve => setTimeout(resolve, SKILLS_LIST_RETRY_DELAYS_MS[attempt]))
+      }
+      // Do not erase a previously loaded catalog when a transient reconnect
+      // returns an empty response. An explicitly empty installation still
+      // settles to [] on the final retry above.
+      if (loadedSkills.length > 0 || allSkills.value.length === 0) {
+        allSkills.value = loadedSkills
+      }
       await options.loadProposals()
       return true
     } catch (err) {

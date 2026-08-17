@@ -75,9 +75,11 @@ from openstarry_code.engine.types import (
     DoneEvent,
     EnsembleProgressEvent,
     ErrorEvent,
+    ProviderActivityEvent,
     RouterDecisionEvent,
     RunHeartbeatEvent,
     TextDeltaEvent,
+    ThinkingEvent,
     ToolResultEvent,
     ToolUseStartEvent,
     done_text_snapshot,
@@ -2195,6 +2197,123 @@ def _streaming_reply_kwargs(channel: Any, msg: IncomingMessage) -> dict[str, Any
 
 _STREAM_DONE = object()
 
+
+def _progress_json(value: Any) -> str:
+    try:
+        return json.dumps(value, ensure_ascii=False, sort_keys=True, default=str)
+    except (TypeError, ValueError):
+        return str(value)
+
+
+def _channel_progress_fragment(event: Any, previous_kind: str) -> tuple[str, str]:
+    if isinstance(event, ThinkingEvent):
+        if not event.text:
+            return "", previous_kind
+        prefix = "[思考]\n" if previous_kind != "thinking" else ""
+        return prefix + event.text, "thinking"
+    if isinstance(event, TextDeltaEvent) and event.presentation == "intermediate":
+        if not event.text:
+            return "", previous_kind
+        prefix = "\n\n[过程]\n" if previous_kind != "intermediate" else ""
+        return prefix + event.text, "intermediate"
+    if isinstance(event, ToolUseStartEvent):
+        return f"\n\n[工具开始] {event.tool_name}\n", "tool_use_start"
+    if isinstance(event, ToolResultEvent):
+        if _clarify_tool_arguments(event) is not None:
+            return "", previous_kind
+        details: list[str] = [f"[工具结果] {event.tool_name}"]
+        if event.arguments is not None:
+            details.append(f"参数: {_progress_json(event.arguments)}")
+        details.append(f"状态: {'error' if event.is_error else 'ok'}")
+        if event.execution_status is not None:
+            details.append(f"执行状态: {normalize_execution_status(event.execution_status)}")
+        if event.result:
+            details.append(f"结果: {event.result}")
+        return "\n\n" + "\n".join(details) + "\n", "tool_result"
+    if isinstance(event, RouterDecisionEvent):
+        return (
+            "\n\n[路由] " + _progress_json(_router_decision_payload(event)) + "\n",
+            "router_decision",
+        )
+    if isinstance(event, EnsembleProgressEvent):
+        return (
+            "\n\n[融合] " + _progress_json(_ensemble_progress_payload(event)) + "\n",
+            "ensemble_progress",
+        )
+    if isinstance(event, ProviderActivityEvent):
+        payload = {
+            "phase": event.phase,
+            "reason": event.reason,
+            "retry_attempt": event.retry_attempt,
+            "retry_limit": event.retry_limit,
+            "retry_after_ms": event.retry_after_ms,
+            "heartbeat": event.heartbeat,
+        }
+        return "\n\n[供应商] " + _progress_json(payload) + "\n", "provider_activity"
+    return "", previous_kind
+
+
+class _ChannelProgressRelay:
+    """Deliver reasoning and execution events independently from the final answer."""
+
+    def __init__(self, channel: Any, inbound: IncomingMessage) -> None:
+        self._channel = channel
+        self._inbound = inbound
+        self._queue: asyncio.Queue[str | object] = asyncio.Queue()
+        self._task: asyncio.Task[Any] | None = None
+        self._closed = False
+        self._previous_kind = ""
+        self.emitted = False
+
+    async def _chunks(self) -> AsyncIterator[str]:
+        while True:
+            item = await self._queue.get()
+            if item is _STREAM_DONE:
+                return
+            if isinstance(item, str) and item:
+                yield item
+
+    async def _run(self) -> None:
+        reply_kwargs = _streaming_reply_kwargs(self._channel, self._inbound)
+        send_streaming = getattr(self._channel, "send_streaming", None)
+        if callable(send_streaming):
+            await send_streaming(self._chunks(), **reply_kwargs)
+            return
+        async for chunk in self._chunks():
+            await self._channel.send(_build_reply_message(self._channel, chunk, self._inbound))
+
+    async def emit(self, event: Any) -> None:
+        if self._closed:
+            return
+        fragment, self._previous_kind = _channel_progress_fragment(event, self._previous_kind)
+        if not fragment:
+            return
+        self.emitted = True
+        if self._task is None:
+            self._task = asyncio.create_task(self._run())
+        await self._queue.put(fragment)
+
+    async def close(self, timeout: float = 10.0) -> None:
+        if self._closed:
+            return
+        self._closed = True
+        if self._task is None:
+            return
+        await self._queue.put(_STREAM_DONE)
+        try:
+            await asyncio.wait_for(asyncio.shield(self._task), timeout=timeout)
+        except TimeoutError:
+            self._task.cancel()
+            with contextlib.suppress(asyncio.CancelledError):
+                await self._task
+        except Exception as exc:  # noqa: BLE001 - progress is best effort.
+            log.warning(
+                "channel_dispatch.progress_delivery_failed",
+                channel_type=type(self._channel).__name__,
+                error_type=type(exc).__name__,
+                error=str(exc),
+            )
+
 # Coalescing window for consecutive text deltas in the relay queue. The
 # relay yields a batched chunk once either threshold is reached. Both
 # defaults are 0 so the relay preserves its historical one-chunk-per-delta
@@ -2248,6 +2367,7 @@ class _RuntimeChannelStreamRelay:
         self._done_snapshot_present = False
         self._done_snapshot_text = ""
         self._stream_handle: _StreamedMessageHandle | None = None
+        self._progress_relay = _ChannelProgressRelay(channel, inbound)
         self.text_emitted = False
         self.stream_error: BaseException | None = None
         # Buffer of chunks already yielded to ``send_streaming``. If the
@@ -2380,6 +2500,7 @@ class _RuntimeChannelStreamRelay:
                 return
 
     async def emit(self, event: Any) -> None:
+        await self._progress_relay.emit(event)
         artifact = _artifact_event_payload(event)
         if artifact is not None:
             self._artifacts.append(artifact)
@@ -2431,13 +2552,16 @@ class _RuntimeChannelStreamRelay:
         if self._closed:
             return
         self._closed = True
+        await self._progress_relay.close(timeout=timeout)
         artifact_lines = (
             []
             if _can_deliver_channel_files(self._channel)
             else _artifact_fallback_lines(self._artifacts)
         )
-        terminal_text = (
-            self._done_snapshot_text if self._done_snapshot_present else "".join(self._text_deltas)
+        terminal_text = _select_channel_final_text(
+            "".join(self._text_deltas),
+            self._done_snapshot_present,
+            self._done_snapshot_text,
         )
         if not self._live_preview and terminal_text:
             await self._queue.put(terminal_text)
@@ -2539,15 +2663,41 @@ class _RuntimeChannelStreamRelay:
 
 def _text_delta_from_event(event: Any) -> str:
     if isinstance(event, TextDeltaEvent):
-        return event.text
+        return event.text if event.presentation == "answer" else ""
     kind = getattr(event, "kind", None)
     if kind == "text_delta":
+        if getattr(event, "presentation", "answer") != "answer":
+            return ""
         text = getattr(event, "text", "")
         return text if isinstance(text, str) else ""
     if isinstance(event, dict) and event.get("kind") == "text_delta":
+        if event.get("presentation", "answer") != "answer":
+            return ""
         text = event.get("text", "")
         return text if isinstance(text, str) else ""
     return ""
+
+
+def _select_channel_final_text(
+    streamed_answer: str,
+    done_snapshot_present: bool,
+    done_snapshot_text: str,
+) -> str:
+    """Choose one canonical answer without replaying process narration.
+
+    A terminal snapshot is authoritative when it differs from the streamed
+    answer, but older runtimes sometimes persisted the whole trace followed by
+    the answer. In that shape the answer delta is the clean projection. This
+    decision is based on the two answer sources themselves, never on whether a
+    separate progress relay happened to emit anything.
+    """
+    if not done_snapshot_present:
+        return streamed_answer
+    if not streamed_answer or done_snapshot_text == streamed_answer:
+        return done_snapshot_text
+    if done_snapshot_text.endswith(streamed_answer):
+        return streamed_answer
+    return done_snapshot_text
 
 
 def _artifact_event_payload(event: Any) -> dict[str, Any] | None:
@@ -3923,6 +4073,7 @@ async def _run_turn_batch_path(
     artifacts: list[dict[str, Any]] = []
     error_occurred = False
     clarify_card_sent = False
+    progress_relay = _ChannelProgressRelay(channel, msg)
 
     run_kwargs: dict[str, Any] = {
         "tool_context": tool_ctx,
@@ -3942,10 +4093,12 @@ async def _run_turn_batch_path(
             **run_kwargs,
         )
         async for event in _wrap_channel_turn_stream(stream, config):
+            await progress_relay.emit(event)
             if isinstance(event, TextDeltaEvent):
                 if clarify_card_sent:
                     continue
-                text_parts.append(event.text)
+                if event.presentation == "answer":
+                    text_parts.append(event.text)
                 if event_bridge is not None:
                     await event_bridge.emit(
                         session_key,
@@ -3954,6 +4107,13 @@ async def _run_turn_batch_path(
                             "text": event.text,
                             "presentation": getattr(event, "presentation", "answer"),
                         },
+                    )
+            elif isinstance(event, ThinkingEvent):
+                if event_bridge is not None:
+                    await event_bridge.emit(
+                        session_key,
+                        "session.event.thinking",
+                        {"text": event.text, "started_at": event.started_at},
                     )
             elif isinstance(event, DoneEvent):
                 snapshot_present, snapshot_text = done_text_snapshot(event)
@@ -4031,9 +4191,16 @@ async def _run_turn_batch_path(
         )
         text_parts.clear()
         error_occurred = True
+    finally:
+        await progress_relay.close()
 
     if not error_occurred:
-        content = done_snapshot_text if done_snapshot_present else "".join(text_parts)
+        streamed_answer = "".join(text_parts)
+        content = _select_channel_final_text(
+            streamed_answer,
+            done_snapshot_present,
+            done_snapshot_text,
+        )
         content = _strip_artifact_markers_from_channel_text(content)
         content = _strip_delivered_artifact_image_references(content, artifacts)
         if _can_deliver_channel_files(channel):
@@ -4082,6 +4249,7 @@ async def _run_turn_streaming_path(
     artifacts: list[dict[str, Any]] = []
     stream_sanitizer = _DirectiveTagStreamSanitizer()
     clarify_card_sent = False
+    progress_relay = _ChannelProgressRelay(channel, msg)
 
     async def _chunk_iter() -> AsyncIterator[str]:
         """Async iterator that yields text chunks from the queue."""
@@ -4128,11 +4296,12 @@ async def _run_turn_streaming_path(
             **run_kwargs,
         )
         async for event in _wrap_channel_turn_stream(stream, config):
+            await progress_relay.emit(event)
             if isinstance(event, TextDeltaEvent):
                 if clarify_card_sent:
                     continue
                 cleaned = _strip_artifact_markers_from_channel_text(event.text)
-                if cleaned:
+                if cleaned and event.presentation == "answer":
                     text_emitted = True
                     text_parts.append(cleaned)
                     if live_preview:
@@ -4145,6 +4314,13 @@ async def _run_turn_streaming_path(
                             "text": event.text,
                             "presentation": getattr(event, "presentation", "answer"),
                         },
+                    )
+            elif isinstance(event, ThinkingEvent):
+                if event_bridge is not None:
+                    await event_bridge.emit(
+                        session_key,
+                        "session.event.thinking",
+                        {"text": event.text, "started_at": event.started_at},
                     )
             elif isinstance(event, DoneEvent):
                 snapshot_present, snapshot_text = done_text_snapshot(event)
@@ -4207,8 +4383,14 @@ async def _run_turn_streaming_path(
         log.error("channel_dispatch.agent_stream_timeout", session_key=session_key)
         stream_error = build_terminal_reply(_terminal_payload_from_exception(exc))
     finally:
+        await progress_relay.close()
         if not live_preview:
-            terminal_text = done_snapshot_text if done_snapshot_present else "".join(text_parts)
+            streamed_answer = "".join(text_parts)
+            terminal_text = _select_channel_final_text(
+                streamed_answer,
+                done_snapshot_present,
+                done_snapshot_text,
+            )
             if terminal_text:
                 await queue.put(terminal_text)
         # Signal end-of-stream to the consumer
@@ -4229,6 +4411,8 @@ async def _run_turn_streaming_path(
                 error=str(exc),
             )
             stream_task.cancel()
+            with contextlib.suppress(asyncio.CancelledError, Exception):
+                await stream_task
         except Exception as exc:  # noqa: BLE001 - streaming adapter fallback below
             stream_task_error = exc
             log.warning(
@@ -4238,6 +4422,8 @@ async def _run_turn_streaming_path(
                 error=str(exc),
             )
             stream_task.cancel()
+            with contextlib.suppress(asyncio.CancelledError, Exception):
+                await stream_task
 
     if (
         stream_task_error is None
@@ -4245,8 +4431,14 @@ async def _run_turn_streaming_path(
         and done_snapshot_present
         and stream_error is None
     ):
-        canonical_text = _strip_delivered_artifact_image_references(
+        streamed_answer = "".join(text_parts)
+        canonical_source = _select_channel_final_text(
+            streamed_answer,
+            done_snapshot_present,
             done_snapshot_text,
+        )
+        canonical_text = _strip_delivered_artifact_image_references(
+            canonical_source,
             artifacts,
         )
         canonical_text = _sanitize_streamed_channel_text(canonical_text)

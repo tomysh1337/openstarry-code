@@ -1,0 +1,4 @@
+interface:
+  display_name: "Protobuf and gRPC Reverse Engineering"
+  short_description: "Recover unknown Protobuf and gRPC message framing and schemas."
+  default_prompt: "Use -grpc-reverse-engineering to analyze these Protobuf or gRPC bytes and recover a validated schema."

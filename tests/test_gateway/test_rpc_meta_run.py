@@ -75,7 +75,7 @@ class _ShortDramaProviderLoader:
         bundled = (
             Path(__file__).resolve().parents[2]
             / "src"
-            / "opensquilla"
+            / "openstarry_code"
             / "skills"
             / "bundled"
         )

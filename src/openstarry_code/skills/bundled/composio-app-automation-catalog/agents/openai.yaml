@@ -1,0 +1,11 @@
+interface:
+  display_name: "Composio App Automation Catalog"
+  short_description: "Route requests to Composio app workflows"
+  default_prompt: "Use $composio-app-automation-catalog to find and apply the right Composio app workflow."
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "rube"
+      description: "Rube MCP exposes current Composio app tools and schemas."
+      transport: "streamable_http"
+      url: "https://rube.app/mcp"

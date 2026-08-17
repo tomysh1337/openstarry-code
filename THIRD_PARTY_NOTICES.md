@@ -405,10 +405,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-## OpenSquilla-original bundled skills
+## OpenStarry Code-original bundled skills
 
-These bundled skill descriptors are authored and maintained by OpenSquilla and
-are released under OpenSquilla's repository license (Apache-2.0; see `LICENSE`):
+These bundled skill descriptors are authored and maintained by OpenStarry Code
+and are released under the repository license (Apache-2.0; see `LICENSE`):
 
 - `cron`
 - `code-task`
@@ -476,6 +476,16 @@ are released under OpenSquilla's repository license (Apache-2.0; see `LICENSE`):
 - `voice-clone-lab`
 - `voice-conversion-studio`
 - `voiceover-studio`
+
+## OpenStarry Code-imported bundled skills
+
+The release also includes instruction-only Skill descriptors imported from the
+local `cc-ai-frontend-skill-pack-20260816-grouped.zip` archive. These entries
+are kept as separate bundled trees, retain their original text and resources,
+and are marked `bundled-import` when their source omits provenance metadata.
+They do not redistribute the external command-line programs mentioned by the
+instructions; executable requirements are checked separately through each
+Skill's `metadata.opensquilla.requires.bins` declaration.
 
 ## tokenjuice adapted reduction rules
 

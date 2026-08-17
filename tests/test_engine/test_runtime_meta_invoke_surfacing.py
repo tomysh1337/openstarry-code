@@ -384,7 +384,7 @@ async def test_pipeline_projects_configured_openrouter_key_as_name_only_metadata
         bundled_dir=(
             Path(__file__).resolve().parents[2]
             / "src"
-            / "opensquilla"
+            / "openstarry_code"
             / "skills"
             / "bundled"
         ),

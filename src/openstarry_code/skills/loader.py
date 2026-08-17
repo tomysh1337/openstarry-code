@@ -41,8 +41,9 @@ from openstarry_code.skills.types import (
 
 log = structlog.get_logger(__name__)
 
-MAX_SKILLS_PER_SOURCE = 200  # per layer cap
+MAX_SKILLS_PER_SOURCE = 200  # per managed/workspace layer cap
 MAX_CODEX_SKILLS_PER_SOURCE = 1000
+MAX_BUNDLED_SKILLS_PER_SOURCE = 1000
 
 # Bump when on-disk snapshot fields change so stale caches are invalidated
 # instead of silently losing new fields. v12 uses nanosecond mtimes and stores
@@ -1223,9 +1224,26 @@ class SkillLoader:
             layer_limit = (
                 MAX_CODEX_SKILLS_PER_SOURCE
                 if layer is SkillLayer.CODEX
+                else MAX_BUNDLED_SKILLS_PER_SOURCE
+                if layer is SkillLayer.BUNDLED
                 else MAX_SKILLS_PER_SOURCE
             )
-            for skill_dir in sorted(dir_path.iterdir()):
+            # Community skill packs can contain nested skill manifests (for
+            # example a router with domain-specific children). Discover the
+            # complete tree while preserving deterministic relative ordering.
+            skill_dirs = sorted(
+                (
+                    skill_file.parent
+                    for skill_file in dir_path.rglob("SKILL.md")
+                    if skill_file.is_file()
+                    and not any(
+                        part.startswith(".")
+                        for part in skill_file.relative_to(dir_path).parts
+                    )
+                ),
+                key=lambda path: path.relative_to(dir_path).as_posix().casefold(),
+            )
+            for skill_dir in skill_dirs:
                 if layer_count >= layer_limit:
                     log.warning(
                         "layer %s has %d+ skills, truncating",
@@ -1552,10 +1570,14 @@ class SkillLoader:
             try:
                 decoded_skill = skill_bytes.decode("utf-8")
             except UnicodeDecodeError:
-                if layer is not SkillLayer.CODEX:
+                if layer not in {SkillLayer.CODEX, SkillLayer.BUNDLED}:
                     raise
                 decoded_skill = skill_bytes.decode("utf-8", errors="replace")
-                log.warning("skill.codex_invalid_utf8_replaced", path=str(skill_file))
+                log.warning(
+                    "skill.invalid_utf8_replaced",
+                    layer=layer.value,
+                    path=str(skill_file),
+                )
             normalized_bytes = (
                 decoded_skill.replace("\r\n", "\n").replace("\r", "\n").encode("utf-8")
             )
@@ -1564,8 +1586,34 @@ class SkillLoader:
                 layer,
                 skill_bytes=normalized_bytes,
                 profile=profile or SkillCompileProfile.TRUSTED,
-                fallback_name=(skill_dir.name if layer is SkillLayer.CODEX else None),
+                fallback_name=(
+                    skill_dir.name
+                    if layer in {SkillLayer.CODEX, SkillLayer.BUNDLED}
+                    else None
+                ),
             )
+            if layer is SkillLayer.BUNDLED:
+                provenance = skill.provenance
+                if provenance.origin == "unknown":
+                    # Imported skill packs frequently omit provenance rather
+                    # than claiming an upstream. Keep that distinction
+                    # explicit so release audits can separate them from the
+                    # curated built-in catalog.
+                    skill.provenance = SkillProvenance(
+                        origin="bundled-import",
+                        license="unknown",
+                        upstream_url="",
+                        maintained_by="OpenStarry Code",
+                    )
+                elif provenance.maintained_by != "OpenStarry Code":
+                    # Preserve the historical origin/license while exposing
+                    # the current product name in runtime and release views.
+                    skill.provenance = SkillProvenance(
+                        origin=provenance.origin,
+                        license=provenance.license,
+                        upstream_url=provenance.upstream_url,
+                        maintained_by="OpenStarry Code",
+                    )
             skill.tree_digest = compute_tree_sha256(skill_dir)
             return skill
         except _TreeChangedDuringHashError:

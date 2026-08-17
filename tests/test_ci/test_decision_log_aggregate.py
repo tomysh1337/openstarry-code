@@ -37,7 +37,7 @@ def test_history_explorer_script_imports_from_aggregate_module() -> None:
     script = (
         Path(__file__).resolve().parents[2]
         / "src"
-        / "opensquilla"
+        / "openstarry_code"
         / "skills"
         / "bundled"
         / "history-explorer"

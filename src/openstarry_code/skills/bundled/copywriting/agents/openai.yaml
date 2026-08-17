@@ -1,0 +1,6 @@
+interface:
+  display_name: "Copywriting"
+  short_description: "Write conversion-focused marketing copy"
+  default_prompt: "Use $copywriting to write this marketing copy."
+policy:
+  allow_implicit_invocation: true

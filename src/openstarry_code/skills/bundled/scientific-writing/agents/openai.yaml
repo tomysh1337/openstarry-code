@@ -1,0 +1,6 @@
+interface:
+  display_name: "Scientific Writing"
+  short_description: "Draft traceable scientific manuscripts"
+  default_prompt: "Use $scientific-writing to draft or audit this scientific text."
+policy:
+  allow_implicit_invocation: true

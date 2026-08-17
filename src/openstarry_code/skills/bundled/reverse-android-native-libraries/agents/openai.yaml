@@ -1,0 +1,4 @@
+interface:
+  display_name: "Android Native Reverse Engineering"
+  short_description: "Trace JNI bindings and reverse Android native libraries"
+  default_prompt: "Use $reverse-android-native-libraries to trace an Android app from its Java native call into the implementing shared library and verify the recovered behavior."

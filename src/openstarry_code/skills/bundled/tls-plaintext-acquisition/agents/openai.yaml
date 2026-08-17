@@ -1,0 +1,4 @@
+interface:
+  display_name: "TLS Plaintext Acquisition"
+  short_description: "Select and run a TLS plaintext capture method."
+  default_prompt: "Use -plaintext-acquisition to obtain or diagnose TLS plaintext capture for this authorized target."

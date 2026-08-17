@@ -1,0 +1,6 @@
+interface:
+  display_name: "Email Sequences"
+  short_description: "Plan lifecycle and nurture email flows"
+  default_prompt: "Use $emails to create this lifecycle email sequence."
+policy:
+  allow_implicit_invocation: true

@@ -20,9 +20,9 @@ triggers:
   - "修复仓库"
   - "修复 bug"
 provenance:
-  origin: opensquilla-original
+  origin: openstarry-original
   license: Apache-2.0
-  maintained_by: OpenSquilla
+  maintained_by: OpenStarry Code
 metadata:
   {
     "opensquilla":
@@ -41,14 +41,14 @@ metadata:
 # code-task
 
 Solve a real-repository coding task end to end: clone the repo to a
-disposable working directory, run an OpenSquilla agent to make the change on
+disposable working directory, run an OpenStarry Code agent to make the change on
 a task branch, then **independently verify** it with a red→green→regression
 loop. Host mode (no Docker) in v1.
 
 ## Use this — do not hand-edit the repo yourself
 
 When the user asks to fix/add/implement/change code in a repository they
-name by path or URL, route it through `opensquilla code-task solve` — even
+name by path or URL, route it through `openstarry-code code-task solve` — even
 if the change looks small enough to do by hand. Editing the files yourself
 in this session is **not equivalent**: it skips the disposable clone, the
 task branch, and (most importantly) the runner-verified red→green→regression
@@ -66,15 +66,15 @@ The user speaks naturally ("fix issue 412 in github.com/acme/widgets",
 "add CSV BOM support to my project at ~/code/foo"). Map that to the command:
 
 ```
-opensquilla code-task solve --repo <url-or-path> ( --issue N | --task "<text>" | --task-file <path> ) [--yes]
+openstarry-code code-task solve --repo <url-or-path> ( --issue N | --task "<text>" | --task-file <path> ) [--yes]
 ```
 
-> Invocation: do NOT assume a bare `opensquilla` (or bare `python`) is on PATH —
+> Invocation: do NOT assume a bare `openstarry-code` (or bare `python`) is on PATH —
 > the gateway commonly runs from an absolute interpreter path. When coding mode
 > is active it injects the EXACT, resolved, PATH-independent command: use ONLY
 > that. Otherwise invoke via an ABSOLUTE interpreter, e.g.
-> `/abs/path/python -P -m opensquilla.cli.main code-task solve ...`. Never
-> `pip install` OpenSquilla or run an installer to "get" the command; if it
+> `/abs/path/python -P -m openstarry_code.cli.main code-task solve ...`. Never
+> install a second OpenStarry Code runtime or run an installer to "get" the command; if it
 > cannot be run, stop and report the environment is broken.
 
 - **A GitHub issue** → `--issue N` (needs `gh`; see below).

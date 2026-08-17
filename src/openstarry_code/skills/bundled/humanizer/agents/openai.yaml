@@ -1,0 +1,6 @@
+interface:
+  display_name: "Humanizer"
+  short_description: "Make prose natural while preserving facts"
+  default_prompt: "Use $humanizer to rewrite this prose in a natural voice without changing its facts."
+policy:
+  allow_implicit_invocation: true

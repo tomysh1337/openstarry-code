@@ -102,6 +102,27 @@ async def test_a_disabled_network_without_run_context_reports_required_grant(
 
 
 @pytest.mark.asyncio
+async def test_full_host_mode_bypasses_managed_network_gate(tmp_path: Path) -> None:
+    configure_runtime(_POSTURES["sandbox-off"], workspace=tmp_path)
+    called = False
+
+    async def _callback() -> dict[str, object]:
+        nonlocal called
+        called = True
+        return {"ok": True}
+
+    assert in_process_network_precondition() is None
+    outcome = await run_in_process_network_action(
+        action_kind="web.fetch",
+        argv=_ARGV,
+        callback=_callback,
+    )
+
+    assert outcome == {"ok": True}
+    assert called is True
+
+
+@pytest.mark.asyncio
 @pytest.mark.parametrize("posture", ["recommended", "no-managed-network"])
 async def test_an_established_run_context_clears_the_precondition_and_the_call_runs(
     posture: str, tmp_path: Path

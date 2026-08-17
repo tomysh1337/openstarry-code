@@ -7,10 +7,10 @@ provenance:
   license: MIT-0
   upstream_url: https://clawhub.ai/steipete/nano-banana-pro
   upstream_version: "1.0.1"
-  maintained_by: OpenSquilla
+  maintained_by: OpenStarry Code
   modifications: "Rewired from Google Gemini SDK to OpenRouter /v1/chat/completions; pure-stdlib HTTP client."
 metadata:
-  opensquilla:
+  openstarry-code:
     risk: medium
     capabilities: [network-read, filesystem-write]
     requires:
@@ -67,13 +67,13 @@ through `with:` by convention; for edit workflows call the script.
 API-key resolution order (first hit wins):
 1. `--api-key` CLI argument (rarely used; meta-skills don't pass it)
 2. The parent-injected atomic connection
-   `OPENSQUILLA_META_CAPABILITY_PROVIDER`,
-   `OPENSQUILLA_META_CAPABILITY_API_KEY`, and
-   `OPENSQUILLA_META_CAPABILITY_BASE_URL`. An optional
-   `OPENSQUILLA_META_CAPABILITY_PROXY` applies only to requests to that
+   `OPENSTARRY_CODE_META_CAPABILITY_PROVIDER`,
+   `OPENSTARRY_CODE_META_CAPABILITY_API_KEY`, and
+   `OPENSTARRY_CODE_META_CAPABILITY_BASE_URL`. An optional
+   `OPENSTARRY_CODE_META_CAPABILITY_PROXY` applies only to requests to that
    matching provider API. These internal, volatile values are scoped to this
    bundled skill and are not written to argv, run inputs, or transcripts.
-3. `OPENSQUILLA_META_OPENROUTER_API_KEY`, retained for older parent runtimes
+3. `OPENSTARRY_CODE_META_OPENROUTER_API_KEY`, retained for older parent runtimes
    and bound only to OpenRouter's official API origin.
 4. `OPENROUTER_API_KEY` environment variable for direct CLI use, also bound
    only to OpenRouter's official API origin.
@@ -85,7 +85,7 @@ port. To intentionally use a different API origin from the direct CLI, pass
 both `--api-key` and `--base-url`. Authenticated requests reject URL userinfo,
 queries, fragments, malformed ports, and redirects before a key can be sent.
 
-The child script never discovers or parses `opensquilla.toml` from its current
+The child script never discovers or parses `openstarry-code.toml` from its current
 working directory and never lets a workspace choose an arbitrary
 `llm.api_key_env`. Configure the active Gateway normally; the parent runtime
 performs that resolution before launching this bundled subprocess.
@@ -94,7 +94,7 @@ No Google Gemini key needed — OpenRouter routes the request to the
 Gemini image model on the user's behalf.
 
 When a parent-resolved profile-pool credential receives an authentication,
-credit, or rate-limit failure, OpenSquilla parks that key for the next
+credit, or rate-limit failure, OpenStarry Code parks that key for the next
 explicitly authorized run. It never repeats the current paid generation
 automatically.
 

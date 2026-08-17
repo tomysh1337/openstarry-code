@@ -1,7 +1,7 @@
 # Meta-Skill Authoring Guide
 
 This guide is for authors and maintainers who write, validate, and review
-OpenSquilla MetaSkills. For user-facing guidance, read
+OpenStarry Code MetaSkills. For user-facing guidance, read
 [`../features/meta-skill-user-guide.md`](../features/meta-skill-user-guide.md).
 
 ## What a MetaSkill Is
@@ -18,7 +18,7 @@ At runtime, the model may call:
 meta_invoke(name="<meta-skill-name>")
 ```
 
-OpenSquilla then executes the declared composition step by step and returns the
+OpenStarry Code then executes the declared composition step by step and returns the
 final result to the user. The model chooses the workflow, but the runtime
 enforces dependency order, template rendering, risk metadata, recursion guards,
 tool gates, pauses, and final text selection.
@@ -54,7 +54,7 @@ cannot compose another MetaSkill.
 For local managed skills, create:
 
 ```text
-~/.opensquilla/skills/<skill-name>/SKILL.md
+~/.openstarry-code/skills/<skill-name>/SKILL.md
 ```
 
 For repository-bundled skills, place the skill under the bundled skills tree:
@@ -64,7 +64,7 @@ src/openstarry_code/skills/bundled/<skill-name>/SKILL.md
 ```
 
 Generated proposals are reviewed before installation. After accepting a
-proposal, OpenSquilla promotes it into the managed skills directory and refreshes
+proposal, OpenStarry Code promotes it into the managed skills directory and refreshes
 the live skill loader.
 
 ## Basic Authoring Flow
@@ -101,7 +101,7 @@ meta_priority: 50
 always: false
 final_text_mode: auto
 metadata:
-  opensquilla:
+  openstarry-code:
     risk: low
     capabilities: []
 composition:
@@ -118,13 +118,13 @@ The fields have these meanings:
 - `meta_priority`: sort key when multiple MetaSkills may match.
 - `always`: normally `false`; MetaSkills should not be injected unconditionally.
 - `final_text_mode`: how the final answer is derived.
-- `metadata.opensquilla.risk`: highest unattended auto-enable risk.
-- `metadata.opensquilla.capabilities`: explicit side-effect capabilities.
+- `metadata.openstarry-code.risk`: highest unattended auto-enable risk.
+- `metadata.openstarry-code.capabilities`: explicit side-effect capabilities.
 - `composition.steps`: ordered DAG definition.
 
 ## Risk Metadata
 
-Use `metadata.opensquilla.risk` to declare the highest risk level required by
+Use `metadata.openstarry-code.risk` to declare the highest risk level required by
 the workflow:
 
 - `low`: read-only reasoning, classification, summarization, or safe local
@@ -134,7 +134,7 @@ the workflow:
 - `high`: shell/process control, credential use, network writes, external side
   effects, or direct tool calls that can alter state.
 
-Use `metadata.opensquilla.capabilities` to make side effects explicit. Common
+Use `metadata.openstarry-code.capabilities` to make side effects explicit. Common
 capabilities include:
 
 - `filesystem-write`;
@@ -412,7 +412,7 @@ users naturally type:
 
 - Prefer: `summarize recent history`
 - Prefer: `review current diff`
-- Avoid: `run the internal OpenSquilla DAG composition meta skill`
+- Avoid: `run the internal OpenStarry Code DAG composition meta skill`
 
 Use two to five triggers unless a production workflow has a tested reason to use
 more. Avoid triggers that collide with explanation questions such as "how does
@@ -434,7 +434,7 @@ Before sharing or enabling a MetaSkill:
    valid steps or skills.
 4. Confirm the graph has no cycles.
 5. Confirm all user input and step outputs are filtered.
-6. Confirm `metadata.opensquilla.risk` and `metadata.opensquilla.capabilities`
+6. Confirm `metadata.openstarry-code.risk` and `metadata.openstarry-code.capabilities`
    reflect the workflow's true side effects.
 7. If supporting `meta_skill.auto_trigger = true`, run deterministic trigger
    checks with `scripts/meta_trigger_accuracy.py`.
@@ -493,4 +493,4 @@ phrases that users would not naturally type.
 
 ---
 
-[Docs index](../README.md) · [Product guide](../../README.product.md) · [Improve this page](../contributing-docs.md) · [Report a docs issue](https://github.com/opensquilla/opensquilla/issues/new?template=docs_report.yml)
+[Docs index](../README.md) · [Product guide](../../README.product.md) · [Improve this page](../contributing-docs.md) · [Report a docs issue](https://github.com/tomysh1337/openstarry-code/issues/new?template=docs_report.yml)

@@ -37,6 +37,15 @@ def _outgoing_metadata(channel: str, target: str, thread_id: str | None) -> dict
         return {"thread_ts": thread_id} if thread_id else {}
     if channel == "wecom":
         return {"touser": target}
+    if channel == "qq":
+        kind, separator, native_target = target.partition(":")
+        if separator and kind.lower() in {"group", "c2c", "user"}:
+            if not native_target:
+                raise ToolError("QQ target must include an OpenID after the prefix")
+            if kind.lower() == "group":
+                return {"chat_type": "group", "group_openid": native_target}
+            return {"chat_type": "c2c", "openid": native_target}
+        return {"chat_type": "c2c", "openid": target}
 
     metadata = {"recipient": target}
     if thread_id:
@@ -55,6 +64,8 @@ def _reply_to_target(channel: str, target: str, thread_id: str | None) -> str | 
         return target
     if channel == "slack":
         return thread_id
+    if channel == "qq":
+        return None
     return thread_id or target
 
 
@@ -94,6 +105,18 @@ def _reply_to_target(channel: str, target: str, thread_id: str | None) -> str | 
             "type": "string",
             "description": "Emoji reaction (required for react)",
         },
+        "attachment_url": {
+            "type": "string",
+            "description": "HTTP(S) URL of an image or file to send",
+        },
+        "attachment_name": {
+            "type": "string",
+            "description": "Attachment filename including its extension",
+        },
+        "mime_type": {
+            "type": "string",
+            "description": "Optional attachment MIME type",
+        },
     },
     required=["channel", "target"],
 )
@@ -105,14 +128,19 @@ async def message(
     thread_id: str | None = None,
     message_id: str | None = None,
     reaction: str | None = None,
+    attachment_url: str | None = None,
+    attachment_name: str | None = None,
+    mime_type: str | None = None,
 ) -> str:
     # Validate action
     if action not in _VALID_ACTIONS:
         raise ToolError(f"Invalid action: {action}. Must be send|react|delete")
 
     # Validate action-specific params
-    if action == "send" and not text:
-        raise ToolError("'text' is required for send action")
+    if action == "send" and not text and not attachment_url:
+        raise ToolError("'text' or 'attachment_url' is required for send action")
+    if attachment_url and not attachment_url.lower().startswith(("https://", "http://")):
+        raise ToolError("'attachment_url' must use HTTP(S)")
     if action == "react" and (not message_id or not reaction):
         raise ToolError("'message_id' and 'reaction' required for react")
     if action == "delete" and not message_id:
@@ -128,11 +156,21 @@ async def message(
 
     # Dispatch action via OutgoingMessage protocol
     try:
-        from openstarry_code.channels.types import OutgoingMessage
+        from openstarry_code.channels.types import Attachment, OutgoingMessage
 
         if action == "send":
+            attachments = []
+            if attachment_url:
+                attachments.append(
+                    Attachment(
+                        name=attachment_name or "attachment",
+                        mime_type=mime_type,
+                        url=attachment_url,
+                    )
+                )
             msg = OutgoingMessage(
                 content=text or "",
+                attachments=attachments,
                 metadata=_outgoing_metadata(channel, target, thread_id),
                 reply_to=_reply_to_target(channel, target, thread_id),
             )

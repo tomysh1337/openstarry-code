@@ -1,0 +1,6 @@
+interface:
+  display_name: "Planning and Product Router"
+  short_description: "Route plans, requirements, and roadmaps"
+  default_prompt: "Use $planning-product-router to select the right planning or product skill."
+policy:
+  allow_implicit_invocation: true

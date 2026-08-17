@@ -1,0 +1,4 @@
+interface:
+  display_name: "QUIC and HTTP/3 Analysis"
+  short_description: "Capture, decrypt, and analyze QUIC and HTTP/3 traffic."
+  default_prompt: "Use -http3-analysis to triage and analyze this QUIC or HTTP/3 traffic."

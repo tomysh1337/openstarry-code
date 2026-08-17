@@ -120,8 +120,9 @@ def strip_delivered_artifact_image_references(
 
 
 def can_deliver_channel_files(channel: Any) -> bool:
+    send_artifact = getattr(channel, "send_artifact", None)
     send_file = getattr(channel, "send_file", None)
-    if not callable(send_file):
+    if not callable(send_artifact) and not callable(send_file):
         return False
     profile = channel_capability_profile(channel)
     if profile is not None:
@@ -159,8 +160,11 @@ async def deliver_artifacts_as_channel_files(
 ) -> list[dict[str, Any]]:
     if not can_deliver_channel_files(channel):
         return artifacts
+    send_artifact = getattr(channel, "send_artifact", None)
     send_file = getattr(channel, "send_file", None)
-    if not callable(send_file) or not artifacts:
+    if not callable(send_artifact) and not callable(send_file):
+        return artifacts
+    if not artifacts:
         return artifacts
 
     store = ArtifactStore(media_root_from_config(config))
@@ -174,7 +178,10 @@ async def deliver_artifacts_as_channel_files(
         try:
             ref, path = store.resolve_for_download(artifact_id, session_id=session_id)
             with _named_artifact_delivery_path(path, ref.name) as delivery_path:
-                result = send_file(msg.channel_id, str(delivery_path))
+                if callable(send_artifact):
+                    result = send_artifact(msg, str(delivery_path), artifact)
+                else:
+                    result = send_file(msg.channel_id, str(delivery_path))
                 if inspect.isawaitable(result):
                     result = await result
                 normalized = normalize_channel_send_result(

@@ -38,7 +38,7 @@ entrypoint:
     - --voice
     - "{{ with.voice | default('cedar') }}"
   env:
-    OPENSQUILLA_META_CAPABILITY_LEASE_REQUIRED: "1"
+    OPENSTARRY_CODE_META_CAPABILITY_LEASE_REQUIRED: "1"
   stdin: "{{ with.payload | default(with.prompt | default(inputs.user_message)) }}"
   parse: text
   timeout: 240

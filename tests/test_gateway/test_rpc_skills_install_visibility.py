@@ -979,7 +979,7 @@ def test_meta_paper_write_declares_pdf_compile_binaries() -> None:
     bundled = (
         Path(__file__).resolve().parents[2]
         / "src"
-        / "opensquilla"
+        / "openstarry_code"
         / "skills"
         / "bundled"
     )
@@ -1006,7 +1006,7 @@ def test_meta_payload_marks_only_trusted_provider_backed_plans_for_launch_check(
     bundled = (
         Path(__file__).resolve().parents[2]
         / "src"
-        / "opensquilla"
+        / "openstarry_code"
         / "skills"
         / "bundled"
     )

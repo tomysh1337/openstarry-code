@@ -1,0 +1,6 @@
+interface:
+  display_name: "Experimental Design"
+  short_description: "Design interpretable experiments before collection"
+  default_prompt: "Use $experimental-design to design this experiment and control confounding."
+policy:
+  allow_implicit_invocation: true

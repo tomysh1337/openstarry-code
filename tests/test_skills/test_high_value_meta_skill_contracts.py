@@ -21,7 +21,7 @@ from openstarry_code.skills.meta.templating import evaluate_when, render_with_ar
 BUNDLED = (
     Path(__file__).resolve().parents[2]
     / "src"
-    / "opensquilla"
+    / "openstarry_code"
     / "skills"
     / "bundled"
 )

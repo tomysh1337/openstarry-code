@@ -22,7 +22,12 @@ from .deployment import (
 )
 from .error_redaction import redact_upstream_error_code, redact_upstream_error_text
 from .failures import ProviderFailureKind, classify_provider_error
-from .model_catalog import resolve_effective_context_window, shared_catalog
+from .model_catalog import (
+    CUSTOM_OPENAI_PROVIDER_IDS,
+    _is_remote_http_endpoint,
+    resolve_effective_context_window,
+    shared_catalog,
+)
 from .protocol import (
     LLMProvider,
     ProviderMetadata,
@@ -56,6 +61,7 @@ from .types import (
 )
 
 TRACE_CONTENT_MAX_CHARS = 8_000
+_UNVERIFIED_REMOTE_CONTEXT_WINDOW = 8_192
 _ENSEMBLE_HEARTBEAT_INTERVAL_SECONDS = 15.0
 _ENSEMBLE_CANCEL_CLEANUP_TIMEOUT_SECONDS = 5.0
 # The aggregator leg is retried in-place on transient upstream errors: the
@@ -1115,7 +1121,6 @@ class EnsembleProvider:
 
         if eligible_slots >= self.min_successful_proposers:
             return eligible_slots, []
-
         quorum_error = (
             "proposer was not started because ensemble quorum is statically "
             f"unreachable: {eligible_slots} eligible "
@@ -1161,16 +1166,25 @@ class EnsembleProvider:
         *,
         tools: list[ToolDefinition] | None,
         config: ChatConfig,
+        required_successful_proposers: int | None = None,
     ) -> tuple[int | None, dict[str, Any] | None, bool]:
         """Return the joint escaped-candidate budget before proposer billing."""
 
+        required = max(
+            1,
+            int(
+                self.min_successful_proposers
+                if required_successful_proposers is None
+                else required_successful_proposers
+            ),
+        )
         available_candidate_slots = sum(max(1, int(member.k or 1)) for member in self.proposers)
         # Pre-billing admission only needs to prove that the aggregator can
         # receive the configured quorum. Requiring framing for every optional
         # proposer would incorrectly fall back when a valid quorum still fits.
         candidate_slots = min(
             available_candidate_slots,
-            self.min_successful_proposers,
+            required,
         )
         placeholders = [
             _CandidateResult(
@@ -1327,6 +1341,26 @@ class EnsembleProvider:
             message=message,
             code=code,
         )
+
+    def _aggregator_error_is_transport_transient(
+        self,
+        *,
+        message: str,
+        code: str,
+    ) -> bool:
+        """True for a dropped stream that is safe to replay before commit."""
+
+        raw_code = str(code or "")
+        kind = classify_provider_error(
+            provider_name=self.aggregator.provider_config.provider,
+            status_code=int(raw_code) if raw_code.isdigit() else None,
+            raw_code=raw_code,
+            message=message,
+        )
+        return kind in {
+            ProviderFailureKind.TRANSPORT_TRANSIENT,
+            ProviderFailureKind.PROVIDER_OVERLOADED,
+        }
 
     def provider_metadata(self) -> ProviderMetadata:
         return ProviderMetadata(
@@ -1513,7 +1547,15 @@ class EnsembleProvider:
             tools=tools,
             config=config,
         )
-        if eligible_proposer_slots < self.min_successful_proposers:
+        # ``custom_b5`` is user-authored and may contain a mix of providers
+        # whose per-model budget readiness changes per turn.  Preserve strict
+        # quorum semantics for the built-in static profiles, where the lineup
+        # is a fixed release contract and an unreachable quorum intentionally
+        # skips proposer spend.
+        if eligible_proposer_slots <= 0 or (
+            eligible_proposer_slots < self.min_successful_proposers
+            and self.profile_name != CUSTOM_B5_SELECTION_MODE
+        ):
             async for event in self._fallback_or_error(
                 messages,
                 tools=tools,
@@ -1528,6 +1570,22 @@ class EnsembleProvider:
             ):
                 yield event
             return
+        required_successful_proposers = min(
+            self.min_successful_proposers,
+            eligible_proposer_slots,
+        )
+        target_successful_proposers = min(
+            max(required_successful_proposers, self.target_successful_proposers),
+            eligible_proposer_slots,
+        )
+        if required_successful_proposers < self.min_successful_proposers:
+            log.warning(
+                "ensemble.quorum_reduced_for_turn",
+                profile=self.profile_name,
+                configured_required=self.min_successful_proposers,
+                eligible_slots=eligible_proposer_slots,
+                effective_required=required_successful_proposers,
+            )
 
         try:
             aggregator_provider = _build_provider(self.aggregator.provider_config)
@@ -1567,6 +1625,7 @@ class EnsembleProvider:
             ):
                 yield event
             return
+        aggregator_tools = tools
         (
             candidate_bundle_budget,
             candidate_budget_proof,
@@ -1574,9 +1633,47 @@ class EnsembleProvider:
         ) = self._aggregator_candidate_budget(
             aggregator_provider,
             messages,
-            tools=tools,
+            tools=aggregator_tools,
             config=aggregator_cfg,
+            required_successful_proposers=required_successful_proposers,
         )
+        if not exact_admission_available or (
+            candidate_bundle_budget is not None
+            and candidate_bundle_budget < required_successful_proposers
+        ):
+            # A large tool registry can consume the entire provider envelope
+            # before the candidate bundle is even added.  The fusion response
+            # is still useful as a text answer, so retry admission without the
+            # optional tool schema instead of routing the whole turn through
+            # the single-provider fallback.  Tool execution remains available
+            # on the next normal turn once the request fits again.
+            (
+                text_only_budget,
+                text_only_proof,
+                text_only_admission,
+            ) = self._aggregator_candidate_budget(
+                aggregator_provider,
+                messages,
+                tools=None,
+                config=aggregator_cfg,
+                required_successful_proposers=required_successful_proposers,
+            )
+            if text_only_admission and (
+                text_only_budget is None
+                or text_only_budget >= required_successful_proposers
+            ):
+                log.warning(
+                    "ensemble.aggregator_tools_omitted_for_budget",
+                    profile=self.profile_name,
+                    original_tool_count=len(tools or []),
+                    original_tool_budget_chars=(
+                        (candidate_budget_proof or {}).get("tools_chars", 0)
+                    ),
+                )
+                aggregator_tools = None
+                candidate_bundle_budget = text_only_budget
+                candidate_budget_proof = text_only_proof
+                exact_admission_available = text_only_admission
         if not exact_admission_available:
             async for event in self._fallback_or_error(
                 messages,
@@ -1590,7 +1687,7 @@ class EnsembleProvider:
             return
         if (
             candidate_bundle_budget is not None
-            and candidate_bundle_budget < self.min_successful_proposers
+            and candidate_bundle_budget < required_successful_proposers
         ):
             # The original conversation plus candidate framing cannot leave
             # enough room for the minimum quorum. Do not bill proposers for
@@ -1622,7 +1719,12 @@ class EnsembleProvider:
         async def _drain_proposers() -> list[_CandidateResult]:
             try:
                 return await self._run_proposers(
-                    messages, tools=tools, config=config, progress=progress_queue.put_nowait
+                    messages,
+                    tools=tools,
+                    config=config,
+                    progress=progress_queue.put_nowait,
+                    required_successful_proposers=required_successful_proposers,
+                    target_successful_proposers=target_successful_proposers,
                 )
             finally:
                 progress_queue.put_nowait(None)  # sentinel: proposers finished
@@ -1651,7 +1753,7 @@ class EnsembleProvider:
                 with contextlib.suppress(asyncio.CancelledError):
                     await proposer_task
         successful = [candidate for candidate in candidates if candidate.ok]
-        if len(successful) < self.min_successful_proposers:
+        if len(successful) < required_successful_proposers:
             async for event in self._fallback_or_error(
                 messages,
                 tools=tools,
@@ -1659,7 +1761,7 @@ class EnsembleProvider:
                 reason=(
                     "llm ensemble had "
                     f"{len(successful)} successful proposer(s), "
-                    f"requires {self.min_successful_proposers}"
+                    f"requires {required_successful_proposers}"
                 ),
                 code="ensemble_insufficient_proposers",
                 candidates=candidates,
@@ -1675,19 +1777,22 @@ class EnsembleProvider:
             aggregator_provider,
             messages,
             ordered_successful,
-            tools=tools,
+            tools=aggregator_tools,
             config=aggregator_cfg,
             max_budget_chars=candidate_bundle_budget,
         )
-        if fitted_candidates is None and len(ordered_successful) > self.min_successful_proposers:
+        if (
+            fitted_candidates is None
+            and len(ordered_successful) > required_successful_proposers
+        ):
             # Optional successful drafts must not make a previously admitted
             # quorum impossible to aggregate. Keep a deterministic quorum and
             # re-run the final proof before falling back.
             fitted_candidates = self._fit_candidates_to_aggregator_budget(
                 aggregator_provider,
                 messages,
-                ordered_successful[: self.min_successful_proposers],
-                tools=tools,
+                ordered_successful[:required_successful_proposers],
+                tools=aggregator_tools,
                 config=aggregator_cfg,
                 max_budget_chars=candidate_bundle_budget,
             )
@@ -1712,7 +1817,7 @@ class EnsembleProvider:
             selected_candidates=selected_candidates,
             final_request_member=self.aggregator,
             final_request_config=aggregator_cfg,
-            final_request_tools=tools,
+            final_request_tools=aggregator_tools,
             final_request_messages=aggregator_messages,
             final_request_timeout_seconds=self.aggregator_timeout_seconds,
         )
@@ -1733,7 +1838,7 @@ class EnsembleProvider:
         async for event in self._stream_final_aggregator(
             provider=aggregator_provider,
             messages=aggregator_messages,
-            tools=tools,
+            tools=aggregator_tools,
             config=aggregator_cfg,
             prior_rows=proposer_rows,
             prior_missing_count=_candidate_missing_usage_count(candidates),
@@ -1751,7 +1856,25 @@ class EnsembleProvider:
         tools: list[ToolDefinition] | None,
         config: ChatConfig | None,
         progress: Callable[[EnsembleProgressEvent], None] | None = None,
+        required_successful_proposers: int | None = None,
+        target_successful_proposers: int | None = None,
     ) -> list[_CandidateResult]:
+        required = max(
+            1,
+            int(
+                self.min_successful_proposers
+                if required_successful_proposers is None
+                else required_successful_proposers
+            ),
+        )
+        target = max(
+            required,
+            int(
+                self.target_successful_proposers
+                if target_successful_proposers is None
+                else target_successful_proposers
+            ),
+        )
         tasks: list[asyncio.Task[_CandidateResult]] = []
         task_meta: dict[
             asyncio.Task[_CandidateResult],
@@ -1783,12 +1906,12 @@ class EnsembleProvider:
         cancel_code = ""
         cancel_message = ""
         try:
-            if len(pending) < self.min_successful_proposers:
+            if len(pending) < required:
                 cancel_code = "quorum_unreachable"
                 cancel_message = (
                     "proposer cancelled because ensemble quorum is unreachable: "
                     f"0 successful + {len(pending)} pending "
-                    f"< {self.min_successful_proposers} required"
+                    f"< {required} required"
                 )
             while pending:
                 if cancel_code:
@@ -1801,17 +1924,17 @@ class EnsembleProvider:
                     results.append(await task)
 
                 successful_count = sum(1 for result in results if result.ok)
-                if successful_count + len(pending) < self.min_successful_proposers:
+                if successful_count + len(pending) < required:
                     cancel_code = "quorum_unreachable"
                     cancel_message = (
                         "proposer cancelled because ensemble quorum became unreachable: "
                         f"{successful_count} successful + {len(pending)} pending "
-                        f"< {self.min_successful_proposers} required"
+                        f"< {required} required"
                     )
                     break
                 if (
                     self.quorum_grace_seconds > 0
-                    and successful_count >= self.target_successful_proposers
+                    and successful_count >= target
                 ):
                     break
 
@@ -2454,6 +2577,11 @@ class EnsembleProvider:
         yield aggregator_progress("aggregator_start")
         attempt = 0
         while True:
+            # Buffer answer text until the attempt completes. Proposer status
+            # and aggregator heartbeats remain live, while a dropped upstream
+            # stream can be replayed without leaking or duplicating a prefix.
+            attempt_events: list[StreamEvent] = []
+            attempt_text_parts: list[str] = []
             content_streamed = False
             retry_error: ErrorEvent | None = None
             retry_usage_reported = False
@@ -2481,10 +2609,11 @@ class EnsembleProvider:
                             _attach_final_request_output(
                                 trace,
                                 event=event,
-                                output_text="".join(final_text_parts),
+                                output_text="".join(final_text_parts + attempt_text_parts),
                             )
                             can_retry = (
-                                not content_streamed and attempt < _ENSEMBLE_AGGREGATOR_MAX_RETRIES
+                                not content_streamed
+                                and attempt < _ENSEMBLE_AGGREGATOR_MAX_RETRIES
                             )
                             failed_row = aggregator_usage_row(
                                 event,
@@ -2504,6 +2633,9 @@ class EnsembleProvider:
                                 retry_usage_reported = True
                                 retry_error = error
                                 break
+                            final_text_parts.extend(attempt_text_parts)
+                            for buffered_event in attempt_events:
+                                yield buffered_event
                             terminal_rows = [
                                 *prior_rows,
                                 *retry_rows,
@@ -2520,10 +2652,13 @@ class EnsembleProvider:
                                 usage_missing_count=(prior_missing_count + retry_missing_count),
                             )
                             return
+                        final_text_parts.extend(attempt_text_parts)
                         done_event = ensemble_done(
                             event,
                             aggregator_elapsed_ms=aggregator_elapsed_ms,
                         )
+                        for buffered_event in attempt_events:
+                            yield buffered_event
                         usage_rows = done_event.model_usage_breakdown or []
                         aggregator_usage = next(
                             (
@@ -2567,6 +2702,42 @@ class EnsembleProvider:
                         ):
                             retry_error = safe_event
                             break
+                        # A transient aggregator outage must not be handed to
+                        # the Agent as a terminal composite-provider error. The
+                        # proposer round is already paid for, and the original
+                        # conversation is still safe to replay through the
+                        # configured single-provider fallback. Keep this path
+                        # limited to a no-output transient failure so a partial
+                        # answer is never duplicated by a second model.
+                        if (
+                            not content_streamed
+                            and self.all_failed_policy == "fallback_single"
+                            and self.fallback_provider is not None
+                            and self._aggregator_error_is_transport_transient(
+                                message=safe_event.message,
+                                code=safe_event.code,
+                            )
+                        ):
+                            yield aggregator_progress(
+                                "aggregator_finish",
+                                error=safe_event.message,
+                            )
+                            async for fallback_event in self._fallback_or_error(
+                                original_messages,
+                                tools=tools,
+                                config=original_config,
+                                reason=safe_event.message,
+                                code=safe_event.code,
+                                candidates=candidates,
+                                prior_trace=trace,
+                                prior_usage_rows=retry_rows,
+                                extra_usage_missing_count=retry_missing_count + 1,
+                            ):
+                                yield fallback_event
+                            return
+                        final_text_parts.extend(attempt_text_parts)
+                        for buffered_event in attempt_events:
+                            yield buffered_event
                         yield aggregator_progress(
                             "aggregator_finish",
                             error=safe_event.message,
@@ -2574,17 +2745,24 @@ class EnsembleProvider:
                         yield partial_error(safe_event)
                         return
                     elif isinstance(event, TextDeltaEvent):
-                        content_streamed = True
-                        final_text_parts.append(event.text)
-                        yield event
+                        attempt_text_parts.append(event.text)
+                        attempt_events.append(event)
                     elif isinstance(event, ProviderHeartbeatEvent):
                         yield event
                     else:
-                        # Reasoning/tool-use deltas are user-visible; replaying
-                        # the aggregator after emitting them would duplicate
-                        # output downstream, so they pin this attempt.
-                        content_streamed = True
-                        yield event
+                        if isinstance(
+                            event,
+                            (
+                                ReasoningDeltaEvent,
+                                ToolUseStartEvent,
+                                ToolUseDeltaEvent,
+                                ToolUseEndEvent,
+                            ),
+                        ):
+                            content_streamed = True
+                            yield event
+                        else:
+                            attempt_events.append(event)
             except TimeoutError:
                 error = ErrorEvent(
                     message=(
@@ -2598,9 +2776,9 @@ class EnsembleProvider:
                 # another full budget. Preserve any earlier retry receipts, but
                 # do not retry this timed-out attempt. A fallback is safe only
                 # before any text, reasoning, or tool delta reached consumers.
-                yield aggregator_progress("aggregator_finish", error=error.message)
                 if (
                     not content_streamed
+                    and not attempt_text_parts
                     and self.all_failed_policy == "fallback_single"
                     and self.fallback_provider is not None
                 ):
@@ -2608,6 +2786,7 @@ class EnsembleProvider:
                     # candidate bundle sent to the aggregator. Preserve
                     # billed retry rows and count only attempts that ended
                     # without a usage receipt as missing.
+                    yield aggregator_progress("aggregator_finish", error=error.message)
                     async for fallback_event in self._fallback_or_error(
                         original_messages,
                         tools=tools,
@@ -2621,6 +2800,10 @@ class EnsembleProvider:
                     ):
                         yield fallback_event
                     return
+                final_text_parts.extend(attempt_text_parts)
+                for buffered_event in attempt_events:
+                    yield buffered_event
+                yield aggregator_progress("aggregator_finish", error=error.message)
                 yield partial_error(error)
                 return
             except Exception as exc:  # noqa: BLE001 - provider boundary returns ErrorEvent
@@ -2646,6 +2829,32 @@ class EnsembleProvider:
                         message=safe_message,
                         code="ensemble_aggregator_error",
                     )
+                    if (
+                        not content_streamed
+                        and self.all_failed_policy == "fallback_single"
+                        and self.fallback_provider is not None
+                        and self._aggregator_error_is_transport_transient(
+                            message=error.message,
+                            code=error.code,
+                        )
+                    ):
+                        yield aggregator_progress("aggregator_finish", error=error.message)
+                        async for fallback_event in self._fallback_or_error(
+                            original_messages,
+                            tools=tools,
+                            config=original_config,
+                            reason=error.message,
+                            code=error.code,
+                            candidates=candidates,
+                            prior_trace=trace,
+                            prior_usage_rows=retry_rows,
+                            extra_usage_missing_count=retry_missing_count + 1,
+                        ):
+                            yield fallback_event
+                        return
+                    final_text_parts.extend(attempt_text_parts)
+                    for buffered_event in attempt_events:
+                        yield buffered_event
                     yield aggregator_progress("aggregator_finish", error=error.message)
                     yield partial_error(error)
                     return
@@ -2654,9 +2863,16 @@ class EnsembleProvider:
                     message="ensemble aggregator stream ended before DoneEvent",
                     code="ensemble_aggregator_incomplete",
                 )
-                if not content_streamed and attempt < _ENSEMBLE_AGGREGATOR_MAX_RETRIES:
+                if (
+                    not content_streamed
+                    and not attempt_text_parts
+                    and attempt < _ENSEMBLE_AGGREGATOR_MAX_RETRIES
+                ):
                     retry_error = error
                 else:
+                    final_text_parts.extend(attempt_text_parts)
+                    for buffered_event in attempt_events:
+                        yield buffered_event
                     yield aggregator_progress("aggregator_finish", error=error.message)
                     yield partial_error(error)
                     return
@@ -4529,6 +4745,7 @@ def _runtime_member_request_budget_bindings(
                     member_cfg.model,
                     provider=member_cfg.provider,
                     global_override=member_global_context_override,
+                    base_url=str(getattr(member_cfg, "base_url", "") or ""),
                 )
                 context_window = int(resolved_window)
                 context_source = str(resolved_source or "default")
@@ -4536,10 +4753,23 @@ def _runtime_member_request_budget_bindings(
                 context_window = None
                 context_source = "error"
 
+        remote_custom_default = (
+            context_source == "default"
+            and member_provider in CUSTOM_OPENAI_PROVIDER_IDS
+            and _is_remote_http_endpoint(str(getattr(member_cfg, "base_url", "") or ""))
+        )
+        if remote_custom_default and context_window is not None:
+            # A remote relay without live metadata is not evidence of a 128K
+            # upstream window. Keep request admission conservative until the
+            # provider reports a model limit or the operator configures one.
+            context_window = min(context_window, _UNVERIFIED_REMOTE_CONTEXT_WINDOW)
+            context_source = "unverified_default"
         reliable_context = (
             context_window is not None
             and context_window > 0
-            and context_source in {"override", "config", "catalog"}
+            and (
+                context_source in {"override", "config", "catalog", "unverified_default"}
+            )
         )
         bindings[key] = _MemberRequestBudgetBinding(
             context_window_tokens=context_window,

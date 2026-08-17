@@ -60,6 +60,7 @@ log = structlog.get_logger(__name__)
 _ERROR_DETAIL_MAX_CHARS = 500
 _ERROR_DETAIL_SCAN_CHARS = _ERROR_DETAIL_MAX_CHARS * 4
 _REDACTED = "[REDACTED]"
+_BASE_DIR_ARG_MARKER = "__OPENSTARRY_SKILL_BASE_DIR__"
 _PAID_MEDIA_TRUSTED_ENV = frozenset(
     {
         META_CAPABILITY_PROVIDER_ENV,
@@ -529,9 +530,10 @@ async def run_skill_exec_step(
         except jinja2.TemplateSyntaxError as exc:
             raise RuntimeError(f"entrypoint template syntax error: {exc}") from exc
 
-    # `{baseDir}` is a static placeholder (not Jinja) — substitute before
-    # rendering so it survives shlex.split() below.
-    command_str = _replace_base_dir(command_raw, base_dir)
+    # Keep the static placeholder free of spaces until command tokenization.
+    # Restoring the real path before shlex.split() would split an unquoted
+    # ``{baseDir}/scripts/foo.py`` whenever the installation path has spaces.
+    command_str = command_raw.replace("{baseDir}", _BASE_DIR_ARG_MARKER)
     command_str = _render(command_str)
 
     raw_args = entrypoint.get("args") or []
@@ -545,7 +547,8 @@ async def run_skill_exec_step(
             raise RuntimeError(
                 f"step {step.id!r}: entrypoint.args[{index}] must be a string",
             )
-        rendered_args.append(_render(_replace_base_dir(item, base_dir)))
+        protected_item = item.replace("{baseDir}", _BASE_DIR_ARG_MARKER)
+        rendered_args.append(_render(protected_item))
 
     # Resolve cwd early so assemble's relative-path anchoring matches the
     # subprocess's working directory. Precedence:
@@ -641,7 +644,13 @@ async def run_skill_exec_step(
         )
 
     argv = [
-        _normalize_base_dir_argument(item, base_dir)
+        _normalize_base_dir_argument(
+            _replace_base_dir(
+                item.replace(_BASE_DIR_ARG_MARKER, "{baseDir}"),
+                base_dir,
+            ),
+            base_dir,
+        )
         for item in shlex.split(command_str, posix=os.name != "nt") + rendered_args
     ]
     if not argv:

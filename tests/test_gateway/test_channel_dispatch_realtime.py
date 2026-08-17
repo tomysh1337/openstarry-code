@@ -28,6 +28,7 @@ from openstarry_code.engine.types import (
     DoneEvent,
     ErrorEvent,
     TextDeltaEvent,
+    ThinkingEvent,
     ToolResultEvent,
     ToolUseStartEvent,
 )
@@ -373,6 +374,138 @@ async def test_direct_channel_batch_uses_authoritative_done_snapshot() -> None:
     )
 
     assert [message.content for message in channel.sent] == ["canonical"]
+
+
+@pytest.mark.asyncio
+async def test_batch_channel_delivers_process_events_before_independent_final() -> None:
+    class FakeTurnRunner:
+        async def run(self, message: str, session_key: str, **kwargs):
+            del message, session_key, kwargs
+            yield ThinkingEvent(text="inspect state")
+            yield TextDeltaEvent(text="running checks", presentation="intermediate")
+            yield ToolUseStartEvent(tool_use_id="tool-1", tool_name="exec_command")
+            yield ToolResultEvent(
+                tool_use_id="tool-1",
+                tool_name="exec_command",
+                arguments={"cmd": "pytest -q"},
+                result="2 passed",
+            )
+            yield TextDeltaEvent(text="final answer", presentation="answer")
+            yield DoneEvent(
+                text="inspect state running checks final answer",
+                text_snapshot="inspect state running checks final answer",
+            )
+
+    channel = _FakeChannel()
+
+    await _run_turn_batch_path(
+        channel,
+        FakeTurnRunner(),
+        _message(),
+        "agent:main:realtime-batch",
+        _tool_ctx(),
+        None,
+        None,
+        SimpleNamespace(agent_stream_idle_timeout_seconds=1.0),
+    )
+
+    contents = [message.content for message in channel.sent]
+    assert contents[-1] == "final answer"
+    assert "[思考]" in contents[0]
+    assert any("[过程]" in content and "running checks" in content for content in contents[:-1])
+    assert any("[工具开始] exec_command" in content for content in contents[:-1])
+    assert any("pytest -q" in content and "2 passed" in content for content in contents[:-1])
+
+
+@pytest.mark.asyncio
+async def test_streaming_channel_keeps_process_and_final_in_separate_streams() -> None:
+    class AppendOnlyChannel(_FakeChannel):
+        def __init__(self) -> None:
+            super().__init__()
+            self.streams: list[list[str]] = []
+
+        @property
+        def capability_profile(self) -> ChannelCapabilityProfile:
+            return ChannelCapabilityProfile(channel_type="append-only")
+
+        async def send_streaming(self, chunks, **kwargs):
+            del kwargs
+            stream: list[str] = []
+            self.streams.append(stream)
+            async for chunk in chunks:
+                stream.append(chunk)
+
+    class FakeTurnRunner:
+        async def run(self, message: str, session_key: str, **kwargs):
+            del message, session_key, kwargs
+            yield ThinkingEvent(text="trace")
+            yield TextDeltaEvent(text="tool narration", presentation="intermediate")
+            yield TextDeltaEvent(text="final", presentation="answer")
+            yield DoneEvent(
+                text="trace tool narration final",
+                text_snapshot="trace tool narration final",
+            )
+
+    channel = AppendOnlyChannel()
+
+    await _run_turn_with_streaming(
+        channel,
+        FakeTurnRunner(),
+        _message(),
+        "agent:main:realtime-stream",
+        None,
+        None,
+        SimpleNamespace(agent_stream_idle_timeout_seconds=1.0),
+    )
+
+    rendered = ["".join(stream) for stream in channel.streams]
+    assert "final" in rendered
+    process = next(value for value in rendered if "[思考]" in value)
+    assert "tool narration" in process
+    assert process != "final"
+
+
+@pytest.mark.asyncio
+async def test_runtime_relay_keeps_process_and_final_in_separate_streams() -> None:
+    class AppendOnlyChannel(_FakeChannel):
+        def __init__(self) -> None:
+            super().__init__()
+            self.streams: list[list[str]] = []
+
+        @property
+        def capability_profile(self) -> ChannelCapabilityProfile:
+            return ChannelCapabilityProfile(channel_type="append-only")
+
+        async def send_streaming(self, chunks, **kwargs):
+            del kwargs
+            stream: list[str] = []
+            self.streams.append(stream)
+            async for chunk in chunks:
+                stream.append(chunk)
+
+    class FakeTaskRuntime:
+        async def enqueue(self, envelope, message: str, *, stream_event_sink=None):
+            del envelope, message, stream_event_sink
+
+    channel = AppendOnlyChannel()
+    relay = _RuntimeChannelStreamRelay.maybe_start(channel, _message(), FakeTaskRuntime())
+    assert relay is not None
+
+    await relay.emit(ThinkingEvent(text="runtime trace"))
+    await relay.emit(TextDeltaEvent(text="runtime narration", presentation="intermediate"))
+    await relay.emit(TextDeltaEvent(text="runtime final", presentation="answer"))
+    await relay.emit(
+        DoneEvent(
+            text="runtime trace runtime narration runtime final",
+            text_snapshot="runtime trace runtime narration runtime final",
+        )
+    )
+    await relay.close()
+
+    rendered = ["".join(stream) for stream in channel.streams]
+    assert "runtime final" in rendered
+    process = next(value for value in rendered if "[思考]" in value)
+    assert "runtime narration" in process
 
 
 @pytest.mark.asyncio

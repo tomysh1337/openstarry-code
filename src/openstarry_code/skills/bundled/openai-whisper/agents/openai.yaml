@@ -1,0 +1,6 @@
+interface:
+  display_name: "OpenAI Whisper"
+  short_description: "Transcribe audio locally with Whisper"
+  default_prompt: "Use $openai-whisper to transcribe this audio locally."
+policy:
+  allow_implicit_invocation: true

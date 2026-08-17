@@ -20,9 +20,12 @@ def test_default_bundled_skills_have_release_provenance(tmp_path: Path) -> None:
         assert provenance.origin in {
             "opensquilla-original",
             "bundled-derived",
+            "bundled-import",
             "openclaw-derived",
             "clawhub-mit",
             "clawhub-mit0",
+            "openstarry-code",
+            "openstarry-original",
         }
         assert provenance.maintained_by == "OpenStarry Code"
         if provenance.origin == "bundled-derived":

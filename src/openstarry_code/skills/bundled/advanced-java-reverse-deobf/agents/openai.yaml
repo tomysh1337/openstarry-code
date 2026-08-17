@@ -1,0 +1,4 @@
+interface:
+  display_name: "高级 Java 逆向与反混淆"
+  short_description: "证据驱动的 Java JAR 逆向、反混淆与验证。"
+  default_prompt: "Use $advanced-java-reverse-deobf to probe this JAR, select local tools from evidence, and recover verified readable code."

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Skill Source Manager"
+  short_description: "Audit and refresh cached skill sources"
+  default_prompt: "Use $skill-source-manager to inventory, audit, or refresh skill sources without bulk installing them."
+policy:
+  allow_implicit_invocation: true

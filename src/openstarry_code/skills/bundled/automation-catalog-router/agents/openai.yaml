@@ -1,0 +1,6 @@
+interface:
+  display_name: "Automation and Catalog Router"
+  short_description: "Route integrations, automation, and skill discovery"
+  default_prompt: "Use $automation-catalog-router to select the right automation or catalog skill."
+policy:
+  allow_implicit_invocation: true

@@ -127,6 +127,9 @@ _GREP_MAX_MATCH_LINE_CHARS = 2000
 _SOURCE_SYMBOL_DEFAULT_MAX_RESULTS = 80
 _SOURCE_SYMBOL_MAX_RESULTS = 200
 _SOURCE_SYMBOL_MAX_FILE_BYTES = 1_000_000
+_UNAVAILABLE_BACKEND_HOST_READ_KINDS = frozenset(
+    {"read_file", "list_dir", "glob_search", "grep_search"}
+)
 _SOURCE_SYMBOL_EXTENSIONS = frozenset(
     {
         ".c",
@@ -816,13 +819,17 @@ async def _run_sandbox_operation_if_required(
         )
     if (
         trusted_sandbox_active()
-        and ctx is not None
-        and ctx.is_owner
         and runtime is not None
         and isinstance(runtime.backend, UnavailableBackend)
-        and operation.kind not in {"create_source", "edit_source"}
     ):
-        return None
+        if operation.kind in _UNAVAILABLE_BACKEND_HOST_READ_KINDS:
+            return None
+        if (
+            ctx is not None
+            and ctx.is_owner
+            and operation.kind not in {"create_source", "edit_source"}
+        ):
+            return None
     return await SandboxOperationRuntime(
         runtime,
         host_execution_active=full_host_access_active() or host_execution_active,

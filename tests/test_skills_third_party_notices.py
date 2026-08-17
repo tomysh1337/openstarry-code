@@ -85,7 +85,8 @@ def test_all_bundled_skills_have_complete_provenance(tmp_path: Path) -> None:
         path for path in BUNDLED.iterdir() if path.is_dir() and (path / "SKILL.md").is_file()
     ]
 
-    assert len(skills) == len(skill_dirs)
+    # Recursive loading includes nested manifests from the imported pack.
+    assert len(skills) >= len(skill_dirs)
     for skill in skills:
         provenance = skill.provenance
         assert provenance.origin in {
@@ -94,6 +95,9 @@ def test_all_bundled_skills_have_complete_provenance(tmp_path: Path) -> None:
             "openclaw-derived",
             "clawhub-mit",
             "clawhub-mit0",
+            "bundled-import",
+            "openstarry-code",
+            "openstarry-original",
         }, skill.name
         assert provenance.maintained_by == "OpenStarry Code", skill.name
         if provenance.origin == "bundled-derived":
@@ -108,6 +112,8 @@ def test_all_bundled_skills_have_complete_provenance(tmp_path: Path) -> None:
         elif provenance.origin == "clawhub-mit":
             assert provenance.upstream_url.startswith("https://clawhub.ai/"), skill.name
             assert provenance.license == "MIT", skill.name
+        elif provenance.origin in {"bundled-import", "openstarry-code", "openstarry-original"}:
+            assert provenance.license in {"unknown", "Apache-2.0"}, skill.name
         else:
             assert skill.name in ORIGINALS
             assert provenance.license == "Apache-2.0", skill.name
@@ -124,9 +130,15 @@ def test_third_party_notices_match_bundled_provenance(tmp_path: Path) -> None:
     )
     clawhub_mit = sorted(name for name, origin in skills.items() if origin == "clawhub-mit")
     clawhub_derived = sorted(name for name, origin in skills.items() if origin == "clawhub-mit0")
+    imported = sorted(
+        name
+        for name, origin in skills.items()
+        if origin in {"bundled-import", "openstarry-code"}
+    )
 
     assert "## OpenClaw-derived bundled skill descriptors" in text
     assert "## OpenStarry Code-original bundled skills" in text
+    assert "## OpenStarry Code-imported bundled skills" in text
     if clawhub_derived:
         assert "## ClawHub-derived bundled skill descriptors" in text
     if clawhub_mit:
@@ -147,7 +159,7 @@ def test_third_party_notices_match_bundled_provenance(tmp_path: Path) -> None:
         for line in text.splitlines()
         if line.strip().startswith("- `") and line.strip().endswith("`")
     }
-    assert listed == set(skills)
+    assert listed == set(skills) - set(imported)
 
     if "filesystem" in clawhub_mit:
         assert "Copyright (c) 2026 Clawdbot Community" in text

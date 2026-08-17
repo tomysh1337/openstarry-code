@@ -121,3 +121,34 @@ async def test_streaming_fallback_ack_is_not_delivered(
     assert result.summary == ""
     infer_delivery.assert_not_awaited()
     send_delivery.assert_not_awaited()
+
+
+@pytest.mark.asyncio
+async def test_heartbeat_qq_group_delivery_builds_proactive_route() -> None:
+    adapter = SimpleNamespace(send=AsyncMock())
+    manager = SimpleNamespace(get=lambda name: adapter if name == "qq" else None)
+    service = HeartbeatService(
+        turn_runner=None,
+        session_storage=None,
+        channel_manager_ref=lambda: manager,
+    )
+    delivery = SimpleNamespace(
+        channel_name="qq",
+        channel_id="group-openid",
+        account_id="",
+        thread_id="",
+    )
+
+    result = await service._send_delivery(
+        delivery,
+        "heartbeat result",
+        session_key="agent:main:qq:group:group-openid:sender:user-1",
+    )
+
+    assert result is None
+    sent = adapter.send.await_args.args[0]
+    assert sent.reply_to is None
+    assert sent.metadata == {
+        "chat_type": "group",
+        "group_openid": "group-openid",
+    }

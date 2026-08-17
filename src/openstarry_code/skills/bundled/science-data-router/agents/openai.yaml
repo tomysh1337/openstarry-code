@@ -1,0 +1,6 @@
+interface:
+  display_name: "Science and Data Router"
+  short_description: "Route scientific and data tasks precisely"
+  default_prompt: "Use $science-data-router to select the right scientific or data skill."
+policy:
+  allow_implicit_invocation: true

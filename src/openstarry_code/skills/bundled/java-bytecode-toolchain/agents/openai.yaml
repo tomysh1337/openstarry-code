@@ -1,0 +1,4 @@
+interface:
+  display_name: "Java Bytecode Toolchain"
+  short_description: "Recover Java bytecode with a staged local workflow."
+  default_prompt: "Use $java-bytecode-toolchain to recover this Java artifact into mapped, verifiable source."

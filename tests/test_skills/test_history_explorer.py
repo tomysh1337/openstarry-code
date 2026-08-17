@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -51,6 +52,51 @@ def test_empty_log_returns_placeholder(tmp_path: Path) -> None:
     out = _run_explore(tmp_path, "anything", window_days=30)
     assert out.get("co_occurrences", []) == []
     assert "no history" in out["placeholder"].lower()
+
+
+def test_machine_json_stdout_is_not_polluted_by_catalog_warning(tmp_path: Path) -> None:
+    state_dir = tmp_path / "state"
+    managed_skill = state_dir / "skills" / "history-explorer"
+    managed_skill.mkdir(parents=True)
+    (managed_skill / "SKILL.md").write_text(
+        "---\n"
+        "name: history-explorer\n"
+        "description: managed kind override used to exercise catalog logging\n"
+        "kind: meta\n"
+        "composition:\n"
+        "  steps:\n"
+        "    - id: summarize\n"
+        "      skill: summarize\n"
+        "      with:\n"
+        "        task: test\n"
+        "---\n",
+        encoding="utf-8",
+    )
+    log_dir = state_dir / "logs"
+    log_dir.mkdir()
+    env = os.environ.copy()
+    env["OPENSTARRY_CODE_STATE_DIR"] = str(state_dir)
+    proc = subprocess.run(
+        [
+            sys.executable,
+            str(EXPLORE),
+            "--log-dir",
+            str(log_dir),
+            "--query",
+            "catalog warning",
+            "--include",
+            "meta_usage",
+        ],
+        capture_output=True,
+        text=True,
+        check=True,
+        env=env,
+    )
+
+    payload = json.loads(proc.stdout)
+    assert payload["query"] == "catalog warning"
+    assert proc.stdout.strip().startswith("{")
+    assert "skill.kind_override" in proc.stderr
 
 
 def _make_log_line_with_ts(skills: list[str], ts: str, turn_id: str = "t_ts") -> str:

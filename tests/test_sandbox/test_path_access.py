@@ -352,7 +352,9 @@ def test_path_decision_maps_generalized_workspace_alias_to_host_workspace(
         tmp_writable=False,
         tmpdir_env_writable=False,
     )
-    raw_logical_path = str(tmp_path / "model-home" / ".openstarry-code" / "workspace" / "ordinary.py")
+    raw_logical_path = str(
+        tmp_path / "model-home" / ".openstarry-code" / "workspace" / "ordinary.py"
+    )
 
     decision = decide_path_access(
         workspace / "ordinary.py",
@@ -1650,6 +1652,45 @@ async def test_edit_source_fails_closed_when_configured_backend_is_unavailable(
             )
 
     assert target.read_text(encoding="utf-8") == "value = 1\n"
+
+
+@pytest.mark.asyncio
+async def test_owner_read_uses_host_fallback_when_run_mode_is_missing(
+    tmp_path: Path,
+) -> None:
+    workspace = tmp_path / "workspace-read-unavailable"
+    workspace.mkdir()
+    target = workspace / "notes.txt"
+    target.write_text("owner read fallback\n", encoding="utf-8")
+    runtime = get_runtime()
+    assert runtime is not None
+    runtime.backend = UnavailableBackend("native sandbox is unavailable")
+
+    with tool_context(workspace, run_mode=None) as ctx:
+        ctx.sandbox_run_context = None
+        result = await fs.read_file(str(target))
+
+    assert "owner read fallback" in result
+
+
+@pytest.mark.asyncio
+async def test_non_owner_workspace_read_uses_host_fallback_when_backend_is_unavailable(
+    tmp_path: Path,
+) -> None:
+    workspace = tmp_path / "workspace-read-non-owner"
+    workspace.mkdir()
+    target = workspace / "archive"
+    target.mkdir()
+    (target / "entry.txt").write_text("listed\n", encoding="utf-8")
+    runtime = get_runtime()
+    assert runtime is not None
+    runtime.backend = UnavailableBackend("native sandbox is unavailable")
+
+    with tool_context(workspace, run_mode="safe", workspace_strict=True) as ctx:
+        ctx.is_owner = False
+        result = await fs.list_dir(str(target))
+
+    assert "entry.txt" in result
 
 
 @pytest.mark.asyncio

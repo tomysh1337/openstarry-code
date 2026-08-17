@@ -25,7 +25,7 @@ Expert skill for professional HTML development with focus on semantic markup, ac
 - Using HTML5 APIs (Canvas, SVG, Storage, Geolocation)
 - Troubleshooting validation or accessibility issues
 
-## OpenSquilla Webpage Delivery
+## OpenStarry Code Webpage Delivery
 
 For a new runnable webpage when workspace file-authoring tools are available:
 

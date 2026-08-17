@@ -1,0 +1,4 @@
+interface:
+  display_name: "Anbeime Skill Catalog"
+  short_description: "Route tasks to audited anbeime community skills"
+  default_prompt: "Use $anbeime-skill-catalog to find and apply the closest audited workflow from anbeime/skill."

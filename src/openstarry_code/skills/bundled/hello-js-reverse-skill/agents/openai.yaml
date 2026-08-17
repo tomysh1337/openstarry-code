@@ -1,0 +1,4 @@
+interface:
+  display_name: "JS Reverse Engineering"
+  short_description: "Trace and reproduce authorized Web JS signatures"
+  default_prompt: "Use $hello-js-reverse-skill to trace and reproduce this authorized Web API signature flow."

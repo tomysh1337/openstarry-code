@@ -349,7 +349,7 @@ async def test_run_meta_resume_binds_current_bundled_parent_to_persisted_plan(
     bundled = (
         Path(__file__).resolve().parents[2]
         / "src"
-        / "opensquilla"
+        / "openstarry_code"
         / "skills"
         / "bundled"
     )
@@ -458,7 +458,7 @@ async def test_run_meta_resume_with_incomplete_durable_binding_gets_no_credentia
     bundled = (
         Path(__file__).resolve().parents[2]
         / "src"
-        / "opensquilla"
+        / "openstarry_code"
         / "skills"
         / "bundled"
     )

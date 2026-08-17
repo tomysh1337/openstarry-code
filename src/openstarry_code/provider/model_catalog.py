@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import fnmatch
+import re
 import tomllib
 from collections.abc import Mapping
 from dataclasses import dataclass, replace
@@ -580,10 +581,16 @@ class ModelCatalog:
     async def fetch_openrouter(self, api_key: str, base_url: str, proxy: str = "") -> None:
         """Fetch model list from OpenRouter /api/v1/models endpoint.
 
-        ``base_url`` MUST NOT end with ``/v1`` — boot.py strips it.
-        URL constructed as: ``f"{base_url}/v1/models"``
+        Accept both an API origin (``.../api``) and an already versioned
+        compatibility root (``.../api/v1``).  The latter is common for
+        user-configured OpenAI-compatible relays; appending another ``/v1``
+        would make model discovery fail with a 404.
         """
-        url = f"{base_url}/v1/models"
+        normalized_base = str(base_url or "").rstrip("/")
+        if re.search(r"/v\d+(?:(?:alpha|beta)\d*)?(?:/openai)?$", normalized_base):
+            url = f"{normalized_base}/models"
+        else:
+            url = f"{normalized_base}/v1/models"
         headers = {
             "Authorization": f"Bearer {clean_header_secret(api_key, label='OpenRouter API key')}"
         }

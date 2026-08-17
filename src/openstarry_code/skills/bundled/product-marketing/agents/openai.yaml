@@ -1,0 +1,6 @@
+interface:
+  display_name: "Product Marketing"
+  short_description: "Capture audience, positioning, and product context"
+  default_prompt: "Use $product-marketing to establish product and positioning context."
+policy:
+  allow_implicit_invocation: true

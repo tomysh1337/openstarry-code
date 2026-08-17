@@ -1,0 +1,6 @@
+interface:
+  display_name: "Markdown Converter"
+  short_description: "Convert common files into Markdown"
+  default_prompt: "Use $markdown-converter to convert this input into clean Markdown."
+policy:
+  allow_implicit_invocation: true

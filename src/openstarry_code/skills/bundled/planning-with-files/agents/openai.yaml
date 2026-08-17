@@ -1,0 +1,6 @@
+interface:
+  display_name: "Planning with Files"
+  short_description: "Persist plans, findings, and progress"
+  default_prompt: "Use $planning-with-files to organize this complex task with persistent project files."
+policy:
+  allow_implicit_invocation: true

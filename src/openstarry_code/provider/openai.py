@@ -6167,7 +6167,11 @@ class OpenAIProvider:
                 else:
                     models = [
                         ModelInfo(
-                            provider=self._provider_kind,
+                            # ``provider_kind`` is the protocol dialect
+                            # (usually ``openai``), not the configured
+                            # provider slot. Model-list consumers filter by
+                            # slot, so preserve the configured identity.
+                            provider=self.provider_id,
                             model_id=m["id"],
                             display_name=m.get("name", m.get("id", "")),
                             context_window=m.get("context_length", 0),

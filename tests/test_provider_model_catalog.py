@@ -381,6 +381,35 @@ async def test_fetch_openrouter_adds_app_attribution_headers() -> None:
     assert model.context_window == 128_000
 
 
+@pytest.mark.asyncio
+async def test_fetch_openrouter_does_not_duplicate_versioned_base_url() -> None:
+    captured: dict[str, object] = {}
+    mock_response = MagicMock()
+    mock_response.raise_for_status = MagicMock()
+    mock_response.json.return_value = {"data": []}
+
+    with patch("openstarry_code.provider.model_catalog.httpx.AsyncClient") as mock_client_cls:
+        mock_client = AsyncMock()
+        mock_client.__aenter__ = AsyncMock(return_value=mock_client)
+        mock_client.__aexit__ = AsyncMock(return_value=False)
+
+        async def capture_get(url, *, headers):
+            captured["url"] = url
+            captured["headers"] = headers
+            return mock_response
+
+        mock_client.get = AsyncMock(side_effect=capture_get)
+        mock_client_cls.return_value = mock_client
+
+        catalog = ModelCatalog()
+        await catalog.fetch_openrouter(
+            api_key="test-key",
+            base_url="https://openrouter.ai/api/v1",
+        )
+
+    assert captured["url"] == "https://openrouter.ai/api/v1/models"
+
+
 def test_local_provider_context_window_uses_runtime_default_not_cloud() -> None:
     from openstarry_code.provider.model_catalog import (
         _LOCAL_CONTEXT_WINDOW,

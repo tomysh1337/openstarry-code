@@ -171,7 +171,11 @@ class HeartbeatService:
             delivery.thread_id = turn_source_thread_id
 
         ran_at_ms = int(time.time() * 1000)
-        delivery_error = await self._send_delivery(delivery, summary or "")
+        delivery_error = await self._send_delivery(
+            delivery,
+            summary or "",
+            session_key=session_key,
+        )
         if delivery_error is not None:
             result = HeartbeatRunResult(
                 status="skipped",
@@ -248,7 +252,13 @@ class HeartbeatService:
             heartbeat_ack_max_chars=heartbeat_ack_max_chars,
         )
 
-    async def _send_delivery(self, delivery: Any, text: str) -> str | None:
+    async def _send_delivery(
+        self,
+        delivery: Any,
+        text: str,
+        *,
+        session_key: str = "",
+    ) -> str | None:
         manager = self._channel_manager_ref()
         if manager is None:
             return "channel_manager_unavailable"
@@ -302,6 +312,20 @@ class HeartbeatService:
                     reply_to=("cron" if channel_id else None),
                     metadata=metadata,
                 )
+        elif channel_name == "qq":
+            target = channel_id
+            explicit_kind, separator, explicit_target = target.partition(":")
+            if separator and explicit_kind in {"group", "c2c", "user"}:
+                target = explicit_target
+                is_group = explicit_kind == "group"
+            else:
+                is_group = ":qq:group:" in session_key
+            metadata = (
+                {"chat_type": "group", "group_openid": target}
+                if is_group
+                else {"chat_type": "c2c", "openid": target}
+            )
+            msg = OutgoingMessage(content=text, metadata=metadata)
         else:
             msg = OutgoingMessage(content=text, reply_to=channel_id or None)
         try:

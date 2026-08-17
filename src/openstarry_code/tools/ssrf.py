@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 import ipaddress
+import os
+import secrets
 import socket
+import struct
 from collections.abc import Iterable
 from urllib.parse import urlparse
 from urllib.request import getproxies, proxy_bypass
@@ -29,6 +32,9 @@ _HARD_BLOCKED_NETWORKS: tuple[IPNetwork, ...] = (
 )
 
 _trusted_fake_ip_cidrs: tuple[IPNetwork, ...] = ()
+
+_PUBLIC_DNS_SERVERS = ("1.1.1.1", "8.8.8.8")
+_PUBLIC_DNS_TIMEOUT_SECONDS = 1.5
 
 
 def validate_trusted_fake_ip_cidrs(values: Iterable[str]) -> list[str]:
@@ -83,11 +89,6 @@ def validate_http_url_for_fetch(
     if not hostname:
         raise ValueError("Invalid URL: no hostname")
 
-    try:
-        infos = socket.getaddrinfo(hostname, None)
-    except socket.gaierror as exc:
-        raise ValueError(f"Cannot resolve hostname: {hostname}") from exc
-
     trusted_networks = (
         tuple(
             ipaddress.ip_network(value)
@@ -96,10 +97,70 @@ def validate_http_url_for_fetch(
         if trusted_fake_ip_cidrs is not None
         else _trusted_fake_ip_cidrs
     )
+    try:
+        resolved = _system_resolve(hostname)
+    except socket.gaierror as exc:
+        resolved = []
+        system_error: Exception | None = exc
+    else:
+        system_error = None
 
-    vetted: list[str] = []
+    if resolved:
+        try:
+            return _validate_resolved_addresses(hostname, resolved, trusted_networks)
+        except SSRFBlockedError as exc:
+            # Hosts-file blockers and ISP DNS filters commonly return only a
+            # loopback/private address for public domains. Retry through a
+            # small, explicit DNS query path in that case; a mixed answer is
+            # still rejected to preserve DNS-rebinding protection.
+            if _hostname_is_ip_literal(hostname) or not all(
+                _is_non_public_address(addr) for addr in resolved
+            ):
+                raise
+            public_resolved = _resolve_public_dns(hostname)
+            if public_resolved:
+                try:
+                    return _validate_resolved_addresses(
+                        hostname,
+                        public_resolved,
+                        trusted_networks,
+                    )
+                except SSRFBlockedError:
+                    raise
+            raise exc
+
+    public_resolved = _resolve_public_dns(hostname)
+    if public_resolved:
+        return _validate_resolved_addresses(hostname, public_resolved, trusted_networks)
+    if system_error is not None:
+        raise ValueError(f"Cannot resolve hostname: {hostname}") from system_error
+    raise ValueError(f"Cannot resolve hostname: {hostname}")
+
+
+def _system_resolve(hostname: str) -> list[IPAddress]:
+    """Resolve through the host resolver while preserving answer order."""
+
+    infos = socket.getaddrinfo(hostname, None)
+    resolved: list[IPAddress] = []
+    seen: set[IPAddress] = set()
     for info in infos:
-        addr = ipaddress.ip_address(info[4][0])
+        try:
+            addr = ipaddress.ip_address(info[4][0])
+        except (IndexError, ValueError):
+            continue
+        if addr not in seen:
+            seen.add(addr)
+            resolved.append(addr)
+    return resolved
+
+
+def _validate_resolved_addresses(
+    hostname: str,
+    addresses: Iterable[IPAddress],
+    trusted_networks: tuple[IPNetwork, ...],
+) -> list[str]:
+    vetted: list[str] = []
+    for addr in addresses:
         block_reason = _hard_block_reason(addr)
         if block_reason is not None:
             raise SSRFBlockedError(_blocked_message(hostname, addr, block_reason))
@@ -116,6 +177,115 @@ def validate_http_url_for_fetch(
             raise SSRFBlockedError(_blocked_message(hostname, addr, reason))
         vetted.append(str(addr))
     return vetted
+
+
+def _is_non_public_address(addr: IPAddress) -> bool:
+    return bool(
+        _hard_block_reason(addr)
+        or addr.is_private
+        or addr.is_loopback
+        or addr.is_link_local
+        or addr.is_reserved
+    )
+
+
+def _resolve_public_dns(hostname: str) -> list[IPAddress]:
+    """Resolve a hostname with literal public DNS servers when local DNS lies.
+
+    This deliberately uses a tiny UDP DNS client instead of an HTTP resolver:
+    the fallback must not depend on resolving another hostname through the same
+    poisoned hosts file or on an ambient proxy. The returned addresses still
+    pass the normal SSRF validator before use.
+    """
+
+    if os.environ.get("OPENSTARRY_CODE_DISABLE_PUBLIC_DNS_FALLBACK", "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }:
+        return []
+    raw_servers = os.environ.get("OPENSTARRY_CODE_PUBLIC_DNS_SERVERS", "")
+    servers = (
+        tuple(item.strip() for item in raw_servers.split(",") if item.strip())
+        or _PUBLIC_DNS_SERVERS
+    )
+    answers: list[IPAddress] = []
+    seen: set[IPAddress] = set()
+    for server in servers:
+        try:
+            for qtype in (1, 28):  # A, AAAA
+                for addr in _query_public_dns(server, hostname, qtype):
+                    if addr not in seen:
+                        seen.add(addr)
+                        answers.append(addr)
+        except (OSError, ValueError):
+            continue
+    return answers
+
+
+def _query_public_dns(server: str, hostname: str, qtype: int) -> list[IPAddress]:
+    try:
+        ipaddress.ip_address(server)
+    except ValueError as exc:
+        raise ValueError("public DNS server must be an IP literal") from exc
+    labels = hostname.rstrip(".").split(".")
+    if not labels or any(not label or len(label) > 63 for label in labels):
+        return []
+    query_id = secrets.randbelow(65536)
+    header = struct.pack("!HHHHHH", query_id, 0x0100, 1, 0, 0, 0)
+    question = b"".join(bytes((len(label),)) + label.encode("idna") for label in labels) + b"\0"
+    question += struct.pack("!HH", qtype, 1)
+    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
+        sock.settimeout(_PUBLIC_DNS_TIMEOUT_SECONDS)
+        sock.sendto(header + question, (server, 53))
+        response, _ = sock.recvfrom(4096)
+    if len(response) < 12:
+        return []
+    response_id, flags, questions, answer_count, _authority, _additional = struct.unpack(
+        "!HHHHHH", response[:12]
+    )
+    if response_id != query_id or not (flags & 0x8000) or (flags & 0x000F) != 0:
+        return []
+    offset = 12
+    for _ in range(questions):
+        offset = _skip_dns_name(response, offset)
+        if offset + 4 > len(response):
+            return []
+        offset += 4
+    answers: list[IPAddress] = []
+    for _ in range(answer_count):
+        offset = _skip_dns_name(response, offset)
+        if offset + 10 > len(response):
+            return answers
+        record_type, record_class, _ttl, data_length = struct.unpack(
+            "!HHIH", response[offset : offset + 10]
+        )
+        offset += 10
+        data = response[offset : offset + data_length]
+        offset += data_length
+        if record_class != 1 or record_type != qtype:
+            continue
+        if qtype == 1 and len(data) == 4:
+            answers.append(ipaddress.IPv4Address(data))
+        elif qtype == 28 and len(data) == 16:
+            answers.append(ipaddress.IPv6Address(data))
+    return answers
+
+
+def _skip_dns_name(payload: bytes, offset: int) -> int:
+    """Skip one DNS name, including compressed pointer form."""
+
+    while offset < len(payload):
+        length = payload[offset]
+        if length == 0:
+            return offset + 1
+        if length & 0xC0 == 0xC0:
+            return offset + 2 if offset + 1 < len(payload) else len(payload)
+        if length & 0xC0 or offset + 1 + length > len(payload):
+            return len(payload)
+        offset += 1 + length
+    return len(payload)
 
 
 def _hard_block_reason(addr: IPAddress) -> str | None:

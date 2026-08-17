@@ -7,10 +7,10 @@ provenance:
   license: MIT-0
   upstream_url: https://clawhub.ai/dandysuper/seedance-2-prompt-engineering-skill
   upstream_version: "2.0.0"
-  maintained_by: OpenSquilla
+  maintained_by: OpenStarry Code
   modifications: "Added scripts/generate_video.py with dual-provider support: OpenRouter async /videos API and Volcengine ARK / BytePlus ModelArk /contents/generations/tasks. References kept from upstream."
 metadata:
-  opensquilla:
+  openstarry-code:
     risk: medium
     capabilities: [network-read, filesystem-write]
     requires:
@@ -87,7 +87,7 @@ model uses without locking the frame. For multi-shot drama, pass the
 same `input_reference` to every shot; pass `input_image` only when you
 want a specific opening frame.
 
-## Prompt rules (from upstream + OpenSquilla tightening)
+## Prompt rules (from upstream + OpenStarry Code tightening)
 
 1. **One major action per 3-5s segment.** Don't pack multiple motions.
 2. **Identity continuity** — repeat the main character's full
@@ -107,12 +107,12 @@ See `references/recipes.md`, `references/modes-and-recipes.md`,
 - `openrouter` provider API-key resolution order:
   1. `--api-key` CLI argument
   2. The parent-injected atomic tuple
-     `OPENSQUILLA_META_CAPABILITY_PROVIDER`,
-     `OPENSQUILLA_META_CAPABILITY_API_KEY`, and
-     `OPENSQUILLA_META_CAPABILITY_BASE_URL`; optional
-     `OPENSQUILLA_META_CAPABILITY_PROXY` is used only for the matching
+     `OPENSTARRY_CODE_META_CAPABILITY_PROVIDER`,
+     `OPENSTARRY_CODE_META_CAPABILITY_API_KEY`, and
+     `OPENSTARRY_CODE_META_CAPABILITY_BASE_URL`; optional
+     `OPENSTARRY_CODE_META_CAPABILITY_PROXY` is used only for the matching
      provider's authenticated API requests
-  3. `OPENSQUILLA_META_OPENROUTER_API_KEY`, retained for older parent runtimes
+  3. `OPENSTARRY_CODE_META_OPENROUTER_API_KEY`, retained for older parent runtimes
      and bound to OpenRouter's official origin
   4. `OPENROUTER_API_KEY` for direct CLI use, also bound to the official origin
 - The generic parent key is accepted only with its matching provider and base
@@ -120,16 +120,16 @@ See `references/recipes.md`, `references/modes-and-recipes.md`,
   changes through `--base-url`, but never a scheme, hostname, or effective-port
   change. Direct CLI users who intentionally select a different origin must
   pass both `--api-key` and `--base-url`.
-- The child never discovers or parses `opensquilla.toml` from its workspace
+- The child never discovers or parses `openstarry-code.toml` from its workspace
   and never honors a workspace-selected arbitrary `llm.api_key_env`. Configure
   the active Gateway normally; its parent runtime performs that resolution.
 - When a parent-resolved profile-pool credential receives an authentication,
-  credit, or rate-limit failure, OpenSquilla parks that key for the next
+  credit, or rate-limit failure, OpenStarry Code parks that key for the next
   explicitly authorized run. It never repeats the current paid generation
   automatically.
 - `volcengine` / `byteplus` provider reads `ARK_API_KEY` (with provider-
   specific fallbacks `VOLC_ARK_API_KEY` / `BYTEPLUS_API_KEY`). No
-  config-file fallback for these — the OpenSquilla `[llm]` config
+  config-file fallback for these — the OpenStarry Code `[llm]` config
   describes the agent's selected LLM provider, not ARK / BytePlus video
   credentials.
 - All three send the key as `Authorization: Bearer <key>` only to an API URL

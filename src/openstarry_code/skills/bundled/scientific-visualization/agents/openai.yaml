@@ -1,0 +1,6 @@
+interface:
+  display_name: "Scientific Visualization"
+  short_description: "Create truthful publication-ready figures"
+  default_prompt: "Use $scientific-visualization to create or audit these figures."
+policy:
+  allow_implicit_invocation: true

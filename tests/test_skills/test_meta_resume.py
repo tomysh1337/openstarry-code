@@ -30,7 +30,7 @@ from openstarry_code.skills.meta.types import (
 BUNDLED = (
     Path(__file__).resolve().parents[2]
     / "src"
-    / "opensquilla"
+    / "openstarry_code"
     / "skills"
     / "bundled"
 )

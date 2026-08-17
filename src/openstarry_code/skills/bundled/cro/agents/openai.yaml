@@ -1,0 +1,6 @@
+interface:
+  display_name: "Conversion Optimization"
+  short_description: "Audit and improve page conversion"
+  default_prompt: "Use $cro to diagnose and improve this page's conversion."
+policy:
+  allow_implicit_invocation: true

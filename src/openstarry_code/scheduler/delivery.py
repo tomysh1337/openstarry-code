@@ -239,6 +239,7 @@ class DeliveryChain:
             channel_name=channel_name,
             channel_id=channel_id,
             thread_id=thread_id,
+            session_key=session_key,
         )
 
     async def _deliver_origin_webchat_to_session(
@@ -280,6 +281,7 @@ class DeliveryChain:
         channel_name: str,
         channel_id: str,
         thread_id: str,
+        session_key: str = "",
     ) -> str:
         """Send ``text`` via the registered channel adapter for ``channel_name``."""
         text = strip_reply_directives(text) or ""
@@ -312,6 +314,20 @@ class DeliveryChain:
                         reply_to="cron",
                         metadata={"channel": channel_id, "thread_ts": None},
                     )
+            elif channel_name == "qq":
+                target = channel_id
+                explicit_kind, separator, explicit_target = target.partition(":")
+                if separator and explicit_kind in {"group", "c2c", "user"}:
+                    target = explicit_target
+                    is_group = explicit_kind == "group"
+                else:
+                    is_group = ":qq:group:" in session_key
+                metadata = (
+                    {"chat_type": "group", "group_openid": target}
+                    if is_group
+                    else {"chat_type": "c2c", "openid": target}
+                )
+                msg = OutgoingMessage(content=text, metadata=metadata)
             else:
                 msg = OutgoingMessage(content=text, reply_to=channel_id or None)
             await asyncio.wait_for(adapter.send(msg), timeout=30.0)

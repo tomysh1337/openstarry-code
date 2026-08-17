@@ -330,18 +330,18 @@ def test_feishu_platform_manifest_derives_from_the_profile() -> None:
                 ),
             },
         ),
-        (
-            QQChannel(QQChannelConfig()),
-            {
-                ChannelPlatformCategories.FILES: (
-                    ChannelPlatformCapabilityStatus.UNSUPPORTED,
-                    (),
-                    (),
-                ),
-                ChannelPlatformCategories.MEDIA: (
-                    ChannelPlatformCapabilityStatus.UNSUPPORTED,
-                    (),
-                    (),
+            (
+                QQChannel(QQChannelConfig()),
+                {
+                    ChannelPlatformCategories.FILES: (
+                        ChannelPlatformCapabilityStatus.SUPPORTED,
+                        (),
+                        (),
+                    ),
+                    ChannelPlatformCategories.MEDIA: (
+                        ChannelPlatformCapabilityStatus.SUPPORTED,
+                        (),
+                        (),
                 ),
             },
         ),
@@ -514,8 +514,8 @@ def test_qq_profile_matches_current_official_bot_adapter_surface() -> None:
     assert profile.supports(ChannelCapabilities.REPLY)
     assert not profile.supports(ChannelCapabilities.EDIT)
     assert not profile.supports(ChannelCapabilities.DELETE)
-    assert not profile.supports(ChannelCapabilities.NATIVE_FILE_UPLOAD)
-    assert not profile.supports(ChannelCapabilities.MEDIA)
+    assert profile.supports(ChannelCapabilities.NATIVE_FILE_UPLOAD)
+    assert profile.supports(ChannelCapabilities.MEDIA)
 
 
 def test_group_thread_metadata_builds_thread_session_key() -> None:
@@ -666,6 +666,63 @@ async def test_artifact_delivery_preserves_fallback_on_structured_failure(
     )
 
     assert undelivered == [ref.to_dict()]
+
+
+@pytest.mark.asyncio
+async def test_artifact_delivery_prefers_route_aware_send_artifact(tmp_path: Path) -> None:
+    store = ArtifactStore(tmp_path)
+    ref = store.publish_bytes(
+        b"image",
+        session_id="session-1",
+        session_key="agent:main:qq:direct:user-1",
+        name="result.png",
+        mime="image/png",
+        source="test",
+    )
+    calls: list[tuple[IncomingMessage, str, dict[str, object]]] = []
+
+    class RouteAwareChannel:
+        capability_profile = ChannelCapabilityProfile(
+            channel_type="qq",
+            native_file_upload=True,
+            media=True,
+        )
+
+        async def send_artifact(
+            self,
+            inbound: IncomingMessage,
+            file_path: str,
+            artifact: dict[str, object],
+        ) -> ChannelSendResult:
+            assert Path(file_path).is_file()
+            calls.append((inbound, file_path, artifact))
+            return ChannelSendResult.sent(
+                capability=ChannelCapabilities.NATIVE_FILE_UPLOAD,
+                target_id=inbound.channel_id,
+            )
+
+        async def send_file(self, *_args: object) -> None:
+            raise AssertionError("route-aware delivery must take priority")
+
+    msg = IncomingMessage(
+        sender_id="user-1",
+        channel_id="user-1",
+        content="draw",
+        metadata={"chat_type": "c2c", "msg_id": "msg-1"},
+    )
+    config = SimpleNamespace(attachments=SimpleNamespace(media_root=str(tmp_path)))
+
+    undelivered = await deliver_artifacts_as_channel_files(
+        RouteAwareChannel(),
+        msg,
+        [ref.to_dict()],
+        config,
+    )
+
+    assert undelivered == []
+    assert len(calls) == 1
+    assert calls[0][0] is msg
+    assert calls[0][2]["id"] == ref.id
 
 
 def test_feishu_profile_and_inbound_group_metadata() -> None:

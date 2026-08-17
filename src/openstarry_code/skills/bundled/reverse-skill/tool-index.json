@@ -1,0 +1,1322 @@
+﻿{
+    "generated_at":  "2026-07-12 18:39:56 +08:00",
+    "routing_entry":  [
+                          "SKILL.md",
+                          "routing.md"
+                      ],
+    "tools":  [
+                  {
+                      "name":  "jadx",
+                      "skill":  "apk-reverse",
+                      "purpose":  "Java 反编译",
+                      "available":  false,
+                      "is_executable":  false,
+                      "is_directory":  false,
+                      "resolved_path":  "",
+                      "version":  "",
+                      "source":  "Missing",
+                      "script_refs":  [
+                                          "apk-reverse/scripts/decode.ps1"
+                                      ]
+                  },
+                  {
+                      "name":  "apktool",
+                      "skill":  "apk-reverse",
+                      "purpose":  "APK 解包与重建",
+                      "available":  false,
+                      "is_executable":  false,
+                      "is_directory":  false,
+                      "resolved_path":  "",
+                      "version":  "",
+                      "source":  "Missing",
+                      "script_refs":  [
+                                          "apk-reverse/scripts/decode.ps1",
+                                          "apk-reverse/scripts/rebuild-sign-install.ps1"
+                                      ]
+                  },
+                  {
+                      "name":  "adb",
+                      "skill":  "apk-reverse",
+                      "purpose":  "设备连接与 logcat",
+                      "available":  false,
+                      "is_executable":  false,
+                      "is_directory":  false,
+                      "resolved_path":  "",
+                      "version":  "",
+                      "source":  "Missing",
+                      "script_refs":  [
+                                          "apk-reverse/scripts/rebuild-sign-install.ps1"
+                                      ]
+                  },
+                  {
+                      "name":  "java",
+                      "skill":  "apk-reverse",
+                      "purpose":  "运行 jar 与 Java 工具链",
+                      "available":  true,
+                      "is_executable":  true,
+                      "is_directory":  false,
+                      "resolved_path":  "E:\\zulu25\\bin\\java.exe",
+                      "version":  "OpenJDK Runtime Environment Zulu25.34+17-CA (build 25.0.3+9-LTS)",
+                      "source":  "Get-Command",
+                      "script_refs":  [
+                                          "apk-reverse/scripts/decode.ps1"
+                                      ]
+                  },
+                  {
+                      "name":  "apksigner",
+                      "skill":  "apk-reverse",
+                      "purpose":  "APK 签名",
+                      "available":  false,
+                      "is_executable":  false,
+                      "is_directory":  false,
+                      "resolved_path":  "",
+                      "version":  "",
+                      "source":  "Missing",
+                      "script_refs":  [
+                                          "apk-reverse/scripts/rebuild-sign-install.ps1"
+                                      ]
+                  },
+                  {
+                      "name":  "zipalign",
+                      "skill":  "apk-reverse",
+                      "purpose":  "APK 对齐",
+                      "available":  false,
+                      "is_executable":  false,
+                      "is_directory":  false,
+                      "resolved_path":  "",
+                      "version":  "",
+                      "source":  "Missing",
+                      "script_refs":  [
+                                          "apk-reverse/scripts/rebuild-sign-install.ps1"
+                                      ]
+                  },
+                  {
+                      "name":  "frida",
+                      "skill":  "apk-reverse",
+                      "purpose":  "Frida 动态注入",
+                      "available":  true,
+                      "is_executable":  true,
+                      "is_directory":  false,
+                      "resolved_path":  "C:\\Users\\Administrator\\Tools\\python-analysis\\Scripts\\frida.exe",
+                      "version":  "17.15.4",
+                      "source":  "FallbackPath",
+                      "script_refs":  [
+                                          "apk-reverse/scripts/frida-run.ps1"
+                                      ]
+                  },
+                  {
+                      "name":  "frida-ps",
+                      "skill":  "apk-reverse",
+                      "purpose":  "Frida 进程枚举",
+                      "available":  true,
+                      "is_executable":  true,
+                      "is_directory":  false,
+                      "resolved_path":  "C:\\Users\\Administrator\\Tools\\python-analysis\\Scripts\\frida-ps.exe",
+                      "version":  "17.15.4",
+                      "source":  "Get-Command",
+                      "script_refs":  [
+                                          "apk-reverse/scripts/frida-run.ps1"
+                                      ]
+                  },
+                  {
+                      "name":  "r2",
+                      "skill":  "radare2",
+                      "purpose":  "radare2 主分析器",
+                      "available":  true,
+                      "is_executable":  true,
+                      "is_directory":  false,
+                      "resolved_path":  "C:\\Users\\Administrator\\Tools\\bin\\r2.cmd",
+                      "version":  "radare2 6.1.8 +1 abi:110 @ windows-x86_64",
+                      "source":  "FallbackPath",
+                      "script_refs":  [
+                                          "radare2/scripts/recon.ps1"
+                                      ]
+                  },
+                  {
+                      "name":  "rabin2",
+                      "skill":  "radare2",
+                      "purpose":  "二进制侦察",
+                      "available":  true,
+                      "is_executable":  true,
+                      "is_directory":  false,
+                      "resolved_path":  "C:\\Users\\Administrator\\Tools\\radare2\\bin\\rabin2.exe",
+                      "version":  "rabin2 6.1.8 +1 abi:110 @ windows-x86_64",
+                      "source":  "FallbackPath",
+                      "script_refs":  [
+                                          "radare2/scripts/recon.ps1"
+                                      ]
+                  },
+                  {
+                      "name":  "rasm2",
+                      "skill":  "radare2",
+                      "purpose":  "汇编/反汇编",
+                      "available":  true,
+                      "is_executable":  true,
+                      "is_directory":  false,
+                      "resolved_path":  "C:\\Users\\Administrator\\Tools\\radare2\\bin\\rasm2.exe",
+                      "version":  "rasm2 6.1.8 +1 abi:110 @ windows-x86_64",
+                      "source":  "Get-Command",
+                      "script_refs":  [
+                                          "radare2/SKILL.md"
+                                      ]
+                  },
+                  {
+                      "name":  "radiff2",
+                      "skill":  "radare2",
+                      "purpose":  "二进制差分",
+                      "available":  true,
+                      "is_executable":  true,
+                      "is_directory":  false,
+                      "resolved_path":  "C:\\Users\\Administrator\\Tools\\radare2\\bin\\radiff2.exe",
+                      "version":  "radiff2 6.1.8 +1 abi:110 @ windows-x86_64",
+                      "source":  "Get-Command",
+                      "script_refs":  [
+                                          "radare2/SKILL.md"
+                                      ]
+                  },
+                  {
+                      "name":  "rahash2",
+                      "skill":  "radare2",
+                      "purpose":  "哈希与校验",
+                      "available":  true,
+                      "is_executable":  true,
+                      "is_directory":  false,
+                      "resolved_path":  "C:\\Users\\Administrator\\Tools\\radare2\\bin\\rahash2.exe",
+                      "version":  "rahash2 6.1.8 +1 abi:110 @ windows-x86_64",
+                      "source":  "Get-Command",
+                      "script_refs":  [
+                                          "radare2/SKILL.md"
+                                      ]
+                  },
+                  {
+                      "name":  "rax2",
+                      "skill":  "radare2",
+                      "purpose":  "进制与位运算转换",
+                      "available":  true,
+                      "is_executable":  true,
+                      "is_directory":  false,
+                      "resolved_path":  "C:\\Users\\Administrator\\Tools\\radare2\\bin\\rax2.exe",
+                      "version":  "rax2 6.1.8 +1 abi:110 @ windows-x86_64",
+                      "source":  "Get-Command",
+                      "script_refs":  [
+                                          "radare2/SKILL.md"
+                                      ]
+                  },
+                  {
+                      "name":  "python",
+                      "skill":  "reverse-engineering",
+                      "purpose":  "辅助脚本执行",
+                      "available":  true,
+                      "is_executable":  true,
+                      "is_directory":  false,
+                      "resolved_path":  "C:\\Users\\Administrator\\Tools\\bin\\re-python.cmd",
+                      "version":  "Python 3.12.13",
+                      "source":  "FallbackPath",
+                      "script_refs":  [
+                                          "apk-reverse/scripts/frida-run.ps1"
+                                      ]
+                  },
+                  {
+                      "name":  "pip",
+                      "skill":  "reverse-engineering",
+                      "purpose":  "Python 包管理",
+                      "available":  true,
+                      "is_executable":  true,
+                      "is_directory":  false,
+                      "resolved_path":  "C:\\Users\\Administrator\\Tools\\bin\\re-pip.cmd",
+                      "version":  "pip 25.0.1 from C:\\Users\\Administrator\\Tools\\python-re\\Lib\\site-packages\\pip (python 3.12)",
+                      "source":  "FallbackPath",
+                      "script_refs":  [
+
+                                      ]
+                  },
+                  {
+                      "name":  "node",
+                      "skill":  "js-reverse",
+                      "purpose":  "运行 Node 侧 JS 复现与 MCP 客户端",
+                      "available":  true,
+                      "is_executable":  true,
+                      "is_directory":  false,
+                      "resolved_path":  "E:\\nodejs\\node.exe",
+                      "version":  "v24.15.0",
+                      "source":  "Get-Command",
+                      "script_refs":  [
+                                          "js-reverse/SKILL.md"
+                                      ]
+                  },
+                  {
+                      "name":  "npx",
+                      "skill":  "js-reverse",
+                      "purpose":  "运行临时 npm 包与 MCP 入口",
+                      "available":  true,
+                      "is_executable":  true,
+                      "is_directory":  false,
+                      "resolved_path":  "E:\\nodejs\\npx.cmd",
+                      "version":  "11.12.1",
+                      "source":  "Get-Command",
+                      "script_refs":  [
+                                          "js-reverse/SKILL.md"
+                                      ]
+                  },
+                  {
+                      "name":  "jshookmcp",
+                      "skill":  "js-reverse",
+                      "purpose":  "通过 npx 启动 @jshookmcp/jshook MCP（仍需先配置并启用 MCP server）",
+                      "available":  true,
+                      "is_executable":  true,
+                      "is_directory":  false,
+                      "resolved_path":  "E:\\nodejs\\npx.cmd",
+                      "version":  "@jshookmcp/jshook@latest",
+                      "source":  "Get-Command",
+                      "script_refs":  [
+                                          "js-reverse/SKILL.md"
+                                      ]
+                  },
+                  {
+                      "name":  "agent-browser",
+                      "skill":  "browser-automation",
+                      "purpose":  "浏览器自动化（Playwright）：打开页面、点击、填表、爬取、截图",
+                      "available":  false,
+                      "is_executable":  false,
+                      "is_directory":  false,
+                      "resolved_path":  "",
+                      "version":  "",
+                      "source":  "Missing",
+                      "script_refs":  [
+                                          "browser-automation/SKILL.md"
+                                      ]
+                  },
+                  {
+                      "name":  "analyzeHeadless",
+                      "skill":  "reverse-engineering",
+                      "purpose":  "Ghidra 无头分析（免费 IDA 替代）",
+                      "available":  true,
+                      "is_executable":  true,
+                      "is_directory":  false,
+                      "resolved_path":  "C:\\Users\\Administrator\\Tools\\bin\\analyzeHeadless.cmd",
+                      "version":  "",
+                      "source":  "Get-Command",
+                      "script_refs":  [
+                                          "reverse-engineering/SKILL.md"
+                                      ]
+                  },
+                  {
+                      "name":  "pyghidra",
+                      "skill":  "reverse-engineering",
+                      "purpose":  "Ghidra Python headless API",
+                      "available":  true,
+                      "is_executable":  true,
+                      "is_directory":  false,
+                      "resolved_path":  "C:\\Users\\Administrator\\Tools\\bin\\pyghidra.cmd",
+                      "version":  "3.1.0",
+                      "source":  "FallbackPath",
+                      "script_refs":  [
+                                          "reverse-engineering/SKILL.md",
+                                          "ida-reverse/SKILL.md"
+                                      ]
+                  },
+                  {
+                      "name":  "vineflower",
+                      "skill":  "reverse-engineering",
+                      "purpose":  "Modern Java bytecode decompiler",
+                      "available":  true,
+                      "is_executable":  true,
+                      "is_directory":  false,
+                      "resolved_path":  "C:\\Users\\Administrator\\Tools\\bin\\vineflower.cmd",
+                      "version":  "1.11.1",
+                      "source":  "FallbackPath",
+                      "script_refs":  [
+                                          "reverse-engineering/languages-platforms.md"
+                                      ]
+                  },
+                  {
+                      "name":  "cfr",
+                      "skill":  "reverse-engineering",
+                      "purpose":  "Java bytecode decompiler cross-check",
+                      "available":  true,
+                      "is_executable":  true,
+                      "is_directory":  false,
+                      "resolved_path":  "C:\\Users\\Administrator\\Tools\\bin\\cfr.cmd",
+                      "version":  "0.152",
+                      "source":  "FallbackPath",
+                      "script_refs":  [
+                                          "reverse-engineering/languages-platforms.md"
+                                      ]
+                  },
+                  {
+                      "name":  "procyon",
+                      "skill":  "reverse-engineering",
+                      "purpose":  "Java bytecode decompiler cross-check",
+                      "available":  true,
+                      "is_executable":  true,
+                      "is_directory":  false,
+                      "resolved_path":  "C:\\Users\\Administrator\\Tools\\bin\\procyon.cmd",
+                      "version":  "0.6.0",
+                      "source":  "FallbackPath",
+                      "script_refs":  [
+                                          "reverse-engineering/languages-platforms.md"
+                                      ]
+                  },
+                  {
+                      "name":  "javap",
+                      "skill":  "reverse-engineering",
+                      "purpose":  "JVM bytecode and class signature inspection",
+                      "available":  true,
+                      "is_executable":  true,
+                      "is_directory":  false,
+                      "resolved_path":  "E:\\zulu25\\bin\\javap.exe",
+                      "version":  "25.0.3",
+                      "source":  "Get-Command",
+                      "script_refs":  [
+                                          "reverse-engineering/languages-platforms.md"
+                                      ]
+                  },
+                  {
+                      "name":  "jdeps",
+                      "skill":  "reverse-engineering",
+                      "purpose":  "Java module and dependency analysis",
+                      "available":  true,
+                      "is_executable":  true,
+                      "is_directory":  false,
+                      "resolved_path":  "E:\\zulu25\\bin\\jdeps.exe",
+                      "version":  "25.0.3",
+                      "source":  "Get-Command",
+                      "script_refs":  [
+                                          "reverse-engineering/languages-platforms.md"
+                                      ]
+                  },
+                  {
+                      "name":  "jar",
+                      "skill":  "reverse-engineering",
+                      "purpose":  "JAR archive listing and extraction",
+                      "available":  true,
+                      "is_executable":  true,
+                      "is_directory":  false,
+                      "resolved_path":  "E:\\zulu25\\bin\\jar.exe",
+                      "version":  "jar 25.0.3",
+                      "source":  "Get-Command",
+                      "script_refs":  [
+                                          "reverse-engineering/languages-platforms.md"
+                                      ]
+                  },
+                  {
+                      "name":  "r2ghidra",
+                      "skill":  "radare2",
+                      "purpose":  "radare2 Ghidra decompiler plugin",
+                      "available":  true,
+                      "is_executable":  false,
+                      "is_directory":  false,
+                      "resolved_path":  "C:\\Users\\Administrator\\Tools\\radare2\\lib\\plugins\\core_r2ghidra.dll",
+                      "version":  "6.1.8",
+                      "source":  "FallbackFile",
+                      "script_refs":  [
+                                          "radare2/SKILL.md"
+                                      ]
+                  },
+                  {
+                      "name":  "r2ghidra-sleigh",
+                      "skill":  "radare2",
+                      "purpose":  "r2ghidra processor language definitions",
+                      "available":  true,
+                      "is_executable":  false,
+                      "is_directory":  true,
+                      "resolved_path":  "C:\\Users\\Administrator\\Tools\\r2ghidra-sleigh",
+                      "version":  "6.1.8",
+                      "source":  "FallbackDirectory",
+                      "script_refs":  [
+                                          "radare2/SKILL.md"
+                                      ]
+                  },
+                  {
+                      "name":  "diec",
+                      "skill":  "reverse-engineering",
+                      "purpose":  "Detect It Easy CLI packer/compiler triage",
+                      "available":  true,
+                      "is_executable":  true,
+                      "is_directory":  false,
+                      "resolved_path":  "C:\\Users\\Administrator\\Tools\\die\\diec.exe",
+                      "version":  "die 3.21",
+                      "source":  "FallbackPath",
+                      "script_refs":  [
+                                          "reverse-engineering/tools.md"
+                                      ]
+                  },
+                  {
+                      "name":  "floss",
+                      "skill":  "reverse-engineering",
+                      "purpose":  "Decoded and stack string extraction",
+                      "available":  true,
+                      "is_executable":  true,
+                      "is_directory":  false,
+                      "resolved_path":  "C:\\Users\\Administrator\\Tools\\floss\\floss.exe",
+                      "version":  "floss.exe v3.1.1-0-g3cd3ee6",
+                      "source":  "FallbackPath",
+                      "script_refs":  [
+                                          "reverse-engineering/tools.md",
+                                          "malware-analysis/SKILL.md"
+                                      ]
+                  },
+                  {
+                      "name":  "capa",
+                      "skill":  "reverse-engineering",
+                      "purpose":  "Executable capability identification",
+                      "available":  true,
+                      "is_executable":  true,
+                      "is_directory":  false,
+                      "resolved_path":  "C:\\Users\\Administrator\\Tools\\capa\\capa.exe",
+                      "version":  "capa.exe 9.4.0",
+                      "source":  "FallbackPath",
+                      "script_refs":  [
+                                          "reverse-engineering/tools.md",
+                                          "malware-analysis/SKILL.md"
+                                      ]
+                  },
+                  {
+                      "name":  "pe-bear",
+                      "skill":  "reverse-engineering",
+                      "purpose":  "PE structure inspection GUI",
+                      "available":  true,
+                      "is_executable":  true,
+                      "is_directory":  false,
+                      "resolved_path":  "C:\\Users\\Administrator\\Tools\\pe-bear\\PE-bear.exe",
+                      "version":  "",
+                      "source":  "FallbackPath",
+                      "script_refs":  [
+                                          "reverse-engineering/tools.md"
+                                      ]
+                  },
+                  {
+                      "name":  "x64dbg",
+                      "skill":  "binary-re-dynamic-analysis",
+                      "purpose":  "Windows x64 native debugger",
+                      "available":  true,
+                      "is_executable":  true,
+                      "is_directory":  false,
+                      "resolved_path":  "C:\\Users\\Administrator\\Tools\\bin\\x64dbg.cmd",
+                      "version":  "2026.05.27",
+                      "source":  "Get-Command",
+                      "script_refs":  [
+                                          "reverse-engineering/tools-dynamic.md",
+                                          "../binary-re-dynamic-analysis/SKILL.md"
+                                      ]
+                  },
+                  {
+                      "name":  "x32dbg",
+                      "skill":  "binary-re-dynamic-analysis",
+                      "purpose":  "Windows x86 native debugger",
+                      "available":  true,
+                      "is_executable":  true,
+                      "is_directory":  false,
+                      "resolved_path":  "C:\\Users\\Administrator\\Tools\\bin\\x32dbg.cmd",
+                      "version":  "2026.05.27",
+                      "source":  "Get-Command",
+                      "script_refs":  [
+                                          "reverse-engineering/tools-dynamic.md",
+                                          "../binary-re-dynamic-analysis/SKILL.md"
+                                      ]
+                  },
+                  {
+                      "name":  "objdump",
+                      "skill":  "reverse-engineering",
+                      "purpose":  "GNU disassembly and PE/ELF metadata",
+                      "available":  true,
+                      "is_executable":  true,
+                      "is_directory":  false,
+                      "resolved_path":  "C:\\Users\\Administrator\\Tools\\msys2\\ucrt64\\bin\\objdump.exe",
+                      "version":  "GNU objdump (GNU Binutils) 2.46.1",
+                      "source":  "FallbackPath",
+                      "script_refs":  [
+                                          "reverse-engineering/tools.md"
+                                      ]
+                  },
+                  {
+                      "name":  "nm",
+                      "skill":  "reverse-engineering",
+                      "purpose":  "GNU symbol table inspection",
+                      "available":  true,
+                      "is_executable":  true,
+                      "is_directory":  false,
+                      "resolved_path":  "C:\\Users\\Administrator\\Tools\\msys2\\ucrt64\\bin\\nm.exe",
+                      "version":  "GNU nm (GNU Binutils) 2.46.1",
+                      "source":  "Get-Command",
+                      "script_refs":  [
+                                          "reverse-engineering/tools.md"
+                                      ]
+                  },
+                  {
+                      "name":  "gnu-strings",
+                      "skill":  "reverse-engineering",
+                      "purpose":  "GNU strings extraction",
+                      "available":  true,
+                      "is_executable":  true,
+                      "is_directory":  false,
+                      "resolved_path":  "C:\\Users\\Administrator\\Tools\\msys2\\ucrt64\\bin\\strings.exe",
+                      "version":  "GNU strings (GNU Binutils) 2.46.1",
+                      "source":  "FallbackPath",
+                      "script_refs":  [
+                                          "reverse-engineering/SKILL.md"
+                                      ]
+                  },
+                  {
+                      "name":  "sigcheck",
+                      "skill":  "reverse-engineering",
+                      "purpose":  "PE signature and metadata verification",
+                      "available":  true,
+                      "is_executable":  true,
+                      "is_directory":  false,
+                      "resolved_path":  "C:\\Users\\Administrator\\Tools\\sysinternals\\sigcheck64.exe",
+                      "version":  "",
+                      "source":  "FallbackPath",
+                      "script_refs":  [
+                                          "reverse-engineering/tools.md"
+                                      ]
+                  },
+                  {
+                      "name":  "sysinternals-strings",
+                      "skill":  "reverse-engineering",
+                      "purpose":  "Windows ASCII/Unicode string extraction",
+                      "available":  true,
+                      "is_executable":  true,
+                      "is_directory":  false,
+                      "resolved_path":  "C:\\Users\\Administrator\\Tools\\sysinternals\\strings64.exe",
+                      "version":  "2.54",
+                      "source":  "FallbackPath",
+                      "script_refs":  [
+                                          "reverse-engineering/tools.md"
+                                      ]
+                  },
+                  {
+                      "name":  "capstone-python",
+                      "skill":  "reverse-engineering",
+                      "purpose":  "Python disassembly engine",
+                      "available":  true,
+                      "is_executable":  false,
+                      "is_directory":  false,
+                      "resolved_path":  "C:\\Users\\Administrator\\Tools\\python-analysis\\Scripts\\python.exe :: capstone",
+                      "version":  "5.0.6",
+                      "source":  "PythonModule",
+                      "script_refs":  [
+                                          "reverse-engineering/tools.md"
+                                      ]
+                  },
+                  {
+                      "name":  "lief-python",
+                      "skill":  "reverse-engineering",
+                      "purpose":  "Python executable format parser/editor",
+                      "available":  true,
+                      "is_executable":  false,
+                      "is_directory":  false,
+                      "resolved_path":  "C:\\Users\\Administrator\\Tools\\python-re\\Scripts\\python.exe :: lief",
+                      "version":  "0.17.6",
+                      "source":  "PythonModule",
+                      "script_refs":  [
+                                          "reverse-engineering/tools-advanced.md"
+                                      ]
+                  },
+                  {
+                      "name":  "pefile-python",
+                      "skill":  "reverse-engineering",
+                      "purpose":  "Python PE parser",
+                      "available":  true,
+                      "is_executable":  false,
+                      "is_directory":  false,
+                      "resolved_path":  "C:\\Users\\Administrator\\Tools\\python-analysis\\Scripts\\python.exe :: pefile",
+                      "version":  "2024.8.26",
+                      "source":  "PythonModule",
+                      "script_refs":  [
+                                          "reverse-engineering/tools.md"
+                                      ]
+                  },
+                  {
+                      "name":  "r2pipe-python",
+                      "skill":  "radare2",
+                      "purpose":  "Python radare2 automation bindings",
+                      "available":  true,
+                      "is_executable":  false,
+                      "is_directory":  false,
+                      "resolved_path":  "C:\\Users\\Administrator\\Tools\\python-re\\Scripts\\python.exe :: r2pipe",
+                      "version":  "1.9.8",
+                      "source":  "PythonModule",
+                      "script_refs":  [
+                                          "radare2/SKILL.md"
+                                      ]
+                  },
+                  {
+                      "name":  "unicorn-python",
+                      "skill":  "reverse-engineering",
+                      "purpose":  "Python CPU emulation engine",
+                      "available":  true,
+                      "is_executable":  false,
+                      "is_directory":  false,
+                      "resolved_path":  "C:\\Users\\Administrator\\Tools\\python-analysis\\Scripts\\python.exe :: unicorn",
+                      "version":  "2.1.4",
+                      "source":  "PythonModule",
+                      "script_refs":  [
+                                          "reverse-engineering/tools-dynamic.md"
+                                      ]
+                  },
+                  {
+                      "name":  "yara-python",
+                      "skill":  "malware-analysis",
+                      "purpose":  "Python YARA bindings",
+                      "available":  true,
+                      "is_executable":  false,
+                      "is_directory":  false,
+                      "resolved_path":  "C:\\Users\\Administrator\\Tools\\python-re\\Scripts\\python.exe :: yara",
+                      "version":  "4.5.4",
+                      "source":  "PythonModule",
+                      "script_refs":  [
+                                          "malware-analysis/SKILL.md"
+                                      ]
+                  },
+                  {
+                      "name":  "angr-python",
+                      "skill":  "reverse-engineering",
+                      "purpose":  "Symbolic binary analysis and program exploration",
+                      "available":  true,
+                      "is_executable":  false,
+                      "is_directory":  false,
+                      "resolved_path":  "C:\\Users\\Administrator\\Tools\\python-analysis\\Scripts\\python.exe :: angr",
+                      "version":  "9.2.223",
+                      "source":  "PythonModule",
+                      "script_refs":  [
+                                          "reverse-engineering/tools-advanced.md"
+                                      ]
+                  },
+                  {
+                      "name":  "z3-python",
+                      "skill":  "reverse-engineering",
+                      "purpose":  "SMT solving for symbolic analysis",
+                      "available":  true,
+                      "is_executable":  false,
+                      "is_directory":  false,
+                      "resolved_path":  "C:\\Users\\Administrator\\Tools\\python-analysis\\Scripts\\python.exe :: z3",
+                      "version":  "4.13.0.0",
+                      "source":  "PythonModule",
+                      "script_refs":  [
+                                          "reverse-engineering/tools-advanced.md"
+                                      ]
+                  },
+                  {
+                      "name":  "qiling-python",
+                      "skill":  "binary-re-dynamic-analysis",
+                      "purpose":  "Cross-platform binary emulation framework",
+                      "available":  true,
+                      "is_executable":  false,
+                      "is_directory":  false,
+                      "resolved_path":  "C:\\Users\\Administrator\\Tools\\python-analysis\\Scripts\\python.exe :: qiling",
+                      "version":  "1.4.6",
+                      "source":  "PythonModule",
+                      "script_refs":  [
+                                          "reverse-engineering/tools-dynamic.md"
+                                      ]
+                  },
+                  {
+                      "name":  "frida-python",
+                      "skill":  "binary-re-dynamic-analysis",
+                      "purpose":  "Frida Python instrumentation bindings",
+                      "available":  true,
+                      "is_executable":  false,
+                      "is_directory":  false,
+                      "resolved_path":  "C:\\Users\\Administrator\\Tools\\python-analysis\\Scripts\\python.exe :: frida",
+                      "version":  "17.15.4",
+                      "source":  "PythonModule",
+                      "script_refs":  [
+                                          "apk-reverse/SKILL.md",
+                                          "reverse-engineering/tools-dynamic.md"
+                                      ]
+                  },
+                  {
+                      "name":  "uncompyle6",
+                      "skill":  "reverse-engineering",
+                      "purpose":  "Python bytecode decompiler",
+                      "available":  true,
+                      "is_executable":  true,
+                      "is_directory":  false,
+                      "resolved_path":  "C:\\Users\\Administrator\\Tools\\python-analysis\\Scripts\\uncompyle6.exe",
+                      "version":  "uncompyle6, version 3.9.3",
+                      "source":  "Get-Command",
+                      "script_refs":  [
+                                          "reverse-engineering/languages-platforms.md"
+                                      ]
+                  },
+                  {
+                      "name":  "playwright",
+                      "skill":  "browser-automation",
+                      "purpose":  "Playwright 浏览器引擎",
+                      "available":  false,
+                      "is_executable":  false,
+                      "is_directory":  false,
+                      "resolved_path":  "",
+                      "version":  "",
+                      "source":  "Missing",
+                      "script_refs":  [
+                                          "browser-automation/SKILL.md",
+                                          "browser-automation/scripts/setup.ps1"
+                                      ]
+                  },
+                  {
+                      "name":  "proxycat",
+                      "skill":  "pentest-tools",
+                      "purpose":  "代理池管理与轮换",
+                      "available":  false,
+                      "is_executable":  false,
+                      "is_directory":  false,
+                      "resolved_path":  "",
+                      "version":  "",
+                      "source":  "Missing",
+                      "script_refs":  [
+                                          "pentest-tools/SKILL.md"
+                                      ]
+                  },
+                  {
+                      "name":  "seclists",
+                      "skill":  "pentest-tools",
+                      "purpose":  "Security wordlists",
+                      "available":  false,
+                      "is_executable":  false,
+                      "is_directory":  false,
+                      "resolved_path":  "",
+                      "version":  "",
+                      "source":  "Missing",
+                      "script_refs":  [
+                                          "pentest-tools/SKILL.md"
+                                      ]
+                  },
+                  {
+                      "name":  "pentestswarm",
+                      "skill":  "pentest-tools",
+                      "purpose":  "群体智能自主渗透与 MCP 执行",
+                      "available":  false,
+                      "is_executable":  false,
+                      "is_directory":  false,
+                      "resolved_path":  "",
+                      "version":  "",
+                      "source":  "Missing",
+                      "script_refs":  [
+                                          "pentest-tools/SKILL.md"
+                                      ]
+                  },
+                  {
+                      "name":  "nmap",
+                      "skill":  "pentest-tools",
+                      "purpose":  "端口扫描与服务识别",
+                      "available":  false,
+                      "is_executable":  false,
+                      "is_directory":  false,
+                      "resolved_path":  "",
+                      "version":  "",
+                      "source":  "Missing",
+                      "script_refs":  [
+                                          "pentest-tools/SKILL.md"
+                                      ]
+                  },
+                  {
+                      "name":  "wireshark",
+                      "skill":  "pentest-tools",
+                      "purpose":  "Wireshark GUI 抓包与 PCAP 分析",
+                      "available":  true,
+                      "is_executable":  true,
+                      "is_directory":  false,
+                      "resolved_path":  "E:\\wireshark\\Wireshark.exe",
+                      "version":  "Wireshark 4.6.6 (v4.6.6-0-g3a22c3ef473d).",
+                      "source":  "FallbackPath",
+                      "script_refs":  [
+                                          "pentest-tools/SKILL.md",
+                                          "routing.md",
+                                          "field-journal/seed-011_pcap-protocol-reverse.md"
+                                      ]
+                  },
+                  {
+                      "name":  "tshark",
+                      "skill":  "pentest-tools",
+                      "purpose":  "Wireshark CLI 协议解析与 PCAP 字段提取",
+                      "available":  true,
+                      "is_executable":  true,
+                      "is_directory":  false,
+                      "resolved_path":  "E:\\wireshark\\tshark.exe",
+                      "version":  "TShark (Wireshark) 4.6.6 (v4.6.6-0-g3a22c3ef473d).",
+                      "source":  "Get-Command",
+                      "script_refs":  [
+                                          "pentest-tools/SKILL.md",
+                                          "routing.md",
+                                          "field-journal/seed-011_pcap-protocol-reverse.md"
+                                      ]
+                  },
+                  {
+                      "name":  "dumpcap",
+                      "skill":  "pentest-tools",
+                      "purpose":  "Wireshark CLI 抓包采集",
+                      "available":  true,
+                      "is_executable":  true,
+                      "is_directory":  false,
+                      "resolved_path":  "E:\\wireshark\\dumpcap.exe",
+                      "version":  "Dumpcap (Wireshark) 4.6.6 (v4.6.6-0-g3a22c3ef473d).",
+                      "source":  "Get-Command",
+                      "script_refs":  [
+                                          "pentest-tools/SKILL.md",
+                                          "routing.md",
+                                          "field-journal/seed-011_pcap-protocol-reverse.md"
+                                      ]
+                  },
+                  {
+                      "name":  "capinfos",
+                      "skill":  "pentest-tools",
+                      "purpose":  "PCAP 元数据、时间范围与包计数统计",
+                      "available":  true,
+                      "is_executable":  true,
+                      "is_directory":  false,
+                      "resolved_path":  "E:\\wireshark\\capinfos.exe",
+                      "version":  "Capinfos (Wireshark) 4.6.6 (v4.6.6-0-g3a22c3ef473d).",
+                      "source":  "Get-Command",
+                      "script_refs":  [
+                                          "pentest-tools/SKILL.md",
+                                          "routing.md",
+                                          "field-journal/seed-011_pcap-protocol-reverse.md"
+                                      ]
+                  },
+                  {
+                      "name":  "editcap",
+                      "skill":  "pentest-tools",
+                      "purpose":  "PCAP 裁剪、转换与去重",
+                      "available":  true,
+                      "is_executable":  true,
+                      "is_directory":  false,
+                      "resolved_path":  "E:\\wireshark\\editcap.exe",
+                      "version":  "Editcap (Wireshark) 4.6.6 (v4.6.6-0-g3a22c3ef473d).",
+                      "source":  "Get-Command",
+                      "script_refs":  [
+                                          "pentest-tools/SKILL.md",
+                                          "routing.md",
+                                          "field-journal/seed-011_pcap-protocol-reverse.md"
+                                      ]
+                  },
+                  {
+                      "name":  "mergecap",
+                      "skill":  "pentest-tools",
+                      "purpose":  "多个 PCAP/PCAPNG 文件合并",
+                      "available":  true,
+                      "is_executable":  true,
+                      "is_directory":  false,
+                      "resolved_path":  "E:\\wireshark\\mergecap.exe",
+                      "version":  "Mergecap (Wireshark) 4.6.6 (v4.6.6-0-g3a22c3ef473d).",
+                      "source":  "Get-Command",
+                      "script_refs":  [
+                                          "pentest-tools/SKILL.md",
+                                          "routing.md",
+                                          "field-journal/seed-011_pcap-protocol-reverse.md"
+                                      ]
+                  },
+                  {
+                      "name":  "text2pcap",
+                      "skill":  "pentest-tools",
+                      "purpose":  "文本/十六进制转 PCAP 用于协议复现检查",
+                      "available":  true,
+                      "is_executable":  true,
+                      "is_directory":  false,
+                      "resolved_path":  "E:\\wireshark\\text2pcap.exe",
+                      "version":  "Text2pcap (Wireshark) 4.6.6 (v4.6.6-0-g3a22c3ef473d).",
+                      "source":  "Get-Command",
+                      "script_refs":  [
+                                          "pentest-tools/SKILL.md",
+                                          "routing.md",
+                                          "field-journal/seed-011_pcap-protocol-reverse.md"
+                                      ]
+                  },
+                  {
+                      "name":  "binwalk",
+                      "skill":  "firmware-pentest",
+                      "purpose":  "固件提取与分析",
+                      "available":  false,
+                      "is_executable":  false,
+                      "is_directory":  false,
+                      "resolved_path":  "",
+                      "version":  "",
+                      "source":  "Missing",
+                      "script_refs":  [
+                                          "firmware-pentest/SKILL.md"
+                                      ]
+                  },
+                  {
+                      "name":  "yara",
+                      "skill":  "malware-analysis",
+                      "purpose":  "恶意软件规则匹配引擎",
+                      "available":  false,
+                      "is_executable":  false,
+                      "is_directory":  false,
+                      "resolved_path":  "",
+                      "version":  "",
+                      "source":  "Missing",
+                      "script_refs":  [
+                                          "malware-analysis/SKILL.md"
+                                      ]
+                  },
+                  {
+                      "name":  "pwntools",
+                      "skill":  "reverse-engineering",
+                      "purpose":  "CTF pwn 利用开发框架",
+                      "available":  false,
+                      "is_executable":  false,
+                      "is_directory":  false,
+                      "resolved_path":  "",
+                      "version":  "",
+                      "source":  "Missing",
+                      "script_refs":  [
+                                          "reverse-engineering/SKILL.md",
+                                          "reverse-engineering/patterns-ctf*.md"
+                                      ]
+                  }
+              ],
+    "capabilities":  [
+                         {
+                             "name":  "adb",
+                             "tool_available":  false,
+                             "ready":  false,
+                             "mcp_registered":  false,
+                             "service_online":  false,
+                             "mcp_http_verified":  false,
+                             "can_auto_install":  true,
+                             "bootstrap_kind":  "winget-package"
+                         },
+                         {
+                             "name":  "agent-browser",
+                             "tool_available":  false,
+                             "ready":  false,
+                             "mcp_registered":  false,
+                             "service_online":  false,
+                             "mcp_http_verified":  false,
+                             "can_auto_install":  true,
+                             "bootstrap_kind":  "npm-global"
+                         },
+                         {
+                             "name":  "angr-python",
+                             "tool_available":  true,
+                             "ready":  true,
+                             "mcp_registered":  false,
+                             "service_online":  false,
+                             "mcp_http_verified":  false,
+                             "can_auto_install":  true,
+                             "bootstrap_kind":  "pip-package"
+                         },
+                         {
+                             "name":  "anything-analyzer",
+                             "tool_available":  false,
+                             "ready":  false,
+                             "mcp_registered":  false,
+                             "service_online":  false,
+                             "mcp_http_verified":  false,
+                             "can_auto_install":  true,
+                             "bootstrap_kind":  "local-http-mcp"
+                         },
+                         {
+                             "name":  "apktool",
+                             "tool_available":  false,
+                             "ready":  false,
+                             "mcp_registered":  false,
+                             "service_online":  false,
+                             "mcp_http_verified":  false,
+                             "can_auto_install":  true,
+                             "bootstrap_kind":  "github-release-jar-wrapper"
+                         },
+                         {
+                             "name":  "binwalk",
+                             "tool_available":  false,
+                             "ready":  false,
+                             "mcp_registered":  false,
+                             "service_online":  false,
+                             "mcp_http_verified":  false,
+                             "can_auto_install":  true,
+                             "bootstrap_kind":  "winget-package"
+                         },
+                         {
+                             "name":  "burpsuite-mcp",
+                             "tool_available":  false,
+                             "ready":  false,
+                             "mcp_registered":  false,
+                             "service_online":  false,
+                             "mcp_http_verified":  false,
+                             "can_auto_install":  false,
+                             "bootstrap_kind":  "local-http-mcp"
+                         },
+                         {
+                             "name":  "capinfos",
+                             "tool_available":  true,
+                             "ready":  true,
+                             "mcp_registered":  false,
+                             "service_online":  false,
+                             "mcp_http_verified":  false,
+                             "can_auto_install":  true,
+                             "bootstrap_kind":  "winget-package"
+                         },
+                         {
+                             "name":  "dumpcap",
+                             "tool_available":  true,
+                             "ready":  true,
+                             "mcp_registered":  false,
+                             "service_online":  false,
+                             "mcp_http_verified":  false,
+                             "can_auto_install":  true,
+                             "bootstrap_kind":  "winget-package"
+                         },
+                         {
+                             "name":  "editcap",
+                             "tool_available":  true,
+                             "ready":  true,
+                             "mcp_registered":  false,
+                             "service_online":  false,
+                             "mcp_http_verified":  false,
+                             "can_auto_install":  true,
+                             "bootstrap_kind":  "winget-package"
+                         },
+                         {
+                             "name":  "floss",
+                             "tool_available":  true,
+                             "ready":  true,
+                             "mcp_registered":  false,
+                             "service_online":  false,
+                             "mcp_http_verified":  false,
+                             "can_auto_install":  true,
+                             "bootstrap_kind":  "pip-package"
+                         },
+                         {
+                             "name":  "frida",
+                             "tool_available":  true,
+                             "ready":  true,
+                             "mcp_registered":  false,
+                             "service_online":  false,
+                             "mcp_http_verified":  false,
+                             "can_auto_install":  true,
+                             "bootstrap_kind":  "pip-package"
+                         },
+                         {
+                             "name":  "frida-ps",
+                             "tool_available":  true,
+                             "ready":  true,
+                             "mcp_registered":  false,
+                             "service_online":  false,
+                             "mcp_http_verified":  false,
+                             "can_auto_install":  true,
+                             "bootstrap_kind":  "pip-package"
+                         },
+                         {
+                             "name":  "frida-python",
+                             "tool_available":  true,
+                             "ready":  true,
+                             "mcp_registered":  false,
+                             "service_online":  false,
+                             "mcp_http_verified":  false,
+                             "can_auto_install":  true,
+                             "bootstrap_kind":  "pip-package"
+                         },
+                         {
+                             "name":  "ghidra-mcp",
+                             "tool_available":  false,
+                             "ready":  false,
+                             "mcp_registered":  false,
+                             "service_online":  false,
+                             "mcp_http_verified":  false,
+                             "can_auto_install":  true,
+                             "bootstrap_kind":  "github-release-zip"
+                         },
+                         {
+                             "name":  "idalib-mcp",
+                             "tool_available":  false,
+                             "ready":  false,
+                             "mcp_registered":  false,
+                             "service_online":  false,
+                             "mcp_http_verified":  false,
+                             "can_auto_install":  true,
+                             "bootstrap_kind":  "pip-package"
+                         },
+                         {
+                             "name":  "idapro",
+                             "tool_available":  false,
+                             "ready":  false,
+                             "mcp_registered":  false,
+                             "service_online":  false,
+                             "mcp_http_verified":  false,
+                             "can_auto_install":  true,
+                             "bootstrap_kind":  "local-http-mcp"
+                         },
+                         {
+                             "name":  "jadx",
+                             "tool_available":  false,
+                             "ready":  false,
+                             "mcp_registered":  false,
+                             "service_online":  false,
+                             "mcp_http_verified":  false,
+                             "can_auto_install":  true,
+                             "bootstrap_kind":  "github-release-zip"
+                         },
+                         {
+                             "name":  "jshookmcp",
+                             "tool_available":  true,
+                             "ready":  false,
+                             "mcp_registered":  false,
+                             "service_online":  false,
+                             "mcp_http_verified":  false,
+                             "can_auto_install":  true,
+                             "bootstrap_kind":  "npm-mcp"
+                         },
+                         {
+                             "name":  "mergecap",
+                             "tool_available":  true,
+                             "ready":  true,
+                             "mcp_registered":  false,
+                             "service_online":  false,
+                             "mcp_http_verified":  false,
+                             "can_auto_install":  true,
+                             "bootstrap_kind":  "winget-package"
+                         },
+                         {
+                             "name":  "nmap",
+                             "tool_available":  false,
+                             "ready":  false,
+                             "mcp_registered":  false,
+                             "service_online":  false,
+                             "mcp_http_verified":  false,
+                             "can_auto_install":  true,
+                             "bootstrap_kind":  "winget-package"
+                         },
+                         {
+                             "name":  "pentestswarm",
+                             "tool_available":  false,
+                             "ready":  false,
+                             "mcp_registered":  false,
+                             "service_online":  false,
+                             "mcp_http_verified":  false,
+                             "can_auto_install":  true,
+                             "bootstrap_kind":  "go-install"
+                         },
+                         {
+                             "name":  "proxycat",
+                             "tool_available":  false,
+                             "ready":  false,
+                             "mcp_registered":  false,
+                             "service_online":  false,
+                             "mcp_http_verified":  false,
+                             "can_auto_install":  true,
+                             "bootstrap_kind":  "git-clone"
+                         },
+                         {
+                             "name":  "pwntools",
+                             "tool_available":  false,
+                             "ready":  false,
+                             "mcp_registered":  false,
+                             "service_online":  false,
+                             "mcp_http_verified":  false,
+                             "can_auto_install":  true,
+                             "bootstrap_kind":  "pip-package"
+                         },
+                         {
+                             "name":  "qiling-python",
+                             "tool_available":  true,
+                             "ready":  true,
+                             "mcp_registered":  false,
+                             "service_online":  false,
+                             "mcp_http_verified":  false,
+                             "can_auto_install":  true,
+                             "bootstrap_kind":  "pip-package"
+                         },
+                         {
+                             "name":  "r2",
+                             "tool_available":  true,
+                             "ready":  true,
+                             "mcp_registered":  false,
+                             "service_online":  false,
+                             "mcp_http_verified":  false,
+                             "can_auto_install":  true,
+                             "bootstrap_kind":  "github-release-zip"
+                         },
+                         {
+                             "name":  "rabin2",
+                             "tool_available":  true,
+                             "ready":  true,
+                             "mcp_registered":  false,
+                             "service_online":  false,
+                             "mcp_http_verified":  false,
+                             "can_auto_install":  true,
+                             "bootstrap_kind":  "github-release-zip"
+                         },
+                         {
+                             "name":  "seclists",
+                             "tool_available":  false,
+                             "ready":  false,
+                             "mcp_registered":  false,
+                             "service_online":  false,
+                             "mcp_http_verified":  false,
+                             "can_auto_install":  true,
+                             "bootstrap_kind":  "git-clone"
+                         },
+                         {
+                             "name":  "text2pcap",
+                             "tool_available":  true,
+                             "ready":  true,
+                             "mcp_registered":  false,
+                             "service_online":  false,
+                             "mcp_http_verified":  false,
+                             "can_auto_install":  true,
+                             "bootstrap_kind":  "winget-package"
+                         },
+                         {
+                             "name":  "tshark",
+                             "tool_available":  true,
+                             "ready":  true,
+                             "mcp_registered":  false,
+                             "service_online":  false,
+                             "mcp_http_verified":  false,
+                             "can_auto_install":  true,
+                             "bootstrap_kind":  "winget-package"
+                         },
+                         {
+                             "name":  "uncompyle6",
+                             "tool_available":  true,
+                             "ready":  true,
+                             "mcp_registered":  false,
+                             "service_online":  false,
+                             "mcp_http_verified":  false,
+                             "can_auto_install":  true,
+                             "bootstrap_kind":  "pip-package"
+                         },
+                         {
+                             "name":  "wireshark",
+                             "tool_available":  true,
+                             "ready":  true,
+                             "mcp_registered":  false,
+                             "service_online":  false,
+                             "mcp_http_verified":  false,
+                             "can_auto_install":  true,
+                             "bootstrap_kind":  "winget-package"
+                         },
+                         {
+                             "name":  "x64dbg",
+                             "tool_available":  true,
+                             "ready":  true,
+                             "mcp_registered":  false,
+                             "service_online":  false,
+                             "mcp_http_verified":  false,
+                             "can_auto_install":  true,
+                             "bootstrap_kind":  "winget-package"
+                         },
+                         {
+                             "name":  "yara",
+                             "tool_available":  false,
+                             "ready":  false,
+                             "mcp_registered":  false,
+                             "service_online":  false,
+                             "mcp_http_verified":  false,
+                             "can_auto_install":  true,
+                             "bootstrap_kind":  "winget-package"
+                         },
+                         {
+                             "name":  "z3-python",
+                             "tool_available":  true,
+                             "ready":  true,
+                             "mcp_registered":  false,
+                             "service_online":  false,
+                             "mcp_http_verified":  false,
+                             "can_auto_install":  true,
+                             "bootstrap_kind":  "pip-package"
+                         }
+                     ]
+}

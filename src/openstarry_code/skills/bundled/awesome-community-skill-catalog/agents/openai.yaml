@@ -1,0 +1,5 @@
+interface:
+  display_name: "Awesome Skill Source Catalog"
+  short_description: "Search cached and external Awesome skills"
+  default_prompt: "Use $awesome-community-skill-catalog to find the best cached or external Awesome skill for this task."
+

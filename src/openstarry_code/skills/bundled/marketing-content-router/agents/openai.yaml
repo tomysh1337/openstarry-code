@@ -1,0 +1,6 @@
+interface:
+  display_name: "Marketing and Content Router"
+  short_description: "Route marketing and content work by outcome"
+  default_prompt: "Use $marketing-content-router to select the right marketing or content skill."
+policy:
+  allow_implicit_invocation: true

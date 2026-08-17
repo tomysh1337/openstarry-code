@@ -1,0 +1,6 @@
+interface:
+  display_name: "Security and Reverse Router"
+  short_description: "Route security and reverse tasks to exact local skills"
+  default_prompt: "Use $security-reverse-router to select the narrowest security or reverse-engineering skill."
+policy:
+  allow_implicit_invocation: true

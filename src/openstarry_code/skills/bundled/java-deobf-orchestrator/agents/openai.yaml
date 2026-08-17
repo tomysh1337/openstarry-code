@@ -1,0 +1,4 @@
+interface:
+  display_name: "Java Deobf Orchestrator"
+  short_description: "Recover verified, IDEA-ready Java source"
+  default_prompt: "Orchestrate this Java deobfuscation case from immutable input through tool discovery, multi-decompiler and ASM/bootstrap recovery, reviewed mappings, full-tree build closure, residual evidence, rollback, and an IDEA-ready handoff."

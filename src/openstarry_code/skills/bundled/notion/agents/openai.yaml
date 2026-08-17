@@ -1,0 +1,6 @@
+interface:
+  display_name: "Notion"
+  short_description: "Manage Notion pages and databases"
+  default_prompt: "Use $notion to perform this Notion page or database task."
+policy:
+  allow_implicit_invocation: true

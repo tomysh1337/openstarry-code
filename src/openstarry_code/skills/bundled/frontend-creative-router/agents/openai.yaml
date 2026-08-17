@@ -1,0 +1,6 @@
+interface:
+  display_name: "Frontend Creative Router"
+  short_description: "Route UI requests to focused frontend and design skills"
+  default_prompt: "Use $frontend-creative-router to select the right frontend workflow for this interface task."
+policy:
+  allow_implicit_invocation: true

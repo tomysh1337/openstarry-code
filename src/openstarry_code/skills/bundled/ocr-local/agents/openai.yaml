@@ -1,0 +1,6 @@
+interface:
+  display_name: "Local OCR"
+  short_description: "Extract Chinese or English text locally"
+  default_prompt: "Use $ocr-local to extract text from these images locally."
+policy:
+  allow_implicit_invocation: true

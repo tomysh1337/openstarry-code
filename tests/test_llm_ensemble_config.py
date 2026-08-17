@@ -4,11 +4,24 @@ import pytest
 
 from openstarry_code.gateway.config import GatewayConfig, LlmProviderProfile
 from openstarry_code.provider.compat_policy import compat_policy_for_kind
-from openstarry_code.provider.ensemble import build_ensemble_provider_from_config
+from openstarry_code.provider.ensemble import (
+    EnsembleMemberConfig,
+    EnsembleProvider,
+    build_ensemble_provider_from_config,
+)
 from openstarry_code.provider.openai import _build_openai_wire_messages
 from openstarry_code.provider.request_proof import project_final_request_payload
 from openstarry_code.provider.selector import ProviderConfig
-from openstarry_code.provider.types import ChatConfig, Message, ModelCapabilities
+from openstarry_code.provider.types import (
+    ChatConfig,
+    DoneEvent,
+    ErrorEvent,
+    Message,
+    ModelCapabilities,
+    TextDeltaEvent,
+    ToolDefinition,
+    ToolInputSchema,
+)
 
 
 def test_llm_ensemble_defaults_to_disabled_for_model_router_first_install() -> None:
@@ -1207,3 +1220,285 @@ def test_custom_b5_uses_shared_session_pinned_profile_pool(
         assert second_openai_keys == ({key_a, key_b} - {first_key})
     finally:
         reset_profile_credential_pools()
+
+
+@pytest.mark.asyncio
+async def test_ensemble_retries_aggregator_after_uncommitted_partial_text(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A dropped aggregator stream must not publish a truncated prefix."""
+
+    class _Adapter:
+        def __init__(self, model: str) -> None:
+            self.model = model
+            self.calls = 0
+            self.provider_name = "openai"
+
+        async def chat(self, messages, tools=None, config=None):
+            del messages, tools, config
+            if self.model == "aggregator-model":
+                self.calls += 1
+                if self.calls == 1:
+                    yield TextDeltaEvent(text="prefix-")
+                    yield ErrorEvent(message="temporary disconnect", code="503")
+                    return
+                yield TextDeltaEvent(text="complete")
+                yield DoneEvent(model=self.model, input_tokens=1, output_tokens=1)
+                return
+            yield TextDeltaEvent(text="candidate")
+            yield DoneEvent(model=self.model, input_tokens=1, output_tokens=1)
+
+        def project_final_request(
+            self,
+            messages,
+            tools=None,
+            config=None,
+            *,
+            message_limit=None,
+        ):
+            cfg = config or ChatConfig()
+            payload = {
+                "model": self.model,
+                "messages": [
+                    message.model_dump(mode="json", exclude_none=True)
+                    for message in messages
+                ],
+                "tools": [
+                    tool.model_dump(mode="json", exclude_none=True)
+                    for tool in (tools or [])
+                ],
+            }
+            return project_final_request_payload(
+                payload,
+                projection_adapter="synthetic_ensemble_member",
+                proof_budget=cfg.provider_request_max_chars or 1_000_000,
+                message_limit=message_limit,
+            )
+
+    adapters: dict[str, _Adapter] = {}
+
+    def build_adapter(provider_config: ProviderConfig) -> _Adapter:
+        adapter = adapters.setdefault(provider_config.model, _Adapter(provider_config.model))
+        return adapter
+
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", build_adapter)
+    cfg = GatewayConfig(
+        llm={"provider": "openai", "model": "aggregator-model", "api_key": "test-key"},
+        llm_ensemble={
+            "enabled": True,
+            "selection_mode": "custom_b5",
+            "min_successful_proposers": 1,
+            "shuffle_candidates": False,
+            "candidates": [
+                {"provider": "openai", "model": "proposer-model"},
+                {"provider": "openai", "model": "proposer-model-2"},
+                {"provider": "openai", "model": "aggregator-model", "role": "aggregator"},
+            ],
+        },
+    )
+    provider = build_ensemble_provider_from_config(
+        config=cfg,
+        inherited_provider_config=ProviderConfig(
+            provider="openai", model="aggregator-model", api_key="test-key"
+        ),
+        fallback_provider=None,
+    )
+
+    events = [
+        event
+        async for event in provider.chat([Message(role="user", content="hello")])
+    ]
+
+    text = "".join(event.text for event in events if isinstance(event, TextDeltaEvent))
+    assert text == "complete"
+    assert not any(
+        isinstance(event, ErrorEvent) and event.code == "503" for event in events
+    )
+    assert adapters["aggregator-model"].calls == 2
+
+
+@pytest.mark.asyncio
+async def test_ensemble_reduces_quorum_when_some_members_are_unavailable(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A partial lineup still fuses when the configured quorum is unreachable."""
+
+    class _Adapter:
+        def __init__(self, model: str) -> None:
+            self.model = model
+
+        async def chat(self, messages, tools=None, config=None):
+            del messages, tools, config
+            if self.model == "aggregator-model":
+                yield TextDeltaEvent(text="fused")
+            else:
+                yield TextDeltaEvent(text="draft")
+            yield DoneEvent(model=self.model, input_tokens=1, output_tokens=1)
+
+        def project_final_request(
+            self,
+            messages,
+            tools=None,
+            config=None,
+            *,
+            message_limit=None,
+        ):
+            cfg = config or ChatConfig()
+            payload = {
+                "model": self.model,
+                "messages": [
+                    message.model_dump(mode="json", exclude_none=True)
+                    for message in messages
+                ],
+                "tools": [
+                    tool.model_dump(mode="json", exclude_none=True)
+                    for tool in (tools or [])
+                ],
+            }
+            return project_final_request_payload(
+                payload,
+                projection_adapter="synthetic_ensemble_member",
+                proof_budget=cfg.provider_request_max_chars or 1_000_000,
+                message_limit=message_limit,
+            )
+
+    adapters: dict[str, _Adapter] = {}
+
+    def build_adapter(provider_config: ProviderConfig) -> _Adapter:
+        return adapters.setdefault(provider_config.model, _Adapter(provider_config.model))
+
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", build_adapter)
+
+    def member(model: str, *, ready: bool = True) -> EnsembleMemberConfig:
+        return EnsembleMemberConfig(
+            provider_config=ProviderConfig(
+                provider="openai",
+                model=model,
+                api_key="test-key",
+            ),
+            label=model,
+            ready=ready,
+            unavailable_reason="provider_request_budget_exhausted" if not ready else "",
+        )
+
+    provider = EnsembleProvider(
+        profile_name="custom_b5",
+        proposers=[
+            member("proposer-1"),
+            member("proposer-2"),
+            member("proposer-3"),
+            member("proposer-4", ready=False),
+            member("proposer-5", ready=False),
+        ],
+        aggregator=member("aggregator-model"),
+        min_successful_proposers=4,
+        target_successful_proposers=4,
+        all_failed_policy="error",
+        shuffle_candidates=False,
+    )
+
+    events = [
+        event
+        async for event in provider.chat(
+            [Message(role="user", content="hello")],
+            config=ChatConfig(provider_request_max_chars=100_000),
+        )
+    ]
+
+    assert "fused" == "".join(
+        event.text for event in events if isinstance(event, TextDeltaEvent)
+    )
+    assert not any(isinstance(event, ErrorEvent) for event in events)
+
+
+@pytest.mark.asyncio
+async def test_ensemble_omits_oversized_tool_schema_for_text_fusion(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A tool registry that exhausts the envelope must not force fallback."""
+
+    class _Adapter:
+        def __init__(self, model: str) -> None:
+            self.model = model
+            self.aggregator_tools = object()
+
+        async def chat(self, messages, tools=None, config=None):
+            del messages, config
+            if self.model == "aggregator-model":
+                self.aggregator_tools = tools
+                yield TextDeltaEvent(text="fused without tools")
+            else:
+                yield TextDeltaEvent(text="draft")
+            yield DoneEvent(model=self.model, input_tokens=1, output_tokens=1)
+
+        def project_final_request(
+            self,
+            messages,
+            tools=None,
+            config=None,
+            *,
+            message_limit=None,
+        ):
+            cfg = config or ChatConfig()
+            payload = {
+                "model": self.model,
+                "messages": [
+                    message.model_dump(mode="json", exclude_none=True)
+                    for message in messages
+                ],
+                "tools": [
+                    tool.model_dump(mode="json", exclude_none=True)
+                    for tool in (tools or [])
+                ],
+            }
+            return project_final_request_payload(
+                payload,
+                projection_adapter="synthetic_ensemble_member",
+                proof_budget=cfg.provider_request_max_chars or 1_000_000,
+                message_limit=message_limit,
+            )
+
+    adapters: dict[str, _Adapter] = {}
+
+    def build_adapter(provider_config: ProviderConfig) -> _Adapter:
+        return adapters.setdefault(provider_config.model, _Adapter(provider_config.model))
+
+    monkeypatch.setattr("openstarry_code.provider.ensemble._build_provider", build_adapter)
+    provider = EnsembleProvider(
+        profile_name="custom_b5",
+        proposers=[
+            EnsembleMemberConfig(
+                provider_config=ProviderConfig(
+                    provider="openai", model="proposer-model", api_key="test-key"
+                )
+            ),
+        ],
+        aggregator=EnsembleMemberConfig(
+            provider_config=ProviderConfig(
+                provider="openai", model="aggregator-model", api_key="test-key"
+            )
+        ),
+        min_successful_proposers=1,
+        all_failed_policy="error",
+        shuffle_candidates=False,
+    )
+    oversized_tool = ToolDefinition(
+        name="oversized",
+        description="x" * 20_000,
+        input_schema=ToolInputSchema(),
+    )
+
+    events = [
+        event
+        async for event in provider.chat(
+            [Message(role="user", content="hello")],
+            tools=[oversized_tool],
+            config=ChatConfig(provider_request_max_chars=5_000),
+        )
+    ]
+
+    assert "fused without tools" == "".join(
+        event.text for event in events if isinstance(event, TextDeltaEvent)
+    )
+    assert adapters["aggregator-model"].aggregator_tools is None
+    assert not any(isinstance(event, ErrorEvent) for event in events)

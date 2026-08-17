@@ -1,0 +1,6 @@
+interface:
+  display_name: "Statistical Analysis"
+  short_description: "Choose, validate, and report statistical tests"
+  default_prompt: "Use $statistical-analysis to analyze this dataset with checked assumptions."
+policy:
+  allow_implicit_invocation: true

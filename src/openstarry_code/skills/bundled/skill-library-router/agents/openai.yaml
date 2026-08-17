@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill Library Router"
+  short_description: "Route tasks across grouped local skill domains"
+  default_prompt: "Use $skill-library-router to select the right local skill group and skill."

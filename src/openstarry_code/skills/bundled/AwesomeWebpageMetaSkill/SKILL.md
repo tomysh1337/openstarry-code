@@ -395,7 +395,7 @@ composition:
       depends_on: [page_outline]
       tool_args:
         command: |
-          python -m opensquilla.skills.bundled.AwesomeWebpageMetaSkill.scripts.media_slots_normalize
+          python -m openstarry_code.skills.bundled.AwesomeWebpageMetaSkill.scripts.media_slots_normalize
         timeout: 20
         stdin: |
           {"page_outline": {{ outputs.page_outline | tojson }},
@@ -676,7 +676,7 @@ composition:
         - video_aigc
       tool_args:
         command: |
-          python -m opensquilla.skills.bundled.AwesomeWebpageMetaSkill.scripts.media_assets_collect
+          python -m openstarry_code.skills.bundled.AwesomeWebpageMetaSkill.scripts.media_assets_collect
         timeout: 30
         env:
           PROJECT_ROOT: "{{ inputs.get('config', {}).get('awesome_webpage', {}).get('output_dir') or (inputs.workspace_dir ~ '/awesome-webpage-output') }}/{{ outputs.project_slug | slugify }}/project"
@@ -786,7 +786,7 @@ composition:
       depends_on: [webpage_generation]
       tool_args:
         command: |
-          python -m opensquilla.skills.bundled.AwesomeWebpageMetaSkill.scripts.webpage_source_validate
+          python -m openstarry_code.skills.bundled.AwesomeWebpageMetaSkill.scripts.webpage_source_validate
         timeout: 15
         stdin: "{{ outputs.webpage_generation | tojson }}"
 
@@ -850,7 +850,7 @@ composition:
       depends_on: [webpage_generation, webpage_source_validate, webpage_generation_retry]
       tool_args:
         command: |
-          python -m opensquilla.skills.bundled.AwesomeWebpageMetaSkill.scripts.webpage_write
+          python -m openstarry_code.skills.bundled.AwesomeWebpageMetaSkill.scripts.webpage_write
         timeout: 30
         stdin: "{{ (outputs.get('webpage_generation_retry', '') or outputs.webpage_generation) | tojson }}"
         env:
@@ -864,7 +864,7 @@ composition:
       depends_on: [webpage_write, media_assets_collect]
       tool_args:
         command: |
-          python -m opensquilla.skills.bundled.AwesomeWebpageMetaSkill.scripts.media_bind_validate
+          python -m openstarry_code.skills.bundled.AwesomeWebpageMetaSkill.scripts.media_bind_validate
         timeout: 30
         env:
           PROJECT_ROOT: "{{ inputs.get('config', {}).get('awesome_webpage', {}).get('output_dir') or (inputs.workspace_dir ~ '/awesome-webpage-output') }}/{{ outputs.project_slug | slugify }}"

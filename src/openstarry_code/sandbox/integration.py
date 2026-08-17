@@ -1874,6 +1874,14 @@ def effective_network_mode(
     rt = runtime or get_runtime()
     if rt is None:
         return None
+    # Full Host Access intentionally bypasses the sandbox gate.  The runtime
+    # still keeps a Safe-capable backend alive for explicit Safe runs, so the
+    # policy built from that backend must not be exposed as the active mode for
+    # an ordinary Full call.
+    from openstarry_code.tools.run_mode import full_host_access_active
+
+    if full_host_access_active():
+        return NetworkMode.HOST
     try:
         level = (
             select_level(action_kind, hints)
@@ -1987,6 +1995,10 @@ async def run_in_process_network_action(
     """
     rt = runtime or get_runtime()
     if rt is None:
+        return await callback()
+    from openstarry_code.tools.run_mode import full_host_access_active
+
+    if full_host_access_active():
         return await callback()
     decision, policy, request = await gate_action(
         action_kind=action_kind,

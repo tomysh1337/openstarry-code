@@ -124,6 +124,63 @@ async def test_skill_exec_resolves_bare_python3_too(tmp_path: Path) -> None:
 
 
 @pytest.mark.asyncio
+async def test_skill_exec_preserves_unquoted_base_dir_with_spaces_in_command(
+    tmp_path: Path,
+) -> None:
+    skill_dir = tmp_path / "skill install with spaces"
+    scripts_dir = skill_dir / "scripts"
+    scripts_dir.mkdir(parents=True)
+    script = scripts_dir / "hello.py"
+    script.write_text("print('base-dir-command-ok')\n", encoding="utf-8")
+    spec = _spec(skill_dir, "python {baseDir}/scripts/hello.py")
+
+    out = await run_skill_exec_step(
+        MetaStep(id="base-dir-command", kind="skill_exec", skill=spec.name),
+        effective_skill=spec.name,
+        inputs={},
+        outputs={},
+        skill_loader=_Loader(spec),
+        workspace_dir=str(tmp_path),
+    )
+
+    assert out == "base-dir-command-ok"
+
+
+@pytest.mark.asyncio
+async def test_skill_exec_restores_base_dir_in_args_and_normalizes_separators(
+    tmp_path: Path,
+) -> None:
+    skill_dir = tmp_path / "skill install with spaces"
+    skill_dir.mkdir()
+    script = skill_dir / "capture.py"
+    script.write_text(
+        "import json, sys\nprint(json.dumps(sys.argv[1:]))\n",
+        encoding="utf-8",
+    )
+    spec = _spec(skill_dir, "python")
+    spec.entrypoint["parse"] = "json"
+    spec.entrypoint["args"] = [
+        "{baseDir}\\capture.py",
+        "{baseDir}",
+        "{baseDir}/nested\\result.json",
+    ]
+
+    out = await run_skill_exec_step(
+        MetaStep(id="base-dir-args", kind="skill_exec", skill=spec.name),
+        effective_skill=spec.name,
+        inputs={},
+        outputs={},
+        skill_loader=_Loader(spec),
+        workspace_dir=str(tmp_path),
+    )
+
+    assert json.loads(out) == [
+        str(skill_dir),
+        str(skill_dir / "nested" / "result.json"),
+    ]
+
+
+@pytest.mark.asyncio
 async def test_skill_exec_text_output_normalizes_newlines(tmp_path: Path) -> None:
     """Text step outputs are stable across Windows and POSIX subprocesses."""
 

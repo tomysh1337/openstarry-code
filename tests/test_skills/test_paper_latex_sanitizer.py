@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[2]
 SANITIZER = (
     ROOT
     / "src"
-    / "opensquilla"
+    / "openstarry_code"
     / "skills"
     / "bundled"
     / "paper-latex-sanitizer"
@@ -26,7 +26,7 @@ SANITIZER = (
 QUALITY_GATE = (
     ROOT
     / "src"
-    / "opensquilla"
+    / "openstarry_code"
     / "skills"
     / "bundled"
     / "paper-quality-gate"

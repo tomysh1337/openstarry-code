@@ -346,6 +346,8 @@ async def test_full_optional_read_burst_does_not_block_interactive_rpc(
         "onboarding.status",
         "sandbox.run_mode.preference.get",
         "sessions.list",
+        "skills.list",
+        "skills.status",
         "usage.status",
         "workspaces.list",
     ]

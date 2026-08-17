@@ -1,0 +1,6 @@
+interface:
+  display_name: "Unified Skill Dispatcher"
+  short_description: "Automatically route requests to the best installed skill"
+  default_prompt: "Use $unified-skill-dispatcher to select and apply the best installed skill for this task."
+policy:
+  allow_implicit_invocation: true

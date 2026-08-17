@@ -98,6 +98,8 @@ def test_policy_config_expands_current_groups_patterns_and_profiles() -> None:
             "install_skill_deps",
             "message",
             "session_status",
+            "sessions_spawn",
+            "sessions_yield",
             "web_discover",
             "web_fetch",
             "web_search",
@@ -134,6 +136,7 @@ def test_policy_config_expands_current_groups_patterns_and_profiles() -> None:
     assert "web_discover" in expand_selectors(frozenset({"group:web"}), available)
     assert profile_allowlist("minimal", available) == {"session_status"}
     assert profile_allowlist("full", available) is None
+    assert {"sessions_spawn", "sessions_yield"} <= profile_allowlist("coding", available)
 
 
 def test_policy_config_parses_gateway_and_sender_policy_shapes() -> None:

@@ -8,9 +8,9 @@ disable-model-invocation: true
 provenance:
   origin: opensquilla-original
   license: Apache-2.0
-  maintained_by: OpenSquilla
+  maintained_by: OpenStarry Code
 metadata:
-  opensquilla:
+  openstarry-code:
     risk: high
     capabilities: [network-write, filesystem-read, filesystem-write]
     requires:
@@ -32,7 +32,7 @@ entrypoint:
     - --aspect-ratio
     - "{{ with.aspect_ratio | default('16:9') }}"
   env:
-    OPENSQUILLA_META_CAPABILITY_LEASE_REQUIRED: "1"
+    OPENSTARRY_CODE_META_CAPABILITY_LEASE_REQUIRED: "1"
   stdin: "{{ with.prompt | default(inputs.user_message) }}"
   parse: text
   timeout: 420
@@ -53,6 +53,15 @@ Settings in the child process only; the credential, endpoint, and proxy never
 enter `with`, argv, the plan, or persisted run data. It writes the MP4 under
 the supplied output directory and prints either `VIDEO_READY:` or a failure
 label. Do not spawn an LLM sub-agent just to generate video.
+
+The parent injects the atomic provider tuple through
+`OPENSTARRY_CODE_META_CAPABILITY_PROVIDER`,
+`OPENSTARRY_CODE_META_CAPABILITY_API_KEY`, and
+`OPENSTARRY_CODE_META_CAPABILITY_BASE_URL`; optional
+`OPENSTARRY_CODE_META_CAPABILITY_PROXY` applies only to the matching provider.
+The compatibility credential `OPENSTARRY_CODE_META_OPENROUTER_API_KEY` remains
+bound to OpenRouter's official origin. The child never discovers or parses
+`openstarry-code.toml` from its workspace.
 
 ## Contract
 

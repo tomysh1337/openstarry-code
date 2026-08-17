@@ -128,6 +128,11 @@ def aggregate_router_fixtures(repo_root: Path | None = None) -> list[dict]:
 
 
 def main(argv: list[str] | None = None) -> int:
+    # This entrypoint reserves stdout for one machine-readable JSON document.
+    # Skill catalog diagnostics therefore use the shared CLI stderr logger.
+    from openstarry_code.observability.cli_logging import configure_cli_structlog
+
+    configure_cli_structlog()
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--log-dir",

@@ -1,0 +1,4 @@
+interface:
+  display_name: "CDK Activation and Update Engineering"
+  short_description: "Adapt and verify Windows CDK activation and signed updates"
+  default_prompt: "Use $building-cdk-activation to adapt and verify CDK activation and signed updates in this Windows desktop application."

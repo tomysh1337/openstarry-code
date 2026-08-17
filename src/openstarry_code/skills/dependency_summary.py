@@ -335,7 +335,11 @@ def _markdown_env_candidates(spec: SkillSpec) -> set[str]:
         skill_file = skill_dir / "SKILL.md"
         if skill_file.exists():
             try:
-                skill_text = skill_file.read_text(encoding="utf-8")
+                # Skill loading accepts malformed third-party bytes by
+                # replacing them, so the diagnostic pass must use the same
+                # decoding policy. A single invalid byte must not make the
+                # entire skills.list RPC fail.
+                skill_text = skill_file.read_text(encoding="utf-8", errors="replace")
             except OSError:
                 pass
     pattern = r"\b[A-Z][A-Z0-9_]*(?:_API_KEY|_TOKEN|_BASE_URL|_ENDPOINT)\b"

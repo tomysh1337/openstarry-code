@@ -1,6 +1,6 @@
-# OpenSquilla MetaSkill User Guide
+# OpenStarry Code MetaSkill User Guide
 
-MetaSkill lets OpenSquilla move from figuring out complex work from scratch on
+MetaSkill lets OpenStarry Code move from figuring out complex work from scratch on
 every turn to reusable, explicitly launchable, auditable, and improvable task
 protocols.
 
@@ -9,7 +9,7 @@ high-value work.
 
 ## Important Notice
 
-Some MetaSkills in OpenSquilla, and some of the skills they call, are authored,
+Some MetaSkills in OpenStarry Code, and some of the skills they call, are authored,
 revised, or composed with AI assistance based on intended functionality,
 available capabilities, and usage scenarios.
 
@@ -40,7 +40,7 @@ judgment, or accountability.
 
 ## What It Is
 
-OpenSquilla is an open-source AI agent runtime. MetaSkill is its task-protocol
+OpenStarry Code is an open-source AI agent runtime. MetaSkill is its task-protocol
 layer.
 
 A MetaSkill does not introduce new execution atoms. It defines a way to organize
@@ -49,7 +49,7 @@ reusable task protocol.
 
 The analogy is a Makefile and shell commands. A Makefile does not replace
 commands; it defines how commands are composed. A MetaSkill does not replace
-skills or tools; it tells OpenSquilla how a class of high-value work should be
+skills or tools; it tells OpenStarry Code how a class of high-value work should be
 understood, structured, checked, and delivered.
 
 MetaSkill provides four main advantages:
@@ -84,13 +84,13 @@ To restore the older automatic behavior, set:
 auto_trigger = true
 ```
 
-With `auto_trigger = true`, OpenSquilla may consider MetaSkills during ordinary
+With `auto_trigger = true`, OpenStarry Code may consider MetaSkills during ordinary
 natural-language turns. Leave it off when you want workflows to run only after
 an explicit `/meta <name>` command.
 
 ## User Mental Model
 
-Using a MetaSkill is not just asking a question. It is delegating OpenSquilla to
+Using a MetaSkill is not just asking a question. It is delegating OpenStarry Code to
 produce a reviewable result.
 
 A strong MetaSkill request contains four things:
@@ -112,7 +112,7 @@ Include the LaTeX source and compiled PDF.
 Do not invent citations or experimental results.
 ```
 
-The user defines the target and standard; OpenSquilla organizes the execution.
+The user defines the target and standard; OpenStarry Code organizes the execution.
 
 ## Current Built-In MetaSkills
 
@@ -149,10 +149,10 @@ missing, Web chat follows this flow:
 4. Activate the verified package and automatically resume the original request.
    Failed or interrupted installs leave the workflow unstarted and offer Retry.
 
-The active install is kept below the OpenSquilla state directory at
+The active install is kept below the OpenStarry Code state directory at
 `state/toolchains/v1`; it does not modify the user's shell profile or global
-`PATH`. A normal `opensquilla uninstall` preserves it with other user state.
-`opensquilla uninstall --purge-state` removes OpenSquilla-managed archives,
+`PATH`. A normal `openstarry-code uninstall` preserves it with other user state.
+`openstarry-code uninstall --purge-state` removes OpenStarry Code-managed archives,
 receipts, and activations.
 
 | Capability | macOS | Linux | Windows |
@@ -164,7 +164,7 @@ All managed executable archives, license files, and fonts are versioned and
 checksum-verified. The macOS short-drama download totals about 76 MB on Apple
 Silicon or 87 MB on Intel. Its FFmpeg and FFprobe 8.1.2 ZIPs come from a build
 whose source is pinned to commit
-`bb1d6db29cee948f9685bcd69e6caf17d960662b`. OpenSquilla verifies each original
+`bb1d6db29cee948f9685bcd69e6caf17d960662b`. OpenStarry Code verifies each original
 archive's fixed size and SHA-256 first. It then removes the binaries' invalid
 embedded signatures, applies local ad-hoc signatures, and requires strict
 `codesign` verification before activation. The result is neither Developer ID
@@ -217,7 +217,7 @@ or easily confused tasks because the workflow launch is explicit.
 
 ### Compatibility: Automatic Triggering
 
-If `meta_skill.auto_trigger = true` is set, OpenSquilla can consider MetaSkills
+If `meta_skill.auto_trigger = true` is set, OpenStarry Code can consider MetaSkills
 from natural-language intent:
 
 ```text
@@ -283,7 +283,7 @@ Good fit:
 
 PDF compilation requires the paper capability probe to pass. If it does not,
 confirm the managed setup card; on an unsupported platform, install a compatible
-TeX distribution yourself and retry so OpenSquilla can probe it.
+TeX distribution yourself and retry so OpenStarry Code can probe it.
 
 High-quality request:
 
@@ -451,4 +451,4 @@ For the authoring protocol, read [`../authoring/meta-skills.md`](../authoring/me
 
 ---
 
-[Docs index](../README.md) · [Product guide](../../README.product.md) · [Improve this page](../contributing-docs.md) · [Report a docs issue](https://github.com/opensquilla/opensquilla/issues/new?template=docs_report.yml)
+[Docs index](../README.md) · [Product guide](../../README.product.md) · [Improve this page](../contributing-docs.md) · [Report a docs issue](https://github.com/tomysh1337/openstarry-code/issues/new?template=docs_report.yml)

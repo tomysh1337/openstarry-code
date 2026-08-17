@@ -1,0 +1,6 @@
+interface:
+  display_name: "Gemini Deep Research"
+  short_description: "Run long multi-source research tasks"
+  default_prompt: "Use $gemini-deep-research to perform this multi-source research task."
+policy:
+  allow_implicit_invocation: true

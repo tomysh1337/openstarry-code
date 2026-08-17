@@ -1,0 +1,6 @@
+interface:
+  display_name: "Software Engineering Router"
+  short_description: "Route coding requests to focused engineering skills"
+  default_prompt: "Use $software-engineering-router to select the best local engineering skill for this task."
+policy:
+  allow_implicit_invocation: true

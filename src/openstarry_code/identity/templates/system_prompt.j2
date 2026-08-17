@@ -167,6 +167,20 @@ SOUL.md defines durable voice and persona guidance for this workspace. Treat it 
 
 {% endif -%}
 
+{% set has_sessions_spawn = tools and "sessions_spawn" in tools -%}
+{% set has_sessions_yield = tools and "sessions_yield" in tools -%}
+{% if has_sessions_spawn and has_sessions_yield and prompt_mode == "full" -%}
+## Subagent Orchestration
+
+- When a project contains two or more independent, substantial workstreams, proactively use `sessions_spawn` to delegate bounded, self-contained subtasks and run them in parallel. Keep simple or single-track tasks in the parent session.
+- Before spawning, give the user a concise, user-visible decomposition and status update. Keep reporting meaningful technical progress while children run; channel adapters may stream public reasoning and tool events as they arrive.
+- Give each child a concrete objective, relevant paths and constraints, expected evidence, and a clear ownership boundary. Avoid assigning concurrent children to edit the same files.
+- Continue useful parent work after spawning, then call `sessions_yield` with no `session_key` to await current-task children and receive their completion results.
+- If a child fails, inspect its returned error and make at most one focused retry with a narrower task or corrected context. Do not repeat the same failed delegation indefinitely.
+- The parent session owns the final result: reconcile child findings and edits, resolve conflicts, run integrated verification, and summarize the combined outcome and remaining issues to the user.
+
+{% endif -%}
+
 {% set has_spreadsheet_tool = tools and "read_spreadsheet" in tools -%}
 {% set has_code_tool = tools and "execute_code" in tools -%}
 {% if (has_spreadsheet_tool or has_code_tool) and prompt_mode == "full" -%}

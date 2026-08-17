@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill Router"
+  short_description: "Routes local skill packs to the right task."
+  default_prompt: "Use $skill-router to choose and apply the best local skill pack for this task."
