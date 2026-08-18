@@ -19,6 +19,73 @@ function makePanel(form: ReturnType<typeof useSetupRouterForm>, isOpenrouter: bo
 }
 
 describe('useSetupRouterForm — openrouter-mix round-trip', () => {
+  it('expands a complete historical four-level ladder to c0-c6', () => {
+    const f = useSetupRouterForm()
+    f.initFromConfig({
+      enabled: true,
+      tier_profile: null,
+      tiers: {
+        c0: { provider: 'nvidia', model: 'fast' },
+        c1: { provider: 'openai', model: 'balanced' },
+        c2: { provider: 'anthropic', model: 'reasoning' },
+        c3: { provider: 'anthropic', model: 'highest', thinking_level: 'xhigh' },
+      },
+    }, {}, 'openai')
+
+    const tiers = f.payload().tiers as Record<string, { provider: string; model: string; thinkingLevel: string }>
+    expect(Object.keys(tiers)).toEqual(['c0', 'c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'image_model'])
+    expect(tiers.c4).toMatchObject({ provider: 'anthropic', model: 'highest', thinkingLevel: 'xhigh' })
+    expect(tiers.c5).toMatchObject(tiers.c4)
+    expect(tiers.c6).toMatchObject(tiers.c4)
+  })
+
+  it('orders expert roles before the image model row', () => {
+    const f = useSetupRouterForm()
+    f.initFromConfig({
+      enabled: true,
+      tiers: {
+        c0: { provider: 'openai', model: 'fast' },
+        c1: { provider: 'openai', model: 'balanced' },
+        c2: { provider: 'openai', model: 'strong' },
+        c3: { provider: 'openai', model: 'coding' },
+        image_model: { provider: 'openai', model: 'vision' },
+      },
+    }, {}, 'openai')
+
+    const panel = f.createPanel({
+      routerSummary: computed(() => ''),
+      ensembleProfileActive: computed(() => false),
+      hasSavedProvider: computed(() => true),
+      isOpenrouter: computed(() => false),
+      textTiers: ['c0', 'c1', 'c2', 'c3', 'c4', 'c5', 'c6'],
+      tierLabel: (tier) => tier,
+    })
+
+    expect(panel.value.tierRows.map((tier) => tier.name)).toEqual([
+      'c0', 'c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'image_model',
+    ])
+  })
+
+  it('materializes an editable image route for legacy custom ladders', () => {
+    const f = useSetupRouterForm()
+    f.initFromConfig({
+      enabled: true,
+      tiers: {
+        c0: { provider: 'custom', model: 'fast' },
+        c1: { provider: 'custom', model: 'balanced' },
+        c2: { provider: 'custom', model: 'strong' },
+        c3: { provider: 'custom', model: 'vision-capable' },
+      },
+    }, {}, 'custom')
+
+    const image = f.payload().tiers as Record<string, { provider: string; model: string; supportsImage: boolean }>
+    expect(image.image_model).toMatchObject({
+      provider: 'custom',
+      model: 'vision-capable',
+      supportsImage: true,
+    })
+  })
+
   it('classifies legacy openrouter mix internally but saves canonical custom mode', () => {
     const f = useSetupRouterForm()
     f.initFromConfig({ enabled: true, tier_profile: null }, {}, 'openrouter')

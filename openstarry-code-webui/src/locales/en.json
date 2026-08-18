@@ -1186,11 +1186,14 @@
         "legacy_grid": "Three-tier visual panel"
       },
       "tiers": {
-        "c0": "C0 Fast/simple",
-        "c1": "C1 Balanced",
-        "c2": "C2 Strong reasoning",
-        "c3": "C3 Max quality",
-        "image_model": "Image model"
+        "c0": "C0 Ultra-fast/lightweight",
+        "c1": "C1 Fast/simple",
+        "c2": "C2 Daily/balanced",
+        "c3": "C3 Coding/tools",
+        "c4": "C4 Strong reasoning",
+        "c5": "C5 Expert/complex",
+        "c6": "C6 Max quality",
+        "image_model": "Vision input model"
       }
     },
     "ensemble": {
@@ -1312,6 +1315,9 @@
       "memoryCustomDesc": "This embedding provider is managed through CLI or TOML. Restore here to return to built-in local retrieval.",
       "imageModelSummary": "Model ID",
       "imageModelHint": "Choose from the provider's image model catalog, or enter another supported model ID.",
+      "imageBaseUrlLabel": "Image generation Base URL",
+      "imageBaseUrlHint": "Base URL for this image provider.",
+      "imageOpenAiBaseUrlHint": "OpenAI Images requests use /images/generations. You can enter a compatible relay's /v1 Base URL.",
       "imageProviderSelectLabel": "Image generation provider",
       "imageProviderPlaceholder": "Choose an image provider",
       "imageRecommendedGroup": "Recommended",

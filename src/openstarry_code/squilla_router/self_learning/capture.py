@@ -11,10 +11,8 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import Any
 
-from openstarry_code.router_tiers import ROUTE_CLASS_TO_TIER, normalize_text_tier
+from openstarry_code.router_tiers import TIER_TO_ROUTE_CLASS, normalize_text_tier
 from openstarry_code.squilla_router.self_learning.schema import RouterTrainSample, encode_features
-
-_TIER_TO_ROUTE = {v: k for k, v in ROUTE_CLASS_TO_TIER.items()}
 
 # Routing sources that bypass the text ML classifier; offline training drops
 # these, so there is no point capturing them.
@@ -23,7 +21,7 @@ _BYPASS_SOURCES = {"image_route", "hold", "manual_hold"}
 
 def _route_class_for_tier(tier: str | None) -> str:
     norm = normalize_text_tier(tier) if tier else None
-    return _TIER_TO_ROUTE.get(norm or "", "R1")
+    return TIER_TO_ROUTE_CLASS.get(norm or "", "R1")
 
 
 def build_train_sample(

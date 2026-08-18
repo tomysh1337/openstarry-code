@@ -1771,7 +1771,7 @@ describe('useSetupCatalog fresh-install provider semantics', () => {
     const { api, app } = await mountCatalog()
     api.setModelStrategy('router')
 
-    expect(api.routerPanel.value.tierRows).toHaveLength(4)
+    expect(api.routerPanel.value.tierRows).toHaveLength(8)
     expect(api.routerPanel.value.tierRows.every(row => (
       row.provider === 'anthropic' && row.model === 'claude-sonnet-4'
     ))).toBe(true)

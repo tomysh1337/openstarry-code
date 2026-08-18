@@ -219,8 +219,23 @@ def _clear_vision_provider_env(monkeypatch) -> None:
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("base_url", "expected_url"),
+    [
+        (
+            "https://api.openai.com/v1",
+            "https://api.openai.com/v1/images/generations",
+        ),
+        (
+            "https://images.example.test/v1",
+            "https://images.example.test/v1/images/generations",
+        ),
+    ],
+)
 async def test_openai_image_provider_keeps_output_format_in_images_payload(
     monkeypatch,
+    base_url: str,
+    expected_url: str,
 ) -> None:
     captured: dict[str, object] = {}
 
@@ -257,7 +272,10 @@ async def test_openai_image_provider_keeps_output_format_in_images_payload(
         lambda **_kwargs: FakeClient(),
     )
 
-    await OpenAIImageGenerationProvider(api_key="synthetic-openai-key").generate(
+    await OpenAIImageGenerationProvider(
+        api_key="synthetic-openai-key",
+        base_url=base_url,
+    ).generate(
         ImageGenerationRequest(
             prompt="draw a squid",
             model="gpt-image-1",
@@ -266,7 +284,7 @@ async def test_openai_image_provider_keeps_output_format_in_images_payload(
         )
     )
 
-    assert captured["url"] == "https://api.openai.com/v1/images/generations"
+    assert captured["url"] == expected_url
     assert captured["json"] == {
         "model": "gpt-image-1",
         "prompt": "draw a squid",

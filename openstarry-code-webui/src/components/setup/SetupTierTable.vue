@@ -189,10 +189,10 @@ const hasCombobox = computed(() => props.rows.some(row => hasLiveCatalog(row)))
           :disabled="dependentFieldsDisabled(tier)"
           @update="(val) => emit('updateTierField', tier.name, 'model', val)"
         />
-        <select :value="tier.thinkingLevel" :aria-label="t('setup.router.tierThinkingAria', { tier: tier.name })" :disabled="dependentFieldsDisabled(tier)" @change="emit('updateTierField', tier.name, 'thinkingLevel', ($event.target as HTMLSelectElement).value)">
+        <select :value="tier.thinkingLevel" :aria-label="t('setup.router.tierThinkingAria', { tier: tier.name })" :disabled="dependentFieldsDisabled(tier) || tier.name === 'image_model'" @change="emit('updateTierField', tier.name, 'thinkingLevel', ($event.target as HTMLSelectElement).value)">
           <option v-for="v in THINKING_LEVELS" :key="v" :value="v">{{ v || '-' }}</option>
         </select>
-        <ControlSwitch :checked="tier.supportsImage" :disabled="dependentFieldsDisabled(tier)" :aria-label="t('setup.router.tierImageAria', { tier: tier.name })" @change="(v) => emit('updateTierField', tier.name, 'supportsImage', v)" />
+        <ControlSwitch :checked="tier.supportsImage" :disabled="dependentFieldsDisabled(tier) || tier.name === 'image_model'" :aria-label="t('setup.router.tierImageAria', { tier: tier.name })" @change="(v) => emit('updateTierField', tier.name, 'supportsImage', v)" />
       </template>
     </div>
   </div>

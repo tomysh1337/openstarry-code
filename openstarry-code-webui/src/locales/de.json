@@ -1135,11 +1135,14 @@
       },
       "defaultRoutingTier": "Standard-Modellstufe",
       "tiers": {
-        "c0": "C0 Schnell/einfach",
-        "c1": "C1 Ausgewogen",
-        "c2": "C2 Starkes Reasoning",
-        "c3": "C3 Höchste Qualität",
-        "image_model": "Bildmodell"
+        "c0": "C0 Ultraschnell/leicht",
+        "c1": "C1 Schnell/einfach",
+        "c2": "C2 Alltag/ausgewogen",
+        "c3": "C3 Programmierung/Werkzeuge",
+        "c4": "C4 Starkes Reasoning",
+        "c5": "C5 Experte/komplex",
+        "c6": "C6 Höchste Qualität",
+        "image_model": "Modell für Bildeingaben"
       }
     },
     "ensemble": {
@@ -1261,6 +1264,9 @@
       "memoryCustomDesc": "Dieser Embedding-Anbieter wird über CLI oder TOML verwaltet. Hier können Sie zur integrierten lokalen Suche zurückkehren.",
       "imageModelSummary": "Modell-ID",
       "imageModelHint": "Wähle ein Modell aus dem Bildmodellkatalog des Anbieters oder gib eine andere unterstützte Modell-ID ein.",
+      "imageBaseUrlLabel": "Basis-URL für Bildgenerierung",
+      "imageBaseUrlHint": "Basis-URL für diesen Bildanbieter.",
+      "imageOpenAiBaseUrlHint": "OpenAI-Images-Anfragen verwenden /images/generations. Eine kompatible Relay-/v1-Basis-URL kann eingetragen werden.",
       "imageProviderSelectLabel": "Anbieter für Bildgenerierung",
       "imageProviderPlaceholder": "Bildanbieter auswählen",
       "imageRecommendedGroup": "Empfohlen",

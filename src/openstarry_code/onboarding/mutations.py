@@ -71,7 +71,9 @@ from openstarry_code.provider.registry import CUSTOM_OPENAI_PROVIDER_IDS
 from openstarry_code.provider.request_headers import merge_redacted_request_headers
 from openstarry_code.router_tiers import (
     DEFAULT_TEXT_TIER,
+    IMAGE_TIER,
     TEXT_TIERS,
+    expand_text_tier_mapping,
     normalize_text_tier,
 )
 from openstarry_code.search.types import DEFAULT_SEARCH_MAX_RESULTS, MAX_SEARCH_RESULTS
@@ -297,7 +299,9 @@ def _tiers_equal_after_canonical_normalization(
     candidate: Mapping[str, Any] | None,
     preset_tiers: Mapping[str, Any],
 ) -> bool:
-    return _canonical_tier_map(candidate) == _canonical_tier_map(preset_tiers)
+    return expand_text_tier_mapping(_canonical_tier_map(candidate)) == expand_text_tier_mapping(
+        _canonical_tier_map(preset_tiers)
+    )
 
 
 def _router_tiers_hand_customized(
@@ -355,6 +359,14 @@ def _validate_router_tiers(tiers: dict[str, Any], default_tier: str) -> None:
             raise ValueError(f"router tier {tier_name!r} requires provider")
         if not str(tier.get("model") or "").strip():
             raise ValueError(f"router tier {tier_name!r} requires model")
+    image_tier = tiers.get(IMAGE_TIER)
+    if image_tier is not None:
+        if not isinstance(image_tier, dict):
+            raise ValueError(f"router tier {IMAGE_TIER!r} must be an object")
+        if not str(image_tier.get("provider") or "").strip():
+            raise ValueError(f"router tier {IMAGE_TIER!r} requires provider")
+        if not str(image_tier.get("model") or "").strip():
+            raise ValueError(f"router tier {IMAGE_TIER!r} requires model")
 
 
 def _tier_provider_deployment_unready_reason(
@@ -1068,7 +1080,9 @@ def upsert_router(
                 and not _tiers_equal_after_canonical_normalization(stored_tiers, _default_tiers())
             ):
                 source_tiers = stored_tiers
-        merged_tiers = _merge_router_tiers(base_tiers, source_tiers)
+        merged_tiers = expand_text_tier_mapping(
+            _merge_router_tiers(base_tiers, source_tiers)
+        )
         if preset is None:
             # A hand-edited, non-registry llm.provider has no packaged
             # profile to seed tiers from; unless the caller supplied a full

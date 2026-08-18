@@ -10837,7 +10837,7 @@ class Agent:
                                     or self.config.context_window_tokens
                                 ) + 1
                             effective_overflow_retries = min(
-                                1,
+                                2,
                                 max(0, int(self.config.max_overflow_retries or 0)),
                             )
                             if overflow_retries >= effective_overflow_retries:
@@ -10865,6 +10865,13 @@ class Agent:
                                 estimated_context_chars=provider_estimated_chars,
                                 durable_consumer_overflow_proven=(
                                     durable_consumer_overflow_proven
+                                ),
+                                live_turn_keep_recent_rounds=max(
+                                    1,
+                                    3 - overflow_retries,
+                                ),
+                                progressive_compaction_ratio=(
+                                    0.65 if overflow_retries > 1 else 1.0
                                 ),
                             )
                             if overflow_outcome is None:
@@ -18285,6 +18292,8 @@ class Agent:
         request_window_chars: int | None = None,
         estimated_context_chars: int | None = None,
         durable_consumer_overflow_proven: bool | None = None,
+        live_turn_keep_recent_rounds: int = 2,
+        progressive_compaction_ratio: float = 1.0,
     ) -> CompactionOutcome | None:
         """Check if estimated live context tokens exceed the overflow threshold.
 
@@ -18293,11 +18302,21 @@ class Agent:
         """
         self._last_compaction_refusal_reason = None
         window_tokens = compaction_window_tokens or self.config.context_window_tokens
-        pressure_window_tokens = request_window_tokens or window_tokens
+        retry_ratio = min(1.0, max(0.25, float(progressive_compaction_ratio)))
+        compaction_target_window_tokens = max(1, int(window_tokens * retry_ratio))
+        pressure_window_tokens = min(
+            request_window_tokens or window_tokens,
+            compaction_target_window_tokens,
+        )
+        compaction_target_window_chars = (
+            max(1, int(request_window_chars * retry_ratio))
+            if request_window_chars is not None
+            else None
+        )
         threshold = self.config.context_overflow_threshold * pressure_window_tokens
         char_threshold = (
-            self.config.context_overflow_threshold * request_window_chars
-            if request_window_chars is not None
+            self.config.context_overflow_threshold * compaction_target_window_chars
+            if compaction_target_window_chars is not None
             else None
         )
         within_character_budget = bool(
@@ -18340,9 +18359,10 @@ class Agent:
                         messages,
                         protected_turn_start_index=protected_turn_start_index,
                         context_window_tokens=pressure_window_tokens,
-                        context_window_chars=request_window_chars,
+                        context_window_chars=compaction_target_window_chars,
                         request_context_insert_index=request_context_insert_index,
                         runtime_context_insert_index=runtime_context_insert_index,
+                        keep_recent_rounds=live_turn_keep_recent_rounds,
                     )
                 except asyncio.CancelledError:
                     raise
@@ -18404,9 +18424,10 @@ class Agent:
                         messages,
                         protected_turn_start_index=protected_tail_start,
                         context_window_tokens=pressure_window_tokens,
-                        context_window_chars=request_window_chars,
+                        context_window_chars=compaction_target_window_chars,
                         request_context_insert_index=request_context_insert_index,
                         runtime_context_insert_index=runtime_context_insert_index,
+                        keep_recent_rounds=live_turn_keep_recent_rounds,
                     )
                 except asyncio.CancelledError:
                     raise
@@ -18675,7 +18696,8 @@ class Agent:
         request = CompactionRequest(
             session_id="agent-turn",
             entries=entries,
-            context_window_tokens=window_tokens,
+            context_window_tokens=compaction_target_window_tokens,
+            context_window_chars=compaction_target_window_chars,
             config=compaction_config,
             provider_request_correlation=derive_provider_request_correlation(
                 self._provider_request_correlation,

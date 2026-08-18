@@ -40,6 +40,7 @@ from openstarry_code.provider.credentials import (
 from openstarry_code.provider.preset_registry import get_preset, legacy_profile_ids
 from openstarry_code.router_tiers import (
     DEFAULT_TEXT_TIER,
+    expand_text_tier_mapping,
     normalize_text_tier,
     normalize_tier_mapping,
 )
@@ -1885,8 +1886,8 @@ class AgentRoutingConfig(BaseModel):
     """Per-agent router tier overrides for a durable agent profile.
 
     Both fields are optional and default to ``None`` ("unset"). Tier strings are
-    canonicalized to ``c0``–``c3`` exactly the way :class:`SquillaRouterConfig`
-    normalizes its ``default_tier``: legacy ``t0``–``t3`` aliases and a leading
+    canonicalized to ``c0``–``c6`` exactly the way :class:`SquillaRouterConfig`
+    normalizes its ``default_tier``: ``t0``–``t6`` aliases and a leading
     ``tier:`` prefix are accepted, and an unrecognized value is kept verbatim
     (normalize-or-keep). This matches every other tier-accepting surface in the
     codebase (``SquillaRouterConfig``, ``engine/routing/policy.py``) rather than
@@ -2954,7 +2955,11 @@ class GatewayConfig(BaseSettings):
                     defaults = _router_tier_profile_defaults(profile)
                 except ValueError:  # pragma: no cover - membership checked above
                     defaults = None
-                if defaults is not None and router.get("tiers") == defaults:
+                if (
+                    defaults is not None
+                    and expand_text_tier_mapping(router.get("tiers"))
+                    == expand_text_tier_mapping(defaults)
+                ):
                     router.pop("tiers", None)
         for path in sorted(self._runtime_secret_paths):
             _delete_path(data, path)

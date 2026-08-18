@@ -1,7 +1,7 @@
 """AgentEntryConfig.routing: additive per-agent tier overrides.
 
-Mirrors ``SquillaRouterConfig`` tier normalization (canonical ``c0``–``c3``,
-legacy ``t0``–``t3`` aliases, ``tier:``-prefixed forms) and proves the block is
+Mirrors ``SquillaRouterConfig`` tier normalization (canonical ``c0``–``c6``,
+``t0``–``t6`` aliases, ``tier:``-prefixed forms) and proves the block is
 additive: unset agents persist nothing new via ``to_toml_dict``.
 """
 
@@ -26,9 +26,15 @@ def test_routing_fields_default_to_none() -> None:
 
 
 def test_canonical_tiers_pass_through_unchanged() -> None:
-    routing = AgentRoutingConfig(default_tier="c0", max_tier="c3")
+    routing = AgentRoutingConfig(default_tier="c0", max_tier="c6")
     assert routing.default_tier == "c0"
-    assert routing.max_tier == "c3"
+    assert routing.max_tier == "c6"
+
+
+def test_extended_tier_alias_t6_normalizes_to_c6() -> None:
+    routing = AgentRoutingConfig(default_tier="t4", max_tier="tier:t6")
+    assert routing.default_tier == "c4"
+    assert routing.max_tier == "c6"
 
 
 def test_legacy_alias_t2_normalizes_to_c2() -> None:

@@ -15,7 +15,7 @@ scopes. Mutation is therefore admin-gated (matching ``sessions.patch``,
 which also rebinds a session's model) and the peek is read-scoped.
 
 Scope note (decision H2): operator holds accept only text-tier targets
-(``c0``–``c3``, legacy ``t0``–``t3`` aliases) and ``auto``; ``mode:*``
+(``c0``–``c6``, ``t0``–``t6`` aliases) and ``auto``; ``mode:*``
 pinning is deliberately not part of this surface.
 """
 
@@ -70,7 +70,7 @@ def normalize_hold_target(value: object) -> str:
     if tier is None:
         raise RouterControlValidationError(
             f"routing.hold target {str(value).strip()!r} is not supported; "
-            "expected 'auto' or a text tier id (c0-c3)"
+            "expected 'auto' or a text tier id (c0-c6)"
         )
     return f"tier:{tier}"
 

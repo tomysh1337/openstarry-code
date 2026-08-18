@@ -329,7 +329,7 @@ export function roleForTier(tier: unknown): EnsembleCandidateRole {
   const raw = String(tier || '').trim().toLowerCase()
   if (raw === 'c0' || raw === 'c1' || raw === 't0' || raw === 't1') return 'fast_check'
   if (raw === 'c2' || raw === 't2') return 'contrast'
-  if (raw === 'c3' || raw === 't3') return 'critic'
+  if (['c3', 'c4', 'c5', 'c6', 't3', 't4', 't5', 't6'].includes(raw)) return 'critic'
   return ''
 }
 

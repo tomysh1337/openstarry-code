@@ -1186,11 +1186,14 @@
       },
       "defaultRoutingTier": "默认模型分层",
       "tiers": {
-        "c0": "C0 快速/简单",
-        "c1": "C1 均衡",
-        "c2": "C2 强推理",
-        "c3": "C3 最高质量",
-        "image_model": "图像模型"
+        "c0": "C0 极速/轻量",
+        "c1": "C1 快速/简单",
+        "c2": "C2 日常/均衡",
+        "c3": "C3 编程/工具",
+        "c4": "C4 强推理",
+        "c5": "C5 专家/复杂",
+        "c6": "C6 最高质量",
+        "image_model": "视觉输入模型"
       }
     },
     "ensemble": {
@@ -1312,6 +1315,9 @@
       "memoryCustomDesc": "该嵌入服务通过 CLI 或 TOML 管理；可在此恢复为内置本地检索。",
       "imageModelSummary": "模型 ID",
       "imageModelHint": "从服务商的图像模型目录中选择，或直接输入其他受支持的模型 ID。",
+      "imageBaseUrlLabel": "图像生成基础 URL",
+      "imageBaseUrlHint": "此图像生成服务商的基础 URL。",
+      "imageOpenAiBaseUrlHint": "OpenAI Images 请求使用 /images/generations，可填写兼容中转站的 /v1 基础 URL。",
       "imageProviderSelectLabel": "图像生成服务商",
       "imageProviderPlaceholder": "选择图像服务商",
       "imageRecommendedGroup": "推荐",

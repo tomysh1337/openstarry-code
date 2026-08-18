@@ -4758,8 +4758,14 @@ async def test_agent_turn_cost_budget_stops_retry_after_ensemble_error_receipt(
     assert calls == [("m1", "p1")]
 
 
-def test_with_model_usage_cost_fields_prices_unbilled_cache_reads_cache_aware() -> None:
+def test_with_model_usage_cost_fields_prices_unbilled_cache_reads_cache_aware(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     from openstarry_code.engine import agent as agent_module
+
+    # Keep this accounting contract test deterministic; live marketplace prices
+    # are covered by the pricing resolver tests with an explicit fixture.
+    monkeypatch.setenv("OPENSTARRY_CODE_OPENROUTER_LIVE_PRICING", "0")
 
     blind_row = {
         "model": "deepseek/deepseek-v4-pro-20260423",
@@ -5214,6 +5220,56 @@ async def test_context_overflow_effective_compaction_allows_single_retry(
     )
     assert compaction_indexes[0] < first_provider_output
     assert any(event.kind == "done" and getattr(event, "text", "") == "ok" for event in events)
+
+
+@pytest.mark.asyncio
+async def test_context_overflow_progressive_compaction_honors_second_retry(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    compact_calls = 0
+    compaction_windows: list[int] = []
+
+    async def _progressive_compact(request: Any) -> CompactionResult:
+        nonlocal compact_calls
+        compact_calls += 1
+        compaction_windows.append(request.context_window_tokens)
+        protected = int(request.config.protected_recent_messages or 0)
+        removable = max(1, len(request.entries) - protected)
+        cut = removable if compact_calls > 1 else max(1, removable // 2)
+        return CompactionResult(
+            summary=f"progressive summary pass {compact_calls}",
+            kept_entries=request.entries[cut:],
+            removed_count=cut,
+            kept_start_index=cut,
+            chunks_processed=1,
+        )
+
+    monkeypatch.setattr("openstarry_code.engine.agent.compact_context", _progressive_compact)
+    provider = _ContextOverflowProvider(success_after=2)
+    agent = Agent(
+        provider=provider,
+        config=AgentConfig(
+            max_provider_retries=0,
+            max_overflow_retries=2,
+            flush_enabled=False,
+        ),
+    )
+    agent.set_history(
+        [
+            Message(role="user", content="old question one " + ("q" * 5_000)),
+            Message(role="assistant", content="old answer one " + ("a" * 5_000)),
+            Message(role="user", content="old question two " + ("q" * 5_000)),
+            Message(role="assistant", content="old answer two " + ("a" * 5_000)),
+        ]
+    )
+
+    events = [event async for event in agent.run_turn("continue")]
+    assert compact_calls == 2
+    assert compaction_windows[1] < compaction_windows[0]
+    assert len(provider.calls) == 3
+    assert _provider_payload_is_smaller(provider.calls[0], provider.calls[1])
+    assert _provider_payload_is_smaller(provider.calls[1], provider.calls[2])
+    assert any(isinstance(event, DoneEvent) for event in events)
 
 
 @pytest.mark.asyncio

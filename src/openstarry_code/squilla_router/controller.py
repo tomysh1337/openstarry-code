@@ -7,7 +7,7 @@ are retained only for safe fallback/default handling.
 
 from __future__ import annotations
 
-from openstarry_code.router_tiers import TEXT_TIERS
+from openstarry_code.router_tiers import CLASSIFIER_TEXT_TIERS, TEXT_TIERS
 
 TIER_ORDER: list[str] = list(TEXT_TIERS)
 
@@ -15,7 +15,7 @@ _SYNTHETIC_PEAK = 0.85
 
 
 def synthetic_one_hot(tier: str, dominant: float = _SYNTHETIC_PEAK) -> list[float]:
-    """Return a synthetic 4-class probability vector peaking on *tier*."""
+    """Return a synthetic product-tier probability vector peaking on *tier*."""
     n = len(TIER_ORDER)
     residual = (1.0 - dominant) / max(n - 1, 1)
     idx = TIER_ORDER.index(tier) if tier in TIER_ORDER else 1
@@ -23,7 +23,7 @@ def synthetic_one_hot(tier: str, dominant: float = _SYNTHETIC_PEAK) -> list[floa
     probs[idx] = dominant
     return probs
 
-DIFFICULTY_WEIGHTS: list[float] = [0.0, 1.0, 2.0, 3.0]
+DIFFICULTY_WEIGHTS: list[float] = [float(index) for index in range(len(TIER_ORDER))]
 
 _THINKING_MODE_LEVEL: dict[str, str | None] = {
     "T0": None,
@@ -86,7 +86,7 @@ def derive_thinking_mode(
     top1_idx = int(max(range(len(probs)), key=lambda i: probs[i]))
     margin = compute_margin(probs)
 
-    if top1_idx >= len(TIER_ORDER) - 1:
+    if top1_idx >= len(CLASSIFIER_TEXT_TIERS) - 1:
         return "T3"
     if top1_idx >= t3_min_idx and _has_any_flag(flags, _DEEP_FLAGS):
         return "T3"

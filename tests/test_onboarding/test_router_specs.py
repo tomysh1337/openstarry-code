@@ -26,7 +26,7 @@ def test_router_catalog_exposes_supported_profiles_and_tiers():
     assert byteplus["tiers"]["c1"]["model"] == "seed-2-0-lite-260228"
     assert byteplus["tiers"]["c1"]["provider"] == "byteplus"
     assert payload["defaultTier"] == "c1"
-    assert set(payload["textTiers"]) == {"c0", "c1", "c2", "c3"}
+    assert payload["textTiers"] == ["c0", "c1", "c2", "c3", "c4", "c5", "c6"]
 
 
 def test_get_router_setup_profile_rejects_unknown_profile():

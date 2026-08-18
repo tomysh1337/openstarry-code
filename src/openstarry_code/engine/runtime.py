@@ -252,7 +252,7 @@ from openstarry_code.router_control import (
     RouterControlHoldStore,
     render_router_control_prompt_block,
 )
-from openstarry_code.router_tiers import HIGHEST_TEXT_TIER, normalize_text_tier, tier_index
+from openstarry_code.router_tiers import normalize_text_tier, tier_index
 from openstarry_code.run_mode import RunMode, display_name, execution_target, normalize_run_mode
 from openstarry_code.safety import injection_guard, permission_matrix, sandbox, tool_tiers
 from openstarry_code.session.compaction_lifecycle import (
@@ -3856,6 +3856,13 @@ class TurnRunner:
             set[asyncio.Task[None]],
         ] = {}
         self._emergency_compaction_overrides: dict[str, _EmergencyCompactionOverride] = {}
+        # Bridge a freshly produced summary directly into the history-load
+        # stage. Durable storage remains authoritative, but older embedders
+        # may return a successful compact() result without exposing
+        # get_summaries(), and some stores may not make the write visible to an
+        # immediate read. Without this one-turn handoff the summary is silently
+        # absent from the very next provider request.
+        self._immediate_compaction_summaries: dict[str, str] = {}
         # TurnRunner stage decomposition InputStage instance. Holds no per-turn state;
         # constructed once. Active unconditionally as of.
         self._input_stage = InputStage(extra_ctx=_TurnRunnerExtraContextAdapter())
@@ -9022,7 +9029,7 @@ class TurnRunner:
         consumer_admission: Any | None = None,
         consumer_admission_fingerprint: str = "",
     ) -> str:
-        """Flush memory and compact transcript when the router upgrades into t3.
+        """Flush memory and compact transcript when routing upgrades into c3+.
 
         Returns a status string so the caller can distinguish non-applicable
         routes, flush failures that may still fall back to generic preflight,
@@ -9038,7 +9045,8 @@ class TurnRunner:
             return _T3_NOT_APPLICABLE
 
         routed_tier = normalize_text_tier(turn.metadata.get("routed_tier"))
-        if routed_tier != HIGHEST_TEXT_TIER:
+        routed_rank = tier_index(routed_tier)
+        if routed_rank < 3:
             return _T3_NOT_APPLICABLE
 
         if not turn.metadata.get("routing_applied", False):
@@ -9049,12 +9057,12 @@ class TurnRunner:
         if previous is None:
             final = normalize_text_tier(routing_extra.get("final_tier"))
             base = normalize_text_tier(routing_extra.get("base_tier"))
-            if final == HIGHEST_TEXT_TIER and tier_index(base) in {0, 1, 2}:
+            if tier_index(final) >= 3 and 0 <= tier_index(base) < tier_index(final):
                 previous = base
             else:
                 return _T3_NOT_APPLICABLE
 
-        if tier_index(previous) not in {0, 1, 2}:
+        if not 0 <= tier_index(previous) < routed_rank:
             return _T3_NOT_APPLICABLE
 
         if session_key.startswith(("cron:", "subagent:")):
@@ -9270,7 +9278,7 @@ class TurnRunner:
             "t3_upgrade_compaction.triggered",
             session_key=session_key,
             previous_tier=previous,
-            final_tier=HIGHEST_TEXT_TIER,
+            final_tier=routed_tier,
             context_window_tokens=context_window_tokens,
         )
         self.mark_compaction_attempted_this_turn(session_key)
@@ -9516,6 +9524,7 @@ class TurnRunner:
                         **observed_payload,
                     )
             if result:
+                self._immediate_compaction_summaries[session_key] = str(result)
                 self.mark_compacted_this_turn(session_key)
                 self._record_compaction_success(session_key)
                 completed_payload = {"summary_len": len(result)}
@@ -10255,6 +10264,7 @@ class TurnRunner:
             if emergency_applied:
                 return
         if result:
+            self._immediate_compaction_summaries[session_key] = str(result)
             self.mark_compacted_this_turn(session_key)
             self._record_compaction_success(session_key)
             completed_payload = {"tokens_before": total_tokens}
@@ -10898,6 +10908,13 @@ class TurnRunner:
             session_key,
             None,
         )
+        immediate_summary = getattr(
+            self,
+            "_immediate_compaction_summaries",
+            {},
+        ).pop(session_key, None)
+        if immediate_summary and immediate_summary.strip():
+            summary_markers.append(immediate_summary)
         if emergency_override is not None:
             transcript = list(emergency_override.kept_entries)
             summary_markers.append(emergency_override.summary)

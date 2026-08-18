@@ -77,7 +77,10 @@ def router_catalog_payload() -> dict[str, Any]:
             {
                 "mode": "recommended",
                 "label": "Recommended provider profile",
-                "description": "Use the selected provider's default c0-c3 routing profile.",
+                "description": (
+                    "Use the selected provider's default ladder and expand its "
+                    "former top route across the c4-c6 expert roles."
+                ),
             },
             {
                 "mode": "openrouter-mix",
@@ -88,7 +91,7 @@ def router_catalog_payload() -> dict[str, Any]:
                 "mode": "custom",
                 "label": "Custom provider mix",
                 "description": (
-                    "Route c0-c3 on the active provider using its registry "
+                    "Route c0-c6 on the active provider using its registry "
                     "preset tiers, with per-tier overrides."
                 ),
             },

@@ -3,6 +3,7 @@ import i18n from '@/i18n'
 import {
   DEFAULT_TEXT_TIER,
   IMAGE_TIER,
+  TEXT_TIERS,
   normalizeRouterTier,
 } from '@/utils/chat/routerTiers'
 import {
@@ -201,6 +202,26 @@ export function useSetupRouterForm() {
         supportsImage: tier.supportsImage || tier.supports_image || false,
       }
     })
+    // A complete c0-c3 table is the historical four-level ladder. Expand it
+    // in-memory so existing installations immediately expose the new expert
+    // roles without rewriting config until the user explicitly saves. The
+    // former top model is the conservative default for c4-c6.
+    if (['c0', 'c1', 'c2', 'c3'].every(name => Boolean(next[name]))) {
+      let inherited = next.c3
+      for (const name of TEXT_TIERS.slice(4)) {
+        if (next[name]) {
+          inherited = next[name]
+          continue
+        }
+        next[name] = { ...inherited }
+      }
+      // Older custom ladders often omitted the independent vision route. Seed
+      // it from the strongest text role so it is immediately editable; the
+      // server enforces supports_image/image_only when the row is saved.
+      if (!next[IMAGE_TIER]) {
+        next[IMAGE_TIER] = { ...next.c3, supportsImage: true }
+      }
+    }
     tierValues.value = next
     routerBaseline.value = routerSerialized.value
     visualModeBaseline.value = routerVisualMode.value
@@ -230,15 +251,18 @@ export function useSetupRouterForm() {
   }
 
   function tierRows(textTiers: readonly string[]): SetupTierRow[] {
-    return Object.entries(tierValues.value)
-      .filter(([name]) => textTiers.includes(name) || name === IMAGE_TIER)
-      .map(([name, tier]) => ({
+    return [...textTiers, IMAGE_TIER]
+      .filter((name, index, names) => names.indexOf(name) === index && Boolean(tierValues.value[name]))
+      .map((name) => {
+        const tier = tierValues.value[name]
+        return {
         name,
         provider: tier.provider,
         model: tier.model,
         thinkingLevel: tier.thinkingLevel,
         supportsImage: tier.supportsImage,
-      }))
+        }
+      })
   }
 
   function setRouterMode(value: string) {

@@ -1135,11 +1135,14 @@
       },
       "defaultRoutingTier": "Nivel de modelo predeterminado",
       "tiers": {
-        "c0": "C0 Rápido/simple",
-        "c1": "C1 Equilibrado",
-        "c2": "C2 Razonamiento fuerte",
-        "c3": "C3 Máxima calidad",
-        "image_model": "Modelo de imagen"
+        "c0": "C0 Ultrarrápido/ligero",
+        "c1": "C1 Rápido/simple",
+        "c2": "C2 Diario/equilibrado",
+        "c3": "C3 Código/herramientas",
+        "c4": "C4 Razonamiento fuerte",
+        "c5": "C5 Experto/complejo",
+        "c6": "C6 Máxima calidad",
+        "image_model": "Modelo de entrada visual"
       }
     },
     "ensemble": {
@@ -1261,6 +1264,9 @@
       "memoryCustomDesc": "Este proveedor se administra mediante CLI o TOML. Restáuralo aquí para volver a la búsqueda local integrada.",
       "imageModelSummary": "ID del modelo",
       "imageModelHint": "Elige un modelo del catálogo de imágenes del proveedor o introduce otro ID de modelo compatible.",
+      "imageBaseUrlLabel": "URL base de generación de imágenes",
+      "imageBaseUrlHint": "URL base de este proveedor de imágenes.",
+      "imageOpenAiBaseUrlHint": "Las solicitudes de OpenAI Images usan /images/generations. Puedes indicar la URL base /v1 de un relay compatible.",
       "imageProviderSelectLabel": "Proveedor de generación de imágenes",
       "imageProviderPlaceholder": "Elegir un proveedor de imágenes",
       "imageRecommendedGroup": "Recomendado",

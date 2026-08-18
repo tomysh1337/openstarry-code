@@ -15,6 +15,7 @@ function panel() {
       imageProvider: 'openrouter',
       imagePrimary: 'google/gemini-image',
       imageApiKey: '',
+      imageBaseUrl: 'https://openrouter.ai/api/v1',
       imageEnabled: true,
       imageKeyConfigured: false,
       imageCredentialSource: 'none' as ImageCredentialSource,
@@ -246,6 +247,28 @@ describe('SetupCapabilitiesPanel', () => {
     model!.value = 'custom/image-model'
     model!.dispatchEvent(new Event('input'))
     expect(updateField).toHaveBeenCalledWith('image', 'primary', 'custom/image-model')
+  })
+
+  it('edits a dedicated image-generation base URL independently from model providers', async () => {
+    i18n.global.locale.value = 'en'
+    const openaiImages = panel()
+    openaiImages.form.imageProvider = 'openai'
+    openaiImages.form.imagePrimary = 'gpt-image-1'
+    openaiImages.form.imageBaseUrl = 'https://api.openai.com/v1'
+    openaiImages.options.imageProviders = [{ providerId: 'openai', label: 'OpenAI Images' }]
+    const { el, updateField } = await mountPanel(openaiImages)
+    const baseUrl = el.querySelector<HTMLInputElement>('[name="setup_image_base_url"]')
+
+    expect(baseUrl?.value).toBe('https://api.openai.com/v1')
+    expect(el.textContent).toContain('/images/generations')
+
+    baseUrl!.value = 'https://images.example.test/v1'
+    baseUrl!.dispatchEvent(new Event('input'))
+    expect(updateField).toHaveBeenCalledWith(
+      'image',
+      'baseUrl',
+      'https://images.example.test/v1',
+    )
   })
 
   it('groups the recommendation, configured model providers, and other image providers', async () => {

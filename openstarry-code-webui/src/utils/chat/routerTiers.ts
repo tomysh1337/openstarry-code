@@ -1,4 +1,4 @@
-export const TEXT_TIERS = ['c0', 'c1', 'c2', 'c3'] as const
+export const TEXT_TIERS = ['c0', 'c1', 'c2', 'c3', 'c4', 'c5', 'c6'] as const
 export const DEFAULT_TEXT_TIER = 'c1'
 export const IMAGE_TIER = 'image_model'
 
@@ -7,6 +7,9 @@ const LEGACY_TEXT_TIER_ALIASES: Record<string, string> = {
   t1: 'c1',
   t2: 'c2',
   t3: 'c3',
+  t4: 'c4',
+  t5: 'c5',
+  t6: 'c6',
 }
 
 export function normalizeRouterTextTier(value: unknown): string {

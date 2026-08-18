@@ -98,11 +98,12 @@ ROUTER_TIER_PAYLOAD_KEYS = frozenset(
     {"provider", "model", "description", "thinkingLevel", "supportsImage"}
 )
 
-# The canonical text tiers (c0-c3, per router_tiers.py) and the nine tier
-# profiles shipped today. Hardcoded on purpose: dropping a profile or renaming
-# a tier changes what onboarding clients can select, so it must fail here even
-# if the source constant is edited in the same change.
-FROZEN_TEXT_TIERS = ("c0", "c1", "c2", "c3")
+# The public seven-level ladder and the downgrade-compatible four-level preset
+# payloads shipped today. Hardcoded on purpose: dropping a profile or renaming a
+# tier changes what onboarding clients can select, so it must fail here even if
+# the source constant is edited in the same change.
+FROZEN_TEXT_TIERS = ("c0", "c1", "c2", "c3", "c4", "c5", "c6")
+FROZEN_PACKAGED_TEXT_TIERS = FROZEN_TEXT_TIERS[:4]
 FROZEN_ROUTER_PROFILE_IDS = frozenset(
     {
         "byteplus",
@@ -161,7 +162,7 @@ def test_provider_catalog_preset_keys_are_frozen() -> None:
             # Preset tiers reuse the router-catalog tier payload shape so the
             # same client component renders both.
             tiers = preset["tiers"]
-            assert set(FROZEN_TEXT_TIERS) <= set(tiers), entry["providerId"]
+            assert set(FROZEN_PACKAGED_TEXT_TIERS) <= set(tiers), entry["providerId"]
             for tier_name, tier in tiers.items():
                 assert set(tier) == ROUTER_TIER_PAYLOAD_KEYS, (entry["providerId"], tier_name)
         # The entry-level defaultModel mirrors the (single) preset's.
@@ -183,7 +184,7 @@ def test_provider_catalog_preset_synthesized_flag_tracks_packaged_presets() -> N
 def test_router_catalog_top_level_shape_is_frozen() -> None:
     payload = router_catalog_payload()
     assert set(payload) == ROUTER_CATALOG_TOP_LEVEL_KEYS
-    # Tier names are canonical c0-c3 and c1 is the default route; clients
+    # Tier names are canonical c0-c6 and c1 is the default route; clients
     # (tier pills, onboarding tier tables) key directly off these strings.
     assert payload["textTiers"] == list(FROZEN_TEXT_TIERS)
     assert payload["defaultTier"] == "c1"
@@ -220,7 +221,9 @@ def test_router_catalog_profiles_and_tier_payloads_are_frozen() -> None:
         tiers = profile["tiers"]
         # Every profile must route all four text tiers; image_model is the
         # only other tier slot exposed to onboarding.
-        assert set(FROZEN_TEXT_TIERS) <= set(tiers), profile["profileId"]
-        assert set(tiers) <= set(FROZEN_TEXT_TIERS) | {"image_model"}, profile["profileId"]
+        assert set(FROZEN_PACKAGED_TEXT_TIERS) <= set(tiers), profile["profileId"]
+        assert set(tiers) <= set(FROZEN_PACKAGED_TEXT_TIERS) | {
+            "image_model"
+        }, profile["profileId"]
         for tier_name, tier in tiers.items():
             assert set(tier) == ROUTER_TIER_PAYLOAD_KEYS, (profile["profileId"], tier_name)

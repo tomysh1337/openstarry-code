@@ -26,7 +26,10 @@ from openstarry_code.channels.types import (
 from openstarry_code.engine.types import (
     ArtifactEvent,
     DoneEvent,
+    EnsembleProgressEvent,
     ErrorEvent,
+    ProviderActivityEvent,
+    RouterDecisionEvent,
     TextDeltaEvent,
     ThinkingEvent,
     ToolResultEvent,
@@ -415,6 +418,75 @@ async def test_batch_channel_delivers_process_events_before_independent_final() 
     assert any("[过程]" in content and "running checks" in content for content in contents[:-1])
     assert any("[工具开始] exec_command" in content for content in contents[:-1])
     assert any("pytest -q" in content and "2 passed" in content for content in contents[:-1])
+
+
+@pytest.mark.asyncio
+async def test_channel_progress_filters_internal_model_diagnostics_from_delivery() -> None:
+    class FakeTurnRunner:
+        async def run(self, message: str, session_key: str, **kwargs):
+            del message, session_key, kwargs
+            yield ThinkingEvent(text="inspect state")
+            yield RouterDecisionEvent(
+                model="hidden-routed-model",
+                baseline_model="hidden-baseline-model",
+                confidence=0.73,
+                probs=[0.73, 0.27],
+                routing_applied=True,
+            )
+            yield ProviderActivityEvent(
+                phase="requesting",
+                reason="initial",
+                retry_attempt=0,
+                retry_limit=3,
+                heartbeat=False,
+            )
+            yield EnsembleProgressEvent(
+                event_type="proposer_start",
+                proposer_model="hidden-proposer-model",
+                proposer_provider="hidden-provider",
+            )
+            yield TextDeltaEvent(text="running checks", presentation="intermediate")
+            yield TextDeltaEvent(text="final answer", presentation="answer")
+            yield DoneEvent(text="final answer", text_snapshot="final answer")
+
+    channel = _FakeChannel()
+    bridge = _FakeEventBridge()
+
+    await _run_turn_batch_path(
+        channel,
+        FakeTurnRunner(),
+        _message(),
+        "agent:main:filtered-channel-diagnostics",
+        _tool_ctx(),
+        bridge,
+        None,
+        SimpleNamespace(agent_stream_idle_timeout_seconds=1.0),
+    )
+
+    delivered = "\n".join(message.content for message in channel.sent)
+    assert "[思考]" in delivered
+    assert "[过程]" in delivered
+    assert channel.sent[-1].content == "final answer"
+    for internal_value in (
+        "[路由]",
+        "[供应商]",
+        "[融合]",
+        "hidden-routed-model",
+        "hidden-baseline-model",
+        "hidden-proposer-model",
+        "hidden-provider",
+        "baseline_model",
+        "retry_attempt",
+        "routing_applied",
+    ):
+        assert internal_value not in delivered
+
+    bridged = {event_name: payload for _, event_name, payload in bridge.events}
+    assert bridged["session.event.router_decision"]["baseline_model"] == "hidden-baseline-model"
+    assert (
+        bridged["session.event.ensemble_progress"]["proposer_model"]
+        == "hidden-proposer-model"
+    )
 
 
 @pytest.mark.asyncio

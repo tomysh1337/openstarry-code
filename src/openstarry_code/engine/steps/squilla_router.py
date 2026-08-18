@@ -1160,7 +1160,7 @@ async def apply_squilla_router(ctx: TurnContext) -> TurnContext:
     if not routing_message.strip():
         return ctx
 
-    # Order valid_tiers by the canonical c0<c1<c2<c3 ladder rather than TOML
+    # Order valid_tiers by the canonical c0<c1<...<c6 ladder rather than TOML
     # insertion order — downstream policy stages rank tiers by position in this
     # list, so trusting declaration order inverted upgrades/holds for configs
     # that list tiers out of order. Unknown/custom tier names (tier_index == -1)

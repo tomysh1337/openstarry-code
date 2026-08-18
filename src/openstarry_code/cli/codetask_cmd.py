@@ -99,9 +99,11 @@ def _smoke_router_runtime() -> dict[str, object]:
 
     async def _run() -> dict[str, object]:
         strategy = strategy_cls(require_router_runtime=True)
+        from openstarry_code.router_tiers import TEXT_TIERS
+
         tier, confidence, source, metadata = await strategy.classify(
             "Summarize this short note.",
-            valid_tiers=["c0", "c1", "c2", "c3"],
+            valid_tiers=list(TEXT_TIERS),
         )
         success = source == "v4_phase3" and bool(strategy._available)
         return {

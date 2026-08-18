@@ -1410,10 +1410,13 @@ def run_interactive_memory_embedding_configure(
 _TEXT_ROUTER_TIERS = TEXT_TIERS
 _EXPOSED_ROUTER_TIERS = (*TEXT_TIERS, IMAGE_TIER)
 _TEXT_TIER_LABELS = {
-    "c0": "Route c0",
-    "c1": "Route c1",
-    "c2": "Route c2",
-    "c3": "Route c3",
+    "c0": "C0 ultra-fast / lightweight",
+    "c1": "C1 fast / simple",
+    "c2": "C2 daily / balanced",
+    "c3": "C3 coding / tools",
+    "c4": "C4 strong reasoning",
+    "c5": "C5 expert / complex",
+    "c6": "C6 maximum quality",
 }
 _IMAGE_TIER_LABEL = "Image model"
 _DONE_LABEL = "Done"

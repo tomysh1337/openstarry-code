@@ -80,7 +80,7 @@ from openstarry_code.squilla_router.controller import normalize_decisions
 
 
 def _canonical_order(valid_tiers: list[str]) -> list[str]:
-    """Order tiers by the canonical c0<c1<c2<c3 ladder, not dict/TOML order.
+    """Order tiers by the canonical c0<c1<...<c6 ladder, not dict/TOML order.
 
     Ranking on raw ``valid_tiers`` positions let a config that declared tiers
     out of order (e.g. ``c3`` first) invert upgrades into downgrades. Unknown
@@ -155,9 +155,10 @@ def tier_for_route_class(route_class: object) -> str | None:
 
 def _min_thinking_mode_for_tier(tier: str | None) -> str | None:
     tier = normalize_text_tier(tier)
-    if tier == HIGHEST_TEXT_TIER:
+    rank = tier_index(tier)
+    if rank >= 3:
         return "T3"
-    if tier == "c2":
+    if rank == 2:
         return "T2"
     if tier == DEFAULT_TEXT_TIER:
         return "T1"
@@ -388,7 +389,7 @@ def capability_gate(
     """
     if not tier_capabilities:
         return CapabilityGateResult(tier)
-    # Walk the canonically-ordered ladder so "nearest higher tier" is c0<c1<c2<c3,
+    # Walk the canonical c0<c1<...<c6 ladder instead of declaration order.
     # not TOML declaration order.
     ordered = _canonical_order(valid_tiers)
     normalized = normalize_text_tier(tier) or tier
@@ -514,7 +515,7 @@ def reconcile_controller_with_final_tier(
         _min_thinking_mode_for_tier(str(final_tier)),
     )
     if prompt_policy == "P0" and (
-        str(final_tier) in {"c2", HIGHEST_TEXT_TIER} or extra.get("complaint_detected")
+        tier_index(final_tier) >= 2 or extra.get("complaint_detected")
     ):
         prompt_policy = "P1"
     if thinking_mode is not None and prompt_policy is not None:
@@ -537,7 +538,11 @@ def large_context_min_tier(material_tokens: int, context_window_tokens: int) -> 
         material_tokens >= LARGE_CONTEXT_T3_FLOOR_TOKENS
         or material_tokens >= int(context_window_tokens * LARGE_CONTEXT_T3_CONTEXT_RATIO)
     ):
-        return HIGHEST_TEXT_TIER
+        # The bundled classifier's strongest native class is c3. Expanded
+        # c4-c6 roles remain available for explicit defaults, capability
+        # escalation, complaints, and operator control without forcing every
+        # large paste onto the most expensive configured model.
+        return "c3"
     if material_tokens >= LARGE_CONTEXT_T2_FLOOR_TOKENS:
         return "c2"
     return None
@@ -561,7 +566,17 @@ def large_context_floor(
     if min_tier is None:
         return decision
     if min_tier not in valid_tiers:
-        return decision
+        ordered = _canonical_order(valid_tiers)
+        minimum_rank = tier_index(min_tier)
+        eligible = [name for name in ordered if tier_index(name) >= minimum_rank]
+        if eligible:
+            min_tier = eligible[0]
+        elif min_tier == HIGHEST_TEXT_TIER and ordered:
+            # Historical c0-c3 configurations still floor heavy contexts to
+            # their highest configured tier until the expanded ladder is saved.
+            min_tier = ordered[-1]
+        else:
+            return decision
     if _tier_index(decision.tier, valid_tiers) >= _tier_index(min_tier, valid_tiers):
         return decision
 

@@ -11,6 +11,8 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 
+import pytest
+
 from openstarry_code.engine.routing import (
     PolicyInputs,
     RoutingDecision,
@@ -365,6 +367,13 @@ def test_reconcile_promotes_thinking_and_prompt() -> None:
     assert extra["controller_reconciled"] is True
     assert extra["base_thinking_mode"] == "T0"
     assert extra["base_prompt_policy"] == "P0"
+
+
+@pytest.mark.parametrize("tier", ["c4", "c5", "c6"])
+def test_reconcile_expanded_expert_tiers_keep_full_prompt(tier: str) -> None:
+    extra = {"base_tier": "c1", "final_tier": tier, "complaint_detected": False}
+    thinking, prompt = reconcile_controller_with_final_tier("T1", "P0", extra)
+    assert (thinking, prompt) == ("T3", "P1")
 
 
 def test_reconcile_complaint_forces_full_prompt_on_low_tier() -> None:

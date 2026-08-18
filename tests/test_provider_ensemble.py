@@ -33,9 +33,11 @@ from openstarry_code.provider import (
 from openstarry_code.provider.ensemble import (
     EnsembleMemberConfig,
     EnsembleProvider,
+    _dynamic_candidate,
     _member_chat_config,
     _member_from_ref,
     _MemberRequestBudgetBinding,
+    _router_affinity_score,
     _runtime_member_request_budget_bindings,
     _stream_with_heartbeats,
     build_ensemble_provider_from_config,
@@ -72,6 +74,22 @@ class _FakeRegistry:
 
     def provider_for(self, cfg: ProviderConfig) -> _FakeProvider:
         return _FakeProvider(cfg, self)
+
+
+def test_router_affinity_uses_full_seven_tier_distance() -> None:
+    candidate = _dynamic_candidate(
+        provider="openrouter",
+        model="vendor/c3-model",
+        tier_hint="c3",
+        source="test",
+        pool_index=0,
+    )
+
+    assert _router_affinity_score(
+        candidate,
+        routed_tier="c6",
+        routing_confidence=1.0,
+    ) == pytest.approx(0.5)
 
 
 class _ExactProjectionMixin:

@@ -66,7 +66,7 @@ class RouterHudPlugin:
 
 def build_router_hud_snapshot(payload: Mapping[str, Any]) -> RouterHudSnapshot:
     tier = _string_field(payload, "tier")
-    # Canonical tiers are c0-c3 with legacy t0-t3 aliases; the shared helper
+    # Canonical tiers are c0-c6 with t0-t6 aliases; the shared helper
     # accepts both, so a payload missing tier_index still resolves either way.
     tier_index = _int_field(payload, "tier_index", router_tiers.tier_index(tier))
     model = _string_field(payload, "model")

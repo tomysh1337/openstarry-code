@@ -309,8 +309,10 @@ def test_global_context_window_override_prevents_catalog_only_escalation(
         *,
         provider: str = "",
         global_override: int = 0,
+        base_url: str = "",
     ) -> tuple[int, str]:
         assert provider == "openai"
+        assert base_url == ""
         seen.append((model, global_override))
         if global_override > 0:
             return global_override, "config"

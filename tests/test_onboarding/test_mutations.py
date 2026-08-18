@@ -1538,6 +1538,64 @@ def test_upsert_router_recommended_writes_profile_without_expanded_tiers():
     assert res.public_payload["mode"] == "recommended"
 
 
+def test_upsert_router_recommended_expands_expert_roles_and_accepts_expert_default():
+    cfg = GatewayConfig(llm={"provider": "deepseek", "model": "deepseek-chat"})
+
+    res = upsert_router(cfg, mode="recommended", default_tier="c5")
+
+    router = res.config.squilla_router
+    assert router.default_tier == "c5"
+    assert list(name for name in router.tiers if name != "image_model") == [
+        "c0",
+        "c1",
+        "c2",
+        "c3",
+        "c4",
+        "c5",
+        "c6",
+    ]
+    assert router.tiers["c4"]["model"] == router.tiers["c3"]["model"]
+    assert router.tiers["c5"]["model"] == router.tiers["c3"]["model"]
+    assert router.preset_binding == "follow_primary"
+    assert res.public_payload["mode"] == "recommended"
+
+
+def test_upsert_router_webui_expansion_preserves_follow_primary_binding():
+    cfg = GatewayConfig(llm={"provider": "deepseek", "model": "deepseek-chat"})
+    effective_tiers = upsert_router(cfg, mode="recommended").config.squilla_router.tiers
+
+    res = upsert_router(
+        cfg,
+        mode="recommended",
+        default_tier="c4",
+        tiers=effective_tiers,
+    )
+
+    assert res.config.squilla_router.preset_binding == "follow_primary"
+    assert res.config.squilla_router.tier_profile == "deepseek"
+    assert res.public_payload["mode"] == "recommended"
+
+
+def test_upsert_router_validates_and_preserves_custom_image_route():
+    cfg = GatewayConfig(llm={"provider": "deepseek", "model": "deepseek-chat"})
+    res = upsert_router(
+        cfg,
+        mode="custom",
+        tiers={
+            "image_model": {
+                "provider": "openrouter",
+                "model": "google/gemini-3.1-flash-image-preview",
+                "supports_image": False,
+            }
+        },
+    )
+
+    image = res.config.squilla_router.tiers["image_model"]
+    assert image["model"] == "google/gemini-3.1-flash-image-preview"
+    assert image["supports_image"] is True
+    assert image["image_only"] is True
+
+
 def test_upsert_router_forces_image_model_role_invariants():
     cfg = GatewayConfig(llm={"provider": "openrouter", "model": "z-ai/glm-5.1"})
 

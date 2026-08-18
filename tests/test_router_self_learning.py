@@ -91,6 +91,18 @@ def test_build_sample_extracts_decision_and_flags() -> None:
     np.testing.assert_allclose(decode_features(sample.features_390_b64, 390), vec, atol=1e-2)
 
 
+@pytest.mark.parametrize("tier", ["c4", "c5", "c6"])
+def test_build_sample_maps_expert_tiers_to_strong_classifier_label(tier: str) -> None:
+    metadata = _features_meta(np.zeros(390, dtype=np.float32))
+    metadata["routed_tier"] = tier
+    del metadata["routing_extra"]["final_route_class"]
+
+    sample = build_train_sample(session_key="s-expert", metadata=metadata)
+
+    assert sample is not None
+    assert sample.final_route_class == "R3"
+
+
 def test_build_sample_returns_none_without_features() -> None:
     assert build_train_sample(session_key="s", metadata={"routing_source": "v4_phase3"}) is None
 

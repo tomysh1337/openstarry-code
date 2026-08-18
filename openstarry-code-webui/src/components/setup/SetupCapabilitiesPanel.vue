@@ -25,6 +25,7 @@ interface CapabilitiesPanelContract {
     imageProvider: string
     imagePrimary: string
     imageApiKey: string
+    imageBaseUrl: string
     imageEnabled: boolean
     imageKeyConfigured: boolean
     imageCredentialSource: ImageCredentialSource
@@ -458,6 +459,32 @@ function resetLabel(capabilityId: CapabilityId): string {
               input-class="capability-card__model-input"
               @update="emit('updateField', 'image', 'primary', $event)"
             />
+            <label class="control-row">
+              <div class="control-row__label-block">
+                <span class="control-row__label">{{ t('setup.common.baseUrl') }}</span>
+                <span class="control-row__desc">
+                  {{ t(panel.form.imageProvider === 'openai'
+                    ? 'setup.capabilities.imageOpenAiBaseUrlHint'
+                    : 'setup.capabilities.imageBaseUrlHint') }}
+                </span>
+              </div>
+              <div class="control-row__control">
+                <input
+                  class="control-input"
+                  :value="panel.form.imageBaseUrl"
+                  name="setup_image_base_url"
+                  type="url"
+                  inputmode="url"
+                  autocomplete="url"
+                  spellcheck="false"
+                  :placeholder="panel.form.imageProvider === 'openai'
+                    ? 'https://api.openai.com/v1'
+                    : 'https://api.example.com/v1'"
+                  :aria-label="t('setup.capabilities.imageBaseUrlLabel')"
+                  @input="emit('updateField', 'image', 'baseUrl', ($event.target as HTMLInputElement).value)"
+                >
+              </div>
+            </label>
             <div class="control-row">
               <div class="control-row__label-block">
                 <span class="control-row__label">

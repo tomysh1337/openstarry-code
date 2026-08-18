@@ -6,9 +6,10 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any
 
-TEXT_TIERS: tuple[str, str, str, str] = ("c0", "c1", "c2", "c3")
+TEXT_TIERS: tuple[str, ...] = ("c0", "c1", "c2", "c3", "c4", "c5", "c6")
+CLASSIFIER_TEXT_TIERS: tuple[str, ...] = TEXT_TIERS[:4]
 DEFAULT_TEXT_TIER = "c1"
-HIGHEST_TEXT_TIER = "c3"
+HIGHEST_TEXT_TIER = "c6"
 IMAGE_TIER = "image_model"
 
 LEGACY_TEXT_TIER_ALIASES: dict[str, str] = {
@@ -16,19 +17,27 @@ LEGACY_TEXT_TIER_ALIASES: dict[str, str] = {
     "t1": "c1",
     "t2": "c2",
     "t3": "c3",
+    "t4": "c4",
+    "t5": "c5",
+    "t6": "c6",
 }
 
 ROUTE_CLASS_TO_TIER: dict[str, str] = {
-    "R0": "c0",
-    "R1": "c1",
-    "R2": "c2",
-    "R3": "c3",
+    f"R{index}": tier for index, tier in enumerate(CLASSIFIER_TEXT_TIERS)
 }
-TIER_TO_ROUTE_CLASS: dict[str, str] = {tier: route for route, tier in ROUTE_CLASS_TO_TIER.items()}
+TIER_TO_ROUTE_CLASS: dict[str, str] = {
+    **{tier: route for route, tier in ROUTE_CLASS_TO_TIER.items()},
+    # The bundled classifier has four output heads. Higher operator-defined
+    # roles retain the strongest classifier class in telemetry while the
+    # canonical tier id carries the finer seven-level routing decision.
+    "c4": "R3",
+    "c5": "R3",
+    "c6": "R3",
+}
 
 
 def normalize_text_tier(value: object) -> str | None:
-    """Return the canonical text tier id for *value*, accepting legacy t0-t3."""
+    """Return the canonical text tier id for *value*, accepting t0-t6 aliases."""
 
     if value is None:
         return None
@@ -80,8 +89,34 @@ def normalize_tier_mapping(mapping: Mapping[str, Any] | None) -> dict[str, Any]:
     return normalized
 
 
+def expand_text_tier_mapping(mapping: Mapping[str, Any] | None) -> dict[str, Any]:
+    """Expand a complete historical c0-c3 ladder through c6 in memory.
+
+    Each missing expert role inherits the nearest configured lower role. Invalid
+    existing values are preserved so downstream validation can report them.
+    Non-text tiers are kept after the canonical text ladder.
+    """
+
+    normalized = normalize_tier_mapping(mapping)
+    if not all(isinstance(normalized.get(tier), Mapping) for tier in CLASSIFIER_TEXT_TIERS):
+        return normalized
+
+    inherited: Mapping[str, Any] = normalized[CLASSIFIER_TEXT_TIERS[-1]]
+    for tier in TEXT_TIERS[len(CLASSIFIER_TEXT_TIERS) :]:
+        if tier in normalized:
+            current = normalized[tier]
+            if isinstance(current, Mapping):
+                inherited = current
+            continue
+        normalized[tier] = dict(inherited)
+
+    ordered = {tier: normalized[tier] for tier in TEXT_TIERS if tier in normalized}
+    ordered.update({key: value for key, value in normalized.items() if key not in TEXT_TIERS})
+    return ordered
+
+
 def tier_index(value: object) -> int:
-    """Return 0-3 for known text tiers; -1 for unknown values."""
+    """Return 0-6 for known text tiers; -1 for unknown values."""
 
     tier = normalize_text_tier(value)
     if tier is None:

@@ -3320,7 +3320,15 @@ def _json_safe(value: Any) -> Any:
     return str(value)
 
 
-_TEXT_TIER_INDEX = {"c0": 0, "c1": 1, "c2": 2, "c3": 3}
+_TEXT_TIER_INDEX = {
+    "c0": 0,
+    "c1": 1,
+    "c2": 2,
+    "c3": 3,
+    "c4": 4,
+    "c5": 5,
+    "c6": 6,
+}
 _TEXT_TIER_BY_INDEX = {value: key for key, value in _TEXT_TIER_INDEX.items()}
 
 _DYNAMIC_TIER_SLOTS = {
@@ -3328,6 +3336,9 @@ _DYNAMIC_TIER_SLOTS = {
     "c1": ("anchor", "balanced_contrast"),
     "c2": ("anchor", "adjacent_tier_check", "orthogonal_family"),
     "c3": ("anchor", "strong_critic", "orthogonal_family", "fast_sanity"),
+    "c4": ("anchor", "strong_critic", "orthogonal_family", "fast_sanity"),
+    "c5": ("anchor", "strong_critic", "orthogonal_family", "fast_sanity"),
+    "c6": ("anchor", "strong_critic", "orthogonal_family", "fast_sanity"),
 }
 
 _DYNAMIC_AGGREGATOR_SLOT = {
@@ -3335,6 +3346,9 @@ _DYNAMIC_AGGREGATOR_SLOT = {
     "c1": "aggregator_balanced",
     "c2": "aggregator_strong",
     "c3": "aggregator_strong",
+    "c4": "aggregator_strong",
+    "c5": "aggregator_strong",
+    "c6": "aggregator_strong",
 }
 
 _STATIC_OPENROUTER_B5_PROFILE_NAME = "static_openrouter_b5"
@@ -3710,7 +3724,7 @@ def _tier_index(value: str | None, default: int = 1) -> int:
 
 
 def _tier_from_index(index: int) -> str:
-    return _TEXT_TIER_BY_INDEX[max(0, min(3, int(index)))]
+    return _TEXT_TIER_BY_INDEX[max(0, min(6, int(index)))]
 
 
 def _tier_target_score(tier: str, targets: Sequence[int]) -> float:
@@ -3718,15 +3732,31 @@ def _tier_target_score(tier: str, targets: Sequence[int]) -> float:
         return 0.0
     idx = _tier_index(tier)
     distance = min(abs(idx - target) for target in targets)
-    return max(0.0, 1.0 - (distance / 3.0))
+    return max(0.0, 1.0 - (distance / 6.0))
 
 
 def _tier_quality_prior(tier: str) -> float:
-    return {"c0": 0.56, "c1": 0.72, "c2": 0.82, "c3": 0.91}.get(tier, 0.72)
+    return {
+        "c0": 0.56,
+        "c1": 0.72,
+        "c2": 0.82,
+        "c3": 0.91,
+        "c4": 0.94,
+        "c5": 0.97,
+        "c6": 1.00,
+    }.get(tier, 0.72)
 
 
 def _tier_cost_latency_prior(tier: str) -> float:
-    return {"c0": 0.92, "c1": 0.74, "c2": 0.58, "c3": 0.36}.get(tier, 0.70)
+    return {
+        "c0": 0.92,
+        "c1": 0.74,
+        "c2": 0.58,
+        "c3": 0.36,
+        "c4": 0.28,
+        "c5": 0.20,
+        "c6": 0.12,
+    }.get(tier, 0.70)
 
 
 def _coerce_thinking_level(value: Any) -> str | None:
@@ -3892,7 +3922,7 @@ def _router_affinity_score(
     confidence = max(0.0, min(1.0, routing_confidence))
     # Low confidence relaxes tier matching instead of forcing a brittle tier lock.
     penalty_scale = 0.45 + (0.55 * confidence)
-    return max(0.0, 1.0 - ((distance / 3.0) * penalty_scale))
+    return max(0.0, 1.0 - ((distance / 6.0) * penalty_scale))
 
 
 def _contrast_score(candidate: _DynamicCandidate, anchor: _DynamicCandidate) -> float:
@@ -3956,7 +3986,7 @@ def _role_match_score(
             + 0.15
             * _tier_target_score(
                 candidate.tier_prior,
-                [max(0, routed_idx - 1), min(3, routed_idx + 1)],
+                [max(0, routed_idx - 1), min(6, routed_idx + 1)],
             )
             + 0.10 * contrast
         )
@@ -3964,11 +3994,11 @@ def _role_match_score(
         return (
             0.55 * contrast
             + 0.25 * diversity
-            + 0.20 * _tier_target_score(candidate.tier_prior, [routed_idx, min(3, routed_idx + 1)])
+            + 0.20 * _tier_target_score(candidate.tier_prior, [routed_idx, min(6, routed_idx + 1)])
         )
     if slot == "strong_critic":
         return (
-            0.55 * _tier_target_score(candidate.tier_prior, [3])
+            0.55 * _tier_target_score(candidate.tier_prior, [3, 4, 5, 6])
             + 0.35 * candidate.quality_prior
             + 0.10 * contrast
         )
@@ -3994,7 +4024,7 @@ def _role_match_score(
         )
     if slot == "aggregator_strong":
         return (
-            0.45 * _tier_target_score(candidate.tier_prior, [2, 3])
+            0.45 * _tier_target_score(candidate.tier_prior, [2, 3, 4, 5, 6])
             + 0.40 * candidate.quality_prior
             + 0.10 * diversity
             + 0.05 * candidate.cost_latency_prior

@@ -151,12 +151,15 @@ def _provider_ensemble_candidates(config: Any) -> list[dict[str, Any]]:
 
     router = getattr(config, "squilla_router", None)
     tiers = getattr(router, "tiers", {}) or {}
-    tier_order = ("c0", "c1", "c2", "c3")
+    tier_order = ("c0", "c1", "c2", "c3", "c4", "c5", "c6")
     role_by_tier = {
         "c0": "fast_check",
         "c1": "primary",
         "c2": "contrast",
         "c3": "critic",
+        "c4": "critic",
+        "c5": "critic",
+        "c6": "critic",
     }
     seen: set[tuple[str, str]] = set()
     candidates: list[dict[str, Any]] = []
@@ -164,7 +167,7 @@ def _provider_ensemble_candidates(config: Any) -> list[dict[str, Any]]:
         normalized: dict[str, dict[str, Any]] = {}
         for raw_tier, raw_cfg in tiers.items():
             tier = _clean(raw_tier)
-            if tier.startswith("t") and tier[1:] in {"0", "1", "2", "3"}:
+            if tier.startswith("t") and tier[1:] in {"0", "1", "2", "3", "4", "5", "6"}:
                 tier = f"c{tier[1:]}"
             if tier in tier_order and isinstance(raw_cfg, dict):
                 normalized[tier] = raw_cfg

@@ -1135,11 +1135,14 @@
       },
       "defaultRoutingTier": "既定のモデル階層",
       "tiers": {
-        "c0": "C0 高速/簡単",
-        "c1": "C1 バランス",
-        "c2": "C2 強い推論",
-        "c3": "C3 最高品質",
-        "image_model": "画像モデル"
+        "c0": "C0 超高速/軽量",
+        "c1": "C1 高速/簡単",
+        "c2": "C2 日常/バランス",
+        "c3": "C3 コーディング/ツール",
+        "c4": "C4 強い推論",
+        "c5": "C5 専門/複雑",
+        "c6": "C6 最高品質",
+        "image_model": "画像入力モデル"
       }
     },
     "ensemble": {
@@ -1261,6 +1264,9 @@
       "memoryCustomDesc": "この埋め込みプロバイダーは CLI または TOML で管理されています。ここで内蔵ローカル検索に戻せます。",
       "imageModelSummary": "モデル ID",
       "imageModelHint": "プロバイダーの画像モデル一覧から選択するか、対応する別のモデル ID を直接入力します。",
+      "imageBaseUrlLabel": "画像生成 Base URL",
+      "imageBaseUrlHint": "この画像プロバイダーの Base URL です。",
+      "imageOpenAiBaseUrlHint": "OpenAI Images リクエストは /images/generations を使用します。互換リレーの /v1 Base URL も指定できます。",
       "imageProviderSelectLabel": "画像生成プロバイダー",
       "imageProviderPlaceholder": "画像プロバイダーを選択",
       "imageRecommendedGroup": "おすすめ",

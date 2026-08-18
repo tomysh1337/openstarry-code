@@ -4324,9 +4324,14 @@ async def start_gateway_server(
             provider_selector = svc.provider_selector
             router_cfg = getattr(config, "squilla_router", None)
             tiers = getattr(router_cfg, "tiers", {}) if router_cfg is not None else {}
-            from openstarry_code.router_tiers import HIGHEST_TEXT_TIER
+            from openstarry_code.router_tiers import tier_index
 
-            t3_tier = tiers.get(HIGHEST_TEXT_TIER) if isinstance(tiers, dict) else None
+            highest_tier_name = ""
+            if isinstance(tiers, dict):
+                candidates = [name for name in tiers if tier_index(name) >= 0]
+                if candidates:
+                    highest_tier_name = max(candidates, key=tier_index)
+            t3_tier = tiers.get(highest_tier_name) if isinstance(tiers, dict) else None
             t3_model = ""
             t3_thinking_level = ""
             if isinstance(t3_tier, dict):
@@ -4375,7 +4380,7 @@ async def start_gateway_server(
             if t3_model:
                 auto_metadata.update(
                     {
-                        "routed_tier": HIGHEST_TEXT_TIER,
+                        "routed_tier": highest_tier_name,
                         "routed_model": t3_model,
                         "applied_model": t3_model,
                     }

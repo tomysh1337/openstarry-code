@@ -717,6 +717,96 @@ async def test_preflight_under_threshold_does_not_compact() -> None:
 
 
 @pytest.mark.asyncio
+async def test_preflight_fresh_summary_is_available_to_immediate_provider_request() -> None:
+    session_key = "agent:main:immediate-summary"
+    entries = [
+        TranscriptEntry(
+            session_id="test-session-id",
+            session_key=session_key,
+            role="user" if index % 2 == 0 else "assistant",
+            content=f"historic message {index} " + ("x" * 500),
+            token_count=300,
+        )
+        for index in range(8)
+    ]
+    manager = _ResultCompactionSessionManager(entries)
+    runner = TurnRunner(provider_selector=MagicMock(), session_manager=manager)
+
+    await runner._maybe_preflight_compact(session_key, 1000)
+
+    class _HistoryCapture:
+        provider = SimpleNamespace(provider_name="test")
+
+        def __init__(self) -> None:
+            self.history: list[Any] = []
+
+        def set_history(self, history: list[Any]) -> None:
+            self.history = history
+
+    agent = _HistoryCapture()
+    summary_context = await runner._load_history(
+        agent,
+        session_key,
+        trim_last_user=False,
+    )
+
+    assert summary_context is not None
+    assert "summary text" in summary_context
+    assert session_key not in runner._immediate_compaction_summaries
+
+    second_summary_context = await runner._load_history(
+        agent,
+        session_key,
+        trim_last_user=False,
+    )
+    assert second_summary_context is None
+
+
+@pytest.mark.asyncio
+async def test_preflight_fresh_summary_is_not_duplicated_when_durable_read_is_visible() -> None:
+    session_key = "agent:main:visible-summary"
+    entries = [
+        TranscriptEntry(
+            session_id="test-session-id",
+            session_key=session_key,
+            role="user" if index % 2 == 0 else "assistant",
+            content=f"historic message {index} " + ("x" * 500),
+            token_count=300,
+        )
+        for index in range(8)
+    ]
+    manager = _ResultCompactionSessionManager(entries)
+
+    async def get_summaries(_session_key: str) -> list[SimpleNamespace]:
+        assert _session_key == session_key
+        return [
+            SimpleNamespace(
+                summary_text="summary text",
+                compaction_id="cmp-visible",
+                covered_through_id=4,
+            )
+        ]
+
+    manager.get_summaries = get_summaries  # type: ignore[attr-defined]
+    runner = TurnRunner(provider_selector=MagicMock(), session_manager=manager)
+
+    await runner._maybe_preflight_compact(session_key, 1000)
+    agent = SimpleNamespace(
+        provider=SimpleNamespace(provider_name="test"),
+        set_history=lambda _history: None,
+    )
+
+    summary_context = await runner._load_history(
+        agent,
+        session_key,
+        trim_last_user=False,
+    )
+
+    assert summary_context is not None
+    assert summary_context.count("summary text") == 1
+
+
+@pytest.mark.asyncio
 async def test_preflight_uses_configured_compaction_ratio() -> None:
     """Operators can tune the preflight threshold without code changes."""
     context_window = 1000

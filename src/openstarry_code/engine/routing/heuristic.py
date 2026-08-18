@@ -85,7 +85,15 @@ BORDERLINE_CONFIDENCE = 0.40
 
 # Thinking modes consistent with the tier floors the policy engine's
 # reconcile step enforces (c2 → T2, c3 → T3, default tier → T1).
-_TIER_THINKING_MODE = {"c0": "T0", "c1": "T1", "c2": "T2", "c3": "T3"}
+_TIER_THINKING_MODE = {
+    "c0": "T0",
+    "c1": "T1",
+    "c2": "T2",
+    "c3": "T3",
+    "c4": "T3",
+    "c5": "T3",
+    "c6": "T3",
+}
 
 
 def extract_features(

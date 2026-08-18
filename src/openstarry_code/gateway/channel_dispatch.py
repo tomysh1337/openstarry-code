@@ -2206,6 +2206,11 @@ def _progress_json(value: Any) -> str:
 
 
 def _channel_progress_fragment(event: Any, previous_kind: str) -> tuple[str, str]:
+    if isinstance(event, (RouterDecisionEvent, EnsembleProgressEvent, ProviderActivityEvent)):
+        # These events power local diagnostics, but their routing scores, model
+        # identities, provider state, and retry counters are not user-facing
+        # channel progress. The EventBridge receives them on its separate path.
+        return "", previous_kind
     if isinstance(event, ThinkingEvent):
         if not event.text:
             return "", previous_kind
@@ -2230,26 +2235,6 @@ def _channel_progress_fragment(event: Any, previous_kind: str) -> tuple[str, str
         if event.result:
             details.append(f"结果: {event.result}")
         return "\n\n" + "\n".join(details) + "\n", "tool_result"
-    if isinstance(event, RouterDecisionEvent):
-        return (
-            "\n\n[路由] " + _progress_json(_router_decision_payload(event)) + "\n",
-            "router_decision",
-        )
-    if isinstance(event, EnsembleProgressEvent):
-        return (
-            "\n\n[融合] " + _progress_json(_ensemble_progress_payload(event)) + "\n",
-            "ensemble_progress",
-        )
-    if isinstance(event, ProviderActivityEvent):
-        payload = {
-            "phase": event.phase,
-            "reason": event.reason,
-            "retry_attempt": event.retry_attempt,
-            "retry_limit": event.retry_limit,
-            "retry_after_ms": event.retry_after_ms,
-            "heartbeat": event.heartbeat,
-        }
-        return "\n\n[供应商] " + _progress_json(payload) + "\n", "provider_activity"
     return "", previous_kind
 
 
