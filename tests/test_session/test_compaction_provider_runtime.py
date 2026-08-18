@@ -13,6 +13,7 @@ from openstarry_code.engine.usage_accounting import (
 )
 from openstarry_code.provider.failures import ProviderFailureKind
 from openstarry_code.provider.protocol import ProviderConnectionConfig, ProviderMetadata
+from openstarry_code.provider.request_proof import project_final_request_payload
 from openstarry_code.provider.selector import ProviderConfig, build_provider_from_config
 from openstarry_code.provider.types import (
     ChatConfig,
@@ -24,6 +25,7 @@ from openstarry_code.provider.types import (
 )
 from openstarry_code.session.compaction import (
     CompactionRequest,
+    _api_round_groups,
     arm_compaction_deadline,
     build_compaction_config_from_provider,
     call_compaction_provider,
@@ -104,6 +106,52 @@ class _Provider:
 
     async def list_models(self) -> list[Any]:
         return []
+
+
+class _EnvelopeBudgetProvider(_Provider):
+    """Provider stub that enforces the same final-envelope proof as transport."""
+
+    def __init__(self, stream_factory) -> None:
+        super().__init__(stream_factory)
+        self.projections: list[Any] = []
+        self.transport_projection: Any = None
+
+    def project_final_request(
+        self,
+        messages,
+        tools=None,
+        config=None,
+        *,
+        message_limit=None,
+    ):
+        assert tools is None
+        assert config is not None
+        wire_messages = []
+        if config.system:
+            wire_messages.append({"role": "system", "content": str(config.system)})
+        wire_messages.extend(
+            {"role": message.role, "content": message.content} for message in messages
+        )
+        projection = project_final_request_payload(
+            {
+                "model": "provider/model",
+                "messages": wire_messages,
+                "max_tokens": config.max_tokens,
+                "temperature": config.temperature,
+                "stream": True,
+            },
+            projection_adapter="openai",
+            proof_budget=config.provider_request_max_chars,
+            status_projection_mode="content_envelope",
+            message_limit=message_limit,
+        )
+        self.projections.append(projection)
+        return projection
+
+    def chat(self, messages, tools=None, config=None):
+        self.transport_projection = self.project_final_request(messages, tools, config)
+        assert self.transport_projection.fits
+        return super().chat(messages, tools=tools, config=config)
 
 
 @dataclass
@@ -739,7 +787,7 @@ async def test_rolling_summary_can_replace_oversized_checkpoint_without_raw_entr
     )
     config = build_compaction_config_from_provider(
         provider,
-        context_window_tokens=8_000,
+        context_window_tokens=64_000,
     )
     config.safety_margin = 1.0
 
@@ -823,6 +871,81 @@ async def test_fallback_replans_summary_input_for_its_own_smaller_window() -> No
     assert fallback.calls[0][2].max_tokens == 128
     assert primary.calls[0][2].candidate_output_mode == "inert_artifact"
     assert fallback.calls[0][2].candidate_output_mode == "inert_artifact"
+
+
+@pytest.mark.asyncio
+async def test_single_234k_tool_round_is_projected_against_complete_provider_envelope() -> None:
+    provider = _EnvelopeBudgetProvider(_successful_stream)
+    hex_output = "".join(f"{index:08x} " for index in range(20_000))[:140_000]
+    prose_line = (
+        "synthetic log line lorem ipsum dolor sit amet request completed "
+        "with status pending 0123456789\n"
+    )
+    tool_output = hex_output + (prose_line * 2_000)[:94_700]
+    entries = [
+        {"role": "user", "content": "Inspect the generated artifact."},
+        {
+            "role": "assistant",
+            "content": "[tool_call: inspect_artifact]",
+            "tool_calls": [
+                {
+                    "id": "call-234k",
+                    "type": "function",
+                    "function": {
+                        "name": "inspect_artifact",
+                        "arguments": '{"path":"artifact.log"}',
+                    },
+                }
+            ],
+        },
+        {
+            "role": "user",
+            "content": f"[Tool result call-234k]\n{tool_output}",
+        },
+    ]
+    assert len(tool_output) == 234_700
+    assert _api_round_groups(entries) == [entries]
+
+    config = build_compaction_config_from_provider(provider)
+    config.llm_plan = CompactionExecutionPlan(
+        candidates=(
+            CompactionExecutionTarget(
+                provider=provider,
+                provider_id="openai",
+                model="provider/model",
+                context_window_tokens=128_000,
+                max_output_tokens=1_024,
+                provider_request_max_chars=374_160,
+            ),
+        ),
+    )
+    config.safety_margin = 1.0
+    config.coverage_blocking = False
+    config.protected_recent_messages = 0
+    config.protect_semantic_tail = False
+
+    result = await compact_context(
+        CompactionRequest(
+            session_id="single-234k-tool-round",
+            entries=entries,
+            context_window_tokens=80_000,
+            config=config,
+            forced_prefix_cut=len(entries),
+        )
+    )
+
+    assert result.summary_source == "llm"
+    assert result.removed_count == len(entries)
+    assert len(provider.calls) == 1
+    assert provider.projections[0].fits is False
+    assert provider.projections[0].proof["fits_char_budget"] is True
+    assert provider.projections[0].proof["fits_token_budget"] is False
+    assert provider.transport_projection is not None
+    assert provider.transport_projection.fits is True
+    sent_content = provider.calls[0][0][0].content
+    assert isinstance(sent_content, str)
+    assert "[Deterministic token-aware preprojection]" in sent_content
+    assert len(sent_content) < len(tool_output)
 
 
 def test_new_operation_rearms_deadline_and_call_budget() -> None:

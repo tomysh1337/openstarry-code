@@ -18,8 +18,12 @@ import structlog
 from openstarry_code.env import trust_env as _trust_env
 from openstarry_code.provider.app_attribution import provider_app_headers
 from openstarry_code.provider.failures import classify_provider_error
-from openstarry_code.provider.protocol import provider_connection_config
+from openstarry_code.provider.protocol import (
+    project_provider_final_request,
+    provider_connection_config,
+)
 from openstarry_code.provider.request_headers import normalize_request_headers
+from openstarry_code.provider.request_proof import project_provider_payload
 from openstarry_code.provider.tokenrhythm_correlation import (
     redact_tokenrhythm_install_ids,
     tokenrhythm_correlation_headers,
@@ -953,12 +957,20 @@ def _fit_compaction_input_to_target(
     target: CompactionExecutionTarget,
     previous_summary: str,
     chunk: list[dict[str, Any]],
+    identifier_instruction: str = "",
+    custom_instructions: str | None = None,
 ) -> str | None:
     """Replan one summary input against the candidate that will execute it."""
 
     budget = _compaction_target_input_budget(request, target)
     raw = _rolling_chunk_text(previous_summary, chunk)
-    if _estimate_tokens(raw) <= budget:
+    if _compaction_input_fits_target(
+        request=request,
+        target=target,
+        chunk_text=raw,
+        identifier_instruction=identifier_instruction,
+        custom_instructions=custom_instructions,
+    ):
         return raw
 
     chunk_projection = _summarize_chunk_fallback(
@@ -970,13 +982,25 @@ def _fit_compaction_input_to_target(
         # preproject the newly covered raw prefix, but it must either receive
         # the previous checkpoint in full or decline this candidate.
         previous_only = _rolling_chunk_text(previous_summary, [])
-        if _estimate_tokens(previous_only) > budget:
+        if not _compaction_input_fits_target(
+            request=request,
+            target=target,
+            chunk_text=previous_only,
+            identifier_instruction=identifier_instruction,
+            custom_instructions=custom_instructions,
+        ):
             return None
         deterministic = _merge_rolling_fallback(
             previous_summary,
             chunk_projection,
         )
-        while chunk_projection and _estimate_tokens(deterministic) > budget:
+        while chunk_projection and not _compaction_input_fits_target(
+            request=request,
+            target=target,
+            chunk_text=deterministic,
+            identifier_instruction=identifier_instruction,
+            custom_instructions=custom_instructions,
+        ):
             current_tokens = max(1, _estimate_tokens(chunk_projection))
             excess = max(1, _estimate_tokens(deterministic) - budget)
             target_chars = max(
@@ -990,11 +1014,27 @@ def _fit_compaction_input_to_target(
                 previous_summary,
                 chunk_projection,
             )
-        return deterministic if _estimate_tokens(deterministic) <= budget else None
+        return (
+            deterministic
+            if _compaction_input_fits_target(
+                request=request,
+                target=target,
+                chunk_text=deterministic,
+                identifier_instruction=identifier_instruction,
+                custom_instructions=custom_instructions,
+            )
+            else None
+        )
 
     deterministic = _merge_rolling_fallback("", chunk_projection)
     projected = f"[Deterministic token-aware preprojection]\n{deterministic}"
-    while len(projected) > 1 and _estimate_tokens(projected) > budget:
+    while len(projected) > 1 and not _compaction_input_fits_target(
+        request=request,
+        target=target,
+        chunk_text=projected,
+        identifier_instruction=identifier_instruction,
+        custom_instructions=custom_instructions,
+    ):
         current_tokens = max(1, _estimate_tokens(projected))
         target_chars = max(
             1,
@@ -1011,7 +1051,17 @@ def _fit_compaction_input_to_target(
         projected = (
             projected[:head_chars] + marker + (projected[-tail_chars:] if tail_chars > 0 else "")
         )
-    return projected
+    return (
+        projected
+        if _compaction_input_fits_target(
+            request=request,
+            target=target,
+            chunk_text=projected,
+            identifier_instruction=identifier_instruction,
+            custom_instructions=custom_instructions,
+        )
+        else None
+    )
 
 
 def _rolling_chunk_text(
@@ -1297,6 +1347,93 @@ def _build_compaction_prompt(
     return system, user_content
 
 
+def _build_compaction_provider_request(
+    *,
+    chunk_text: str,
+    identifier_instruction: str,
+    custom_instructions: str | None,
+    target: CompactionExecutionTarget,
+    timeout: float,
+    provider_request_correlation: ProviderRequestCorrelation | None = None,
+) -> tuple[list[Message], ChatConfig]:
+    """Build the one request envelope shared by projection and transport."""
+
+    system, user_content = _build_compaction_prompt(
+        chunk_text,
+        identifier_instruction,
+        custom_instructions,
+    )
+    return (
+        [Message(role="user", content=user_content)],
+        ChatConfig(
+            max_tokens=target.max_output_tokens,
+            temperature=0,
+            system=system,
+            thinking=False,
+            thinking_budget_explicit=False,
+            timeout=timeout,
+            provider_request_max_chars=target.provider_request_max_chars,
+            tool_choice=None,
+            candidate_output_mode="inert_artifact",
+            physical_attempt_limit=1,
+            provider_request_correlation=provider_request_correlation,
+        ),
+    )
+
+
+def _compaction_input_fits_target(
+    *,
+    request: CompactionRequest,
+    target: CompactionExecutionTarget,
+    chunk_text: str,
+    identifier_instruction: str,
+    custom_instructions: str | None,
+) -> bool:
+    """Prove the complete summary envelope against the physical target."""
+
+    messages, chat_config = _build_compaction_provider_request(
+        chunk_text=chunk_text,
+        identifier_instruction=identifier_instruction,
+        custom_instructions=custom_instructions,
+        target=target,
+        timeout=_COMPACTION_TIMEOUT,
+    )
+    exact = project_provider_final_request(
+        target.provider,
+        messages,
+        tools=None,
+        config=chat_config,
+    )
+    if exact is not None:
+        return bool(exact.fits)
+
+    system = str(chat_config.system or "")
+    user_content = str(messages[0].content or "")
+    payload = {
+        "model": target.model,
+        "messages": [
+            {"role": "system", "content": system},
+            {"role": "user", "content": user_content},
+        ],
+        "max_tokens": target.max_output_tokens,
+        "temperature": 0,
+        "stream": True,
+    }
+    if target.provider_request_max_chars > 0:
+        proof = project_provider_payload(
+            payload,
+            projection_adapter=target.provider_id,
+            proof_budget=target.provider_request_max_chars,
+            status_projection_mode="content_envelope",
+        )
+        return bool(proof["fits"])
+
+    # Compatibility providers without request projection still receive a
+    # conservative full-envelope tokenizer check instead of a chunk-only one.
+    serialized = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
+    return _estimate_tokens(serialized) <= _compaction_target_input_budget(request, target)
+
+
 def _consume_compaction_close_result(task: asyncio.Future[Any]) -> None:
     """Consume a detached close result without surfacing a late cleanup failure."""
 
@@ -1414,23 +1551,12 @@ async def call_compaction_provider(
     if candidate_index < 0 or candidate_index >= len(plan.candidates):
         return None
     deployment = plan.candidates[candidate_index]
-    system, user_content = _build_compaction_prompt(
-        chunk_text,
-        identifier_instruction,
-        custom_instructions,
-    )
-    messages = [Message(role="user", content=user_content)]
-    chat_config = ChatConfig(
-        max_tokens=deployment.max_output_tokens,
-        temperature=0,
-        system=system,
-        thinking=False,
-        thinking_budget_explicit=False,
+    messages, chat_config = _build_compaction_provider_request(
+        chunk_text=chunk_text,
+        identifier_instruction=identifier_instruction,
+        custom_instructions=custom_instructions,
+        target=deployment,
         timeout=timeout,
-        provider_request_max_chars=deployment.provider_request_max_chars,
-        tool_choice=None,
-        candidate_output_mode="inert_artifact",
-        physical_attempt_limit=1,
         provider_request_correlation=provider_request_correlation,
     )
 
@@ -2037,6 +2163,8 @@ async def compact_context_new(request: CompactionRequest) -> CompactionResult:
                     target=deployment,
                     previous_summary=rolling_summary,
                     chunk=chunk,
+                    identifier_instruction=id_instruction,
+                    custom_instructions=custom_instructions or None,
                 )
                 if candidate_chunk_text is None:
                     log.info(
