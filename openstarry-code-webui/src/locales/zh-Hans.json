@@ -3455,7 +3455,6 @@
     "thinkingForSeconds": "思考中 · {seconds} 秒",
     "thoughtForSeconds": "思考了 {seconds} 秒",
     "thoughtForMinutes": "思考了 {minutes} 分 {seconds} 秒",
-    "activityTechnicalDetails": "技术细节",
     "toolResult": "工具结果",
     "subagentPrefix": "子智能体：",
     "subagentCompletion": "子智能体完成",

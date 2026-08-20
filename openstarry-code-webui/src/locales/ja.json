@@ -3402,7 +3402,6 @@
     "thinkingForSeconds": "思考中 · {seconds} 秒",
     "thoughtForSeconds": "{seconds} 秒間思考",
     "thoughtForMinutes": "{minutes} 分 {seconds} 秒間思考",
-    "activityTechnicalDetails": "技術的な詳細",
     "toolResult": "ツールの結果",
     "subagentPrefix": "サブエージェント: ",
     "subagentCompletion": "サブエージェントの完了",

@@ -16,6 +16,7 @@ class FakeStrategy:
         self.extra = extra
         self.calls = 0
         self.messages: list[str] = []
+        self.valid_tier_calls: list[list[str]] = []
 
     async def classify(
         self,
@@ -25,6 +26,7 @@ class FakeStrategy:
     ) -> tuple[str, float, str, dict]:
         self.calls += 1
         self.messages.append(message)
+        self.valid_tier_calls.append(list(valid_tiers))
         assert self.tier in valid_tiers
         return self.tier, self.confidence, "v4_phase3", dict(self.extra)
 
@@ -192,6 +194,33 @@ async def test_full_rollout_applies_routed_model_thinking_and_p0_prompt(
     assert routed.metadata["thinking_level"] == "low"
     assert routed.metadata["prompt_policy"] == "P0"
     assert "[RESPONSE_POLICY: Answer directly" in routed.message
+
+
+@pytest.mark.asyncio
+async def test_default_classifier_uses_only_native_four_level_ladder(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    strategy = fake_strategy(
+        monkeypatch,
+        "c3",
+        0.93,
+        {"route_class": "R3", "thinking_mode": "T3", "prompt_policy": "P2"},
+    )
+    ctx = make_context("Handle this difficult multi-step project.")
+    # Older persisted configs may still carry operator-defined c4-c6 entries.
+    ctx.config.squilla_router.tiers.update(
+        {
+            "c4": {"model": "legacy/c4"},
+            "c5": {"model": "legacy/c5"},
+            "c6": {"model": "legacy/c6"},
+        }
+    )
+
+    routed = await apply_squilla_router(ctx)
+
+    assert strategy.valid_tier_calls == [["c0", "c1", "c2", "c3"]]
+    assert routed.metadata["routed_tier"] == "c3"
+    assert routed.metadata["routed_model"] == "anthropic/claude-opus-4.8"
 
 
 @pytest.mark.asyncio

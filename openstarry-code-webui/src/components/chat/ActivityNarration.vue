@@ -2,7 +2,6 @@
   <details
     v-if="shouldFold"
     class="activity-narration activity-narration--folded"
-    :class="{ 'activity-narration--technical': technical }"
   >
     <summary class="activity-narration__summary">
       <Icon
@@ -12,9 +11,9 @@
         aria-hidden="true"
       />
       <span class="activity-narration__summary-text">
-        {{ technical ? t('chat.activityTechnicalDetails') : preview }}
+        {{ preview }}
       </span>
-      <span v-if="!technical" class="activity-narration__hint">
+      <span class="activity-narration__hint">
         {{ t('shared.runTrace.activityViewDetails') }}
       </span>
     </summary>
@@ -45,7 +44,7 @@ const normalizedText = computed(() =>
     .trim(),
 )
 
-const technical = computed(() => {
+const structuredUpdate = computed(() => {
   const text = normalizedText.value
   if (!text) return false
   return [
@@ -59,7 +58,7 @@ const technical = computed(() => {
 
 const shouldFold = computed(() => {
   const raw = String(props.item.rawText || '')
-  return technical.value
+  return structuredUpdate.value
     || normalizedText.value.length > 280
     || raw.split(/\r\n|\r|\n/).length > 3
 })
@@ -145,10 +144,6 @@ const preview = computed(() => {
   margin-left: auto;
   color: var(--text-dim);
   font-size: 0.75rem;
-}
-
-.activity-narration--technical .activity-narration__summary {
-  color: var(--text-dim);
 }
 
 .activity-narration__body {

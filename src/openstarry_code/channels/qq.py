@@ -171,6 +171,10 @@ class QQChannel(_QQClientBase):  # type: ignore[misc, valid-type]
     """
 
     config: QQChannelConfig
+    # QQ has no edit primitive, so progress is delivered as bounded messages.
+    # Keep this explicit so a future adapter policy change cannot hide the
+    # thinking and execution stream behind a final-only response.
+    STREAM_UPDATE_STRATEGY = "adapter_stream"
 
     def __init__(self, config: QQChannelConfig) -> None:
         # Lazy SDK import — keeps the adapter usable even when the

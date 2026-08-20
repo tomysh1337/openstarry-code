@@ -198,6 +198,41 @@ async def test_squilla_router_applies_hold_before_normal_classification(monkeypa
 
 
 @pytest.mark.asyncio
+async def test_squilla_router_applies_explicit_legacy_expert_hold(monkeypatch) -> None:
+    tiers = {
+        **_router_tier_profile_defaults("openrouter"),
+        "c4": {"provider": "openrouter", "model": "legacy/expert-4"},
+        "c5": {"provider": "openrouter", "model": "legacy/expert-5"},
+        "c6": {"provider": "openrouter", "model": "legacy/expert-6"},
+    }
+    cfg = _router_cfg(tiers)
+    target = resolve_router_control_target(cfg, "tier:c6")
+    store = RouterControlHoldStore()
+    store.set_hold("agent:main:legacy-expert", target, evidence="use expert route")
+
+    def fail_strategy(_cfg: object) -> object:
+        raise AssertionError("router classification should not run while hold is valid")
+
+    monkeypatch.setattr("openstarry_code.engine.steps.squilla_router._get_strategy", fail_strategy)
+    ctx = TurnContext(
+        message="continue this expert task",
+        session_key="agent:main:legacy-expert",
+        config=SimpleNamespace(squilla_router=cfg),
+        provider=None,
+        model="default-model",
+        tool_defs=[],
+        system_prompt="system",
+        metadata={"router_control_hold_store": store},
+    )
+
+    out = await apply_squilla_router(ctx)
+
+    assert out.model == "legacy/expert-6"
+    assert out.metadata["routing_source"] == "router_control_hold"
+    assert out.metadata["router_control_target_tier"] == "c6"
+
+
+@pytest.mark.asyncio
 async def test_image_attachments_bypass_text_hold(monkeypatch) -> None:
     cfg = _router_cfg(_router_tier_profile_defaults("openrouter"))
     target = resolve_router_control_target(cfg, "tier:c3")

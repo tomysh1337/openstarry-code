@@ -3402,7 +3402,6 @@
     "thinkingForSeconds": "Réflexion · {seconds} s",
     "thoughtForSeconds": "A réfléchi pendant {seconds} s",
     "thoughtForMinutes": "A réfléchi pendant {minutes} min {seconds} s",
-    "activityTechnicalDetails": "Détails techniques",
     "toolResult": "Résultat de l'outil",
     "subagentPrefix": "Sous-agent : ",
     "subagentCompletion": "Achèvement du sous-agent",

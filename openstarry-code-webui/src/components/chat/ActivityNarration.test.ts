@@ -61,14 +61,15 @@ describe('ActivityNarration progressive disclosure', () => {
       .toContain('view details')
   })
 
-  it('replaces command and error prose with a plain technical-details label', () => {
-    const technical = 'code-task failed with exit_code=1 and stderr=permission denied'
-    const host = mount(technical)
-    const fold = host.querySelector<HTMLDetailsElement>('details.activity-narration--technical')
+  it('uses the update summary for command and error prose', () => {
+    const update = 'code-task failed with exit_code=1 and stderr=permission denied'
+    const host = mount(update)
+    const fold = host.querySelector<HTMLDetailsElement>('details.activity-narration')
 
     expect(fold).not.toBeNull()
     expect(fold?.open).toBe(false)
-    expect(fold?.querySelector('summary')?.textContent).toContain('Technical details')
-    expect(fold?.querySelector('summary')?.textContent).not.toContain('exit_code')
+    expect(fold?.querySelector('.activity-narration__summary-text')?.textContent)
+      .toContain('code-task failed')
+    expect(fold?.querySelector('summary')?.textContent).toContain('view details')
   })
 })

@@ -3402,7 +3402,6 @@
     "thinkingForSeconds": "Denkt nach · {seconds}s",
     "thoughtForSeconds": "{seconds}s nachgedacht",
     "thoughtForMinutes": "{minutes}min {seconds}s nachgedacht",
-    "activityTechnicalDetails": "Technische Details",
     "toolResult": "Werkzeugergebnis",
     "subagentPrefix": "Subagent: ",
     "subagentCompletion": "Subagent-Abschluss",

@@ -237,6 +237,17 @@ def confidence_gate(
     if default_tier is None:
         return ConfidenceGateResult(tier, False, threshold, None)
     default_tier = normalize_text_tier(default_tier) or str(default_tier)
+    # Persisted c4-c6 defaults belong to the legacy expanded ladder. The
+    # native classifier now operates on c0-c3, so keep the confidence gate on
+    # a usable four-level default when such a config is loaded.
+    if default_tier not in valid_tiers:
+        default_tier = (
+            DEFAULT_TEXT_TIER
+            if DEFAULT_TEXT_TIER in valid_tiers
+            else (valid_tiers[0] if valid_tiers else None)
+        )
+        if default_tier is None:
+            return ConfidenceGateResult(tier, False, threshold, None)
     selected_cfg = tiers.get(tier, {}) if isinstance(tiers, dict) else {}
     if bool(_tier_config_value(selected_cfg, "image_only", False)):
         return ConfidenceGateResult(tier, False, threshold, default_tier)

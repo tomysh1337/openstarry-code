@@ -44,6 +44,7 @@ from openstarry_code.router_runtime_diagnostics import (
     router_runtime_operator_message,
 )
 from openstarry_code.router_tiers import (
+    CLASSIFIER_TEXT_TIERS,
     DEFAULT_TEXT_TIER,
     TEXT_TIERS,
     TierConfig,
@@ -1160,12 +1161,22 @@ async def apply_squilla_router(ctx: TurnContext) -> TurnContext:
     if not routing_message.strip():
         return ctx
 
-    # Order valid_tiers by the canonical c0<c1<...<c6 ladder rather than TOML
+    # V4 Phase 3 has four native output classes (R0-R3), so the default live
+    # route must expose exactly the matching c0-c3 ladder. c4-c6 remain
+    # accepted in persisted configs for downgrade/upgrade compatibility, but
+    # are not candidates for random classification or automatic promotion.
+    # Unknown operator-defined names stay available for legacy custom routers.
+    valid_tiers = [
+        name
+        for name, tier in tiers.items()
+        if not tier.get("image_only", False)
+        and (name not in TEXT_TIERS or name in CLASSIFIER_TEXT_TIERS)
+    ]
+    # Order valid_tiers by the canonical c0<c1<c2<c3 ladder rather than TOML
     # insertion order — downstream policy stages rank tiers by position in this
     # list, so trusting declaration order inverted upgrades/holds for configs
     # that list tiers out of order. Unknown/custom tier names (tier_index == -1)
     # sort after the canonical ones, preserving their relative order (stable).
-    valid_tiers = [name for name, tier in tiers.items() if not tier.get("image_only", False)]
     valid_tiers = sorted(
         valid_tiers,
         key=lambda name: (0, tier_index(name)) if tier_index(name) >= 0 else (1, 0),
@@ -1176,7 +1187,17 @@ async def apply_squilla_router(ctx: TurnContext) -> TurnContext:
     hold_store = ctx.metadata.get("router_control_hold_store")
     if isinstance(hold_store, RouterControlHoldStore):
         hold = hold_store.get_valid(ctx.session_key, decrement=True)
-        if hold is not None and hold.tier in tiers and hold.tier in valid_tiers:
+        # ``valid_tiers`` is deliberately limited to the classifier's native
+        # c0-c3 ladder.  An explicit router-control hold is different: it is an
+        # operator selection and may target a persisted c4-c6/custom tier.  A
+        # hold remains valid as long as its configured tier still exists and is
+        # not an image-only route (image turns take the vision path above).
+        hold_cfg = tiers.get(hold.tier) if hold is not None else None
+        if (
+            hold is not None
+            and isinstance(hold_cfg, dict)
+            and not hold_cfg.get("image_only", False)
+        ):
             decision = RoutingDecision(
                 tier=hold.tier,
                 model=hold.model,
