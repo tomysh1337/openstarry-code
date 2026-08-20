@@ -112,6 +112,11 @@ exclude = [
     "src/openstarry_code/scheduler/templates/*.md",
     "src/openstarry_code/skills/exp/**",
     "src/openstarry_code/skills/meta/META_SKILL_AUTHORING.md",
+    "src/openstarry_code/skills/bundled/**/THIRD_PARTY_NOTICES.md",
+    "src/openstarry_code/skills/bundled/**/README.md",
+    "src/openstarry_code/skills/bundled/**/LICENSE.md",
+    "src/openstarry_code/skills/bundled/**/skill-card.md",
+    "src/openstarry_code/skills/bundled/**/references/*.md",
     # The core distribution may carry the OpenTUI JavaScript sources for
     # explicit source-development mode, but never local dependency installs or
     # compiled platform artifacts. Those belong to openstarry-code-tui-host.
