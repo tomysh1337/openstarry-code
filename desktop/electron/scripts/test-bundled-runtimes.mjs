@@ -80,15 +80,21 @@ try {
       false,
     ),
     {
-      command: 'tar',
+      command: 'powershell.exe',
       args: [
-        '-xf',
-        'Z:/fixture/.runtime-cache/node.zip',
-        '-C',
-        'Z:/fixture/runtime/node.staging',
+        '-NoLogo',
+        '-NoProfile',
+        '-NonInteractive',
+        '-Command',
+        'Expand-Archive -LiteralPath $env:OPENSTARRY_RUNTIME_ARCHIVE '
+          + '-DestinationPath $env:OPENSTARRY_RUNTIME_DESTINATION -Force',
       ],
+      env: {
+        OPENSTARRY_RUNTIME_ARCHIVE: String.raw`Z:\fixture\.runtime-cache\node.zip`,
+        OPENSTARRY_RUNTIME_DESTINATION: String.raw`Z:\fixture\runtime\node.staging`,
+      },
     },
-    'Windows zip extraction must use the same drive-safe tar path as other runtimes',
+    'Windows zip extraction must use PowerShell native ZIP support',
   )
   const extracted = join(root, 'extracted')
   await mkdir(join(extracted, 'node-wrapper', 'bin'), { recursive: true })

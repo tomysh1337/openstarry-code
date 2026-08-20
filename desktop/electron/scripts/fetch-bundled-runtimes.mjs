@@ -216,16 +216,21 @@ function detectTarForceLocalSupport() {
   return tarForceLocalSupport
 }
 
-export function windowsZipExtractSpec(archive, destination, forceLocalSupported) {
+export function windowsZipExtractSpec(archive, destination) {
   return {
-    command: 'tar',
-    args: tarExtractArgs(
-      archive,
-      destination,
-      0,
-      'win32',
-      forceLocalSupported,
-    ),
+    command: 'powershell.exe',
+    args: [
+      '-NoLogo',
+      '-NoProfile',
+      '-NonInteractive',
+      '-Command',
+      'Expand-Archive -LiteralPath $env:OPENSTARRY_RUNTIME_ARCHIVE '
+        + '-DestinationPath $env:OPENSTARRY_RUNTIME_DESTINATION -Force',
+    ],
+    env: {
+      OPENSTARRY_RUNTIME_ARCHIVE: archive,
+      OPENSTARRY_RUNTIME_DESTINATION: destination,
+    },
   }
 }
 
@@ -281,7 +286,7 @@ async function extractAsset(asset, archive, destination) {
   }
   if (process.platform === 'win32' && asset.archiveType === 'zip') {
     const spec = windowsZipExtractSpec(archive, destination)
-    runChecked(spec.command, spec.args)
+    runChecked(spec.command, spec.args, { env: { ...process.env, ...spec.env } })
     await stripExtractedComponents(destination, asset.stripComponents)
     return
   }
