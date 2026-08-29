@@ -552,12 +552,87 @@ jobs:
             dist/desktop-electron/latest.yml
           overwrite: true
 
+  build-desktop-linux:
+    name: Build Linux Electron installer
+    needs: build-control-ui
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+          persist-credentials: false
+          ref: ${{ env.RELEASE_TAG != '' && env.RELEASE_TAG || github.ref }}
+
+      - name: Download verified Web UI artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: openstarry-code-release-webui-dist
+          path: src/openstarry_code/gateway/static/dist/
+
+      - name: Hydrate router assets
+        shell: bash
+        run: git lfs pull --include="src/openstarry_code/squilla_router/models/**"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.12.0"
+          cache: npm
+          cache-dependency-path: desktop/electron/package-lock.json
+
+      - name: Install Electron dependencies
+        working-directory: desktop/electron
+        run: npm ci
+
+      - name: Build unsigned Linux installer
+        working-directory: desktop/electron
+        shell: bash
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+        run: |
+          set -euo pipefail
+          npm run fetch:runtimes
+          npm run build:gateway
+          npm run build
+          npx electron-builder --linux --publish never
+
+      - name: Verify Electron package
+        working-directory: desktop/electron
+        run: npm run verify:package
+
+      - name: List Linux artifacts
+        shell: bash
+        run: find dist/desktop-electron -maxdepth 2 -type f -print
+
+      - name: Upload Linux Electron artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: openstarry-code-electron-linux
+          path: |
+            dist/desktop-electron/*.AppImage
+            dist/desktop-electron/*.deb
+            dist/desktop-electron/latest-linux.yml
+          overwrite: true
+
   publish-release:
     name: Publish release assets
     needs:
       - build-release-assets
       - build-desktop-macos
       - build-desktop-windows
+      - build-desktop-linux
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
@@ -587,6 +662,12 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: openstarry-code-electron-windows
+          path: dist
+
+      - name: Download Linux Electron assets
+        uses: actions/download-artifact@v4
+        with:
+          name: openstarry-code-electron-linux
           path: dist
 
       - name: Regenerate release checksums
@@ -620,6 +701,9 @@ jobs:
               f"OpenStarry-Code-{desktop_version}-win-x64.exe.blockmap",
               f"OpenStarry-Code-{desktop_version}-win-x64.msi",
               "latest.yml",
+              f"OpenStarry-Code-{desktop_version}-linux-x64.AppImage",
+              f"OpenStarry-Code-{desktop_version}-linux-x64.deb",
+              "latest-linux.yml",
               f"openstarry_code-{version}-py3-none-any.whl",
               f"openstarry_code-{version}.tar.gz",
           ]
@@ -663,6 +747,9 @@ jobs:
               f"OpenStarry-Code-{desktop_version}-win-x64.exe.blockmap",
               f"OpenStarry-Code-{desktop_version}-win-x64.msi",
               "latest.yml",
+              f"OpenStarry-Code-{desktop_version}-linux-x64.AppImage",
+              f"OpenStarry-Code-{desktop_version}-linux-x64.deb",
+              "latest-linux.yml",
               f"openstarry_code-{version}-py3-none-any.whl",
               f"openstarry_code-{version}.tar.gz",
           ]
@@ -819,6 +906,9 @@ jobs:
               f"OpenStarry-Code-{desktop_version}-win-x64.exe.blockmap",
               f"OpenStarry-Code-{desktop_version}-win-x64.msi",
               "latest.yml",
+              f"OpenStarry-Code-{desktop_version}-linux-x64.AppImage",
+              f"OpenStarry-Code-{desktop_version}-linux-x64.deb",
+              "latest-linux.yml",
               f"openstarry_code-{version}-py3-none-any.whl",
               f"openstarry_code-{version}.tar.gz",
               "SHA256SUMS",
