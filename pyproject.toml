@@ -33,7 +33,7 @@ dependencies = [
     "aiosqlite>=0.20",
     "apscheduler>=3.10",
     "pyyaml>=6.0",
-    "pywinpty>=6.0; sys_platform == 'win32'",
+    "pywinpty>=3.0; sys_platform == 'win32'",
     "sqlite-vec>=0.1",
     "html2text>=2024.2",
     "readability-lxml>=0.8",
