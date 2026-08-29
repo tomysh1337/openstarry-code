@@ -164,6 +164,9 @@
       ],
       "category": "Development"
     },
+    "deb": {
+      "artifactName": "OpenStarry-Code-${version}-linux-x86_64.${ext}"
+    },
     "win": {
       "icon": "assets/icon.ico",
       "target": [
