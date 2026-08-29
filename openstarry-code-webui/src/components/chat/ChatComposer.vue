@@ -1366,6 +1366,12 @@ defineExpose<ChatComposerExpose>({
 
 .chat-input-actions--right {
   flex-shrink: 0;
+  /* The left action anchors are positioned (`.chat-settings-anchor`), so under a
+     narrow viewport their overflowing icon descendants paint above the send
+     button and swallow its clicks. Elevate the right actions group so the send
+     control always stays the topmost hit target. */
+  position: relative;
+  z-index: 1;
 }
 
 .chat-input-wrap {
