@@ -53,27 +53,25 @@ def _fake_fetch(
     return fetch
 
 
-def _manifest(
+def _gh_release(
     *,
     tag: str = "v0.5.0rc5",
-    version: str = "0.5.0-rc5",
-    base: str = "0.5.0",
-    prerelease: object = True,
-    release_url: str | None = None,
+    prerelease: bool | None = None,
+    html_url: str | None = None,
 ) -> dict[str, object]:
+    # A single GitHub Release object. ``prerelease`` defaults to whether the tag
+    # carries an ``rc`` suffix, matching the GitHub flag for the canonical shape.
+    if prerelease is None:
+        prerelease = "rc" in tag.lower()
     return {
-        "schemaVersion": 1,
-        "tag": tag,
-        "version": version,
-        "baseVersion": base,
+        "tag_name": tag,
         "prerelease": prerelease,
-        "publishedAt": "2026-07-15T00:00:00Z",
-        "releaseUrl": release_url
+        "html_url": html_url
         or f"https://github.com/tomysh1337/openstarry-code/releases/tag/{tag}",
+        "published_at": "2026-07-15T00:00:00Z",
         # Python intentionally does not consume platform assets, but including
-        # them keeps fixtures representative of the shared desktop manifest.
-        "sha256sums": "SHA256SUMS",
-        "platforms": {},
+        # them keeps fixtures representative of the shared desktop release.
+        "assets": [],
     }
 
 
@@ -414,11 +412,10 @@ def test_channel_endpoints_are_static_and_rc_scoped(monkeypatch) -> None:
     preview = update_check._channel_for("0.5.0rc4")
 
     assert stable.endpoint == (
-        "https://opensquilla-releases.oss-cn-beijing.aliyuncs.com/releases/channels/stable.json"
+        "https://api.github.com/repos/tomysh1337/openstarry-code/releases/latest"
     )
     assert preview.endpoint == (
-        "https://opensquilla-releases.oss-cn-beijing.aliyuncs.com/"
-        "releases/channels/preview/0.5.0.json"
+        "https://api.github.com/repos/tomysh1337/openstarry-code/releases?per_page=100"
     )
 
     monkeypatch.setenv(
@@ -434,12 +431,7 @@ def test_channel_endpoints_are_static_and_rc_scoped(monkeypatch) -> None:
     [
         (
             "0.4.1",
-            _manifest(
-                tag="v0.5.0",
-                version="0.5.0",
-                base="0.5.0",
-                prerelease=False,
-            ),
+            _gh_release(tag="v0.5.0"),
             (
                 "0.5.0",
                 "https://github.com/tomysh1337/openstarry-code/releases/tag/v0.5.0",
@@ -448,24 +440,33 @@ def test_channel_endpoints_are_static_and_rc_scoped(monkeypatch) -> None:
         ),
         (
             "0.5.0rc4",
-            _manifest(),
+            [_gh_release()],
             (
-                "0.5.0-rc5",
+                "0.5.0rc5",
                 "https://github.com/tomysh1337/openstarry-code/releases/tag/v0.5.0rc5",
                 None,
             ),
         ),
         (
             "0.5.0rc10",
-            _manifest(
-                tag="v0.5.0",
-                version="0.5.0",
-                base="0.5.0",
-                prerelease=False,
-            ),
+            [_gh_release(tag="v0.5.0", prerelease=False)],
             (
                 "0.5.0",
                 "https://github.com/tomysh1337/openstarry-code/releases/tag/v0.5.0",
+                None,
+            ),
+        ),
+        # A newer release on the RC line is picked even when a newer release on a
+        # different line precedes it in the list (GitHub returns newest-first).
+        (
+            "0.5.0rc4",
+            [
+                {"tag_name": "v0.6.0", "prerelease": False, "html_url": "https://github.com/tomysh1337/openstarry-code/releases/tag/v0.6.0"},
+                _gh_release(),
+            ],
+            (
+                "0.5.0rc5",
+                "https://github.com/tomysh1337/openstarry-code/releases/tag/v0.5.0rc5",
                 None,
             ),
         ),
@@ -494,29 +495,19 @@ def test_fetch_accepts_valid_static_channel_manifest(
     "payload",
     [
         [],
-        {**_manifest(), "schemaVersion": True},
-        {**_manifest(), "schemaVersion": 2},
-        {**_manifest(), "tag": "vv0.5.0rc5"},
-        {
-            **_manifest(tag="V0.5.0RC5"),
-            "releaseUrl": ("https://github.com/tomysh1337/openstarry-code/releases/tag/V0.5.0RC5"),
-        },
-        {**_manifest(), "version": "0.5.0rc5"},
-        {**_manifest(), "version": "0.5.0-RC5"},
-        {**_manifest(), "version": "0.5.0-rc6"},
-        {**_manifest(), "baseVersion": "0.6.0"},
-        {**_manifest(), "prerelease": 1},
-        {**_manifest(), "prerelease": False},
-        {
-            **_manifest(),
-            "releaseUrl": "https://example.test/opensquilla/v0.5.0rc5",
-        },
-        _manifest(
-            tag="v0.6.0rc1",
-            version="0.6.0-rc1",
-            base="0.6.0",
-            prerelease=True,
-        ),
+        ["not-a-release"],
+        [_gh_release(tag="not-a-version")],
+        [_gh_release(tag="v0.5.0rc5", prerelease="yes")],
+        [_gh_release(tag="v0.5.0rc5", prerelease=False)],
+        [_gh_release(tag="v0.5.0", prerelease=True)],
+        [
+            _gh_release(
+                tag="v0.5.0rc5",
+                html_url="https://example.test/opensquilla/v0.5.0rc5",
+            )
+        ],
+        [_gh_release(tag="v0.6.0rc1")],
+        _gh_release(),  # preview channel expects a list, not a single release
     ],
 )
 def test_rc_fetch_rejects_invalid_or_cross_base_manifest(
@@ -537,7 +528,7 @@ def test_rc_fetch_rejects_invalid_or_cross_base_manifest(
 def test_stable_fetch_rejects_prerelease_manifest(monkeypatch) -> None:
     current = "0.4.1"
     endpoint = update_check._channel_for(current).endpoint
-    _install_httpx_payload(monkeypatch, _manifest(), expected_endpoint=endpoint)
+    _install_httpx_payload(monkeypatch, _gh_release(), expected_endpoint=endpoint)
 
     assert update_check._fetch_latest_release(
         endpoint,
@@ -553,7 +544,7 @@ def test_channel_manifest_http_failure_is_not_a_successful_empty_result(
     endpoint = update_check._channel_for(current).endpoint
     _install_httpx_payload(
         monkeypatch,
-        _manifest(),
+        [_gh_release()],
         expected_endpoint=endpoint,
         status_code=503,
     )

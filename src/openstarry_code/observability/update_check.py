@@ -1,10 +1,11 @@
 """Passive update-availability check.
 
-Queries the static OpenStarry Code release-channel manifest mirrored to Aliyun OSS
-and compares it with the running version, so the Control UI (and the
-``openstarry-code version --check`` command) can show a friendly "a newer version
-is available" notice. This is intentionally passive: it never downloads or
-installs anything, never blocks startup, and never raises.
+Queries the OpenStarry Code release channel, now discovered through the GitHub
+Releases API of the ``tomysh1337/openstarry-code`` repository, and compares it
+with the running version, so the Control UI (and the ``openstarry-code version
+--check`` command) can show a friendly "a newer version is available" notice.
+This is intentionally passive: it never downloads or installs anything, never
+blocks startup, and never raises.
 
 The result is cached under the state dir with a 24h TTL so each passive channel
 check performs at most one network attempt per day. The check honours the same
@@ -48,16 +49,22 @@ TELEMETRY_DISABLED_ENV = "OPENSTARRY_CODE_TELEMETRY_DISABLED"
 UPDATE_CHECK_ENDPOINT_ENV = "OPENSTARRY_CODE_UPDATE_CHECK_ENDPOINT"
 TELEMETRY_TESTING_ENV = "OPENSTARRY_CODE_TESTING"
 
-DEFAULT_UPDATE_CHANNEL_ROOT = (
-    "https://opensquilla-releases.oss-cn-beijing.aliyuncs.com/releases/channels"
+UPDATE_CHANNEL_REPO = "tomysh1337/openstarry-code"
+
+# Discover the latest release directly from the GitHub Releases API rather than a
+# static manifest mirrored to Aliyun OSS. ``/releases/latest`` always returns the
+# newest *stable* release; the preview channel lists releases so the checker can
+# pick the newest pre-release on the running release line.
+DEFAULT_UPDATE_CHECK_ENDPOINT = (
+    f"https://api.github.com/repos/{UPDATE_CHANNEL_REPO}/releases/latest"
 )
-DEFAULT_UPDATE_CHECK_ENDPOINT = f"{DEFAULT_UPDATE_CHANNEL_ROOT}/stable.json"
-# RC checks are scoped to the running release line. ``_channel_for`` expands
-# this template before it reaches the network; keeping it as a named constant
-# also makes the public endpoint contract easy to exercise in tests.
-DEFAULT_RC_UPDATE_CHECK_ENDPOINT = f"{DEFAULT_UPDATE_CHANNEL_ROOT}/preview/{{base}}.json"
-DEFAULT_RELEASE_TAG_PAGE = "https://github.com/tomysh1337/openstarry-code/releases/tag"
-DEFAULT_RELEASES_INDEX_PAGE = "https://github.com/tomysh1337/openstarry-code/releases"
+# RC discovery lists up to 100 newest releases (GitHub returns newest-first) so the
+# newest pre-release of the running line is found even when newer lines dominate.
+DEFAULT_RC_UPDATE_CHECK_ENDPOINT = (
+    f"https://api.github.com/repos/{UPDATE_CHANNEL_REPO}/releases?per_page=100"
+)
+DEFAULT_RELEASE_TAG_PAGE = f"https://github.com/{UPDATE_CHANNEL_REPO}/releases/tag"
+DEFAULT_RELEASES_INDEX_PAGE = f"https://github.com/{UPDATE_CHANNEL_REPO}/releases"
 # Compatibility name for callers that imported the old fallback constant.
 # A lookup without an exact release URL leads to the generic index rather than
 # implying that any particular GitHub Release was selected.
@@ -325,7 +332,7 @@ def _channel_for(current: str) -> _UpdateChannel:
             kind="rc",
             scope=f"rc:{base_text}",
             state_file=RC_UPDATE_CHECK_STATE_FILE,
-            endpoint=DEFAULT_RC_UPDATE_CHECK_ENDPOINT.format(base=base_text),
+            endpoint=DEFAULT_RC_UPDATE_CHECK_ENDPOINT,
             releases_page=DEFAULT_RELEASES_INDEX_PAGE,
             base=base,
         )
@@ -547,75 +554,67 @@ def _write_state(path: Path, state: dict[str, Any]) -> None:
         raise
 
 
-_MANIFEST_TAG_RE = re.compile(
-    r"^v(0|[1-9]\d*)[.](0|[1-9]\d*)[.](0|[1-9]\d*)"
-    r"(?:rc(0|[1-9]\d*))?$"
-)
-_MANIFEST_VERSION_RE = re.compile(
-    r"^(0|[1-9]\d*)[.](0|[1-9]\d*)[.](0|[1-9]\d*)"
-    r"(?:-rc(0|[1-9]\d*))?$"
-)
+def _github_release(release: object, *, require_stable: bool) -> tuple[str, str]:
+    """Validate one GitHub Release object and return ``(version, release_url)``.
 
-
-def _strict_manifest_version(
-    value: object,
-    pattern: re.Pattern[str],
-) -> tuple[tuple[int, int, int], int | None] | None:
-    if not isinstance(value, str):
-        return None
-    match = pattern.fullmatch(value.strip())
-    if match is None:
-        return None
-    base = int(match.group(1)), int(match.group(2)), int(match.group(3))
-    ordinal = int(match.group(4)) if match.group(4) is not None else None
-    return base, ordinal
-
-
-def _manifest_release(
-    payload: object,
-    channel: _UpdateChannel,
-) -> tuple[str, str]:
-    """Validate a v1 channel manifest and return its version and release page.
-
-    Platform assets deliberately remain an Electron concern. This passive
-    checker validates only the common discovery contract it consumes, plus the
-    requested stable/preview scope so a misplaced moving object cannot leak a
-    release from another channel into the cache.
+    The passive checker consumes only the common discovery fields GitHub exposes
+    (``tag_name``, ``prerelease``, ``html_url``); platform assets deliberately
+    remain an Electron concern and are not inspected here. ``require_stable``
+    rejects a pre-release for the stable channel so a published RC cannot be
+    advertised to stable users through the ``/releases/latest`` endpoint.
     """
-    if not isinstance(payload, dict):
-        raise ValueError("channel manifest must be an object")
-    schema_version = payload.get("schemaVersion")
-    if type(schema_version) is not int or schema_version != 1:
-        raise ValueError("unsupported channel manifest schemaVersion")
+    if not isinstance(release, dict):
+        raise ValueError("GitHub release must be an object")
+    tag_value = release.get("tag_name")
+    if not isinstance(tag_value, str) or not tag_value.strip():
+        raise ValueError("GitHub release missing tag_name")
+    tag = tag_value.strip()
 
-    tag_value = payload.get("tag")
-    version_value = payload.get("version")
-    tag = tag_value.strip() if isinstance(tag_value, str) else ""
-    version = version_value.strip() if isinstance(version_value, str) else ""
-    tag_parsed = _strict_manifest_version(tag, _MANIFEST_TAG_RE)
-    version_parsed = _strict_manifest_version(version, _MANIFEST_VERSION_RE)
-    if tag_parsed is None or version_parsed is None or tag_parsed != version_parsed:
-        raise ValueError("channel manifest tag and version disagree")
+    parsed = _parse_rc_version(tag)
+    if parsed is None:
+        raise ValueError("GitHub release tag is not a version")
+    base, ordinal = parsed
+    if require_stable and ordinal is not None:
+        raise ValueError("stable channel release must not be a prerelease")
 
-    base, ordinal = tag_parsed
-    base_text = ".".join(str(part) for part in base)
-    base_value = payload.get("baseVersion")
-    if not isinstance(base_value, str) or base_value.strip() != base_text:
-        raise ValueError("channel manifest baseVersion disagrees with tag")
-    prerelease = payload.get("prerelease")
-    if type(prerelease) is not bool or prerelease is not (ordinal is not None):
-        raise ValueError("channel manifest prerelease disagrees with tag")
-
-    if channel.kind == "stable":
-        if ordinal is not None:
-            raise ValueError("stable channel manifest contains a prerelease")
-    elif channel.base is None or base != channel.base:
-        raise ValueError("preview channel manifest contains another release line")
+    prerelease = release.get("prerelease")
+    if type(prerelease) is not bool:
+        raise ValueError("GitHub release prerelease flag is not a boolean")
+    if prerelease is not (ordinal is not None):
+        raise ValueError("GitHub release prerelease flag disagrees with tag")
 
     canonical_release_url = f"{DEFAULT_RELEASE_TAG_PAGE}/{tag}"
-    if payload.get("releaseUrl") != canonical_release_url:
-        raise ValueError("channel manifest releaseUrl is not canonical")
-    return version, canonical_release_url
+    if release.get("html_url") != canonical_release_url:
+        raise ValueError("GitHub release html_url is not canonical")
+    return tag.lstrip("vV"), canonical_release_url
+
+
+def _releases_release(payload: object, channel: _UpdateChannel) -> tuple[str, str]:
+    """Resolve the newest eligible release for ``channel`` and return its version/URL.
+
+    The stable channel consumes the single release object returned by GitHub's
+    ``/releases/latest``. The preview channel consumes the ``/releases`` array and
+    picks the newest release on the running line (GitHub returns newest-first), so
+    an RC user learns both a newer RC and the moment that RC graduates to stable.
+    """
+    if channel.kind == "stable":
+        if not isinstance(payload, dict):
+            raise ValueError("stable channel payload must be a release object")
+        return _github_release(payload, require_stable=True)
+
+    if not isinstance(payload, list):
+        raise ValueError("preview channel payload must be a list")
+    for release in payload:
+        if not isinstance(release, dict):
+            continue
+        tag = release.get("tag_name")
+        if not isinstance(tag, str):
+            continue
+        parsed = _parse_rc_version(tag.strip())
+        if parsed is None or parsed[0] != channel.base:
+            continue
+        return _github_release(release, require_stable=False)
+    raise ValueError("preview channel has no release for this release line")
 
 
 def _fetch_latest_release(
@@ -624,11 +623,11 @@ def _fetch_latest_release(
     *,
     timeout: float,
 ) -> tuple[str | None, str | None, str | None]:
-    """Return ``(manifest_version, canonical_release_url, error)``.
+    """Return ``(latest_version, canonical_release_url, error)``.
 
     Transport, HTTP, JSON, and schema failures return a non-null error. This is
     important for the cache contract: a damaged or temporarily unreachable
-    moving manifest must preserve the last successful same-scope result rather
+    release channel must preserve the last successful same-scope result rather
     than masquerade as a successful "no update" lookup.
     """
     if not endpoint:
@@ -650,12 +649,12 @@ def _fetch_latest_release(
         return None, None, str(exc)
 
     try:
-        latest, release_url = _manifest_release(
+        latest, release_url = _releases_release(
             payload,
             _channel_for(current_version),
         )
     except ValueError as exc:
-        log.debug("Update-channel manifest rejected: %s", exc)
+        log.debug("Update-channel release rejected: %s", exc)
         return None, None, "manifest_invalid"
     return latest, release_url, None
 

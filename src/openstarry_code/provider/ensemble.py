@@ -2858,6 +2858,11 @@ class EnsembleProvider:
                     yield aggregator_progress("aggregator_finish", error=error.message)
                     yield partial_error(error)
                     return
+            finally:
+                close_stream = getattr(heartbeat_stream, "aclose", None)
+                if callable(close_stream):
+                    with contextlib.suppress(Exception):
+                        await close_stream()
             if retry_error is None:
                 error = ErrorEvent(
                     message="ensemble aggregator stream ended before DoneEvent",

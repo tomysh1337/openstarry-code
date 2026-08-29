@@ -148,11 +148,15 @@ class GuestRpcPolicy:
             if not isinstance(params, dict):
                 return params
             normalized = dict(params)
+            # Guests may send their first message but cannot choose a cost or
+            # capability profile that their principal is not allowed to mutate.
             normalized["sessionKey"] = guest_owned_session_key(
                 owner_id,
                 params.get("sessionKey") or params.get("key"),
             )
             normalized.pop("key", None)
+            normalized.pop("initialRoutingMode", None)
+            normalized.pop("initial_routing_mode", None)
             normalized["noMemoryCapture"] = True
             normalized["no_memory_capture"] = True
             source = normalized.get("_source")
@@ -187,6 +191,11 @@ class GuestRpcPolicy:
         normalized[fields[0]] = key
         for alias in fields[1:]:
             normalized.pop(alias, None)
+        if method == "sessions.pending_inputs.enqueue":
+            # Guests must not stage a message on a routing mode their principal
+            # is not allowed to mutate; keep the global routing default.
+            normalized.pop("initialRoutingMode", None)
+            normalized.pop("initial_routing_mode", None)
         # Keep a guest WebUI's task id only after proving ownership of the
         # session key. chat.abort binds that id back to this same session in
         # TaskRuntime; stripping it here would widen a precise Stop into the
