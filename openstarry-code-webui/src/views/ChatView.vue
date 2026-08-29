@@ -603,6 +603,8 @@
       :plan-mode-disabled="planActionPending !== null"
       :plan-mode-applies-next-turn="planModeAppliesNextTurn"
       :replan-active="replanActive"
+      :review-level="assistReviewLevel"
+      :thinking-level="assistThinkingLevel"
       :prompt-cache-keepalive-available="promptCacheKeepaliveAvailable"
       :prompt-cache-keepalive-session-ready="promptCacheKeepaliveSessionReady"
       :prompt-cache-keepalive-status="promptCacheKeepaliveStatus"
@@ -623,6 +625,8 @@
       @set-collaboration-mode="setCollaborationMode"
       @arm-goal="void activateGoalComposerMode()"
       @disarm-goal="disarmGoalMode"
+      @cycle-review-mode="cycleAssistReview"
+      @cycle-thinking-mode="cycleAssistThinking"
       @cancel-replan="cancelPlanRevision"
       @voice-input="onVoiceInput"
       @voice-setup="onVoiceSetup"
@@ -831,6 +835,7 @@ import { navigateMetaSetupProviderSettings } from '@/composables/chat/metaSetupP
 import { useDocumentEvent } from '@/composables/useDocumentEvent'
 import { hasOpenDialogLayer } from '@/composables/useDialogA11y'
 import { useToasts } from '@/composables/useToasts'
+import { useAssistModes } from '@/composables/chat/useAssistModes'
 import { useConfirm } from '@/composables/useConfirm'
 import {
   useProjectWorkspaces,
@@ -1026,6 +1031,27 @@ const router = useRouter()
 const { t } = useI18n()
 const { pushToast } = useToasts()
 const { confirm } = useConfirm()
+
+// Assist modes (composer "+" menu): review + thinking. Cycling review ON from
+// OFF warns about the extra token cost of the iterative self-review pass.
+const {
+  reviewLevel: assistReviewLevel,
+  thinkingLevel: assistThinkingLevel,
+  cycleReviewLevel,
+  cycleThinkingLevel,
+} = useAssistModes()
+
+function cycleAssistReview() {
+  const wasOff = assistReviewLevel.value === 'off'
+  const level = cycleReviewLevel()
+  if (wasOff && level !== 'off') {
+    pushToast(t('chat.reviewMode.tokenWarning'), { tone: 'warn' })
+  }
+}
+
+function cycleAssistThinking() {
+  cycleThinkingLevel()
+}
 const projectWorkspaces = useProjectWorkspaces()
 const activeProjectWorkspace = useActiveProjectWorkspace()
 const draftProjectHydration = createDraftProjectHydrationGuard()

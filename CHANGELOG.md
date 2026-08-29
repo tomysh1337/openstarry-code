@@ -6,6 +6,29 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-08-29
+
+### Added
+
+- Added read-only remote file browsing (SSH, FTP, WSL, MCP, and cloned Git
+  repositories) in the IDE panel, including a Git transport that scans the
+  workspace for cloned repositories.
+- Added AI command mirroring in the terminal panel, showing the PowerShell
+  commands executed by the agent in real time.
+- Added the computer-use module with a visual cursor overlay (4x
+  supersampling, glowing rectangular frame), desktop control session, and
+  an MCP server surface.
+- Added the starry protocol module, session handoff and recovery, thinking
+  mode, workflow learner, prompt compressor, and QA verification stages.
+- Added SSH/FTP/MCP settings panels, a Computer Use preview modal, and the
+  Tenacity theme.
+- Added green/red per-line change marks in the IDE panel for local project
+  files, computed against an in-memory project snapshot.
+
+### Fixed
+
+- Fixed the Web UI redirecting to an empty chat on cold start.
+
 ## [0.5.9] - 2026-08-17
 
 ### Added

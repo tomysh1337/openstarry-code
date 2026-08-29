@@ -874,6 +874,112 @@ class TurnFinalizerStage:
         except Exception as exc:  # noqa: BLE001 - log-and-continue intentional
             log.warning("turn_runner.usage_telemetry_persist_failed", error=str(exc))
 
+        # 7. Hermes 自动学习系统（对话完成后分析工作流）
+        # 只有在成功完成 Turn 时才尝试学习（有 DoneEvent 且无错误）
+        if done_event is not None and not inp.error_message and transcript_appended:
+            try:
+                from openstarry_code.engine.workflow_learner import analyze_turn_for_learning
+                
+                # 提取工具调用信息
+                tool_calls = [
+                    segment for segment in turn_segments 
+                    if isinstance(segment, dict) and segment.get("type") in ("tool_use", "tool_result")
+                ]
+                
+                # 只有当工具调用数量 >= 5 时才尝试学习
+                if len(tool_calls) >= 5:
+                    pattern = await analyze_turn_for_learning(
+                        user_message=inp.runtime_message,
+                        tool_calls=tool_calls,
+                        turn_segments=turn_segments,
+                        success=True
+                    )
+                    if pattern:
+                        log.info(
+                            "turn_runner.workflow_learned",
+                            session_key=inp.session_key,
+                            pattern_name=pattern.name,
+                            reusability_score=pattern.reusability_score,
+                            tool_count=len(tool_calls)
+                        )
+                        # TODO: 可以在这里将 pattern 保存到数据库或生成 Skill 草稿
+            except Exception as exc:  # noqa: BLE001 - log-and-continue intentional
+                log.warning(
+                    "turn_runner.workflow_learning_failed",
+                    session_key=inp.session_key,
+                    error=str(exc)
+                )
+
+        # 8. QA 验证系统（任务完成前强制验证）
+        # 只有在成功完成 Turn 且有文件修改时才执行 QA
+        qa_passed = True
+        if done_event is not None and not inp.error_message and transcript_appended:
+            try:
+                from pathlib import Path
+                from openstarry_code.engine.qa_verification import run_qa_verification
+                
+                # 从 turn_segments 中提取修改的文件列表
+                modified_files: list[str] = []
+                for segment in turn_segments:
+                    if isinstance(segment, dict):
+                        # 检查是否是文件操作相关的工具调用
+                        if segment.get("type") == "tool_use":
+                            tool_name = segment.get("name", "")
+                            if tool_name in ("Write", "SearchReplace", "DeleteFile"):
+                                tool_input = segment.get("input", {})
+                                if isinstance(tool_input, dict):
+                                    # Write 和 SearchReplace 使用 file_path
+                                    if "file_path" in tool_input:
+                                        modified_files.append(str(tool_input["file_path"]))
+                                    # DeleteFile 使用 file_paths (列表)
+                                    elif "file_paths" in tool_input:
+                                        file_paths = tool_input["file_paths"]
+                                        if isinstance(file_paths, list):
+                                            modified_files.extend(str(fp) for fp in file_paths)
+                
+                # 去重
+                modified_files = list(set(modified_files))
+                
+                # 只有当有文件修改时才执行 QA 验证
+                if modified_files:
+                    workspace_root = Path.cwd()
+                    qa_report = await run_qa_verification(
+                        session_key=inp.session_key,
+                        modified_files=modified_files,
+                        workspace_root=workspace_root,
+                        skip_build=False,
+                        skip_tests=False
+                    )
+                    
+                    qa_passed = qa_report.passed
+                    
+                    if qa_passed:
+                        log.info(
+                            "turn_runner.qa_verification_passed",
+                            session_key=inp.session_key,
+                            modified_files_count=len(modified_files),
+                            build_passed=qa_report.build_passed,
+                            tests_passed=qa_report.tests_passed
+                        )
+                    else:
+                        log.warning(
+                            "turn_runner.qa_verification_failed",
+                            session_key=inp.session_key,
+                            modified_files_count=len(modified_files),
+                            build_passed=qa_report.build_passed,
+                            tests_passed=qa_report.tests_passed,
+                            failed_checks=qa_report.failed_checks
+                        )
+                        # TODO: 可以在这里添加逻辑，阻止 Turn 标记为完成
+                        # 或者将 QA 报告添加到 final_text 中通知用户
+                        
+            except Exception as exc:  # noqa: BLE001 - log-and-continue intentional
+                log.warning(
+                    "turn_runner.qa_verification_error",
+                    session_key=inp.session_key,
+                    error=str(exc)
+                )
+
         return StageOutcome.success(
             TurnFinalizerStageOutput(
                 final_text=final_text,

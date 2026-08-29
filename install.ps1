@@ -12,7 +12,7 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-$defaultVersion = 'v0.5.9'
+$defaultVersion = 'v0.6.0'
 $repoSlug = if ($env:OPENSTARRY_CODE_REPOSITORY) { $env:OPENSTARRY_CODE_REPOSITORY } else { 'tomysh1337/openstarry-code' }
 $pythonVersion = if ($env:OPENSTARRY_CODE_PYTHON_VERSION) { $env:OPENSTARRY_CODE_PYTHON_VERSION } else { '3.12' }
 $originalPath = if ($env:Path) { $env:Path } else { '' }

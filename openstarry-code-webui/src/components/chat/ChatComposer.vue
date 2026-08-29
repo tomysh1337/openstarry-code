@@ -105,10 +105,14 @@
                 :plan-mode-active="collaborationMode === 'plan'"
                 :plan-mode-available="planModeAvailable === true"
                 :plan-mode-busy="planModeBusy === true || planModeDisabled === true"
+                :review-level="reviewLevel"
+                :thinking-level="thinkingLevel"
                 @activate-goal-mode="emit('armGoal')"
                 @activate-plan-mode="emit('setCollaborationMode', 'plan')"
                 @attach-files="fileInputEl?.click()"
                 @close="addMenuOpen = false"
+                @cycle-review-mode="emit('cycleReviewMode')"
+                @cycle-thinking-mode="emit('cycleThinkingMode')"
               />
             </div>
             <div
@@ -359,7 +363,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import Icon from '@/components/Icon.vue'
 import type { IconName } from '@/utils/icons'
@@ -374,6 +378,7 @@ import type { SandboxRunMode } from '@/types/sandbox'
 import type { CollaborationMode } from '@/types/plans'
 import type { PromptCacheKeepaliveStatus } from '@/types/promptCacheKeepalive'
 import { isAttachmentBusy, isImageDisplayAttachment } from '@/utils/chat/attachments'
+import { COMPOSER_INSERT_EVENT, type ComposerInsertEventDetail } from '@/utils/chat/composerInsert'
 
 interface ChatComposerExpose {
   composerElement: () => HTMLElement | null
@@ -422,6 +427,8 @@ const props = withDefaults(defineProps<{
   planModeDisabled?: boolean
   planModeAppliesNextTurn?: boolean
   replanActive?: boolean
+  reviewLevel?: import('@/composables/chat/useAssistModes').ReviewLevel
+  thinkingLevel?: import('@/composables/chat/useAssistModes').ThinkingLevel
   promptCacheKeepaliveAvailable?: boolean
   promptCacheKeepaliveSessionReady?: boolean
   promptCacheKeepaliveStatus?: PromptCacheKeepaliveStatus | null
@@ -438,6 +445,8 @@ const props = withDefaults(defineProps<{
   inputDisabled: false,
   safeSetupAvailable: false,
   floating: false,
+  reviewLevel: 'off',
+  thinkingLevel: 'off',
 })
 
 const emit = defineEmits<{
@@ -456,6 +465,8 @@ const emit = defineEmits<{
   setCollaborationMode: [mode: CollaborationMode]
   armGoal: []
   disarmGoal: []
+  cycleReviewMode: []
+  cycleThinkingMode: []
   cancelReplan: []
   voiceInput: []
   voiceSetup: []
@@ -585,6 +596,23 @@ watch(anyPopoverOpen, (open) => {
 
 onBeforeUnmount(() => {
   document.removeEventListener('pointerdown', closeOpenPopoversFromOutside, true)
+  window.removeEventListener(COMPOSER_INSERT_EVENT, onComposerInsert)
+})
+
+// External surfaces (e.g. the IDE explorer's "add to conversation") append
+// text to the draft through the window-event bridge in utils/chat/composerInsert.
+function onComposerInsert(event: Event) {
+  const detail = (event as CustomEvent<ComposerInsertEventDetail>).detail
+  const text = typeof detail?.text === 'string' ? detail.text : ''
+  if (!text) return
+  inputText.value = inputText.value.trimEnd()
+    ? `${inputText.value.trimEnd()}\n\n${text}`
+    : text
+  focusTextarea()
+}
+
+onMounted(() => {
+  window.addEventListener(COMPOSER_INSERT_EVENT, onComposerInsert)
 })
 
 function toggleModelRouting() {

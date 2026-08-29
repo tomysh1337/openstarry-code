@@ -22,6 +22,24 @@ from openstarry_code.gateway.approval_events import build_approval_snapshot_item
 from openstarry_code.gateway.approval_queue import get_approval_queue
 from openstarry_code.gateway.config import GatewayConfig
 from openstarry_code.gateway.control_ui import create_control_ui_routes
+from openstarry_code.gateway.ide_routes import (
+    api_ide_changes,
+    api_ide_create,
+    api_ide_delete,
+    api_ide_diff,
+    api_ide_doc,
+    api_ide_file,
+    api_ide_handoff,
+    api_ide_rename,
+    api_ide_root,
+    api_ide_tree,
+)
+from openstarry_code.gateway.computer_use_routes import computer_use_routes
+from openstarry_code.gateway.mcp_routes import mcp_server_routes
+from openstarry_code.gateway.ssh_routes import ssh_host_routes
+from openstarry_code.gateway.ftp_routes import ftp_host_routes
+from openstarry_code.gateway.remote_routes import remote_routes
+from openstarry_code.gateway.ui_routes import ui_theme_routes
 from openstarry_code.gateway.middleware import (
     AuthMiddleware,
     ErrorHandlingMiddleware,
@@ -762,6 +780,11 @@ def create_gateway_app(
             skill_management_service=skill_management_service,
         )
 
+    async def terminal_ws_endpoint(ws: WebSocket) -> None:
+        from openstarry_code.gateway.terminal_ws import terminal_ws_endpoint as _run_terminal
+
+        await _run_terminal(ws, config)
+
     # ── Routes ───────────────────────────────────────────────────────────────
 
     root_routes = (
@@ -810,7 +833,39 @@ def create_gateway_app(
         Route("/api/approvals/settings", _same_origin(api_approvals_settings), methods=["POST"]),
         Route("/api/approvals/resolve", _same_origin(api_approvals_resolve), methods=["POST"]),
         Route("/api/elevated-mode", _same_origin(api_elevated_mode), methods=["POST"]),
+        # IDE panel: project source tree / file reading / handoff document,
+        # plus create / rename / delete for the explorer's context menu.
+        Route("/api/ide/root", api_ide_root, methods=["GET"]),
+        Route("/api/ide/tree", api_ide_tree, methods=["GET"]),
+        Route("/api/ide/file", api_ide_file, methods=["GET"]),
+        Route("/api/ide/doc", api_ide_doc, methods=["GET"]),
+        Route("/api/ide/handoff", api_ide_handoff, methods=["GET"]),
+        Route("/api/ide/changes", api_ide_changes, methods=["GET"]),
+        Route("/api/ide/diff", api_ide_diff, methods=["GET"]),
+        Route("/api/ide/create", api_ide_create, methods=["POST"]),
+        Route("/api/ide/rename", api_ide_rename, methods=["POST"]),
+        Route("/api/ide/delete", api_ide_delete, methods=["POST"]),
+        # MCP server configuration management (settings panel CRUD; runtime
+        # connections still happen at boot via mcp.discovery, honoring
+        # the enabled flag).
+        *mcp_server_routes(config),
+        # SSH host configuration management (settings panel CRUD; terminal
+        # sessions run through the builtin terminal WS with ssh_host=<id>,
+        # carried by the system ssh client).
+        *ssh_host_routes(config),
+        # FTP host configuration management (settings panel CRUD; browsing is
+        # read-only and carried by stdlib ftplib in the IDE panel's remote tab).
+        *ftp_host_routes(config),
+        # Remote file browsing for the IDE panel (SSH/FTP/WSL/MCP sources).
+        *remote_routes(config),
+        # WebUI theme sync (PUT /api/ui/theme): mirrors the operator's theme
+        # onto config.ui_theme for engine computer-use guidance + OSC_THEME.
+        *ui_theme_routes(config),
+        # Computer-use session state for the WebUI preview panel (mirrors the
+        # state.json snapshot written by the computer-use MCP server).
+        *computer_use_routes(),
         WebSocketRoute("/ws", ws_endpoint),
+        WebSocketRoute("/ws/builtin/terminal", terminal_ws_endpoint),
     ]
 
     # ── Channel webhook routes (Slack, Feishu) ────────────────────────────

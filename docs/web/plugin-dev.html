@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>插件开发 - OpenStarry Code</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="page-wrapper">
+        <!-- 侧边栏导航 -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="logo">⭐ OpenStarry</h1>
+                <p class="subtitle">AI Agent Runtime</p>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-title">入门</div>
+                <ul class="nav-list">
+                    <li><a href="index.html" class="nav-link">快速开始</a></li>
+                    <li><a href="index.html#installation" class="nav-link">安装指南</a></li>
+                    <li><a href="index.html#configuration" class="nav-link">基础配置</a></li>
+                </ul>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-title">API 参考</div>
+                <ul class="nav-list">
+                    <li><a href="api.html" class="nav-link">API 总览</a></li>
+                    <li><a href="api.html#providers" class="nav-link">Provider API</a></li>
+                    <li><a href="api.html#skills" class="nav-link">Skills API</a></li>
+                    <li><a href="api.html#protocol" class="nav-link">Protocol API</a></li>
+                </ul>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-title">插件系统</div>
+                <ul class="nav-list">
+                    <li><a href="plugins.html" class="nav-link">插件架构</a></li>
+                    <li><a href="plugins.html#marketplace" class="nav-link">插件市场</a></li>
+                    <li><a href="#skill-dev" class="nav-link active">开发 Skill</a></li>
+                    <li><a href="#extension-dev" class="nav-link">开发扩展</a></li>
+                    <li><a href="#publish" class="nav-link">发布插件</a></li>
+                </ul>
+            </div>
+        </nav>
+        
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <div class="content-wrapper">
+                <!-- 页面标题 -->
+                <header class="page-header">
+                    <h1 class="page-title">插件开发指南</h1>
+                    <p class="page-desc">创建并发布你的 OpenStarry Code 插件</p>
+                </header>
+                
+                <!-- 开发 Skill 插件 -->
+                <section id="skill-dev" class="doc-section">
+                    <h2 class="section-title">开发 Skill 插件</h2>
+                    
+                    <div class="card">
+                        <h3>Skill 基本结构</h3>
+                        <p>每个 Skill 是一个包含 <code>SKILL.md</code> 文件的目录：</p>
+                        
+                        <div class="code-block">
+                            <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                            <pre><code>my-awesome-skill/
+├── SKILL.md          # 必需：Skill 定义文件
+├── README.md         # 可选：使用说明
+├── scripts/          # 可选：辅助脚本
+│   └── helper.py
+└── resources/        # 可选：资源文件
+    └── templates/</code></pre>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>SKILL.md 格式</h3>
+                        <p>Skill 定义文件使用 YAML 前置元数据 + Markdown 正文的格式：</p>
+                        
+                        <div class="tabs">
+                            <button class="tab-btn active" onclick="switchTab(event, 'skill-basic')">基础 Skill</button>
+                            <button class="tab-btn" onclick="switchTab(event, 'skill-meta')">Meta-Skill</button>
+                        </div>
+                        
+                        <div id="skill-basic" class="tab-content active">
+                            <div class="code-block">
+                                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                                <pre><code>---
+name: my-awesome-skill
+description: "A clear one-sentence description"
+description_zh: "该技能功能的中文描述"
+triggers:
+  - "keyword or phrase that activates this skill"
+  - "another trigger phrase"
+homepage: https://github.com/yourname/my-awesome-skill
+provenance:
+  origin: community
+  license: MIT
+  upstream_url: https://github.com/yourname/my-awesome-skill
+  maintained_by: Your Name
+requires:
+  - python>=3.10
+  - pip:pandas
+metadata:
+  risk: low
+  capabilities:
+    - filesystem-read
+---
+
+# My Awesome Skill
+
+## Purpose
+
+Explain what this skill does and when to use it.
+
+## Instructions
+
+Detailed instructions for the AI agent on how to use this skill.
+
+### Step 1: Understand the Request
+
+Guidelines for interpreting user input...
+
+### Step 2: Execute the Task
+
+Specific implementation steps...
+
+### Step 3: Deliver the Result
+
+How to format and present the output...
+
+## Examples
+
+### Example 1: Basic Usage
+
+User request: "Do something awesome"
+
+Expected behavior:
+1. Analyze the request
+2. Execute the task
+3. Return the result
+
+## Constraints
+
+- Do not perform action X
+- Always validate input Y
+- Respect user preferences for Z</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div id="skill-meta" class="tab-content">
+                            <div class="code-block">
+                                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                                <pre><code>---
+name: research-report-workflow
+kind: meta
+description: "Automated research report generation"
+triggers:
+  - "research report"
+  - "academic paper"
+meta_priority: 50
+provenance:
+  origin: bundled
+  license: MIT
+metadata:
+  risk: medium
+  capabilities:
+    - filesystem-write
+    - network-read
+    - artifact-write
+composition:
+  inputs:
+    topic:
+      type: string
+      required: true
+    depth:
+      type: integer
+      default: 3
+  steps:
+    - id: gather
+      skill: web-research
+      inputs:
+        query: "{{inputs.topic}}"
+        max_results: 20
+    - id: synthesize
+      skill: content-synthesis
+      inputs:
+        sources: "{{steps.gather.output}}"
+    - id: format
+      skill: markdown-formatter
+      inputs:
+        content: "{{steps.synthesize.output}}"
+  outputs:
+    report: "{{steps.format.output}}"
+---
+
+# Research Report Workflow
+
+Multi-step research and report generation workflow.</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>YAML 前置元数据字段</h3>
+                        
+                        <table class="api-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 25%">字段</th>
+                                    <th style="width: 15%">类型</th>
+                                    <th style="width: 60%">说明</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>name</code></td>
+                                    <td>string</td>
+                                    <td><strong>必需</strong>。Skill 唯一标识符（小写字母、数字、连字符）</td>
+                                </tr>
+                                <tr>
+                                    <td><code>description</code></td>
+                                    <td>string</td>
+                                    <td><strong>必需</strong>。简短的英文描述（一句话）</td>
+                                </tr>
+                                <tr>
+                                    <td><code>description_zh</code></td>
+                                    <td>string</td>
+                                    <td>可选。中文描述</td>
+                                </tr>
+                                <tr>
+                                    <td><code>triggers</code></td>
+                                    <td>list</td>
+                                    <td>触发该 Skill 的关键词或短语列表</td>
+                                </tr>
+                                <tr>
+                                    <td><code>kind</code></td>
+                                    <td>string</td>
+                                    <td><code>normal</code>（默认）或 <code>meta</code>（Meta-Skill）</td>
+                                </tr>
+                                <tr>
+                                    <td><code>homepage</code></td>
+                                    <td>string</td>
+                                    <td>Skill 的主页 URL</td>
+                                </tr>
+                                <tr>
+                                    <td><code>provenance</code></td>
+                                    <td>object</td>
+                                    <td>来源信息（origin, license, upstream_url, maintained_by）</td>
+                                </tr>
+                                <tr>
+                                    <td><code>requires</code></td>
+                                    <td>list</td>
+                                    <td>依赖项列表（格式：<code>python>=3.10</code>、<code>pip:package</code>）</td>
+                                </tr>
+                                <tr>
+                                    <td><code>metadata</code></td>
+                                    <td>object</td>
+                                    <td>元数据（risk 级别、capabilities 列表）</td>
+                                </tr>
+                                <tr>
+                                    <td><code>composition</code></td>
+                                    <td>object</td>
+                                    <td>仅 Meta-Skill。定义工作流的输入、步骤和输出</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+                
+                <!-- 开发原生扩展 -->
+                <section id="extension-dev" class="doc-section">
+                    <h2 class="section-title">开发原生扩展</h2>
+                    
+                    <div class="card">
+                        <h3>扩展类型</h3>
+                        <p>OpenStarry Code 支持三种编程语言开发原生扩展：</p>
+                        
+                        <div class="grid-3">
+                            <div class="feature-card">
+                                <div class="feature-icon">🐍</div>
+                                <h3>Python</h3>
+                                <p>推荐。完整的 API 访问权限</p>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <div class="feature-icon">☕</div>
+                                <h3>Java</h3>
+                                <p>高性能，跨平台</p>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <div class="feature-icon">🔷</div>
+                                <h3>Go</h3>
+                                <p>通过 CGO 编译为共享库</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>Python 扩展开发</h3>
+                        
+                        <div class="tabs">
+                            <button class="tab-btn active" onclick="switchTab(event, 'py-basic')">基础结构</button>
+                            <button class="tab-btn" onclick="switchTab(event, 'py-advanced')">高级功能</button>
+                        </div>
+                        
+                        <div id="py-basic" class="tab-content active">
+                            <p><strong>1. 创建扩展目录：</strong></p>
+                            <div class="code-block">
+                                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                                <pre><code>my-extension/
+├── __init__.py       # 扩展入口
+├── manifest.json     # 扩展元数据
+├── handlers.py       # 功能实现
+└── requirements.txt  # Python 依赖</code></pre>
+                            </div>
+                            
+                            <p><strong>2. manifest.json：</strong></p>
+                            <div class="code-block">
+                                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                                <pre><code>{
+  "name": "my-extension",
+  "version": "1.0.0",
+  "description": "My awesome extension",
+  "author": "Your Name",
+  "license": "MIT",
+  "entry_point": "__init__.py",
+  "api_version": "1.0",
+  "capabilities": [
+    "tool-registry",
+    "event-hooks",
+    "config-provider"
+  ],
+  "permissions": [
+    "filesystem-read",
+    "network-request"
+  ]
+}</code></pre>
+                            </div>
+                            
+                            <p><strong>3. __init__.py：</strong></p>
+                            <div class="code-block">
+                                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                                <pre><code>from openstarry_code.extension import Extension
+from openstarry_code.tools import Tool, ToolParameter
+
+class MyExtension(Extension):
+    def __init__(self):
+        super().__init__(
+            name="my-extension",
+            version="1.0.0",
+            description="My awesome extension"
+        )
+    
+    def on_load(self):
+        """扩展加载时调用"""
+        self.register_tool(MyCustomTool())
+        self.logger.info("Extension loaded")
+    
+    def on_unload(self):
+        """扩展卸载时调用"""
+        self.logger.info("Extension unloaded")
+
+class MyCustomTool(Tool):
+    def __init__(self):
+        super().__init__(
+            name="my_custom_tool",
+            description="Does something awesome",
+            parameters=[
+                ToolParameter(
+                    name="input_text",
+                    type="string",
+                    description="Input text to process",
+                    required=True
+                )
+            ]
+        )
+    
+    def execute(self, input_text: str) -> dict:
+        """工具执行逻辑"""
+        result = f"Processed: {input_text}"
+        return {"output": result}
+
+# 扩展实例
+extension = MyExtension()</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div id="py-advanced" class="tab-content">
+                            <p><strong>事件钩子：</strong></p>
+                            <div class="code-block">
+                                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                                <pre><code>from openstarry_code.events import Event, EventHandler
+
+class MyExtension(Extension):
+    def on_load(self):
+        # 注册事件处理器
+        self.register_event_handler(
+            "agent.before_execute",
+            self.on_before_execute
+        )
+    
+    def on_before_execute(self, event: Event):
+        """Agent 执行前触发"""
+        task = event.data.get("task")
+        self.logger.info(f"Processing task: {task}")
+        
+        # 可以修改事件数据
+        event.data["custom_context"] = {
+            "timestamp": time.time()
+        }</code></pre>
+                            </div>
+                            
+                            <p><strong>配置提供者：</strong></p>
+                            <div class="code-block">
+                                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                                <pre><code>from openstarry_code.config import ConfigProvider
+
+class MyExtension(Extension):
+    def get_config_schema(self):
+        """定义扩展的配置模式"""
+        return {
+            "api_key": {
+                "type": "string",
+                "required": True,
+                "description": "API key for external service"
+            },
+            "timeout": {
+                "type": "integer",
+                "default": 30,
+                "description": "Request timeout in seconds"
+            }
+        }
+    
+    def on_config_changed(self, config: dict):
+        """配置变更时调用"""
+        self.api_key = config.get("api_key")
+        self.timeout = config.get("timeout", 30)</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>Java 扩展开发</h3>
+                        
+                        <p><strong>基础结构：</strong></p>
+                        <div class="code-block">
+                            <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                            <pre><code>package com.example.myextension;
+
+import io.openstarry.extension.Extension;
+import io.openstarry.tools.Tool;
+import io.openstarry.tools.ToolParameter;
+
+public class MyExtension extends Extension {
+    @Override
+    public void onLoad() {
+        registerTool(new MyCustomTool());
+        getLogger().info("Java extension loaded");
+    }
+    
+    @Override
+    public void onUnload() {
+        getLogger().info("Java extension unloaded");
+    }
+}
+
+class MyCustomTool implements Tool {
+    @Override
+    public String getName() {
+        return "my_custom_tool";
+    }
+    
+    @Override
+    public String getDescription() {
+        return "Does something awesome";
+    }
+    
+    @Override
+    public Object execute(Map<String, Object> params) {
+        String input = (String) params.get("input_text");
+        String result = "Processed: " + input;
+        
+        Map<String, Object> output = new HashMap<>();
+        output.put("output", result);
+        return output;
+    }
+}</code></pre>
+                        </div>
+                        
+                        <p><strong>编译为 JAR：</strong></p>
+                        <div class="code-block">
+                            <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                            <pre><code># Maven
+mvn clean package
+
+# Gradle
+gradle build
+
+# 产出：target/my-extension-1.0.0.jar</code></pre>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>Go 扩展开发</h3>
+                        
+                        <p><strong>使用 CGO 构建共享库：</strong></p>
+                        <div class="code-block">
+                            <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                            <pre><code>package main
+
+import "C"
+import (
+    "encoding/json"
+    "fmt"
+)
+
+type ToolRequest struct {
+    Name   string            `json:"name"`
+    Params map[string]interface{} `json:"params"`
+}
+
+type ToolResponse struct {
+    Output interface{} `json:"output"`
+    Error  string      `json:"error,omitempty"`
+}
+
+//export ExecuteTool
+func ExecuteTool(requestJSON *C.char) *C.char {
+    var req ToolRequest
+    json.Unmarshal([]byte(C.GoString(requestJSON)), &req)
+    
+    // 工具逻辑
+    result := fmt.Sprintf("Processed: %v", req.Params["input_text"])
+    
+    response := ToolResponse{
+        Output: map[string]interface{}{
+            "output": result,
+        },
+    }
+    
+    responseJSON, _ := json.Marshal(response)
+    return C.CString(string(responseJSON))
+}
+
+func main() {}</code></pre>
+                        </div>
+                        
+                        <p><strong>编译为共享库：</strong></p>
+                        <div class="code-block">
+                            <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                            <pre><code># Linux
+go build -buildmode=c-shared -o my-extension.so
+
+# macOS
+go build -buildmode=c-shared -o my-extension.dylib
+
+# Windows
+go build -buildmode=c-shared -o my-extension.dll</code></pre>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- 发布插件 -->
+                <section id="publish" class="doc-section">
+                    <h2 class="section-title">发布插件</h2>
+                    
+                    <div class="card">
+                        <h3>发布到 GitHub</h3>
+                        
+                        <p><strong>1. 仓库结构：</strong></p>
+                        <div class="code-block">
+                            <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                            <pre><code>my-awesome-skill/
+├── SKILL.md          # Skill 定义
+├── README.md         # 项目说明
+├── LICENSE           # 开源许可证
+├── .gitignore
+└── examples/         # 使用示例
+    └── demo.md</code></pre>
+                        </div>
+                        
+                        <p><strong>2. 创建 Release：</strong></p>
+                        <div class="code-block">
+                            <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                            <pre><code># 打标签
+git tag -a v1.0.0 -m "Release version 1.0.0"
+git push origin v1.0.0
+
+# 在 GitHub 上创建 Release</code></pre>
+                        </div>
+                        
+                        <p><strong>3. 用户可以通过 starry:// 协议安装：</strong></p>
+                        <div class="code-block">
+                            <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                            <pre><code>starry://skill/install?github=yourname/my-awesome-skill
+starry://skill/install?github=yourname/my-awesome-skill&ref=v1.0.0</code></pre>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>发布到 ClawHub</h3>
+                        
+                        <p>ClawHub 是 OpenStarry Code 的官方插件市场。发布流程：</p>
+                        
+                        <ol style="line-height: 1.8;">
+                            <li>确保插件在 GitHub 上已公开</li>
+                            <li>访问 <a href="https://clawhub.openstarry.dev" target="_blank">clawhub.openstarry.dev</a></li>
+                            <li>使用 GitHub 账号登录</li>
+                            <li>点击"Submit Plugin"，填写表单：
+                                <ul style="margin-top: 0.5rem;">
+                                    <li>GitHub 仓库 URL</li>
+                                    <li>插件类型（Skill / Extension）</li>
+                                    <li>分类标签</li>
+                                    <li>简短描述</li>
+                                </ul>
+                            </li>
+                            <li>提交后等待审核（通常 1-3 个工作日）</li>
+                        </ol>
+                        
+                        <p>审核通过后，用户可以通过以下方式安装：</p>
+                        <div class="code-block">
+                            <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                            <pre><code>starry://skill/install?clawhub=your-plugin-id</code></pre>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>最佳实践</h3>
+                        
+                        <div class="grid-2">
+                            <div style="padding: 1.5rem; background: var(--surface-2); border-radius: 12px;">
+                                <h4 style="margin-top: 0; color: var(--accent-primary);">✅ 推荐做法</h4>
+                                <ul style="margin-bottom: 0; line-height: 1.8;">
+                                    <li>提供清晰的 README 和使用示例</li>
+                                    <li>使用语义化版本号（SemVer）</li>
+                                    <li>在 SKILL.md 中详细说明用途和限制</li>
+                                    <li>列出所有依赖项</li>
+                                    <li>明确标注风险级别和所需权限</li>
+                                    <li>保持向后兼容，谨慎破坏性变更</li>
+                                </ul>
+                            </div>
+                            
+                            <div style="padding: 1.5rem; background: var(--surface-2); border-radius: 12px;">
+                                <h4 style="margin-top: 0; color: var(--text-muted);">❌ 避免事项</h4>
+                                <ul style="margin-bottom: 0; line-height: 1.8;">
+                                    <li>不要在插件中硬编码密钥</li>
+                                    <li>不要执行未经用户确认的危险操作</li>
+                                    <li>不要依赖未声明的外部服务</li>
+                                    <li>不要使用模糊的 Skill 名称</li>
+                                    <li>不要忽略错误处理</li>
+                                    <li>不要在未告知的情况下收集用户数据</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            
+            <!-- 页面底部 -->
+            <footer class="page-footer">
+                <p>© 2026 OpenStarry Code | <a href="https://github.com/tomysh1337/openstarry" target="_blank">GitHub</a></p>
+            </footer>
+        </main>
+    </div>
+    
+    <script src="scripts.js"></script>
+</body>
+</html>

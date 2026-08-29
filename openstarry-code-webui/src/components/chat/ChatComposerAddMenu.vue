@@ -66,6 +66,40 @@
         </span>
       </span>
     </button>
+    <button
+      type="button"
+      class="composer-add-menu__item"
+      role="menuitemradio"
+      :aria-pressed="reviewLevel !== 'off'"
+      @click="cycleReviewMode"
+    >
+      <span class="composer-add-menu__icon" aria-hidden="true">
+        <Icon name="shield" :size="17" />
+      </span>
+      <span class="composer-add-menu__copy">
+        <strong>{{ t('chat.reviewMode.label') }}{{ reviewLevel === 'off' ? '' : ` · ${t(`chat.reviewMode.level.${reviewLevel}`)}` }}</strong>
+        <span>{{ reviewLevel === 'off'
+          ? t('chat.reviewMode.turnOn')
+          : t('chat.reviewMode.active') }}</span>
+      </span>
+    </button>
+    <button
+      type="button"
+      class="composer-add-menu__item"
+      role="menuitemradio"
+      :aria-pressed="thinkingLevel !== 'off'"
+      @click="cycleThinkingMode"
+    >
+      <span class="composer-add-menu__icon" aria-hidden="true">
+        <Icon name="search" :size="17" />
+      </span>
+      <span class="composer-add-menu__copy">
+        <strong>{{ t('chat.thinkingMode.label') }}{{ thinkingLevel === 'off' ? '' : ` · ${t(`chat.thinkingMode.level.${thinkingLevel}`)}` }}</strong>
+        <span>{{ thinkingLevel === 'off'
+          ? t('chat.thinkingMode.turnOn')
+          : t('chat.thinkingMode.active') }}</span>
+      </span>
+    </button>
   </section>
 </template>
 
@@ -73,6 +107,7 @@
 import { onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import Icon from '@/components/Icon.vue'
+import type { ReviewLevel, ThinkingLevel } from '@/composables/chat/useAssistModes'
 
 defineProps<{
   attachmentsDisabled?: boolean
@@ -83,6 +118,8 @@ defineProps<{
   planModeActive: boolean
   planModeAvailable: boolean
   planModeBusy: boolean
+  reviewLevel: ReviewLevel
+  thinkingLevel: ThinkingLevel
 }>()
 
 const emit = defineEmits<{
@@ -90,6 +127,8 @@ const emit = defineEmits<{
   activatePlanMode: []
   attachFiles: []
   close: []
+  cycleReviewMode: []
+  cycleThinkingMode: []
 }>()
 
 const { t } = useI18n()
@@ -108,6 +147,14 @@ function activatePlanMode() {
 function activateGoalMode() {
   emit('activateGoalMode')
   emit('close')
+}
+
+function cycleReviewMode() {
+  emit('cycleReviewMode')
+}
+
+function cycleThinkingMode() {
+  emit('cycleThinkingMode')
 }
 
 onMounted(() => rootRef.value?.focus())

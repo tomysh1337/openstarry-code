@@ -90,6 +90,21 @@
 
           <SandboxSettingsPanel v-else-if="section === 'sandbox'" />
 
+          <!-- MCP servers is a gateway action surface: the panel owns its own
+               HTTP CRUD against /api/mcp/servers and never enters the
+               config-form dirty/save flow. -->
+          <SettingsMcpPanel v-else-if="section === 'mcp'" />
+
+          <!-- SSH hosts is a gateway action surface like MCP: the panel owns
+               its own HTTP CRUD against /api/ssh/hosts and never enters the
+               config-form dirty/save flow. -->
+          <SettingsSshPanel v-else-if="section === 'ssh'" />
+
+          <!-- FTP hosts is a gateway action surface like SSH: the panel owns
+               its own HTTP CRUD against /api/ftp/hosts and never enters the
+               config-form dirty/save flow. -->
+          <SettingsFtpPanel v-else-if="section === 'ftp'" />
+
           <SettingsDesktopIntegrationsPanel
             v-else-if="section === 'computerControl'"
             mode="computerControl"
@@ -256,6 +271,9 @@ import SettingsKeyboardPanel from '@/components/settings/SettingsKeyboardPanel.v
 import SettingsAdvancedPanel from '@/components/settings/SettingsAdvancedPanel.vue'
 import SettingsMemoryPanel from '@/components/settings/SettingsMemoryPanel.vue'
 import SandboxSettingsPanel from '@/components/settings/SandboxSettingsPanel.vue'
+import SettingsMcpPanel from '@/components/settings/SettingsMcpPanel.vue'
+import SettingsSshPanel from '@/components/settings/SettingsSshPanel.vue'
+import SettingsFtpPanel from '@/components/settings/SettingsFtpPanel.vue'
 import DesktopRuntimePanel from '@/components/settings/DesktopRuntimePanel.vue'
 import DataMigrationPanel from '@/components/settings/DataMigrationPanel.vue'
 import SettingsDesktopIntegrationsPanel from '@/components/settings/SettingsDesktopIntegrationsPanel.vue'

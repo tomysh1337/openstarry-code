@@ -6,6 +6,7 @@ import {
   type RpcConnectionWaitOptions,
   type RpcEventHandler,
 } from '@/lib/rpc'
+import { normalizeWsUrl } from '@/lib/ws-url'
 
 const WS_URL_KEY = 'opensquilla.wsUrl'
 const WS_TOKEN_KEY = 'opensquilla.wsToken'
@@ -62,13 +63,13 @@ function consumeLinkTokenFromUrl(): { url: string; token: string } | null {
 function loadConnectionSettings(): { url: string; token: string } {
   let url = getDefaultRpcUrl()
   let token = ''
-  try { url = localStorage.getItem(WS_URL_KEY) || url } catch {}
+  try { url = normalizeWsUrl(localStorage.getItem(WS_URL_KEY) || url) } catch {}
   try { token = sessionStorage.getItem(WS_TOKEN_KEY) || '' } catch {}
   return { url, token }
 }
 
 function saveConnectionSettings(url: string, token: string): void {
-  try { localStorage.setItem(WS_URL_KEY, url || getDefaultRpcUrl()) } catch {}
+  try { localStorage.setItem(WS_URL_KEY, normalizeWsUrl(url) || getDefaultRpcUrl()) } catch {}
   try {
     if (token) sessionStorage.setItem(WS_TOKEN_KEY, token)
     else sessionStorage.removeItem(WS_TOKEN_KEY)
@@ -144,8 +145,9 @@ export const useRpcStore = defineStore('rpc', () => {
   async function connect(url: string, token?: string) {
     if (!client.value) throw new Error('RPC client not initialized')
     error.value = null
-    saveConnectionSettings(url, token || '')
-    client.value.connect(url, token)
+    const normalized = normalizeWsUrl(url)
+    saveConnectionSettings(normalized, token || '')
+    client.value.connect(normalized, token)
   }
 
   function applyLinkTokenFromUrl(): boolean {

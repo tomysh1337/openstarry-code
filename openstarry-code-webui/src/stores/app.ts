@@ -19,6 +19,7 @@ import {
   type SidebarWidthPreference,
 } from '@/utils/sidebarLayout'
 import type { ChatLiveConnectionPhase } from '@/utils/chat/chatConnectionState'
+import { putUiTheme } from '@/utils/computerUseApi'
 
 // 'system' or any registered value-theme id. The string branch keeps custom
 // themes typeable while preserving autocomplete for the built-ins.
@@ -214,6 +215,10 @@ export const useAppStore = defineStore('app', () => {
   function setTheme(mode: ThemeMode) {
     theme.value = mode
     try { localStorage.setItem('opensquilla-theme', mode) } catch {}
+    // Mirror the applied theme onto the gateway (engine computer-use
+    // guidance + MCP OSC_THEME). Fire-and-forget: a gateway that is down or
+    // unauthenticated must never block or fail the local theme switch.
+    void putUiTheme(resolvedTheme.value).catch(() => undefined)
   }
 
   function cycleTheme() {

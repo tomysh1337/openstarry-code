@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API 参考 - OpenStarry Code</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="page-wrapper">
+        <!-- 侧边栏导航 -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="logo">⭐ OpenStarry</h1>
+                <p class="subtitle">AI Agent Runtime</p>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-title">入门</div>
+                <ul class="nav-list">
+                    <li><a href="index.html" class="nav-link">快速开始</a></li>
+                    <li><a href="index.html#installation" class="nav-link">安装指南</a></li>
+                    <li><a href="index.html#configuration" class="nav-link">基础配置</a></li>
+                </ul>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-title">API 参考</div>
+                <ul class="nav-list">
+                    <li><a href="#api-overview" class="nav-link active">API 总览</a></li>
+                    <li><a href="#providers" class="nav-link">Provider API</a></li>
+                    <li><a href="#skills" class="nav-link">Skills API</a></li>
+                    <li><a href="#protocol" class="nav-link">Protocol API</a></li>
+                    <li><a href="#gateway" class="nav-link">Gateway API</a></li>
+                </ul>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-title">插件系统</div>
+                <ul class="nav-list">
+                    <li><a href="plugins.html" class="nav-link">插件架构</a></li>
+                    <li><a href="plugins.html#marketplace" class="nav-link">插件市场</a></li>
+                    <li><a href="plugin-dev.html" class="nav-link">开发插件</a></li>
+                </ul>
+            </div>
+        </nav>
+        
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <div class="content-wrapper">
+                <!-- 页面标题 -->
+                <header class="page-header">
+                    <h1 class="page-title">API 参考</h1>
+                    <p class="page-desc">OpenStarry Code 完整 API 文档</p>
+                </header>
+                
+                <!-- API 总览 -->
+                <section id="api-overview" class="doc-section">
+                    <h2 class="section-title">API 总览</h2>
+                    
+                    <div class="card">
+                        <h3>API 架构</h3>
+                        <p>OpenStarry Code 提供三层 API 接口：</p>
+                        
+                        <div class="grid-3">
+                            <div class="feature-card">
+                                <div class="feature-icon">🔌</div>
+                                <h3>Python API</h3>
+                                <p>直接调用 Python 模块</p>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <div class="feature-icon">🌐</div>
+                                <h3>HTTP API</h3>
+                                <p>通过 Gateway 访问</p>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <div class="feature-icon">⚡</div>
+                                <h3>CLI API</h3>
+                                <p>命令行工具接口</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>认证方式</h3>
+                        <p>Gateway HTTP API 使用 WebSocket 连接和 Token 认证：</p>
+                        
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-lang">Python</span>
+                                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                            </div>
+                            <pre><code>import os
+from openstarry_code.gateway.client import GatewayClient
+
+# 连接到 Gateway
+client = GatewayClient(
+    url="ws://localhost:18791/ws",
+    token=os.environ.get("OPENSTARRY_TOKEN")
+)
+
+# 调用 API
+result = await client.call("providers.list")</code></pre>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Provider API -->
+                <section id="providers" class="doc-section">
+                    <h2 class="section-title">Provider API</h2>
+                    
+                    <div class="card">
+                        <h3>列出所有 Provider</h3>
+                        
+                        <div class="tabs">
+                            <button class="tab-btn active" onclick="switchTab(event, 'provider-list-python')">Python</button>
+                            <button class="tab-btn" onclick="switchTab(event, 'provider-list-cli')">CLI</button>
+                            <button class="tab-btn" onclick="switchTab(event, 'provider-list-http')">HTTP</button>
+                        </div>
+                        
+                        <div id="provider-list-python" class="tab-content active">
+                            <div class="code-block">
+                                <pre><code>from openstarry_code.config import load_config
+
+config = load_config()
+providers = config.llm_providers
+
+for provider in providers:
+    print(f"{provider.provider_id}: {provider.provider_type}/{provider.model}")</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div id="provider-list-cli" class="tab-content">
+                            <div class="code-block">
+                                <pre><code># 列出所有 providers
+openstarry-code providers list
+
+# JSON 格式输出
+openstarry-code providers list --json</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div id="provider-list-http" class="tab-content">
+                            <div class="code-block">
+                                <pre><code>// WebSocket RPC 调用
+{
+  "method": "providers.list",
+  "params": {},
+  "id": 1
+}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>添加 Provider</h3>
+                        
+                        <div class="tabs">
+                            <button class="tab-btn active" onclick="switchTab(event, 'provider-add-python')">Python</button>
+                            <button class="tab-btn" onclick="switchTab(event, 'provider-add-cli')">CLI</button>
+                            <button class="tab-btn" onclick="switchTab(event, 'provider-add-protocol')">starry://</button>
+                        </div>
+                        
+                        <div id="provider-add-python" class="tab-content active">
+                            <div class="code-block">
+                                <pre><code>from openstarry_code.config import load_config
+from openstarry_code.config.mutations import upsert_llm_provider
+
+config = load_config()
+
+# 添加 OpenRouter provider
+upsert_llm_provider(config, {
+    "provider_id": "my-openrouter",
+    "provider_type": "openrouter",
+    "model": "anthropic/claude-3.5-sonnet",
+    "api_key_env": "OPENROUTER_API_KEY"
+})
+
+# 保存配置
+config.save()</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div id="provider-add-cli" class="tab-content">
+                            <div class="code-block">
+                                <pre><code># 添加 provider
+openstarry-code providers add \
+  --id my-openrouter \
+  --type openrouter \
+  --model anthropic/claude-3.5-sonnet \
+  --api-key-env OPENROUTER_API_KEY</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div id="provider-add-protocol" class="tab-content">
+                            <div class="code-block">
+                                <pre><code># 使用 starry:// 协议快速添加
+openstarry-code protocol handle \
+  "starry://api/import?provider=openrouter&model=anthropic/claude-3.5-sonnet&key=env:OPENROUTER_API_KEY"</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div class="info-box">
+                            <div class="info-icon">💡</div>
+                            <div>
+                                <strong>支持的 Provider 类型</strong><br>
+                                openrouter, anthropic, openai, gemini, azure, ollama, zhipu, qwen, baidu
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>配置参数</h3>
+                        
+                        <table class="api-table">
+                            <thead>
+                                <tr>
+                                    <th>参数</th>
+                                    <th>类型</th>
+                                    <th>必需</th>
+                                    <th>说明</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>provider_id</code></td>
+                                    <td>string</td>
+                                    <td>✅</td>
+                                    <td>Provider 唯一标识符</td>
+                                </tr>
+                                <tr>
+                                    <td><code>provider_type</code></td>
+                                    <td>string</td>
+                                    <td>✅</td>
+                                    <td>Provider 类型</td>
+                                </tr>
+                                <tr>
+                                    <td><code>model</code></td>
+                                    <td>string</td>
+                                    <td>✅</td>
+                                    <td>模型名称</td>
+                                </tr>
+                                <tr>
+                                    <td><code>api_key_env</code></td>
+                                    <td>string</td>
+                                    <td>❌</td>
+                                    <td>API Key 环境变量名</td>
+                                </tr>
+                                <tr>
+                                    <td><code>base_url</code></td>
+                                    <td>string</td>
+                                    <td>❌</td>
+                                    <td>自定义 API 端点</td>
+                                </tr>
+                                <tr>
+                                    <td><code>timeout</code></td>
+                                    <td>integer</td>
+                                    <td>❌</td>
+                                    <td>请求超时（秒）</td>
+                                </tr>
+                                <tr>
+                                    <td><code>max_retries</code></td>
+                                    <td>integer</td>
+                                    <td>❌</td>
+                                    <td>最大重试次数</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+                
+                <!-- Skills API -->
+                <section id="skills" class="doc-section">
+                    <h2 class="section-title">Skills API</h2>
+                    
+                    <div class="card">
+                        <h3>列出已安装的 Skills</h3>
+                        
+                        <div class="tabs">
+                            <button class="tab-btn active" onclick="switchTab(event, 'skills-list-python')">Python</button>
+                            <button class="tab-btn" onclick="switchTab(event, 'skills-list-cli')">CLI</button>
+                        </div>
+                        
+                        <div id="skills-list-python" class="tab-content active">
+                            <div class="code-block">
+                                <pre><code>from openstarry_code.skills import SkillRegistry
+
+registry = SkillRegistry()
+skills = registry.list_skills()
+
+for skill in skills:
+    print(f"{skill.name} - {skill.description}")</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div id="skills-list-cli" class="tab-content">
+                            <div class="code-block">
+                                <pre><code># 列出所有 skills
+openstarry-code skills list
+
+# 显示详细信息
+openstarry-code skills list --verbose
+
+# JSON 格式
+openstarry-code skills list --json</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>安装 Skill</h3>
+                        
+                        <div class="tabs">
+                            <button class="tab-btn active" onclick="switchTab(event, 'skills-install-cli')">CLI</button>
+                            <button class="tab-btn" onclick="switchTab(event, 'skills-install-protocol')">starry://</button>
+                        </div>
+                        
+                        <div id="skills-install-cli" class="tab-content active">
+                            <div class="code-block">
+                                <pre><code># 从 GitHub 安装
+openstarry-code skills install yourname/awesome-skill --source github
+
+# 从本地路径安装
+openstarry-code skills install /path/to/skill --source local
+
+# 指定版本
+openstarry-code skills install yourname/awesome-skill --ref v1.0.0</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div id="skills-install-protocol" class="tab-content">
+                            <div class="code-block">
+                                <pre><code># 使用 starry:// 协议安装
+openstarry-code protocol handle \
+  "starry://skill/install?github=yourname/awesome-skill"
+
+# 指定版本和子路径
+openstarry-code protocol handle \
+  "starry://skill/install?github=org/repo&ref=v1.0.0&subpath=skills/my-skill"</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>查看 Skill 详情</h3>
+                        
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-lang">Bash</span>
+                                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                            </div>
+                            <pre><code># 查看 skill 内容
+openstarry-code skills view skill-name
+
+# 检查 skill 健康状态
+openstarry-code skills doctor skill-name
+
+# 输出诊断信息为 JSON
+openstarry-code skills doctor skill-name --json</code></pre>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Protocol API -->
+                <section id="protocol" class="doc-section">
+                    <h2 class="section-title">Protocol API</h2>
+                    
+                    <div class="card">
+                        <h3>starry:// 协议格式</h3>
+                        <p>starry:// 是 OpenStarry Code 的私有协议，用于快速配置和安装：</p>
+                        
+                        <div class="code-block">
+                            <pre><code>starry://<action>/<operation>?<parameters>
+
+示例：
+starry://api/import?provider=openrouter&key=env:API_KEY
+starry://skill/install?github=user/repo&ref=v1.0.0
+starry://extension/load?path=https://example.com/ext.so&type=go</code></pre>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>处理协议 URL</h3>
+                        
+                        <div class="tabs">
+                            <button class="tab-btn active" onclick="switchTab(event, 'protocol-handle-cli')">CLI</button>
+                            <button class="tab-btn" onclick="switchTab(event, 'protocol-handle-python')">Python</button>
+                        </div>
+                        
+                        <div id="protocol-handle-cli" class="tab-content active">
+                            <div class="code-block">
+                                <pre><code># 处理单个 URL
+openstarry-code protocol handle "starry://api/import?provider=ollama"
+
+# 批量处理
+openstarry-code protocol batch setup.txt
+
+# 验证 URL（不执行）
+openstarry-code protocol validate "starry://skill/install?github=user/repo"
+
+# JSON 输出
+openstarry-code protocol handle "starry://..." --json</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div id="protocol-handle-python" class="tab-content">
+                            <div class="code-block">
+                                <pre><code>from openstarry_code.protocol import StarryProtocolHandler
+
+handler = StarryProtocolHandler()
+
+# 处理单个 URL
+result = await handler.handle("starry://api/import?provider=ollama")
+
+# 批量处理
+urls = [
+    "starry://api/import?provider=openrouter&key=env:KEY",
+    "starry://skill/install?github=user/repo"
+]
+results = await handler.handle_batch(urls)
+
+# 检查结果
+for result in results:
+    if result.status == "success":
+        print(f"✓ {result.message}")
+    else:
+        print(f"✗ {result.error}")</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>支持的协议操作</h3>
+                        
+                        <table class="api-table">
+                            <thead>
+                                <tr>
+                                    <th>操作</th>
+                                    <th>格式</th>
+                                    <th>说明</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>api/import</code></td>
+                                    <td><code>starry://api/import?provider=...&key=...</code></td>
+                                    <td>导入 API 配置</td>
+                                </tr>
+                                <tr>
+                                    <td><code>skill/install</code></td>
+                                    <td><code>starry://skill/install?github=...</code></td>
+                                    <td>安装 Skill</td>
+                                </tr>
+                                <tr>
+                                    <td><code>extension/load</code></td>
+                                    <td><code>starry://extension/load?path=...&type=...</code></td>
+                                    <td>加载扩展</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+                
+                <!-- Gateway API -->
+                <section id="gateway" class="doc-section">
+                    <h2 class="section-title">Gateway API</h2>
+                    
+                    <div class="card">
+                        <h3>WebSocket 连接</h3>
+                        <p>Gateway 通过 WebSocket 提供实时 RPC 接口：</p>
+                        
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-lang">JavaScript</span>
+                                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                            </div>
+                            <pre><code>const ws = new WebSocket('ws://localhost:18791/ws');
+
+// 发送 RPC 请求
+ws.send(JSON.stringify({
+  method: 'providers.list',
+  params: {},
+  id: 1
+}));
+
+// 接收响应
+ws.onmessage = (event) => {
+  const response = JSON.parse(event.data);
+  console.log(response.result);
+};</code></pre>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>可用的 RPC 方法</h3>
+                        
+                        <table class="api-table">
+                            <thead>
+                                <tr>
+                                    <th>方法</th>
+                                    <th>参数</th>
+                                    <th>返回</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>providers.list</code></td>
+                                    <td><code>{}</code></td>
+                                    <td>Provider 列表</td>
+                                </tr>
+                                <tr>
+                                    <td><code>providers.add</code></td>
+                                    <td><code>{provider_id, provider_type, model, ...}</code></td>
+                                    <td>添加结果</td>
+                                </tr>
+                                <tr>
+                                    <td><code>skills.list</code></td>
+                                    <td><code>{}</code></td>
+                                    <td>Skill 列表</td>
+                                </tr>
+                                <tr>
+                                    <td><code>skills.install</code></td>
+                                    <td><code>{source, ref?, subpath?}</code></td>
+                                    <td>安装结果</td>
+                                </tr>
+                                <tr>
+                                    <td><code>chat.create</code></td>
+                                    <td><code>{provider_id, messages}</code></td>
+                                    <td>对话响应</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+    
+    <script src="scripts.js"></script>
+    <script>
+        // 添加表格样式
+        const style = document.createElement('style');
+        style.textContent = `
+            .api-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin: var(--spacing-md) 0;
+            }
+            .api-table th,
+            .api-table td {
+                padding: var(--spacing-sm);
+                text-align: left;
+                border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+            }
+            .api-table th {
+                background: rgba(139, 92, 246, 0.1);
+                color: var(--accent-purple);
+                font-weight: 600;
+            }
+            .api-table td {
+                color: var(--text-secondary);
+            }
+            .api-table code {
+                font-size: 0.875rem;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

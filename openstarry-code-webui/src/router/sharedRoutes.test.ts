@@ -23,17 +23,27 @@ beforeEach(() => {
 })
 
 describe('defaultRootRedirect', () => {
-  it('opens the desktop app on Chat even when a previous route was saved', () => {
+  it('opens the desktop app on the new-task draft (greeting landing)', () => {
     window.opensquillaDesktop = {} as never
     localStorage.setItem(LAST_ROUTE_KEY, '/sessions')
 
-    expect(defaultRootRedirect()).toBe('/chat')
+    expect(defaultRootRedirect()).toBe('/chat/new')
   })
 
   it('keeps browser desktop restore behavior', () => {
     localStorage.setItem(LAST_ROUTE_KEY, '/overview')
 
     expect(defaultRootRedirect()).toBe('/overview')
+  })
+
+  it('reopens a saved bare /chat as the new-task draft (no greeting, no session otherwise)', () => {
+    localStorage.setItem(LAST_ROUTE_KEY, '/chat')
+
+    expect(defaultRootRedirect()).toBe('/chat/new')
+  })
+
+  it('lands on the new-task draft when no restorable route was saved', () => {
+    expect(defaultRootRedirect()).toBe('/chat/new')
   })
 })
 

@@ -46,6 +46,7 @@ export const isValueThemeId = (id: string): boolean =>
 export const LEGACY_THEME_IDS: Record<string, string> = {
   nord: 'arctic',
   phosphor: 'crt-green',
+  jetbrains: 'dark',
 }
 
 /** Map a possibly-legacy persisted theme id to its current canonical id; passes

@@ -74,7 +74,7 @@ async def test_discovered_mcp_clients_have_owner_and_close_lifecycle(
     names = await discovery.discover_and_register(config, ToolRegistry(), owner="gateway")
     snapshot = discovery.active_clients_snapshot()
 
-    assert names == ["mcp_lookup"]
+    assert names == ["mcp__docs__lookup"]
     assert len(snapshot) == 1
     assert snapshot[0].owner == "gateway"
     assert snapshot[0].server_name == "docs"

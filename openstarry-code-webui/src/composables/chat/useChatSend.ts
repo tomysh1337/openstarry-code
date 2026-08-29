@@ -39,6 +39,7 @@ import {
 import { localizedChatErrorMessage } from '@/utils/chat/errors'
 import { isControlInput } from '@/utils/chat/inputSemantics'
 import { createClientMessageId, createClientRequestId } from '@/utils/chat/messageIdentity'
+import { applyAssistModes } from '@/composables/chat/useAssistModes'
 import {
   type HiddenControlStorage,
   listHiddenControls,
@@ -2017,7 +2018,9 @@ export function useChatSend(options: UseChatSendOptions) {
         clientRequestId: durablePendingItem?.pendingClientRequestId
           || createClientRequestId(),
         clientMessageId,
-        message: text || 'Describe these attachments',
+        // Assist modes (review/thinking) ride inside the outgoing message as a
+        // compact directive block; the transcript still shows the raw text.
+        message: applyAssistModes(text) || 'Describe these attachments',
         // The Vue client never uses the legacy cancel-style steer path. Make
         // ordinary sends explicit so a persisted session queue_mode="steer"
         // from an older client cannot silently turn them into interrupts.

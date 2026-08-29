@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>插件系统 - OpenStarry Code</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="page-wrapper">
+        <!-- 侧边栏导航 -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="logo">⭐ OpenStarry</h1>
+                <p class="subtitle">AI Agent Runtime</p>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-title">入门</div>
+                <ul class="nav-list">
+                    <li><a href="index.html" class="nav-link">快速开始</a></li>
+                    <li><a href="index.html#installation" class="nav-link">安装指南</a></li>
+                    <li><a href="index.html#configuration" class="nav-link">基础配置</a></li>
+                </ul>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-title">API 参考</div>
+                <ul class="nav-list">
+                    <li><a href="api.html" class="nav-link">API 总览</a></li>
+                    <li><a href="api.html#providers" class="nav-link">Provider API</a></li>
+                    <li><a href="api.html#skills" class="nav-link">Skills API</a></li>
+                    <li><a href="api.html#protocol" class="nav-link">Protocol API</a></li>
+                </ul>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-title">插件系统</div>
+                <ul class="nav-list">
+                    <li><a href="#plugin-arch" class="nav-link active">插件架构</a></li>
+                    <li><a href="#marketplace" class="nav-link">插件市场</a></li>
+                    <li><a href="#skill-plugins" class="nav-link">Skill 插件</a></li>
+                    <li><a href="#extensions" class="nav-link">原生扩展</a></li>
+                    <li><a href="plugin-dev.html" class="nav-link">开发插件</a></li>
+                </ul>
+            </div>
+        </nav>
+        
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <div class="content-wrapper">
+                <!-- 页面标题 -->
+                <header class="page-header">
+                    <h1 class="page-title">插件系统</h1>
+                    <p class="page-desc">扩展 OpenStarry Code 的能力边界</p>
+                </header>
+                
+                <!-- 插件架构 -->
+                <section id="plugin-arch" class="doc-section">
+                    <h2 class="section-title">插件架构</h2>
+                    
+                    <div class="card">
+                        <h3>插件类型概览</h3>
+                        <p>OpenStarry Code 支持三种插件类型，满足不同的扩展需求：</p>
+                        
+                        <div class="grid-3">
+                            <div class="feature-card">
+                                <div class="feature-icon">📦</div>
+                                <h3>Skill 插件</h3>
+                                <p>任务特定的 AI 指令包，使用 Markdown + YAML 定义</p>
+                                <div style="margin-top: 1rem; font-size: 0.875rem; color: var(--text-muted);">
+                                    ✓ 轻量级<br>
+                                    ✓ 易于编写<br>
+                                    ✓ 快速部署
+                                </div>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <div class="feature-icon">🔄</div>
+                                <h3>Meta-Skill</h3>
+                                <p>多步骤工作流编排，组合多个 Skills 完成复杂任务</p>
+                                <div style="margin-top: 1rem; font-size: 0.875rem; color: var(--text-muted);">
+                                    ✓ 工作流编排<br>
+                                    ✓ 步骤依赖<br>
+                                    ✓ 状态管理
+                                </div>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <div class="feature-icon">⚙️</div>
+                                <h3>原生扩展</h3>
+                                <p>Python/Java/Go 编写的原生代码模块，提供核心能力扩展</p>
+                                <div style="margin-top: 1rem; font-size: 0.875rem; color: var(--text-muted);">
+                                    ✓ 高性能<br>
+                                    ✓ 完整控制<br>
+                                    ✓ 系统集成
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>六层优先级架构</h3>
+                        <p>Skills 遵循六层加载优先级，从低到高：</p>
+                        
+                        <div class="step-item">
+                            <div class="step-num">1</div>
+                            <div class="step-content">
+                                <h4>Extra 层</h4>
+                                <p>配置文件指定的额外目录</p>
+                                <div class="code-block"><pre><code>~/.openstarry-code/extra-skills/</code></pre></div>
+                            </div>
+                        </div>
+                        
+                        <div class="step-item">
+                            <div class="step-num">2</div>
+                            <div class="step-content">
+                                <h4>Bundled 层</h4>
+                                <p>随 OpenStarry Code 发布的内置 Skills</p>
+                                <div class="code-block"><pre><code>src/openstarry_code/skills/bundled/</code></pre></div>
+                            </div>
+                        </div>
+                        
+                        <div class="step-item">
+                            <div class="step-num">3</div>
+                            <div class="step-content">
+                                <h4>Managed 层</h4>
+                                <p>本地安装目录（推荐安装位置）</p>
+                                <div class="code-block"><pre><code>~/.openstarry-code/skills/</code></pre></div>
+                            </div>
+                        </div>
+                        
+                        <div class="step-item">
+                            <div class="step-num">4</div>
+                            <div class="step-content">
+                                <h4>Personal 层</h4>
+                                <p>用户个人目录</p>
+                                <div class="code-block"><pre><code>~/.agents/skills/</code></pre></div>
+                            </div>
+                        </div>
+                        
+                        <div class="step-item">
+                            <div class="step-num">5</div>
+                            <div class="step-content">
+                                <h4>Project 层</h4>
+                                <p>项目级目录</p>
+                                <div class="code-block"><pre><code>{workspace}/.agents/skills/</code></pre></div>
+                            </div>
+                        </div>
+                        
+                        <div class="step-item">
+                            <div class="step-num">6</div>
+                            <div class="step-content">
+                                <h4>Workspace 层（最高优先级）</h4>
+                                <p>工作区目录</p>
+                                <div class="code-block"><pre><code>{workspace}/skills/</code></pre></div>
+                            </div>
+                        </div>
+                        
+                        <div class="info-box">
+                            <div class="info-icon">💡</div>
+                            <div>
+                                <strong>优先级规则</strong><br>
+                                高层级的 Skill 会覆盖低层级的同名 Skill，实现灵活的定制化
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- 插件市场 -->
+                <section id="marketplace" class="doc-section">
+                    <h2 class="section-title">插件市场</h2>
+                    
+                    <div class="card">
+                        <h3>市场架构</h3>
+                        <p>OpenStarry Code 的插件市场参考了 VS Code Extensions 和 JetBrains Plugin Repository 的设计理念：</p>
+                        
+                        <table class="comparison-table">
+                            <thead>
+                                <tr>
+                                    <th>特性</th>
+                                    <th>VS Code</th>
+                                    <th>IntelliJ IDEA</th>
+                                    <th>OpenStarry Code</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>市场类型</strong></td>
+                                    <td>中心化市场</td>
+                                    <td>中心化市场</td>
+                                    <td>分布式 + GitHub</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>安装方式</strong></td>
+                                    <td>ID / VSIX</td>
+                                    <td>ID / JAR</td>
+                                    <td>GitHub / URL / 本地</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>版本管理</strong></td>
+                                    <td>自动更新</td>
+                                    <td>自动更新</td>
+                                    <td>Git 标签 / 手动</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>审核机制</strong></td>
+                                    <td>自动扫描</td>
+                                    <td>人工审核</td>
+                                    <td>社区驱动</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>协议支持</strong></td>
+                                    <td>vscode://</td>
+                                    <td>jetbrains://</td>
+                                    <td>starry://</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>插件来源</h3>
+                        
+                        <div class="grid-3">
+                            <div class="feature-card">
+                                <div class="feature-icon">🐙</div>
+                                <h3>GitHub</h3>
+                                <p>从 GitHub 仓库直接安装</p>
+                                <div class="code-block">
+                                    <pre><code>starry://skill/install?github=user/repo</code></pre>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <div class="feature-icon">🏪</div>
+                                <h3>ClawHub</h3>
+                                <p>官方插件托管平台</p>
+                                <div class="code-block">
+                                    <pre><code>starry://skill/install?clawhub=skill-id</code></pre>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <div class="feature-icon">📁</div>
+                                <h3>本地文件</h3>
+                                <p>从本地路径安装</p>
+                                <div class="code-block">
+                                    <pre><code>starry://skill/install?path=file:///...</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>安装插件</h3>
+                        
+                        <div class="tabs">
+                            <button class="tab-btn active" onclick="switchTab(event, 'install-protocol')">starry:// 协议</button>
+                            <button class="tab-btn" onclick="switchTab(event, 'install-cli')">CLI 命令</button>
+                            <button class="tab-btn" onclick="switchTab(event, 'install-batch')">批量安装</button>
+                        </div>
+                        
+                        <div id="install-protocol" class="tab-content active">
+                            <p>使用 starry:// 协议一键安装（类似 VS Code 的 <code>vscode:extension/...</code>）：</p>
+                            <div class="code-block">
+                                <pre><code># 从 GitHub 安装
+starry://skill/install?github=yourname/awesome-skill
+
+# 指定版本
+starry://skill/install?github=yourname/awesome-skill&ref=v1.0.0
+
+# 从子目录安装
+starry://skill/install?github=org/monorepo&subpath=skills/my-skill</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div id="install-cli" class="tab-content">
+                            <p>使用 CLI 命令安装：</p>
+                            <div class="code-block">
+                                <pre><code># GitHub 源
+openstarry-code skills install yourname/awesome-skill --source github
+
+# ClawHub 源
+openstarry-code skills install skill-id --source clawhub
+
+# 本地路径
+openstarry-code skills install /path/to/skill --source local</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div id="install-batch" class="tab-content">
+                            <p>创建 <code>plugins.txt</code> 批量安装：</p>
+                            <div class="code-block">
+                                <pre><code># OpenStarry Code 插件配置
+starry://skill/install?github=community/code-review
+starry://skill/install?github=community/test-generator
+starry://skill/install?github=myteam/custom-tool&ref=v2.0.0
+starry://extension/load?path=https://cdn.example.com/analyzer.so&type=go</code></pre>
+                            </div>
+                            <p>执行批量安装：</p>
+                            <div class="code-block">
+                                <pre><code>openstarry-code protocol batch plugins.txt</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>插件发现</h3>
+                        <p>推荐的插件查找方式：</p>
+                        
+                        <ul class="feature-list">
+                            <li>在 GitHub 搜索 topic: <code>openstarry-code</code>, <code>openstarry-skill</code></li>
+                            <li>访问官方插件列表（待建设）</li>
+                            <li>在社区论坛浏览推荐插件</li>
+                            <li>通过 <code>openstarry-code skills search</code> 命令搜索</li>
+                        </ul>
+                    </div>
+                </section>
+                
+                <!-- Skill 插件 -->
+                <section id="skill-plugins" class="doc-section">
+                    <h2 class="section-title">Skill 插件</h2>
+                    
+                    <div class="card">
+                        <h3>什么是 Skill？</h3>
+                        <p>Skill 是包含 AI 指令的轻量级插件，使用 Markdown 编写，YAML 元数据定义：</p>
+                        
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-lang">Markdown</span>
+                                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                            </div>
+                            <pre><code>---
+name: code-reviewer
+description: "Review code for quality and best practices"
+triggers:
+  - "review code"
+  - "code review"
+provenance:
+  origin: community
+  license: MIT
+metadata:
+  risk: low
+  capabilities:
+    - filesystem-read
+---
+
+# Code Reviewer Skill
+
+## Purpose
+Review code for quality, security, and best practices.
+
+## Instructions
+1. Read the specified code files
+2. Analyze code quality and patterns
+3. Identify potential issues
+4. Provide actionable suggestions
+
+...</code></pre>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>Skill 结构</h3>
+                        
+                        <div class="code-block">
+                            <pre><code>my-skill/
+├── SKILL.md          # 必需：Skill 定义文件
+├── README.md         # 推荐：使用说明
+├── LICENSE           # 推荐：开源许可证
+├── scripts/          # 可选：辅助脚本
+│   └── helper.py
+└── resources/        # 可选：资源文件
+    └── templates/</code></pre>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>常见 Skill 类型</h3>
+                        
+                        <div class="grid-3">
+                            <div class="feature-card">
+                                <div class="feature-icon">🔍</div>
+                                <h3>代码分析</h3>
+                                <p>代码审查、质量检查、重构建议</p>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <div class="feature-icon">✨</div>
+                                <h3>代码生成</h3>
+                                <p>脚手架、模板、样板代码</p>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <div class="feature-icon">📝</div>
+                                <h3>文档生成</h3>
+                                <p>API 文档、README、注释</p>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <div class="feature-icon">🧪</div>
+                                <h3>测试生成</h3>
+                                <p>单元测试、集成测试、E2E</p>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <div class="feature-icon">🔄</div>
+                                <h3>数据转换</h3>
+                                <p>格式转换、数据处理、迁移</p>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <div class="feature-icon">🎨</div>
+                                <h3>设计辅助</h3>
+                                <p>UI/UX 建议、设计系统</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- 原生扩展 -->
+                <section id="extensions" class="doc-section">
+                    <h2 class="section-title">原生扩展</h2>
+                    
+                    <div class="card">
+                        <h3>扩展语言支持</h3>
+                        <p>OpenStarry Code 支持三种语言编写扩展，对标 VS Code 和 IDEA 的能力：</p>
+                        
+                        <table class="comparison-table">
+                            <thead>
+                                <tr>
+                                    <th>语言</th>
+                                    <th>VS Code</th>
+                                    <th>IDEA</th>
+                                    <th>OpenStarry Code</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>主要语言</strong></td>
+                                    <td>TypeScript/JavaScript</td>
+                                    <td>Java/Kotlin</td>
+                                    <td>Python</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>替代语言</strong></td>
+                                    <td>-</td>
+                                    <td>Groovy/Scala</td>
+                                    <td>Java/Go</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>打包格式</strong></td>
+                                    <td>.vsix</td>
+                                    <td>.jar/.zip</td>
+                                    <td>.py/.jar/.so/.dll</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>Python 扩展</h3>
+                        <p>最推荐的扩展开发语言，与 OpenStarry Code 核心无缝集成：</p>
+                        
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-lang">Python</span>
+                                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                            </div>
+                            <pre><code>class MyExtension:
+    def __init__(self):
+        self.name = "my-extension"
+        self.version = "1.0.0"
+    
+    def initialize(self, config):
+        """初始化扩展"""
+        return True
+    
+    def execute(self, command, args):
+        """执行命令"""
+        if command == "analyze":
+            return self.analyze(args)
+        return {"error": "Unknown command"}
+    
+    def cleanup(self):
+        """清理资源"""
+        pass
+
+def get_extension():
+    return MyExtension()</code></pre>
+                        </div>
+                        
+                        <div class="info-box">
+                            <div class="info-icon">📦</div>
+                            <div>
+                                <strong>安装 Python 扩展</strong><br>
+                                <code>starry://extension/load?path=https://example.com/ext.py&type=python</code>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>Java 扩展</h3>
+                        <p>适合需要高性能和 JVM 生态集成的场景：</p>
+                        
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-lang">Java</span>
+                                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                            </div>
+                            <pre><code>public class MyExtension implements OpenStarryExtension {
+    @Override
+    public String getName() {
+        return "my-java-extension";
+    }
+    
+    @Override
+    public boolean initialize(Map<String, Object> config) {
+        return true;
+    }
+    
+    @Override
+    public Map<String, Object> execute(String command, Map<String, Object> args) {
+        // 实现逻辑
+        return result;
+    }
+}</code></pre>
+                        </div>
+                        
+                        <div class="info-box">
+                            <div class="info-icon">📦</div>
+                            <div>
+                                <strong>安装 Java 扩展</strong><br>
+                                <code>starry://extension/load?path=file:///path/to/ext.jar&type=java</code>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>Go 扩展</h3>
+                        <p>提供最佳性能，适合计算密集型任务：</p>
+                        
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-lang">Go</span>
+                                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                            </div>
+                            <pre><code>//export Initialize
+func Initialize(configJSON *C.char) C.int {
+    return 1 // 成功
+}
+
+//export Execute
+func Execute(command *C.char, argsJSON *C.char) *C.char {
+    // 实现逻辑
+    return C.CString(resultJSON)
+}
+
+//export Cleanup
+func Cleanup() {
+    // 清理资源
+}</code></pre>
+                        </div>
+                        
+                        <div class="info-box">
+                            <div class="info-icon">📦</div>
+                            <div>
+                                <strong>安装 Go 扩展</strong><br>
+                                <code>starry://extension/load?path=https://example.com/ext.so&type=go</code>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- 下一步 -->
+                <section class="doc-section">
+                    <h2 class="section-title">开始开发</h2>
+                    
+                    <div class="grid-3">
+                        <a href="plugin-dev.html" class="feature-card">
+                            <div class="feature-icon">💻</div>
+                            <h3>插件开发指南</h3>
+                            <p>完整的插件开发教程和最佳实践</p>
+                        </a>
+                        
+                        <a href="api.html" class="feature-card">
+                            <div class="feature-icon">📚</div>
+                            <h3>API 参考</h3>
+                            <p>查看所有可用的 API 接口</p>
+                        </a>
+                        
+                        <a href="https://github.com/tomysh1337/openstarry" class="feature-card">
+                            <div class="feature-icon">🐙</div>
+                            <h3>示例代码</h3>
+                            <p>浏览官方和社区的插件示例</p>
+                        </a>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+    
+    <script src="scripts.js"></script>
+    <script>
+        const style = document.createElement('style');
+        style.textContent = `
+            .comparison-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin: var(--spacing-md) 0;
+                font-size: 0.9375rem;
+            }
+            .comparison-table th,
+            .comparison-table td {
+                padding: var(--spacing-sm);
+                text-align: left;
+                border: 1px solid rgba(148, 163, 184, 0.2);
+            }
+            .comparison-table th {
+                background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+                color: var(--accent-purple);
+                font-weight: 600;
+            }
+            .comparison-table td {
+                color: var(--text-secondary);
+            }
+            .comparison-table tbody tr:hover {
+                background: rgba(139, 92, 246, 0.05);
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

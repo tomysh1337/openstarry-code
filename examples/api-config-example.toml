@@ -1,0 +1,16 @@
+# OpenStarry Code API 配置示例
+
+[llm]
+provider = "openrouter"
+model = "anthropic/claude-3.5-sonnet"
+api_key_env = "OPENROUTER_API_KEY"
+base_url = "https://openrouter.ai/api/v1"
+timeout = 120
+
+[router]
+mode = "recommended"
+
+[router.tier_models]
+quick = "anthropic/claude-3-haiku"
+normal = "anthropic/claude-3.5-sonnet"
+advanced = "anthropic/claude-3-opus"

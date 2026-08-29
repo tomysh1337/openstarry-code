@@ -216,23 +216,23 @@ bundled gateway and platform runtime pass the packaging gate.
 ## Release Build
 
 The current OpenStarry Code release is
-[`v0.5.9`](https://github.com/tomysh1337/openstarry-code/releases/tag/v0.5.9),
+[`v0.6.0`](https://github.com/tomysh1337/openstarry-code/releases/tag/v0.6.0),
 built from the tagged repository state on 2026-08-17.
 
 Install its verified wheel directly with `uv`:
 
 ```sh
 uv tool install --python 3.12 \
-  "openstarry-code[recommended] @ https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.9/openstarry_code-0.5.9-py3-none-any.whl"
+  "openstarry-code[recommended] @ https://github.com/tomysh1337/openstarry-code/releases/download/v0.6.0/openstarry_code-0.6.0-py3-none-any.whl"
 ```
 <!-- release URL boundary: / -->
 
 | Artifact | Purpose | Integrity |
 | --- | --- | --- |
-| [`OpenStarry-Code-0.5.9-win-x64.exe`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.9/OpenStarry-Code-0.5.9-win-x64.exe) | Interactive NSIS Windows installer | Listed in `SHA256SUMS` |
-| [`OpenStarry-Code-0.5.9-win-x64.msi`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.9/OpenStarry-Code-0.5.9-win-x64.msi) | WiX MSI Windows installer | Listed in `SHA256SUMS` |
-| [`openstarry_code-0.5.9-py3-none-any.whl`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.9/openstarry_code-0.5.9-py3-none-any.whl) | Installable Python runtime with the compiled Web UI | Listed in `SHA256SUMS` |
-| [`openstarry_code-0.5.9.tar.gz`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.5.9/openstarry_code-0.5.9.tar.gz) | Reproducible source distribution | Listed in `SHA256SUMS` |
+| [`OpenStarry-Code-0.6.0-win-x64.exe`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.6.0/OpenStarry-Code-0.6.0-win-x64.exe) | Interactive NSIS Windows installer | Listed in `SHA256SUMS` |
+| [`OpenStarry-Code-0.6.0-win-x64.msi`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.6.0/OpenStarry-Code-0.6.0-win-x64.msi) | WiX MSI Windows installer | Listed in `SHA256SUMS` |
+| [`openstarry_code-0.6.0-py3-none-any.whl`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.6.0/openstarry_code-0.6.0-py3-none-any.whl) | Installable Python runtime with the compiled Web UI | Listed in `SHA256SUMS` |
+| [`openstarry_code-0.6.0.tar.gz`](https://github.com/tomysh1337/openstarry-code/releases/download/v0.6.0/openstarry_code-0.6.0.tar.gz) | Reproducible source distribution | Listed in `SHA256SUMS` |
 | `SHA256SUMS` | SHA-256 manifest for release downloads | Published with the release |
 
 Release verification covers the complete frontend build, artifact contract,
@@ -251,7 +251,7 @@ Windows installers are currently unsigned; verify `SHA256SUMS` before use.
 | Wheel/sdist build | Passed |
 
 See [`CHANGELOG.md`](CHANGELOG.md) for the version history and
-[`docs/releases/0.5.9.md`](docs/releases/0.5.9.md) for detailed release notes.
+[`docs/releases/0.6.0.md`](docs/releases/0.6.0.md) for detailed release notes.
 
 ## Codex-X Companion
 

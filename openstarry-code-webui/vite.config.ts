@@ -35,7 +35,19 @@ export default defineConfig({
         },
       },
       // RpcClient connects to ws://<host>/ws for the live chat/event stream.
-      '/ws': { target: gatewayTarget, ws: true, changeOrigin: true },
+      // Strip Origin here too: the gateway's same-origin guard would otherwise
+      // reject the proxied upgrade (Origin says localhost:5173, the gateway
+      // serves 18790) exactly like it rejects proxied POSTs.
+      '/ws': {
+        target: gatewayTarget,
+        ws: true,
+        changeOrigin: true,
+        configure: (proxy) => {
+          proxy.on('proxyReq', (proxyReq) => proxyReq.removeHeader('origin'))
+          // WebSocket upgrades emit proxyReqWs, not proxyReq.
+          proxy.on('proxyReqWs', (proxyReq) => proxyReq.removeHeader('origin'))
+        },
+      },
       // Backend-owned static assets (brand mark, share-export images, …) that the
       // app loads from `${base}/static/*`. Scope to /control/static ONLY — the
       // bare /control prefix is the SPA router base and must stay with Vite, or

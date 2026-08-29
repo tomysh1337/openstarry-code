@@ -12,12 +12,19 @@ const LogsView = () => import('@/views/LogsView.vue')
 const SkillsChannelsHubView = () => import('@/views/SkillsChannelsHubView.vue')
 
 export function defaultRootRedirect(): string {
-  if (detectPlatformId() === 'desktop') return '/chat'
+  // Cold starts land on the new-task draft so the greeting landing
+  // (早上好/晚上好) shows. A bare /chat is a dead end: it renders neither
+  // the greeting (only /chat/new does) nor a session (the restore query is
+  // dropped), so a saved /chat reopens as the draft instead. The desktop
+  // shell loads /control/chat/new directly; keep the in-app / redirect
+  // consistent.
+  if (detectPlatformId() === 'desktop') return '/chat/new'
   const saved = readLastRoute()
+  if (saved === '/chat') return '/chat/new'
   if (saved) return saved
   // Chat on every form factor: Sessions is no longer a navigation destination,
   // so landing there would open on a page the sidebar cannot get back to.
-  return '/chat'
+  return '/chat/new'
 }
 
 export const sharedRoutes: RouteRecordRaw[] = [

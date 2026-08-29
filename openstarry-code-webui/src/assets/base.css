@@ -2005,7 +2005,47 @@ pre {
   .topbar--chat .topbar-right--attention > .theme-menu-wrap:not(.bgm-menu-wrap):not(.lang-menu-wrap) {
     display: none;
   }
+}
 
+/* -- Review report (assist modes): the 审查报告 blockquote renders as a glass
+   card — translucent card surface + backdrop blur, rounded, floating shadow,
+   sliding in. Colours stay token-only via color-mix over --card/--border, so
+   the glass adapts to every theme (white glass on light, smoked glass on
+   dark). Animation gated by prefers-reduced-motion. */
+.activity-narration__body blockquote {
+  margin: var(--sp-3) 0;
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid color-mix(in srgb, var(--border-strong) 70%, transparent);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--card) 75%, transparent);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  box-shadow: var(--elev-2);
+  animation: review-card-in var(--dur-enter) var(--ease-standard);
+}
+
+.activity-narration__body blockquote > * + * {
+  margin-top: var(--sp-2);
+}
+
+@keyframes review-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .activity-narration__body blockquote {
+    animation: none;
+  }
+}
+
+@media (max-width: 768px) {
   .sidebar-dock-toggle {
     width: 44px;
     height: 44px;

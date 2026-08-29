@@ -11,6 +11,7 @@ _NAMES = [
     "admin",
     "agents",
     "artifacts",
+    "automation",
     "code_exec",
     "file_authoring",
     "filesystem",

@@ -1443,13 +1443,20 @@ class SessionNamingConfig(BaseSettings):
 class MCPServerEntry(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="OPENSTARRY_CODE_MCP_SERVER_")
 
+    # Stable identifier assigned by the settings HTTP API (uuid4 hex). Entries
+    # authored by hand in TOML may leave it empty; the API then also accepts
+    # the server name as the addressing key.
+    id: str = ""
     name: str = ""
-    transport: str = "stdio"  # "stdio" | "sse"
+    transport: str = "stdio"  # "stdio" | "sse" | "http"
     command: str | None = None  # for stdio
     args: list[str] = Field(default_factory=list)  # for stdio
-    url: str | None = None  # for sse
+    url: str | None = None  # for sse / http
     env: dict[str, str] = Field(default_factory=dict)
     tool_timeout_seconds: float = 30.0
+    # Disabled entries stay in the config but are skipped by boot-time MCP
+    # discovery. Defaults to True so pre-existing entries keep connecting.
+    enabled: bool = True
 
 
 class MCPConfig(BaseSettings):
@@ -1458,6 +1465,66 @@ class MCPConfig(BaseSettings):
     enabled: bool = False
     servers: list[MCPServerEntry] = Field(default_factory=list)
     connect_timeout_seconds: float = 5.0
+
+
+class SSHHostEntry(BaseSettings):
+    """One saved SSH host carried by the system ``ssh`` client.
+
+    Mirrors :class:`MCPServerEntry`: entries live under ``[[ssh.hosts]]`` in the
+    gateway config TOML and are managed by the settings HTTP API, which assigns
+    the ``id`` (uuid4 hex) on create. No key management — authentication is
+    delegated to whatever the user's ssh client is already configured for.
+    """
+
+    model_config = SettingsConfigDict(env_prefix="OPENSTARRY_CODE_SSH_HOST_")
+
+    id: str = ""
+    name: str = ""
+    host: str = ""
+    port: int = 22
+    # Optional login user; empty means let ssh pick the current one.
+    username: str = ""
+    # Disabled entries stay in the config but are hidden from the terminal
+    # panel's SSH selector, matching MCP discovery semantics.
+    enabled: bool = True
+
+
+class SSHConfig(BaseSettings):
+    model_config = SettingsConfigDict(env_prefix="OPENSTARRY_CODE_SSH_")
+
+    hosts: list[SSHHostEntry] = Field(default_factory=list)
+
+
+class FTPHostEntry(BaseSettings):
+    """One saved FTP/FTPS host browsed by the IDE panel's remote tab.
+
+    Mirrors :class:`SSHHostEntry`: entries live under ``[[ftp.hosts]]`` in the
+    gateway config TOML and are managed by the settings HTTP API, which assigns
+    the ``id`` (uuid4 hex) on create. Unlike SSH (which delegates auth to the
+    system ssh client), FTP needs credentials here because stdlib ``ftplib``
+    carries no ambient auth — empty username means anonymous.
+    """
+
+    model_config = SettingsConfigDict(env_prefix="OPENSTARRY_CODE_FTP_HOST_")
+
+    id: str = ""
+    name: str = ""
+    host: str = ""
+    port: int = 21
+    # Optional login; empty username means anonymous (password then ignored).
+    username: str = ""
+    password: str = ""
+    # True = FTP over TLS (ftplib.FTP_TLS, AUTH TLS on connect).
+    tls: bool = False
+    # Disabled entries stay in the config but are hidden from the IDE panel's
+    # remote tab, matching SSH host semantics.
+    enabled: bool = True
+
+
+class FTPConfig(BaseSettings):
+    model_config = SettingsConfigDict(env_prefix="OPENSTARRY_CODE_FTP_")
+
+    hosts: list[FTPHostEntry] = Field(default_factory=list)
 
 
 class HeartbeatConfig(BaseSettings):
@@ -2336,6 +2403,8 @@ class GatewayConfig(BaseSettings):
     compaction: CompactionLlmConfig = Field(default_factory=CompactionLlmConfig)
     naming: SessionNamingConfig = Field(default_factory=SessionNamingConfig)
     mcp: MCPConfig = Field(default_factory=MCPConfig)
+    ssh: SSHConfig = Field(default_factory=SSHConfig)
+    ftp: FTPConfig = Field(default_factory=FTPConfig)
     heartbeat: HeartbeatConfig = Field(default_factory=HeartbeatConfig)
     goal: GoalConfig = Field(default_factory=GoalConfig)
     image_generation: ImageGenerationConfig = Field(default_factory=ImageGenerationConfig)
@@ -2352,6 +2421,11 @@ class GatewayConfig(BaseSettings):
     privacy: PrivacyConfig = Field(default_factory=PrivacyConfig)
     diagnostics_enabled: bool = False
     channel_admin_senders: dict[str, list[str]] = Field(default_factory=dict)
+
+    # WebUI theme mirrored from PUT /api/ui/theme. Consumed by the engine's
+    # computer-use guidance (session_start(theme=...)) and injected into MCP
+    # server subprocesses as OSC_THEME so the on-screen cursor matches the UI.
+    ui_theme: str = "dark"
 
     @property
     def effective_run_mode(self) -> str:

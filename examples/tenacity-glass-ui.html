@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tenacity Glass UI - OpenStarry Code</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            min-height: 100vh;
+            /* Tenacity 渐变背景：浅蓝到粉色 */
+            background: linear-gradient(135deg, 
+                #e0f2fe 0%, 
+                #dbeafe 15%,
+                #e0e7ff 30%,
+                #ede9fe 45%,
+                #fce7f3 60%,
+                #fecdd3 75%,
+                #fecaca 90%,
+                #fee2e2 100%
+            );
+            background-attachment: fixed;
+            padding: 2rem;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* 毛玻璃卡片 */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            border-radius: 24px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 48px rgba(31, 38, 135, 0.25);
+            background: rgba(255, 255, 255, 0.85);
+        }
+
+        /* 标题 */
+        h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #06b6d4, #8b5cf6, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            color: #374151;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        h3 {
+            font-size: 1.25rem;
+            color: #4b5563;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        p {
+            color: #6b7280;
+            line-height: 1.7;
+            margin-bottom: 1rem;
+        }
+
+        /* 按钮 */
+        .btn {
+            display: inline-block;
+            padding: 0.875rem 2rem;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 999px;
+            color: #8b5cf6;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, #06b6d4, #8b5cf6);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(139, 92, 246, 0.4);
+            border-color: transparent;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #06b6d4, #8b5cf6);
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #0891b2, #7c3aed);
+            box-shadow: 0 12px 32px rgba(139, 92, 246, 0.5);
+        }
+
+        /* 代码块 */
+        .code-block {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .code-block code {
+            color: #e2e8f0;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .code-block .keyword {
+            color: #c084fc;
+        }
+
+        .code-block .string {
+            color: #6ee7b7;
+        }
+
+        .code-block .comment {
+            color: #94a3b8;
+            font-style: italic;
+        }
+
+        /* 网格布局 */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            border-radius: 20px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            background: rgba(255, 255, 255, 0.85);
+            transform: scale(1.03);
+            box-shadow: 0 8px 32px rgba(139, 92, 246, 0.2);
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #06b6d4, #8b5cf6);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        /* 输入框 */
+        .input-group {
+            margin: 1rem 0;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 0.875rem 1.25rem;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 16px;
+            font-size: 1rem;
+            color: #374151;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+        }
+
+        /* 标签 */
+        .tag {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 999px;
+            font-size: 0.875rem;
+            color: #8b5cf6;
+            margin: 0.25rem;
+            transition: all 0.3s ease;
+        }
+
+        .tag:hover {
+            background: linear-gradient(135deg, #06b6d4, #8b5cf6);
+            color: white;
+            border-color: transparent;
+        }
+
+        /* 导航栏 */
+        .navbar {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            border-radius: 999px;
+            padding: 1rem 2rem;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #6b7280;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #8b5cf6;
+        }
+
+        /* 动画 */
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* 滚动条 */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #06b6d4, #8b5cf6);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #0891b2, #7c3aed);
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .navbar {
+                flex-direction: column;
+                gap: 1rem;
+                border-radius: 24px;
+            }
+
+            .nav-links {
+                flex-direction: column;
+                gap: 0.5rem;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 导航栏 -->
+        <nav class="navbar">
+            <div style="font-weight: 700; font-size: 1.25rem; background: linear-gradient(135deg, #06b6d4, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                ⚡ OpenStarry Code
+            </div>
+            <ul class="nav-links">
+                <li><a href="#intro">介绍</a></li>
+                <li><a href="#features">特性</a></li>
+                <li><a href="#examples">示例</a></li>
+                <li><a href="#protocol">协议</a></li>
+            </ul>
+        </nav>
+
+        <!-- 主标题 -->
+        <div class="glass-card floating">
+            <h1>✨ Tenacity Glass UI</h1>
+            <p style="font-size: 1.25rem; color: #4b5563;">
+                灵感来自 Minecraft Tenacity Client，采用渐变背景 + 白色毛玻璃设计
+            </p>
+            <div style="margin-top: 1.5rem;">
+                <button class="btn btn-primary" style="margin-right: 1rem;">开始使用</button>
+                <button class="btn">查看文档</button>
+            </div>
+        </div>
+
+        <!-- 介绍 -->
+        <div id="intro" class="glass-card">
+            <h2>🎨 设计风格</h2>
+            <p>
+                Tenacity Glass UI 采用浅色系渐变背景（浅蓝 → 浅紫 → 浅粉），
+                配合 75% 透明度的白色毛玻璃效果，营造出轻盈、现代、优雅的视觉体验。
+            </p>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1rem;">
+                <span class="tag">浅蓝渐变</span>
+                <span class="tag">毛玻璃效果</span>
+                <span class="tag">75% 透明度</span>
+                <span class="tag">圆角设计</span>
+                <span class="tag">悬停动画</span>
+                <span class="tag">响应式布局</span>
+            </div>
+        </div>
+
+        <!-- 特性网格 -->
+        <div id="features">
+            <h2 style="color: #374151; margin-bottom: 1.5rem; font-size: 2rem;">✨ 核心特性</h2>
+            <div class="grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎨</div>
+                    <h3>渐变背景</h3>
+                    <p>浅蓝到粉色的多层次渐变，柔和而富有层次感</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💎</div>
+                    <h3>毛玻璃效果</h3>
+                    <p>backdrop-filter 实现的真实毛玻璃模糊效果</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🚀</div>
+                    <h3>流畅动画</h3>
+                    <p>所有交互都有平滑的过渡动画和悬停效果</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <h3>响应式设计</h3>
+                    <p>完美适配桌面、平板和移动设备</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3>圆角设计</h3>
+                    <p>大圆角（24px）和圆形按钮（999px）</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">✨</div>
+                    <h3>渐变元素</h3>
+                    <p>按钮、标题、图标都使用渐变配色</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 示例 -->
+        <div id="examples" class="glass-card">
+            <h2>📝 代码示例</h2>
+            <p>以下是实现毛玻璃卡片的核心 CSS 代码：</p>
+            
+            <div class="code-block">
+                <code>
+<span class="comment">/* 毛玻璃卡片 */</span>
+<span class="keyword">.glass-card</span> {
+    <span class="keyword">background</span>: <span class="string">rgba(255, 255, 255, 0.75)</span>;
+    <span class="keyword">backdrop-filter</span>: <span class="string">blur(20px)</span>;
+    <span class="keyword">-webkit-backdrop-filter</span>: <span class="string">blur(20px)</span>;
+    <span class="keyword">border</span>: <span class="string">1px solid rgba(255, 255, 255, 0.9)</span>;
+    <span class="keyword">border-radius</span>: <span class="string">24px</span>;
+    <span class="keyword">box-shadow</span>: <span class="string">0 8px 32px rgba(31, 38, 135, 0.15)</span>;
+    <span class="keyword">transition</span>: <span class="string">all 0.4s cubic-bezier(0.4, 0, 0.2, 1)</span>;
+}
+
+<span class="keyword">.glass-card:hover</span> {
+    <span class="keyword">transform</span>: <span class="string">translateY(-4px)</span>;
+    <span class="keyword">box-shadow</span>: <span class="string">0 12px 48px rgba(31, 38, 135, 0.25)</span>;
+    <span class="keyword">background</span>: <span class="string">rgba(255, 255, 255, 0.85)</span>;
+}
+                </code>
+            </div>
+
+            <p style="margin-top: 1.5rem;">渐变背景实现：</p>
+            <div class="code-block">
+                <code>
+<span class="keyword">body</span> {
+    <span class="keyword">background</span>: <span class="string">linear-gradient(135deg, 
+        #e0f2fe 0%,   /* 浅蓝 */
+        #dbeafe 15%,
+        #e0e7ff 30%,  /* 浅紫 */
+        #ede9fe 45%,
+        #fce7f3 60%,  /* 浅粉 */
+        #fecdd3 75%,
+        #fecaca 90%,
+        #fee2e2 100%
+    )</span>;
+    <span class="keyword">background-attachment</span>: <span class="string">fixed</span>;
+}
+                </code>
+            </div>
+        </div>
+
+        <!-- 表单示例 -->
+        <div class="glass-card">
+            <h2>📮 表单示例</h2>
+            <div class="input-group">
+                <input type="text" placeholder="输入你的名字...">
+            </div>
+            <div class="input-group">
+                <input type="email" placeholder="输入你的邮箱...">
+            </div>
+            <div class="input-group">
+                <textarea rows="4" placeholder="留下你的消息..."></textarea>
+            </div>
+            <button class="btn btn-primary">提交</button>
+        </div>
+
+        <!-- starry:// 协议展示 -->
+        <div id="protocol" class="glass-card">
+            <h2>⚡ starry:// 协议详解</h2>
+            <p>OpenStarry Code 私有协议，用于快速配置 API、安装 Skills 和加载扩展。</p>
+            
+            <h3 style="margin-top: 1.5rem;">📡 API 配置导入</h3>
+            <p style="font-size: 0.95rem; color: #6b7280;">支持所有主流 LLM 提供商的快速配置</p>
+            
+            <div class="code-block">
+                <code>
+<span class="comment"># ========== 商业 API 提供商 ==========</span>
+
+<span class="comment"># 1. OpenRouter（推荐 - 支持多个模型）</span>
+starry://api/import?provider=openrouter&key=env:OPENROUTER_API_KEY
+
+<span class="comment"># 2. Anthropic Claude（最新 Sonnet 4.5）</span>
+starry://api/import?provider=anthropic&model=claude-sonnet-4-5&key=env:ANTHROPIC_API_KEY
+
+<span class="comment"># 3. OpenAI GPT-4</span>
+starry://api/import?provider=openai&model=gpt-4o&key=env:OPENAI_API_KEY
+
+<span class="comment"># 4. Google Gemini</span>
+starry://api/import?provider=gemini&model=gemini-2.0-flash&key=env:GEMINI_API_KEY
+
+<span class="comment"># 5. Azure OpenAI（需要指定 base_url）</span>
+starry://api/import?provider=azure&model=gpt-4&key=env:AZURE_API_KEY&base_url=https://your-resource.openai.azure.com
+
+<span class="comment"># 6. 智谱 AI (GLM-4)</span>
+starry://api/import?provider=zhipu&model=glm-4-plus&key=env:ZHIPU_API_KEY
+
+<span class="comment"># 7. DeepSeek</span>
+starry://api/import?provider=deepseek&model=deepseek-chat&key=env:DEEPSEEK_API_KEY
+
+<span class="comment"># 8. Moonshot AI (Kimi)</span>
+starry://api/import?provider=moonshot&model=moonshot-v1-32k&key=env:MOONSHOT_API_KEY
+
+
+<span class="comment"># ========== 本地/开源模型 ==========</span>
+
+<span class="comment"># 9. Ollama 本地运行（无需 API key）</span>
+starry://api/import?provider=ollama&model=llama3.1
+
+<span class="comment"># 10. Ollama 指定端口</span>
+starry://api/import?provider=ollama&model=qwen2.5&base_url=http://localhost:11434
+
+
+<span class="comment"># ========== 从配置文件导入 ==========</span>
+
+<span class="comment"># 11. 从远程 JSON 导入</span>
+starry://api/import?url=https://example.com/openai-config.json&type=openai
+
+<span class="comment"># 12. 从本地 TOML 文件导入</span>
+starry://api/import?url=file:///C:/configs/anthropic.toml&type=anthropic
+
+<span class="comment"># 13. 从本地 JSON 文件导入</span>
+starry://api/import?url=file:///home/user/configs/openrouter.json&type=openrouter
+                </code>
+            </div>
+
+            <h3 style="margin-top: 2rem;">📦 配置文件格式示例</h3>
+            
+            <p style="font-size: 0.95rem; color: #6b7280; margin-top: 1rem;">JSON 格式（openai-config.json）：</p>
+            <div class="code-block">
+                <code>
+{
+  <span class="string">"version"</span>: <span class="string">"1.0"</span>,
+  <span class="string">"provider"</span>: <span class="string">"openai"</span>,
+  <span class="string">"config"</span>: {
+    <span class="string">"api_key_env"</span>: <span class="string">"OPENAI_API_KEY"</span>,
+    <span class="string">"base_url"</span>: <span class="string">"https://api.openai.com/v1"</span>,
+    <span class="string">"model"</span>: <span class="string">"gpt-4o"</span>,
+    <span class="string">"timeout"</span>: <span class="keyword">60</span>,
+    <span class="string">"max_retries"</span>: <span class="keyword">3</span>
+  },
+  <span class="string">"router"</span>: {
+    <span class="string">"mode"</span>: <span class="string">"recommended"</span>,
+    <span class="string">"tiers"</span>: {
+      <span class="string">"quick"</span>: <span class="string">"gpt-4o-mini"</span>,
+      <span class="string">"normal"</span>: <span class="string">"gpt-4o"</span>,
+      <span class="string">"advanced"</span>: <span class="string">"gpt-4-turbo"</span>
+    }
+  }
+}
+                </code>
+            </div>
+
+            <p style="font-size: 0.95rem; color: #6b7280; margin-top: 1rem;">TOML 格式（anthropic.toml）：</p>
+            <div class="code-block">
+                <code>
+[llm]
+provider = <span class="string">"anthropic"</span>
+model = <span class="string">"claude-sonnet-4-5"</span>
+api_key_env = <span class="string">"ANTHROPIC_API_KEY"</span>
+base_url = <span class="string">"https://api.anthropic.com"</span>
+timeout = <span class="keyword">120</span>
+
+[router]
+mode = <span class="string">"recommended"</span>
+
+[router.tier_models]
+quick = <span class="string">"claude-3-haiku"</span>
+normal = <span class="string">"claude-3.5-sonnet"</span>
+advanced = <span class="string">"claude-3-opus"</span>
+                </code>
+            </div>
+
+            <h3 style="margin-top: 2rem;">🔧 Skill 安装</h3>
+            <div class="code-block">
+                <code>
+<span class="comment"># 从 GitHub 安装（默认 main 分支）</span>
+starry://skill/install?github=openstarry/deep-research
+
+<span class="comment"># 指定分支或标签</span>
+starry://skill/install?github=openstarry/awesome-skill&ref=v1.2.0
+
+<span class="comment"># 指定仓库子路径</span>
+starry://skill/install?github=myorg/skills&ref=main&subpath=pdf-tools
+
+<span class="comment"># 从 ClawHub 安装</span>
+starry://skill/install?clawhub=deep-research-pro
+
+<span class="comment"># 从本地路径安装</span>
+starry://skill/install?local=file:///path/to/my-skill
+                </code>
+            </div>
+
+            <h3 style="margin-top: 2rem;">🔌 扩展加载</h3>
+            <div class="code-block">
+                <code>
+<span class="comment"># 加载 Python 扩展</span>
+starry://extension/load?path=file:///plugins/my_extension.py&type=python
+
+<span class="comment"># 加载 Java 扩展</span>
+starry://extension/load?path=file:///C:/plugins/code-analyzer.jar&type=java
+
+<span class="comment"># 加载 Go 扩展（Linux/macOS）</span>
+starry://extension/load?path=file:///usr/local/lib/analyzer.so&type=go
+
+<span class="comment"># 从 URL 加载扩展</span>
+starry://extension/load?path=https://example.com/extensions/analyzer.so&type=go
+                </code>
+            </div>
+
+            <h3 style="margin-top: 2rem;">📋 批量配置</h3>
+            <p style="font-size: 0.95rem; color: #6b7280;">创建 setup.txt 文件，每行一个协议 URL：</p>
+            <div class="code-block">
+                <code>
+<span class="comment"># setup.txt - 一键配置完整环境</span>
+starry://api/import?provider=openrouter&key=env:OPENROUTER_API_KEY
+starry://api/import?provider=ollama&model=llama3.1
+starry://skill/install?github=openstarry/deep-research
+starry://skill/install?clawhub=pdf-tools
+                </code>
+            </div>
+
+            <p style="font-size: 0.95rem; color: #6b7280; margin-top: 1rem;">执行批量配置：</p>
+            <div class="code-block">
+                <code>
+<span class="comment"># 批量处理所有配置</span>
+openstarry-code protocol batch setup.txt
+
+<span class="comment"># JSON 输出格式</span>
+openstarry-code protocol batch setup.txt --json
+                </code>
+            </div>
+
+            <h3 style="margin-top: 2rem;">🎯 高级配置示例</h3>
+            <p style="font-size: 0.95rem; color: #6b7280;">自定义超时、重试、代理等高级参数：</p>
+            <div class="code-block">
+                <code>
+<span class="comment"># 自定义超时和重试</span>
+starry://api/import?provider=openai&model=gpt-4o&key=env:OPENAI_API_KEY&timeout=120&max_retries=5
+
+<span class="comment"># 使用代理</span>
+starry://api/import?provider=anthropic&key=env:ANTHROPIC_API_KEY&proxy=http://proxy.example.com:8080
+
+<span class="comment"># 设置自定义 base_url（私有部署）</span>
+starry://api/import?provider=openai&key=env:CUSTOM_API_KEY&base_url=https://my-api.example.com/v1
+
+<span class="comment"># 配置模型路由（多层级）</span>
+starry://api/import?url=https://example.com/router-config.json&type=openai
+
+<span class="comment"># 多 provider 组合配置</span>
+starry://api/import?provider=openrouter&key=env:OPENROUTER_API_KEY
+starry://api/import?provider=ollama&model=qwen2.5
+starry://api/import?provider=anthropic&model=claude-sonnet-4-5&key=env:ANTHROPIC_API_KEY
+                </code>
+            </div>
+
+            <h3 style="margin-top: 2rem;">� CLI 命令详解</h3>
+            <div class="code-block">
+                <code>
+<span class="comment"># 1. 处理单个 URL</span>
+openstarry-code protocol handle "starry://api/import?provider=openai&key=env:OPENAI_API_KEY"
+
+<span class="comment"># 2. 批量处理</span>
+openstarry-code protocol batch setup.txt
+
+<span class="comment"># 3. 验证 URL 格式</span>
+openstarry-code protocol validate "starry://api/import?provider=openai"
+
+<span class="comment"># 4. 查看协议信息</span>
+openstarry-code protocol info
+
+<span class="comment"># 5. JSON 输出格式</span>
+openstarry-code protocol handle "starry://..." --json
+
+<span class="comment"># 6. 指定配置文件路径</span>
+openstarry-code protocol handle "starry://..." --config-path /path/to/config.toml
+                </code>
+            </div>
+
+            <h3 style="margin-top: 2rem;">�🛡️ 安全最佳实践</h3>
+            <div class="grid" style="margin-top: 1rem;">
+                <div class="feature-card">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">🔐</div>
+                    <h3 style="font-size: 1rem;">使用环境变量</h3>
+                    <p style="font-size: 0.875rem;">优先使用 <code style="color: #8b5cf6;">env:VAR_NAME</code> 引用环境变量，避免明文密钥</p>
+                </div>
+                <div class="feature-card">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">✅</div>
+                    <h3 style="font-size: 1rem;">验证后执行</h3>
+                    <p style="font-size: 0.875rem;">使用 <code style="color: #8b5cf6;">protocol validate</code> 先验证 URL 格式</p>
+                </div>
+                <div class="feature-card">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">📝</div>
+                    <h3 style="font-size: 1rem;">配置文件优先</h3>
+                    <p style="font-size: 0.875rem;">复杂配置使用 JSON/TOML 文件而非 URL 参数</p>
+                </div>
+                <div class="feature-card">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">🌐</div>
+                    <h3 style="font-size: 1rem;">验证来源</h3>
+                    <p style="font-size: 0.875rem;">仅从可信来源导入配置文件和安装 Skills</p>
+                </div>
+                <div class="feature-card">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">🔒</div>
+                    <h3 style="font-size: 1rem;">权限控制</h3>
+                    <p style="font-size: 0.875rem;">扩展加载需要用户明确授权，避免自动执行</p>
+                </div>
+                <div class="feature-card">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">📊</div>
+                    <h3 style="font-size: 1rem;">审计日志</h3>
+                    <p style="font-size: 0.875rem;">所有协议操作都会记录日志，便于追踪和审计</p>
+                </div>
+            </div>
+
+            <div style="margin-top: 2rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+                <button class="btn btn-primary">查看完整文档</button>
+                <button class="btn">下载配置模板</button>
+                <button class="btn">测试协议 URL</button>
+            </div>
+        </div>
+
+        <!-- 页脚 -->
+        <div class="glass-card" style="text-align: center;">
+            <p style="color: #9ca3af;">
+                ✨ OpenStarry Code - Tenacity Glass UI<br>
+                浅蓝到粉色渐变 • 75% 毛玻璃效果 • 现代化设计
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // 动态效果
+        document.querySelectorAll('.feature-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.05) rotate(1deg)';
+            });
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1) rotate(0deg)';
+            });
+        });
+    </script>
+</body>
+</html>

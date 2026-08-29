@@ -3273,15 +3273,23 @@ async def build_services(
         mcp_failures = 0
         log.info("build_services.mcp_discovery_started", servers=len(config.mcp.servers))
         for server_index, entry in enumerate(config.mcp.servers):
+            # The settings API's enable toggle: a disabled entry stays in the
+            # config but never gets a runtime client this boot.
+            if not entry.enabled:
+                log.info("build_services.mcp_server_disabled", server=entry.name)
+                continue
             server_started_at = time.monotonic()
             try:
+                # Mirror the WebUI theme into the server subprocess (OSC_THEME)
+                # so the computer-use on-screen cursor matches the UI palette.
+                ui_theme = str(getattr(config, "ui_theme", "") or "dark")
                 mcp_cfg = MCPServerConfig(
                     name=entry.name,
                     transport=entry.transport,
                     command=entry.command,
                     args=entry.args,
                     url=entry.url,
-                    env=entry.env,
+                    env={**entry.env, "OSC_THEME": ui_theme},
                     tool_timeout_seconds=entry.tool_timeout_seconds,
                 )
                 names = await asyncio.wait_for(

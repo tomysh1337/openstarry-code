@@ -393,9 +393,18 @@
       "retryFailedTitle": "未能重新生成预览",
       "retryFailedDescription": "本次重新生成请求未成功。上一次处理结果仍未被采纳，也没有修改文件；可以再次尝试或丢弃导入。",
       "jobStates": {
-        "cancelled": {"title": "已取消生成预览", "description": "隔离原文会保留 24 小时。重新生成时若首个结果未通过校验，会自动重试一次，因此最多调用模型两次，结果可能不同。"},
-        "interrupted": {"title": "预览生成已中断", "description": "模型处理期间 OpenStarry Code 发生重启。隔离原文仍可用；重新生成时若首个结果未通过校验，会自动重试一次，因此最多调用模型两次。"},
-        "failed": {"title": "本次预览生成失败", "description": "本次处理没有生成通过校验且可核对的预览。未采纳任何导入判断，也未修改任何文件。隔离原文已保留；重新生成最多调用模型两次，结果可能不同。"}
+        "cancelled": {
+          "title": "已取消生成预览",
+          "description": "隔离原文会保留 24 小时。重新生成时若首个结果未通过校验，会自动重试一次，因此最多调用模型两次，结果可能不同。"
+        },
+        "interrupted": {
+          "title": "预览生成已中断",
+          "description": "模型处理期间 OpenStarry Code 发生重启。隔离原文仍可用；重新生成时若首个结果未通过校验，会自动重试一次，因此最多调用模型两次。"
+        },
+        "failed": {
+          "title": "本次预览生成失败",
+          "description": "本次处理没有生成通过校验且可核对的预览。未采纳任何导入判断，也未修改任何文件。隔离原文已保留；重新生成最多调用模型两次，结果可能不同。"
+        }
       },
       "modelAnalysisTitle": "模型分析（请以文件差异为准）",
       "previewTitle": "核对每一处文件变更",
@@ -578,6 +587,139 @@
       "discardBody": "有尚未保存的编辑，现在关闭将丢失它们。",
       "discardConfirmPrimary": "放弃修改"
     },
+    "mcp": {
+      "title": "MCP 服务器",
+      "subtitle": "配置模型上下文协议（MCP）服务器，为智能体扩展外部工具。修改将在下次网关启动时生效。",
+      "add": "新增服务器",
+      "empty": "尚未配置 MCP 服务器",
+      "emptyHint": "添加 stdio 命令或 http 端点，为智能体扩展外部工具",
+      "newTitle": "新增 MCP 服务器",
+      "editTitle": "编辑 MCP 服务器",
+      "fieldName": "名称",
+      "namePlaceholder": "例如 filesystem",
+      "fieldTransport": "传输类型",
+      "transportStdio": "stdio（本地命令）",
+      "transportHttp": "http（远程 URL）",
+      "fieldCommand": "命令",
+      "commandPlaceholder": "例如 npx",
+      "fieldArgs": "参数",
+      "argsPlaceholder": "以空格分隔的参数",
+      "fieldUrl": "服务器 URL",
+      "urlPlaceholder": "例如 https://example.com/mcp",
+      "fieldEnv": "环境变量",
+      "envPlaceholder": "例如 API_KEY=xxxx",
+      "envHint": "每行一条 KEY=VALUE",
+      "fieldEnabled": "启用",
+      "save": "保存",
+      "cancel": "取消",
+      "edit": "编辑",
+      "delete": "删除",
+      "deleteTitle": "删除 MCP 服务器？",
+      "deleteBody": "“{name}”将从配置中移除。",
+      "saved": "MCP 服务器已保存",
+      "deleted": "MCP 服务器已删除",
+      "saveFailed": "无法保存 MCP 服务器",
+      "deleteFailed": "无法删除 MCP 服务器",
+      "loadFailed": "无法加载 MCP 服务器",
+      "retry": "重试",
+      "errNameRequired": "名称为必填项",
+      "errCommandRequired": "stdio 服务器必须填写命令",
+      "errUrlRequired": "必须提供合法的 http(s) URL",
+      "errEnvInvalid": "环境变量必须每行一条 KEY=VALUE",
+      "builtin": {
+        "title": "内置服务器",
+        "subtitle": "OpenStarry Code 内置的 MCP 服务器，点击即可一键启用。",
+        "computerUseName": "电脑使用",
+        "computerUseDesc": "让 AI 看到屏幕内容，并以仿人手动作控制键盘鼠标，屏幕上会实时显示操作光标。",
+        "enable": "启用",
+        "enabled": "已启用",
+        "alreadyEnabled": "电脑使用已启用",
+        "enableFailed": "无法启用电脑使用"
+      },
+      "preview": {
+        "open": "实时预览",
+        "title": "电脑使用 — 实时预览",
+        "close": "关闭",
+        "statusActive": "进行中",
+        "statusAborted": "已中止",
+        "statusIdle": "空闲",
+        "noScreenshot": "暂无截图 — 代理开始电脑使用会话后，预览会自动更新。",
+        "loadFailed": "无法加载电脑使用状态",
+        "lastAction": "最近动作",
+        "noAction": "暂无动作",
+        "cursor": "光标"
+      }
+    },
+    "ssh": {
+      "title": "SSH 主机",
+      "subtitle": "保存 SSH 主机，内置终端将通过系统 ssh 客户端连接。认证沿用你现有的 ssh 配置。",
+      "add": "新增主机",
+      "empty": "尚未配置 SSH 主机",
+      "emptyHint": "添加主机后，可在终端面板中通过 SSH 打开终端会话",
+      "newTitle": "新增 SSH 主机",
+      "editTitle": "编辑 SSH 主机",
+      "fieldName": "名称",
+      "namePlaceholder": "例如 web-server",
+      "fieldHost": "主机",
+      "hostPlaceholder": "例如 192.168.1.10",
+      "fieldPort": "端口",
+      "portPlaceholder": "22",
+      "fieldUsername": "用户名",
+      "usernamePlaceholder": "例如 root",
+      "fieldEnabled": "启用",
+      "save": "保存",
+      "cancel": "取消",
+      "edit": "编辑",
+      "delete": "删除",
+      "deleteTitle": "删除 SSH 主机？",
+      "deleteBody": "“{name}”将从配置中移除。",
+      "saved": "SSH 主机已保存",
+      "deleted": "SSH 主机已删除",
+      "saveFailed": "无法保存 SSH 主机",
+      "deleteFailed": "无法删除 SSH 主机",
+      "loadFailed": "无法加载 SSH 主机",
+      "retry": "重试",
+      "errNameRequired": "名称为必填项",
+      "errHostRequired": "主机为必填项",
+      "errPortInvalid": "端口必须是 1 到 65535 之间的整数"
+    },
+    "ftp": {
+      "title": "FTP 服务器",
+      "subtitle": "保存 FTP 服务器，IDE 面板的“远程”标签可浏览其文件。用户名为空表示匿名登录。",
+      "add": "新增服务器",
+      "empty": "尚未配置 FTP 服务器",
+      "emptyHint": "添加服务器后，可在 IDE 面板中浏览其文件",
+      "newTitle": "新增 FTP 服务器",
+      "editTitle": "编辑 FTP 服务器",
+      "fieldName": "名称",
+      "namePlaceholder": "例如 web-server",
+      "fieldHost": "主机",
+      "hostPlaceholder": "例如 ftp.example.com",
+      "fieldPort": "端口",
+      "portPlaceholder": "21",
+      "fieldUsername": "用户名",
+      "usernamePlaceholder": "例如 deploy",
+      "fieldPassword": "密码",
+      "passwordPlaceholder": "密码",
+      "passwordHint": "留空表示匿名登录。密码保存在网关配置中。",
+      "fieldTls": "使用 TLS（FTPS）",
+      "fieldEnabled": "启用",
+      "save": "保存",
+      "cancel": "取消",
+      "edit": "编辑",
+      "delete": "删除",
+      "deleteTitle": "删除 FTP 服务器？",
+      "deleteBody": "“{name}”将从配置中移除。",
+      "saved": "FTP 服务器已保存",
+      "deleted": "FTP 服务器已删除",
+      "saveFailed": "无法保存 FTP 服务器",
+      "deleteFailed": "无法删除 FTP 服务器",
+      "loadFailed": "无法加载 FTP 服务器",
+      "retry": "重试",
+      "errNameRequired": "名称为必填项",
+      "errHostRequired": "主机为必填项",
+      "errPortInvalid": "端口必须是 1 到 65535 之间的整数"
+    },
     "rail": {
       "connection": "连接",
       "runtime": "运行时",
@@ -589,6 +731,9 @@
       "memory": "记忆与画像",
       "computerControl": "电脑操控",
       "browser": "浏览器",
+      "mcp": "MCP 服务器",
+      "ssh": "SSH 主机",
+      "ftp": "FTP 服务器",
       "coding": "编码",
       "router": "路由",
       "ensemble": "模型融合",
@@ -2507,15 +2652,60 @@
       "galleryEyebrow": "自动化模板库",
       "bulkDeleteConfirm": "确定删除选中的 {count} 个自动化任务吗？此操作无法撤销。",
       "templates": {
-        "ai-daily": { "title": "每日 AI 资讯简报", "description": "检索过去 24 小时的重要 AI 新闻，去重并生成带来源链接的简报。", "category": "资讯与情报", "schedule": "每天 08:00" },
-        "weekly-report": { "title": "每周工作复盘", "description": "汇总本周任务与交付，提炼进展、风险和下周优先事项。", "category": "效率办公", "schedule": "每周五 17:30" },
-        "english-five": { "title": "每天 5 个英语单词", "description": "结合例句与小测验，生成轻量、可坚持的英语学习卡片。", "category": "学习成长", "schedule": "每天 09:00" },
-        "project-risk": { "title": "项目风险巡检", "description": "检查延期事项、异常日志与待处理问题，输出风险等级和建议。", "category": "项目研发", "schedule": "工作日 10:00" },
-        "knowledge-review": { "title": "知识库周回顾", "description": "整理本周新增笔记与会议纪要，补充标签并生成待消化清单。", "category": "知识管理", "schedule": "每周日 18:00" },
-        "daily-idea": { "title": "每日灵感与冷知识", "description": "每天送上一条可靠、有出处的知识和一个可行动的小灵感。", "category": "轻松生活", "schedule": "每天 12:00" },
-        "bedtime-story": { "title": "每日儿童睡前故事", "description": "生成一篇温暖、有启发、适合亲子共读的短篇故事。", "category": "亲子陪伴", "schedule": "每天 20:30" },
-        "classic-movie": { "title": "经典电影推荐", "description": "每周推荐一部高质量经典电影，并附无剧透导读。", "category": "休闲娱乐", "schedule": "每周六 19:00" },
-        "today-in-history": { "title": "历史上的今天", "description": "从科技、文化与社会领域挑选一件可靠的历史事件。", "category": "每日知识", "schedule": "每天 08:30" }
+        "ai-daily": {
+          "title": "每日 AI 资讯简报",
+          "description": "检索过去 24 小时的重要 AI 新闻，去重并生成带来源链接的简报。",
+          "category": "资讯与情报",
+          "schedule": "每天 08:00"
+        },
+        "weekly-report": {
+          "title": "每周工作复盘",
+          "description": "汇总本周任务与交付，提炼进展、风险和下周优先事项。",
+          "category": "效率办公",
+          "schedule": "每周五 17:30"
+        },
+        "english-five": {
+          "title": "每天 5 个英语单词",
+          "description": "结合例句与小测验，生成轻量、可坚持的英语学习卡片。",
+          "category": "学习成长",
+          "schedule": "每天 09:00"
+        },
+        "project-risk": {
+          "title": "项目风险巡检",
+          "description": "检查延期事项、异常日志与待处理问题，输出风险等级和建议。",
+          "category": "项目研发",
+          "schedule": "工作日 10:00"
+        },
+        "knowledge-review": {
+          "title": "知识库周回顾",
+          "description": "整理本周新增笔记与会议纪要，补充标签并生成待消化清单。",
+          "category": "知识管理",
+          "schedule": "每周日 18:00"
+        },
+        "daily-idea": {
+          "title": "每日灵感与冷知识",
+          "description": "每天送上一条可靠、有出处的知识和一个可行动的小灵感。",
+          "category": "轻松生活",
+          "schedule": "每天 12:00"
+        },
+        "bedtime-story": {
+          "title": "每日儿童睡前故事",
+          "description": "生成一篇温暖、有启发、适合亲子共读的短篇故事。",
+          "category": "亲子陪伴",
+          "schedule": "每天 20:30"
+        },
+        "classic-movie": {
+          "title": "经典电影推荐",
+          "description": "每周推荐一部高质量经典电影，并附无剧透导读。",
+          "category": "休闲娱乐",
+          "schedule": "每周六 19:00"
+        },
+        "today-in-history": {
+          "title": "历史上的今天",
+          "description": "从科技、文化与社会领域挑选一件可靠的历史事件。",
+          "category": "每日知识",
+          "schedule": "每天 08:30"
+        }
       }
     },
     "deleteDialog": {
@@ -2637,39 +2827,39 @@
       "fdChannel": "一个渠道",
       "fdWebhook": "一个 webhook",
       "enabled": "已启用",
-      "saveSchedule": "保存定时任务"
-      ,"friendlyNamePlaceholder": "例如：每天整理客户反馈"
-      ,"friendlyTypeCron": "按固定时间重复"
-      ,"friendlyTypeEvery": "每隔一段时间执行"
-      ,"friendlyTypeAt": "只在指定时间执行一次"
-      ,"executionFrequency": "执行频率"
-      ,"daily": "每天"
-      ,"weekdays": "每个工作日"
-      ,"weekly": "每周"
-      ,"monthly": "每月"
-      ,"customAdvancedTime": "自定义高级时间"
-      ,"weekday": "星期"
-      ,"date": "日期"
-      ,"monthlyDay": "每月 {day} 日"
-      ,"specificTime": "具体时间"
-      ,"customTimeHint": "可输入更灵活的时间规则。"
-      ,"openAdvancedTime": "打开高级时间设置"
-      ,"everyHowOften": "每隔多久执行"
-      ,"timeUnit": "时间单位"
-      ,"minutes": "分钟"
-      ,"hours": "小时"
-      ,"days": "天"
-      ,"dateAndTime": "执行日期和时间"
-      ,"friendlyMessagePlaceholder": "例如：整理今天收到的客户反馈，归纳主要问题并给出处理建议"
-      ,"moreRuntimeSettings": "更多运行设置（可选）"
-      ,"advancedTimeHint": "仅在上面的时间选择无法满足需求时使用。"
-      ,"timezoneSimpleHint": "通常无需修改。"
-      ,"projectWorkspace": "项目空间"
-      ,"defaultWorkspace": "使用默认工作区"
-      ,"noWorkspace": "无项目空间"
-      ,"workspaceUnavailable": "{name}（不可用）"
-      ,"workspaceRequiredHint": "请选择该任务要检查的项目。任务只会在所选项目中读取和处理文件。"
-      ,"workspaceOptionalHint": "可选。通用任务可选择“无项目空间”；需要读取项目文件时请选择对应项目。"
+      "saveSchedule": "保存定时任务",
+      "friendlyNamePlaceholder": "例如：每天整理客户反馈",
+      "friendlyTypeCron": "按固定时间重复",
+      "friendlyTypeEvery": "每隔一段时间执行",
+      "friendlyTypeAt": "只在指定时间执行一次",
+      "executionFrequency": "执行频率",
+      "daily": "每天",
+      "weekdays": "每个工作日",
+      "weekly": "每周",
+      "monthly": "每月",
+      "customAdvancedTime": "自定义高级时间",
+      "weekday": "星期",
+      "date": "日期",
+      "monthlyDay": "每月 {day} 日",
+      "specificTime": "具体时间",
+      "customTimeHint": "可输入更灵活的时间规则。",
+      "openAdvancedTime": "打开高级时间设置",
+      "everyHowOften": "每隔多久执行",
+      "timeUnit": "时间单位",
+      "minutes": "分钟",
+      "hours": "小时",
+      "days": "天",
+      "dateAndTime": "执行日期和时间",
+      "friendlyMessagePlaceholder": "例如：整理今天收到的客户反馈，归纳主要问题并给出处理建议",
+      "moreRuntimeSettings": "更多运行设置（可选）",
+      "advancedTimeHint": "仅在上面的时间选择无法满足需求时使用。",
+      "timezoneSimpleHint": "通常无需修改。",
+      "projectWorkspace": "项目空间",
+      "defaultWorkspace": "使用默认工作区",
+      "noWorkspace": "无项目空间",
+      "workspaceUnavailable": "{name}（不可用）",
+      "workspaceRequiredHint": "请选择该任务要检查的项目。任务只会在所选项目中读取和处理文件。",
+      "workspaceOptionalHint": "可选。通用任务可选择“无项目空间”；需要读取项目文件时请选择对应项目。"
     },
     "form": {
       "cronPreviewPlaceholder": "输入 5 字段的 cron 表达式以预览",
@@ -3317,7 +3507,14 @@
       "targetLabel": "供应商 / 模型",
       "lastHitLabel": "上次缓存命中 token",
       "autoPauseLabel": "自动暂停",
-      "states": { "off": "已关闭", "waiting": "等待稳定前缀", "scheduled": "已计划", "probing": "正在探测", "paused": "空闲超时，等待下一条消息", "stopped": "未命中或出错后已停止" }
+      "states": {
+        "off": "已关闭",
+        "waiting": "等待稳定前缀",
+        "scheduled": "已计划",
+        "probing": "正在探测",
+        "paused": "空闲超时，等待下一条消息",
+        "stopped": "未命中或出错后已停止"
+      }
     },
     "send": "发送",
     "sendQueues": "发送（排队等待当前回复结束）",
@@ -3419,7 +3616,7 @@
     "audioUnsupported": "此浏览器无法播放这种音频格式，请改为下载文件。",
     "playVideo": "播放视频",
     "videoLoadFailed": "无法加载视频。",
-    "videoUnsupported": "此浏览器无法播放这种视频格式，请改为下载文件。",
+    "videoUnsupported": "此浏览器无法播放该视频。请改为下载。",
     "previewOf": "预览：{title}",
     "closePreview": "关闭预览",
     "previousImage": "上一张图片",
@@ -3428,7 +3625,6 @@
     "previewDownload": "预览下载",
     "previewTimedOut": "预览超时。",
     "previewFailed": "预览加载失败。",
-    "videoUnsupported": "此浏览器无法播放该视频。请改为下载。",
     "loadVideoPreview": "加载视频预览",
     "loadVideoPreviewFor": "加载视频预览 {title}",
     "videoPreviewLoading": "正在加载视频预览。下载过程中可以取消。",
@@ -4108,6 +4304,26 @@
       "downEnsemble": "对这次融合回答不满意",
       "expired": "这条消息的路由记录已过期",
       "failed": "未能记录你的评价"
+    },
+    "reviewMode": {
+      "label": "审查模式",
+      "turnOn": "AI 自动审查代码质量、性能与安全",
+      "active": "迭代自审查已开启——回复末尾附审查报告",
+      "level": {
+        "lenient": "宽松",
+        "normal": "正常",
+        "strict": "严格"
+      },
+      "tokenWarning": "审查模式已开启：token 消耗可能上升（每轮回复会额外执行多轮自审）。"
+    },
+    "thinkingMode": {
+      "label": "Thinking 模式",
+      "turnOn": "回答前展示 AI 的思考过程",
+      "active": "回复开头会附 🧠 思路 分节",
+      "level": {
+        "auto": "自动",
+        "high": "深度"
+      }
     }
   },
   "shared": {
@@ -4277,5 +4493,81 @@
       "copyFailed": "无法复制命令",
       "copyLabel": "复制网关重启命令"
     }
+  },
+  "ide": {
+    "title": "代码解释器",
+    "tabDocs": "文档",
+    "tabCode": "代码",
+    "tabRemote": "远程",
+    "refresh": "刷新",
+    "collapse": "收起面板",
+    "expand": "展开面板",
+    "resize": "调整面板大小",
+    "retry": "重试",
+    "loading": "加载中…",
+    "noHandoff": "未找到交接文档",
+    "emptyTree": "此文件夹为空",
+    "fileTooLarge": "文件过大 — 仅显示前 512 KB",
+    "binaryFile": "二进制文件 — 不显示内容",
+    "noSelection": "选择文件以查看源码",
+    "newFile": "新建文件",
+    "newFolder": "新建文件夹",
+    "rename": "重命名",
+    "delete": "删除",
+    "copyPath": "复制路径",
+    "copyRelativePath": "复制相对路径",
+    "addToChat": "添加到对话",
+    "insertPath": "插入文件路径",
+    "insertContent": "插入文件内容",
+    "deleteConfirmTitle": "删除确认",
+    "deleteConfirmBody": "「{name}」将被永久删除，此操作无法撤销。",
+    "namePlaceholder": "输入名称",
+    "remote": {
+      "ssh": "SSH 服务器",
+      "ftp": "FTP 服务器",
+      "wsl": "WSL 服务器",
+      "mcp": "MCP 服务器",
+      "git": "Git 克隆",
+      "selectServer": "服务器",
+      "noServers": "未配置{transport}服务器",
+      "noGitRepos": "尚未发现克隆的 Git 仓库，可先让 AI 克隆一个仓库",
+      "openSettings": "打开设置"
+    },
+    "changes": {
+      "title": "最近改动",
+      "empty": "暂无文件改动",
+      "close": "关闭",
+      "justNow": "刚刚",
+      "minutesAgo": "{n} 分钟前",
+      "hoursAgo": "{n} 小时前",
+      "daysAgo": "{n} 天前"
+    },
+    "diff": {
+      "legend": "AI 修改标记：绿=新增，红=修改/删除"
+    }
+  },
+  "terminal": {
+    "titlePowershell": "Windows PowerShell",
+    "titleShell": "终端",
+    "collapse": "收起终端",
+    "expand": "展开终端",
+    "resize": "调整终端大小",
+    "reconnect": "重新连接",
+    "connected": "已连接",
+    "connecting": "连接中…",
+    "disconnected": "未连接",
+    "exited": "进程已退出",
+    "connectionFailed": "无法连接到终端",
+    "ssh": {
+      "aria": "SSH 主机",
+      "local": "本地 Shell",
+      "rejected": "SSH 会话被拒绝：主机不存在或 ssh 不可用"
+    },
+    "mirror": "AI 镜像",
+    "mirrorOn": "AI 镜像中",
+    "mirrorOff": "关闭 AI 镜像",
+    "mirrorTitle": "AI PowerShell 镜像",
+    "mirrorHint": "已开启 AI 镜像：AI 在 PowerShell 中执行的命令与输出将实时显示在此处",
+    "mirrorNoOutput": "无输出"
   }
 }

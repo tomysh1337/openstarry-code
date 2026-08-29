@@ -139,6 +139,26 @@ class InputStage:
         self._extra_ctx = extra_ctx
 
     async def run(self, inp: InputStageInput) -> InputStageOutput:
+        # Thinking Mode 前置检查（复杂任务澄清）
+        from openstarry_code.engine.thinking_mode import check_thinking_mode
+        
+        thinking_result = await check_thinking_mode(
+            inp.message,
+            threshold=0.7,
+            min_message_length=50
+        )
+        
+        # TODO: 如果触发 Thinking Mode，需要通过 WebSocket 发送问题给前端
+        # 并等待用户回答。当前先记录到 metadata 中
+        normalization_metadata = {}
+        if thinking_result.triggered:
+            normalization_metadata["thinking_mode_triggered"] = True
+            normalization_metadata["thinking_questions"] = [
+                {"id": q.id, "question": q.question, "purpose": q.purpose}
+                for q in thinking_result.questions
+            ]
+            normalization_metadata["thinking_checklist"] = thinking_result.preparation_checklist
+        
         runtime_message = inp.message
         semantic_input = (
             inp.semantic_message if inp.semantic_message is not None else inp.message
@@ -159,11 +179,12 @@ class InputStage:
             extra_prompt_context,
             self._extra_ctx.extra_context_for(inp.tool_context),
         )
-        normalization_metadata = None
+        
+        # 合并 Thinking Mode metadata 和原有的 normalization_metadata
         if isinstance(inp.input_provenance, dict):
             input_normalization = inp.input_provenance.get("input_normalization")
             if isinstance(input_normalization, dict):
-                normalization_metadata = dict(input_normalization)
+                normalization_metadata.update(input_normalization)
 
         persisted_entry = None
         if inp.persist_input and inp.session_append is not None and inp.message:

@@ -1,0 +1,69 @@
+# starry:// 协议示例
+
+# ==================== API 配置导入 ====================
+
+# 1. 配置 OpenAI（使用环境变量）
+starry://api/import?provider=openai&key=env:OPENAI_API_KEY
+
+# 2. 配置 OpenAI（指定模型）
+starry://api/import?provider=openai&model=gpt-4&key=env:OPENAI_API_KEY
+
+# 3. 配置 Anthropic Claude
+starry://api/import?provider=anthropic&model=claude-sonnet-4-5&key=env:ANTHROPIC_API_KEY
+
+# 4. 配置 OpenRouter
+starry://api/import?provider=openrouter&key=env:OPENROUTER_API_KEY
+
+# 5. 配置本地 Ollama
+starry://api/import?provider=ollama&model=llama3.1
+
+# 6. 配置 Azure OpenAI（带 base_url）
+starry://api/import?provider=azure&model=gpt-4&key=env:AZURE_API_KEY&base_url=https://your-resource.openai.azure.com
+
+# 7. 从 URL 导入 JSON 配置
+starry://api/import?url=https://example.com/openai-config.json&type=openai
+
+# 8. 从本地文件导入 TOML 配置
+starry://api/import?url=file:///path/to/config.toml&type=anthropic
+
+
+# ==================== Skill 安装 ====================
+
+# 1. 从 GitHub 安装（默认 main 分支）
+starry://skill/install?github=openstarry/deep-research
+
+# 2. 从 GitHub 安装（指定分支）
+starry://skill/install?github=openstarry/awesome-skill&ref=v1.2.0
+
+# 3. 从 GitHub 安装（指定子路径）
+starry://skill/install?github=myorg/skills&ref=main&subpath=pdf-tools
+
+# 4. 从 ClawHub 安装
+starry://skill/install?clawhub=deep-research-pro
+
+# 5. 从本地路径安装
+starry://skill/install?local=file:///path/to/my-skill
+
+
+# ==================== 扩展加载 ====================
+
+# 1. 加载 Python 扩展
+starry://extension/load?path=file:///plugins/my_extension.py&type=python
+
+# 2. 加载 Java 扩展
+starry://extension/load?path=file:///C:/plugins/code-analyzer.jar&type=java
+
+# 3. 加载 Go 扩展
+starry://extension/load?path=file:///usr/local/lib/analyzer.so&type=go
+
+# 4. 从 URL 加载扩展
+starry://extension/load?path=https://example.com/extensions/analyzer.so&type=go
+
+
+# ==================== 配置导入 ====================
+
+# 1. 从 URL 导入完整配置
+starry://config/import?url=https://example.com/openstarry-config.toml
+
+# 2. 从本地文件导入完整配置
+starry://config/import?url=file:///path/to/full-config.json

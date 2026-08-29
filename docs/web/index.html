@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenStarry Code 文档</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="page-wrapper">
+        <!-- 侧边栏导航 -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="logo">⭐ OpenStarry</h1>
+                <p class="subtitle">AI Agent Runtime</p>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-title">入门</div>
+                <ul class="nav-list">
+                    <li><a href="#quick-start" class="nav-link active">快速开始</a></li>
+                    <li><a href="#installation" class="nav-link">安装指南</a></li>
+                    <li><a href="#configuration" class="nav-link">基础配置</a></li>
+                </ul>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-title">API 参考</div>
+                <ul class="nav-list">
+                    <li><a href="api.html" class="nav-link">API 总览</a></li>
+                    <li><a href="api.html#providers" class="nav-link">Provider API</a></li>
+                    <li><a href="api.html#skills" class="nav-link">Skills API</a></li>
+                    <li><a href="api.html#protocol" class="nav-link">Protocol API</a></li>
+                </ul>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-title">插件系统</div>
+                <ul class="nav-list">
+                    <li><a href="plugins.html" class="nav-link">插件架构</a></li>
+                    <li><a href="plugins.html#marketplace" class="nav-link">插件市场</a></li>
+                    <li><a href="plugin-dev.html" class="nav-link">开发插件</a></li>
+                    <li><a href="plugin-dev.html#publish" class="nav-link">发布插件</a></li>
+                </ul>
+            </div>
+        </nav>
+        
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <div class="content-wrapper">
+                <!-- 页面标题 -->
+                <header class="page-header">
+                    <h1 class="page-title">OpenStarry Code 文档</h1>
+                    <p class="page-desc">支持多 LLM 提供商的开源 AI Agent 运行时</p>
+                </header>
+                
+                <!-- 快速开始 -->
+                <section id="quick-start" class="doc-section">
+                    <h2 class="section-title">快速开始</h2>
+                    
+                    <div class="card">
+                        <h3>安装 OpenStarry Code</h3>
+                        <p>选择适合你的安装方式：</p>
+                        
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-lang">Bash</span>
+                                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                            </div>
+                            <pre><code># 使用 pipx 安装（推荐）
+pipx install openstarry-code
+
+# 使用 pip 安装
+pip install openstarry-code
+
+# 从源码安装
+bash scripts/install_source.sh</code></pre>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>启动 Gateway 服务</h3>
+                        <p>OpenStarry Code 通过 Gateway 提供 Web UI 和 API 服务：</p>
+                        
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-lang">Bash</span>
+                                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                            </div>
+                            <pre><code># 启动 Gateway（默认端口 18791）
+openstarry-code gateway run
+
+# 指定端口
+openstarry-code gateway run --port 8080
+
+# 后台运行
+openstarry-code gateway start</code></pre>
+                        </div>
+                        
+                        <div class="info-box">
+                            <div class="info-icon">ℹ️</div>
+                            <div>
+                                <strong>访问 Web UI</strong><br>
+                                Gateway 启动后，在浏览器中打开 <code>http://localhost:18791</code>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- 安装指南 -->
+                <section id="installation" class="doc-section">
+                    <h2 class="section-title">安装指南</h2>
+                    
+                    <div class="card">
+                        <h3>系统要求</h3>
+                        <ul class="feature-list">
+                            <li>Python 3.10 或更高版本</li>
+                            <li>Windows / macOS / Linux</li>
+                            <li>8GB RAM（推荐 16GB）</li>
+                            <li>互联网连接（用于访问 LLM 服务）</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>详细安装步骤</h3>
+                        
+                        <div class="step-item">
+                            <div class="step-num">1</div>
+                            <div class="step-content">
+                                <h4>安装 Python</h4>
+                                <p>确保已安装 Python 3.10+：</p>
+                                <div class="code-block">
+                                    <pre><code>python --version</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="step-item">
+                            <div class="step-num">2</div>
+                            <div class="step-content">
+                                <h4>安装 OpenStarry Code</h4>
+                                <p>使用 pipx 进行隔离安装（推荐）：</p>
+                                <div class="code-block">
+                                    <pre><code>pipx install openstarry-code</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="step-item">
+                            <div class="step-num">3</div>
+                            <div class="step-content">
+                                <h4>验证安装</h4>
+                                <div class="code-block">
+                                    <pre><code>openstarry-code --version
+openstarry-code --help</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="step-item">
+                            <div class="step-num">4</div>
+                            <div class="step-content">
+                                <h4>配置 LLM Provider</h4>
+                                <p>使用 <code>starry://</code> 协议快速配置：</p>
+                                <div class="code-block">
+                                    <pre><code># 配置 OpenRouter
+starry://api/import?provider=openrouter&key=env:OPENROUTER_API_KEY
+
+# 配置 Ollama（本地）
+starry://api/import?provider=ollama&model=llama3.1</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- 基础配置 -->
+                <section id="configuration" class="doc-section">
+                    <h2 class="section-title">基础配置</h2>
+                    
+                    <div class="card">
+                        <h3>配置文件位置</h3>
+                        <p>OpenStarry Code 使用 TOML 格式的配置文件：</p>
+                        <ul class="feature-list">
+                            <li><strong>Windows</strong>: <code>%APPDATA%\openstarry-code\config.toml</code></li>
+                            <li><strong>macOS</strong>: <code>~/Library/Application Support/openstarry-code/config.toml</code></li>
+                            <li><strong>Linux</strong>: <code>~/.config/openstarry-code/config.toml</code></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>配置 Provider</h3>
+                        <p>添加 LLM Provider 配置：</p>
+                        
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span class="code-lang">TOML</span>
+                                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+                            </div>
+                            <pre><code>[[llm_providers]]
+provider_id = "my-openrouter"
+provider_type = "openrouter"
+model = "anthropic/claude-3.5-sonnet"
+api_key_env = "OPENROUTER_API_KEY"
+
+[[llm_providers]]
+provider_id = "local-ollama"
+provider_type = "ollama"
+model = "llama3.1"
+base_url = "http://localhost:11434"</code></pre>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>使用 starry:// 协议配置</h3>
+                        <p>更快捷的配置方式：</p>
+                        
+                        <div class="tabs">
+                            <button class="tab-btn active" onclick="switchTab(event, 'cli-config')">CLI</button>
+                            <button class="tab-btn" onclick="switchTab(event, 'url-config')">URL</button>
+                            <button class="tab-btn" onclick="switchTab(event, 'file-config')">配置文件</button>
+                        </div>
+                        
+                        <div id="cli-config" class="tab-content active">
+                            <div class="code-block">
+                                <pre><code># 使用 CLI 命令
+openstarry-code protocol handle "starry://api/import?provider=openrouter&key=env:OPENROUTER_API_KEY"</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div id="url-config" class="tab-content">
+                            <div class="code-block">
+                                <pre><code># 在浏览器中打开
+starry://api/import?provider=openrouter&key=env:OPENROUTER_API_KEY
+
+# 或点击网页链接
+<a href="starry://...">一键配置</a></code></pre>
+                            </div>
+                        </div>
+                        
+                        <div id="file-config" class="tab-content">
+                            <div class="code-block">
+                                <pre><code># 从配置文件导入
+starry://api/import?url=https://example.com/config.json&type=openrouter</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- 快速链接 -->
+                <section class="doc-section">
+                    <h2 class="section-title">继续探索</h2>
+                    
+                    <div class="grid-3">
+                        <a href="api.html" class="feature-card">
+                            <div class="feature-icon">📚</div>
+                            <h3>API 参考</h3>
+                            <p>完整的 API 文档和使用示例</p>
+                        </a>
+                        
+                        <a href="plugins.html" class="feature-card">
+                            <div class="feature-icon">🔌</div>
+                            <h3>插件系统</h3>
+                            <p>了解插件架构和市场机制</p>
+                        </a>
+                        
+                        <a href="plugin-dev.html" class="feature-card">
+                            <div class="feature-icon">💻</div>
+                            <h3>开发插件</h3>
+                            <p>创建和发布你自己的插件</p>
+                        </a>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+    
+    <script src="scripts.js"></script>
+</body>
+</html>

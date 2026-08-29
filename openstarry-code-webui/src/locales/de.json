@@ -393,9 +393,18 @@
       "retryFailedTitle": "Die Vorschau konnte nicht neu erstellt werden",
       "retryFailedDescription": "Diese Anfrage zur erneuten Erstellung wurde nicht abgeschlossen. Das vorherige Ergebnis bleibt unberücksichtigt und es wurden keine Dateien geändert. Versuchen Sie es erneut oder verwerfen Sie den Import.",
       "jobStates": {
-        "cancelled": {"title": "Vorschauerstellung abgebrochen", "description": "Die isolierte Quelle bleibt 24 Stunden erhalten. Die erneute Erstellung kann höchstens zwei Modellaufrufe ausführen, da ein nicht validiertes Ergebnis einmal wiederholt werden kann; das Ergebnis kann abweichen."},
-        "interrupted": {"title": "Vorschauerstellung unterbrochen", "description": "OpenStarry Code wurde während der Modellverarbeitung neu gestartet. Die isolierte Quelle bleibt verfügbar. Die erneute Erstellung kann durch eine interne Wiederholung höchstens zwei Modellaufrufe ausführen."},
-        "failed": {"title": "Vorschauerstellung fehlgeschlagen", "description": "Dieser Versuch hat keine validierte, prüfbare Vorschau erzeugt. Es wurden keine Importentscheidungen übernommen und keine Dateien geändert. Die isolierte Quelle wurde beibehalten; die erneute Erstellung kann höchstens zwei Modellaufrufe ausführen."}
+        "cancelled": {
+          "title": "Vorschauerstellung abgebrochen",
+          "description": "Die isolierte Quelle bleibt 24 Stunden erhalten. Die erneute Erstellung kann höchstens zwei Modellaufrufe ausführen, da ein nicht validiertes Ergebnis einmal wiederholt werden kann; das Ergebnis kann abweichen."
+        },
+        "interrupted": {
+          "title": "Vorschauerstellung unterbrochen",
+          "description": "OpenStarry Code wurde während der Modellverarbeitung neu gestartet. Die isolierte Quelle bleibt verfügbar. Die erneute Erstellung kann durch eine interne Wiederholung höchstens zwei Modellaufrufe ausführen."
+        },
+        "failed": {
+          "title": "Vorschauerstellung fehlgeschlagen",
+          "description": "Dieser Versuch hat keine validierte, prüfbare Vorschau erzeugt. Es wurden keine Importentscheidungen übernommen und keine Dateien geändert. Die isolierte Quelle wurde beibehalten; die erneute Erstellung kann höchstens zwei Modellaufrufe ausführen."
+        }
       },
       "modelAnalysisTitle": "Modellanalyse (mit den Dateiänderungen abgleichen)",
       "previewTitle": "Jede Dateiänderung prüfen",
@@ -461,42 +470,93 @@
       "available": "Sicherer Modus verfügbar",
       "unavailable": "Sicherer Modus nicht verfügbar",
       "builtin": "Integriert",
-      "actions": { "add": "Hinzufügen", "remove": "Entfernen", "retry": "Erneut versuchen", "copy": "Kopieren", "saving": "Speichern…", "redetect": "Erneut prüfen" },
+      "actions": {
+        "add": "Hinzufügen",
+        "remove": "Entfernen",
+        "retry": "Erneut versuchen",
+        "copy": "Kopieren",
+        "saving": "Speichern…",
+        "redetect": "Erneut prüfen"
+      },
       "mode": {
-        "title": "Standardzugriffsmodus", "description": "Startmodus für neue Aufgaben. Safe bleibt bei fehlgeschlagener Prüfung nicht auswählbar.",
-        "default": "Standardmodus", "safe": "Safe", "full": "Vollzugriff", "resetWarning": "Warnung beim Start wieder anzeigen"
+        "title": "Standardzugriffsmodus",
+        "description": "Startmodus für neue Aufgaben. Safe bleibt bei fehlgeschlagener Prüfung nicht auswählbar.",
+        "default": "Standardmodus",
+        "safe": "Safe",
+        "full": "Vollzugriff",
+        "resetWarning": "Warnung beim Start wieder anzeigen"
       },
       "setup": {
-        "title": "Safe-Modus einrichten", "description": "OpenStarry Code benötigt einmalig eine Administratorfreigabe, um ein isoliertes Konto sowie Datei- und Netzwerkschutz einzurichten.", "descriptionWithDuration": "OpenStarry Code benötigt einmalig eine Administratorfreigabe, um ein isoliertes Konto und Schutzmaßnahmen einzurichten. Die Ersteinrichtung dauert normalerweise etwa 20–30 Sekunden. Lassen Sie OpenStarry Code geöffnet.",
-        "continue": "Weiter", "configuring": "Wird eingerichtet…", "requestingApproval": "Bestätigen Sie die Windows-Abfrage, um fortzufahren.", "configuringProtection": "OpenStarry Code richtet den Safe-Modus fertig ein. Lassen Sie die App geöffnet.", "takingLonger": "Die Ersteinrichtung kann einige Minuten dauern. Die Überprüfung läuft automatisch.", "elapsed": "{seconds} s vergangen", "cancelled": "Einrichtung abgebrochen. Der Vollzugriff bleibt unverändert; Sie können es jederzeit erneut versuchen.",
-        "failed": "Safe-Modus konnte nicht eingerichtet werden. Der Vollzugriff bleibt unverändert.", "verificationFailed": "Die Einrichtung ist fertig, aber die Sicherheitsprüfung ist fehlgeschlagen. Der Vollzugriff bleibt unverändert.",
-        "runInBackground": "Im Hintergrund einrichten", "readyToast": "Der Safe-Modus ist bereit.", "failedToast": "Die Einrichtung des Safe-Modus konnte nicht abgeschlossen werden. Versuchen Sie es erneut über den Safe-Modus."
+        "title": "Safe-Modus einrichten",
+        "description": "OpenStarry Code benötigt einmalig eine Administratorfreigabe, um ein isoliertes Konto sowie Datei- und Netzwerkschutz einzurichten.",
+        "descriptionWithDuration": "OpenStarry Code benötigt einmalig eine Administratorfreigabe, um ein isoliertes Konto und Schutzmaßnahmen einzurichten. Die Ersteinrichtung dauert normalerweise etwa 20–30 Sekunden. Lassen Sie OpenStarry Code geöffnet.",
+        "continue": "Weiter",
+        "configuring": "Wird eingerichtet…",
+        "requestingApproval": "Bestätigen Sie die Windows-Abfrage, um fortzufahren.",
+        "configuringProtection": "OpenStarry Code richtet den Safe-Modus fertig ein. Lassen Sie die App geöffnet.",
+        "takingLonger": "Die Ersteinrichtung kann einige Minuten dauern. Die Überprüfung läuft automatisch.",
+        "elapsed": "{seconds} s vergangen",
+        "cancelled": "Einrichtung abgebrochen. Der Vollzugriff bleibt unverändert; Sie können es jederzeit erneut versuchen.",
+        "failed": "Safe-Modus konnte nicht eingerichtet werden. Der Vollzugriff bleibt unverändert.",
+        "verificationFailed": "Die Einrichtung ist fertig, aber die Sicherheitsprüfung ist fehlgeschlagen. Der Vollzugriff bleibt unverändert.",
+        "runInBackground": "Im Hintergrund einrichten",
+        "readyToast": "Der Safe-Modus ist bereit.",
+        "failedToast": "Die Einrichtung des Safe-Modus konnte nicht abgeschlossen werden. Versuchen Sie es erneut über den Safe-Modus."
       },
       "files": {
-        "title": "Dateisicherheit", "description": "Normale Dateien sind lesbar. Änderungen an geschützten Pfaden erfordern eine Freigabe.", "readsAllowed": "Lesen erlaubt",
-        "customPath": "Eigener geschützter Pfad", "pathPlaceholder": "Geschützten Pfad hinzufügen", "backupTitle": "Vor destruktiven Dateiänderungen sichern",
-        "backupDescription": "Vor dem Löschen oder Ändern vorhandener Dateien wiederherstellbare Kopien anlegen und bei Bedarf die ältesten automatisch entfernen.", "quota": "Backup-Speicherlimit",
+        "title": "Dateisicherheit",
+        "description": "Normale Dateien sind lesbar. Änderungen an geschützten Pfaden erfordern eine Freigabe.",
+        "readsAllowed": "Lesen erlaubt",
+        "customPath": "Eigener geschützter Pfad",
+        "pathPlaceholder": "Geschützten Pfad hinzufügen",
+        "backupTitle": "Vor destruktiven Dateiänderungen sichern",
+        "backupDescription": "Vor dem Löschen oder Ändern vorhandener Dateien wiederherstellbare Kopien anlegen und bei Bedarf die ältesten automatisch entfernen.",
+        "quota": "Backup-Speicherlimit",
         "recursiveWarning": "Ohne Backup können Löschen und Ersetzen unwiederbringlich sein. Schlägt das Backup nach dem Entfernen alter Kopien weiter fehl, fragt OpenStarry Code vor dem Fortfahren erneut."
       },
       "commands": {
-        "title": "Befehlssicherheit", "description": "Befehle laufen standardmäßig automatisch. Riskante Aktionen wie git push brauchen eine Freigabe.",
-        "systemTools": "Systemwerkzeuge", "systemToolsAuto": "Automatisch erlauben", "systemToolsPrompt": "Vorher fragen", "systemToolsDisabled": "Deaktiviert",
-        "approvalPrefixes": "Befehlspräfixe mit Freigabe", "autoPrefixes": "Immer automatisch erlaubte Präfixe", "prefixPlaceholder": "Zum Beispiel: git push"
+        "title": "Befehlssicherheit",
+        "description": "Befehle laufen standardmäßig automatisch. Riskante Aktionen wie git push brauchen eine Freigabe.",
+        "systemTools": "Systemwerkzeuge",
+        "systemToolsAuto": "Automatisch erlauben",
+        "systemToolsPrompt": "Vorher fragen",
+        "systemToolsDisabled": "Deaktiviert",
+        "approvalPrefixes": "Befehlspräfixe mit Freigabe",
+        "autoPrefixes": "Immer automatisch erlaubte Präfixe",
+        "prefixPlaceholder": "Zum Beispiel: git push"
       },
       "network": {
-        "title": "Netzwerksicherheit", "description": "Öffentlicher Netzwerkzugriff ist standardmäßig erlaubt; SSRF- und Metadatenschutz bleiben aktiv.",
-        "blockAll": "Gesamten Netzwerkzugriff sperren", "blockAllDescription": "Erlaubte Domains bleiben Ausnahmen.", "allowDomains": "Erlaubte Domains", "denyDomains": "Gesperrte Domains"
+        "title": "Netzwerksicherheit",
+        "description": "Öffentlicher Netzwerkzugriff ist standardmäßig erlaubt; SSRF- und Metadatenschutz bleiben aktiv.",
+        "blockAll": "Gesamten Netzwerkzugriff sperren",
+        "blockAllDescription": "Erlaubte Domains bleiben Ausnahmen.",
+        "allowDomains": "Erlaubte Domains",
+        "denyDomains": "Gesperrte Domains"
       },
-      "runtimes": { "title": "Mitgelieferte Laufzeiten", "description": "Sicher nutzt zuerst mitgelieferte Werkzeuge; Vollzugriff zuerst Host-Werkzeuge.", "target": "Paket-Ziel" },
+      "runtimes": {
+        "title": "Mitgelieferte Laufzeiten",
+        "description": "Sicher nutzt zuerst mitgelieferte Werkzeuge; Vollzugriff zuerst Host-Werkzeuge.",
+        "target": "Paket-Ziel"
+      },
       "lan": {
-        "listen": "Im lokalen Netzwerk lauschen", "listenDescription": "Nach einem Neustart an alle lokalen Schnittstellen binden; öffentliche Peers bleiben gesperrt.",
-        "allowedCidrs": "Erlaubte Client-CIDRs", "cidrDescription": "Optional. Leer erlaubt Loopback, RFC1918 und IPv6 ULA; Einträge können den Bereich nur einschränken.",
+        "listen": "Im lokalen Netzwerk lauschen",
+        "listenDescription": "Nach einem Neustart an alle lokalen Schnittstellen binden; öffentliche Peers bleiben gesperrt.",
+        "allowedCidrs": "Erlaubte Client-CIDRs",
+        "cidrDescription": "Optional. Leer erlaubt Loopback, RFC1918 und IPv6 ULA; Einträge können den Bereich nur einschränken.",
         "restartRequired": "OpenStarry Code neu starten, um die Änderung anzuwenden.",
-        "title": "Web-Zugriff und benannte Tokens", "description": "Entfernter Web-Zugriff ohne gültiges Token nutzt den Gast-Sicherheitsmodus; benannte Tokens vergeben die konfigurierte Berechtigung.",
-        "guest": "Kein oder ungültiges Token:", "guestDescription": " Gast-Sicherheitsmodus: Normale Dateien sind lesbar, nur der Standard-Arbeitsbereich ist beschreibbar und Anmeldedateien sind nicht lesbar.",
-        "authenticated": "Gültiges Token:", "authenticatedDescription": " je nach Berechtigung Sicher oder Vollzugriff.",
-        "tokenName": "Token-Name, z. B. Laptop", "hostExecute": "Host-Ausführung / Vollzugriff erlauben", "createToken": "Token erstellen",
-        "copyNow": "Jetzt kopieren. Das Token wird nicht erneut angezeigt.", "fullCapable": "Sicher und Vollzugriff", "safeOnly": "Nur Sicher", "revoke": "Widerrufen"
+        "title": "Web-Zugriff und benannte Tokens",
+        "description": "Entfernter Web-Zugriff ohne gültiges Token nutzt den Gast-Sicherheitsmodus; benannte Tokens vergeben die konfigurierte Berechtigung.",
+        "guest": "Kein oder ungültiges Token:",
+        "guestDescription": " Gast-Sicherheitsmodus: Normale Dateien sind lesbar, nur der Standard-Arbeitsbereich ist beschreibbar und Anmeldedateien sind nicht lesbar.",
+        "authenticated": "Gültiges Token:",
+        "authenticatedDescription": " je nach Berechtigung Sicher oder Vollzugriff.",
+        "tokenName": "Token-Name, z. B. Laptop",
+        "hostExecute": "Host-Ausführung / Vollzugriff erlauben",
+        "createToken": "Token erstellen",
+        "copyNow": "Jetzt kopieren. Das Token wird nicht erneut angezeigt.",
+        "fullCapable": "Sicher und Vollzugriff",
+        "safeOnly": "Nur Sicher",
+        "revoke": "Widerrufen"
       }
     },
     "dialog": {
@@ -527,6 +587,139 @@
       "discardBody": "Es gibt ungespeicherte Änderungen. Beim Schließen gehen sie verloren.",
       "discardConfirmPrimary": "Änderungen verwerfen"
     },
+    "mcp": {
+      "title": "MCP-Server",
+      "subtitle": "Model-Context-Protocol-Server konfigurieren, die den Agenten um externe Tools erweitern. Änderungen werden beim nächsten Gateway-Start wirksam.",
+      "add": "Server hinzufügen",
+      "empty": "Keine MCP-Server konfiguriert",
+      "emptyHint": "Fügen Sie einen stdio-Befehl oder einen http-Endpunkt hinzu, um den Agenten um externe Tools zu erweitern",
+      "newTitle": "Neuer MCP-Server",
+      "editTitle": "MCP-Server bearbeiten",
+      "fieldName": "Name",
+      "namePlaceholder": "z. B. filesystem",
+      "fieldTransport": "Transport",
+      "transportStdio": "stdio (lokaler Befehl)",
+      "transportHttp": "http (entfernte URL)",
+      "fieldCommand": "Befehl",
+      "commandPlaceholder": "z. B. npx",
+      "fieldArgs": "Argumente",
+      "argsPlaceholder": "Leerzeichengetrennte Argumente",
+      "fieldUrl": "Server-URL",
+      "urlPlaceholder": "https://example.com/mcp",
+      "fieldEnv": "Umgebungsvariablen",
+      "envPlaceholder": "KEY=VALUE",
+      "envHint": "Ein KEY=VALUE pro Zeile",
+      "fieldEnabled": "Aktiviert",
+      "save": "Speichern",
+      "cancel": "Abbrechen",
+      "edit": "Bearbeiten",
+      "delete": "Löschen",
+      "deleteTitle": "MCP-Server löschen?",
+      "deleteBody": "„{name}“ wird aus der Konfiguration entfernt.",
+      "saved": "MCP-Server gespeichert",
+      "deleted": "MCP-Server gelöscht",
+      "saveFailed": "MCP-Server konnte nicht gespeichert werden",
+      "deleteFailed": "MCP-Server konnte nicht gelöscht werden",
+      "loadFailed": "MCP-Server konnten nicht geladen werden",
+      "retry": "Erneut versuchen",
+      "errNameRequired": "Name ist erforderlich",
+      "errCommandRequired": "Für stdio-Server ist ein Befehl erforderlich",
+      "errUrlRequired": "Eine gültige http(s)-URL ist erforderlich",
+      "errEnvInvalid": "Umgebungsvariablen: ein KEY=VALUE pro Zeile",
+      "builtin": {
+        "title": "Integrierte Server",
+        "subtitle": "MCP-Server, die mit OpenStarry Code mitgeliefert werden — mit einem Klick aktivierbar.",
+        "computerUseName": "Computerbedienung",
+        "computerUseDesc": "Lässt die KI den Bildschirm sehen und Tastatur sowie Maus mit menschenähnlichen Bewegungen steuern; ein sichtbarer Cursor zeigt jede Aktion.",
+        "enable": "Aktivieren",
+        "enabled": "Aktiviert",
+        "alreadyEnabled": "Computerbedienung ist bereits aktiviert",
+        "enableFailed": "Computerbedienung konnte nicht aktiviert werden"
+      },
+      "preview": {
+        "open": "Live-Vorschau",
+        "title": "Computerbedienung — Live-Vorschau",
+        "close": "Schließen",
+        "statusActive": "Aktiv",
+        "statusAborted": "Abgebrochen",
+        "statusIdle": "Inaktiv",
+        "noScreenshot": "Noch kein Screenshot — die Vorschau aktualisiert sich, sobald der Agent eine Computerbedienungssitzung startet.",
+        "loadFailed": "Computerbedienungs-Status konnte nicht geladen werden",
+        "lastAction": "Letzte Aktion",
+        "noAction": "Noch keine Aktionen",
+        "cursor": "Cursor"
+      }
+    },
+    "ssh": {
+      "title": "SSH-Hosts",
+      "subtitle": "Speichere SSH-Hosts, zu denen das eingebaute Terminal über deinen ssh-Client verbindet. Die Authentifizierung nutzt deine bestehende ssh-Konfiguration.",
+      "add": "Host hinzufügen",
+      "empty": "Keine SSH-Hosts konfiguriert",
+      "emptyHint": "Füge einen Host hinzu, um im Terminal-Panel eine SSH-Sitzung zu öffnen",
+      "newTitle": "Neuer SSH-Host",
+      "editTitle": "SSH-Host bearbeiten",
+      "fieldName": "Name",
+      "namePlaceholder": "z. B. web-server",
+      "fieldHost": "Host",
+      "hostPlaceholder": "z. B. 192.168.1.10",
+      "fieldPort": "Port",
+      "portPlaceholder": "22",
+      "fieldUsername": "Benutzername",
+      "usernamePlaceholder": "z. B. root",
+      "fieldEnabled": "Aktiviert",
+      "save": "Speichern",
+      "cancel": "Abbrechen",
+      "edit": "Bearbeiten",
+      "delete": "Löschen",
+      "deleteTitle": "SSH-Host löschen?",
+      "deleteBody": "„{name}“ wird aus der Konfiguration entfernt.",
+      "saved": "SSH-Host gespeichert",
+      "deleted": "SSH-Host gelöscht",
+      "saveFailed": "SSH-Host konnte nicht gespeichert werden",
+      "deleteFailed": "SSH-Host konnte nicht gelöscht werden",
+      "loadFailed": "SSH-Hosts konnten nicht geladen werden",
+      "retry": "Erneut versuchen",
+      "errNameRequired": "Name ist erforderlich",
+      "errHostRequired": "Host ist erforderlich",
+      "errPortInvalid": "Der Port muss eine Ganzzahl zwischen 1 und 65535 sein"
+    },
+    "ftp": {
+      "title": "FTP-Server",
+      "subtitle": "Speichere FTP-Server, die der Remote-Tab des IDE-Panels durchsucht. Ein leerer Benutzername bedeutet anonyme Anmeldung.",
+      "add": "Server hinzufügen",
+      "empty": "Keine FTP-Server konfiguriert",
+      "emptyHint": "Füge einen Server hinzu, um dessen Dateien im IDE-Panel zu durchsuchen",
+      "newTitle": "Neuer FTP-Server",
+      "editTitle": "FTP-Server bearbeiten",
+      "fieldName": "Name",
+      "namePlaceholder": "z. B. web-server",
+      "fieldHost": "Host",
+      "hostPlaceholder": "z. B. ftp.example.com",
+      "fieldPort": "Port",
+      "portPlaceholder": "21",
+      "fieldUsername": "Benutzername",
+      "usernamePlaceholder": "z. B. deploy",
+      "fieldPassword": "Passwort",
+      "passwordPlaceholder": "Passwort",
+      "passwordHint": "Leer für anonyme Anmeldung. Wird in der Gateway-Konfiguration gespeichert.",
+      "fieldTls": "TLS verwenden (FTPS)",
+      "fieldEnabled": "Aktiviert",
+      "save": "Speichern",
+      "cancel": "Abbrechen",
+      "edit": "Bearbeiten",
+      "delete": "Löschen",
+      "deleteTitle": "FTP-Server löschen?",
+      "deleteBody": "„{name}“ wird aus der Konfiguration entfernt.",
+      "saved": "FTP-Server gespeichert",
+      "deleted": "FTP-Server gelöscht",
+      "saveFailed": "FTP-Server konnte nicht gespeichert werden",
+      "deleteFailed": "FTP-Server konnte nicht gelöscht werden",
+      "loadFailed": "FTP-Server konnten nicht geladen werden",
+      "retry": "Erneut versuchen",
+      "errNameRequired": "Name ist erforderlich",
+      "errHostRequired": "Host ist erforderlich",
+      "errPortInvalid": "Der Port muss eine Ganzzahl zwischen 1 und 65535 sein"
+    },
     "rail": {
       "connection": "Verbindung",
       "runtime": "Laufzeit",
@@ -538,6 +731,9 @@
       "memory": "Gedächtnis und Profil",
       "computerControl": "Computersteuerung",
       "browser": "Browser",
+      "mcp": "MCP-Server",
+      "ssh": "SSH",
+      "ftp": "FTP",
       "coding": "Codierung",
       "router": "Router",
       "ensemble": "Ensemble",
@@ -2456,15 +2652,60 @@
       "galleryEyebrow": "AUTOMATISIERUNGSVORLAGEN",
       "bulkDeleteConfirm": "{count} ausgewählte Automatisierungen löschen? Dies kann nicht rückgängig gemacht werden.",
       "templates": {
-        "ai-daily": { "title": "Täglicher KI-Nachrichtenüberblick", "description": "Fasst wichtige KI-Nachrichten der letzten 24 Stunden mit geprüften Quellen zusammen.", "category": "Nachrichten", "schedule": "Täglich um 08:00" },
-        "weekly-report": { "title": "Wöchentlicher Arbeitsrückblick", "description": "Fasst Fortschritte, Risiken, Ergebnisse und Prioritäten der nächsten Woche zusammen.", "category": "Produktivität", "schedule": "Freitag um 17:30" },
-        "english-five": { "title": "Fünf englische Wörter täglich", "description": "Erstellt eine kurze Vokabellektion mit Beispielen und Quiz.", "category": "Lernen", "schedule": "Täglich um 09:00" },
-        "project-risk": { "title": "Projektrisiken prüfen", "description": "Prüft Verzögerungen, Fehler und offene Punkte und schlägt Maßnahmen vor.", "category": "Projekte", "schedule": "Werktags um 10:00" },
-        "knowledge-review": { "title": "Wöchentlicher Wissensrückblick", "description": "Ordnet neue Notizen und Besprechungen und erstellt eine Nachbereitungsliste.", "category": "Wissen", "schedule": "Sonntag um 18:00" },
-        "daily-idea": { "title": "Tägliche Idee und Wissenshäppchen", "description": "Teilt eine verlässliche Tatsache und eine kleine umsetzbare Idee.", "category": "Alltag", "schedule": "Täglich um 12:00" },
-        "bedtime-story": { "title": "Tägliche Gute-Nacht-Geschichte", "description": "Schreibt eine warme, fantasievolle Kurzgeschichte für Familien.", "category": "Familie", "schedule": "Täglich um 20:30" },
-        "classic-movie": { "title": "Klassische Filmempfehlung", "description": "Empfiehlt einen anerkannten Filmklassiker ohne Spoiler.", "category": "Unterhaltung", "schedule": "Samstag um 19:00" },
-        "today-in-history": { "title": "Heute in der Geschichte", "description": "Stellt ein verlässliches historisches Ereignis aus Wissenschaft, Kultur oder Gesellschaft vor.", "category": "Tägliches Wissen", "schedule": "Täglich um 08:30" }
+        "ai-daily": {
+          "title": "Täglicher KI-Nachrichtenüberblick",
+          "description": "Fasst wichtige KI-Nachrichten der letzten 24 Stunden mit geprüften Quellen zusammen.",
+          "category": "Nachrichten",
+          "schedule": "Täglich um 08:00"
+        },
+        "weekly-report": {
+          "title": "Wöchentlicher Arbeitsrückblick",
+          "description": "Fasst Fortschritte, Risiken, Ergebnisse und Prioritäten der nächsten Woche zusammen.",
+          "category": "Produktivität",
+          "schedule": "Freitag um 17:30"
+        },
+        "english-five": {
+          "title": "Fünf englische Wörter täglich",
+          "description": "Erstellt eine kurze Vokabellektion mit Beispielen und Quiz.",
+          "category": "Lernen",
+          "schedule": "Täglich um 09:00"
+        },
+        "project-risk": {
+          "title": "Projektrisiken prüfen",
+          "description": "Prüft Verzögerungen, Fehler und offene Punkte und schlägt Maßnahmen vor.",
+          "category": "Projekte",
+          "schedule": "Werktags um 10:00"
+        },
+        "knowledge-review": {
+          "title": "Wöchentlicher Wissensrückblick",
+          "description": "Ordnet neue Notizen und Besprechungen und erstellt eine Nachbereitungsliste.",
+          "category": "Wissen",
+          "schedule": "Sonntag um 18:00"
+        },
+        "daily-idea": {
+          "title": "Tägliche Idee und Wissenshäppchen",
+          "description": "Teilt eine verlässliche Tatsache und eine kleine umsetzbare Idee.",
+          "category": "Alltag",
+          "schedule": "Täglich um 12:00"
+        },
+        "bedtime-story": {
+          "title": "Tägliche Gute-Nacht-Geschichte",
+          "description": "Schreibt eine warme, fantasievolle Kurzgeschichte für Familien.",
+          "category": "Familie",
+          "schedule": "Täglich um 20:30"
+        },
+        "classic-movie": {
+          "title": "Klassische Filmempfehlung",
+          "description": "Empfiehlt einen anerkannten Filmklassiker ohne Spoiler.",
+          "category": "Unterhaltung",
+          "schedule": "Samstag um 19:00"
+        },
+        "today-in-history": {
+          "title": "Heute in der Geschichte",
+          "description": "Stellt ein verlässliches historisches Ereignis aus Wissenschaft, Kultur oder Gesellschaft vor.",
+          "category": "Tägliches Wissen",
+          "schedule": "Täglich um 08:30"
+        }
       }
     },
     "deleteDialog": {
@@ -2586,39 +2827,39 @@
       "fdChannel": "Ein Kanal",
       "fdWebhook": "Ein Webhook",
       "enabled": "Aktiviert",
-      "saveSchedule": "Zeitplan speichern"
-      ,"friendlyNamePlaceholder": "Beispiel: Kundenfeedback täglich zusammenfassen"
-      ,"friendlyTypeCron": "Zu einer festen Zeit wiederholen"
-      ,"friendlyTypeEvery": "In festem Abstand wiederholen"
-      ,"friendlyTypeAt": "Einmal zu einer bestimmten Zeit ausführen"
-      ,"executionFrequency": "Häufigkeit"
-      ,"daily": "Täglich"
-      ,"weekdays": "Werktags"
-      ,"weekly": "Wöchentlich"
-      ,"monthly": "Monatlich"
-      ,"customAdvancedTime": "Erweiterter Zeitplan"
-      ,"weekday": "Wochentag"
-      ,"date": "Datum"
-      ,"monthlyDay": "Jeden Monat am {day}."
-      ,"specificTime": "Uhrzeit"
-      ,"customTimeHint": "Verwenden Sie eine flexiblere Zeitregel."
-      ,"openAdvancedTime": "Erweiterten Zeitplan öffnen"
-      ,"everyHowOften": "Wiederholen alle"
-      ,"timeUnit": "Zeiteinheit"
-      ,"minutes": "Minuten"
-      ,"hours": "Stunden"
-      ,"days": "Tage"
-      ,"dateAndTime": "Datum und Uhrzeit"
-      ,"friendlyMessagePlaceholder": "Beispiel: Heutiges Kundenfeedback zusammenfassen und nächste Schritte vorschlagen"
-      ,"moreRuntimeSettings": "Weitere Ausführungseinstellungen (optional)"
-      ,"advancedTimeHint": "Nur verwenden, wenn die obige Zeitauswahl nicht ausreicht."
-      ,"timezoneSimpleHint": "Normalerweise ist keine Änderung erforderlich."
-      ,"projectWorkspace": "Projekt-Arbeitsbereich"
-      ,"defaultWorkspace": "Standard-Arbeitsbereich verwenden"
-      ,"noWorkspace": "Kein Projekt-Arbeitsbereich"
-      ,"workspaceUnavailable": "{name} (nicht verfügbar)"
-      ,"workspaceRequiredHint": "Wählen Sie das zu prüfende Projekt. Die Aufgabe arbeitet ausschließlich in diesem Projekt."
-      ,"workspaceOptionalHint": "Optional. Wählen Sie für allgemeine Aufgaben „Kein Projekt-Arbeitsbereich“ oder ein Projekt, wenn dessen Dateien benötigt werden."
+      "saveSchedule": "Zeitplan speichern",
+      "friendlyNamePlaceholder": "Beispiel: Kundenfeedback täglich zusammenfassen",
+      "friendlyTypeCron": "Zu einer festen Zeit wiederholen",
+      "friendlyTypeEvery": "In festem Abstand wiederholen",
+      "friendlyTypeAt": "Einmal zu einer bestimmten Zeit ausführen",
+      "executionFrequency": "Häufigkeit",
+      "daily": "Täglich",
+      "weekdays": "Werktags",
+      "weekly": "Wöchentlich",
+      "monthly": "Monatlich",
+      "customAdvancedTime": "Erweiterter Zeitplan",
+      "weekday": "Wochentag",
+      "date": "Datum",
+      "monthlyDay": "Jeden Monat am {day}.",
+      "specificTime": "Uhrzeit",
+      "customTimeHint": "Verwenden Sie eine flexiblere Zeitregel.",
+      "openAdvancedTime": "Erweiterten Zeitplan öffnen",
+      "everyHowOften": "Wiederholen alle",
+      "timeUnit": "Zeiteinheit",
+      "minutes": "Minuten",
+      "hours": "Stunden",
+      "days": "Tage",
+      "dateAndTime": "Datum und Uhrzeit",
+      "friendlyMessagePlaceholder": "Beispiel: Heutiges Kundenfeedback zusammenfassen und nächste Schritte vorschlagen",
+      "moreRuntimeSettings": "Weitere Ausführungseinstellungen (optional)",
+      "advancedTimeHint": "Nur verwenden, wenn die obige Zeitauswahl nicht ausreicht.",
+      "timezoneSimpleHint": "Normalerweise ist keine Änderung erforderlich.",
+      "projectWorkspace": "Projekt-Arbeitsbereich",
+      "defaultWorkspace": "Standard-Arbeitsbereich verwenden",
+      "noWorkspace": "Kein Projekt-Arbeitsbereich",
+      "workspaceUnavailable": "{name} (nicht verfügbar)",
+      "workspaceRequiredHint": "Wählen Sie das zu prüfende Projekt. Die Aufgabe arbeitet ausschließlich in diesem Projekt.",
+      "workspaceOptionalHint": "Optional. Wählen Sie für allgemeine Aufgaben „Kein Projekt-Arbeitsbereich“ oder ein Projekt, wenn dessen Dateien benötigt werden."
     },
     "form": {
       "cronPreviewPlaceholder": "Geben Sie einen Cron-Ausdruck mit 5 Feldern ein, um eine Vorschau zu sehen",
@@ -3262,9 +3503,18 @@
       "planTitle": "Erhaltungsplan",
       "planSummary": "Etwa alle {interval} Min. · bis zu ca. {count} Anfragen · Pause nach {duration} Min.",
       "costWarning": "Echte Provider-Anfragen können Token-Kosten verursachen; sie erscheinen nicht im Chat und führen keine Tools aus.",
-      "statusLabel": "Status", "targetLabel": "Provider / Modell", "lastHitLabel": "Zuletzt gecachte Tokens",
+      "statusLabel": "Status",
+      "targetLabel": "Provider / Modell",
+      "lastHitLabel": "Zuletzt gecachte Tokens",
       "autoPauseLabel": "Automatische Pause",
-      "states": { "off": "Aus", "waiting": "Wartet auf stabilen Präfix", "scheduled": "Geplant", "probing": "Prüfung läuft", "paused": "Leerlauflimit erreicht; wartet auf nächste Nachricht", "stopped": "Nach Fehlschlag gestoppt" }
+      "states": {
+        "off": "Aus",
+        "waiting": "Wartet auf stabilen Präfix",
+        "scheduled": "Geplant",
+        "probing": "Prüfung läuft",
+        "paused": "Leerlauflimit erreicht; wartet auf nächste Nachricht",
+        "stopped": "Nach Fehlschlag gestoppt"
+      }
     },
     "send": "Senden",
     "sendQueues": "Senden (wird nach der aktuellen Antwort in die Warteschlange gestellt)",
@@ -3366,7 +3616,7 @@
     "audioUnsupported": "Dieser Browser kann dieses Audioformat nicht abspielen. Laden Sie die Datei stattdessen herunter.",
     "playVideo": "Video abspielen",
     "videoLoadFailed": "Video konnte nicht geladen werden.",
-    "videoUnsupported": "Dieser Browser kann dieses Videoformat nicht abspielen. Laden Sie die Datei stattdessen herunter.",
+    "videoUnsupported": "Dieser Browser kann dieses Video nicht wiedergeben. Laden Sie es stattdessen herunter.",
     "previewOf": "Vorschau: {title}",
     "closePreview": "Vorschau schließen",
     "previousImage": "Vorheriges Bild",
@@ -3375,7 +3625,6 @@
     "previewDownload": "Vorschau herunterladen",
     "previewTimedOut": "Zeitüberschreitung bei der Vorschau.",
     "previewFailed": "Vorschau konnte nicht geladen werden.",
-    "videoUnsupported": "Dieser Browser kann dieses Video nicht wiedergeben. Laden Sie es stattdessen herunter.",
     "loadVideoPreview": "Videovorschau laden",
     "loadVideoPreviewFor": "Videovorschau für {title} laden",
     "videoPreviewLoading": "Die Videovorschau wird geladen. Sie können den Download abbrechen.",
@@ -4055,6 +4304,26 @@
       "downEnsemble": "Mit dieser aggregierten Antwort unzufrieden",
       "expired": "Der Routing-Eintrag dieser Nachricht ist abgelaufen",
       "failed": "Bewertung konnte nicht gespeichert werden"
+    },
+    "reviewMode": {
+      "label": "Review-Modus",
+      "turnOn": "Die KI prüft ihre Ausgabe selbst (Logik, Performance, Sicherheit)",
+      "active": "Iterative Selbstprüfung aktiv — die Antwort endet mit einem Review-Bericht",
+      "level": {
+        "lenient": "Locker",
+        "normal": "Normal",
+        "strict": "Streng"
+      },
+      "tokenWarning": "Review-Modus aktiv: Der Token-Verbrauch kann steigen."
+    },
+    "thinkingMode": {
+      "label": "Thinking-Modus",
+      "turnOn": "Zeigt den Gedankenweg der KI vor der Antwort",
+      "active": "Die Antwort beginnt mit einem 🧠 Ansatz-Abschnitt",
+      "level": {
+        "auto": "Automatisch",
+        "high": "Hoch"
+      }
     }
   },
   "shared": {
@@ -4224,5 +4493,81 @@
       "copyFailed": "Befehl konnte nicht kopiert werden",
       "copyLabel": "Gateway-Neustart-Befehl kopieren"
     }
+  },
+  "ide": {
+    "title": "Code-Interpreter",
+    "tabDocs": "Dokumente",
+    "tabCode": "Code",
+    "tabRemote": "Remote",
+    "refresh": "Aktualisieren",
+    "collapse": "Bereich einklappen",
+    "expand": "Bereich ausklappen",
+    "resize": "Bereich skalieren",
+    "retry": "Erneut versuchen",
+    "loading": "Wird geladen…",
+    "noHandoff": "Kein Übergabedokument gefunden",
+    "emptyTree": "Dieser Ordner ist leer",
+    "fileTooLarge": "Abgeschnitten — nur die ersten 512 KB",
+    "binaryFile": "Binärdatei — nicht angezeigt",
+    "noSelection": "Wählen Sie eine Datei, um den Quellcode anzuzeigen",
+    "newFile": "Neue Datei",
+    "newFolder": "Neuer Ordner",
+    "rename": "Umbenennen",
+    "delete": "Löschen",
+    "copyPath": "Pfad kopieren",
+    "copyRelativePath": "Relativen Pfad kopieren",
+    "addToChat": "Zur Unterhaltung hinzufügen",
+    "insertPath": "Dateipfad einfügen",
+    "insertContent": "Dateiinhalt einfügen",
+    "deleteConfirmTitle": "Eintrag löschen",
+    "deleteConfirmBody": "„{name}“ wird dauerhaft gelöscht. Dies kann nicht rückgängig gemacht werden.",
+    "namePlaceholder": "Name eingeben",
+    "remote": {
+      "ssh": "SSH",
+      "ftp": "FTP",
+      "wsl": "WSL",
+      "mcp": "MCP",
+      "git": "Git-Klone",
+      "selectServer": "Server",
+      "noServers": "Keine {transport}-Server konfiguriert",
+      "noGitRepos": "Noch keine geklonten Git-Repositorys gefunden — bitte zuerst die KI ein Repository klonen lassen",
+      "openSettings": "Einstellungen öffnen"
+    },
+    "changes": {
+      "title": "Letzte Änderungen",
+      "empty": "Keine aktuellen Dateiänderungen",
+      "close": "Schließen",
+      "justNow": "gerade eben",
+      "minutesAgo": "vor {n} Min.",
+      "hoursAgo": "vor {n} Std.",
+      "daysAgo": "vor {n} Tg."
+    },
+    "diff": {
+      "legend": "KI-Änderungen: grün = hinzugefügt, rot = geändert/gelöscht"
+    }
+  },
+  "terminal": {
+    "titlePowershell": "PowerShell",
+    "titleShell": "Terminal",
+    "collapse": "Terminal einklappen",
+    "expand": "Terminal ausklappen",
+    "resize": "Terminal skalieren",
+    "reconnect": "Erneut verbinden",
+    "connected": "Verbunden",
+    "connecting": "Verbindung wird hergestellt…",
+    "disconnected": "Getrennt",
+    "exited": "Prozess beendet",
+    "connectionFailed": "Verbindung zum Terminal fehlgeschlagen",
+    "ssh": {
+      "aria": "SSH-Host",
+      "local": "Lokale Shell",
+      "rejected": "SSH-Sitzung abgelehnt: Host unbekannt oder ssh nicht verfügbar"
+    },
+    "mirror": "KI-Spiegel",
+    "mirrorOn": "KI-Spiegel aktiv",
+    "mirrorOff": "KI-Spiegel deaktivieren",
+    "mirrorTitle": "KI-PowerShell-Spiegel",
+    "mirrorHint": "KI-Spiegel aktiviert: Befehle, die die KI in PowerShell ausführt, und deren Ausgabe werden hier live angezeigt",
+    "mirrorNoOutput": "keine Ausgabe"
   }
 }

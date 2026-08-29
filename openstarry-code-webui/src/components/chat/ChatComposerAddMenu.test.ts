@@ -54,6 +54,8 @@ function mountMenu(overrides: Record<string, unknown> = {}) {
       planModeActive: false,
       planModeAvailable: true,
       planModeBusy: false,
+      reviewLevel: 'off',
+      thinkingLevel: 'off',
       onActivatePlanMode: activatePlanMode,
       onActivateGoalMode: activateGoalMode,
       onAttachFiles: attachFiles,

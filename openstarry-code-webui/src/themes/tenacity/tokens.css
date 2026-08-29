@@ -1,0 +1,96 @@
+/* Theme: tenacity (value) — L1 token block. See src/themes/tenacity/manifest.ts.
+   Tenacity Glass — a light, airy palette inspired by the Tenacity client look:
+   a pastel light-blue→pink gradient ground (the gradient itself lives in
+   --tenacity-gradient below and is painted by world.css), white glassy
+   surfaces, and a cyan→violet→pink accent family. Text inks are AA-tuned on
+   the pastel field (check-webui-colors.mjs enforces the floors). */
+[data-theme="tenacity"] {
+  /* Pastel instrument — cool white surfaces that float on the gradient. */
+  --bg: #F2F7FD;
+  --bg-surface: #FFFFFF;
+  --bg-surface-2: #EBF1FA;
+  --bg-elevated: #FFFFFF;
+  --bg-hover: #E2EAF8;
+  --text: #232840;
+  --text-muted: #4E5A76;
+  --text-dim: #667390;
+  --border: #D9E3F3;
+  --border-strong: #BECDE8;
+  --border-focus: #8B5CF6;
+  --card: #FFFFFF;
+  --hairline: #E8EFFA;
+
+  --msg-bubble: color-mix(in srgb, var(--text) 7%, var(--bg-surface));
+
+  /* Cyan→violet→pink family: violet carries the primary strike (AA on the
+     pastel field), pink is the secondary orbit. */
+  --accent: #7C3AED;
+  --accent-hover: #6D28D9;
+  --accent-deep: #5B21B6;
+  --accent-secondary: #C2185B;
+  --accent-foreground: #FFFFFF;
+
+  /* Functional hues — AA ink versions borrowed from the light theme's
+     calibrated ramp, with brighter -fill siblings for small marks. */
+  --ok: #257552;
+  --ok-fill: #2E8A5F;
+  --warn: #8A6410;
+  --warn-fill: #B2820B;
+  --danger: #C2382E;
+  --danger-fill: #E0564A;
+  --info: #4353B8;
+  --info-fill: #6478D9;
+  --queued: #6B51C6;
+  --queued-fill: #8B6FE0;
+
+  /* Syntax highlighting (chat code blocks) */
+  --syntax-comment: #5F6B7A;
+  --syntax-keyword: #8E24AA;
+  --syntax-string: #2E7D32;
+  --syntax-literal: #8A5700;
+  --syntax-title: #1E55C7;
+  --syntax-attr: #0E7490;
+
+  --elev-highlight: rgba(255,255,255,0.9);
+  --elev-1: 0 1px 2px rgba(16,20,26,0.035), 0 8px 24px -16px rgba(31,38,135,0.14);
+  --elev-1-hover: 0 2px 5px rgba(16,20,26,0.055), 0 14px 34px -18px rgba(31,38,135,0.20);
+  --elev-2: 0 8px 30px -16px rgba(31,38,135,0.22);
+  --elev-3: 0 20px 55px -22px rgba(31,38,135,0.30);
+  --shadow: rgba(31,38,135,0.12);
+  --shadow-color: rgba(31,38,135,0.12);
+  --scrim: rgba(31, 38, 135, 0.38);
+  --grain-opacity: 0;
+
+  /* The Tenacity ground: a light-blue → lilac → pink pastel sweep, painted
+     app-wide by world.css (fixed attachment) with glass surfaces on top. */
+  --tenacity-gradient: linear-gradient(135deg, #E0F2FE 0%, #DBEAFE 15%, #E0E7FF 30%, #EDE9FE 45%, #FCE7F3 60%, #FECDD3 75%, #FECACA 90%, #FEE2E2 100%);
+
+  /* Glass recipe — white at 75% + the blur radius used by world.css. */
+  --glass-surface: rgba(255, 255, 255, 0.75);
+  --glass-surface-strong: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.9);
+  --glass-blur: 20px;
+
+  /* Sidebar reuses the ramp on a slightly deeper sky step. */
+  --sidebar-bg: #E9F1FB;
+  --sidebar-control-bg: #FFFFFF;
+  --sidebar-control-hover: #F4F9FE;
+  --sidebar-item-hover: #DCE8F7;
+  --sidebar-item-active: #D2E2F4;
+  --sidebar-text-strong: #232840;
+  --sidebar-text: #4E5A76;
+  --sidebar-text-soft: #667390;
+  --sidebar-border: #D9E3F3;
+}
+
+/* Structural identity — re-assert foundation type; larger, softer corners to
+   match the Tenacity rounded-glass look. */
+[data-theme="tenacity"] {
+  --font-sans: var(--font-sans-default);
+  --font-display: var(--font-display-default);
+  --radius-control: var(--radius-lg);
+  --radius-card: var(--radius-xl);
+  --radius-panel: var(--radius-2xl);
+  --radius-modal: var(--radius-2xl);
+  --radius-pill: var(--radius-full);
+}

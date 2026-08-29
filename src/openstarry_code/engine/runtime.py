@@ -7888,6 +7888,7 @@ class TurnRunner:
             apply_vision_followup_gate,
             enforce_coding_mode,
             filter_skills,
+            inject_computer_use_guidance,
             inject_platform_hint,
             inject_subagent_grounding,
             meta_command_launch,
@@ -8158,11 +8159,15 @@ class TurnRunner:
                 filter_skills,
                 inject_subagent_grounding,
                 inject_platform_hint,
+                inject_computer_use_guidance,
                 apply_prompt_cache,
             ]
         )
         if not planning_turn:
-            pipeline_steps.insert(-4, meta_command_launch)
+            # -5 keeps meta_command_launch immediately before filter_skills,
+            # the same relative slot it occupied before
+            # inject_computer_use_guidance joined the tail of the list.
+            pipeline_steps.insert(-5, meta_command_launch)
         turn = await run_pipeline(turn, pipeline_steps)
 
         # Apply routed model back to cloned selector (local, not shared)

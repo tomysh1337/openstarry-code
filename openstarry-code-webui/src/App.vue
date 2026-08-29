@@ -14,7 +14,7 @@
   >
     <!-- Brand -->
     <div class="sidebar-brand">
-      <div class="sidebar-brand-lockup">
+      <div class="sidebar-brand-lockup" @click="cycleAllThemes" style="cursor: pointer;" :title="t('chrome.theme')">
         <img class="sidebar-brand-mark" :src="brandMarkUrl" alt="" aria-hidden="true" />
         <span class="sidebar-brand-text">OpenStarry Code</span>
       </div>
@@ -340,7 +340,9 @@
         :modal-blocked="workbenchModalBlocked"
       />
       <ArtifactImageLightbox />
+      <IdeExplorerPanel />
     </div>
+    <TerminalPanel />
   </div>
 
   <!-- Mobile bottom tab bar (<=768px only; hides while the keyboard is up):
@@ -469,6 +471,8 @@ import LanguageSwitcher from './components/LanguageSwitcher.vue'
 import BgmControl from './components/BgmControl.vue'
 import ArtifactImageLightbox from './components/chat/ArtifactImageLightbox.vue'
 import AppWorkbench from './components/workbench/AppWorkbench.vue'
+import IdeExplorerPanel from './components/ide/IdeExplorerPanel.vue'
+import TerminalPanel from './components/terminal/TerminalPanel.vue'
 import { useBgm } from './composables/useBgm'
 import { useDesktopUpdate } from './composables/useDesktopUpdate'
 import { useSidebarLayout } from './composables/useSidebarLayout'
@@ -493,7 +497,7 @@ import { useProjectWorkspaces } from './composables/useProjectWorkspaces'
 import { useFreshTaskDraft } from './composables/useFreshTaskDraft'
 import { useNavigation } from './app/useNavigation'
 import { useSurfaceSkin } from './themes/useSurfaceSkin'
-import { themePickerOptions, getManifest } from './themes/registry'
+import { themePickerOptions, getManifest, selectableValueThemes } from './themes/registry'
 import { normalizeAgentId } from './utils/chat/sessionKeys'
 import { effectiveChatConnectionState } from './utils/chat/chatConnectionState'
 import { reminderToastPreview } from './utils/cron/notifications'
@@ -758,10 +762,10 @@ useChatTopbarPopoverCoordination(
 const themeMenuIsTopmost = useDialogLayer(themeMenuOpen)
 const themeButtonRef = ref<HTMLButtonElement | null>(null)
 
-// The compact topbar menu deliberately lists only the basic modes (Light / Dark
-// / System). Custom value themes live in Settings → Appearance, reached via the
-// "More themes…" action below — see themePickerOptions({ scope }) in registry.ts.
-const themeOptions = themePickerOptions({ scope: 'basic' })
+// The topbar menu lists EVERY registered value theme (user request: the
+// top-left brand click cycles all themes, and the menu shows the same full
+// set). Settings → Appearance stays the detailed picker.
+const themeOptions = themePickerOptions({ scope: 'all' })
 
 // A custom value theme (chosen in Settings) is active but not shown in the basic
 // topbar menu; mark "More themes…" instead of leaving no selection indicator.
@@ -781,6 +785,15 @@ function openMoreThemes() {
   themeMenuOpen.value = false
   handleNavClick()
   router.push('/settings/appearance')
+}
+
+// Cycle ALL themes: click the brand logo to step through every registered
+// value theme (light → dark → arctic → … ), wrapping back to the first.
+function cycleAllThemes() {
+  const ids = selectableValueThemes.map((m) => m.id)
+  if (!ids.length) return
+  const idx = ids.indexOf(appStore.theme)
+  appStore.setTheme(ids[(idx + 1) % ids.length])
 }
 
 useDocumentEvent('click', (e) => {

@@ -385,6 +385,30 @@ class PromptAssemblerStage:
             fresh_user_session=inp.fresh_user_session,
             workspace_dir=getattr(inp.effective_tool_context, "workspace_dir", None),
         )
+        
+        # Headroom 提示词压缩（如果 base_prompt 是字符串且足够长）
+        from openstarry_code.engine.prompt_compressor import compress_prompt, CompressionLevel
+        
+        if isinstance(base_prompt, str):
+            compressed_prompt = compress_prompt(
+                base_prompt,
+                level=CompressionLevel.MEDIUM,
+                auto_compress=True,
+                min_length=1000
+            )
+            if compressed_prompt != base_prompt:
+                prompt_metadata["headroom_compressed"] = True
+                prompt_metadata["original_length"] = len(base_prompt)
+                prompt_metadata["compressed_length"] = len(compressed_prompt)
+                base_prompt = compressed_prompt
+        elif isinstance(base_prompt, tuple) and len(base_prompt) == 2:
+            # 元组形式 (system, user)
+            system_prompt, user_prompt = base_prompt
+            compressed_system = compress_prompt(system_prompt, level=CompressionLevel.MEDIUM, auto_compress=True, min_length=1000)
+            compressed_user = compress_prompt(user_prompt, level=CompressionLevel.LIGHT, auto_compress=True, min_length=500)
+            if compressed_system != system_prompt or compressed_user != user_prompt:
+                prompt_metadata["headroom_compressed"] = True
+                base_prompt = (compressed_system, compressed_user)
 
         # 2. Fetch router context (transcript-driven)
         router_context = await self._router_context.fetch_router_context(

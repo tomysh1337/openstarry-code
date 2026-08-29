@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import re
 from dataclasses import dataclass
 from typing import Any
 
@@ -69,6 +70,25 @@ def create_client(config: MCPServerConfig) -> MCPClient:
         raise ValueError(f"Unknown MCP transport: {config.transport!r}")
 
 
+# Character classes not accepted by provider tool-name validators; MCP server
+# names are operator-authored (spaces, dots, slashes...) so they are folded
+# down to the safe alphabet before being embedded in a tool name.
+_TOOL_NAME_UNSAFE = re.compile(r"[^a-zA-Z0-9_-]+")
+
+
+def mcp_tool_name(server_name: str, tool_name: str) -> str:
+    """Build the registry/model-facing tool name for one MCP tool.
+
+    The ``mcp__<server>__<tool>`` shape (double underscores, mirroring the
+    conventional MCP client naming) keeps tools from different MCP servers
+    from colliding — e.g. two servers both exposing ``screenshot`` register
+    as ``mcp__docs__screenshot`` and ``mcp__openstarry-computer-use__screenshot``.
+    """
+    safe_server = _TOOL_NAME_UNSAFE.sub("_", server_name or "server").strip("_") or "server"
+    safe_tool = _TOOL_NAME_UNSAFE.sub("_", tool_name or "tool").strip("_") or "tool"
+    return f"mcp__{safe_server}__{safe_tool}"
+
+
 def _make_tool_handler(
     client: MCPClient,
     tool_name: str,
@@ -76,14 +96,14 @@ def _make_tool_handler(
     registry: ToolRegistry,
     timeout_seconds: float,
 ) -> None:
-    """Register a single MCP tool into the registry with an mcp_ prefix."""
+    """Register a single MCP tool into the registry with an mcp__<server>__ prefix."""
     # Extract properties and required from input_schema
     schema = tool_def.input_schema
     properties: dict[str, Any] = schema.get("properties", {})
     required: list[str] = schema.get("required", [])
 
     spec = ToolSpec(
-        name=f"mcp_{tool_name}",
+        name=mcp_tool_name(client.config.name, tool_name),
         description=tool_def.description,
         parameters=properties,
         required=required,
@@ -144,7 +164,7 @@ async def discover_and_register(
                 registry,
                 timeout_seconds=config.tool_timeout_seconds,
             )
-            registered.append(f"mcp_{t.name}")
+            registered.append(mcp_tool_name(config.name, t.name))
     except Exception:
         if entry is not None:
             try:

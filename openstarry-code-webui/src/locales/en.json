@@ -393,9 +393,18 @@
       "retryFailedTitle": "The preview could not be regenerated",
       "retryFailedDescription": "This regeneration request did not complete. The previous result remains unadopted and no files were changed. Try again or discard the import.",
       "jobStates": {
-        "cancelled": {"title": "Preview generation cancelled", "description": "The isolated source is retained for 24 hours. Regeneration may make at most two model calls because one result that does not pass validation can be retried once; the result may differ."},
-        "interrupted": {"title": "Preview generation interrupted", "description": "OpenStarry Code restarted while the model was processing. The isolated source is still available. Regeneration may make at most two model calls because one result that does not pass validation can be retried once."},
-        "failed": {"title": "Preview generation failed", "description": "This attempt did not produce a validated, reviewable preview. No import decisions were adopted and no files were changed. The isolated source was retained; regeneration may make at most two model calls and the result may differ."}
+        "cancelled": {
+          "title": "Preview generation cancelled",
+          "description": "The isolated source is retained for 24 hours. Regeneration may make at most two model calls because one result that does not pass validation can be retried once; the result may differ."
+        },
+        "interrupted": {
+          "title": "Preview generation interrupted",
+          "description": "OpenStarry Code restarted while the model was processing. The isolated source is still available. Regeneration may make at most two model calls because one result that does not pass validation can be retried once."
+        },
+        "failed": {
+          "title": "Preview generation failed",
+          "description": "This attempt did not produce a validated, reviewable preview. No import decisions were adopted and no files were changed. The isolated source was retained; regeneration may make at most two model calls and the result may differ."
+        }
       },
       "modelAnalysisTitle": "Model analysis (verify against the file changes)",
       "previewTitle": "Review every file change",
@@ -578,6 +587,139 @@
       "discardBody": "You have unsaved edits. Closing now will lose them.",
       "discardConfirmPrimary": "Discard changes"
     },
+    "mcp": {
+      "title": "MCP Servers",
+      "subtitle": "Configure Model Context Protocol servers that extend the agent with external tools. Changes apply on the next gateway start.",
+      "add": "Add server",
+      "empty": "No MCP servers configured",
+      "emptyHint": "Add a stdio command or an http endpoint to extend the agent with external tools",
+      "newTitle": "New MCP server",
+      "editTitle": "Edit MCP server",
+      "fieldName": "Name",
+      "namePlaceholder": "e.g. filesystem",
+      "fieldTransport": "Transport",
+      "transportStdio": "stdio (local command)",
+      "transportHttp": "http (remote URL)",
+      "fieldCommand": "Command",
+      "commandPlaceholder": "e.g. npx",
+      "fieldArgs": "Arguments",
+      "argsPlaceholder": "Space-separated arguments",
+      "fieldUrl": "Server URL",
+      "urlPlaceholder": "https://example.com/mcp",
+      "fieldEnv": "Environment variables",
+      "envPlaceholder": "KEY=VALUE",
+      "envHint": "One KEY=VALUE per line",
+      "fieldEnabled": "Enabled",
+      "save": "Save",
+      "cancel": "Cancel",
+      "edit": "Edit",
+      "delete": "Delete",
+      "deleteTitle": "Delete MCP server?",
+      "deleteBody": "\"{name}\" will be removed from the configuration.",
+      "saved": "MCP server saved",
+      "deleted": "MCP server deleted",
+      "saveFailed": "Couldn't save the MCP server",
+      "deleteFailed": "Couldn't delete the MCP server",
+      "loadFailed": "Couldn't load MCP servers",
+      "retry": "Retry",
+      "errNameRequired": "Name is required",
+      "errCommandRequired": "A command is required for stdio servers",
+      "errUrlRequired": "A valid http(s) URL is required",
+      "errEnvInvalid": "Environment variables must be one KEY=VALUE per line",
+      "builtin": {
+        "title": "Built-in servers",
+        "subtitle": "MCP servers bundled with OpenStarry Code, ready to enable with one click.",
+        "computerUseName": "Computer use",
+        "computerUseDesc": "Lets the AI see the screen and drive the keyboard and mouse with human-like actions; an on-screen cursor shows every move.",
+        "enable": "Enable",
+        "enabled": "Enabled",
+        "alreadyEnabled": "Computer use is already enabled",
+        "enableFailed": "Couldn't enable computer use"
+      },
+      "preview": {
+        "open": "Live preview",
+        "title": "Computer use — live preview",
+        "close": "Close",
+        "statusActive": "Active",
+        "statusAborted": "Aborted",
+        "statusIdle": "Idle",
+        "noScreenshot": "No screenshot yet — the preview updates once the agent starts a computer-use session.",
+        "loadFailed": "Couldn't load the computer-use state",
+        "lastAction": "Last action",
+        "noAction": "No actions yet",
+        "cursor": "Cursor"
+      }
+    },
+    "ssh": {
+      "title": "SSH Hosts",
+      "subtitle": "Save SSH hosts that the built-in terminal connects to with your system ssh client. Authentication uses your existing ssh configuration.",
+      "add": "Add host",
+      "empty": "No SSH hosts configured",
+      "emptyHint": "Add a host to open a terminal session over SSH from the terminal panel",
+      "newTitle": "New SSH host",
+      "editTitle": "Edit SSH host",
+      "fieldName": "Name",
+      "namePlaceholder": "e.g. web-server",
+      "fieldHost": "Host",
+      "hostPlaceholder": "e.g. 192.168.1.10",
+      "fieldPort": "Port",
+      "portPlaceholder": "22",
+      "fieldUsername": "Username",
+      "usernamePlaceholder": "e.g. root",
+      "fieldEnabled": "Enabled",
+      "save": "Save",
+      "cancel": "Cancel",
+      "edit": "Edit",
+      "delete": "Delete",
+      "deleteTitle": "Delete SSH host?",
+      "deleteBody": "\"{name}\" will be removed from the configuration.",
+      "saved": "SSH host saved",
+      "deleted": "SSH host deleted",
+      "saveFailed": "Couldn't save the SSH host",
+      "deleteFailed": "Couldn't delete the SSH host",
+      "loadFailed": "Couldn't load SSH hosts",
+      "retry": "Retry",
+      "errNameRequired": "Name is required",
+      "errHostRequired": "Host is required",
+      "errPortInvalid": "Port must be an integer between 1 and 65535"
+    },
+    "ftp": {
+      "title": "FTP Servers",
+      "subtitle": "Save FTP servers that the IDE panel's Remote tab browses. An empty username means anonymous login.",
+      "add": "Add server",
+      "empty": "No FTP servers configured",
+      "emptyHint": "Add a server to browse its files from the IDE panel",
+      "newTitle": "New FTP server",
+      "editTitle": "Edit FTP server",
+      "fieldName": "Name",
+      "namePlaceholder": "e.g. web-server",
+      "fieldHost": "Host",
+      "hostPlaceholder": "e.g. ftp.example.com",
+      "fieldPort": "Port",
+      "portPlaceholder": "21",
+      "fieldUsername": "Username",
+      "usernamePlaceholder": "e.g. deploy",
+      "fieldPassword": "Password",
+      "passwordPlaceholder": "Password",
+      "passwordHint": "Empty for anonymous login. Stored in the gateway config.",
+      "fieldTls": "Use TLS (FTPS)",
+      "fieldEnabled": "Enabled",
+      "save": "Save",
+      "cancel": "Cancel",
+      "edit": "Edit",
+      "delete": "Delete",
+      "deleteTitle": "Delete FTP server?",
+      "deleteBody": "\"{name}\" will be removed from the configuration.",
+      "saved": "FTP server saved",
+      "deleted": "FTP server deleted",
+      "saveFailed": "Couldn't save the FTP server",
+      "deleteFailed": "Couldn't delete the FTP server",
+      "loadFailed": "Couldn't load FTP servers",
+      "retry": "Retry",
+      "errNameRequired": "Name is required",
+      "errHostRequired": "Host is required",
+      "errPortInvalid": "Port must be an integer between 1 and 65535"
+    },
     "rail": {
       "connection": "Connection",
       "runtime": "Runtime",
@@ -589,6 +731,9 @@
       "memory": "Memory & Profile",
       "computerControl": "Computer control",
       "browser": "Browser",
+      "mcp": "MCP Servers",
+      "ssh": "SSH",
+      "ftp": "FTP",
       "coding": "Coding",
       "router": "Router",
       "ensemble": "Ensemble",
@@ -2507,15 +2652,60 @@
       "galleryEyebrow": "AUTOMATION GALLERY",
       "bulkDeleteConfirm": "Delete {count} selected automation jobs? This cannot be undone.",
       "templates": {
-        "ai-daily": { "title": "Daily AI news briefing", "description": "Summarize important AI news from the last 24 hours with verified source links.", "category": "News & intelligence", "schedule": "Daily at 08:00" },
-        "weekly-report": { "title": "Weekly work review", "description": "Summarize progress, risks, deliverables, and next week’s priorities.", "category": "Productivity", "schedule": "Friday at 17:30" },
-        "english-five": { "title": "Five English words a day", "description": "Create a lightweight vocabulary lesson with examples and a short quiz.", "category": "Learning", "schedule": "Daily at 09:00" },
-        "project-risk": { "title": "Project risk check", "description": "Review delays, errors, and open issues and report risk levels with recommendations.", "category": "Projects", "schedule": "Weekdays at 10:00" },
-        "knowledge-review": { "title": "Weekly knowledge review", "description": "Organize new notes and meeting records and produce a follow-up reading list.", "category": "Knowledge", "schedule": "Sunday at 18:00" },
-        "daily-idea": { "title": "Daily idea and fun fact", "description": "Share one reliable fact and one small, actionable idea.", "category": "Lifestyle", "schedule": "Daily at 12:00" },
-        "bedtime-story": { "title": "Daily bedtime story", "description": "Write a warm, imaginative short story suitable for reading with children.", "category": "Family", "schedule": "Daily at 20:30" },
-        "classic-movie": { "title": "Classic movie recommendation", "description": "Recommend one acclaimed classic film with a spoiler-free introduction.", "category": "Entertainment", "schedule": "Saturday at 19:00" },
-        "today-in-history": { "title": "Today in history", "description": "Select one reliable historical event from science, culture, or society.", "category": "Daily knowledge", "schedule": "Daily at 08:30" }
+        "ai-daily": {
+          "title": "Daily AI news briefing",
+          "description": "Summarize important AI news from the last 24 hours with verified source links.",
+          "category": "News & intelligence",
+          "schedule": "Daily at 08:00"
+        },
+        "weekly-report": {
+          "title": "Weekly work review",
+          "description": "Summarize progress, risks, deliverables, and next week’s priorities.",
+          "category": "Productivity",
+          "schedule": "Friday at 17:30"
+        },
+        "english-five": {
+          "title": "Five English words a day",
+          "description": "Create a lightweight vocabulary lesson with examples and a short quiz.",
+          "category": "Learning",
+          "schedule": "Daily at 09:00"
+        },
+        "project-risk": {
+          "title": "Project risk check",
+          "description": "Review delays, errors, and open issues and report risk levels with recommendations.",
+          "category": "Projects",
+          "schedule": "Weekdays at 10:00"
+        },
+        "knowledge-review": {
+          "title": "Weekly knowledge review",
+          "description": "Organize new notes and meeting records and produce a follow-up reading list.",
+          "category": "Knowledge",
+          "schedule": "Sunday at 18:00"
+        },
+        "daily-idea": {
+          "title": "Daily idea and fun fact",
+          "description": "Share one reliable fact and one small, actionable idea.",
+          "category": "Lifestyle",
+          "schedule": "Daily at 12:00"
+        },
+        "bedtime-story": {
+          "title": "Daily bedtime story",
+          "description": "Write a warm, imaginative short story suitable for reading with children.",
+          "category": "Family",
+          "schedule": "Daily at 20:30"
+        },
+        "classic-movie": {
+          "title": "Classic movie recommendation",
+          "description": "Recommend one acclaimed classic film with a spoiler-free introduction.",
+          "category": "Entertainment",
+          "schedule": "Saturday at 19:00"
+        },
+        "today-in-history": {
+          "title": "Today in history",
+          "description": "Select one reliable historical event from science, culture, or society.",
+          "category": "Daily knowledge",
+          "schedule": "Daily at 08:30"
+        }
       }
     },
     "deleteDialog": {
@@ -2637,39 +2827,39 @@
       "fdChannel": "A channel",
       "fdWebhook": "A webhook",
       "enabled": "Enabled",
-      "saveSchedule": "Save schedule"
-      ,"friendlyNamePlaceholder": "For example: Organize customer feedback every day"
-      ,"friendlyTypeCron": "Repeat at a scheduled time"
-      ,"friendlyTypeEvery": "Repeat at a fixed interval"
-      ,"friendlyTypeAt": "Run once at a specified time"
-      ,"executionFrequency": "Frequency"
-      ,"daily": "Daily"
-      ,"weekdays": "Weekdays"
-      ,"weekly": "Weekly"
-      ,"monthly": "Monthly"
-      ,"customAdvancedTime": "Custom advanced schedule"
-      ,"weekday": "Day of week"
-      ,"date": "Date"
-      ,"monthlyDay": "Day {day} of each month"
-      ,"specificTime": "Time"
-      ,"customTimeHint": "Use a more flexible schedule rule."
-      ,"openAdvancedTime": "Open advanced schedule"
-      ,"everyHowOften": "Repeat every"
-      ,"timeUnit": "Time unit"
-      ,"minutes": "Minutes"
-      ,"hours": "Hours"
-      ,"days": "Days"
-      ,"dateAndTime": "Date and time"
-      ,"friendlyMessagePlaceholder": "For example: Summarize today's customer feedback and suggest next steps"
-      ,"moreRuntimeSettings": "More runtime settings (optional)"
-      ,"advancedTimeHint": "Use this only when the schedule picker above is not flexible enough."
-      ,"timezoneSimpleHint": "Usually you do not need to change this."
-      ,"projectWorkspace": "Project workspace"
-      ,"defaultWorkspace": "Use the default workspace"
-      ,"noWorkspace": "No project workspace"
-      ,"workspaceUnavailable": "{name} (unavailable)"
-      ,"workspaceRequiredHint": "Choose the project this task should inspect. The task will read and work only in that project."
-      ,"workspaceOptionalHint": "Optional. Choose “No project workspace” for general tasks, or select a project when the task needs its files."
+      "saveSchedule": "Save schedule",
+      "friendlyNamePlaceholder": "For example: Organize customer feedback every day",
+      "friendlyTypeCron": "Repeat at a scheduled time",
+      "friendlyTypeEvery": "Repeat at a fixed interval",
+      "friendlyTypeAt": "Run once at a specified time",
+      "executionFrequency": "Frequency",
+      "daily": "Daily",
+      "weekdays": "Weekdays",
+      "weekly": "Weekly",
+      "monthly": "Monthly",
+      "customAdvancedTime": "Custom advanced schedule",
+      "weekday": "Day of week",
+      "date": "Date",
+      "monthlyDay": "Day {day} of each month",
+      "specificTime": "Time",
+      "customTimeHint": "Use a more flexible schedule rule.",
+      "openAdvancedTime": "Open advanced schedule",
+      "everyHowOften": "Repeat every",
+      "timeUnit": "Time unit",
+      "minutes": "Minutes",
+      "hours": "Hours",
+      "days": "Days",
+      "dateAndTime": "Date and time",
+      "friendlyMessagePlaceholder": "For example: Summarize today's customer feedback and suggest next steps",
+      "moreRuntimeSettings": "More runtime settings (optional)",
+      "advancedTimeHint": "Use this only when the schedule picker above is not flexible enough.",
+      "timezoneSimpleHint": "Usually you do not need to change this.",
+      "projectWorkspace": "Project workspace",
+      "defaultWorkspace": "Use the default workspace",
+      "noWorkspace": "No project workspace",
+      "workspaceUnavailable": "{name} (unavailable)",
+      "workspaceRequiredHint": "Choose the project this task should inspect. The task will read and work only in that project.",
+      "workspaceOptionalHint": "Optional. Choose “No project workspace” for general tasks, or select a project when the task needs its files."
     },
     "form": {
       "cronPreviewPlaceholder": "Enter a 5-field cron expression to preview",
@@ -3317,7 +3507,14 @@
       "targetLabel": "Provider / model",
       "lastHitLabel": "Last cached tokens",
       "autoPauseLabel": "Auto-pause",
-      "states": { "off": "Off", "waiting": "Waiting for a stable prefix", "scheduled": "Scheduled", "probing": "Probing", "paused": "Idle limit reached; waiting for the next message", "stopped": "Stopped after a miss or error" }
+      "states": {
+        "off": "Off",
+        "waiting": "Waiting for a stable prefix",
+        "scheduled": "Scheduled",
+        "probing": "Probing",
+        "paused": "Idle limit reached; waiting for the next message",
+        "stopped": "Stopped after a miss or error"
+      }
     },
     "send": "Send",
     "sendQueues": "Send (queues for after current response)",
@@ -3419,7 +3616,7 @@
     "audioUnsupported": "This browser cannot play this audio format. Download the file instead.",
     "playVideo": "Play video",
     "videoLoadFailed": "Video could not be loaded.",
-    "videoUnsupported": "This browser cannot play this video format. Download the file instead.",
+    "videoUnsupported": "This browser cannot play this video. Download it instead.",
     "previewOf": "Preview: {title}",
     "closePreview": "Close preview",
     "previousImage": "Previous image",
@@ -3428,7 +3625,6 @@
     "previewDownload": "Preview download",
     "previewTimedOut": "Preview timed out.",
     "previewFailed": "Preview failed to load.",
-    "videoUnsupported": "This browser cannot play this video. Download it instead.",
     "loadVideoPreview": "Load video preview",
     "loadVideoPreviewFor": "Load video preview for {title}",
     "videoPreviewLoading": "Loading the video preview. You can cancel while it downloads.",
@@ -4108,6 +4304,26 @@
       "downEnsemble": "Unsatisfied with this aggregated answer",
       "expired": "This message’s routing record has expired",
       "failed": "Could not record your rating"
+    },
+    "reviewMode": {
+      "label": "Review mode",
+      "turnOn": "AI self-reviews its output (logic, performance, security)",
+      "active": "Iterative self-review on — the reply ends with a review report",
+      "level": {
+        "lenient": "Lenient",
+        "normal": "Normal",
+        "strict": "Strict"
+      },
+      "tokenWarning": "Review mode on: token usage will rise (extra self-review passes run per reply)."
+    },
+    "thinkingMode": {
+      "label": "Thinking mode",
+      "turnOn": "Show the AI's step-by-step approach before the answer",
+      "active": "The reply starts with a 🧠 Approach section",
+      "level": {
+        "auto": "Auto",
+        "high": "High"
+      }
     }
   },
   "shared": {
@@ -4277,5 +4493,81 @@
       "copyFailed": "Could not copy the command",
       "copyLabel": "Copy the gateway restart command"
     }
+  },
+  "ide": {
+    "title": "Code Interpreter",
+    "tabDocs": "Docs",
+    "tabCode": "Code",
+    "tabRemote": "Remote",
+    "refresh": "Refresh",
+    "collapse": "Collapse panel",
+    "expand": "Expand panel",
+    "resize": "Resize panel",
+    "retry": "Retry",
+    "loading": "Loading…",
+    "noHandoff": "No handoff document found",
+    "emptyTree": "This folder is empty",
+    "fileTooLarge": "Truncated — showing the first 512 KB",
+    "binaryFile": "Binary file — not displayed",
+    "noSelection": "Select a file to view its source",
+    "newFile": "New file",
+    "newFolder": "New folder",
+    "rename": "Rename",
+    "delete": "Delete",
+    "copyPath": "Copy path",
+    "copyRelativePath": "Copy relative path",
+    "addToChat": "Add to conversation",
+    "insertPath": "Insert file path",
+    "insertContent": "Insert file content",
+    "deleteConfirmTitle": "Delete entry",
+    "deleteConfirmBody": "\"{name}\" will be permanently deleted. This cannot be undone.",
+    "namePlaceholder": "Enter a name",
+    "remote": {
+      "ssh": "SSH",
+      "ftp": "FTP",
+      "wsl": "WSL",
+      "mcp": "MCP",
+      "git": "Git clones",
+      "selectServer": "Server",
+      "noServers": "No {transport} servers configured",
+      "noGitRepos": "No cloned git repositories found yet — ask the AI to clone a repository first",
+      "openSettings": "Open settings"
+    },
+    "changes": {
+      "title": "Recent changes",
+      "empty": "No recent file changes",
+      "close": "Close",
+      "justNow": "just now",
+      "minutesAgo": "{n} min ago",
+      "hoursAgo": "{n} h ago",
+      "daysAgo": "{n} d ago"
+    },
+    "diff": {
+      "legend": "AI changes: green = added, red = modified/deleted"
+    }
+  },
+  "terminal": {
+    "titlePowershell": "PowerShell",
+    "titleShell": "Terminal",
+    "collapse": "Collapse terminal",
+    "expand": "Expand terminal",
+    "resize": "Resize terminal",
+    "reconnect": "Reconnect",
+    "connected": "Connected",
+    "connecting": "Connecting…",
+    "disconnected": "Disconnected",
+    "exited": "process exited",
+    "connectionFailed": "Could not connect to the terminal",
+    "ssh": {
+      "aria": "SSH host",
+      "local": "Local shell",
+      "rejected": "SSH session rejected: unknown host or ssh unavailable"
+    },
+    "mirror": "AI mirror",
+    "mirrorOn": "AI mirror on",
+    "mirrorOff": "Turn off AI mirror",
+    "mirrorTitle": "AI PowerShell mirror",
+    "mirrorHint": "AI mirror is on: commands the AI runs in PowerShell and their output will be shown here live",
+    "mirrorNoOutput": "no output"
   }
 }

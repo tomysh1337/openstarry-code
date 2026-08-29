@@ -7,7 +7,7 @@
 
 set -euo pipefail
 
-default_version="v0.5.9"
+default_version="v0.6.0"
 repo_slug="${OPENSTARRY_CODE_REPOSITORY:-tomysh1337/openstarry-code}"
 python_version="${OPENSTARRY_CODE_PYTHON_VERSION:-3.12}"
 original_path="${PATH:-}"
@@ -18,10 +18,10 @@ cli_extras=""
 
 usage() {
     cat <<HELP
-Usage: bash install.sh [--version v0.5.9|latest] [--profile recommended|core] [--extras name[,name]]
+Usage: bash install.sh [--version v0.6.0|latest] [--profile recommended|core] [--extras name[,name]]
 
 Environment equivalents:
-  OPENSTARRY_CODE_VERSION=v0.5.9
+  OPENSTARRY_CODE_VERSION=v0.6.0
   OPENSTARRY_CODE_INSTALL_PROFILE=recommended|core
   OPENSTARRY_CODE_INSTALL_EXTRAS=matrix
   OPENSTARRY_CODE_INSTALL_DRY_RUN=1

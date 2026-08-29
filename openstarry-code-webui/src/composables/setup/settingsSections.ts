@@ -36,6 +36,15 @@ export const SETTINGS_SECTIONS = [
   // they are client-only preferences and never enter gateway save state.
   { id: 'computerControl', label: '电脑操控', icon: 'monitor', client: true, desktopOnly: false, group: 'integrations' },
   { id: 'browser', label: '浏览器', icon: 'cloud', client: true, desktopOnly: false, group: 'integrations' },
+  // MCP server configuration is a gateway action surface (its own HTTP CRUD
+  // endpoints, not the config form dirty-save flow), so it is client-like.
+  { id: 'mcp', label: 'MCP Servers', icon: 'config', client: true, desktopOnly: false, group: 'integrations' },
+  // SSH host configuration mirrors MCP: gateway HTTP CRUD (/api/ssh/hosts),
+  // sessions carried by the system ssh client in the builtin terminal.
+  { id: 'ssh', label: 'SSH', icon: 'languages', client: true, desktopOnly: false, group: 'integrations' },
+  // FTP host configuration mirrors SSH: gateway HTTP CRUD (/api/ftp/hosts),
+  // browsing carried by stdlib ftplib in the IDE panel's remote tab.
+  { id: 'ftp', label: 'FTP', icon: 'cloud', client: true, desktopOnly: false, group: 'integrations' },
   { id: 'coding', label: '编码', icon: 'fileCode', client: true, desktopOnly: false, group: 'coding' },
   // Client-only sections carry no readiness/RPC state: they edit local browser
   // preferences that apply instantly and never enter the dirty bar. The status

@@ -1,0 +1,101 @@
+/* Tenacity WORLD — the glass identity applied globally (via data-theme) when
+   the tenacity theme is active: the pastel light-blue→pink gradient ground,
+   frosted-glass chrome (sidebar/topbar/composer) floating on it, a soft accent
+   glow on primary actions and headings, and gentle slide/hover motion. Every
+   colour comes from tokens.css (--tenacity-gradient / --glass-*) — no raw
+   literals; every animation uses the shared motion tokens and is
+   gated by prefers-reduced-motion. Decorative layers never intercept pointers. */
+
+/* -- GROUND: the fixed pastel sweep behind everything ----------------------- */
+[data-theme="tenacity"] body {
+  background: var(--tenacity-gradient);
+  background-attachment: fixed;
+}
+
+/* -- GLASS CHROME: sidebar + topbar become frosted panes -------------------- */
+[data-theme="tenacity"] .sidebar,
+[data-theme="tenacity"] .topbar {
+  background: var(--glass-surface);
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  backdrop-filter: blur(var(--glass-blur));
+  border-color: var(--glass-border);
+  box-shadow: var(--elev-1);
+}
+
+/* Raised surfaces (cards, modals, menus, popovers) float a step stronger. */
+[data-theme="tenacity"] .theme-menu,
+[data-theme="tenacity"] .composer-add-menu {
+  background: var(--glass-surface-strong);
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  backdrop-filter: blur(var(--glass-blur));
+  border-color: var(--glass-border);
+}
+
+/* -- GLOW: primary actions and headings carry the accent aura --------------- */
+[data-theme="tenacity"] h1,
+[data-theme="tenacity"] h2,
+[data-theme="tenacity"] h3,
+[data-theme="tenacity"] .view-title {
+  text-shadow:
+    0 0 14px color-mix(in srgb, var(--accent) 18%, transparent),
+    0 0 30px color-mix(in srgb, var(--accent-secondary) 10%, transparent);
+}
+
+[data-theme="tenacity"] .btn--primary {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent) 22%, transparent),
+    0 4px 18px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+[data-theme="tenacity"] .btn--primary:hover {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent),
+    0 8px 28px color-mix(in srgb, var(--accent) 42%, transparent);
+}
+
+/* -- MOTION: gentle lift on interactive cards/buttons ------------------------ */
+[data-theme="tenacity"] .btn,
+[data-theme="tenacity"] .feature-card {
+  transition:
+    transform var(--dur-base) var(--ease-standard),
+    box-shadow var(--dur-base) var(--ease-standard),
+    background var(--dur-base) var(--ease-standard);
+}
+
+[data-theme="tenacity"] .btn:hover {
+  transform: translateY(-2px);
+}
+
+[data-theme="tenacity"] .btn:active {
+  transform: translateY(0);
+}
+
+/* Popovers/menus slide in from a 4px offset instead of popping. */
+[data-theme="tenacity"] .theme-menu,
+[data-theme="tenacity"] .composer-add-menu {
+  animation: tenacity-slide-in var(--dur-enter) var(--ease-out);
+}
+
+@keyframes tenacity-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Reduced motion: keep the palette and glass, drop every movement. */
+@media (prefers-reduced-motion: reduce) {
+  [data-theme="tenacity"] .btn:hover,
+  [data-theme="tenacity"] .btn:active {
+    transform: none;
+  }
+
+  [data-theme="tenacity"] .theme-menu,
+  [data-theme="tenacity"] .composer-add-menu {
+    animation: none;
+  }
+}
