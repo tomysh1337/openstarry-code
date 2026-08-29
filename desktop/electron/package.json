@@ -153,6 +153,7 @@
     },
     "linux": {
       "icon": "assets/icon.png",
+      "executableName": "openstarry-code",
       "target": [
         "AppImage",
         "deb"
