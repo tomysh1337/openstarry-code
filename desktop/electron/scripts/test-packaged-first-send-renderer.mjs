@@ -14,6 +14,16 @@ import {
 const DEFAULT_ITERATIONS = 20
 const SEND_TIMEOUT_MS = 45_000
 const FORBIDDEN_RENDERER_ERROR = /(?:emitsOptions|\bexposed\b|nextSibling|getNextHostNode|Teleport\.process|\[ErrorBoundary\])/i
+// The release gate reloads the control UI up to 40 times in rapid succession,
+// and the renderer opens its Gateway WebSocket before the per-run Gateway has
+// finished binding its port. That produces two classes of transient, non-fatal
+// Chromium noise that are platform- and timing-dependent and unrelated to the
+// first-send behavior under test: resource loads the Gateway answers with
+// 404 (endpoint not present) or 429 (rate-limit under the burst), and the
+// initial WebSocket handshake that is refused until the Gateway accepts the
+// connection. These are tolerated so the gate still hard-fails on any genuine
+// renderer error while not flaking on startup/rate-limit noise.
+const TOLERATED_RENDERER_ERROR = /(?:Failed to load resource: the server responded with a status of (?:404|429)|WebSocket connection to ['"]ws:\/\/127\.0\.0\.1:\d+\/ws(?:\/builtin\/terminal)?['"] failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED)/i
 const WIDE_VIEWPORT = { width: 1440, height: 900 }
 const TIGHT_VIEWPORT = { width: 900, height: 780 }
 
@@ -184,6 +194,7 @@ let provider
 let runError
 const pageErrors = []
 const consoleErrors = []
+const toleratedConsoleErrors = []
 const outboundNetwork = []
 const rpcSendCounts = new Map()
 const rpcSessions = new Map()
@@ -306,7 +317,12 @@ try {
   })
   page.on('pageerror', (error) => pageErrors.push(String(error?.message || error)))
   page.on('console', (message) => {
-    if (message.type() === 'error') consoleErrors.push(message.text())
+    if (message.type() !== 'error') return
+    if (TOLERATED_RENDERER_ERROR.test(message.text())) {
+      toleratedConsoleErrors.push(message.text())
+      return
+    }
+    consoleErrors.push(message.text())
   })
   await waitFor(() => page.url().includes('/control/chat'), 'candidate Control UI')
   // firstWindow can expose the target URL while Electron's initial loadURL()
@@ -509,6 +525,7 @@ if (runError) {
     mainFrameNavigations,
     pageErrors,
     consoleErrors,
+    toleratedConsoleErrors,
     rendererFailureSnapshot,
     desktopLog: desktopLogSummary,
     shutdownDesktopLog: shutdownDesktopLogSummary,
@@ -539,6 +556,7 @@ console.log(JSON.stringify({
   renderer: {
     pageErrors: pageErrors.length,
     consoleErrors: consoleErrors.length,
+    toleratedConsoleErrors: toleratedConsoleErrors.length,
     mainFrameNavigations: mainFrameNavigations.length,
   },
   externalRendererRequests: outboundNetwork.length,
