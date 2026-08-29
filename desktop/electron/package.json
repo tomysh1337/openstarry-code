@@ -3,6 +3,10 @@
   "version": "0.6.2",
   "private": true,
   "description": "Electron desktop shell for the OpenStarry Code Control UI.",
+  "author": {
+    "name": "tomysh1337",
+    "email": "213164678+tomysh1337@users.noreply.github.com"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/tomysh1337/openstarry-code.git"
